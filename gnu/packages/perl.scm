@@ -1813,6 +1813,32 @@ edges (mainly concerning timezone detection and selection).")
 This module parses and emits such dates.")
     (license (package-license perl))))
 
+(define-public perl-datetime-format-w3cdtf
+  (package
+    (name "perl-datetime-format-w3cdtf")
+    (version "0.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GW/GWILLIAMS/"
+                                  "DateTime-Format-W3CDTF-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ymxizwd2zfx8b4bmrmv4k439qwfwf2522jrvn4hlay5v6z459dr"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-datetime" ,perl-datetime)))
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-W3CDTF")
+    (synopsis "Parse and format W3CDTF datetime strings")
+    (description
+     "This module understands the W3CDTF date/time format, an ISO 8601 profile,
+defined at https://www.w3.org/TR/NOTE-datetime.  This format is the native date
+format of RSS 1.0.  It can be used to parse these formats in order to create
+the appropriate objects.")
+    (license (package-license perl))))
+
 (define-public perl-devel-caller
   (package
     (name "perl-devel-caller")
