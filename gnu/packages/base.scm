@@ -363,14 +363,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.25.1")
+   (version "2.27")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "08lzmhidzc16af1zbx34f8cy4z7mzrswpdbhrb8shy3xxpflmcdm"))
+              "125clslv17xh1sab74343fg6v31msavpmaa1c1394zsqa773g5rn"))
             (patches (search-patches "binutils-ld-new-dtags.patch"
                                      "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
