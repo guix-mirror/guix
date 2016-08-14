@@ -819,6 +819,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
+(define-public qtquickcontrols2
+  (package (inherit qtsvg)
+    (name "qtquickcontrols2")
+    (version "5.6.1-1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0wfa2xcqsvx3zihd5nb9f9qhq0xn14c03sw1qdymzfsryqwmk4ac"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
