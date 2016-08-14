@@ -1303,7 +1303,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.20.0")
+    (version "0.22.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/lilv-"
@@ -1311,7 +1311,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
                                  ".tar.bz2"))
              (sha256
               (base32
-               "0aj2plkx56iar8vzjbq2l7hi7sp0ml99m0h44rgwai2x4vqkk2j2"))))
+               "1d3ss7vv8drf1c5340lyd0gv736n2qy7sxji2nh1rw9y48hr69yd"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
