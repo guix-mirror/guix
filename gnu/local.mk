@@ -297,6 +297,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rdesktop.scm			\
   %D%/packages/rdf.scm				\
   %D%/packages/readline.scm			\
+  %D%/packages/regex.scm				\
   %D%/packages/rrdtool.scm			\
   %D%/packages/rsync.scm			\
   %D%/packages/ruby.scm				\
