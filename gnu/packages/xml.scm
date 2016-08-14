@@ -340,6 +340,41 @@ maintain a prefix to namespace URI map, and provides a number of basic
 checks.")
     (license (package-license perl))))
 
+(define-public perl-xml-rss
+  (package
+    (name "perl-xml-rss")
+    (version "1.59")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                                  "XML-RSS-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v6vfizn2psy6av057kp7fv3z3y73s6b3w56jm3zr6hlq48llsx2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-manifest" ,perl-test-manifest)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    ;; XXX: The test which uses this modules does not run, even when it is included
+    ;; it is ignored. ("perl-test-trailingspace" ,perl-test-trailingspace)
+    (inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "http://search.cpan.org/dist/XML-RSS")
+    (synopsis "Creates and updates RSS files")
+    (description
+     "This module provides a basic framework for creating and maintaining
+RDF Site Summary (RSS) files.  This distribution also contains many examples
+that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
+1.0 version, and more.")
+    (license (package-license perl))))
+
 (define-public perl-xml-sax
   (package
     (name "perl-xml-sax")
