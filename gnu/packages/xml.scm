@@ -186,6 +186,38 @@ which read a graph file and create an instance of the Graph class.
 the @code{Graph} class and write it out in a specific file format.")
     (license (package-license perl))))
 
+(define-public perl-xml-atom
+  (package
+    (name "perl-xml-atom")
+    (version "0.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                                  "XML-Atom-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17lnkb9ymrhk2z642bhj5i2bv3q1da3kpp2lvsl0yhqshk3wdjj8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ;; TODO package: perl-datetime-format-atom
+       ("perl-xml-xpath" ,perl-xml-xpath)))
+    (inputs
+     `(("perl-class-data-inheritable" ,perl-class-data-inheritable)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-digest-sha1" ,perl-digest-sha1)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)
+       ("perl-xml-libxml" ,perl-xml-libxml)
+       ("perl-xml-xpath" ,perl-xml-xpath)))
+    (home-page "http://search.cpan.org/dist/XML-Atom")
+    (synopsis "Atom feed and API implementation")
+    (description
+     "Atom is a syndication, API, and archiving format for weblogs and other data.
+@code{XML::Atom} implements the feed format as well as a client for the API.")
+    (license (package-license perl))))
+
 (define-public perl-xml-parser
   (package
     (name "perl-xml-parser")
