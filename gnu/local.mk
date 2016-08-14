@@ -723,7 +723,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/procmail-ambiguous-getline-debian.patch  \
   %D%/packages/patches/procmail-CVE-2014-3618.patch		\
-  %D%/packages/patches/procps-non-linux.patch			\
   %D%/packages/patches/pt-scotch-build-parallelism.patch	\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\

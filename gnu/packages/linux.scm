@@ -532,16 +532,14 @@ block devices, UUIDs, TTYs, and many other tools.")
 (define-public procps
   (package
     (name "procps")
-    (version "3.3.11")
+    (version "3.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/procps-ng/Production/"
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "1va4n0mpsq327ca9dqp4hnrpgs6821rp0f2m0jyc1bfjl9lk2jg9"))
-              (patches
-               (list (search-patch "procps-non-linux.patch")))))
+                "1m57w6jmry84njd5sgk5afycbglql0al80grx027kwqqcfw5mmkf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build utils)
