@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl3 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
                           bsd-2 bsd-3 public-domain))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -1064,3 +1066,31 @@ trees (LSM), for sustained throughput under random insert workloads.")
   (description
     "The DB::File module provides Perl bindings to the Berkeley DB version 1.x.")
   (license (package-license perl))))
+
+(define-public lmdb
+  (package
+    (name "lmdb")
+    (version "0.9.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/LMDB/lmdb/archive/"
+                                  "LMDB_" version ".tar.gz"))
+              (sha256
+               (base32
+                "12crvzxky8in99ibh22k4ppmkgqs28yy3v7yy944za7fsrqv8dfx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir (string-append
+               (getenv "PWD") "/lmdb-LMDB_" ,version "/libraries/liblmdb"))
+             (substitute* "Makefile"
+               (("/usr/local") (assoc-ref outputs "out")))
+            #t)))))
+    (home-page "https://symas.com/products/lightning-memory-mapped-database")
+    (synopsis "Lightning memory-mapped database library")
+    (description "Lightning memory-mapped database library.")
+    (license license:openldap2.8)))
