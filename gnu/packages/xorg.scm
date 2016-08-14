@@ -133,6 +133,29 @@ projects.  Software developers are encouraged to migrate software to the GNU
 autotools system.")
     (license license:x11)))
 
+(define-public lndir
+  (package
+    (name "lndir")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/util/"
+                    "lndir-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0pdngiy8zdhsiqx2am75yfcl36l7kd7d7nl0rss8shcdvsqgmx29"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xproto" ,xproto)))
+    (home-page "http://www.x.org")
+    (synopsis "Symlink directory into tree")
+    (description "Create a shadow directory of symbolic links to another
+directory tree.")
+    (license license:x11)))
+
 (define-public bdftopcf
   (package
     (name "bdftopcf")
