@@ -3092,6 +3092,34 @@ library.")
 web browsing, used for automating interaction with websites.")
     (license (package-license perl))))
 
+(define-public perl-www-opensearch
+  (package
+    (name "perl-www-opensearch")
+    (version "0.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/"
+                                  "WWW-OpenSearch-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yxplx1q1qk2fvnzqrbk01lz26fy1lyhay51a3ky7q3jgh9p01rb"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require further modules to be packaged
+    (inputs
+     `(("perl-data-page" ,perl-data-page)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)
+       ("perl-uri-template" ,perl-uri-template)
+       ("perl-xml-feed" ,perl-xml-feed)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "http://search.cpan.org/dist/WWW-OpenSearch")
+    (synopsis "Search A9 OpenSearch compatible engines")
+    (description
+     "@code{WWW::OpenSearch} is a module to search @url{A9's OpenSearch,
+http://opensearch.a9.com} compatible search engines.")
+    (license (package-license perl))))
+
 (define-public perl-www-robotrules
   (package
     (name "perl-www-robotrules")
