@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -233,7 +233,7 @@ and triple stores.")
 (define-public serd
   (package
     (name "serd")
-    (version "0.20.0")
+    (version "0.22.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/serd-"
@@ -241,7 +241,7 @@ and triple stores.")
                                  ".tar.bz2"))
              (sha256
               (base32
-               "1gxbzqsm212wmn8qkdd3lbl6wbv7fwmaf9qh2nxa4yxjbr7mylb4"))))
+               "1lmgca2s6r7ysakcld2lrj06bgn0pr45c51b47k3apxpnj3h40vv"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
