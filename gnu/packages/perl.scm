@@ -1792,6 +1792,27 @@ to create DateTime objects, with some custom tweaks to smooth out the rough
 edges (mainly concerning timezone detection and selection).")
     (license (package-license perl))))
 
+(define-public perl-datetime-format-mail
+  (package
+    (name "perl-datetime-format-mail")
+    (version "0.403")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BO/BOOK/"
+                                  "DateTime-Format-Mail-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c7wapbi9g9p2za52l3skhh31vg4da5kx2yfqzsqyf3p8iff7y4d"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-params-validate" ,perl-params-validate)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Mail")
+    (synopsis "Convert between DateTime and RFC2822/822 formats")
+    (description "RFCs 2822 and 822 specify date formats to be used by email.
+This module parses and emits such dates.")
+    (license (package-license perl))))
+
 (define-public perl-devel-caller
   (package
     (name "perl-devel-caller")
