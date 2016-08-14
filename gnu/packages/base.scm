@@ -339,16 +339,16 @@ functionality beyond that which is outlined in the POSIX standard.")
    (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments
-    '(#:phases (alist-cons-before
-                'build 'set-default-shell
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Change the default shell from /bin/sh.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* "job.c"
-                      (("default_shell =.*$")
-                       (format #f "default_shell = \"~a/bin/bash\";\n"
-                               bash)))))
-                %standard-phases)))
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-before 'build 'set-default-shell
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Change the default shell from /bin/sh.
+            (let ((bash (assoc-ref inputs "bash")))
+              (substitute* "job.c"
+                (("default_shell =.*$")
+                 (format #f "default_shell = \"~a/bin/bash\";\n"
+                         bash)))))))))
    (synopsis "Remake files automatically")
    (description
     "Make is a program that is used to control the production of
