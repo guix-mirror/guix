@@ -1789,6 +1789,33 @@ by calling Encode::encode(locale => $bytes) and converted back again
 with Encode::decode(locale => $string).")
     (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
 
+(define-public perl-feed-find
+  (package
+    (name "perl-feed-find")
+    (version "0.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BT/BTROTT/"
+                                  "Feed-Find-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sa33cm8ww55cymnl8j7b5yspi2y5xkkkgqqa4h6fs3wdqylz600"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; Tests expect to query files at http://stupidfool.org/perl/feeds/
+     `(#:tests? #f))
+    (inputs
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/Feed-Find")
+    (synopsis "Syndication feed auto-discovery")
+    (description "@code{Feed::Find} implements feed auto-discovery for finding
+syndication feeds, given a URI.  It will discover the following feed formats:
+RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
+    (license (package-license perl))))
+
 (define-public perl-file-listing
   (package
     (name "perl-file-listing")
