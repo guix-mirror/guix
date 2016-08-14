@@ -944,14 +944,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.2.0")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "0ql7zp061xr66a1dzpa6a0ijm8zm133dd364va7q5h8avkrim7wq"))))
+                "05az2g3gna5lkhh6x1a5m6yardbiig1l4ysggldlk5if8ww9qkk7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail
