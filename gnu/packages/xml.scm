@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -561,6 +562,30 @@ used.")
 messages to be send and received over SOAP connections.  This involves
 encoding of the message to be send into XML, sending the message to the
 server, collect the answer, and finally decoding the XML to Perl.")
+    (license (package-license perl))))
+
+(define-public perl-xml-xpath
+  (package
+    (name "perl-xml-xpath")
+    (version "1.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
+                                  "XML-XPath-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0997l8vjgq8p7d1irvp6amqyrv24x7f8hybjm4l4ayag32b13bmq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-path-tiny" ,perl-path-tiny)))
+    (inputs
+     `(("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "http://search.cpan.org/dist/XML-XPath")
+    (synopsis "Parse and evaluate XPath statements")
+    (description
+     "This module aims to comply exactly to the @url{XPath specification,
+https://www.w3.org/TR/xpath} and yet allow extensions to be added in
+the form of functions.")
     (license (package-license perl))))
 
 (define-public pugixml
