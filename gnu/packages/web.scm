@@ -2964,6 +2964,30 @@ URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
 methods for WebSocket URIs as it does for HTTP URIs.")
     (license (package-license perl))))
 
+(define-public perl-uri-template
+  (package
+    (name "perl-uri-template")
+    (version "0.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/URI-Template-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "08kjjb4c0v9gqfrfnj1wkivylxl05finn11ra64dj136fhmnyrbg"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-uri" ,perl-uri)))
+    (native-inputs
+     `(("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-json" ,perl-json)))
+    (home-page "http://search.cpan.org/dist/URI-Template")
+    (synopsis "Object for handling URI templates")
+    (description "This perl module provides a wrapper around URI templates as described in
+RFC 6570.")
+    (license (package-license perl))))
+
 (define-public perl-www-curl
   (package
     (name "perl-www-curl")
