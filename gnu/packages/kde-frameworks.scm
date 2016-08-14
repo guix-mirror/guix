@@ -33,6 +33,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -141,6 +142,38 @@ common build settings used in software produced by the KDE community.")
     (synopsis "C++ bindings/wrapper for gpgme")
     (description "C++ bindings/wrapper for gpgme.")
     (license license:lgpl2.1+)))
+
+(define-public kpmcore
+  (package
+    (name "kpmcore")
+    (version "2.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/kpmcore"
+                            "/" version "/src/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1blila6ncqbmzhycx3szrbkxc000pzh62956mw5ihxvhrqpncg2p"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kconfigwidgets" ,kconfigwidgets)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("ki18n" ,ki18n)
+       ("kservice" ,kservice)
+       ("libatasmart" ,libatasmart)
+       ("parted" ,parted)
+       ("qtbase" ,qtbase)
+       ("util-linux" ,util-linux)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Library for managing partitions")
+    (description "Library for managing partitions.")
+    (license license:gpl3+)))
 
 
 ;; Tier 1
