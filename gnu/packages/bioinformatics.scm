@@ -2974,31 +2974,31 @@ sequencing tag position and orientation.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
-          (lambda _ (chdir "core") #t))
+           (lambda _ (chdir "core") #t))
          (add-after 'enter-dir 'patch-makefile
-          (lambda _
-            ;; on advice from the MAFFT authors, there is no need to
-            ;; distribute mafft-profile, mafft-distance, or
-            ;; mafft-homologs.rb as they are too "specialised".
-            (substitute* "Makefile"
-              ;; remove mafft-homologs.rb from SCRIPTS
-              (("^SCRIPTS = mafft mafft-homologs.rb")
-               "SCRIPTS = mafft")
-              ;; remove mafft-homologs from MANPAGES
-              (("^MANPAGES = mafft.1 mafft-homologs.1")
-               "MANPAGES = mafft.1")
-              ;; remove mafft-distance from PROGS
-              (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
-               "PROGS = dvtditr dndfast7 dndblast sextet5")
-              ;; remove mafft-profile from PROGS
-              (("splittbfast disttbfast tbfast mafft-profile 2cl mccaskillwrap")
-               "splittbfast disttbfast tbfast f2cl mccaskillwrap")
-              (("^rm -f mafft-profile mafft-profile.exe") "#")
-              (("^rm -f mafft-distance mafft-distance.exe") ")#")
-              ;; do not install MAN pages in libexec folder
-              (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
+           (lambda _
+             ;; on advice from the MAFFT authors, there is no need to
+             ;; distribute mafft-profile, mafft-distance, or
+             ;; mafft-homologs.rb as they are too "specialised".
+             (substitute* "Makefile"
+               ;; remove mafft-homologs.rb from SCRIPTS
+               (("^SCRIPTS = mafft mafft-homologs.rb")
+                "SCRIPTS = mafft")
+               ;; remove mafft-homologs from MANPAGES
+               (("^MANPAGES = mafft.1 mafft-homologs.1")
+                "MANPAGES = mafft.1")
+               ;; remove mafft-distance from PROGS
+               (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
+                "PROGS = dvtditr dndfast7 dndblast sextet5")
+               ;; remove mafft-profile from PROGS
+               (("splittbfast disttbfast tbfast mafft-profile 2cl mccaskillwrap")
+                "splittbfast disttbfast tbfast f2cl mccaskillwrap")
+               (("^rm -f mafft-profile mafft-profile.exe") "#")
+               (("^rm -f mafft-distance mafft-distance.exe") ")#")
+               ;; do not install MAN pages in libexec folder
+               (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
 \\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))
-            #t))
+             #t))
          (add-after 'enter-dir 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("pairash.c"
@@ -3008,13 +3008,23 @@ sequencing tag position and orientation.")
                 (string-append prefix (which "awk")))
                (("grep") (which "grep")))
              #t))
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (path (string-append
+                           (assoc-ref %build-inputs "coreutils") "/bin:")))
+               (for-each (lambda (file)
+                           (wrap-program file
+                             `("PATH" ":" prefix (,path))))
+                         (find-files bin)))
+             #t)))))
     (inputs
      `(("perl" ,perl)
        ("gawk" ,gawk)
-       ("grep" ,grep)))
-    (propagated-inputs
-     `(("coreutils" ,coreutils)))
+       ("grep" ,grep)
+       ("coreutils" ,coreutils)))
     (home-page "http://mafft.cbrc.jp/alignment/software/")
     (synopsis "Multiple sequence alignment program")
     (description
