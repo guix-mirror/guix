@@ -43,7 +43,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.4.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -51,7 +51,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "16jpqqlixlv2dxqv8gak5qg4qnsnw4p745xr6rhw9dgylf13z9ha"))
+                "18816kdnhdv7qfbhvghvrr3wn6cvhhdhwhg586rqxyv48508lw0z"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -94,7 +94,7 @@
        ("qpdf"         ,qpdf)
        ("poppler"      ,poppler)
        ("cups-minimal" ,cups-minimal)))
-    (home-page "http://www.linuxfoundation.org/collaborate/workgroups/openprinting/cups-filters")
+    (home-page "https://wiki.linuxfoundation.org/openprinting/cups-filters")
     (synopsis "OpenPrinting CUPS filters and backends")
     (description
      "Contains backends, filters, and other software that was once part of the
