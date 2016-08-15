@@ -2954,7 +2954,7 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.300")
+    (version "7.304")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2963,7 +2963,7 @@ sequencing tag position and orientation.")
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "1dng898rh5jd1q1xyhxz8h2csmdw3wp12hvvhad1ryalx8aw131k"))))
+                "0jnciffkrsws3hw2mp8cs68mgciiz6glfbvgyasbk4na9vc00mi1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
