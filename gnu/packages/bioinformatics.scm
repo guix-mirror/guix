@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -3117,6 +3119,62 @@ an automated metagenome binning software, which integrates empirical
 probabilistic distances of genome abundance and tetranucleotide frequency.")
    (license (license:non-copyleft "file://license.txt"
                                   "See license.txt in the distribution."))))
+
+(define-public minced
+  (package
+    (name "minced")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ctSkennerton/minced/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wxmlsapxfpxfd3ps9636h7i2xy6la8i42mwh0j2lsky63h63jp1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'fix-test
+           (lambda _
+             ;; Fix test for latest version.
+             (substitute* "t/Aquifex_aeolicus_VF5.expected"
+               (("minced:0.1.6") "minced:0.2.0"))
+             #t))
+         (replace 'install ; No install target.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (wrapper (string-append bin "/minced")))
+               ;; Minced comes with a wrapper script that tries to figure out where
+               ;; it is located before running the JAR. Since these paths are known
+               ;; to us, we build our own wrapper to avoid coreutils dependency.
+               (install-file "minced.jar" bin)
+               (with-output-to-file wrapper
+                 (lambda _
+                   (display
+                    (string-append
+                     "#!" (assoc-ref inputs "bash") "/bin/sh\n\n"
+                     (assoc-ref inputs "jre") "/bin/java -jar "
+                     bin "/minced.jar \"$@\"\n"))))
+               (chmod wrapper #o555)))))))
+    (native-inputs
+     `(("jdk" ,icedtea "jdk")))
+    (inputs
+     `(("bash" ,bash)
+       ("jre" ,icedtea "out")))
+    (home-page "https://github.com/ctSkennerton/minced")
+    (synopsis "Mining CRISPRs in Environmental Datasets")
+    (description
+     "MinCED is a program to find Clustered Regularly Interspaced Short
+Palindromic Repeats (CRISPRs) in DNA sequences.  It can be used for
+unassembled metagenomic reads, but is mainly designed for full genomes and
+assembled metagenomic sequence.")
+    (license license:gpl3+)))
 
 (define-public miso
   (package
