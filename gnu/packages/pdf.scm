@@ -527,17 +527,17 @@ eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
    (build-system gnu-build-system)
    (arguments
     `(#:disallowed-references (,perl)
-      #:phases (alist-cons-before
-                'configure 'patch-paths
-                (lambda _
-                  (substitute* "make/libtool.mk"
-                    (("SHELL=/bin/bash")
-                     (string-append "SHELL=" (which "bash"))))
-                  (substitute* (append
-                                '("qtest/bin/qtest-driver")
-                                (find-files "." "\\.test"))
-                    (("/usr/bin/env") (which "env"))))
-                %standard-phases)))
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'configure 'patch-paths
+          (lambda _
+            (substitute* "make/libtool.mk"
+              (("SHELL=/bin/bash")
+               (string-append "SHELL=" (which "bash"))))
+            (substitute* (append
+                          '("qtest/bin/qtest-driver")
+                          (find-files "." "\\.test"))
+              (("/usr/bin/env") (which "env"))))))))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("perl" ,perl)))
