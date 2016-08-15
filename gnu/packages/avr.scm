@@ -73,7 +73,7 @@
     (version (package-version gcc-5))
     (source (package-source gcc-5))))
 
-(define-public avr-libc
+(define (avr-libc avr-gcc)
   (package
     (name "avr-libc")
     (version "2.0.0")
@@ -99,7 +99,7 @@
              (unsetenv "C_INCLUDE_PATH")
              #t)))))
     (native-inputs `(("avr-binutils" ,avr-binutils)
-                     ("avr-gcc" ,avr-gcc-4.9)))
+                     ("avr-gcc" ,avr-gcc)))
     (home-page "http://www.nongnu.org/avr-libc/")
     (synopsis "The AVR C Library")
     (description
@@ -109,24 +109,27 @@ for use with GCC on Atmel AVR microcontrollers.")
      (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
 
 (define (avr-toolchain avr-gcc)
-  (package
-    (name "avr-toolchain")
-    (version (package-version avr-gcc))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
-    (propagated-inputs
-     `(("avrdude" ,avrdude)
-       ("binutils" ,avr-binutils)
-       ("gcc" ,avr-gcc)
-       ("libc" ,avr-libc)))
-    (synopsis "Complete GCC tool chain for AVR microcontroller development")
-    (description "This package provides a complete GCC tool chain for AVR
+  ;; avr-libc checks the compiler version and passes "--enable-device-lib" for avr-gcc > 5.1.0.
+  ;; It wouldn't install the library for atmega32u4 etc if we didn't use the corret avr-gcc.
+  (let ((avr-libc (avr-libc avr-gcc)))
+    (package
+      (name "avr-toolchain")
+      (version (package-version avr-gcc))
+      (source #f)
+      (build-system trivial-build-system)
+      (arguments '(#:builder (mkdir %output)))
+      (propagated-inputs
+       `(("avrdude" ,avrdude)
+         ("binutils" ,avr-binutils)
+         ("gcc" ,avr-gcc)
+         ("libc" ,avr-libc)))
+      (synopsis "Complete GCC tool chain for AVR microcontroller development")
+      (description "This package provides a complete GCC tool chain for AVR
 microcontroller development.  This includes the GCC AVR cross compiler and
 avrdude for firmware flashing.  The supported programming languages are C and
 C++.")
-    (home-page (package-home-page avr-libc))
-    (license (package-license avr-gcc))))
+      (home-page (package-home-page avr-libc))
+      (license (package-license avr-gcc)))))
 
 (define-public avr-toolchain-4.9 (avr-toolchain avr-gcc-4.9))
 (define-public avr-toolchain-5 (avr-toolchain avr-gcc-5))
