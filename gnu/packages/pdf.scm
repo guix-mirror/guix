@@ -95,14 +95,13 @@
         ;; Saves 8 MiB of .a files.
         "--disable-static")
       #:phases
-      (alist-cons-before
-       'configure 'setenv
-       (lambda _
-         (setenv "CPATH"
-                 (string-append (assoc-ref %build-inputs "openjpeg-1")
-                                "/include/openjpeg-1.5"
-                                ":" (or (getenv "CPATH") ""))))
-        %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'configure 'setenv
+          (lambda _
+            (setenv "CPATH"
+                    (string-append (assoc-ref %build-inputs "openjpeg-1")
+                                   "/include/openjpeg-1.5"
+                                   ":" (or (getenv "CPATH") ""))))))))
    (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
