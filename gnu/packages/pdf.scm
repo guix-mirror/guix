@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,14 +56,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.43.0")
+   (version "0.46.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0mi4zf0pz3x3fx3ir7szz1n57nywgbpd4mp2r7mvf47f4rmf4867"))))
+              "11z4d5vrrd0m7w9bfydwabksk273z7z0xf2nwvzf5pk17p8kazcn"))))
    (build-system gnu-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -106,7 +107,7 @@
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)
-   (home-page "http://poppler.freedesktop.org/")))
+   (home-page "https://poppler.freedesktop.org/")))
 
 (define-public poppler-qt4
   (package (inherit poppler)
