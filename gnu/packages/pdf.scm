@@ -120,7 +120,7 @@
 (define-public poppler-qt5
   (package (inherit poppler)
    (name "poppler-qt5")
-   (inputs `(("qt" ,qt)
+   (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
    (synopsis "Qt5 frontend for the Poppler PDF rendering library")))
 
