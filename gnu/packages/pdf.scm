@@ -507,13 +507,14 @@ and examining the file structure (pdfshow).")
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "5.1.3")
+   (version "6.0.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
-            (sha256 (base32
-                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))
+            (sha256
+             (base32
+              "0csj2p2gkxrc0rk8ykymlsdgfas96vzf1dip3y1x7z1q9plwgzd9"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove
