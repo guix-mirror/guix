@@ -21,6 +21,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4458,6 +4459,27 @@ available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
 devices, and provides VPN integration with a variety of different VPN
 services.")
     (license license:gpl2+)))
+
+(define-public mobile-broadband-provider-info
+  (package
+    (name "mobile-broadband-provider-info")
+    (version "20151214")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/"
+                    "mobile-broadband-provider-info/" version "/"
+                    "mobile-broadband-provider-info-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1905nab1h8p4hx0m1w0rn4mkg9209x680dcr4l77bngy21pmvr4a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager")
+    (synopsis "Database of broadband connection configuration")
+    (description "Database of broadband connection configuration.")
+    (license license:public-domain)))
 
 (define-public network-manager-applet
   (package
