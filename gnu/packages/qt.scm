@@ -1070,8 +1070,10 @@ contain over 620 classes.")
         (sha256
          (base32 "0fka5q5cdzlf79igcjgbnb2smvwbwfasqawkzkbr34whispgm6lz"))))
     (build-system cmake-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
     (inputs
-     `(("qt" ,qt)))
+     `(("qtbase" ,qtbase)))
     (arguments
      `(#:tests? #f ; No tests included
        #:phases
