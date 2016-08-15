@@ -934,9 +934,12 @@ messages.")
       `(("extra-cmake-modules" ,extra-cmake-modules)
         ("dbus" ,dbus)
         ("pkg-config" ,pkg-config)))
+     (propagated-inputs
+      ; Headers contain #include <NetworkManager.h> and
+      ;                 #include <libnm/NetworkManager.h>
+      `(("network-manager" ,network-manager)))
      (inputs
-      `(("network-manager", network-manager)
-        ("qtbase" ,qtbase)))
+      `(("qtbase" ,qtbase)))
      (arguments
       `(#:phases
          (modify-phases %standard-phases
