@@ -178,122 +178,116 @@ device-specific programs to convert and print many types of files.")
        '("--disable-launchd"
          "--disable-systemd")
        #:phases
-       (alist-cons-before
-        'configure
-        'patch-makedefs
-        (lambda _
-          (substitute* "Makedefs.in"
-            (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
-            (("/bin/sh") (which "sh"))))
-        (alist-cons-before
-         'check
-         'patch-tests
-         (lambda _
-           (let ((filters (assoc-ref %build-inputs "cups-filters"))
-                 (catpath (string-append
-                           (assoc-ref %build-inputs "coreutils") "/bin/"))
-                 (testdir (string-append (getcwd) "/tmp/")))
-             (mkdir testdir)
-             (substitute* "test/run-stp-tests.sh"
-               ((" *BASE=/tmp/") (string-append "BASE=" testdir))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-makedefs
+           (lambda _
+             (substitute* "Makedefs.in"
+               (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
+               (("/bin/sh") (which "sh")))))
+         (add-before 'check 'patch-tests
+           (lambda _
+             (let ((filters (assoc-ref %build-inputs "cups-filters"))
+                   (catpath (string-append
+                             (assoc-ref %build-inputs "coreutils") "/bin/"))
+                   (testdir (string-append (getcwd) "/tmp/")))
+               (mkdir testdir)
+               (substitute* "test/run-stp-tests.sh"
+                 ((" *BASE=/tmp/") (string-append "BASE=" testdir))
 
-               ;; allow installation of filters from output dir and from
-               ;; cups-filters
-               (("for dir in /usr/libexec/cups/filter /usr/lib/cups/filter")
-                (string-append
-                 "for dir in "
-                 (assoc-ref %outputs "out") "/lib/cups/filter "
-                 filters "/lib/cups/filter"))
+                 ;; allow installation of filters from output dir and from
+                 ;; cups-filters
+                 (("for dir in /usr/libexec/cups/filter /usr/lib/cups/filter")
+                  (string-append
+                   "for dir in "
+                   (assoc-ref %outputs "out") "/lib/cups/filter "
+                   filters "/lib/cups/filter"))
 
-               ;; check for charsets in cups-filters output
-               (("/usr/share/cups/charsets")
-                (string-append filters "/share/cups/charsets"))
+                 ;; check for charsets in cups-filters output
+                 (("/usr/share/cups/charsets")
+                  (string-append filters "/share/cups/charsets"))
 
-               ;; install additional required filters
-               (("instfilter texttopdf texttopdf pdf")
-                (string-append
-                 "instfilter texttopdf texttopdf pdf;"
-                 "instfilter imagetoraster imagetoraster raster;"
-                 "instfilter gstoraster gstoraster raster;"
-                 "instfilter urftopdf urftopdf pdf;"
-                 "instfilter rastertopdf rastertopdf pdf;"
-                 "instfilter pstopdf pstopdf pdf"))
+                 ;; install additional required filters
+                 (("instfilter texttopdf texttopdf pdf")
+                  (string-append
+                   "instfilter texttopdf texttopdf pdf;"
+                   "instfilter imagetoraster imagetoraster raster;"
+                   "instfilter gstoraster gstoraster raster;"
+                   "instfilter urftopdf urftopdf pdf;"
+                   "instfilter rastertopdf rastertopdf pdf;"
+                   "instfilter pstopdf pstopdf pdf"))
 
-               ;; specify location of lpstat binary
-               (("description=\"`lpstat -l")
-                "description=\"`../systemv/lpstat -l")
+                 ;; specify location of lpstat binary
+                 (("description=\"`lpstat -l")
+                  "description=\"`../systemv/lpstat -l")
 
-               ;; patch shebangs of embedded scripts
-               (("#!/bin/sh") (string-append "#!" (which "sh")))
+                 ;; patch shebangs of embedded scripts
+                 (("#!/bin/sh") (string-append "#!" (which "sh")))
 
-               ;; also link mime definitions from cups-filters
-               ;; to enable the additional filters for the test suite
-               (("ln -s \\$root/conf/mime\\.types")
-                (string-append
-                 "ln -s " filters
-                 "/share/cups/mime/cupsfilters.types $BASE/share/mime; "
-                 "ln -s $root/conf/mime.types"))
-               (("ln -s \\$root/conf/mime\\.convs")
-                (string-append
-                 "ln -s " filters
-                 "/share/cups/mime/cupsfilters.convs $BASE/share/mime; "
-                 "ln -s $root/conf/mime.convs")))
+                 ;; also link mime definitions from cups-filters
+                 ;; to enable the additional filters for the test suite
+                 (("ln -s \\$root/conf/mime\\.types")
+                  (string-append
+                   "ln -s " filters
+                   "/share/cups/mime/cupsfilters.types $BASE/share/mime; "
+                   "ln -s $root/conf/mime.types"))
+                 (("ln -s \\$root/conf/mime\\.convs")
+                  (string-append
+                   "ln -s " filters
+                   "/share/cups/mime/cupsfilters.convs $BASE/share/mime; "
+                   "ln -s $root/conf/mime.convs")))
 
-             ;; fix search path for "cat"
-             (substitute* "cups/testfile.c"
-               (("cupsFileFind\\(\"cat\", \"/bin\"")
-                (string-append "cupsFileFind(\"cat\", \"" catpath "\""))
-               (("cupsFileFind\\(\"cat\", \"/bin:/usr/bin\"")
-                (string-append "cupsFileFind(\"cat\", \"" catpath "\"")))))
-         (alist-cons-after
-          'install
-          'install-cups-filters-symlinks
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (cups-filters (assoc-ref inputs "cups-filters")))
-              ;; charsets
-              (symlink
-               (string-append cups-filters "/share/cups/charsets")
-               (string-append out "/share/charsets"))
+               ;; fix search path for "cat"
+               (substitute* "cups/testfile.c"
+                 (("cupsFileFind\\(\"cat\", \"/bin\"")
+                  (string-append "cupsFileFind(\"cat\", \"" catpath "\""))
+                 (("cupsFileFind\\(\"cat\", \"/bin:/usr/bin\"")
+                  (string-append "cupsFileFind(\"cat\", \"" catpath "\""))))))
+         (add-after 'install 'install-cups-filters-symlinks
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (cups-filters (assoc-ref inputs "cups-filters")))
+               ;; charsets
+               (symlink
+                (string-append cups-filters "/share/cups/charsets")
+                (string-append out "/share/charsets"))
 
-              ;; mime types, driver file, ppds
-              (for-each
-               (lambda (f)
-                 (symlink (string-append cups-filters f)
-                          (string-append out f)))
-               '("/share/cups/mime/cupsfilters.types"
-                 "/share/cups/mime/cupsfilters.convs"
-                 "/share/cups/drv/cupsfilters.drv"
-                 "/share/ppd"))
+               ;; mime types, driver file, ppds
+               (for-each
+                (lambda (f)
+                  (symlink (string-append cups-filters f)
+                           (string-append out f)))
+                '("/share/cups/mime/cupsfilters.types"
+                  "/share/cups/mime/cupsfilters.convs"
+                  "/share/cups/drv/cupsfilters.drv"
+                  "/share/ppd"))
 
-              ;; filters
-              (for-each
-               (lambda (f)
-                 (symlink f
-                          (string-append out "/lib/cups/filter" (basename f))))
-               (find-files (string-append cups-filters "/lib/cups/filter")))
+               ;; filters
+               (for-each
+                (lambda (f)
+                  (symlink f
+                           (string-append out "/lib/cups/filter" (basename f))))
+                (find-files (string-append cups-filters "/lib/cups/filter")))
 
-              ;; backends
-              (for-each
-               (lambda (f)
-                 (symlink (string-append cups-filters f)
-                          (string-append out "/lib/cups/backend/"
-                                         (basename f))))
-               '("/lib/cups/backend/parallel"
-                 "/lib/cups/backend/serial"))
+               ;; backends
+               (for-each
+                (lambda (f)
+                  (symlink (string-append cups-filters f)
+                           (string-append out "/lib/cups/backend/"
+                                          (basename f))))
+                '("/lib/cups/backend/parallel"
+                  "/lib/cups/backend/serial"))
 
-              ;; banners
-              (let ((banners "/share/cups/banners"))
-                (delete-file-recursively (string-append out banners))
-                (symlink (string-append cups-filters banners)
-                         (string-append out banners)))
+               ;; banners
+               (let ((banners "/share/cups/banners"))
+                 (delete-file-recursively (string-append out banners))
+                 (symlink (string-append cups-filters banners)
+                          (string-append out banners)))
 
-              ;; assorted data
-              (let ((data "/share/cups/data"))
-                (delete-file-recursively (string-append out data))
-                (symlink (string-append cups-filters data)
-                         (string-append out data)))))
-          %standard-phases)))))
+               ;; assorted data
+               (let ((data "/share/cups/data"))
+                 (delete-file-recursively (string-append out data))
+                 (symlink (string-append cups-filters data)
+                          (string-append out data)))))))))
     (inputs
      `(("avahi" ,avahi)
        ("gnutls" ,gnutls)
