@@ -67,7 +67,7 @@
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
        ("protobuf" ,protobuf)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
         (list
