@@ -2112,9 +2112,12 @@ interface.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no "check" phase
+    (native-inputs
+     `(("qttools" ,qttools)))
     (inputs
-     `(("qt" ,qt)
-       ("fluidsynth" ,fluidsynth)))
+     `(("fluidsynth" ,fluidsynth)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
     (home-page "http://qsynth.sourceforge.net")
     (synopsis "Graphical user interface for FluidSynth")
     (description
