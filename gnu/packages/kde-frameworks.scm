@@ -898,9 +898,11 @@ lower level classes for interaction with the X Windowing System.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("dbus" ,dbus)
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ; Headers contain #include <ModemManager/ModemManager.h>
+     `(("modem-manager", modem-manager)))
     (inputs
-     `(("modem-manager", modem-manager)
-       ("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
         (modify-phases %standard-phases
