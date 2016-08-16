@@ -1,0 +1,17 @@
+Don't encode the current timestamp.
+
+This affects the output of `perl -V`, specifically the message "Compiled
+at [...]".
+
+diff --git a/perl.c b/perl.c
+index 228a0d8..ed38313 100644
+--- a/perl.c
++++ b/perl.c
+@@ -1825,6 +1825,7 @@ S_Internals_V(pTHX_ CV *cv)
+     PUSHs(Perl_newSVpvn_flags(aTHX_ non_bincompat_options,
+ 			      sizeof(non_bincompat_options) - 1, SVs_TEMP));
+ 
++#define PERL_BUILD_DATE "Jan  1 1970 00:00:00"
+ #ifndef PERL_BUILD_DATE
+ #  ifdef __DATE__
+ #    ifdef __TIME__

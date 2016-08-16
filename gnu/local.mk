@@ -695,8 +695,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/pcre-CVE-2016-3191.patch			\
   %D%/packages/patches/pcre2-CVE-2016-3191.patch		\
-  %D%/packages/patches/perl-CVE-2015-8607.patch			\
-  %D%/packages/patches/perl-CVE-2016-2381.patch			\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -705,10 +703,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   %D%/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
   %D%/packages/patches/perl-net-dns-resolver-programmable-Fix-broken-interface.patch	\
-  %D%/packages/patches/perl-no-build-time.patch			\
   %D%/packages/patches/perl-no-sys-dirs.patch			\
   %D%/packages/patches/perl-module-pluggable-search.patch	\
-  %D%/packages/patches/perl-source-date-epoch.patch		\
+  %D%/packages/patches/perl-reproducible-build-date.patch	\
   %D%/packages/patches/pidgin-add-search-path.patch		\
   %D%/packages/patches/pinball-const-fix.patch			\
   %D%/packages/patches/pinball-cstddef.patch			\
