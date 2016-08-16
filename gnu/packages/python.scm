@@ -9886,3 +9886,32 @@ relays publish about themselves.")
 
 (define-public python2-stem
   (package-with-python2 python-stem))
+
+(define-public python-pyserial
+  (package
+    (name "python-pyserial")
+    (version "3.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyserial" version))
+        (sha256
+          (base32
+            "0k1nfdrxxkdlv4zgaqsdv8li0pj3gbh2pyxw8q2bsg6f9490amyn"))))
+    (build-system python-build-system)
+    (home-page
+      "https://github.com/pyserial/pyserial")
+    (synopsis "Python Serial Port Bindings")
+    (description "@code{pyserial} provide serial port bindings for Python.  It
+supports different byte sizes, stop bits, parity and flow control with RTS/CTS
+and/or Xon/Xoff.  The port is accessed in RAW mode.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-pyserial))))))
+
+(define-public python2-pyserial
+  (let ((base (package-with-python2 (strip-python2-variant python-pyserial))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
