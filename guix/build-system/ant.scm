@@ -103,7 +103,7 @@
                     (outputs '("out"))
                     (search-paths '())
                     (system (%current-system))
-                    (guile #f)p
+                    (guile #f)
                     (imported-modules %ant-build-system-modules)
                     (modules '((guix build ant-build-system)
                                (guix build utils))))
