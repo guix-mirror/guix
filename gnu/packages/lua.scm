@@ -84,7 +84,8 @@ for configuration, scripting, and rapid prototyping.")
              (sha256
               (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))
              (patches (search-patches "lua51-liblua-so.patch"
-                                      "lua-CVE-2014-5461.patch"))))))
+                                      "lua-CVE-2014-5461.patch"
+                                      "lua51-pkgconfig.patch"))))))
 
 (define-public luajit
   (package
