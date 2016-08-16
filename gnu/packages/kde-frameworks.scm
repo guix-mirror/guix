@@ -817,19 +817,19 @@ represented by a QPoint or a QSize.")
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: libGL error: failed to load driver: swrast.
-       #:phases
+     `(#:phases
         (modify-phases %standard-phases
           (add-before 'check 'check-setup
             (lambda* _
-              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
-              (setenv "LIBGL_DEBUG" "verbose") ; enable debug output
               (setenv "DBUS_FATAL_WARNINGS" "0")))
           (add-before 'check 'start-xorg-server
             (lambda* (#:key inputs #:allow-other-keys)
               ;; The test suite requires a running X server.
+              ;; Xvfb doesn't have proper glx support and needs a pixeldepth
+              ;; of 24 bit to avoid "libGL error: failed to load driver: swrast"
+              ;;                    "Could not initialize GLX"
               (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 &"))
+                                     "/bin/Xvfb :1 -screen 0 640x480x24 &"))
               (setenv "DISPLAY" ":1")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
