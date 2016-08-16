@@ -222,7 +222,18 @@ television and DVD.  It is also known as AC-3.")
                            ;; package to avoid a circular dependency (the x264
                            ;; program depends on ffmpeg and ffmpeg depends on
                            ;; libx264).
-                           "--disable-cli")))
+                           "--disable-cli"
+
+                           ;; On MIPS, we must pass "--disable-asm" or else
+                           ;; configure fails after printing: "You specified a
+                           ;; pre-MSA CPU in your CFLAGS. If you really want
+                           ;; to run on such a CPU, configure with
+                           ;; --disable-asm."
+                           ,@(if (string-prefix? "mips"
+                                                 (or (%current-target-system)
+                                                     (%current-system)))
+                                 '("--disable-asm")
+                                 '()))))
     (home-page "http://www.videolan.org/developers/x264.html")
     (synopsis "H.264 video coding library")
     (description "libx264 is an advanced encoding library for creating
