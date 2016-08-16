@@ -3526,7 +3526,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.19.91")
+    (version "3.21.90")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/simple-scan/"
@@ -3535,7 +3535,7 @@ USB transfers with your high-level application or system daemon.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1c5glf5vxgld41w4jxfqcv17q76qnh43fawpv33hncgh8d283xkf"))))
+                "0dmsvq3vviky6851rqiik898r84c7744i7md672ckic3mdv21ap3"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk" ,gtk+)
@@ -3543,10 +3543,9 @@ USB transfers with your high-level application or system daemon.")
        ("cairo" ,cairo)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gusb" ,gusb)
-       ("libgudev" ,libgudev)
        ("libsane" ,sane-backends)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gnu-gettext)
        ("itstool" ,itstool)
        ("colord" ,colord)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
