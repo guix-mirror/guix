@@ -22,6 +22,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,7 +87,6 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages m4)
   #:use-module (gnu packages image)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
@@ -3842,7 +3842,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.23.4")
+    (version "0.23.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3850,40 +3850,28 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hnl0lxibklmr1cy95ij1b3jgvdsw4zlcja53ngfxvlsi2r2bbxi"))))
+                "0fgs1rgvkmy79bmpxrsvm5w8rvqml4l1vnwma0xqx5zzm02p8a07"))))
     (build-system glib-or-gtk-build-system)
-    (arguments
-     `(#:tests? #f ;no "check" target
-       #:make-flags '("CC=gcc")
-       #:configure-flags '("--disable-gsettings-convert-install")
-       #:out-of-source? #f))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("itstool" ,itstool)
        ("gettext" ,gnu-gettext)
-       ("m4" ,m4)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("vala" ,vala)
-       ("which" ,which)
-       ("gnome-doc-utils" ,gnome-doc-utils)
-       ;; FIXME: I only added python2-libxml2 because xml2po needs it at
-       ;; runtime.  It should be propagated.
-       ("python2-libxml2" ,python2-libxml2)
-       ("python2" ,python-2)))
+       ("itstool" ,itstool)
+       ("vala" ,vala)))
     (inputs
-     `(("gstreamer" ,gstreamer)
+     `(("glib:bin" ,glib "bin")
+       ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)
        ("libgee" ,libgee)
        ("gexiv2" ,gexiv2)
        ("libraw" ,libraw)
        ("json-glib" ,json-glib)
-       ("rest" ,rest)
        ("webkitgtk" ,webkitgtk)
        ("sqlite" ,sqlite)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
-       ("gtk+" ,gtk+)
        ("libgudev" ,libgudev)
        ("libgphoto2" ,libgphoto2)))
     (home-page "https://wiki.gnome.org/Apps/Shotwell")
