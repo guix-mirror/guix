@@ -1422,7 +1422,7 @@ databases.")
 (define-public clipper
   (package
     (name "clipper")
-    (version "0.3.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1431,12 +1431,18 @@ databases.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1q7jpimsqln7ic44i8v2rx2haj5wvik8hc1s2syd31zcn0xk1iyq"))
+                "0pflmsvhbf8izbgwhbhj1i7349sw1f55qpqj8ljmapp16hb0p0qi"))
               (modules '((guix build utils)))
               (snippet
-               ;; remove unnecessary setup dependency
-               '(substitute* "setup.py"
-                  (("setup_requires = .*") "")))))
+               '(begin
+                  ;; remove unnecessary setup dependency
+                  (substitute* "setup.py"
+                    (("setup_requires = .*") ""))
+                  (for-each delete-file
+                            '("clipper/src/peaks.so"
+                              "clipper/src/readsToWiggle.so"))
+                  (delete-file-recursively "dist/")
+                  #t))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; only Python 2 is supported
     (inputs
@@ -1445,6 +1451,7 @@ databases.")
        ("python-cython" ,python2-cython)
        ("python-scikit-learn" ,python2-scikit-learn)
        ("python-matplotlib" ,python2-matplotlib)
+       ("python-pandas" ,python2-pandas)
        ("python-pysam" ,python2-pysam)
        ("python-numpy" ,python2-numpy)
        ("python-scipy" ,python2-scipy)))
