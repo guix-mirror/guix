@@ -345,7 +345,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tls.scm				\
   %D%/packages/tmux.scm				\
   %D%/packages/tor.scm				\
-  %D%/packages/tre.scm				\
   %D%/packages/tv.scm				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
