@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
@@ -123,3 +125,25 @@ such as compact binary encodings, XML, or JSON.")
     (description "Msgpack is a library for C/C++ that implements binary
 serialization.")
     (license license:boost1.0)))
+
+(define-public yaml-cpp
+  (package
+    (name "yaml-cpp")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/jbeder/yaml-cpp/archive/"
+                    "yaml-cpp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vk6pjh0f5k6jwk2sszb9z5169whmiha9ainbdpa1arxlkq7v3b6"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost)))
+    (native-inputs
+     `(("python" ,python)))
+    (home-page "https://github.com/jbeder/yaml-cpp")
+    (synopsis "YAML parser and emitter in C++")
+    (description "YAML parser and emitter in C++ matching the YAML 1.2 spec.")
+    (license license:bsd-3)))
