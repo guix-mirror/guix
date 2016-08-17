@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.18.2")
+    (version "3.18.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -43,7 +44,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0y4jmh5hwskh2mnladh9hxp9k8as7crm8wwwiifvxsjjj9az2gv9"))))
+                "1vdnr2wmhqhql2gxd5n1ijwk88qhim14izbkczncg35846hfsr5i"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags ; Ensure that geoclue is referred to by output.
