@@ -9968,7 +9968,7 @@ hardware-accelerated multitouch applications.")
         (revision "1"))
     (package (inherit python-kivy)
       (name "python-kivy-next")
-      (version (string-append "1.9.1" revision "."
+      (version (string-append "1.9.1-" revision "."
                               (string-take commit 7)))
       (source
        (origin
