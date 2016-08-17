@@ -147,3 +147,25 @@ serialization.")
     (synopsis "YAML parser and emitter in C++")
     (description "YAML parser and emitter in C++ matching the YAML 1.2 spec.")
     (license license:bsd-3)))
+
+(define-public jsoncpp
+  (package
+    (name "jsoncpp")
+    (version "1.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/open-source-parsers/jsoncpp/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sgp6nc4c6pfn92f369v08zdwpqswn9j2ihy59bpwwl0grkx1p0h"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/open-source-parsers/jsoncpp")
+    (synopsis "C++ library for interacting with JSON")
+    (description "JsonCpp is a C++ library that allows manipulating JSON values,
+including serialization and deserialization to and from strings.  It can also
+preserve existing comment in unserialization/serialization steps, making
+it a convenient format to store user input files.")
+    (license license:expat)))
