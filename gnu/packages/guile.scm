@@ -1158,7 +1158,7 @@ library}.")
 (define-public guile-daemon
   (package
     (name "guile-daemon")
-    (version "0.1")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/" name
@@ -1166,7 +1166,7 @@ library}.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1s90h8qhblhhz4ahn3p5d573a24px6cdjq2w311ibpgwnsni4qvq"))))
+                "0wsq9l6a4sijq4i1r3kcddfaznsak2jc5k59gzkhs5il5d2kn5yi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
