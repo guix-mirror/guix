@@ -580,14 +580,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "3.8.4")
+    (version "3.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "19ixvxgifx48lxp9vdmsf88nnjsxl035ahmp3iw1vyilkpqkwbjb"))))
+               "1g6svg7fc1kyaxq653iwsvdh8hp2lrhs2ywazfc436a4zzf2akw3"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
