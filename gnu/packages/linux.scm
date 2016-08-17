@@ -226,7 +226,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.7")
+  (let* ((version "4.7.1")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -304,7 +304,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0ah3c70bj7iik5xrmrrixcbcz65pn3nf887x78drv6mdw2ayb0zl"))))
+               "08b8yv5grhzacahmhs3q1031d6a4k7qf1qj7i5vsk33fhgg1nvzx"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
