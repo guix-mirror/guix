@@ -26,6 +26,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10241,3 +10242,39 @@ time by mocking the datetime module.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-odfpy
+  (package
+    (name "python-odfpy")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "odfpy" version))
+              (sha256
+               (base32
+                "1a6ms0w9zfhhkqhvrnynwwbxrivw6hgjc0s5k7j06npc7rq0blxw"))))
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (guix build python-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; The test runner invokes python2 and python3 for test*.py.
+           ;; To avoid having both in inputs, we replicate it here.
+           (lambda _
+             (every (lambda (test-file)
+                      (zero? (system* "python" test-file)))
+                    (find-files "tests" "^test.*\\.py$")))))))
+    (build-system python-build-system)
+    (home-page "https://github.com/eea/odfpy")
+    (synopsis "Python API and tools to manipulate OpenDocument files")
+    (description "Collection of libraries and utility programs written in
+Python to manipulate OpenDocument 1.2 files.")
+    (license
+     ;; The software is mainly dual GPL2+ and ASL2.0, but includes a
+     ;; number of files with other licenses.
+     (list license:gpl2+ license:asl2.0 license:lgpl2.1+ license:cc-by-sa3.0))))
+
+(define-public python2-odfpy
+  (package-with-python2 python-odfpy))
