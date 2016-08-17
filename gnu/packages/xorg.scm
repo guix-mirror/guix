@@ -5088,7 +5088,13 @@ over Xlib, including:
         ("xkbcomp" ,xkbcomp)
         ("xkeyboard-config" ,xkeyboard-config)
         ("xtrans" ,xtrans)
-        ("zlib" ,zlib)))
+        ("zlib" ,zlib)
+        ;; Inputs for Xephyr
+        ("xcb-util" ,xcb-util)
+        ("xcb-util-image" ,xcb-util-image)
+        ("xcb-util-keysyms" ,xcb-util-keysyms)
+        ("xcb-util-renderutil" ,xcb-util-renderutil)
+        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
        `(("python" ,python-minimal-wrapper)
          ("pkg-config" ,pkg-config)))
@@ -5106,7 +5112,10 @@ over Xlib, including:
                             "/bin")
 
              ;; For the log file, etc.
-             "--localstatedir=/var")
+             "--localstatedir=/var"
+             ;; For sddm
+             "--enable-kdrive"
+             "--enable-xephyr")
 
        #:phases (alist-cons-before
                  'configure 'pre-configure
