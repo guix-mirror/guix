@@ -108,7 +108,7 @@ generation.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
 
-(define-public libgcrypt-1.7.3
+(define libgcrypt-1.7.3
   (package
     (inherit libgcrypt)
     (source
@@ -134,7 +134,7 @@ generation.")
        (base32
         "0czvqxkzd5y872ipy6s010ifwdwv29sqbnqc4pf56sd486gqvy6m"))))))
 
-(define-public libgcrypt-1.5.6
+(define libgcrypt-1.5.6
   (package
     (inherit libgcrypt-1.5)
     (source
