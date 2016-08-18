@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Nils Gillmann <ng0@libertad.pw>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +50,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.22")
+    (version "1.24")
     (source
      (origin
       (method url-fetch)
@@ -58,7 +58,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0ywxwswizmkyciy480kzczxn6nhbgzf3z8my4nk43nvv67k4x87j"))))
+        "0h75sf1ngr750c3fjfn4583q7wz40qm63jhg8vjfdrbx936f2s4j"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
