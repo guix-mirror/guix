@@ -10,7 +10,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
@@ -46,6 +46,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages valgrind)
+  #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public zlib
@@ -1001,3 +1002,61 @@ handles the 7z format which features very high compression ratios.")
     (description "gzstream is a small library for providing zlib
 functionality in a C++ iostream.")
     (license license:lgpl2.1+)))
+
+(define-public zpaq
+  (package
+    (name "zpaq")
+    (version "7.15")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "http://mattmahoney.net/dc/zpaq"
+                           (string-delete #\. version) ".zip"))
+       (sha256
+        (base32
+         "066l94yyladlfzri877nh2dhkvspagjn3m5bmv725fmhkr9c4pp8"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete irrelevant pre-compiled binaries.
+        '(for-each delete-file (find-files "." "\\.exe$")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no ‘configure’ script
+       #:make-flags
+       (list
+        (string-append "CPPFLAGS=-Dunix"
+                       ,(match (or (%current-target-system)
+                                   (%current-system))
+                               ("x86_64-linux"  "")
+                               ("i686-linux"    "")
+                               (_               " -DNOJIT")))
+        ;; These should be safe, lowest-common-denominator instruction sets,
+        ;; allowing for some optimisation while remaining reproducible.
+        (string-append "CXXFLAGS=-O3 -mtune=generic -DNDEBUG"
+                       ,(match (or (%current-target-system)
+                                   (%current-system))
+                               ("x86_64-linux"  " -march=nocona")
+                               ("i686-linux"    " -march=i686")
+                               (_               "")))
+        (string-append "PREFIX="
+                       (assoc-ref %outputs "out")))))
+    (native-inputs
+     `(("perl" ,perl)))                 ; for pod2man
+    (home-page "http://mattmahoney.net/dc/zpaq.html")
+    (synopsis "Incremental journaling archiver")
+    (description "ZPAQ is a command-line archiver for realistic situations with
+many duplicate and already compressed files.  It backs up only those files
+modified since the last update.  All previous versions remain untouched and can
+be independently recovered.  Identical files are only stored once (known as
+@dfn{de-duplication}).  Archives can also be encrypted.
+
+ZPAQ is intended to back up user data, not entire operating systems.  It ignores
+owner and group IDs, ACLs, extended attributes, or special file types like
+devices, sockets, or named pipes.  It does not follow or restore symbolic links
+or junctions, and always follows hard links.")
+    (license (list license:public-domain
+                   ;; libzpaq.cpp contains a mix of public-domain and
+                   ;; expat-licenced (or ‘MIT’) code.
+                   license:expat))))
