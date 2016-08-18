@@ -74,6 +74,7 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
+    (replacement libgcrypt-1.7.3)
     (version "1.7.0")
     (source (origin
              (method url-fetch)
@@ -107,8 +108,22 @@ generation.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
 
+(define-public libgcrypt-1.7.3
+  (package
+    (inherit libgcrypt)
+    (source
+     (let ((version "1.7.3"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                             version ".tar.bz2"))
+         (sha256
+          (base32
+           "0wbh6fq5zi9wg2xcfvfpwh7dv52jihivx1vm4h91c2kx0w8n3b6x")))))))
+
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
+    (replacement libgcrypt-1.5.6)
     (version "1.5.4")
     (source
      (origin
@@ -118,6 +133,19 @@ generation.")
       (sha256
        (base32
         "0czvqxkzd5y872ipy6s010ifwdwv29sqbnqc4pf56sd486gqvy6m"))))))
+
+(define-public libgcrypt-1.5.6
+  (package
+    (inherit libgcrypt-1.5)
+    (source
+     (let ((version "1.5.6"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                             version ".tar.bz2"))
+         (sha256
+          (base32
+           "0ydy7bgra5jbq9mxl5x031nif3m6y3balc6ndw2ngj11wnsjc61h")))))))
 
 (define-public libassuan
   (package
@@ -303,14 +331,14 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-1
   (package (inherit gnupg)
-    (version "1.4.20")
+    (version "1.4.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1k7d6zi0zznqsmcjic0yrgfhqklqz3qgd3yac7wxsa7s6088p604"))))
+                "0xi2mshq8f6zbarb5f61c9w2qzwrdbjm4q8fqsrwlzc51h8a6ivb"))))
     (native-inputs '())
     (inputs
      `(("zlib" ,zlib)
@@ -319,12 +347,12 @@ libskba (working with X.509 certificates and CMS data).")
        ("readline" ,readline)
        ("libgpg-error" ,libgpg-error)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'patch-check-sh
-                 (lambda _
-                   (substitute* "checks/Makefile.in"
-                     (("/bin/sh") (which "bash"))))
-                 %standard-phases)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-check-sh
+           (lambda _
+             (substitute* "checks/Makefile.in"
+               (("/bin/sh") (which "bash"))))))))))
 
 (define-public gpgme
   (package

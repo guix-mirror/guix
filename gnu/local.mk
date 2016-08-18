@@ -54,6 +54,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/base.scm				\
   %D%/packages/bash.scm				\
   %D%/packages/bdw-gc.scm			\
+  %D%/packages/benchmark.scm			\
   %D%/packages/bioinformatics.scm		\
   %D%/packages/bittorrent.scm			\
   %D%/packages/bison.scm			\
@@ -244,6 +245,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mpi.scm				\
   %D%/packages/multiprecision.scm		\
   %D%/packages/music.scm			\
+  %D%/packages/musl.scm				\
   %D%/packages/mtools.scm			\
   %D%/packages/nano.scm				\
   %D%/packages/ncdu.scm				\
@@ -305,6 +307,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/scheme.scm			\
   %D%/packages/screen.scm			\
   %D%/packages/scribus.scm			\
+  %D%/packages/scsi.scm				\
   %D%/packages/sdl.scm				\
   %D%/packages/search.scm			\
   %D%/packages/serialization.scm		\
@@ -461,6 +464,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cpio-gets-undeclared.patch		\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
+  %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/csound-header-ordering.patch		\
@@ -471,8 +475,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/devil-CVE-2009-3994.patch		\
   %D%/packages/patches/devil-fix-libpng.patch			\
-  %D%/packages/patches/dico-idxgcide-bug.patch			\
-  %D%/packages/patches/dico-libtool-deterministic.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/doc++-include-directives.patch		\
@@ -597,8 +599,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/jasper-CVE-2016-2089.patch		\
   %D%/packages/patches/jasper-CVE-2016-2116.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
+  %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
+  %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
   %D%/packages/patches/liba52-enable-pic.patch			\
@@ -670,6 +674,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nasm-no-ps-pdf.patch			\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-config-date.patch			\
+  %D%/packages/patches/netsurf-about.patch			\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
   %D%/packages/patches/ninja-tests.patch			\

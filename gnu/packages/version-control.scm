@@ -9,6 +9,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,21 +111,29 @@ as well as the classic centralized workflow.")
     (license gpl2+)))
 
 (define-public git
-  ;; Keep in sync with 'git-manpages'!
   (package
    (name "git")
-   (version "2.9.2")
+   (version "2.9.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1d9dmhgzcnwc2jbib4q23ypjbnw1gh1w8gif63qldwkpixj4dxgq"))))
+              "0qzs681a64k3shh5p0rg41l1z16fbk5sj0xga45k34hp1hsp654z"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
-      ("gettext" ,gnu-gettext)))
+      ("gettext" ,gnu-gettext)
+      ("git-manpages"
+       ,(origin
+          (method url-fetch)
+          (uri (string-append
+                "mirror://kernel.org/software/scm/git/git-manpages-"
+                version ".tar.xz"))
+          (sha256
+           (base32
+            "0kabsmjfbvq4y1vlwq0yl2y4033a90rnwsq01d7np3cvy55fiq0l"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -260,7 +269,15 @@ as well as the classic centralized workflow.")
               ;; specify a single directory, not a search path.
               (wrap-program (string-append out "/bin/git")
                 `("PATH" ":" prefix
-                  ("$HOME/.guix-profile/libexec/git-core")))))))))
+                  ("$HOME/.guix-profile/libexec/git-core"))))))
+        (add-after 'split 'install-man-pages
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (man (string-append out "/share/man"))
+                   (manpages (assoc-ref inputs "git-manpages")))
+              (mkdir-p man)
+              (with-directory-excursion man
+                (zero? (system* "tar" "xvf" manpages)))))))))
 
    (native-search-paths
     ;; For HTTPS access, Git needs a single-file certificate bundle, specified
@@ -277,52 +294,6 @@ as well as the classic centralized workflow.")
 everything from small to very large projects with speed and efficiency.")
    (license gpl2)
    (home-page "http://git-scm.com/")))
-
-(define-public git-manpages
-  ;; Keep in sync with 'git'!
-
-  ;; Granted, we could build the man pages from the 'git' package itself,
-  ;; which contains the real source.  However, it would add a dependency on a
-  ;; full XML tool chain, and building it actually takes ages.  So we use this
-  ;; lazy approach.
-  (package
-    (name "git-manpages")
-    (version (package-version git))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kernel.org/software/scm/git/git-manpages-"
-                    version ".tar.xz"))
-              (sha256
-               (base32
-                "08y38w6yfvrpgj10dl3vghp05xjpl8jj37kkfna2nhf0wip52p2c"))))
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-
-         (let* ((xz  (assoc-ref %build-inputs "xz"))
-                (tar (assoc-ref %build-inputs "tar"))
-                (out (assoc-ref %outputs "out"))
-                (man (string-append out "/share/man")))
-           (setenv "PATH" (string-append tar "/bin:" xz "/bin"))
-
-           (mkdir-p man)
-           (with-directory-excursion man
-             (zero? (system* "tar" "xvf"
-                             (assoc-ref %build-inputs "source"))))))))
-
-    (native-inputs `(("tar" ,tar)
-                     ("xz" ,xz)))
-    (home-page (package-home-page git))
-    (license (package-license git))
-    (synopsis "Man pages of the Git version control system")
-    (description
-     "This package provides the man pages of the Git version control system.
-This is the documentation displayed when using the '--help' option of a 'git'
-command.")))
 
 (define-public libgit2
   (package
@@ -609,14 +580,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "3.8.4")
+    (version "3.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "19ixvxgifx48lxp9vdmsf88nnjsxl035ahmp3iw1vyilkpqkwbjb"))))
+               "1g6svg7fc1kyaxq653iwsvdh8hp2lrhs2ywazfc436a4zzf2akw3"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require

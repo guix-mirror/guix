@@ -226,7 +226,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.7")
+  (let* ((version "4.7.1")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -304,7 +304,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0ah3c70bj7iik5xrmrrixcbcz65pn3nf887x78drv6mdw2ayb0zl"))))
+               "08b8yv5grhzacahmhs3q1031d6a4k7qf1qj7i5vsk33fhgg1nvzx"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -341,13 +341,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.16")
+    (version "4.4.18")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0lgc064r18gxvya5zvv2l4dmcj7161mb34q4frlw9z02ils9d623"))))
+                "0k8k17in7dkjd9d8zg3i8l1ax466dba6bxw28flxizzyq8znljps"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -358,13 +358,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.29")
+    (version "4.1.30")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "1ygd89x5plkpxisafhnrnfbw69a257sza2gw15wj9jkzxs36a1jp"))))
+                "0nwmwbskfni3fnbd7v6jh8yfah915zh80xg4g7n38lb66rk3bxvi"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))

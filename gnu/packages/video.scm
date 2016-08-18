@@ -104,7 +104,7 @@
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
                   (lambda* (#:key build inputs outputs #:allow-other-keys)
@@ -116,6 +116,12 @@
                       (zero? (system* "./configure"
                                       (string-append "--prefix=" out)
                                       (string-append "--build=" build)
+                                      ;; The ancient config.guess is unable to
+                                      ;; guess the host triplet on mips64el.
+                                      ,@(if (string=? "mips64el-linux"
+                                                      (%current-system))
+                                            '("--host=mips64el-unknown-linux-gnu")
+                                            '())
                                       (string-append "--with-ncurses="
                                                      ncurses)))))))))
     (home-page "http://aa-project.sourceforge.net/aalib/")
@@ -216,7 +222,18 @@ television and DVD.  It is also known as AC-3.")
                            ;; package to avoid a circular dependency (the x264
                            ;; program depends on ffmpeg and ffmpeg depends on
                            ;; libx264).
-                           "--disable-cli")))
+                           "--disable-cli"
+
+                           ;; On MIPS, we must pass "--disable-asm" or else
+                           ;; configure fails after printing: "You specified a
+                           ;; pre-MSA CPU in your CFLAGS. If you really want
+                           ;; to run on such a CPU, configure with
+                           ;; --disable-asm."
+                           ,@(if (string-prefix? "mips"
+                                                 (or (%current-target-system)
+                                                     (%current-system)))
+                                 '("--disable-asm")
+                                 '()))))
     (home-page "http://www.videolan.org/developers/x264.html")
     (synopsis "H.264 video coding library")
     (description "libx264 is an advanced encoding library for creating
@@ -273,6 +290,7 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
     (inputs
      `(("freeglut" ,freeglut)
        ("ftgl" ,ftgl)
+       ("imlib2" ,imlib2)
        ("libx11" ,libx11)
        ("mesa" ,mesa)
        ("ncurses" ,ncurses)
@@ -381,14 +399,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.1.1")
+    (version "3.1.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1nris3flwqd4v4b65yrrv9aqhsab7cb9lfp4wpxz6bi0m3r13g3i"))))
+               "0qdxp6r6x47jzi6nmbsv3dhvm073c8n5hpnlmj5gwihgkyva5ljq"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -769,7 +787,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.18.0")
+    (version "0.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -777,7 +795,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0az0zqb2rakak51zsvfqzj9a8jiqpvc61jxap8hjdkkb9y6n6mmn"))
+                "1qk7blpg64v47qfnvpgnbf413v5gzn900wmlivs727fd88cq3x9x"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -838,7 +856,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
@@ -847,7 +865,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "06pgxl6f3kkgxv8nlmyl7gy3pg55sqf8vgr8m6426mlpm4p3qdn0"))))
+         "10zizf926a82c753a80bi49rb5c4yqjyd6zin4xgmggspfxngncj"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1398,7 +1416,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.15.1")
+    (version "0.15.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1406,7 +1424,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "18fycg7xlj2i89wdb9c5js0bnl964s1lpmnvmfyj11zi9k061wsg"))))
+                "11bqk0jpp8fp24j0rkjgrv3fdi3xnjyk4wq55j803cg84mn4zsp0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests

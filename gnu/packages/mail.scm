@@ -296,7 +296,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.4")
+    (version "7.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -304,7 +304,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g1ylvz214iydskvanzyac7kgmz61s5bqmpzz5hm11mrllkq111z"))))
+                "05wm7qix4ikx6hi57a1qc3hb5fv1vksbg6dgvmd8871y5l1qqrkn"))))
     (build-system python-build-system)
     (inputs `(("python2-pysqlite" ,python2-pysqlite)
               ("python2-six" ,python2-six)))
@@ -438,18 +438,18 @@ attachments, create new maildirs, and so on.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.21")
+    (version "0.22.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1cr53rbpkcy3pvrmhbg2gq7sjpwb0c8xd7a4zhzxbiv8s7z8yvyh"))))
+                "0jwpda3q023dn3sp41n8648951i7iagfv8zzpriv7hpkjivlafg7"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; FIXME: 662 tests; 168 fail and 99 are skipped
-                   ;; with perl input: 50 fail and 99 are skipped
+     '(#:tests? #f ; FIXME: 694 tests; 170 fail and 100 are skipped
+                   ; with perl input: 50 fail and 100 are skipped
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -460,14 +460,14 @@ attachments, create new maildirs, and so on.")
                         (zero? (system* "./configure"
                                         (string-append "--prefix=" out)))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("bash-completion" ,bash-completion)
+       ("emacs" ,emacs-minimal)
+       ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("python-docutils" ,python2-docutils)
-       ("python-sphinx" ,python2-sphinx)
-       ("bash-completion" ,bash-completion)))
+       ("python-sphinx" ,python2-sphinx)))
     (inputs
-     `(("emacs" ,emacs)
-       ("glib" ,glib)
+     `(("glib" ,glib)
        ("gmime" ,gmime)
        ("talloc" ,talloc)
        ("xapian" ,xapian)
@@ -520,39 +520,40 @@ ing, and tagging large collections of email messages.")
 useful for email address completion.")
     (license license:expat)))
 
-(define-public python2-notmuch
+(define-public python-notmuch
   (package
-    (name "python2-notmuch")
-    (version "0.15.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/n/notmuch/notmuch-"
-                    version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "18g8701ibr153ngsz258kgcd42wqnbf9ifpqig1bijy6b0zx9xn5"))))
+    (name "python-notmuch")
+    (version "0.22.1")
+    ;; Notmuch python bindings are now unavailable on pypi.  The
+    ;; bindings are distributed via the notmuch release tarball.
+    (source (package-source notmuch))
     (build-system python-build-system)
     (inputs `(("notmuch" ,notmuch)))
     (arguments
-     `(#:python ,python-2
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'build 'set-libnotmuch-file-name
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((notmuch (assoc-ref inputs "notmuch")))
-                       (substitute* "notmuch/globals.py"
-                         (("libnotmuch\\.so\\.[0-9]")
-                          (string-append notmuch "/lib/libnotmuch.so.4")))
-                       #t))))
-       #:tests? #f))                              ;no "test" target
+     `(#:tests? #f  ; no "test" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; This python package lives in a subdirectory of the notmuch source
+         ;; tree, so chdir into it before building.
+         (add-after 'unpack 'enter-python-dir
+           (lambda _ (chdir "bindings/python") #t))
+         ;; Make sure the correct notmuch shared library gets loaded.
+         (add-before 'build 'set-libnotmuch-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((notmuch (assoc-ref inputs "notmuch")))
+               (substitute* "notmuch/globals.py"
+                 (("libnotmuch\\.so\\.")
+                  (string-append notmuch "/lib/libnotmuch.so.")))
+               #t))))))
     (home-page "http://notmuchmail.org/")
     (synopsis "Python bindings of the Notmuch mail indexing library")
     (description
      "This package provides Python bindings to use the Notmuch mail indexing
 and search library.")
     (license gpl3+)))
+
+(define-public python2-notmuch
+  (package-with-python2 python-notmuch))
 
 (define-public getmail
   (package
@@ -607,12 +608,12 @@ useful features.")
        ("expat" ,expat)
        ("zlib" ,zlib)))
     (arguments
-      '(#:phases (alist-cons-after
-                  'unpack 'autogen
-                  (lambda _
-                    (setenv "NOCONFIGURE" "true")
-                    (zero? (system* "sh" "autogen.sh")))
-                  %standard-phases)
+      '(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'autogen
+            (lambda _
+              (setenv "NOCONFIGURE" "true")
+              (zero? (system* "sh" "autogen.sh")))))
         #:configure-flags
         '("--disable-static" "--disable-db")))
     (home-page "http://www.etpan.org/libetpan.html")
@@ -627,7 +628,7 @@ MailCore 2.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.13.2")
+    (version "3.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -635,7 +636,7 @@ MailCore 2.")
                     ".tar.xz"))
               (sha256
                (base32
-                "1l8ankx0qpq1ix1an8viphcf11ksh53jsrm1xjmq8cjbh5910wva"))))
+                "0nfchgga3ir91s8rky0a0vnz8cgj2f6h716wh3cmb466a01xfss6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)

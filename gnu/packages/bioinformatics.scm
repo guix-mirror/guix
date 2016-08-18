@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -135,6 +137,99 @@ transfer-messenger RNA from nucleotide sequences, based on homology to known
 tRNA consensus sequences and RNA structure.  It also outputs the secondary
 structure of the predicted RNA.")
     (license license:gpl2)))
+
+(define-public bamm
+  (package
+    (name "bamm")
+    (version "1.7.2a")
+    (source (origin
+              (method url-fetch)
+              ;; BamM is not available on pypi.
+              (uri (string-append
+                    "https://github.com/Ecogenomics/BamM/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nb20yml39f8fh0cahpjywsl91irh9yskig549c17xkrkl74czsq"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Delete bundled htslib.
+                  (delete-file-recursively "c/htslib-1.3.1")
+                  #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; BamM is Python 2 only.
+       ;; Do not use bundled libhts.  Do use the bundled libcfu because it has
+       ;; been modified from its original form.
+       #:configure-flags
+       (let ((htslib (assoc-ref %build-inputs "htslib")))
+         (list "--with-libhts-lib" (string-append htslib "/lib")
+               "--with-libhts-inc" (string-append htslib "/include/htslib")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (with-directory-excursion "c"
+               (let ((sh (which "sh")))
+                 ;; Use autogen so that 'configure' works.
+                 (substitute* "autogen.sh" (("/bin/sh") sh))
+                 (setenv "CONFIG_SHELL" sh)
+                 (substitute* "configure" (("/bin/sh") sh))
+                 (zero? (system* "./autogen.sh"))))))
+         (delete 'build)
+         ;; Run tests after installation so compilation only happens once.
+         (delete 'check)
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out  (assoc-ref outputs "out"))
+                   (path (getenv "PATH")))
+              (wrap-program (string-append out "/bin/bamm")
+                `("PATH" ":" prefix (,path))))
+            #t))
+         (add-after 'wrap-executable 'post-install-check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "PATH"
+                     (string-append (assoc-ref outputs "out")
+                                    "/bin:"
+                                    (getenv "PATH")))
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (assoc-ref outputs "out")
+                      "/lib/python"
+                      (string-take (string-take-right
+                                    (assoc-ref inputs "python") 5) 3)
+                      "/site-packages:"
+                      (getenv "PYTHONPATH")))
+             ;; There are 2 errors printed, but they are safe to ignore:
+             ;; 1) [E::hts_open_format] fail to open file ...
+             ;; 2) samtools view: failed to open ...
+             (zero? (system* "nosetests")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("zlib" ,zlib)
+       ("python-nose" ,python2-nose)
+       ("python-pysam" ,python2-pysam)
+       ("python-setuptools" ,python2-setuptools)))
+    (inputs
+     `(("htslib" ,htslib)
+       ("samtools" ,samtools)
+       ("bwa" ,bwa)
+       ("grep" ,grep)
+       ("sed" ,sed)
+       ("coreutils" ,coreutils)))
+    (propagated-inputs
+     `(("python-numpy" ,python2-numpy)))
+    (home-page "http://ecogenomics.github.io/BamM/")
+    (synopsis "Metagenomics-focused BAM file manipulator")
+    (description
+     "BamM is a C library, wrapped in python, to efficiently generate and
+parse BAM files, specifically for the analysis of metagenomic data.  For
+instance, it implements several methods to assess contig-wise read coverage.")
+    (license license:lgpl3+)))
 
 (define-public bamtools
   (package
@@ -1327,7 +1422,7 @@ databases.")
 (define-public clipper
   (package
     (name "clipper")
-    (version "0.3.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1336,12 +1431,18 @@ databases.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1q7jpimsqln7ic44i8v2rx2haj5wvik8hc1s2syd31zcn0xk1iyq"))
+                "0pflmsvhbf8izbgwhbhj1i7349sw1f55qpqj8ljmapp16hb0p0qi"))
               (modules '((guix build utils)))
               (snippet
-               ;; remove unnecessary setup dependency
-               '(substitute* "setup.py"
-                  (("setup_requires = .*") "")))))
+               '(begin
+                  ;; remove unnecessary setup dependency
+                  (substitute* "setup.py"
+                    (("setup_requires = .*") ""))
+                  (for-each delete-file
+                            '("clipper/src/peaks.so"
+                              "clipper/src/readsToWiggle.so"))
+                  (delete-file-recursively "dist/")
+                  #t))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; only Python 2 is supported
     (inputs
@@ -1350,6 +1451,7 @@ databases.")
        ("python-cython" ,python2-cython)
        ("python-scikit-learn" ,python2-scikit-learn)
        ("python-matplotlib" ,python2-matplotlib)
+       ("python-pandas" ,python2-pandas)
        ("python-pysam" ,python2-pysam)
        ("python-numpy" ,python2-numpy)
        ("python-scipy" ,python2-scipy)))
@@ -1801,7 +1903,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.17")
+    (version "0.8.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1810,7 +1912,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1479sz0phddv40kx4xv95g2q7m3wy52smjb4apn0xpn2gqgj4nrx"))))
+                "1r8klhbzn5cfzg9g69dd0sk4c0bd8cg1g5id8blsqi273bymm4jl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2861,7 +2963,7 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.299")
+    (version "7.305")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2870,7 +2972,7 @@ sequencing tag position and orientation.")
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "1pwwdy5a17ggx8h9v9y712ilswj27dc3d23r65l56jgjz67y5zc0"))))
+                "0ziim7g58n3z8gppsa713f5fxprl60ldj3xck186z0n9dpp06i8r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
@@ -2881,31 +2983,31 @@ sequencing tag position and orientation.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
-          (lambda _ (chdir "core") #t))
+           (lambda _ (chdir "core") #t))
          (add-after 'enter-dir 'patch-makefile
-          (lambda _
-            ;; on advice from the MAFFT authors, there is no need to
-            ;; distribute mafft-profile, mafft-distance, or
-            ;; mafft-homologs.rb as they are too "specialised".
-            (substitute* "Makefile"
-              ;; remove mafft-homologs.rb from SCRIPTS
-              (("^SCRIPTS = mafft mafft-homologs.rb")
-               "SCRIPTS = mafft")
-              ;; remove mafft-homologs from MANPAGES
-              (("^MANPAGES = mafft.1 mafft-homologs.1")
-               "MANPAGES = mafft.1")
-              ;; remove mafft-distance from PROGS
-              (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
-               "PROGS = dvtditr dndfast7 dndblast sextet5")
-              ;; remove mafft-profile from PROGS
-              (("splittbfast disttbfast tbfast mafft-profile 2cl mccaskillwrap")
-               "splittbfast disttbfast tbfast f2cl mccaskillwrap")
-              (("^rm -f mafft-profile mafft-profile.exe") "#")
-              (("^rm -f mafft-distance mafft-distance.exe") ")#")
-              ;; do not install MAN pages in libexec folder
-              (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
+           (lambda _
+             ;; on advice from the MAFFT authors, there is no need to
+             ;; distribute mafft-profile, mafft-distance, or
+             ;; mafft-homologs.rb as they are too "specialised".
+             (substitute* "Makefile"
+               ;; remove mafft-homologs.rb from SCRIPTS
+               (("^SCRIPTS = mafft mafft-homologs.rb")
+                "SCRIPTS = mafft")
+               ;; remove mafft-homologs from MANPAGES
+               (("^MANPAGES = mafft.1 mafft-homologs.1")
+                "MANPAGES = mafft.1")
+               ;; remove mafft-distance from PROGS
+               (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
+                "PROGS = dvtditr dndfast7 dndblast sextet5")
+               ;; remove mafft-profile from PROGS
+               (("splittbfast disttbfast tbfast mafft-profile 2cl mccaskillwrap")
+                "splittbfast disttbfast tbfast f2cl mccaskillwrap")
+               (("^rm -f mafft-profile mafft-profile.exe") "#")
+               (("^rm -f mafft-distance mafft-distance.exe") ")#")
+               ;; do not install MAN pages in libexec folder
+               (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
 \\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))
-            #t))
+             #t))
          (add-after 'enter-dir 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("pairash.c"
@@ -2915,13 +3017,24 @@ sequencing tag position and orientation.")
                 (string-append prefix (which "awk")))
                (("grep") (which "grep")))
              #t))
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (path (string-append
+                           (assoc-ref %build-inputs "coreutils") "/bin:")))
+               (for-each (lambda (file)
+                           (wrap-program file
+                             `("PATH" ":" prefix (,path))))
+                         (find-files bin)))
+             #t)))))
     (inputs
      `(("perl" ,perl)
+       ("ruby" ,ruby)
        ("gawk" ,gawk)
-       ("grep" ,grep)))
-    (propagated-inputs
-     `(("coreutils" ,coreutils)))
+       ("grep" ,grep)
+       ("coreutils" ,coreutils)))
     (home-page "http://mafft.cbrc.jp/alignment/software/")
     (synopsis "Multiple sequence alignment program")
     (description
@@ -3013,6 +3126,62 @@ an automated metagenome binning software, which integrates empirical
 probabilistic distances of genome abundance and tetranucleotide frequency.")
    (license (license:non-copyleft "file://license.txt"
                                   "See license.txt in the distribution."))))
+
+(define-public minced
+  (package
+    (name "minced")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ctSkennerton/minced/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wxmlsapxfpxfd3ps9636h7i2xy6la8i42mwh0j2lsky63h63jp1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'fix-test
+           (lambda _
+             ;; Fix test for latest version.
+             (substitute* "t/Aquifex_aeolicus_VF5.expected"
+               (("minced:0.1.6") "minced:0.2.0"))
+             #t))
+         (replace 'install ; No install target.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (wrapper (string-append bin "/minced")))
+               ;; Minced comes with a wrapper script that tries to figure out where
+               ;; it is located before running the JAR. Since these paths are known
+               ;; to us, we build our own wrapper to avoid coreutils dependency.
+               (install-file "minced.jar" bin)
+               (with-output-to-file wrapper
+                 (lambda _
+                   (display
+                    (string-append
+                     "#!" (assoc-ref inputs "bash") "/bin/sh\n\n"
+                     (assoc-ref inputs "jre") "/bin/java -jar "
+                     bin "/minced.jar \"$@\"\n"))))
+               (chmod wrapper #o555)))))))
+    (native-inputs
+     `(("jdk" ,icedtea "jdk")))
+    (inputs
+     `(("bash" ,bash)
+       ("jre" ,icedtea "out")))
+    (home-page "https://github.com/ctSkennerton/minced")
+    (synopsis "Mining CRISPRs in Environmental Datasets")
+    (description
+     "MinCED is a program to find Clustered Regularly Interspaced Short
+Palindromic Repeats (CRISPRs) in DNA sequences.  It can be used for
+unassembled metagenomic reads, but is mainly designed for full genomes and
+assembled metagenomic sequence.")
+    (license license:gpl3+)))
 
 (define-public miso
   (package
@@ -4395,6 +4564,11 @@ is one that takes arguments.")
      "SNAP is a fast and accurate aligner for short DNA reads.  It is
 optimized for modern read lengths of 100 bases or higher, and takes advantage
 of these reads to align data quickly through a hash-based indexing scheme.")
+    ;; 32-bit systems are not supported by the unpatched code.
+    ;; Following the bug reports https://github.com/amplab/snap/issues/68 and
+    ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=812378 we see that
+    ;; systems without a lot of memory cannot make good use of this program.
+    (supported-systems '("x86_64-linux"))
     (license license:asl2.0)))
 
 (define-public sortmerna

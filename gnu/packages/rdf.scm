@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -233,7 +233,7 @@ and triple stores.")
 (define-public serd
   (package
     (name "serd")
-    (version "0.20.0")
+    (version "0.22.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/serd-"
@@ -241,7 +241,7 @@ and triple stores.")
                                  ".tar.bz2"))
              (sha256
               (base32
-               "1gxbzqsm212wmn8qkdd3lbl6wbv7fwmaf9qh2nxa4yxjbr7mylb4"))))
+               "1lmgca2s6r7ysakcld2lrj06bgn0pr45c51b47k3apxpnj3h40vv"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -267,7 +267,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
 (define-public sord
   (package
     (name "sord")
-    (version "0.12.2")
+    (version "0.14.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/sord-"
@@ -275,7 +275,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
                                  ".tar.bz2"))
              (sha256
               (base32
-               "0rq7vafdv4vsxi6xk9zf5shr59w3kppdhqbj78185rz5gp9kh1dx"))))
+               "16piw1s3l95cf9x3rdcplp9l52k2lxq8drwg2q50ygm4avndhmkn"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target

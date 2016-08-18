@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
+;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,7 +71,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages man)
-  #:use-module (gnu packages autotools))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk))
 
 (define-public aide
   (package
@@ -1698,3 +1701,36 @@ a new command using the matched rule, and runs it.")
 display your disk usage in whatever format you prefer.  It is designed to be
 highly portable.  Great for heterogenous networks.")
     (license license:zlib)))
+
+(define-public cbatticon
+  (package
+    (name "cbatticon")
+    (version "1.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/valr/"
+                                  name "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "023fvsa4q7rl98rqgwrb1shyzaybdkkbyz5sywd0s5p7ixkksxqx"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no configure script
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gnu-gettext" ,gnu-gettext)
+       ("libnotify" ,libnotify)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Lightweight battery icon for the system tray")
+    (description "cbatticon is a lightweight battery icon that displays
+the status of your battery in the system tray.")
+    (home-page "https://github.com/valr/cbatticon")
+    (license license:gpl2+)))

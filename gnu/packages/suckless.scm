@@ -3,6 +3,9 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +30,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages pkg-config)
@@ -68,30 +72,7 @@
     (description
      "dwm is a dynamic window manager for X.  It manages windows in tiled,
 monocle and floating layouts.  All of the layouts can be applied dynamically,
-optimising the environment for the application in use and the task performed.
-
-In tiled layout windows are managed in a master and stacking area.  The master
-area contains the window which currently needs most attention, whereas the
-stacking area contains all other windows.  In monocle layout all windows are
-maximised to the screen size.  In floating layout windows can be resized and
-moved freely.  Dialog windows are always managed floating, regardless of the
-layout applied.
-
-Windows are grouped by tags.  Each window can be tagged with one or multiple
-tags.  Selecting certain tags displays all windows with these tags.
-
-Each screen contains a small status bar which displays all available tags, the
-layout, the number of visible windows, the title of the focused window, and the
-text read from the root window name property, if the screen is focused.  A
-floating window is indicated with an empty square and a maximised floating
-window is indicated with a filled square before the windows title.  The selected
-tags are indicated with a different color.  The tags of the focused window are
-indicated with a filled square in the top left corner.  The tags which are
-applied to one or more windows are indicated with an empty square in the top
-left corner.
-
-dwm draws a small customizable border around windows to indicate the focus
-state.")
+optimising the environment for the application in use and the task performed.")
     (license license:x11)))
 
 (define-public dmenu
@@ -152,7 +133,7 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method url-fetch)
@@ -160,7 +141,7 @@ numbers of user-defined menu items efficiently.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0avsfc1qp8zvshsfjwwrkvk411jlqy58z225bsdhjkl1qc40qcc5"))))
+         "00309qiw20rc89696pk8bdr7ik4r1aarik7jxqk8k66cdj80v1zp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -177,14 +158,8 @@ numbers of user-defined menu items efficiently.")
     (inputs
      `(("libx11" ,libx11)
        ("libxft" ,libxft)
-       ("libxcomposite" ,libxcomposite)
-       ("compositeproto" ,compositeproto)
-       ("libxext" ,libxext)
-       ("xextproto" ,xextproto)
-       ("libxrender" ,libxrender)
        ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("font-liberation" ,font-liberation)))
+       ("freetype" ,freetype)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://st.suckless.org/")
     (synopsis "Simple terminal emulator")
@@ -228,4 +203,45 @@ drawing.")
 display websites and follow links.  It supports the XEmbed protocol which
 makes it possible to embed it in another application.  Furthermore, one can
 point surf to another URI by setting its XProperties.")
+    (license license:x11)))
+
+(define-public sent
+  (package
+    (name "sent")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/sent-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0xhh752hwaa26k4q6wvrb9jnpbnylss2aw6z11j7l9rav7wn3fak"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))  ;no configuration
+       #:tests? #f                      ;no test suite
+       #:make-flags (let ((pkg-config (lambda (flag)
+                                        (string-append
+                                         "$(shell pkg-config " flag " "
+                                         "xft fontconfig x11 libpng)"))))
+                      (list
+                       "CC=gcc"
+                       (string-append "PREFIX=" %output)
+                       (string-append "INCS=-I. " (pkg-config "--cflags"))
+                       (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("fontconfig" ,fontconfig)))
+    (synopsis "Plaintext presentation tool")
+    (description "Sent uses plaintext files and PNG images to create slideshow
+presentations.  Each paragraph represents a slide in the presentation.
+Especially for presentations using the Takahashi method this is very nice and
+allows you to write down the presentation for a quick lightning talk within a
+few minutes.")
+    (home-page "http://tools.suckless.org/sent")
     (license license:x11)))

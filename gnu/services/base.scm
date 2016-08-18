@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -1099,8 +1099,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
      ;; Optionally authorize hydra.gnu.org's key.
-     (and authorize-key?
-          (hydra-key-authorization guix)))))
+     (if authorize-key?
+         (hydra-key-authorization guix)
+         #~#f))))
 
 (define guix-service-type
   (service-type

@@ -24,6 +24,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,7 @@
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3 gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
                           isc mpl2.0 psfl public-domain repoze unlicense x11-style
-                          zpl2.1))
+                          zpl2.1 lgpl3))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -58,7 +59,9 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -74,6 +77,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -2999,14 +3003,14 @@ is designed to have a low barrier to entry.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.24")
+    (version "0.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1wd3q97gia3zhsgcdlvxh26hkrf3m53i6r1l4g0yya119264vr3d"))))
+         "1fg7fmpvfcq9md4ncyqnnylyjy4z3ksdrshzis95g1sh03d8z044"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3014,14 +3018,12 @@ is designed to have a low barrier to entry.")
      `(("python" ,python)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'set-HOME
-        ;; some tests require access to "$HOME/.cython"
-        (lambda* _ (setenv "HOME" "/tmp"))
-        (alist-replace
-         'check
-         (lambda _ (zero? (system* "python" "runtests.py" "-vv")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+           ;; some tests require access to "$HOME/.cython"
+           (lambda _ (setenv "HOME" "/tmp")))
+         (replace 'check
+           (lambda _ (zero? (system* "python" "runtests.py" "-vv")))))))
     (home-page "http://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
@@ -9852,3 +9854,132 @@ etc.")
     (package
       (inherit base)
       (name "ptpython2"))))
+
+(define-public python-stem
+  (package
+    (name "python-stem")
+    (version "1.4.1b")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "stem" version ".tar.bz2"))
+       (sha256
+        (base32
+         "09a3amp1y351nwz088ckiibbp666qi2lxwkyknavswfm400s0ns7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "./run_tests.py" "--unit")))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pep8" ,python-pep8)
+       ("python-pyflakes" ,python-pyflakes)))
+    (inputs
+     `(("python-pycrypto" ,python-pycrypto)))
+    (home-page "https://stem.torproject.org/")
+    (synopsis
+     "Python controller library that allows applications to interact with Tor")
+    (description
+     "Stem is a Python controller library for Tor.  With it you can use Tor's
+control protocol to script against the Tor process and read descriptor data
+relays publish about themselves.")
+    (license lgpl3)))
+
+(define-public python2-stem
+  (package-with-python2 python-stem))
+
+(define-public python-pyserial
+  (package
+    (name "python-pyserial")
+    (version "3.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyserial" version))
+        (sha256
+          (base32
+            "0k1nfdrxxkdlv4zgaqsdv8li0pj3gbh2pyxw8q2bsg6f9490amyn"))))
+    (build-system python-build-system)
+    (home-page
+      "https://github.com/pyserial/pyserial")
+    (synopsis "Python Serial Port Bindings")
+    (description "@code{pyserial} provide serial port bindings for Python.  It
+supports different byte sizes, stop bits, parity and flow control with RTS/CTS
+and/or Xon/Xoff.  The port is accessed in RAW mode.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-pyserial))))))
+
+(define-public python2-pyserial
+  (let ((base (package-with-python2 (strip-python2-variant python-pyserial))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-kivy
+  (package
+    (name "python-kivy")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kivy" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zk3g1j1z0lzcm9d0k1lprrs95zr8n8k5pdg3p5qlsn26jz4bg19"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f              ; Tests require many optional packages
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build (lambda _ (zero? (system* "make" "force"))))
+         (add-after 'patch-generated-file-shebangs 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "KIVY_SDL2_PATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL2"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python-cython" ,python-cython)
+       ("gstreamer" ,gstreamer)
+       ("mesa" ,mesa)
+       ("sdl-union"
+        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (home-page "http://kivy.org")
+    (synopsis
+     "Multitouch application framework")
+    (description
+     "A software library for rapid development of
+hardware-accelerated multitouch applications.")
+    (license license:expat)))
+
+(define-public python2-kivy
+  (package-with-python2 python-kivy))
+
+(define-public python-kivy-next
+  (let ((commit "a988c5e7a47da56263ff39514264a3de516ef2fe")
+        (revision "1"))
+    (package (inherit python-kivy)
+      (name "python-kivy-next")
+      (version (string-append "1.9.1-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kivy/kivy")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0jk92b4a8l7blkvkgkjihk171s0dfnq582cckff5srwc8kal5m0p")))))))
+
+(define-public python2-kivy-next
+  (package-with-python2 python-kivy-next))

@@ -275,23 +275,22 @@ libssh library.")
      ;; Replace configure phase as the ./configure script does not link
      ;; CONFIG_SHELL and SHELL passed as parameters
      '(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs inputs system build target
-                        #:allow-other-keys #:rest args)
-          (let* ((configure (assoc-ref %standard-phases 'configure))
-                 (prefix (assoc-ref outputs "out"))
-                 (bash   (which "bash"))
-                 ;; Set --build and --host flags as the provided config.guess
-                 ;; is not able to detect them
-                 (flags `(,(string-append "--prefix=" prefix)
-                          ,(string-append "--build=" build)
-                          ,(string-append "--host=" (or target build)))))
-            (setenv "CONFIG_SHELL" bash)
-            (zero? (apply system* bash
-                          (string-append "." "/configure")
-                          flags))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs inputs system build target
+                           #:allow-other-keys #:rest args)
+             (let* ((configure (assoc-ref %standard-phases 'configure))
+                    (prefix (assoc-ref outputs "out"))
+                    (bash   (which "bash"))
+                    ;; Set --build and --host flags as the provided config.guess
+                    ;; is not able to detect them
+                    (flags `(,(string-append "--prefix=" prefix)
+                             ,(string-append "--build=" build)
+                             ,(string-append "--host=" (or target build)))))
+               (setenv "CONFIG_SHELL" bash)
+               (zero? (apply system* bash
+                             (string-append "." "/configure")
+                             flags))))))))
     (home-page "http://www.agroman.net/corkscrew")
     (synopsis "Tunneling SSH through HTTP proxies")
     (description
@@ -304,26 +303,25 @@ in future and NTLM based authentication is most likey never be supported.")
 (define-public mosh
   (package
     (name "mosh")
-    (version "1.2.5")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://mosh.mit.edu/mosh-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://mosh.org/mosh-" version ".tar.gz"))
               (sha256
                (base32
-                "1qsb0y882yfgwnpy6f98pi5xqm6kykdsrxzvaal37hs7szjhky0s"))))
+                "118fhpm754wpklf1blnlq5xbvrxqml6rdfs3b07wg666zkxvg0ky"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'wrap
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Make sure 'mosh' can find 'mosh-client' and
-                   ;; 'mosh-server'.
-                   (let* ((out (assoc-ref outputs "out"))
-                          (bin (string-append out "/bin")))
-                     (wrap-program (string-append bin "/mosh")
-                                   `("PATH" ":" prefix (,bin)))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure 'mosh' can find 'mosh-client' and
+             ;; 'mosh-server'.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (wrap-program (string-append bin "/mosh")
+                             `("PATH" ":" prefix (,bin)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -334,7 +332,7 @@ in future and NTLM based authentication is most likey never be supported.")
        ("ncurses" ,ncurses)
        ("protobuf" ,protobuf)
        ("boost-headers" ,boost)))
-    (home-page "http://mosh.mit.edu/")
+    (home-page "https://mosh.org/")
     (synopsis "Remote shell tolerant to intermittent connectivity")
     (description
      "Remote terminal application that allows roaming, supports intermittent
@@ -346,7 +344,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2016.73")
+    (version "2016.74")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -354,7 +352,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mzg18jss1bsmcnn88zv7kv5yj01hzimndnd5636hfq9kgva8qaw"))))
+                "14c8f4gzixf0j9fkx68jgl85q7b05852kk0vf09gi6h0xmafl817"))))
     (build-system gnu-build-system)
     (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("zlib" ,zlib)))

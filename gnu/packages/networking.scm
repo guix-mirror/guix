@@ -1,12 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +40,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
@@ -46,6 +49,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -415,6 +419,58 @@ by firewalls or when you want to monitor the response time of the actual web
 application stack itself.")
     (license license:gpl2)))        ; with permission to link with OpenSSL
 
+(define-public aircrack-ng
+  (package
+    (name "aircrack-ng")
+    (version "1.2-rc4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.aircrack-ng.org/aircrack-ng-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0dpzx9kddxpgzmgvdpl3rxn0jdaqhm5wxxndp1xd7d75mmmc2fnr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("libnl" ,libnl)
+       ("ethtool" ,ethtool)
+       ("pcre" ,pcre)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags `("sqlite=true"
+                      "gcrypt=true"
+                      "libnl=true"
+                      "pcre=true"
+                      "experimental=true" ;build wesside-ng, etc.
+                      "AVX2FLAG=N" "AVX1FLAG=N" "SSEFLAG=Y"
+                      ,(string-append "prefix=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)   ;no configure phase
+                  (add-after 'build 'absolutize-tools
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((ethtool (string-append (assoc-ref inputs "ethtool")
+                                                    "/sbin/ethtool")))
+                        (substitute* "scripts/airmon-ng"
+                          (("\\[ ! -x \"\\$\\(command -v ethtool 2>&1)\" \\]")
+                           (string-append "! " ethtool " --version "
+                                          ">/dev/null 2>&1"))
+                          (("\\$\\(ethtool")
+                           (string-append "$(" ethtool)))
+                        #t))))))
+    (home-page "http://www.aircrack-ng.org")
+    (synopsis "Assess WiFi network security")
+    (description
+     "Aircrack-ng is a complete suite of tools to assess WiFi network
+security.  It focuses on different areas of WiFi security: monitoring,
+attacking, testing, and cracking.  All tools are command-line driven, which
+allows for heavy scripting.")
+    (license (list license:gpl2+ license:bsd-3))))
+
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
@@ -635,3 +691,37 @@ information by IP Address.")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
 sockets in Perl.")
   (license (package-license perl))))
+
+(define-public proxychains-ng
+  (package
+    (name "proxychains-ng")
+    (version "4.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rofl0r/" name "/releases/"
+                                  "download/v" version "/" name "-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "1dkncdzw852488gkh5zhn4b5i03qyj8rgh1wcvcva7yd12c19i6w"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-configure-script
+           (lambda _
+             ;; The configure script is very intolerant to unknown arguments,
+             ;; such as "CONFIG_SHELL".
+             (substitute* "configure"
+               (("\\*\\) break ;;" line)
+                (string-append "[A-Z]*) shift ;;\n"
+                               line)))
+             #t)))))
+    (synopsis "Redirect any TCP connection through a proxy or proxy chain")
+    (description "Proxychains-ng is a preloader which hooks calls to sockets
+in dynamically linked programs and redirects them through one or more SOCKS or
+HTTP proxies.")
+    (home-page "https://github.com/rofl0r/proxychains-ng")
+    (license license:gpl2+)))

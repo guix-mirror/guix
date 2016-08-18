@@ -1588,7 +1588,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.28")
+    (version "1.12.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1596,7 +1596,7 @@ Hints specification (EWMH).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fsdp7r6fhc0m3fb4ly4xwh83v3hp2zrv9d0713g4lcy709svm02"))))
+                "1rvadlgikklwb6rccqc3rlhqv3m9qx27rchm7znxr062fn7fgb68"))))
     (build-system gnu-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -3428,7 +3428,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.28.1")
+    (version "1.28.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3436,7 +3436,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16bry61hg681bwb0pih86cjayzvc5f89ip5xd8fydcy16nnfbksf"))))
+                "05xxy0ids310qy24vmkyl3hc6mq05p39aa8mkr5fzxkhhnv4r325"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; XXX: requiring `pidof'
@@ -3526,7 +3526,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.19.91")
+    (version "3.21.90")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/simple-scan/"
@@ -3535,7 +3535,7 @@ USB transfers with your high-level application or system daemon.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1c5glf5vxgld41w4jxfqcv17q76qnh43fawpv33hncgh8d283xkf"))))
+                "0dmsvq3vviky6851rqiik898r84c7744i7md672ckic3mdv21ap3"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk" ,gtk+)
@@ -3543,10 +3543,9 @@ USB transfers with your high-level application or system daemon.")
        ("cairo" ,cairo)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gusb" ,gusb)
-       ("libgudev" ,libgudev)
        ("libsane" ,sane-backends)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gnu-gettext)
        ("itstool" ,itstool)
        ("colord" ,colord)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
@@ -3812,7 +3811,7 @@ classes for commonly used data structures.")
 (define-public gexiv2
   (package
     (name "gexiv2")
-    (version "0.10.3")
+    (version "0.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3820,7 +3819,7 @@ classes for commonly used data structures.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "121r5lv6l82pjr0ycdf2b01mdwy7sxwca2r068zrzylpc6bgn31r"))))
+                "190www3b61spfgwx42jw8h5hsz2996jcxky48k63468avjpk33dd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")

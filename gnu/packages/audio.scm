@@ -40,6 +40,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -174,7 +175,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "4.7")
+    (version "5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -188,10 +189,10 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"4.7-219-g0e36f8e\" ; }"))))
+namespace ARDOUR { const char* revision = \"5.0-10-g23d1d1f\" ; }"))))
               (sha256
                (base32
-                "149gswphz77m3pkzsn2nqbm6yvcfa3fva560bcvjzlgb73f64q5l"))
+                "0ihd6zxha1vvp4jy5s49pqyw09qxxjgrdlslrkz6ll59zdh6x7am"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
@@ -233,12 +234,14 @@ namespace ARDOUR { const char* revision = \"4.7-219-g0e36f8e\" ; }"))))
        ("sratom" ,sratom)
        ("suil" ,suil)
        ("lilv" ,lilv)
+       ("readline" ,readline)
        ("redland" ,redland)
        ("rubberband" ,rubberband)
        ("taglib" ,taglib)
        ("python-rdflib" ,python-rdflib)))
     (native-inputs
      `(("perl" ,perl)
+       ("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
     (home-page "http://ardour.org")
     (synopsis "Digital audio workstation")
@@ -1303,7 +1306,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.20.0")
+    (version "0.22.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/lilv-"
@@ -1311,7 +1314,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
                                  ".tar.bz2"))
              (sha256
               (base32
-               "0aj2plkx56iar8vzjbq2l7hi7sp0ml99m0h44rgwai2x4vqkk2j2"))))
+               "1d3ss7vv8drf1c5340lyd0gv736n2qy7sxji2nh1rw9y48hr69yd"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
