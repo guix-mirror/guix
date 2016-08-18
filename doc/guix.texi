@@ -7680,8 +7680,15 @@ Name of the group for build user accounts.
 Number of build user accounts to create.
 
 @item @code{authorize-key?} (default: @code{#t})
-Whether to authorize the substitute key for @code{hydra.gnu.org}
+Whether to authorize the substitute keys listed in
+@code{authorized-keys}---by default that of @code{hydra.gnu.org}
 (@pxref{Substitutes}).
+
+@vindex %default-authorized-guix-keys
+@item @code{authorized-keys} (default: @var{%default-authorized-guix-keys})
+The list of authorized key files for archive imports, as a list of
+string-valued gexps (@pxref{Invoking guix archive}).  By default, it
+contains that of @code{hydra.gnu.org} (@pxref{Substitutes}).
 
 @item @code{use-substitutes?} (default: @code{#t})
 Whether to use substitutes.

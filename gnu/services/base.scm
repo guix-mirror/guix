@@ -86,6 +86,7 @@
             syslog-service-type
             %default-syslog.conf
 
+            %default-authorized-guix-keys
             guix-configuration
             guix-configuration?
             guix-service
@@ -1003,15 +1004,14 @@ starting at FIRST-UID, and under GID."
           1+
           1))
 
-(define (hydra-key-authorization guix)
-  "Return a gexp with code to register the hydra.gnu.org public key with
-GUIX."
+(define (hydra-key-authorization key guix)
+  "Return a gexp with code to register KEY, a file containing a 'guix archive'
+public key, with GUIX."
   #~(unless (file-exists? "/etc/guix/acl")
       (let ((pid (primitive-fork)))
         (case pid
           ((0)
-           (let* ((key  (string-append #$guix
-                                       "/share/guix/hydra.gnu.org.pub"))
+           (let* ((key  #$key)
                   (port (open-file key "r0b")))
              (format #t "registering public key '~a'...~%" key)
              (close-port (current-input-port))
@@ -1025,6 +1025,10 @@ GUIX."
                (format (current-error-port) "warning: \
 failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
+(define %default-authorized-guix-keys
+  ;; List of authorized substitute keys.
+  (list #~(string-append #$guix "/share/guix/hydra.gnu.org.pub")))
+
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
   guix-configuration?
@@ -1036,6 +1040,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default 10))
   (authorize-key?   guix-configuration-authorize-key? ;Boolean
                     (default #t))
+  (authorized-keys  guix-configuration-authorized-keys ;list of gexps
+                    (default %default-authorized-guix-keys))
   (use-substitutes? guix-configuration-use-substitutes? ;Boolean
                     (default #t))
   (substitute-urls  guix-configuration-substitute-urls ;list of strings
@@ -1053,7 +1059,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 (define (guix-shepherd-service config)
   "Return a <shepherd-service> for the Guix daemon service with CONFIG."
   (match config
-    (($ <guix-configuration> guix build-group build-accounts authorize-key?
+    (($ <guix-configuration> guix build-group build-accounts
+                             authorize-key? keys
                              use-substitutes? substitute-urls extra-options
                              lsof lsh)
      (list (shepherd-service
@@ -1093,14 +1100,15 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 (define (guix-activation config)
   "Return the activation gexp for CONFIG."
   (match config
-    (($ <guix-configuration> guix build-group build-accounts authorize-key?)
+    (($ <guix-configuration> guix build-group build-accounts authorize-key? keys)
      ;; Assume that the store has BUILD-GROUP as its group.  We could
      ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
      ;; Optionally authorize hydra.gnu.org's key.
      (if authorize-key?
-         (hydra-key-authorization guix)
+         #~(begin
+             #$@(map (cut hydra-key-authorization <> guix) keys))
          #~#f))))
 
 (define guix-service-type
