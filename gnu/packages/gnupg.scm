@@ -123,8 +123,7 @@ generation.")
 
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
-    (replacement libgcrypt-1.5.6)
-    (version "1.5.4")
+    (version "1.5.6")
     (source
      (origin
       (method url-fetch)
@@ -132,20 +131,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0czvqxkzd5y872ipy6s010ifwdwv29sqbnqc4pf56sd486gqvy6m"))))))
-
-(define-public libgcrypt-1.5.6
-  (package
-    (inherit libgcrypt-1.5)
-    (source
-     (let ((version "1.5.6"))
-       (origin
-         (method url-fetch)
-         (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                             version ".tar.bz2"))
-         (sha256
-          (base32
-           "0ydy7bgra5jbq9mxl5x031nif3m6y3balc6ndw2ngj11wnsjc61h")))))))
+        "0ydy7bgra5jbq9mxl5x031nif3m6y3balc6ndw2ngj11wnsjc61h"))))))
 
 (define-public libassuan
   (package
