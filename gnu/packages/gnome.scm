@@ -3264,7 +3264,7 @@ which can read a large number of file formats.")
 (define-public rhythmbox
  (package
    (name "rhythmbox")
-   (version "3.2.1")
+   (version "3.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3272,7 +3272,7 @@ which can read a large number of file formats.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0f3radhlji7rxl760yl2vm49fvfslympxrpm8497acbmbd7wlhxz"))))
+              "1347747m90aiz47wny1f8rdk5195qf2ph0554c6y91711sm951gg"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:configure-flags
@@ -3290,11 +3290,13 @@ which can read a large number of file formats.")
            (let ((out               (assoc-ref outputs "out"))
                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
                  (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH"))
-                 (grl-plugin-path   (getenv "GRL_PLUGIN_PATH")))
+                 (grl-plugin-path   (getenv "GRL_PLUGIN_PATH"))
+                 (python-path       (getenv "PYTHONPATH")))
              (wrap-program (string-append out "/bin/rhythmbox")
                `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-               `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))))
+               `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))
+               `("PYTHONPATH"             ":" prefix (,python-path))))
            #t)))))
    (propagated-inputs
     `(("dconf" ,dconf)))
@@ -3340,7 +3342,6 @@ which can read a large number of file formats.")
       ;; TODO:
       ;;  * libgpod
       ;;  * mx
-      ;;  * webkit
       ("brasero" ,brasero)))
    (home-page "https://wiki.gnome.org/Apps/Rhythmbox")
    (synopsis "Music player for GNOME")
