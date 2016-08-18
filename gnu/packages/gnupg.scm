@@ -209,14 +209,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.13")
+    (version "2.1.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0xcn46vcb5x5qx0bc803vpzhzhnn6wfhp7x71w9n1ahx4ak877ag"))))
+                "1pgz02gd84ab94w4xdg67p9z8kvkyr9d523bvcxxd2hviwh1m362"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -242,7 +242,12 @@ compatible to GNU Pth.")
           (lambda _
             (substitute* "tests/openpgp/defs.inc"
               (("/bin/pwd") (which "pwd")))
-            #t)))))
+            #t))
+        (add-after 'build 'patch-scheme-tests
+          (lambda _
+            (substitute* (find-files "tests" ".\\.scm$")
+              (("/usr/bin/env gpgscm")
+               (string-append (getcwd) "/tests/gpgscm/gpgscm"))))))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
