@@ -514,21 +514,20 @@ include cursor in the resulting image.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
-       #:phases (alist-delete
-                 'configure
-                 (alist-replace
-                  'install
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let* ((out  (assoc-ref outputs "out"))
-                           (bin  (string-append out "/bin"))
-                           (man1 (string-append out "/share/man/man1")))
-                      (mkdir-p bin)
-                      (mkdir-p man1)
-                      (zero?
-                       (system* "make" "install" "install.man"
-                                (string-append "BINDIR=" bin)
-                                (string-append "MANDIR=" man1)))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (man1 (string-append out "/share/man/man1")))
+               (mkdir-p bin)
+               (mkdir-p man1)
+               (zero?
+                 (system* "make" "install" "install.man"
+                          (string-append "BINDIR=" bin)
+                          (string-append "MANDIR=" man1)))))))))
     (inputs `(("libx11" ,libx11)))
     (home-page "http://ftp.x.org/contrib/utilities/")
     (synopsis "Hide idle mouse cursor")
