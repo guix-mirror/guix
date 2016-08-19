@@ -519,8 +519,8 @@ PGP keysigning parties.")
    (version "1.1.4")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.debian.org/debian/pool/main/s/signing-party/signing-party_"
-                                version ".orig.tar.gz"))
+            (uri (string-append "mirror://debian/pool/main/s/signing-party/"
+                                "signing-party_" version ".orig.tar.gz"))
             (sha256 (base32
                      "188gp0prbh8qs29lq3pbf0qibfd6jq4fk7i0pfrybl8aahvm84rx"))))
    (build-system gnu-build-system)
