@@ -577,34 +577,22 @@ PGP keysigning parties.")
    (description
     "Signing-party is a collection for all kinds of PGP/GnuPG related things,
 including tools for signing keys, keyring analysis, and party preparation.
-
- * caff: CA - Fire and Forget signs and mails a key
-
- * pgp-clean: removes all non-self signatures from key
-
- * pgp-fixkey: removes broken packets from keys
-
- * gpg-mailkeys: simply mail out a signed key to its owner
-
- * gpg-key2ps: generate PostScript file with fingerprint paper strips
-
- * gpgdir: recursive directory encryption tool
-
- * gpglist: show who signed which of your UIDs
-
- * gpgsigs: annotates list of GnuPG keys with already done signatures
-
- * gpgparticipants: create list of party participants for the organiser
-
- * gpgwrap: a passphrase wrapper
-
- * keyanalyze: minimum signing distance (MSD) analysis on keyrings
-
- * keylookup: ncurses wrapper around gpg --search
-
- * sig2dot: converts a list of GnuPG signatures to a .dot file
-
- * springgraph: creates a graph from a .dot file")
+@enumerate
+@item caff: CA - Fire and Forget signs and mails a key
+@item pgp-clean: removes all non-self signatures from key
+@item pgp-fixkey: removes broken packets from keys
+@item gpg-mailkeys: simply mail out a signed key to its owner
+@item gpg-key2ps: generate PostScript file with fingerprint paper strips
+@item gpgdir: recursive directory encryption tool
+@item gpglist: show who signed which of your UIDs
+@item gpgsigs: annotates list of GnuPG keys with already done signatures
+@item gpgparticipants: create list of party participants for the organiser
+@item gpgwrap: a passphrase wrapper
+@item keyanalyze: minimum signing distance (MSD) analysis on keyrings
+@item keylookup: ncurses wrapper around gpg --search
+@item sig2dot: converts a list of GnuPG signatures to a .dot file
+@item springgraph: creates a graph from a .dot file
+@end enumerate")
    ;; gpl2+ for almost all programs, except for keyanalyze: gpl2
    ;; and caff and gpgsigs: bsd-3, see
    ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
