@@ -528,53 +528,51 @@ PGP keysigning parties.")
    (arguments
     `(#:tests? #f
       #:phases
-      (alist-cons-after
-       'unpack 'remove-spurious-links
-       (lambda _ (delete-file "keyanalyze/pgpring/depcomp"))
-      (alist-replace
-       'configure
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-           (substitute* "keyanalyze/Makefile"
-             (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
-           (substitute* "keyanalyze/Makefile"
-             (("./configure") (string-append "./configure --prefix=" out)))
-           (substitute* "keyanalyze/pgpring/configure"
-             (("/bin/sh") (which "bash")))
-           (substitute* "gpgwrap/Makefile"
-             (("\\} clean") (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
-                                      out "/bin/gpgwrap\n")))
-           (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
-                          "keylookup/Makefile" "sig2dot/Makefile"
-                          "springgraph/Makefile")
-             (("/usr") out))))
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys #:rest args)
-          (let ((out (assoc-ref outputs "out"))
-                (install (assoc-ref %standard-phases 'install)))
-            (apply install args)
-            (for-each
-              (lambda (dir file)
-                (copy-file (string-append dir "/" file)
-                           (string-append out "/bin/" file)))
-              '("caff" "caff" "caff" "gpgdir" "gpg-key2ps"
-                "gpglist" "gpg-mailkeys" "gpgparticipants")
-              '("caff" "pgp-clean" "pgp-fixkey" "gpgdir" "gpg-key2ps"
-                "gpglist" "gpg-mailkeys" "gpgparticipants"))
-            (for-each
-              (lambda (dir file)
-                (copy-file (string-append dir "/" file)
-                           (string-append out "/share/man/man1/" file)))
-              '("caff" "caff" "caff" "gpgdir"
-                "gpg-key2ps" "gpglist" "gpg-mailkeys"
-                "gpgparticipants" "gpgsigs" "gpgwrap/doc"
-                "keyanalyze" "keyanalyze/pgpring" "keyanalyze")
-              '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
-                "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
-                "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
-                "process_keys.1" "pgpring.1" "keyanalyze.1"))))
-      %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'remove-spurious-links
+          (lambda _ (delete-file "keyanalyze/pgpring/depcomp")))
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "keyanalyze/Makefile"
+                (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
+              (substitute* "keyanalyze/Makefile"
+                (("./configure") (string-append "./configure --prefix=" out)))
+              (substitute* "keyanalyze/pgpring/configure"
+                (("/bin/sh") (which "bash")))
+              (substitute* "gpgwrap/Makefile"
+                (("\\} clean")
+                 (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
+                                out "/bin/gpgwrap\n")))
+              (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
+                             "keylookup/Makefile" "sig2dot/Makefile"
+                             "springgraph/Makefile")
+                           (("/usr") out)))))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys #:rest args)
+            (let ((out (assoc-ref outputs "out"))
+                  (install (assoc-ref %standard-phases 'install)))
+              (apply install args)
+              (for-each
+                (lambda (dir file)
+                  (copy-file (string-append dir "/" file)
+                             (string-append out "/bin/" file)))
+                '("caff" "caff" "caff" "gpgdir" "gpg-key2ps"
+                  "gpglist" "gpg-mailkeys" "gpgparticipants")
+                '("caff" "pgp-clean" "pgp-fixkey" "gpgdir" "gpg-key2ps"
+                  "gpglist" "gpg-mailkeys" "gpgparticipants"))
+              (for-each
+                (lambda (dir file)
+                  (copy-file (string-append dir "/" file)
+                             (string-append out "/share/man/man1/" file)))
+                '("caff" "caff" "caff" "gpgdir"
+                  "gpg-key2ps" "gpglist" "gpg-mailkeys"
+                  "gpgparticipants" "gpgsigs" "gpgwrap/doc"
+                  "keyanalyze" "keyanalyze/pgpring" "keyanalyze")
+                '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
+                  "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
+                  "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
+                  "process_keys.1" "pgpring.1" "keyanalyze.1"))))))))
    (synopsis "Collection of scripts for simplifying gnupg key signing")
    (description
     "Signing-party is a collection for all kinds of PGP/GnuPG related things,
