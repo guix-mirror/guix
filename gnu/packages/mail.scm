@@ -182,14 +182,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.6.2")
+    (version "1.7.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "13hxmji7v9m2agmvzrs7gzx8s3c9jiwrv7pbkr7z1kc6ckq2xl65"))
+               "0idkamdiwj9fgqaz1vzkfg78cnmkzp74skv0ibw2xjfq6ds9hghx"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -205,6 +205,7 @@ aliasing facilities to work just as they would on normal mail.")
                            "--enable-pop"
                            "--enable-gpgme"
                            "--enable-hcache" ; for header caching
+                           "--enable-sidebar"
                            "--with-ssl"
                            "--with-sasl"
                            ;; so that mutt does not check whether the path
