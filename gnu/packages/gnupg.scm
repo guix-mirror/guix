@@ -668,13 +668,13 @@ passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'patch-check-scripts
-        (lambda _
-          (substitute* '("checks/roundtrip.sh"
-                         "checks/roundtrip-raw.sh")
-            (("/bin/echo") "echo")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-check-scripts
+           (lambda _
+             (substitute* '("checks/roundtrip.sh"
+                            "checks/roundtrip-raw.sh")
+               (("/bin/echo") "echo"))
+             #t)))))
     (home-page "http://www.jabberwocky.com/software/paperkey/")
     (synopsis "Backup OpenPGP keys to paper")
     (description
