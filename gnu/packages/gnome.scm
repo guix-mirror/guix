@@ -3842,7 +3842,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.23.1")
+    (version "0.23.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3850,7 +3850,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12imip32mav0zqg1fh4xm6zk4qsgg2435xsyb6ljz47i37zk6kg2"))))
+                "1hnl0lxibklmr1cy95ij1b3jgvdsw4zlcja53ngfxvlsi2r2bbxi"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -3859,6 +3859,7 @@ metadata in photo and video files of various formats.")
        #:out-of-source? #f))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("itstool" ,itstool)
        ("gettext" ,gnu-gettext)
        ("m4" ,m4)
        ("desktop-file-utils" ,desktop-file-utils)
