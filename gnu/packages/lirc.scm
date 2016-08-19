@@ -89,50 +89,50 @@ on just one button press.")
     (license license:gpl2+)))
 
 (define-public python-lirc
- (let ((commit "4091fe918f3eed2513dad008828565cace408d2f")
-       (revision "1"))
-  (package
-    (name "python-lirc")
-    (version (string-append "1.2.1-" revision "." (string-take commit 7)))
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/tompreston/python-lirc.git")
-               (commit commit)))
-        (sha256
-          (base32
-            "0cm47s5pvijfs3v2k7hmpxv3mvp4n5la0ihnsczk5ym3iq166jil"))
-        (file-name (string-append name "-" version ".tar.gz"))))
-    (build-system python-build-system)
-    (inputs
-     `(("lirc" ,lirc)))
-    (native-inputs
-     `(("python-cython" ,python-cython)))
-    (arguments
-     `(#:tests? #f ; the only tests that exist are human-interactive
-       #:phases
-        (modify-phases %standard-phases
-          (add-before 'build 'build-from-cython-files
-            (lambda _
-              (zero? (system* "make" "py3")))))))
-    (home-page "https://github.com/tompreston/python-lirc")
-    (synopsis "Python bindings for LIRC")
-    (description "@code{lirc} is a Python module which provides LIRC bindings.")
-    (license license:gpl3)
-    (properties `((python2-variant . ,(delay python2-lirc)))))))
-
-(define-public python2-lirc
-  (let ((base (package-with-python2 (strip-python2-variant python-lirc))))
+  (let ((commit "4091fe918f3eed2513dad008828565cace408d2f")
+        (revision "1"))
     (package
-      (inherit base)
-      (arguments
-       `(#:tests? #f ; the only tests there are are human-interactive
-         #:phases
-          (modify-phases %standard-phases
-            (add-before 'build 'build-from-cython-files
-              (lambda _
-                (zero? (system* "make" "py2")))))))
+      (name "python-lirc")
+      (version (string-append "1.2.1-" revision "." (string-take commit 7)))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/tompreston/python-lirc.git")
+                 (commit commit)))
+          (sha256
+            (base32
+              "0cm47s5pvijfs3v2k7hmpxv3mvp4n5la0ihnsczk5ym3iq166jil"))
+          (file-name (string-append name "-" version))))
+      (build-system python-build-system)
+      (inputs
+       `(("lirc" ,lirc)))
       (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ("python2-cython" ,python2-cython))))))
+       `(("python-cython" ,python-cython)))
+      (arguments
+       `(#:tests? #f ; the only tests that exist are human-interactive
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'build-from-cython-files
+             (lambda _
+               (zero? (system* "make" "py3")))))))
+      (home-page "https://github.com/tompreston/python-lirc")
+      (synopsis "Python bindings for LIRC")
+      (description "@code{lirc} is a Python module which provides LIRC bindings.")
+      (license license:gpl3)
+      (properties `((python2-variant . ,(delay python2-lirc)))))))
+
+  (define-public python2-lirc
+    (let ((base (package-with-python2 (strip-python2-variant python-lirc))))
+      (package
+        (inherit base)
+        (arguments
+         `(#:tests? #f ; the only tests that exist are human-interactive
+           #:phases
+           (modify-phases %standard-phases
+             (add-before 'build 'build-from-cython-files
+               (lambda _
+                 (zero? (system* "make" "py2")))))))
+        (native-inputs
+         `(("python2-setuptools" ,python2-setuptools)
+           ("python2-cython" ,python2-cython))))))
