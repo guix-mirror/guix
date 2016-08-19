@@ -393,7 +393,7 @@ It is made of two parts: KConfigCore and KConfigGui.
 KConfigCore provides access to the configuration files themselves.
 It features:
 
-@itemize
+@enumerate
 @item Code generation: describe your configuration in an XML file, and use
 `kconfig_compiler to generate classes that read and write configuration
 entries.
@@ -404,7 +404,7 @@ settings).
 @item Optional shell expansion support (see docs/options.md).
 
 @item The ability to lock down configuration options (see docs/options.md).
-@end itemize
+@end enumerate
 
 KConfigGui provides a way to hook widgets to the configuration so that they
 are automatically initialized from the configuration and automatically
@@ -654,7 +654,7 @@ or user activity.")
     (synopsis "Set of item models extending the Qt model-view framework")
     (description "KItemModels provides the following models:
 
-@itemize
+@enumerate
 @item KBreadcrumbSelectionModel - Selects the parents of selected items to
 create breadcrumbs.
 
@@ -679,7 +679,7 @@ model.
 
 @item KSelectionProxyModel - A Proxy Model which presents a subset of its source
 model to observers
-@end itemize")
+@end enumerate")
     (license license:lgpl2.1+)))
 
 (define-public kitemviews
