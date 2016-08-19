@@ -32,9 +32,14 @@
     (version "0.58")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://debian/pool/main/m/moreutils/moreutils_"
-                    version ".orig.tar.gz"))
+              (uri (list
+                     (string-append
+                       "mirror://debian/pool/main/m/moreutils/moreutils_"
+                       version ".orig.tar.gz")
+                     ;; The main Debian mirrors only hold the current packages
+                     (string-append
+                       "http://snapshot.debian.org/archive/debian/20160304T165744Z"
+                       "/pool/main/m/moreutils/moreutils_0.58.orig.tar.gz")))
               (sha256
                (base32
                 "02n00vqp6jxbxr5v3rdjxmzp6kxxjdkjgcclam6wrw8qamsbljww"))))
