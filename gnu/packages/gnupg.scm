@@ -414,9 +414,7 @@ and every application benefits from this.")
              (zero? (system* "make" "check")))))))
     (build-system python-build-system)
     (inputs
-     `(;; setuptools required for python-2 variant
-       ("python-setuptools" ,python-setuptools)
-       ("gnupg" ,gnupg-2.0)
+     `(("gnupg" ,gnupg-2.0)
        ("gpgme" ,gpgme)))
     (home-page "https://launchpad.net/pygpgme")
     (synopsis "Python module for working with OpenPGP messages")
@@ -426,7 +424,12 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
     (license license:lgpl2.1+)))
 
 (define-public python2-pygpgme
-  (package-with-python2 python-pygpgme))
+  (let ((base (package-with-python2 python-pygpgme)))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
 
 (define-public python-gnupg
   (package
