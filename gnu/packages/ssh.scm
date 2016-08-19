@@ -143,6 +143,7 @@ a server that supports the SSH-2 protocol.")
              ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
+      #:configure-flags '("--sysconfdir=/etc")
       #:phases
       (modify-phases %standard-phases
         (add-after 'configure 'reset-/var/empty
