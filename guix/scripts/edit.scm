@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -74,9 +74,16 @@ line."
 
 
 (define (guix-edit . args)
+  (define (parse-arguments)
+    ;; Return the list of package names.
+    (args-fold* args %options
+                (lambda (opt name arg result)
+                  (leave (_ "~A: unrecognized option~%") name))
+                cons
+                '()))
+
   (with-error-handling
-    (let* ((specs    (parse-command-line args %options '(())
-                                         #:argument-handler cons))
+    (let* ((specs    (reverse (parse-arguments)))
            (packages (map specification->package specs)))
       (for-each (lambda (package)
                   (unless (package-location package)
