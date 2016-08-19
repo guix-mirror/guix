@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2959,4 +2960,24 @@ passive voice.")
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
     (description "This Emacs package provides a folder tree view.")
+    (license license:gpl3+)))
+
+(define-public emacs-org
+  (package
+    (name "emacs-org")
+    (version "20160815")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://orgmode.org/elpa/org-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0k9pa13kpmpi6irmbavxffgqfanhjnijz4mkmmi0zp7kgjfbaliw"))))
+    (build-system emacs-build-system)
+    (home-page "http://orgmode.org/")
+    (synopsis "Outline-based notes management and organizer")
+    (description "Org is an Emacs mode for keeping notes, maintaining TODO
+lists, and project planning with a fast and effective plain-text system.  It
+also is an authoring system with unique support for literate programming and
+reproducible research.")
     (license license:gpl3+)))
