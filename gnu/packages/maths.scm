@@ -2079,59 +2079,54 @@ packages.")
          ,(string-append "--with-netlib-lapack-tarfile="
                          (assoc-ref %build-inputs "lapack-tar")))
        #:phases
-        (alist-cons-after
-         'install 'install-doc
-         (lambda* (#:key outputs inputs #:allow-other-keys)
-           (let ((doc (string-append (assoc-ref outputs "doc")
-                                     "/share/doc/atlas")))
-             (mkdir-p doc)
-             (fold (lambda (file previous)
-                     (and previous (zero? (system* "cp" file doc))))
-                   #t (find-files "../ATLAS/doc" ".*"))))
-         (alist-cons-after
-          'check 'check-pt
-          (lambda _ (zero? (system* "make" "ptcheck")))
-          ;; Fix files required to run configure.
-          (alist-cons-before
-           'configure 'fix-/bin/sh
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((doc (string-append (assoc-ref outputs "doc")
+                                       "/share/doc/atlas")))
+               (mkdir-p doc)
+               (fold (lambda (file previous)
+                       (and previous (zero? (system* "cp" file doc))))
+                     #t (find-files "../ATLAS/doc" ".*")))))
+         (add-after 'check 'check-pt
+           (lambda _ (zero? (system* "make" "ptcheck"))))
+         ;; Fix files required to run configure.
+         (add-before 'configure 'fix-/bin/sh
            (lambda _
              ;; Use `sh', not `/bin/sh'.
              (substitute* (find-files "." "Makefile|configure|SpewMakeInc\\.c")
                (("/bin/sh")
-                "sh")))
-           ;; Fix /bin/sh in generated make files.
-           (alist-cons-after
-            'configure 'fix-/bin/sh-in-generated-files
-            (lambda _
-              (substitute* (find-files "." "^[Mm]ake\\.inc.*")
-                (("/bin/sh")
-                 "sh")))
-            ;; ATLAS configure program does not accepts the default flags
-            ;; passed by the 'gnu-build-system'.
-            (alist-replace
-             'configure
-             (lambda* (#:key native-inputs inputs outputs
-                             (configure-flags '())
-                             #:allow-other-keys #:rest args)
-               (let* ((prefix     (assoc-ref outputs "out"))
-                      (bash       (or (and=> (assoc-ref
-                                              (or native-inputs inputs) "bash")
-                                             (cut string-append <> "/bin/bash"))
-                                      "/bin/sh"))
-                      (flags      `(,(string-append "--prefix=" prefix)
-                                    ,@configure-flags))
-                      (abs-srcdir (getcwd))
-                      (srcdir     (string-append "../" (basename abs-srcdir))))
-                 (format #t "source directory: ~s (relative from build: ~s)~%"
-                         abs-srcdir srcdir)
-                 (mkdir "../build")
-                 (chdir "../build")
-                 (format #t "build directory: ~s~%" (getcwd))
-                 (format #t "configure flags: ~s~%" flags)
-                 (zero? (apply system* bash
-                               (string-append srcdir "/configure")
-                               flags))))
-             %standard-phases)))))))
+                "sh"))))
+         ;; Fix /bin/sh in generated make files.
+         (add-after 'configure 'fix-/bin/sh-in-generated-files
+           (lambda _
+             (substitute* (find-files "." "^[Mm]ake\\.inc.*")
+               (("/bin/sh")
+                "sh"))))
+         ;; ATLAS configure program does not accepts the default flags
+         ;; passed by the 'gnu-build-system'.
+         (replace 'configure
+           (lambda* (#:key native-inputs inputs outputs
+                           (configure-flags '())
+                           #:allow-other-keys #:rest args)
+             (let* ((prefix     (assoc-ref outputs "out"))
+                    (bash       (or (and=> (assoc-ref
+                                            (or native-inputs inputs) "bash")
+                                           (cut string-append <> "/bin/bash"))
+                                    "/bin/sh"))
+                    (flags      `(,(string-append "--prefix=" prefix)
+                                  ,@configure-flags))
+                    (abs-srcdir (getcwd))
+                    (srcdir     (string-append "../" (basename abs-srcdir))))
+               (format #t "source directory: ~s (relative from build: ~s)~%"
+                       abs-srcdir srcdir)
+               (mkdir "../build")
+               (chdir "../build")
+               (format #t "build directory: ~s~%" (getcwd))
+               (format #t "configure flags: ~s~%" flags)
+               (zero? (apply system* bash
+                             (string-append srcdir "/configure")
+                             flags))))))))
     (synopsis "Automatically Tuned Linear Algebra Software")
     (description
      "ATLAS is an automatically tuned linear algebra software library
