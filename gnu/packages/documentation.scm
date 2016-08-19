@@ -49,8 +49,25 @@
                (base32
                 "1w71nk527lq504njmaf0vzr93pgahkgzzxzglrq6bay8cw2rvnvq"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no 'check' target
-    (inputs `(("python" ,python-2)))
+    (arguments
+     `(#:tests? #f                     ; no 'check' target
+       #:phases
+       (modify-phases %standard-phases
+         ;; Make asciidoc use the local docbook-xsl package instead of fetching
+         ;; it from the internet at run-time.
+         (add-before 'install 'make-local-docbook-xsl
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (substitute* (find-files "docbook-xsl" ".*\\.xsl$")
+                         (("xsl:import href=\"http://docbook.sourceforge.net/\
+release/xsl/current")
+                          (string-append
+                           "xsl:import href=\""
+                           (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl)))))
+                       #t)))))
+    (inputs `(("python" ,python-2)
+              ("docbook-xsl" ,docbook-xsl)))
     (home-page "http://www.methods.co.nz/asciidoc/")
     (synopsis "Text-based document generation system")
     (description
