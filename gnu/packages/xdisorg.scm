@@ -182,14 +182,14 @@ X11 (yet).")
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
        #:phases
-       (alist-replace 'configure
-                      (lambda* (#:key outputs #:allow-other-keys #:rest args)
-                        (setenv "PREFIX" (assoc-ref outputs "out"))
-                        (setenv "LDFLAGS" (string-append "-Wl,-rpath="
-                                               (assoc-ref
-                                                %outputs "out") "/lib"))
-                        (setenv "CC" "gcc"))
-                      %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys #:rest args)
+             (setenv "PREFIX" (assoc-ref outputs "out"))
+             (setenv "LDFLAGS"
+                     (string-append "-Wl,-rpath="
+                                    (assoc-ref %outputs "out") "/lib"))
+             (setenv "CC" "gcc"))))))
     (native-inputs `(("perl" ,perl))) ; for pod2man
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
