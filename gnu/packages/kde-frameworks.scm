@@ -539,13 +539,10 @@ infrastructure.")
     (arguments
      `(#:phases
         (modify-phases %standard-phases
-          (add-before 'check 'start-xorg-server
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; The test suite requires a running X server.
-              (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 &"))
-              (setenv "DISPLAY" ":1")
-             #t)))))
+          (add-before 'check 'check-setup
+            (lambda* _
+              (setenv "QT_QPA_PLATFORM" "offscreen")
+              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Utilities for graphical user interfaces")
     (description "The KDE GUI addons provide utilities for graphical user
