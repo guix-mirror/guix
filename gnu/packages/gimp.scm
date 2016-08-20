@@ -126,16 +126,15 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.8.16")
+    (version "2.8.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.gimp.org/pub/gimp/v"
                                   (version-major+minor version)
                                   "/gimp-" version ".tar.bz2"))
-              (patches (search-patches "gimp-CVE-2016-4994.patch"))
               (sha256
                (base32
-                "1dsgazia9hmab8cw3iis7s69dvqyfj5wga7ds7w2q5mms1xqbqwm"))))
+                "0halh6sl3d2j9gahyabj6h6r3yyldcy7sfb4qrfazpkqqr3j5p9r"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of gtk-doc HTML
