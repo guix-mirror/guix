@@ -1396,7 +1396,8 @@ tools, XML authoring components, and an extensible plug-in based API.")
      '(#:configure-flags
        (list (string-append "--with-udevdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev"))))
+                            "/lib/udev")
+             "CXXFLAGS=-std=gnu++11")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
