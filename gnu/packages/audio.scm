@@ -2113,7 +2113,9 @@ interface.")
         (base32 "034p6mbwrjnxd9b6h20cidxi4ilkk3cgpjp154j0jzjs1ipf7x2h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; no "check" phase
+     `(#:tests? #f ; no "check" phase
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
