@@ -141,7 +141,23 @@ buffers.")
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
-                                              "/share/gtk-doc/html"))))
+                                              "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-sitecustomize.py
+           ;; Install 'sitecustomize.py' into gimp's python directory to
+           ;; add pygobject and pygtk to pygimp's search path.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((pythonpath (getenv "PYTHONPATH"))
+                    (out        (assoc-ref outputs "out"))
+                    (sitecustomize.py
+                     (string-append
+                      out "/lib/gimp/2.0/python/sitecustomize.py")))
+               (call-with-output-file sitecustomize.py
+                 (lambda (port)
+                   (format port "import site~%")
+                   (format port "for dir in '~a'.split(':'):~%" pythonpath)
+                   (format port "    site.addsitedir(dir)~%")))))))))
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)
