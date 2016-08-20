@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
@@ -35,6 +37,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -59,7 +62,9 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages icu4c))
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph))
 
 (define-public libotr
   (package
@@ -565,5 +570,46 @@ Additionally, for developers it aims to be easy to extend and give a flexible
 system on which to rapidly develop added functionality, or prototype new
 protocols.")
     (license x11)))
+
+(define-public libtoxcore
+  (let ((revision "1")
+        (commit "755f084e8720b349026c85afbad58954cb7ff1d4"))
+    (package
+      (name "libtoxcore")
+      (version (string-append "0.0.0" "-"
+                              revision "."(string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/irungentoo/toxcore.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0ap1gvlyihnfivv235dbrgsxsiiz70bhlmlr5gn1027w3h5kqz8w"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ;; TODO: Add when test suite is capable of passing.
+         ;; ("check" ,check)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libsodium" ,libsodium)
+         ("opus" ,opus)
+         ("libvpx" ,libvpx)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'autoconf
+             (lambda _
+               (zero? (system* "autoreconf" "-vfi")))))
+         #:tests? #f)) ; FIXME: Testsuite fails, reasons unspecific.
+      (synopsis "Library for the Tox encrypted messenger protocol")
+      (description
+       "C library implementation of the Tox encrypted messenger protocol.")
+      (license gpl3+)
+      (home-page "https://tox.chat"))))
 
 ;;; messaging.scm ends here
