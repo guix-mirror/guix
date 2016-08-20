@@ -85,7 +85,9 @@
                 "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-qt5")
+     `(#:configure-flags
+       '("--enable-qt5"
+         "CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
          ;; Insert an extra space between linker flags.
