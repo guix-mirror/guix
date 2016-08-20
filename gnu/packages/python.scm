@@ -105,7 +105,7 @@
 (define-public python-2.7
   (package
     (name "python")
-    (version "2.7.11")
+    (version "2.7.12")
     (source
      (origin
       (method url-fetch)
@@ -113,7 +113,7 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0iiz844riiznsyhhyy962710pz228gmhv8qi3yk4w4jhmx2lqawn"))
+        "0y7rl603vmwlxm6ilkhc51rx2mfj14ckcz40xxgs0ljnvlhp30yp"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-source-date-epoch.patch"))
@@ -125,6 +125,7 @@
        '(begin
           (for-each delete-file
                     '("Lib/test/test_compileall.py"
+                      "Lib/test/test_ctypes.py" ; fails on mips64el
                       "Lib/test/test_distutils.py"
                       "Lib/test/test_import.py"
                       "Lib/test/test_shutil.py"
@@ -200,13 +201,6 @@
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
              (setenv "HOME" (getcwd))
-             ,@(if (string-prefix? "mips64el" (%current-system))
-
-                   ;; XXX: The following test fails on mips64el.
-                   '((false-if-exception
-                      (delete-file "Lib/test/test_ctypes.py")))
-
-                   '())
              #t))
           (add-after
            'unpack 'set-source-file-times-to-1980
@@ -288,7 +282,7 @@
      (list (search-path-specification
             (variable "PYTHONPATH")
             (files '("lib/python2.7/site-packages")))))
-    (home-page "http://python.org")
+    (home-page "https://www.python.org")
     (synopsis "High-level, dynamically-typed programming language")
     (description
      "Python is a remarkably powerful dynamic programming language that
