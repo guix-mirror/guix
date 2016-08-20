@@ -702,8 +702,10 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
                (base32
                 "0h5zja78phf9705i9g54zh61iczb24iv7rxhljyms30sjgajig1y"))))
     (build-system gnu-build-system)
-    ;; There are no tests.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
     (inputs
      `(("jack" ,jack-1)
        ("lv2" ,lv2)
