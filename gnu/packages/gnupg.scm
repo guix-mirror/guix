@@ -247,7 +247,13 @@ compatible to GNU Pth.")
           (lambda _
             (substitute* (find-files "tests" ".\\.scm$")
               (("/usr/bin/env gpgscm")
-               (string-append (getcwd) "/tests/gpgscm/gpgscm"))))))))
+               (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
+        (add-before 'check 'set-home
+          ;; Some tests require write access to $HOME, otherwise leading to
+          ;; 'failed to create directory /homeless-shelter/.asy' error.
+          (lambda _
+            (setenv "HOME" "/tmp")
+            #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
