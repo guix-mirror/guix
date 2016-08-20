@@ -52,6 +52,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
+  #:use-module (rnrs bytevectors)
   #:export (guix-system
             read-operating-system))
 
@@ -397,6 +398,9 @@ it atomically, and then run OS's activation script."
                                 read-boot-parameters))
             (label            (boot-parameters-label params))
             (root             (boot-parameters-root-device params))
+            (root-device      (if (bytevector? root)
+                                  (uuid->string root)
+                                  root))
             (kernel           (boot-parameters-kernel params))
             (kernel-arguments (boot-parameters-kernel-arguments params)))
        (menu-entry
@@ -405,7 +409,7 @@ it atomically, and then run OS's activation script."
                               (seconds->string time) ")"))
         (linux kernel)
         (linux-arguments
-         (cons* (string-append "--root=" root)
+         (cons* (string-append "--root=" root-device)
                 #~(string-append "--system=" #$system)
                 #~(string-append "--load=" #$system "/boot")
                 kernel-arguments))
@@ -473,18 +477,21 @@ list of services."
                                     #:optional (profile %system-profile))
   "Display a summary of system generation NUMBER in a human-readable format."
   (unless (zero? number)
-    (let* ((generation (generation-file-name profile number))
-           (param-file (string-append generation "/parameters"))
-           (params     (call-with-input-file param-file read-boot-parameters))
-           (label      (boot-parameters-label params))
-           (root       (boot-parameters-root-device params))
-           (kernel     (boot-parameters-kernel params)))
+    (let* ((generation  (generation-file-name profile number))
+           (param-file  (string-append generation "/parameters"))
+           (params      (call-with-input-file param-file read-boot-parameters))
+           (label       (boot-parameters-label params))
+           (root        (boot-parameters-root-device params))
+           (root-device (if (bytevector? root)
+                            (uuid->string root)
+                            root))
+           (kernel      (boot-parameters-kernel params)))
       (display-generation profile number)
       (format #t (_ "  file name: ~a~%") generation)
       (format #t (_ "  canonical file name: ~a~%") (readlink* generation))
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (_ "  label: ~a~%") label)
-      (format #t (_ "  root device: ~a~%") root)
+      (format #t (_ "  root device: ~a~%") root-device)
       (format #t (_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
