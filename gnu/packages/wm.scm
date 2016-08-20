@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -452,16 +453,7 @@ experience.")
                       (zero? (system* "../build/awesome" "-v")))))))
     (synopsis "Highly configurable window manager")
     (description
-     "awesome is a window manager for X.  It manages windows in different
-layouts, like floating or tiled.  Any layout can be applied dynamically,
-optimizing the environment for the application in use and the task currently
-being performed.
-
-In a tiled layout, windows are managed in a master and stacking area.  In a
-floating layout windows can be resized and moved freely.  Dialog windows are
-always managed as floating, regardless of the layout currently applied.
-
-Windows are grouped by tags in awesome.  Each window can be tagged with one or
-more tags.  Selecting certain tags displays all windows with these tags.")
+     "Awesome has been designed as a framework window manager.  It is fast, small,
+dynamic and extensible using the Lua programming language.")
     (license license:gpl2+)
     (home-page "https://awesome.naquadah.org/")))
