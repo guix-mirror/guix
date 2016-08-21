@@ -22,7 +22,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages disk)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -73,7 +73,7 @@
     (description
      "GNU Parted is a package for creating and manipulating disk partition
 tables.  It includes a library and command-line utility.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public fdisk
   (package
@@ -99,7 +99,7 @@ tables.  It includes a library and command-line utility.")
      "GNU fdisk provides a GNU version of the common disk partitioning tool
 fdisk.  fdisk is used for the creation and manipulation of disk partition
 tables, and it understands a variety of different formats.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public gptfdisk
   (package
@@ -139,7 +139,7 @@ tables, and it understands a variety of different formats.")
 works on Globally Unique Identifier (GUID) Partition Table (GPT) disks, rather
 than on the more common (through 2009) Master Boot Record (MBR) partition
 tables.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public ddrescue
   (package
@@ -162,7 +162,7 @@ tables.")
 from one file to another, working to rescue data in case of read errors.  The
 program also includes a tool for manipulating its log files, which are used
 to recover data more efficiently by only reading the necessary blocks.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public dosfstools
   (package
@@ -187,7 +187,7 @@ to recover data more efficiently by only reading the necessary blocks.")
     (description
      "The dosfstools package includes the mkfs.fat and fsck.fat utilities,
 which respectively make and check MS-DOS FAT filesystems.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public sdparm
   (package
@@ -213,7 +213,7 @@ uses a SCSI command set.  Such devices include CD/DVD drives (irrespective of
 transport), SCSI and ATAPI tape drives, and SCSI enclosures.  This utility can
 also send commands associated with starting and stopping the media, loading
 and unloading removable media and some other housekeeping functions.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public idle3-tools
   (package
@@ -245,4 +245,4 @@ present in many Western Digital hard drives.  This timer is part of the
 \"IntelliPark\" feature that stops the disk when not in use.  Unfortunately,
 the default timer setting is not well suited to Linux or other *nix systems,
 and can dramatically shorten the lifespan of the drive if left unchecked.")
-    (license gpl3+)))
+    (license license:gpl3+)))
