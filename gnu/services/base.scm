@@ -49,7 +49,7 @@
   #:use-module (ice-9 format)
   #:export (fstab-service-type
             root-file-system-service
-            file-system-service
+            file-system-service-type
             user-unmount-service
             swap-service
             user-processes-service
@@ -164,7 +164,7 @@
                 (extensions
                  (list (service-extension etc-service-type
                                           file-systems->fstab)))
-                (compose identity)
+                (compose concatenate)
                 (extend append)))
 
 (define %root-file-system-shepherd-service
@@ -230,7 +230,8 @@ FILE-SYSTEM."
      (file-system->shepherd-service-name fs))))
 
 (define (file-system-shepherd-service file-system)
-  "Return a list containing the shepherd service for @var{file-system}."
+  "Return the shepherd service for @var{file-system}, or @code{#f} if
+@var{file-system} is not auto-mounted upon boot."
   (let ((target  (file-system-mount-point file-system))
         (device  (file-system-device file-system))
         (type    (file-system-type file-system))
@@ -238,10 +239,9 @@ FILE-SYSTEM."
         (check?  (file-system-check? file-system))
         (create? (file-system-create-mount-point? file-system))
         (dependencies (file-system-dependencies file-system)))
-    (if (file-system-mount? file-system)
-        (with-imported-modules '((gnu build file-systems)
-                                 (guix build bournish))
-          (list
+    (and (file-system-mount? file-system)
+         (with-imported-modules '((gnu build file-systems)
+                                  (guix build bournish))
            (shepherd-service
             (provision (list (file-system->shepherd-service-name file-system)))
             (requirement `(root-file-system
@@ -290,23 +290,19 @@ FILE-SYSTEM."
             ;; We need an additional module.
             (modules `(((gnu build file-systems)
                         #:select (check-file-system canonicalize-device-spec))
-                       ,@%default-modules)))))
-        '())))
+                       ,@%default-modules)))))))
 
 (define file-system-service-type
-  ;; TODO(?): Make this an extensible service that takes <file-system> objects
-  ;; and returns a list of <shepherd-service>.
-  (service-type (name 'file-system)
+  (service-type (name 'file-systems)
                 (extensions
                  (list (service-extension shepherd-root-service-type
-                                          file-system-shepherd-service)
+                                          (lambda (file-systems)
+                                            (filter-map file-system-shepherd-service
+                                                        file-systems)))
                        (service-extension fstab-service-type
-                                          identity)))))
-
-(define* (file-system-service file-system)
-  "Return a service that mounts @var{file-system}, a @code{<file-system>}
-object."
-  (service file-system-service-type file-system))
+                                          identity)))
+                (compose concatenate)
+                (extend append)))
 
 (define user-unmount-service-type
   (shepherd-service-type
