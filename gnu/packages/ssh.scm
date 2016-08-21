@@ -146,6 +146,9 @@ a server that supports the SSH-2 protocol.")
     `(#:test-target "tests"
       #:configure-flags '("--sysconfdir=/etc"
 
+                          ;; Default value of 'PATH' used by sshd.
+                          "--with-default-path=/run/current-system/profile/bin"
+
                           ;; Enable PAM support in sshd.
                           "--with-pam")
 
