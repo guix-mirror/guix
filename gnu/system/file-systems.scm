@@ -257,7 +257,6 @@ TARGET in the other system."
   (append (list %pseudo-terminal-file-system
                 %shared-memory-file-system
                 %immutable-store)
-          %elogind-file-systems
           %control-groups))
 
 ;; File systems for Linux containers differ from %base-file-systems in that
