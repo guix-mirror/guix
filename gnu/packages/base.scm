@@ -88,6 +88,20 @@ command-line arguments, multiple languages, and so on.")
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'fix-egrep-and-fgrep
+          ;; Patch 'egrep' and 'fgrep' to execute 'grep' via its
+          ;; absolute file name instead of searching for it in $PATH.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+              (substitute* (list (string-append bin "/egrep")
+                                 (string-append bin "/fgrep"))
+                (("^exec grep")
+                 (string-append "exec " bin "/grep")))
+              #t))))))
    (synopsis "Print lines matching a pattern")
    (description
      "grep is a tool for finding text inside files.  Text is found by
