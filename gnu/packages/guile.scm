@@ -198,17 +198,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  (package
-    (inherit guile-2.0)
-    (version "2.0.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "1qh3j7308qvsjgwf7h94yqgckpbgz2k3yqdkzsyhqcafvfka9l5f"))
-              (patches (search-patches "guile-arm-fixes.patch"))))))
+  guile-2.0)
 
 (define-public guile-next
   (package (inherit guile-2.0)
