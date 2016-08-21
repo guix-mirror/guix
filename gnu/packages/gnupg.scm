@@ -497,7 +497,7 @@ and signature functionality from Python programs.")
          'build 'set-gpg-file-name
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let* ((gpg (string-append (assoc-ref inputs "gpg")
-                                      "/bin/gpg2")))
+                                      "/bin/gpg")))
              (substitute* "libpius/constants.py"
                (("/usr/bin/gpg2") gpg))))))))
    (synopsis "Programs to simplify GnuPG key signing")
