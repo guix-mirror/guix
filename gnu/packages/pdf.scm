@@ -26,6 +26,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -122,6 +123,10 @@
    (name "poppler-qt5")
    (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
+   (arguments
+    (substitute-keyword-arguments (package-arguments poppler)
+     ((#:configure-flags flags)
+       `(cons "CXXFLAGS=-std=gnu++11" ,flags))))
    (synopsis "Qt5 frontend for the Poppler PDF rendering library")))
 
 (define-public python-poppler-qt4
