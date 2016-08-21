@@ -1,13 +1,13 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,14 +93,14 @@ is used in some video games and movies.")
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.9")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nf8naqbc4hmhy99b8n70yswg9j71nh5mfpwwh6d8pdw5mp9b46a"))))
+                "055m7ywgl48ljwxf0kjhl76ldck890y5afdwjhk5s3p65xyaxh0k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -116,7 +116,6 @@ is used in some video games and movies.")
     (native-inputs `(("pkgconfig" ,pkg-config)))
     (inputs `(("bdb" ,bdb)
               ("glib" ,glib)
-              ("gmp" ,gmp)
               ("guile" ,guile-2.0)
               ("libmicrohttpd" ,libmicrohttpd)
               ("ncurses" ,ncurses)
