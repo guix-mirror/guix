@@ -139,11 +139,16 @@ a server that supports the SSH-2 protocol.")
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
+             ("pam" ,linux-pam)
              ("zlib" ,zlib)
              ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
-      #:configure-flags '("--sysconfdir=/etc")
+      #:configure-flags '("--sysconfdir=/etc"
+
+                          ;; Enable PAM support in sshd.
+                          "--with-pam")
+
       #:phases
       (modify-phases %standard-phases
         (add-after 'configure 'reset-/var/empty
