@@ -747,6 +747,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-2.7-source-date-epoch.patch	\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
+  %D%/packages/patches/python-3.4-fix-tests.patch		\
+  %D%/packages/patches/python-3.5-fix-tests.patch		\
   %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-ipython-inputhook-ctype.patch	\

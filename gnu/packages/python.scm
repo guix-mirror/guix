@@ -293,21 +293,22 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
-(define-public python-3.4
+(define-public python-3.5
   (package (inherit python-2)
-    (version "3.4.5")
+    (version "3.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-fix-tests.patch"
+                        "python-3.5-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "12l9klp778wklxmckhghniy5hklss8r26995pyd00qbllk4b2r7f"))))
+                "0h6a5fr7ram2s483lh0pnmc4ncijb8llnpfdxdcl5dxr01hza400"))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
     (native-search-paths
@@ -317,8 +318,25 @@ data types.")
                                         (version-major+minor version)
                                         "/site-packages"))))))))
 
+(define-public python-3.4
+  (package (inherit python-3.5)
+    (version "3.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.python.org/ftp/python/"
+                                  version "/Python-" version ".tar.xz"))
+              (patches (search-patches
+                        "python-fix-tests.patch"
+                        "python-3.4-fix-tests.patch"
+                        "python-3-deterministic-build-info.patch"
+                        "python-3-search-paths.patch"))
+              (patch-flags '("-p0"))
+              (sha256
+               (base32
+                "12l9klp778wklxmckhghniy5hklss8r26995pyd00qbllk4b2r7f"))))))
+
 ;; Current 3.x version.
-(define-public python-3 python-3.4)
+(define-public python-3 python-3.5)
 
 ;; Current major version.
 (define-public python python-3)
