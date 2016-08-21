@@ -219,14 +219,14 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.4")
+   (version "3.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1qlw328qpbss07zrb14ls0rhnhbvxrnssgbmrxxj2gdcy8jw0lyv"))))
+              "0csmqfz8ks23kdjsq0v2ll1acqiz8lva06dj19mwmymrsp69ilys"))))
    (build-system gnu-build-system)
    (synopsis "Comparing and merging files")
    (description
