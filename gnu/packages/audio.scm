@@ -6,6 +6,7 @@
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1510,6 +1511,32 @@ through the EFX extension.  It also facilitates streaming audio, multi-channel
 buffers, and audio capture.")
     (home-page "http://kcat.strangesoft.net/openal.html")
     (license license:lgpl2.0+)))
+
+(define-public freealut
+  (package
+    (name "freealut")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              ;; Upstream url is unclear, many systems use Fedora, there is also
+              ;; https://github.com/vancegroup/freealut though the status of it
+              ;; (official? unofficial?) is not clear.
+              (uri (string-append
+                    "https://pkgs.fedoraproject.org/repo/pkgs/" name "/" name "-"
+                    version ".tar.gz" "/e089b28a0267faabdb6c079ee173664a/" name
+                    "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kzlil6112x2429nw6mycmif8y6bxr2cwjcvp18vh6s7g63ymlb0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))  ; no check target
+    (inputs
+     `(("openal" ,openal)))
+    (synopsis "Free implementation of OpenAL's ALUT standard")
+    (description "freealut is the OpenAL Utility Toolkit.")
+    (home-page "http://kcat.strangesoft.net/openal.html")
+    (license license:lgpl2.0)))
 
 (define-public patchage
   (package
