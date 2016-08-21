@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,15 +28,22 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages guile)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages xml))
 
 (define-public parted
   (package
@@ -246,3 +254,42 @@ present in many Western Digital hard drives.  This timer is part of the
 the default timer setting is not well suited to Linux or other *nix systems,
 and can dramatically shorten the lifespan of the drive if left unchecked.")
     (license license:gpl3+)))
+
+(define-public gparted
+  (package
+    (name "gparted")
+    (version "0.26.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
+                           version "/gparted-" version ".tar.gz"))
+       (sha256
+        (base32 "1h9d6x335wxpm49yphzm9n1hbh2hcg0p2rphv76mrvsss91bcm1g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; Tests require a network connection.
+       #:configure-flags '("--disable-scrollkeeper")))
+    (inputs
+     `(("util-linux" ,util-linux)
+       ("parted" ,parted)
+       ("glib" ,glib)
+       ("gtkmm" ,gtkmm-2)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("gnome-doc-utils" ,gnome-doc-utils)
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("python" ,python-2)
+       ("python-libxml2" ,python2-libxml2)
+       ("which" ,which)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://sourceforge.net/projects/gparted/")
+    (synopsis "Partition editor to graphically manage disk partitions")
+    (description "GParted is a GNOME partition editor for creating,
+reorganizing, and deleting disk partitions.  It uses libparted from the parted
+project to detect and manipulate partition tables.  Optional file system tools
+permit managing file systems not included in libparted.")
+    ;; The home page says GPLv2, but the source code says GPLv2+.
+    (license license:gpl2+)))
