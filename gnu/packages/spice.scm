@@ -20,6 +20,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools) ; remove after updating usbredir to 0.7.1+
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -199,7 +200,7 @@ which allows users to view a desktop computing environment.")
 (define-public spice
   (package
     (name "spice")
-    (version "0.13.1")
+    (version "0.12.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -207,14 +208,15 @@ which allows users to view a desktop computing environment.")
                 "spice-" version ".tar.bz2"))
               (sha256
                (base32
-                "18hxk47z58cqbix5h477qmvcdmsrwzv984jw4c6fj0ns4h217jwy"))))
+                "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("openssl" ,openssl)
         ("pixman" ,pixman)
         ("spice-protocol" ,spice-protocol)))
     (inputs
-      `(("glib" ,glib)
+      `(("cyrus-sasl" ,cyrus-sasl)
+        ("glib" ,glib)
         ("libjpeg" ,libjpeg)
         ("lz4" ,lz4)
         ("opus" ,opus)
