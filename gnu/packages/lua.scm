@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,14 +45,15 @@
     (inputs `(("readline" ,readline)))
     (arguments
      '(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-1))
+                  (guix build utils)
+                  (srfi srfi-1))
        #:test-target "test"
+       #:make-flags
+       '("CFLAGS=-fPIC -DLUA_DL_DLOPEN -DLUA_USE_POSIX"
+         "linux")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (replace 'build
-           (lambda _ (zero? (system* "make" "CFLAGS=-fPIC" "linux"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
