@@ -27,8 +27,6 @@
   #:use-module (gnu services avahi)
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
-  #:use-module ((gnu system file-systems)
-                #:select (%elogind-file-systems))
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages glib)
@@ -762,11 +760,7 @@ seats.)"
 
                        ;; Extend PAM with pam_elogind.so.
                        (service-extension pam-root-service-type
-                                          pam-extension-procedure)
-
-                       ;; We need /run/user, /run/systemd, etc.
-                       (service-extension file-system-service-type
-                                          (const %elogind-file-systems))))))
+                                          pam-extension-procedure)))))
 
 (define* (elogind-service #:key (config (elogind-configuration)))
   "Return a service that runs the @command{elogind} login and seat management
