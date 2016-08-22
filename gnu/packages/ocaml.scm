@@ -149,7 +149,7 @@ functional, imperative and object-oriented styles of programming.")
 (define-public opam
   (package
     (name "opam")
-    (version "1.1.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               ;; Use the '-full' version, which includes all the dependencies.
@@ -161,7 +161,7 @@ functional, imperative and object-oriented styles of programming.")
                )
               (sha256
                (base32
-                "1frzqkx6yn1pnyd9qz3bv3rbwv74bmc1xji8kl41r1dkqzfl3xqv"))))
+                "004gwn6rbpcb53y3rpb3v23vk39rp2xmf0liyd5iy12ij8bigrhm"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Sometimes, 'make -jX' would fail right after ./configure with
@@ -169,7 +169,10 @@ functional, imperative and object-oriented styles of programming.")
        #:parallel-build? #f
 
        ;; For some reason, 'ocp-build' needs $TERM to be set.
-       #:make-flags '("TERM=screen")
+       #:make-flags `("TERM=screen"
+                      ,(string-append "SHELL="
+                                      (assoc-ref %build-inputs "bash")
+                                      "/bin/sh"))
        #:test-target "tests"
 
        ;; FIXME: There's an obscure test failure:
@@ -182,7 +185,9 @@ functional, imperative and object-oriented styles of programming.")
                      (let ((bash (assoc-ref inputs "bash")))
                        (substitute* "src/core/opamSystem.ml"
                          (("\"/bin/sh\"")
-                          (string-append "\"" bash "/bin/sh\""))))))
+                          (string-append "\"" bash "/bin/sh\"")))
+                       ;; Build dependencies
+                       (zero? (apply system* "make" "lib-ext" make-flags)))))
                  (add-before 'check 'pre-check
                    (lambda _
                      (setenv "HOME" (getcwd))
@@ -190,7 +195,8 @@ functional, imperative and object-oriented styles of programming.")
                           (system "git config --global user.name Guix")))))))
     (native-inputs
      `(("git" ,git)                               ;for the tests
-       ("python" ,python)))                       ;for the tests
+       ("python" ,python)                         ;for the tests
+       ("camlp4" ,camlp4)))
     (inputs
      `(("ocaml" ,ocaml)
        ("ncurses" ,ncurses)
