@@ -3927,6 +3927,15 @@ share them with others via social networking and more.")
                (base32
                 "0cx3d8mp0pxz9wcsb2ph7g1zy22m8z5x0a4f5vgfzl0jmrcxpcy8"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* (find-files "data" "^Makefile$")
+               (("gtk-update-icon-cache") (which "true")))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
