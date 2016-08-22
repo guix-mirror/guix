@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -159,3 +160,27 @@ insert mode and command mode where keybindings have different functions.")
 Forget screen recording apps and blurry video.  Enjoy a lightweight, purely
 text-based approach to terminal recording.")
     (license license:gpl3)))
+
+(define-public libtsm
+  (package
+    (name "libtsm")
+    (version "3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://freedesktop.org/software/kmscon/releases/"
+                    "libtsm-" version ".tar.xz"))
+              (sha256
+               (base32
+                "01ygwrsxfii0pngfikgqsb4fxp8n1bbs47l7hck81h9b9bc1ah8i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxkbcommon" ,libxkbcommon)))
+    (synopsis "Xterm state machine library")
+    (description "TSM is a state machine for DEC VT100-VT520 compatible
+terminal emulators.  It tries to support all common standards while keeping
+compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
+    (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
+    (license (list license:expat license:public-domain))))
