@@ -4091,7 +4091,7 @@ javascript engine and the GObject introspection framework.")
 (define-public gedit
   (package
     (name "gedit")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4099,7 +4099,7 @@ javascript engine and the GObject introspection framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1i0x1jd9x1vpv8lwdlzwf0ml8jxh3b3l6nlg6pbnfjw47w3y6iws"))))
+                "1y330hanqfld3kssf77wfphah2qpfg17pa109spsbm50f5m2g89j"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-spell") ; XXX: gspell not packaged yet
