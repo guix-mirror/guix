@@ -904,7 +904,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.36")
+    (version "1.14.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -912,7 +912,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0h19ssxzz0cmznwga2xy55kjibm24mwxqarnpd0w7xy0hrzm1dvi"))))
+                "1q2i5p9s5zw0y0502risykrzkfma7p24n3mmh244scjy9f4kh1im"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
