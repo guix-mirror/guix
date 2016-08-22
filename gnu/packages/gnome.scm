@@ -4330,7 +4330,7 @@ Evolution (hence the name), but is now used by other packages as well.")
 (define-public caribou
   (package
     (name "caribou")
-    (version "0.4.20")
+    (version "0.4.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4338,7 +4338,7 @@ Evolution (hence the name), but is now used by other packages as well.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1nahpfs5ap9f9wsvn93kg8isqffk60v785f1q6k64awcd7an8ris"))))
+                "0mfychh1q3dx0b96pjz9a9y112bm9yqyim40yykzxx1hppsdjhww"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
