@@ -1258,7 +1258,8 @@ degradation and failure.")
          "1sj9pa40pbz6xdwbxfwhdhkvhdf1xc5gvggk9mdq26c41gdnyswx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
        #:tests? #f ; no 'check' target
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX="
