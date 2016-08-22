@@ -4864,7 +4864,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4872,7 +4872,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1s41bsihacs7cywm60vqgv46m22gmga4b0bwxnki4r02jjwhgagj"))))
+                "1bnalv0ljdjzqzvh3rfyg7r4z8vdbq1gdard5q68riqdi2dnfvld"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
