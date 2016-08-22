@@ -325,7 +325,7 @@ services.")
                 "1p38k1s6a2fmcfc9a7cf1zrdycm9h06kqdyand4s3k500nj6mb4g"))))
     (arguments
      `(#:configure-flags
-       (list "--without-libunique"
+       (list "--with-libunique"
              "--with-qrencode"
              (string-append "--with-gnunet="
                             (assoc-ref %build-inputs "gnunet")))))
@@ -335,7 +335,8 @@ services.")
        ("gtk+" ,gtk+)
        ("libextractor" ,libextractor)
        ("glade3" ,glade3)
-       ("qrencode" ,qrencode)))
+       ("qrencode" ,qrencode)
+       ("libunique" ,libunique)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libglade" ,libglade)))
