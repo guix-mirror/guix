@@ -176,20 +176,18 @@ functional, imperative and object-oriented styles of programming.")
        ;;   …/_obuild/opam/opam.asm install P1' failed.
        #:tests? #f
 
-       #:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((bash (assoc-ref inputs "bash")))
-                     (substitute* "src/core/opamSystem.ml"
-                       (("\"/bin/sh\"")
-                        (string-append "\"" bash "/bin/sh\"")))))
-                 (alist-cons-before
-                  'check 'pre-check
-                  (lambda _
-                    (setenv "HOME" (getcwd))
-                    (and (system "git config --global user.email guix@gnu.org")
-                         (system "git config --global user.name Guix")))
-                  %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                 (add-before 'build 'pre-build
+                   (lambda* (#:key inputs make-flags #:allow-other-keys)
+                     (let ((bash (assoc-ref inputs "bash")))
+                       (substitute* "src/core/opamSystem.ml"
+                         (("\"/bin/sh\"")
+                          (string-append "\"" bash "/bin/sh\""))))))
+                 (add-before 'check 'pre-check
+                   (lambda _
+                     (setenv "HOME" (getcwd))
+                     (and (system "git config --global user.email guix@gnu.org")
+                          (system "git config --global user.name Guix")))))))
     (native-inputs
      `(("git" ,git)                               ;for the tests
        ("python" ,python)))                       ;for the tests
