@@ -191,3 +191,34 @@ that the MIME (common encodings), URL (anything you could possible want to do
 with one) and LTN12 (filters, sinks, sources and pumps) modules can be very
 handy.")
     (license (package-license lua-5.1))))
+
+(define-public lua5.1-filesystem
+  (package
+    (name "lua5.1-filesystem")
+    (version "1.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/keplerproject/"
+                                  "luafilesystem/archive/v_"
+                                  "1_6_3" ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0s10ckxin0bysd6gaywqhxkpw3ybjhprr8m655b8cx3pxjwd49am"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("lua" ,lua-5.1)))
+    (home-page "https://keplerproject.github.io/luafilesystem/index.html")
+    (synopsis "File system library for Lua")
+    (description "LuaFileSystem is a Lua library developed to complement the
+set of functions related to file systems offered by the standard Lua
+distribution.  LuaFileSystem offers a portable way to access the underlying
+directory structure and file attributes.")
+    (license (package-license lua-5.1))))
