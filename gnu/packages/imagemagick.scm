@@ -100,7 +100,7 @@
     (home-page "http://www.imagemagick.org/")
     (synopsis "Create, edit, compose, or convert bitmap images")
     (description
-     "ImageMagick® is a software suite to create, edit, compose, or convert
+     "ImageMagick is a software suite to create, edit, compose, or convert
 bitmap images.  It can read and write images in a variety of formats (over 100)
 including DPX, EXR, GIF, JPEG, JPEG-2000, PDF, PhotoCD, PNG, Postscript, SVG,
 and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
