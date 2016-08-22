@@ -1129,15 +1129,9 @@ utilities.")
      `(#:phases
         (modify-phases %standard-phases
           (add-before 'check 'check-setup
-            (lambda* _
-              (setenv "DBUS_FATAL_WARNINGS" "0")))
-          (add-before 'check 'start-xorg-server
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; The test suite requires a running X server.
-              (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 &"))
-              (setenv "DISPLAY" ":1")
-             #t)))))
+            (lambda _
+              (setenv "QT_QPA_PLATFORM" "offscreen")
+              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Powerful autocompletion framework and widgets")
     (description "This framework helps implement autocompletion in Qt-based
