@@ -5000,7 +5000,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.20.1")
+    (version "3.20.3")
     (source
      (origin
        (method url-fetch)
@@ -5009,7 +5009,7 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0pfpmvpv57a01nsd1fah3np33avihm5ic43fi6b60dyw6c5z953p"))))
+         "0yf553bd9l030shhs0jkl5gvkzkfxbxxm56xv0l0nmbplaci8wm8"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
