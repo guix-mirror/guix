@@ -28,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
 (define-public lua
@@ -221,4 +222,40 @@ handy.")
 set of functions related to file systems offered by the standard Lua
 distribution.  LuaFileSystem offers a portable way to access the underlying
 directory structure and file attributes.")
+    (license (package-license lua-5.1))))
+
+(define-public lua5.1-sec
+  (package
+    (name "lua5.1-sec")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brunoos/luasec/archive/"
+                                  "luasec-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pgd1anzznl4s0h16wg8dlw9mgdb9h52drlcki6sbf5y31fa7wyf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "linux"
+               "CC=gcc"
+               "LD=gcc"
+               (string-append "LUAPATH=" out "/share/lua/5.1")
+               (string-append "LUACPATH=" out "/lib/lua/5.1")))
+       #:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("lua" ,lua-5.1)
+       ("openssl" ,openssl)))
+    (propagated-inputs
+     `(("lua-socket" ,lua5.1-socket)))
+    (home-page "https://github.com/brunoos/luasec/wiki")
+    (synopsis "OpenSSL bindings for Lua")
+    (description "LuaSec is a binding for OpenSSL library to provide TLS/SSL
+communication.  It takes an already established TCP connection and creates a
+secure session between the peers.")
     (license (package-license lua-5.1))))
