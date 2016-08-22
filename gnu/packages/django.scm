@@ -96,3 +96,29 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
          ;; When adding memcached mind: for Python 2 memcached <= 1.53 is
          ;; required.
          ,@(package-inputs base))))))
+
+(define-public python-django-simple-math-captcha
+  (package
+    (name "python-django-simple-math-captcha")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-simple-math-captcha" version))
+              (sha256
+               (base32
+                "0906hms6y6znjhpd0g4wmzv9vcla4brkdpsm4zha9zdj8g5vq2hd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/alsoicode/django-simple-math-captcha")
+    (synopsis "Easy-to-use math field/widget captcha for Django forms")
+    (description
+     "A multi-value-field that presents a human answerable question,
+with no settings.py configuration necessary, but instead can be configured
+with arguments to the field constructor.")
+    (license license:asl2.0)))
+
+(define-public python2-django-simple-math-captcha
+  (package-with-python2 python-django-simple-math-captcha))
