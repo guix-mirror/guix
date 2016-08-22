@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,7 +33,7 @@
 (define-public synergy
   (package
     (name "synergy")
-    (version "1.7.6")
+    (version "1.8.2")
     (source
      (origin
       (method url-fetch)
@@ -42,7 +42,7 @@
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "07a1g2kh4f064nqjdqgfzrjfayls31scnssphbndmnvfc20bhlx4"))
+        "1ym9lmnm64i1bw4spxq40drb4nvzsq5z7zq1935aq0kgccccg11g"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove ~14MB of unnecessary bundled source and binaries
