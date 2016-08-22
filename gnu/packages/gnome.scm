@@ -2294,7 +2294,7 @@ floating in an ocean using only your brain and a little bit of luck.")
 (define-public gnome-sudoku
   (package
     (name "gnome-sudoku")
-    (version "3.20.0")
+    (version "3.20.5")
     (source
      (origin
        (method url-fetch)
@@ -2303,7 +2303,7 @@ floating in an ocean using only your brain and a little bit of luck.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1n8hp3pl56p9s0c5kldk11zg1vg7ykhgn3ndp8nf375h1q49ldh8"))))
+         "166bbv5k50v7pjp3wbl2rmxcmv1adwr14hxg5rw2ws8kams8151k"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
