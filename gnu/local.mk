@@ -97,6 +97,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dillo.scm			\
   %D%/packages/disk.scm				\
   %D%/packages/display-managers.scm		\
+  %D%/packages/django.scm			\
   %D%/packages/djvu.scm				\
   %D%/packages/dns.scm				\
   %D%/packages/docbook.scm			\
@@ -481,8 +482,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/devil-CVE-2009-3994.patch		\
   %D%/packages/patches/devil-fix-libpng.patch			\
-  %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
+  %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/doxygen-test.patch			\
@@ -764,6 +765,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
   %D%/packages/patches/python-disable-ssl-test.patch		\
+  %D%/packages/patches/python-django-fix-testcase.patch		\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-ipython-inputhook-ctype.patch	\
   %D%/packages/patches/python-rarfile-fix-tests.patch		\
