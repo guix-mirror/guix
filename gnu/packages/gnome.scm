@@ -937,7 +937,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.15")
+    (version "2.40.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -945,7 +945,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1x05vd2llpmskq3prkp7kbpmshmpp9whj4kfl99ybipf4fhw9jnr"))))
+                "0bpz6gsq8xi1pb5k9ax6vinph460v14znch3y5yz167s0dmwz2yl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
