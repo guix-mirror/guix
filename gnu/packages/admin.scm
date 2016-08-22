@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1244,21 +1245,23 @@ degradation and failure.")
 (define-public fdupes
   (package
     (name "fdupes")
-    (version "1.51")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/adrianlopezroche/fdupes/archive/fdupes-"
+             "https://github.com/adrianlopezroche/fdupes/archive/v"
              version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11j96vxl9vg3jsnxqxskrv3gad6dh7hz2zpyc8n31xzyxka1c7kn"))))
+         "1sj9pa40pbz6xdwbxfwhdhkvhdf1xc5gvggk9mdq26c41gdnyswx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)
        #:tests? #f ; no 'check' target
-       #:make-flags (list (string-append "PREFIX="
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))))
     (home-page "https://github.com/adrianlopezroche/fdupes")
     (synopsis "Identify duplicate files")
