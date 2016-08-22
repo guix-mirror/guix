@@ -145,3 +145,49 @@ language.")
     (synopsis "SAX XML parser based on the Expat library")
     (description "LuaExpat is a SAX XML parser based on the Expat library.")
     (license (package-license lua-5.1))))
+
+(define-public lua5.1-socket
+  (package
+    (name "lua5.1-socket")
+    (version "2.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://files.luaforge.net/releases/"
+                                  "luasocket/luasocket/luasocket-"
+                                  version "/luasocket-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19ichkbc4rxv00ggz8gyf29jibvc2wq9pqjik0ll326rrxswgnag"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "INSTALL_TOP_SHARE=" out "/share/lua/5.1")
+               (string-append "INSTALL_TOP_LIB=" out "/lib/lua/5.1")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           (lambda _
+             (setenv "LUA_CPATH" (string-append "src/?.so." ,version ";;"))
+             (setenv "LUA_PATH"  "src/?.lua;;")
+             (when (zero? (primitive-fork))
+               (system* "lua" "test/testsrvr.lua"))
+             (zero? (system* "lua" "test/testclnt.lua")))))))
+    (inputs
+     `(("lua" ,lua-5.1)))
+    (home-page "http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/")
+    (synopsis "Socket library for Lua")
+    (description "LuaSocket is a Lua extension library that is composed by two
+parts: a C core that provides support for the TCP and UDP transport layers,
+and a set of Lua modules that add support for functionality commonly needed by
+applications that deal with the Internet.
+
+Among the supported modules, the most commonly used implement the
+SMTP (sending e-mails), HTTP (WWW access) and FTP (uploading and downloading
+files) client protocols.  These provide a very natural and generic interface
+to the functionality defined by each protocol.  In addition, you will find
+that the MIME (common encodings), URL (anything you could possible want to do
+with one) and LTN12 (filters, sinks, sources and pumps) modules can be very
+handy.")
+    (license (package-license lua-5.1))))
