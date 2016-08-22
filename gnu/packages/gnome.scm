@@ -4178,7 +4178,7 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.20.1")
+    (version "3.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4186,7 +4186,7 @@ to display dialog boxes from the commandline and shell scripts.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0752vkkmaaay8ziczqrf7z3735bq3brx2djw36arqsdhwawh6jba"))))
+                "05pr78vgq52bkkqpbfnp9mxw14ij2wk91l2yfa69dpjbvxqm4b0l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
