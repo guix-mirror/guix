@@ -28,16 +28,20 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages gnome))
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages xdisorg))
 
 (define-public tilda
   (package
@@ -183,4 +187,34 @@ text-based approach to terminal recording.")
 terminal emulators.  It tries to support all common standards while keeping
 compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
     (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
+    (license (list license:expat license:public-domain))))
+
+(define-public kmscon
+  (package
+    (name "kmscon")
+    (version "8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://freedesktop.org/software/kmscon/releases/"
+                    "kmscon-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libtsm" ,libtsm)
+       ("libxkbcommon" ,libxkbcommon)
+       ("logind" ,elogind)
+       ("mesa" ,mesa)
+       ("pango" ,pango)
+       ("udev" ,eudev)))
+    (synopsis "Simple terminal emulator")
+    (description "Kmscon is a simple terminal emulator based on linux kernel
+mode setting (KMS).  It is an attempt to replace the in-kernel VT implementation
+with a userspace console.  See kmscon(1) man-page for usage information.")
+    (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
     (license (list license:expat license:public-domain))))
