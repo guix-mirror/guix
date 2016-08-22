@@ -2025,14 +2025,14 @@ packages.")
 (define-public atlas
   (package
     (name "atlas")
-    (version "3.10.2")
+    (version "3.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/math-atlas/Stable/"
                                   version "/atlas" version ".tar.bz2"))
               (sha256
                (base32
-                "0bqh4bdnjdyww4mcpg6kn0x7338mfqbdgysn97dzrwwb26di7ars"))))
+                "1dyjlq3fiparvm8ypwk6rsmjzmnwk81l88gkishphpvc79ryp216"))))
     (build-system gnu-build-system)
     (home-page "http://math-atlas.sourceforge.net/")
     (inputs `(("gfortran" ,gfortran)
