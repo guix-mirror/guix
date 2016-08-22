@@ -187,7 +187,12 @@ text-based approach to terminal recording.")
 terminal emulators.  It tries to support all common standards while keeping
 compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
     (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
-    (license (list license:expat license:public-domain))))
+    ;; Hash table implementation is lgpl2.1+ licensed.
+    ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
+    ;; derived from ISC.
+    ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
+    ;; under the bsd 2 license.
+    (license (list license:expat license:lgpl2.1+ license:isc license:bsd-2))))
 
 (define-public kmscon
   (package
