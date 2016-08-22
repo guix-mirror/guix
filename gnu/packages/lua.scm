@@ -27,7 +27,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages readline))
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages xml))
 
 (define-public lua
   (package
@@ -109,3 +110,38 @@ programming language.  Lua is a powerful, dynamic and light-weight programming
 language.  It may be embedded or used as a general-purpose, stand-alone
 language.")
     (license license:x11)))
+
+(define-public lua5.1-expat
+  (package
+    (name "lua5.1-expat")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://matthewwild.co.uk/projects/"
+                                  "luaexpat/luaexpat-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hvxqngn0wf5642i5p3vcyhg3pmp102k63s9ry4jqyyqc1wkjq6h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "CC=gcc"
+               (string-append "LUA_LDIR=" out "/share/lua/$(LUA_V)")
+               (string-append "LUA_CDIR=" out "/lib/lua/$(LUA_V)")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           (lambda _
+             (setenv "LUA_CPATH" "src/?.so;;")
+             (setenv "LUA_PATH"  "src/?.lua;;")
+             (and (zero? (system* "lua" "tests/test.lua"))
+                  (zero? (system* "lua" "tests/test-lom.lua"))))))))
+    (inputs
+     `(("lua" ,lua-5.1)
+       ("expat" ,expat)))
+    (home-page "http://matthewwild.co.uk/projects/luaexpat/")
+    (synopsis "SAX XML parser based on the Expat library")
+    (description "LuaExpat is a SAX XML parser based on the Expat library.")
+    (license (package-license lua-5.1))))
