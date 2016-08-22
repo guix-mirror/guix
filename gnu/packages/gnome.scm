@@ -2057,7 +2057,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.48.1")
+    (version "2.48.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -2065,7 +2065,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0jm4pr91kbq7rcyll08840zkagb9vfhhm2ymyrd1q0b0k2mj76fg"))
+                "111spcar6wbp6m0rdxzjscc7vfqx5nawscrfbxlvbf5jsr4hqp4j"))
               (patches
                (search-patches "glib-networking-ssl-cert-file.patch"))))
     (build-system gnu-build-system)
