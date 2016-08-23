@@ -1388,7 +1388,7 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.2.4")
+    (version "22.3.4")
     (source
      (origin
        (method url-fetch)
@@ -1397,7 +1397,7 @@ limits.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0xglj7nb8xczaqy2dhn78drqdwqj64rqpymxhqmmwwqzfaqassw1"))))
+         "113rcpr37ngf2xs8da41qdarq5qmj0dwx8ggqy3lhlb0kvqq7g9z"))))
     (build-system gnu-build-system)
     (native-inputs                      ;for tests
      `(("python-mock" ,python-mock)
