@@ -28,7 +28,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
-  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -515,8 +514,7 @@ single hidden layer, and for multinomial log-linear models.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("fftw" ,fftw)
-       ("giflib" ,giflib)
+     `(("giflib" ,giflib)
        ;("lapack" ,lapack) XXX lapack here causes test failures in some setups.
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
