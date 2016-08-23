@@ -51,7 +51,7 @@
                "00arcvyhsy9i5gp3b0lhfvs04qwhxpmq0bfsv4ipllinb6mjgxf5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-frozenpaths")
+     `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
        #:phases (modify-phases %standard-phases
                   (add-before
                    'build 'pre-build
