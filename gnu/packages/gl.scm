@@ -252,43 +252,44 @@ also known as DXTn or DXTC) for Mesa.")
               '())
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
-       #:phases (alist-cons-after
-                 'unpack 'patch-create_test_cases
-                 (lambda _
-                   (substitute* "src/compiler/glsl/tests/lower_jumps/create_test_cases.py"
-                     (("/usr/bin/env bash") (which "bash")))
-                   (substitute* "src/intel/genxml/gen_pack_header.py"
-                     (("/usr/bin/env python2") (which "python"))))
-                 (alist-cons-before
-                  'build 'fix-dlopen-libnames
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((s2tc (assoc-ref inputs "s2tc"))
-                          (udev (assoc-ref inputs "udev"))
-                          (out (assoc-ref outputs "out")))
-                      ;; Remain agnostic to .so.X.Y.Z versions while doing
-                      ;; the substitutions so we're future-safe.
-                      (substitute*
-                          '("src/gallium/auxiliary/util/u_format_s3tc.c"
-                            "src/mesa/main/texcompress_s3tc.c")
-                        (("\"libtxc_dxtn\\.so")
-                         (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
-                      (substitute* "src/loader/loader.c"
-                        (("udev_handle = dlopen\\(name")
-                         (string-append "udev_handle = dlopen(\""
-                                        udev "/lib/libudev.so\"")))
-                      (substitute* "src/glx/dri_common.c"
-                        (("dlopen\\(\"libGL\\.so")
-                         (string-append "dlopen(\"" out "/lib/libGL.so")))
-                      (substitute* "src/egl/drivers/dri2/egl_dri2.c"
-                        (("\"libglapi\\.so")
-                         (string-append "\"" out "/lib/libglapi.so")))
-                      (substitute* "src/gbm/main/backend.c"
-                        ;; No need to patch the gbm_gallium_drm.so reference;
-                        ;; it's never installed since Mesa removed its
-                        ;; egl_gallium support.
-                        (("\"gbm_dri\\.so")
-                         (string-append "\"" out "/lib/dri/gbm_dri.so")))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+           'unpack 'patch-create_test_cases
+           (lambda _
+             (substitute* "src/compiler/glsl/tests/lower_jumps/create_test_cases.py"
+               (("/usr/bin/env bash") (which "bash")))
+             (substitute* "src/intel/genxml/gen_pack_header.py"
+               (("/usr/bin/env python2") (which "python")))))
+         (add-before
+           'build 'fix-dlopen-libnames
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((s2tc (assoc-ref inputs "s2tc"))
+                   (udev (assoc-ref inputs "udev"))
+                   (out (assoc-ref outputs "out")))
+               ;; Remain agnostic to .so.X.Y.Z versions while doing
+               ;; the substitutions so we're future-safe.
+               (substitute*
+                   '("src/gallium/auxiliary/util/u_format_s3tc.c"
+                     "src/mesa/main/texcompress_s3tc.c")
+                 (("\"libtxc_dxtn\\.so")
+                  (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
+               (substitute* "src/loader/loader.c"
+                 (("udev_handle = dlopen\\(name")
+                  (string-append "udev_handle = dlopen(\""
+                                 udev "/lib/libudev.so\"")))
+               (substitute* "src/glx/dri_common.c"
+                 (("dlopen\\(\"libGL\\.so")
+                  (string-append "dlopen(\"" out "/lib/libGL.so")))
+               (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+                 (("\"libglapi\\.so")
+                  (string-append "\"" out "/lib/libglapi.so")))
+               (substitute* "src/gbm/main/backend.c"
+                 ;; No need to patch the gbm_gallium_drm.so reference;
+                 ;; it's never installed since Mesa removed its
+                 ;; egl_gallium support.
+                 (("\"gbm_dri\\.so")
+                  (string-append "\"" out "/lib/dri/gbm_dri.so")))))))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
