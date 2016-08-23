@@ -192,7 +192,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "12.0.0")
+    (version "12.0.1")
     (source
       (origin
         (method url-fetch)
@@ -200,7 +200,7 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "1ikxaj4avz29ch403bblq3l47g1r6hp4har94i8r664k44jw1400"))))
+          "12b3i59xdn2in2hchrkgh4fwij8zhznibx976l3pdj3qkyvlzcms"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
