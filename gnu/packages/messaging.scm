@@ -23,9 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages messaging)
-  #:use-module ((guix licenses)
-                #:select (gpl3+ gpl3 gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2
-                          non-copyleft asl2.0 x11))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -98,7 +96,7 @@ correspondent is assured the messages he sees are authentic and
 unmodified.  (4) Perfect forward secrecy: If you lose control of your private
 keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
-    (license (list lgpl2.1 gpl2))))
+    (license (list license:lgpl2.1 license:gpl2))))
 
 ;; These patches together fix https://github.com/bitlbee/bitlbee/pull/55, are
 ;; already upstream, and should be unnecessary when the next bitlbee comes
@@ -162,7 +160,7 @@ Google Talk), MSN Messenger, Yahoo!  Messenger, AIM and ICQ, and the Twitter
 microblogging network (plus all other Twitter API compatible services like
 identi.ca and status.net).")
     (home-page "http://www.bitlbee.org/")
-    (license (list gpl2+ bsd-2))))
+    (license (list license:gpl2+ license:bsd-2))))
 
 (define-public hexchat
   (package
@@ -196,7 +194,7 @@ conversation and the list of users.  It uses colors to differentiate between
 users and to highlight messages.  It checks spelling using available
 dictionaries.  HexChat can be extended with multiple addons.")
     (home-page "http://hexchat.net/")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public ngircd
   (package
@@ -262,7 +260,7 @@ dictionaries.  HexChat can be extended with multiple addons.")
      "ngIRCd is a lightweight Internet Relay Chat server for small or private
 networks.  It is easy to configure, can cope with dynamic IP addresses, and
 supports IPv6, SSL-protected connections as well as PAM for authentication.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public pidgin
   (package
@@ -336,14 +334,14 @@ supports IPv6, SSL-protected connections as well as PAM for authentication.")
 chat protocols.")
     (license
      (list
-      gpl2+    ; Most of the code
-      lgpl2.1  ; GG protocol plugin (libpurple/protocols/gg/lib)
-      lgpl2.0+ ; OSCAR protocol plugin (libpurple/protocols/oscar)
+      license:gpl2+    ; Most of the code
+      license:lgpl2.1  ; GG protocol plugin (libpurple/protocols/gg/lib)
+      license:lgpl2.0+ ; OSCAR protocol plugin (libpurple/protocols/oscar)
       ;; The following licenses cover the zephyr protocol plugin:
-      (non-copyleft
+      (license:non-copyleft
        "file://libpurple/protocols/zephyr/mit-copyright.h"
        "See libpurple/protocols/zephyr/mit-copyright.h in the distribution.")
-      (non-copyleft
+      (license:non-copyleft
        "file://libpurple/protocols/zephyr/mit-sipb-copyright.h"
        "See libpurple/protocols/zephyr/mit-sipb-copyright.h in the distribution.")))))
 
@@ -383,7 +381,7 @@ you.  However, during a conversation, your correspondent is assured the
 messages he sees are authentic and unmodified.  (4) Perfect forward secrecy:
 If you lose control of your private keys, no previous conversation is
 compromised.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public znc
   (package
@@ -417,7 +415,7 @@ compromised.")
 client from the actual IRC server, and also from selected channels.  Multiple
 clients from different locations can connect to a single ZNC account
 simultaneously and therefore appear under the same nickname on IRC.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-nbxmpp
   (package
@@ -440,7 +438,7 @@ simultaneously and therefore appear under the same nickname on IRC.")
      "The goal of this python library is to provide a way for Python
 applications to use Jabber/XMPP networks in a non-blocking way.  This library
 was initially a fork of xmpppy, but is using non-blocking sockets.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python2-nbxmpp
   (package-with-python2 python-nbxmpp))
@@ -500,7 +498,7 @@ Among its features are: a tabbed chat window and single window modes; support
 for group chat (with Multi-User Chat protocol), invitation, chat to group chat
 transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public prosody
   (package
@@ -573,7 +571,7 @@ be easy to set up and configure, and efficient with system resources.
 Additionally, for developers it aims to be easy to extend and give a flexible
 system on which to rapidly develop added functionality, or prototype new
 protocols.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public libtoxcore
   (let ((revision "1")
@@ -613,7 +611,7 @@ protocols.")
       (synopsis "Library for the Tox encrypted messenger protocol")
       (description
        "C library implementation of the Tox encrypted messenger protocol.")
-      (license gpl3+)
+      (license license:gpl3+)
       (home-page "https://tox.chat"))))
 
 (define-public utox
@@ -657,6 +655,6 @@ protocols.")
    (description "A  lightweight Tox client.  Tox is a distributed and secure
 instant messenger with audio and video chat capabilities.")
    (home-page "http://utox.org/")
-   (license gpl3)))
+   (license license:gpl3)))
 
 ;;; messaging.scm ends here
