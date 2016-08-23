@@ -465,32 +465,32 @@ OpenGL graphics API.")
                 "1d1brhwfmlzgnphmdwlvn5wbcrxsdyzf1qfcf8nb89xqzznxs037"))))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _
-          (zero? (system* "autoreconf" "-vif")))
-        (alist-cons-before
-         'configure 'patch-paths
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((python (assoc-ref inputs "python"))
-                 (mesa (assoc-ref inputs "mesa")))
-             (substitute* "src/gen_dispatch.py"
-               (("/usr/bin/env python") python))
-             (substitute* (find-files "." "\\.[ch]$")
-               (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
-               (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
+       (modify-phases %standard-phases
+         (add-after
+           'unpack 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif"))))
+         (add-before
+           'configure 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python"))
+                   (mesa (assoc-ref inputs "mesa")))
+               (substitute* "src/gen_dispatch.py"
+                 (("/usr/bin/env python") python))
+               (substitute* (find-files "." "\\.[ch]$")
+                 (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
+                 (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
 
-             ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
-             ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
-             ;; better to make this a normal patch, but for now we do it here
-             ;; to prevent rebuilding on other platforms.
-             ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                             (%current-system)))
-                   '((substitute* '"test/dlwrap.c"
-                       (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
-                   '())
-             #t))
-         %standard-phases))))
+               ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
+               ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
+               ;; better to make this a normal patch, but for now we do it here
+               ;; to prevent rebuilding on other platforms.
+               ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                               (%current-system)))
+                     '((substitute* '"test/dlwrap.c"
+                         (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
+                     '())
+               #t))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
