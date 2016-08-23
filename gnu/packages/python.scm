@@ -9750,17 +9750,14 @@ implementation for Python.")
 (define-public python-prompt-toolkit
  (package
   (name "python-prompt-toolkit")
-  (version "1.0.3")
+  (version "1.0.7")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/"
-             "8d/de/412f23919929c01e6b55183e124623f705e4b91796d3d2dce2cb53d595ad/"
-             "prompt_toolkit-" version ".tar.gz"))
+      (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
       (sha256
         (base32
-          "18lbmmkyjf509klc3217lq0x863pfzix779zx5kp9lms1iph4pl0"))))
+          "1vyjd0b7wciv55i19l44zy0adx8q7ss79lhy2r9d1rwz2y4822zg"))))
   (build-system python-build-system)
   (inputs `(("python-wcwidth" ,python-wcwidth)
             ("python-pygments" ,python-pygments)))
