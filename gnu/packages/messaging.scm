@@ -62,6 +62,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages audio)
@@ -656,5 +657,102 @@ protocols.")
 instant messenger with audio and video chat capabilities.")
    (home-page "http://utox.org/")
    (license license:gpl3)))
+
+(define-public pybitmessage
+  (package
+    (name "pybitmessage")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Bitmessage/"
+                           "PyBitmessage/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ffj7raxpp277kphj98190fxrwfx16vmbspk7k3azg3bh5f5idnf"))))
+    (inputs
+     `(("python" ,python-2)
+       ("python:tk" ,python-2 "tk")
+       ("openssl" ,openssl)
+       ("sqlite" ,sqlite)
+       ("qt" ,qt-4)
+       ("python2-pyqt-4" ,python2-pyqt-4)
+       ("python2-sip" ,python2-sip)
+       ("python2-pysqlite" ,python2-pysqlite)
+       ("python2-pyopenssl" ,python2-pyopenssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-makefile
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("mkdir -p \\$\\{DESTDIR\\}/usr") "")
+               (("/usr/local") "")
+               (("/usr") "")
+               (("#!/bin/sh") (string-append "#!" (which "bash")))
+               (("python2") (which "python"))
+               (("/opt/openssl-compat-bitcoin/lib/")
+                (string-append (assoc-ref inputs "openssl") "/lib/")))
+             #t))
+         (add-after 'unpack 'fix-unmatched-python-shebangs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/bitmessagemain.py"
+               (("#!/usr/bin/env python2.7")
+                (string-append "#!" (which "python"))))
+             (substitute* "src/bitmessagecli.py"
+               (("#!/usr/bin/env python2.7.x")
+                (string-append "#!" (which "python"))))
+             #t))
+         (add-after 'unpack 'fix-depends
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/depends.py"
+               (("libcrypto.so")
+                (string-append (assoc-ref inputs "openssl")
+                               "/lib/libcrypto.so")))
+             #t))
+         (add-after 'unpack 'fix-local-files-in-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/proofofwork.py"
+               (("bitmsghash.so")
+                (string-append (assoc-ref outputs "out")
+                               "/lib/bitmsghash.so")))
+             #t))
+         (add-after 'unpack 'fix-pyelliptic
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/pyelliptic/openssl.py"
+               (("libcrypto.so")
+                (string-append (assoc-ref inputs "openssl")
+                               "/lib/libcrypto.so"))
+               (("libssl.so")
+                (string-append (assoc-ref inputs "openssl")
+                               "/lib/libssl.so")))
+             #t))
+         ;; XXX: Make does not build and install bitmsghash, do it
+         ;; and place it in /lib.
+         (add-before 'build 'build-and-install-bitmsghash
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "src/bitmsghash")
+             (system* "make")
+             (chdir "../..")
+             (install-file "src/bitmsghash/bitmsghash.so"
+                           (string-append (assoc-ref outputs "out") "/lib"))
+             #t))
+         (add-after 'install 'wrap
+           (@@ (guix build python-build-system) wrap)))))
+    (license license:expat)
+    (description
+     "Distributed and trustless peer-to-peer communications protocol
+for sending encrypted messages to one person or many subscribers.")
+    (synopsis "Distributed peer-to-peer communication")
+    (home-page "https://bitmessage.org/")))
 
 ;;; messaging.scm ends here
