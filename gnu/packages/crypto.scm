@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,9 +24,14 @@
 
 (define-module (gnu packages crypto)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
@@ -33,8 +39,10 @@
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages zsh)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -323,3 +331,71 @@ for valid names can be run with regular expressions and wordlists.  For the
 generation of wordlists the included tool @code{worgen} can be used.  There is
 no man page, refer to the home page for usage details.")
       (license (list license:isc license:expat)))))
+
+(define-public tomb
+  (package
+    (name "tomb")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.dyne.org/tomb/"
+                                  "tomb-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11msj38fdmymiqcmwq1883kjqi5zr01ybdjj58rfjjrw4zw2w5y0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zsh" ,zsh)
+       ("sudo" ,sudo)
+       ("gnupg" ,gnupg)
+       ("cryptsetup" ,cryptsetup)
+       ("e2fsprogs" ,e2fsprogs)         ;for mkfs.ext4
+       ("gettext" ,gnu-gettext)         ;used at runtime
+       ("mlocate" ,mlocate)
+       ("pinentry" ,pinentry)
+       ("qrencode" ,qrencode)
+       ("steghide" ,steghide)
+       ("swish-e" ,swish-e)))
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ;; TODO: Build and install gtk and qt trays
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)   ;no configuration to be done
+         (add-after 'install 'i18n
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system*
+                           "make" "-C" "extras/translations"
+                           "install" make-flags))))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/tomb")
+                 `("PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "mlocate") "/bin")
+                    ,@(map (lambda (program)
+                             (or (and=> (which program) dirname)
+                                 (error "program not found:" program)))
+                           '("seq" "mkfs.ext4" "pinentry" "sudo"
+                             "gpg" "cryptsetup" "gettext"
+                             "qrencode" "steghide" "swish-e")))))
+               #t)))
+         (delete 'check)
+         (add-after 'wrap 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Running the full tests requires sudo/root access for
+             ;; cryptsetup, which is not available in the build environment.
+             ;; But we can run `tomb dig` without root, so make sure that
+             ;; works.  TODO: It Would Be Nice to check the expected "index",
+             ;; "search", "bury", and "exhume" features are available by
+             ;; querying `tomb -h`.
+             (let ((tomb (string-append (assoc-ref outputs "out")
+                                        "/bin/tomb")))
+               (zero? (system* tomb "dig" "-s" "10" "secrets.tomb"))))))))
+    (home-page "http://www.dyne.org/software/tomb")
+    (synopsis "File encryption for secret data")
+    (description
+     "Tomb is an application to manage the creation and access of encrypted
+storage files: it can be operated from commandline and it can integrate with a
+user's graphical desktop.")
+    (license license:gpl3+)))
