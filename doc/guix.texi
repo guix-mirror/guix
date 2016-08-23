@@ -6346,6 +6346,17 @@ the module (in the "arguments" form of a package using the
 linux-module-build-system, use the key #:linux to specify it).
 @end defvr
 
+@defvr {Scheme Variable} node-build-system
+This variable is exported by @code{(guix build-system node)}.  It
+implements the build procedure used by @uref{http://nodejs.org,
+Node.js}, which implements an approximation of the @code{npm install}
+command, followed by an @code{npm test} command.
+
+Which Node.js package is used to interpret the @code{npm} commands can
+be specified with the @code{#:node} parameter which defaults to
+@code{node}.
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,

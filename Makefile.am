@@ -125,6 +125,7 @@ MODULES =					\
   guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
   guix/build-system/linux-module.scm		\
+  guix/build-system/node.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/ocaml.scm			\
@@ -170,6 +171,7 @@ MODULES =					\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/guile-build-system.scm		\
+  guix/build/node-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/ocaml-build-system.scm		\
@@ -182,6 +184,7 @@ MODULES =					\
   guix/build/haskell-build-system.scm		\
   guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
+  guix/build/json.scm				\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/build/profiles.scm			\
