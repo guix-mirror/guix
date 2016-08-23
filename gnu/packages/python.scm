@@ -8737,7 +8737,14 @@ is made as zipfile like as possible.")
                (substitute* "magic.py"
                  (("ctypes.util.find_library\\('magic'\\)")
                   (string-append "'" file "/lib/libmagic.so'")))
-           #t))))))
+           #t)))
+         (add-before 'install 'disable-egg-compression
+           (lambda _
+             (let ((port (open-file "setup.cfg" "a")))
+               (display "\n[easy_install]\nzip_ok = 0\n"
+                        port)
+               (close-port port)
+               #t))))))
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
     (inputs
