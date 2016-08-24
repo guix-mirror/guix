@@ -563,6 +563,7 @@ is part of the GNOME accessibility project.")
              (base32
               "0l6aqk86aw5w132ygy6hv6nlxvd1h6xg7c85qbm60p6mnv1ww58d"))
             (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
+                                     "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
                                      "gtk2-theme-paths.patch"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
