@@ -218,7 +218,9 @@ interface, for the Transmission BitTorrent daemon.")
                 "1388qswa0in7kb1dx7qb10wp60p58zvvpys7jwim3clsbqvz6a68"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-libaria2")
+     `(#:configure-flags (list "--enable-libaria2"
+                               (string-append "--with-bashcompletiondir="
+                                              %output "/etc/bash_completion.d/"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-socket-tests
