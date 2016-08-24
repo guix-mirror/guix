@@ -134,7 +134,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.27")
+    (version "0.28")
     (source (origin
               (method url-fetch)
               (uri
@@ -143,7 +143,7 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0r10wsqxsi07gns6mfnicvpci0sbwwj4qa9iyr1ysrgadl5bx8j5"))))
+                "0iy5mdffkk61255f62si7p8mhyhkib70zlr1i1iimj2xr037scx4"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
