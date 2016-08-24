@@ -123,7 +123,7 @@
            (lambda _
              (substitute* "po/Makefile.in.in"
                           (("/bin/sh") (which "bash"))))))))
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Enlightenment Foundation Libraries")
     (description
      "Enlightenment Foundation Libraries is a set of libraries developed
@@ -150,7 +150,7 @@ removable devices or support for multimedia.")
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("efl" ,efl))) ; elementary.pc, elementary-cxx.pc
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Widget library of Enlightenment world")
     (description
      "Elementary is a widget library/toolkit, part of the Enlightenment
@@ -182,7 +182,7 @@ full capabilities of EFL.")
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
        ("poppler" ,poppler)))
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Plugins for integration of various file types into Evas")
     (description
      "Evas-generic-loaders is a collection of interfaces to outside libraries
@@ -209,7 +209,7 @@ files in Evas (EFL canvas library).")
     (inputs
      `(("efl" ,efl)
        ("vlc" ,vlc)))
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Plugins for integrating media players in EFL based applications")
     (description
      "Emotion-generic-players is a collection of interfaces to outside libraries
@@ -235,7 +235,7 @@ The only supported now is VLC.")
     (inputs
      `(("efl" ,efl)
        ("elementary" ,elementary)))
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Powerful terminal emulator based on EFL")
     (description
      "Terminology is fast and feature rich terminal emulator.  It is solely
