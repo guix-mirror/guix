@@ -53,7 +53,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.17.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -61,7 +61,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1dpq5flygrjg931nzsr2ra8icqffzrzbs1lnrzarbpsbmgq3zacs"))))
+                "17mzbjmz8d2vs8p63r1sk3mppl3l2fhxy2jv24dp75lgqbsvp806"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -69,12 +69,15 @@
      `(("alsa-lib" ,alsa-lib)
        ("compositeproto" ,compositeproto)
        ("curl" ,curl)
+       ("ghostscript" ,ghostscript)
        ("giflib" ,giflib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("libexif" ,libexif)
        ("libjpeg" ,libjpeg)
+       ("libraw" ,libraw)
        ("librsvg" ,librsvg)
+       ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
@@ -90,6 +93,8 @@
        ("libxtst" ,libxtst)
        ("lz4" ,lz4)
        ("mesa" ,mesa)
+       ("openjpeg" ,openjpeg-1)
+       ("poppler" ,poppler)
        ("printproto" ,printproto)
        ("scrnsaverproto" ,scrnsaverproto)
        ("xextproto" ,xextproto)
@@ -100,30 +105,40 @@
      ;; All these inputs are in package config files in section
      ;; Require.private.
      `(("bullet" ,bullet) ; ephysics.pc
-       ("dbus" ,dbus) ; eldbus.pc, ethumb_client.pc
+       ("dbus" ,dbus) ; eldbus.pc, elementary.pc, elocation.pc, ethumb_client.pc
        ("eudev" ,eudev) ; eeze.pc
        ("fontconfig" ,fontconfig) ; evas.pc, evas-cxx.pc
        ("freetype" ,freetype) ; evas.pc, evas-cxx.pc
        ("fribidi" ,fribidi) ; evas.pc, evas-cxx.pc
        ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
        ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
+       ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
-       ("luajit" ,luajit) ; edje.pc, edje-cxx.pc, elua.pc, evas.pc, evas-cxx.pc
        ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
        ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("util-linux" ,util-linux) ; eeze.pc
-       ("zlib" ,zlib))) ; emile.pc
+       ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--enable-liblz4"
                            "--enable-harfbuzz")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-config-files
+         ;; ecore_audio cannot find pulseaudio or libsndfile when compiled.
+         ;; Starting in version 1.18.0, these two libraries are dlopened so
+         ;; we hardcode their locations as a temporary workaround.
+         (add-after 'configure 'hardlink-dlopen-files
            (lambda _
-             (substitute* "po/Makefile.in.in"
-                          (("/bin/sh") (which "bash"))))))))
+             (substitute* "src/lib/ecore_audio/ecore_audio.c"
+                          (("libpulse.so.0")
+                           (string-append (assoc-ref %build-inputs "pulseaudio")
+                                          "/lib/libpulse.so.0")))
+             (substitute* "src/lib/ecore_audio/ecore_audio.c"
+                          (("libsndfile.so.1")
+                           (string-append (assoc-ref %build-inputs "libsndfile")
+                                          "/lib/libsndfile.so.1")))
+             #t)))))
     (home-page "https://www.enlightenment.org")
     (synopsis "Enlightenment Foundation Libraries")
     (description
@@ -234,8 +249,7 @@ The only supported now is VLC.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)
-       ("elementary" ,elementary)))
+     `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org")
     (synopsis "Powerful terminal emulator based on EFL")
     (description
@@ -261,8 +275,7 @@ contents and more.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)
-       ("elementary" ,elementary)))
+     `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org/about-rage")
     (synopsis "Video and audio player based on EFL")
     (description
@@ -297,9 +310,7 @@ Libraries with some extra bells and whistles.")
        ("linux-pam" ,linux-pam)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (propagated-inputs
-     ;; both these inputs are present in pkgconfig file in Require section
-     `(("efl" ,efl) ; enlightenment.pc
-       ("elementary" ,elementary))) ; enlightenment.pc
+     `(("efl" ,efl))) ; enlightenment.pc
     (home-page "https://www.enlightenment.org")
     (synopsis "Lightweight desktop environment")
     (description
@@ -338,7 +349,6 @@ embedded systems.")
        ("python-cython" ,python-cython)))
     (inputs
      `(("efl" ,efl)
-       ("elementary" ,elementary)
        ("python-dbus" ,python-dbus)))
     (home-page "https://www.enlightenment.org/")
     (synopsis "Python bindings for EFL")
