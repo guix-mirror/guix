@@ -40,6 +40,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
@@ -50,6 +51,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
@@ -2859,3 +2861,40 @@ as used on certified hardware security devices.")
                    (license:non-copyleft "file://nist/packtest.c")
                    license:public-domain        ; nist/dfft.c
                    license:gpl3+))))            ; everything else
+
+(define-public ecryptfs-utils
+  (package
+    (name "ecryptfs-utils")
+    (version "111")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/ecryptfs/trunk/"
+                           version "/+download/ecryptfs-utils_"
+                           version ".orig.tar.gz"))
+       (sha256
+        (base32
+         "0zwq19siiwf09h7lwa7n7mgmrr8cxifp45lmwgcfr8c1gviv6b0i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-pywrap")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("perl" ,perl)                   ; for pod2man
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("keyutils" ,keyutils)
+       ("linux-pam" ,linux-pam)
+       ("nss" ,nss)))
+    (home-page "http://ecryptfs.org/")
+    (synopsis "eCryptfs cryptographic file system utilities")
+    (description
+     "eCryptfs is a POSIX-compliant stacked cryptographic file system for Linux.
+Each file's cryptographic meta-data is stored inside the file itself, along
+with the encrypted contents.  This allows individual encrypted files to be
+copied between hosts and still be decrypted with the proper key.  eCryptfs is a
+native Linux file system, and has been part of the Linux kernel since version
+2.6.19.  This package contains the userland utilities to manage it.")
+    ;; The files src/key_mod/ecryptfs_key_mod_{openssl,pkcs11_helper,tspi}.c
+    ;; grant additional permission to link with OpenSSL.
+    (license license:gpl2+)))
