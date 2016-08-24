@@ -100,20 +100,20 @@
      ;; All these inputs are in package config files in section
      ;; Require.private.
      `(("bullet" ,bullet) ; ephysics.pc
-       ("dbus" ,dbus) ; eldbus.pc
+       ("dbus" ,dbus) ; eldbus.pc, ethumb_client.pc
        ("eudev" ,eudev) ; eeze.pc
-       ("fontconfig" ,fontconfig) ; evas.pc
-       ("freetype" ,freetype) ; evas.pc
-       ("fribidi" ,fribidi) ; evas.pc
-       ("glib" ,glib) ; ecore.pc
+       ("fontconfig" ,fontconfig) ; evas.pc, evas-cxx.pc
+       ("freetype" ,freetype) ; evas.pc, evas-cxx.pc
+       ("fribidi" ,fribidi) ; evas.pc, evas-cxx.pc
+       ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
        ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
-       ("luajit" ,luajit) ; evas.pc, edje.pc
-       ("openssl" ,openssl) ; eet.pc, ecore-con.pc
+       ("luajit" ,luajit) ; edje.pc, edje-cxx.pc, elua.pc, evas.pc, evas-cxx.pc
+       ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
        ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("util-linux" ,util-linux) ; eeze.pc
-       ("zlib" ,zlib))) ; eet.pc
+       ("zlib" ,zlib))) ; emile.pc
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--enable-liblz4"
