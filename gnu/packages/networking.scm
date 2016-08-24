@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -418,6 +419,26 @@ HTTP(S) request, and receive the reply headers.  It is somewhat similar to
 by firewalls or when you want to monitor the response time of the actual web
 application stack itself.")
     (license license:gpl2)))        ; with permission to link with OpenSSL
+
+(define-public bwm-ng
+  (package
+    (name "bwm-ng")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gropp.org/bwm-ng/bwm-ng-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1w0dwpjjm9pqi613i8glxrgca3rdyqyp3xydzagzr5ndc34z6z02"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (synopsis "Console based live network and disk I/O bandwidth monitor")
+    (description "Bandwidth Monitor NG is a small and simple console based
+live network and disk I/O bandwidth monitor.")
+    (home-page "https://www.gropp.org/?id=projects&sub=bwm-ng")
+    (license license:gpl2)))
 
 (define-public aircrack-ng
   (package
