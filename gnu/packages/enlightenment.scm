@@ -72,7 +72,6 @@
        ("giflib" ,giflib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("harfbuzz" ,harfbuzz)
        ("libexif" ,libexif)
        ("libjpeg" ,libjpeg)
        ("librsvg" ,librsvg)
@@ -107,6 +106,7 @@
        ("freetype" ,freetype) ; evas.pc
        ("fribidi" ,fribidi) ; evas.pc
        ("glib" ,glib) ; ecore.pc
+       ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("luajit" ,luajit) ; evas.pc, edje.pc
@@ -116,7 +116,8 @@
        ("zlib" ,zlib))) ; eet.pc
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
-                           "--enable-liblz4")
+                           "--enable-liblz4"
+                           "--enable-harfbuzz")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-config-files
