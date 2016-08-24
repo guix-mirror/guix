@@ -553,6 +553,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
+  %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
   %D%/packages/patches/hdf5-config-date.patch			\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\

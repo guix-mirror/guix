@@ -625,7 +625,8 @@ application suites.")
             (sha256
              (base32
               "157nh9gg0p2avw765hrnkvr8lsh2w811397yxgjv6q5j4fzz6d1q"))
-            (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"))))
+            (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
+                                     "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
