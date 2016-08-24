@@ -89,6 +89,7 @@
        ("libxrandr" ,libxrandr)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxtst" ,libxtst)
+       ("lz4" ,lz4)
        ("mesa" ,mesa)
        ("printproto" ,printproto)
        ("scrnsaverproto" ,scrnsaverproto)
@@ -114,7 +115,8 @@
        ("util-linux" ,util-linux) ; eeze.pc
        ("zlib" ,zlib))) ; eet.pc
     (arguments
-     `(#:configure-flags '("--disable-silent-rules")
+     `(#:configure-flags '("--disable-silent-rules"
+                           "--enable-liblz4")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-config-files
