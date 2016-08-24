@@ -156,7 +156,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.24")
+    (version "0.25")
     (source (origin
               (method url-fetch)
               (uri
@@ -165,7 +165,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1sf3nirs3mcx0r5i7acm9bsvzqzlh730m0yjg6jcyj8ln6r7cvqf"))))
+                "196f9s0qmc4srr10n4vk3amvqy5f52y9kvgwqpkfjsnhf75qlckf"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("libmpdclient" ,libmpdclient)
