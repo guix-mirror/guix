@@ -474,7 +474,19 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-search-paths
      (list (search-path-specification
             (variable "QMAKEPATH")
-            (files '("")))))
+            (files '("")))
+           (search-path-specification
+            (variable "QML2_IMPORT_PATH")
+            (files '("qml")))
+           (search-path-specification
+            (variable "QT_PLUGIN_PATH")
+            (files '("plugins")))
+           (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc/xdg")))))
     (home-page "https://www.qt.io/")
     (synopsis "Cross-platform GUI library")
     (description "Qt is a cross-platform application and UI framework for
