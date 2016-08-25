@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2090,6 +2091,26 @@ It is built on top of the custom theme support in Emacs 24 or later.")
     (description
      "Solarized for Emacs is a port of the Solarized theme for Vim.  This
 package provides a light and a dark variant.")
+    (license license:gpl3+)))
+
+(define-public emacs-ahungry-theme
+  (package
+    (name "emacs-ahungry-theme")
+    (version "1.3.0")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "http://elpa.gnu.org/packages/ahungry-theme-"
+                                 version ".tar"))
+             (sha256
+              (base32
+               "1p2zaq0s4bbl5cx6wyab24wamw7m0mysb0v47dqjmnvfc25z84rq"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ahungry/color-theme-ahungry")
+    (synopsis "Ahungry color theme for Emacs")
+    (description "Ahungry theme for Emacs provides bright and bold colors.
+If you load it from a terminal, you will be able to make use of the
+transparent background.  If you load it from a GUI, it will default to a
+dark background.")
     (license license:gpl3+)))
 
 (define-public emacs-smartparens
