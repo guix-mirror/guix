@@ -4951,7 +4951,7 @@ can add your own files to the collection.")
 (define-public gnome-screenshot
   (package
     (name "gnome-screenshot")
-    (version "3.18.0")
+    (version "3.20.1")
     (source
      (origin
        (method url-fetch)
@@ -4960,7 +4960,7 @@ can add your own files to the collection.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0hc8m435q7yzvrw7jpi53kaxpmrd9w59sm7c5wibh2ng9azlv9pb"))))
+         "0hz1ywgb5vbfqr0p0cr20hmz5b11msyi3psanszdnv0lhxl9pa06"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
