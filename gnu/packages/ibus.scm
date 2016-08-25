@@ -68,6 +68,15 @@
             (substitute* "data/dconf/Makefile.in"
               (("dconf update") "echo dconf update"))
             #t))
+        (add-after 'unpack 'delete-generated-files
+          (lambda _
+            (for-each (lambda (file)
+                        (let ((c (string-append (string-drop-right file 4) "c")))
+                          (when (file-exists? c)
+                            (format #t "deleting ~a\n" c)
+                            (delete-file c))))
+                      (find-files "." "\\.vala"))
+            #t))
         (add-after 'wrap-program 'wrap-with-additional-paths
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
@@ -93,6 +102,7 @@
    (native-inputs
     `(("glib" ,glib "bin") ; for glib-genmarshal
       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+      ("vala" ,vala)
       ("pkg-config" ,pkg-config)))
    (native-search-paths
     (list (search-path-specification
