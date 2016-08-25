@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
@@ -62,24 +62,23 @@
                            (assoc-ref %outputs "out")
                            "/lib/python2.7/site-packages/gi/overrides/"))
       #:phases
-      (alist-cons-before
-       'configure 'disable-dconf-update
-       (lambda _
-         (substitute* "data/dconf/Makefile.in"
-           (("dconf update") "echo dconf update"))
-         #t)
-       (alist-cons-after
-        'wrap-program 'wrap-with-additional-paths
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
-          ;; GI_TYPELIB_PATH.
-          (let ((out (assoc-ref outputs "out")))
-            (wrap-program (string-append out "/bin/ibus-setup")
-              `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
-              `("GI_TYPELIB_PATH" ":" prefix
-                (,(getenv "GI_TYPELIB_PATH")
-                 ,(string-append out "/lib/girepository-1.0"))))))
-        %standard-phases))))
+      (modify-phases %standard-phases
+        (add-before 'configure 'disable-dconf-update
+          (lambda _
+            (substitute* "data/dconf/Makefile.in"
+              (("dconf update") "echo dconf update"))
+            #t))
+        (add-after 'wrap-program 'wrap-with-additional-paths
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
+            ;; GI_TYPELIB_PATH.
+            (let ((out (assoc-ref outputs "out")))
+              (wrap-program (string-append out "/bin/ibus-setup")
+                `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" ":" prefix
+                  (,(getenv "GI_TYPELIB_PATH")
+                   ,(string-append out "/lib/girepository-1.0")))))
+            #t)))))
    (inputs
     `(("dbus" ,dbus)
       ("dconf" ,dconf)
