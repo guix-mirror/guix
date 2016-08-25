@@ -36,7 +36,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xorg))
 
 (define-public ibus
   (package
@@ -77,6 +78,16 @@
                             (delete-file c))))
                       (find-files "." "\\.vala"))
             #t))
+        (add-after 'unpack 'fix-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "src/ibusenginesimple.c"
+              (("/usr/share/X11/locale")
+               (string-append (assoc-ref inputs "libx11")
+                              "/share/X11/locale")))
+            (substitute* "ui/gtk3/xkblayout.vala"
+              (("\"(setxkbmap|xmodmap)\"" _ prog)
+               (string-append "\"" (assoc-ref inputs prog) "\"")))
+            #t))
         (add-after 'wrap-program 'wrap-with-additional-paths
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
@@ -96,6 +107,9 @@
       ("gtk+" ,gtk+)
       ("intltool" ,intltool)
       ("libnotify" ,libnotify)
+      ("libx11" ,libx11)
+      ("setxkbmap" ,setxkbmap)
+      ("xmodmap" ,xmodmap)
       ("iso-codes" ,iso-codes)
       ("pygobject2" ,python2-pygobject)
       ("python2" ,python-2)))
