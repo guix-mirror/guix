@@ -36,6 +36,7 @@
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/flex/flex-"
                                  version ".tar.bz2"))
+             (patches (search-patches "flex-CVE-2016-6354.patch"))
              (sha256
               (base32
                "1sdqx63yadindzafrq1w31ajblf9gl1c301g068s20s7bbpi3ri4"))))
