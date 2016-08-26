@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public libsodium
@@ -263,3 +265,61 @@ gain and retain the authorization and encryption keys required to perform
 secure operations. ")
     (license (list license:lgpl2.1+             ; the files keyutils.*
                    license:gpl2+))))            ; the rest
+
+;; There is no release candidate but commits point out a version number,
+;; furthermore no tarball exists.
+(define-public eschalot
+  (let ((commit "0bf31d88a11898c19b1ed25ddd2aff7b35dbac44")
+        (revision "1"))
+    (package
+      (name "eschalot")
+      (version (string-append "1.2.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/schnabear/eschalot")
+               (commit commit)))
+         (file-name (string-append name "-" version))
+         (sha256
+          (base32
+           "0lj38ldh8vzi11wp4ghw4k0fkwp0s04zv8k8d473p1snmbh7mx98"))))
+      (inputs
+       `(("openssl" ,openssl))) ; It needs: openssl/{bn,pem,rsa,sha}.h
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                            (string-append "INSTALL=" "install"))
+         ;; XXX: make test would run a !VERY! long hashing of names with the use
+         ;; of a wordlist, the amount of computing time this would waste on build
+         ;; servers is in no relation to the size or importance of this small
+         ;; application, therefore we run our own tests on eschalot and worgen.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'check
+             (lambda _
+               (and
+                 (zero? (system* "./worgen" "8-12" "top1000.txt" "3-10" "top400nouns.txt"
+                                 "3-6" "top150adjectives.txt" "3-6"))
+                 (zero? (system* "./eschalot" "-r" "^guix|^guixsd"))
+                 (zero? (system* "./eschalot" "-r" "^gnu|^free"))
+                 (zero? (system* "./eschalot" "-r" "^cyber|^hack"))
+                 (zero? (system* "./eschalot" "-r" "^troll")))))
+           ;; Make install can not create the bin dir, create it.
+           (add-before 'install 'create-bin-dir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 #t))))))
+      (home-page "https://github.com/schnabear/eschalot")
+      (synopsis "Tor hidden service name generator")
+      (description
+       "Eschalot is a tor hidden service name generator, it allows one to
+produce customized vanity .onion addresses using a brute-force method.  Searches
+for valid names can be run with regular expressions and wordlists.  For the
+generation of wordlists the included tool @code{worgen} can be used.  There is
+no man page, refer to the home page for usage details.")
+      (license (list license:isc license:expat)))))
