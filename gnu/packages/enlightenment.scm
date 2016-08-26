@@ -300,12 +300,12 @@ Libraries with some extra bells and whistles.")
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("freetype" ,freetype)
-       ("gettext" ,gnu-gettext)
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
