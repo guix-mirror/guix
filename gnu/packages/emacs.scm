@@ -1260,7 +1260,7 @@ strings.")
 (define-public emacs-f
   (package
     (name "emacs-f")
-    (version "0.17.2")
+    (version "0.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1269,7 +1269,7 @@ strings.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1n5gcldf43wmkr7jxgs519v21zavwr0yn8048iv6gvgfwicnyjlx"))))
+                "1926shh2ymdsgz05c6q181mzzz1rci99ch568j151xi865jinyg5"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
