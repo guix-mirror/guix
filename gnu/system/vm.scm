@@ -450,7 +450,6 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
            "")
      " -no-reboot -net nic,model=virtio \
   " #$@(map virtfs-option shared-fs) " \
-  -net user \
   -vga std \
   -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly \
