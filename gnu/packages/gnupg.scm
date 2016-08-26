@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@libertad.pw>
 ;;;
@@ -447,20 +448,18 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    (substitute* "test_gnupg.py"
-                      ;; Test keyrings are missing, so this test fails.
-                      (("'test_scan_keys'") "True")
-                      (("def test_scan_keys") "def disabled__scan_keys")
-                      ;; Unsure why this test fails.
-                      (("'test_search_keys'") "True")
-                      (("def test_search_keys") "def disabled__search_keys"))
-                    (setenv "GPGBINARY" "gpg")
-                    (setenv "USERNAME" "guixbuilder")
-                    ;; The doctests are extremely slow and sometimes time out,
-                    ;; so we disable them.
-                    (zero? (system* "python"
-                                    "test_gnupg.py" "--no-doctests")))))))
+           (lambda _
+             (substitute* "test_gnupg.py"
+               ;; Exported keys don't have a version line!
+               (("del k1\\[1\\]") "#")
+               ;; Unsure why this test fails.
+               (("'test_search_keys'") "True")
+               (("def test_search_keys") "def disabled__search_keys"))
+             (setenv "USERNAME" "guixbuilder")
+             ;; The doctests are extremely slow and sometimes time out,
+             ;; so we disable them.
+             (zero? (system* "python"
+                             "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
      `(("gnupg" ,gnupg-1)))
     (home-page "https://packages.python.org/python-gnupg/index.html")
