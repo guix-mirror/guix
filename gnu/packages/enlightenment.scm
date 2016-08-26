@@ -305,13 +305,12 @@ Libraries with some extra bells and whistles.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
+       ("efl" ,efl)
        ("freetype" ,freetype)
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
-    (propagated-inputs
-     `(("efl" ,efl))) ; enlightenment.pc
     (home-page "https://www.enlightenment.org")
     (synopsis "Lightweight desktop environment")
     (description
