@@ -262,15 +262,16 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.1.4")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
                 "https://download.enlightenment.org/rel/apps/rage/rage-"
-                version ".tar.gz"))
+                version ".tar.xz"))
               (sha256
-               (base32 "10j3n8crk16jzqz2hn5djx6vms5f6x83qyiaphhqx94h9dgv2mgg"))))
+               (base32
+                "07mfh0k83nrm557x72qafxawxizilqgkr6sngbia3ikprc8556zy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
