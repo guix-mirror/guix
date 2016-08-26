@@ -436,7 +436,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.7.0")
+    (version "2.8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -444,7 +444,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1kzd8k2n0lcr04jvn5b6d29zf765mxgshfhzflkzndwmvyxmlqpl"))))
+               "1znvb7inwinrhifqzwp4lp9j6yp1l25j7riczc0zmvcjbpl5yhfq"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -572,7 +572,7 @@ support for Git-SVN.")
               (file-name (string-append "magit-popup-" version ".el"))
               (sha256
                (base32
-                "144nl7j5mn86ccan6qxgg40bsxpkbc83vwnhd5y657gqki74972r"))))
+                "0lmw824zp8c0vhikfkiay9wn4nmaksz6mfy0fldvy4wlx5c26yh3"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
