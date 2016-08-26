@@ -1219,3 +1219,30 @@ access and administration over HTTP CGI or via a built-in HTTP server.  It has
 a built-in wiki, built-in file browsing, built-in tickets system, etc.")
     (license (list license:public-domain        ;src/miniz.c, src/shell.c
                    license:bsd-2))))
+
+(define-public stagit
+  (package
+    (name "stagit")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.2f30.org/releases/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0z5r06wqrfnsz24ci4hjqbd62svclvhkgzaq9npsyjcp6jnf7izc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (inputs
+     `(("libgit2" ,libgit2)))
+    (home-page "http://2f30.org")
+    (synopsis "Static git page generator")
+    (description "Stagit creates static pages for git repositories, the results can
+be served with a HTTP file server of your choice.")
+    (license license:expat)))
