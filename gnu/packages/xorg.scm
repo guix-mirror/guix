@@ -1895,7 +1895,7 @@ generate new versions of their configure scripts with autoconf.")
 (define-public videoproto
   (package
     (name "videoproto")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
       (origin
         (method url-fetch)
@@ -1905,7 +1905,7 @@ generate new versions of their configure scripts with autoconf.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dnlkd9nb0m135lgd6hd61vc29sdyarsyya8aqpx7z10p261dbld"))))
+            "00m7rh3pwmsld4d5fpii3xfk5ciqn17kkk38gfpzrrh8zn4ki067"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
