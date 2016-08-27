@@ -4799,7 +4799,7 @@ an X Window System display.")
 (define-public libxfixes
   (package
     (name "libxfixes")
-    (version "5.0.1")
+    (version "5.0.2")
     (source
       (origin
         (method url-fetch)
@@ -4809,7 +4809,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0rs7qgzr6dpr62db7sd91c1b47hzhzfr010qwnpcm8sg122w1gk3"))))
+            "1slsk898386xii0r3l7szwwq3s6y2m4dsj0x93ninjh8xkghxllv"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fixesproto" ,fixesproto)))
