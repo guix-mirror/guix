@@ -3765,7 +3765,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.17")
+    (version "2.18")
     (source
       (origin
         (method url-fetch)
@@ -3775,7 +3775,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "00878f1v3034ki78pjpf2db0bh7jsmszsnxr3bf5qxripm2bxiny"))))
+            "1l6x2w357ja8vm94ns79s7yj9a5dlr01r9dxrjvzwncadiyr27f4"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gnu-gettext)
