@@ -474,6 +474,8 @@ extracting content or merging files.")
                             name "-" version "-source.tar.gz"))
         (sha256
           (base32 "01n26cy41lc2fjri63s4js23ixxb4nd37aafry3hz4i4id6wd8x2"))
+        (patches (search-patches "mupdf-CVE-2016-6265.patch"
+                                 "mupdf-CVE-2016-6525.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Don't build the bundled-in third party libraries.
