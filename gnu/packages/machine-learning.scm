@@ -502,11 +502,10 @@ single hidden layer, and for multinomial log-linear models.")
          (replace 'check
            (lambda _
              ;; No test target, so we build and run the unit tests here.
-             (let ((test-dir (string-append "../dlib-" ,version "/dlib/test/build")))
-               (mkdir-p test-dir)
+             (let ((test-dir (string-append "../dlib-" ,version "/dlib/test")))
                (with-directory-excursion test-dir
-                 (and (zero? (system* "cmake" ".."))
-                      (zero? (system* "cmake" "--build" "." "--config" "Release"))
+                 (setenv "CXXFLAGS" "-std=gnu++11")
+                 (and (zero? (system* "make" "-j" (number->string (parallel-job-count))))
                       (zero? (system* "./dtest" "--runall")))))))
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
