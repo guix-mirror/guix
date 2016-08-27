@@ -42,6 +42,8 @@
   #:export (xorg-configuration-file
             %default-xorg-modules
             xorg-start-command
+            xinitrc
+
             %default-slim-theme
             %default-slim-theme-name
             slim-configuration
