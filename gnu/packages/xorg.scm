@@ -974,7 +974,7 @@ authentication records.")
 (define-public inputproto
   (package
     (name "inputproto")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method url-fetch)
@@ -984,7 +984,7 @@ authentication records.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1lf1jlxp0fc8h6fjdffhd084dqab94966l1zm3rwwsis0mifwiss"))))
+            "07gk7v006zqn3dcfh16l06gnccy7xnqywf3vl9c209ikazsnlfl9"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
