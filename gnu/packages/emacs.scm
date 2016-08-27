@@ -655,7 +655,7 @@ programs.")
     (version "1.0.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/let-alist-"
+              (uri (string-append "https://elpa.gnu.org/packages/let-alist-"
                                   version ".el"))
               (sha256
                (base32
@@ -684,7 +684,7 @@ programs.")
                      (emacs-byte-compile-directory lispdir)
                      #t))))
     (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "http://elpa.gnu.org/packages/let-alist.html")
+    (home-page "https://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
     (description
      "This package offers a single Emacs Lisp macro, @code{let-alist}.  This
@@ -1041,13 +1041,13 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (version "1.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/async-"
+              (uri (string-append "https://elpa.gnu.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
                 "1ip5nc8xyln5szvqwp6wqva9xr84pn8ssn3nnphrszr19y4js2bm"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/async.html")
+    (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
     (description
      "This package provides the ability to call asynchronous functions and
@@ -1064,7 +1064,7 @@ as a library for other Emacs packages.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://elpa.gnu.org/packages/auctex-"
+             "https://elpa.gnu.org/packages/auctex-"
              version
              ".tar"))
        (sha256
@@ -1622,7 +1622,7 @@ source code using IPython.")
     (version "0.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/debbugs-"
+              (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
@@ -1630,7 +1630,7 @@ source code using IPython.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))
-    (home-page "http://elpa.gnu.org/packages/debbugs.html")
+    (home-page "https://elpa.gnu.org/packages/debbugs.html")
     (synopsis "Access the Debbugs bug tracker in Emacs")
     (description
      "This package lets you access the @uref{http://bugs.gnu.org,GNU Bug
@@ -2102,7 +2102,7 @@ package provides a light and a dark variant.")
     (version "1.3.0")
     (source
      (origin (method url-fetch)
-             (uri (string-append "http://elpa.gnu.org/packages/ahungry-theme-"
+             (uri (string-append "https://elpa.gnu.org/packages/ahungry-theme-"
                                  version ".tar"))
              (sha256
               (base32
@@ -2408,7 +2408,7 @@ The purpose of this library is to wrap all the quirks and hassle of
     (version "0.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/queue-"
+              (uri (string-append "https://elpa.gnu.org/packages/queue-"
                                   version ".el"))
               (sha256
                (base32
@@ -2451,7 +2451,7 @@ be removed from the front.  This type of data structure is sometimes called an
     (version "1.7.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/spinner-"
+              (uri (string-append "https://elpa.gnu.org/packages/spinner-"
                                   version ".el"))
               (sha256
                (base32
@@ -2470,13 +2470,13 @@ ongoing operations.")
     (version "2.15")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/seq-"
+              (uri (string-append "https://elpa.gnu.org/packages/seq-"
                                   version ".tar"))
               (sha256
                (base32
                 "09wi1765bmn7i8fg6ajjfaxgs4ipc42d58zx2fdqpidrdg9c7q73"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/seq.html")
+    (home-page "https://elpa.gnu.org/packages/seq.html")
     (synopsis "Sequence manipulation functions for Emacs")
     (description
      "This Emacs library provides sequence-manipulation functions that
