@@ -705,6 +705,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-CVE-2016-2178.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
+  %D%/packages/patches/p7zip-remove-unused-code.patch		\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\

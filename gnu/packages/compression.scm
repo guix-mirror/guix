@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -895,3 +896,69 @@ compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
     (license license:asl2.0)))
+
+(define-public p7zip
+  (package
+    (name "p7zip")
+    (version "16.02")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                  version "/" name "_" version
+                                  "_src_all.tar.bz2"))
+              (sha256
+               (base32
+                "07rlwbbgszq8i7m8jh3x6j2w2hc9a72dc7fmqawnqkwlwb00mcjy"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove non-free source files
+                  (for-each delete-file
+                            (append
+                             (find-files "CPP/7zip/Compress" "Rar.*")
+                             (find-files "CPP/7zip/Crypto" "Rar.*")
+                             (find-files "DOC/unRarLicense.txt")
+                             (find-files  "Utils/file_Codecs_Rar_so.py")))
+                  (delete-file-recursively "CPP/7zip/Archive/Rar")
+                  (delete-file-recursively "CPP/7zip/Compress/Rar")
+                  #t))
+              (patches (search-patches "p7zip-remove-unused-code.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "DEST_HOME=" (assoc-ref %outputs "out")) "all3")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key system outputs #:allow-other-keys)
+             (zero? (system* "cp"
+                             (let ((system ,(or (%current-target-system)
+                                                (%current-system))))
+                               (cond
+                                ((string-prefix? "x86_64" system)
+                                 "makefile.linux_amd64_asm")
+                                ((string-prefix? "i686" system)
+                                 "makefile.linux_x86_asm_gcc_4.X")
+                                (else
+                                 "makefile.linux_any_cpu_gcc_4.X")))
+                             "makefile.machine"))))
+         (replace 'check
+           (lambda _
+             (and (zero? (system* "make" "test"))
+                  (zero? (system* "make" "test_7z"))
+                  (zero? (system* "make" "test_7zr"))))))))
+    (inputs
+     (let ((system (or (%current-target-system)
+                       (%current-system))))
+       `(,@(cond ((string-prefix? "x86_64" system)
+                  `(("yasm" ,yasm)))
+                 ((string-prefix? "i686" system)
+                  `(("nasm" ,nasm)))
+                 (else '())))))
+    (home-page "http://p7zip.sourceforge.net/")
+    (synopsis "Command-line file archiver with high compression ratio")
+    (description "p7zip is a command-line port of 7-Zip, a file archiver that
+handles the 7z format which features very high compression ratios.")
+    (license (list license:lgpl2.1+
+                   license:gpl2+
+                   license:public-domain))))
