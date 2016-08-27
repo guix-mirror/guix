@@ -20,6 +20,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages mit-krb5)
   #:use-module (guix build-system gnu))
 
 (define-public libtirpc
@@ -36,16 +37,14 @@
                 "18a337wa4amf0k21wnimp3yzs5l3cxqndz4x3x8bm993zhfy5hs5"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; Doesn't work with GNU GSS.
-       #:configure-flags '("--disable-gssapi")
-
-       #:phases (alist-cons-after
+     '(#:phases (alist-cons-after
                  'unpack 'remote-dangling-symlink
                  (lambda _
                    ;; Remote the dangling symlinks since it breaks the
                    ;; 'patch-source-shebangs' file tree traversal.
                    (delete-file "INSTALL"))
                  %standard-phases)))
+    (inputs `(("mit-krb5" ,mit-krb5)))
     (home-page "http://sourceforge.net/projects/libtirpc/")
     (synopsis "Transport-independent Sun/ONC RPC implementation")
     (description
