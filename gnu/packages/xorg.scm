@@ -5030,7 +5030,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.18.1")
+    (version "1.18.4")
     (source
       (origin
         (method url-fetch)
@@ -5039,7 +5039,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "17bq40als48v12ld81jysc0gj5g572zkjkyzbhlm3ac9xgdmdv45"))))
+          "1j1i3n5xy1wawhk95kxqdc54h34kg7xp4nnramba2q8xqfr5k117"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
