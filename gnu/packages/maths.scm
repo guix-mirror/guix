@@ -692,15 +692,15 @@ can solve two kinds of problems:
 (define-public octave
   (package
     (name "octave")
-    (version "4.0.2")
+    (version "4.0.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/octave/octave-"
-                          version ".tar.gz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "1hdxap3j88rpqjimnfhinym6z73wdi5dfa6fv85c13r1dk9qzk9r"))))
+        "11day29k4yfvxh4101x5yf26ld992x5n6qvmhjjk6mzsd26fqayw"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -709,9 +709,7 @@ can solve two kinds of problems:
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
        ("arpack" ,arpack-ng)
-       ("curl" ,curl)
        ("pcre" ,pcre)
-       ("cyrus-sasl" ,cyrus-sasl)
        ("fltk" ,fltk)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -719,7 +717,6 @@ can solve two kinds of problems:
        ("libxft" ,libxft)
        ("mesa" ,mesa)
        ("glu" ,glu)
-       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
      `(("gfortran" ,gfortran)
