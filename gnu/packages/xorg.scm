@@ -3651,7 +3651,7 @@ alternative implementations like XRandR or TwinView.")
 (define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -3660,8 +3660,8 @@ alternative implementations like XRandR or TwinView.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "0aibcbhhjlwcrxh943xg2dswwx5bz1x0pmhs28b55gzsg0vrgb6g"))))
+         (base32
+          "0gcjy70ppmcl610z8gxc7sydsx93f8cm8pggm4qhihaa1ngdq103"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
