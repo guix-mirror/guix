@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -434,7 +435,7 @@ extension functionality is exposed in a single header file.")
                      (dynamic-link-substitute "glu/runtime.scm" "GLU" "glu")
                      (dynamic-link-substitute "glut/runtime.scm" "glut"
                                               "freeglut"))))))
-    (home-page "http://gnu.org/s/guile-opengl")
+    (home-page "https://gnu.org/s/guile-opengl")
     (synopsis "Guile binding for the OpenGL graphics API")
     (description
      "Guile-OpenGL is a library for Guile that provides bindings to the
