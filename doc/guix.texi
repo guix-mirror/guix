@@ -7719,12 +7719,23 @@ privacy---often the result of host name lookups is in local cache, so
 external name servers do not even need to be queried.
 @end defvr
 
+@anchor{syslog-configuration-type}
+@deftp {Data Type} syslog-configuration
+This data type represents the configuration of the syslog daemon.
 
-@deffn {Scheme Procedure} syslog-service @
-             [#:config-file @var{%default-syslog.conf}]
-Return a service that runs @command{syslogd}.  If the configuration file
-name @var{config-file} is not specified, use some reasonable default
-settings.
+@table @asis
+@item @code{syslogd} (default: @code{#~(string-append #$inetutils "/libexec/syslogd")})
+The syslog daemon to use.
+
+@item @code{config-file} (default: @code{%default-syslog.conf})
+The syslog configuration file to use.
+
+@end table
+@end deftp
+
+@anchor{syslog-service}
+@deffn {Scheme Procedure} syslog-service @var{config}
+Return a service that runs a syslog daemon according to @var{config}.
 
 @xref{syslogd invocation,,, inetutils, GNU Inetutils}, for more
 information on the configuration file syntax.

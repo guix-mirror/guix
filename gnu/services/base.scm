@@ -82,6 +82,9 @@
 
             nscd-service-type
             nscd-service
+
+            syslog-configuration
+            syslog-configuration?
             syslog-service
             syslog-service-type
             %default-syslog.conf
@@ -885,17 +888,27 @@ given @var{config}---an @code{<nscd-configuration>} object.  @xref{Name
 Service Switch}, for an example."
   (service nscd-service-type config))
 
+
+(define-record-type* <syslog-configuration>
+  syslog-configuration  make-syslog-configuration
+  syslog-configuration?
+  (syslogd              syslog-configuration-syslogd
+                        (default #~(string-append #$inetutils "/libexec/syslogd")))
+  (config-file          syslog-configuration-config-file
+                        (default %default-syslog.conf)))
+
 (define syslog-service-type
   (shepherd-service-type
    'syslog
-   (lambda (config-file)
+   (lambda (config)
      (shepherd-service
       (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
       (requirement '(user-processes))
       (start #~(make-forkexec-constructor
-                (list (string-append #$inetutils "/libexec/syslogd")
-                      "--no-detach" "--rcfile" #$config-file)))
+                (list #$(syslog-configuration-syslogd config)
+                      "--no-detach"
+                      "--rcfile" #$(syslog-configuration-config-file config))))
       (stop #~(make-kill-destructor))))))
 
 ;; Snippet adapted from the GNU inetutils manual.
@@ -921,14 +934,14 @@ Service Switch}, for an example."
      mail.*                                  /var/log/maillog
 "))
 
-(define* (syslog-service #:key (config-file %default-syslog.conf))
-  "Return a service that runs @command{syslogd}.  If configuration file
-name @var{config-file} is not specified, use some reasonable default
-settings.
+(define* (syslog-service #:optional (config (syslog-configuration)))
+  "Return a service that runs @command{syslogd} and takes
+@var{<syslog-configuration>} as a parameter.
 
 @xref{syslogd invocation,,, inetutils, GNU Inetutils}, for more
 information on the configuration file syntax."
-  (service syslog-service-type config-file))
+  (service syslog-service-type config))
+
 
 (define pam-limits-service-type
   (let ((security-limits

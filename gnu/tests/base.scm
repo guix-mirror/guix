@@ -384,9 +384,12 @@ functionality tests.")
                                               (log-file "/dev/console")))
                        (syslog-service-type config
                                             =>
-                                            (plain-file
-                                             "syslog.conf"
-                                             "*.* /dev/console\n")))))))
+                                            (syslog-configuration
+                                             (inherit config)
+                                             (config-file
+                                              (plain-file
+                                               "syslog.conf"
+                                               "*.* /dev/console\n")))))))))
 
 (define (run-nss-mdns-test)
   ;; Test resolution of '.local' names via libc.  Start the marionette service
