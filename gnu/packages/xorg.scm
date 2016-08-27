@@ -3072,7 +3072,7 @@ graphics cards.")
 (define-public xf86-video-openchrome
   (package
     (name "xf86-video-openchrome")
-    (version "0.3.3")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
@@ -3081,9 +3081,8 @@ graphics cards.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-           "1v8j4i1r268n4fc5gq54zg1x50j0rhw71f3lba7411mcblg2z7p4"))
-        (patches (search-patches "xf86-video-openchrome-glibc-2.20.patch"))))
+         (base32
+          "1fsmr455lk89zl795d6b5ypyqjim40j3h2vjch52lcssjw9xdza9"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
