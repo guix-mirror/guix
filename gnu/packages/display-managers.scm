@@ -19,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages display-managers)
-  #:use-module ((guix licenses) #:prefix l:)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -92,4 +92,4 @@ fonts, External themes support, Configurable runtime options: X server --
 login / shutdown / reboot commands, Single (GDM-like) or double (XDM-like)
 input control, Can load predefined user at startup, Configurable welcome /
 shutdown messages, Random theme selection.")
-    (license l:gpl2)))
+    (license license:gpl2)))
