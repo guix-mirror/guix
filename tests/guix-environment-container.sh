@@ -72,7 +72,7 @@ mount_test_code="
                   ;; correspond to a parent file system.
                   ((_ mount (or \"tmpfs\" \"proc\" \"sysfs\" \"devtmpfs\"
                                 \"devpts\" \"cgroup\" \"mqueue\") _ _ _)
-                   (and (string-prefix? mount (getcwd))
+                   (and (string-prefix? (getcwd) mount)
 		        mount))
                   ((_ mount _ _ _ _)
                    mount)))
