@@ -25,6 +25,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
@@ -117,6 +118,73 @@ Qt-style API for Wayland clients.")
     (home-page "http://hawaiios.org")
     ;; Choice of license at the user's opinion.
     (license (list license:gpl2 license:gpl3 license:lgpl2.1 license:lgpl3))))
+
+(define-public sddm
+  (package
+    (name "sddm")
+    (version "0.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/sddm/sddm"
+                    "/releases/download/v" version "/"
+                    "sddm-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0y3pn8g2qj7q20zkmbasrfsj925lfzizk63sfrvzf84bc5c84d3y"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("glib" ,glib)
+       ("greenisland" ,greenisland)
+       ("libxcb" ,libxcb)
+       ("libxkbcommon" ,libxkbcommon)
+       ("linux-pam" ,linux-pam)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("shadow" ,shadow)
+       ("wayland" ,wayland)))
+    (arguments
+     `(#:configure-flags
+       (list
+        ;; Currently doesn't do anything
+        ;; Option added by enable wayland greeters PR
+        "-DENABLE_WAYLAND=ON"
+        "-DENABLE_PAM=ON"
+        "-DCONFIG_FILE=/etc/sddm.conf"
+        ;; Set path to /etc/login.defs
+        ;; Alternatively use -DUID_MIN and -DUID_MAX
+        (string-append "-DLOGIN_DEFS_PATH="
+                       (assoc-ref %build-inputs "shadow")
+                       "/etc/login.defs")
+        (string-append "-DQT_IMPORTS_DIR="
+                       (assoc-ref %outputs "out") "/qml")
+        (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
+                       (assoc-ref %outputs "out") "/etc"))
+       #:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build qt-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program out "sddm")
+               (wrap-qt-program out "sddm-greeter")
+               #t))))))
+    (synopsis "QML based X11 and Wayland display manager")
+    (description "SDDM is a display manager for X11 and Wayland aiming to be
+fast, simple and beautiful.  SDDM is themeable and puts no restrictions on the
+user interface design.  It uses QtQuick which gives the designer the ability to
+create smooth, animated user interfaces.")
+    (home-page "https://github.com/sddm/sddm")
+    ;; QML files are MIT licensed and images are CC BY 3.0.
+    (license (list license:gpl2+ license:expat license:cc-by3.0))))
 
 (define-public slim
   (package
