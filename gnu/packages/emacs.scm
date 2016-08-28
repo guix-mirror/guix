@@ -3026,3 +3026,24 @@ and contiguous matches (substring).  The longer the substring match,
 the higher it scores. This maps well to how we think about matching.
 Flx has support for ido (interactively do things) through flx-ido.")
     (license license:gpl3+)))
+
+(define-public emacs-cyberpunk-theme
+  (package
+    (name "emacs-cyberpunk-theme")
+    (version "1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/n3mo/cyberpunk-theme.el/"
+                           "archive/" version ".tar.gz"))
+       (sha256
+        (base32
+         "068jcn4g1bvwgpcvyfqygzw6ahill51c1sqzyyvj2paxckbd7h51"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/n3mo/cyberpunk-theme.el")
+    (synopsis "Cyberpunk theme for emacs built-in color theme support")
+    (description
+     "Cyberpunk color theme for the emacs 24+ built-in color theme support
+known loosely as deftheme.  Many mode-specific customizations are included.")
+    (license license:gpl3+)))
