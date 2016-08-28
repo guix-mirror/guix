@@ -750,7 +750,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
 
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'dry-run? #t result)))
+                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg

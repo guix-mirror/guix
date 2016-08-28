@@ -541,7 +541,7 @@ must be one of 'package', 'all', or 'transitive'~%")
                    (alist-cons 'file arg result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'dry-run? #t result)))
+                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
          (option '(#\r "root") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'gc-root arg result)))
