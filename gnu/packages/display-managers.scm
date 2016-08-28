@@ -25,12 +25,98 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix packages)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages image)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg))
+
+(define-public greenisland
+  (package
+    (name "greenisland")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/greenisland/greenisland"
+                    "/releases/download/v" version "/"
+                    "greenisland-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1c9rlq7fqrsd5nb37anjvnp9xspqjz1kc0fvydv5xdy3abg8mw40"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("elogind" ,elogind)
+       ("eudev" ,eudev)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("libdrm" ,libdrm)
+       ("libinput" ,libinput-minimal)
+       ("libxcursor" ,libxcursor)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("xcb-util-cursor" ,xcb-util-cursor)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DPLUGIN_INSTALL_DIR="
+                            (assoc-ref %outputs "out") "/plugins")
+             (string-append "-DQML_INSTALL_DIR="
+                            (assoc-ref %outputs "out") "/qml"))
+       #:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build qt-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-udev-tests
+           (lambda _ ; FIXME: Build env doesn't contain /dev/sda
+             (substitute* "tests/auto/platform/tst_udev.cpp"
+               (("QVERIFY") "// QVERIFY")
+               (("QCOMPARE") "// QCOMPARE"))))
+         (replace 'check
+           (lambda _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (zero? (system* "dbus-launch" "ctest" "."))))
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             #t))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program out "greenisland")
+               (wrap-qt-program out "greenisland-launcher")
+               (wrap-qt-program out "greenisland-screencaster")
+               (wrap-qt-program out "greenisland-wayland-scanner")
+               #t))))))
+    (synopsis "QtQuick Wayland compositor and shell for desktop and mobile")
+    (description "Green Island provides a full blown Wayland compositor for
+QtQuick as well as pluggable hardware abstraction, extensions, tools and a
+Qt-style API for Wayland clients.")
+    (home-page "http://hawaiios.org")
+    ;; Choice of license at the user's opinion.
+    (license (list license:gpl2 license:gpl3 license:lgpl2.1 license:lgpl3))))
 
 (define-public slim
   (package
