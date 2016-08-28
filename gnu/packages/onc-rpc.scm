@@ -37,13 +37,13 @@
                 "18a337wa4amf0k21wnimp3yzs5l3cxqndz4x3x8bm993zhfy5hs5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'remote-dangling-symlink
-                 (lambda _
-                   ;; Remote the dangling symlinks since it breaks the
-                   ;; 'patch-source-shebangs' file tree traversal.
-                   (delete-file "INSTALL"))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remote-dangling-symlink
+           (lambda _
+             ;; Remove the dangling symlinks since it breaks the
+             ;; 'patch-source-shebangs' file tree traversal.
+             (delete-file "INSTALL"))))))
     (inputs `(("mit-krb5" ,mit-krb5)))
     (home-page "http://sourceforge.net/projects/libtirpc/")
     (synopsis "Transport-independent Sun/ONC RPC implementation")
