@@ -130,6 +130,7 @@
          (group "nogroup")
          (shell #~(string-append #$shadow "/sbin/nologin"))
          (home-directory "/nonexistent")
+         (create-home-directory? #f)
          (system? #t))))
 
 (define (default-skeletons)
