@@ -7223,6 +7223,10 @@ A comment about the account, such as the account owner's full name.
 @item @code{home-directory}
 This is the name of the home directory for the account.
 
+@item @code{create-home-directory?} (default: @code{#t})
+Indicates whether the home directory of this account should be created
+if it does not exist yet.
+
 @item @code{shell} (default: Bash)
 This is a G-expression denoting the file name of a program to be used as
 the shell (@pxref{G-Expressions}).

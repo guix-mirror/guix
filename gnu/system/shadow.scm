@@ -78,6 +78,8 @@
                         (default '()))            ; list of strings
   (comment        user-account-comment (default ""))
   (home-directory user-account-home-directory)
+  (create-home-directory? user-account-create-home-directory? ;Boolean
+                          (default #t))
   (shell          user-account-shell              ; gexp
                   (default #~(string-append #$bash "/bin/bash")))
   (system?        user-account-system?            ; Boolean
@@ -255,6 +257,7 @@ of user '~a' is undeclared")
       #$(user-account-supplementary-groups account)
       #$(user-account-comment account)
       #$(user-account-home-directory account)
+      #$(user-account-create-home-directory? account)
       ,#$(user-account-shell account)             ; this one is a gexp
       #$(user-account-password account)
       #$(user-account-system? account)))
