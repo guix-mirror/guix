@@ -2977,7 +2977,7 @@ passive voice.")
               (sha256
                (base32
                 "0cr37pdkwjgfijfws5bjskfh1rq9rfngxblcj6v5383vpmn83q7s"))
-              (file-name (string-append name "-" version))))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
     (description "This Emacs package provides a folder tree view.")
