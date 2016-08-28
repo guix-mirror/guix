@@ -3002,3 +3002,27 @@ lists, and project planning with a fast and effective plain-text system.  It
 also is an authoring system with unique support for literate programming and
 reproducible research.")
     (license license:gpl3+)))
+
+(define-public emacs-flx
+  (package
+    (name "emacs-flx")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lewang/"
+                           "flx/archive/v" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bkcpnf1j4i2fcc2rllwbz62l00sw2mcia6rm5amgwvlkqavmkv6"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/lewang/flx")
+    (synopsis "Fuzzy matching for Emacs")
+    (description
+     "Flx provides fuzzy matching for emacs a la sublime text.
+The sorting algorithm is a balance between word beginnings (abbreviation)
+and contiguous matches (substring).  The longer the substring match,
+the higher it scores. This maps well to how we think about matching.
+Flx has support for ido (interactively do things) through flx-ido.")
+    (license license:gpl3+)))
