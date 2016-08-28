@@ -190,6 +190,33 @@ info --version")
                                   (setlocale LC_ALL before)))
                              marionette))
 
+          (test-assert "/run/current-system is a GC root"
+            (marionette-eval '(begin
+                                ;; Make sure the (guix …) modules are found.
+                                (eval-when (expand load eval)
+                                  (set! %load-path
+                                    (cons
+                                     (string-append
+                                      "/run/current-system/profile/share/guile/site/"
+                                      (effective-version))
+                                     %load-path))
+                                  (set! %load-compiled-path
+                                    (cons
+                                     (string-append
+                                      "/run/current-system/profile/share/guile/site/"
+                                      (effective-version))
+                                     %load-compiled-path)))
+
+                                (use-modules (srfi srfi-34) (guix store))
+
+                                (let ((system (readlink "/run/current-system")))
+                                  (guard (c ((nix-protocol-error? c)
+                                             (file-exists? system)))
+                                    (with-store store
+                                      (delete-paths store (list system))
+                                      #f))))
+                             marionette))
+
           (test-assert "screendump"
             (begin
               (marionette-control (string-append "screendump " #$output
