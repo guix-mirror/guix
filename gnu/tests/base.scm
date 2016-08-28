@@ -217,6 +217,15 @@ info --version")
                                       #f))))
                              marionette))
 
+          ;; This symlink is currently unused, but better have it point to the
+          ;; right place.  See
+          ;; <https://lists.gnu.org/archive/html/guix-devel/2016-08/msg01641.html>.
+          (test-equal "/var/guix/gcroots/profiles is a valid symlink"
+            "/var/guix/profiles"
+            (marionette-eval '(readlink "/var/guix/gcroots/profiles")
+                             marionette))
+
+
           (test-assert "screendump"
             (begin
               (marionette-control (string-append "screendump " #$output
