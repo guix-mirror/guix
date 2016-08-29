@@ -348,6 +348,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
   %D%/packages/uucp.scm				\
+  %D%/packages/u-boot.scm			\
   %D%/packages/valgrind.scm			\
   %D%/packages/version-control.scm		\
   %D%/packages/video.scm			\
