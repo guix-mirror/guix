@@ -97,15 +97,7 @@
                        "--mandir=share/man"
                        ,(string-append
                          "--docdir=share/doc/cmake-"
-                         (version-major+minor version)))))))
-         (add-after 'unpack 'remove-libarchive-version-test
-           ; This test check has been failing consistantly over libarchive 3.2.x
-           ; and cmake 3.4.x and 3.5.x so we disable it for now
-           (lambda _
-               (substitute*
-               "Tests/CMakeOnly/AllFindModules/CMakeLists.txt"
-               (("LibArchive") ""))
-               #t)))))
+                         (version-major+minor version))))))))))
     (inputs
      `(("file"       ,file)
        ("curl"       ,curl)
@@ -117,7 +109,7 @@
      (list (search-path-specification
              (variable "CMAKE_PREFIX_PATH")
              (files '("")))))
-    (home-page "http://www.cmake.org/")
+    (home-page "https://www.cmake.org/")
     (synopsis "Cross-platform build system")
     (description
      "CMake is a family of tools designed to build, test and package software.
