@@ -110,7 +110,8 @@ owner-writable in HOME."
               files)))
 
 (define* (add-user name group
-                   #:key uid comment home shell password system?
+                   #:key uid comment home create-home?
+                   shell password system?
                    (supplementary-groups '())
                    (log-port (current-error-port)))
   "Create an account for user NAME part of GROUP, with the specified
@@ -139,7 +140,7 @@ properties.  Return #t on success."
                           `("-G" ,(string-join supplementary-groups ","))
                           '())
                     ,@(if comment `("-c" ,comment) '())
-                    ,@(if home
+                    ,@(if (and home create-home?)
                           (if (file-exists? home)
                               `("-d" ,home)     ; avoid warning from 'useradd'
                               `("-d" ,home "--create-home"))
@@ -158,7 +159,8 @@ properties.  Return #t on success."
                #t)))))
 
 (define* (modify-user name group
-                      #:key uid comment home shell password system?
+                      #:key uid comment home create-home?
+                      shell password system?
                       (supplementary-groups '())
                       (log-port (current-error-port)))
   "Modify user account NAME to have all the given settings."
@@ -186,7 +188,8 @@ logged in."
   (zero? (system* "groupdel" name)))
 
 (define* (ensure-user name group
-                      #:key uid comment home shell password system?
+                      #:key uid comment home create-home?
+                      shell password system?
                       (supplementary-groups '())
                       (log-port (current-error-port))
                       #:rest rest)
@@ -207,7 +210,8 @@ numeric gid or #f."
 
   (define activate-user
     (match-lambda
-     ((name uid group supplementary-groups comment home shell password system?)
+     ((name uid group supplementary-groups comment home create-home?
+       shell password system?)
       (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
                                         name)))
         (ensure-user name group
@@ -216,6 +220,7 @@ numeric gid or #f."
                      #:supplementary-groups supplementary-groups
                      #:comment comment
                      #:home home
+                     #:create-home? create-home?
                      #:shell shell
                      #:password password)
 

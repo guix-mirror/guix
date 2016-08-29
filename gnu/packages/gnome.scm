@@ -21,6 +21,8 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,7 +87,6 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages m4)
   #:use-module (gnu packages image)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
@@ -3284,7 +3285,7 @@ which can read a large number of file formats.")
 (define-public rhythmbox
  (package
    (name "rhythmbox")
-   (version "3.2.1")
+   (version "3.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3292,7 +3293,7 @@ which can read a large number of file formats.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0f3radhlji7rxl760yl2vm49fvfslympxrpm8497acbmbd7wlhxz"))))
+              "1347747m90aiz47wny1f8rdk5195qf2ph0554c6y91711sm951gg"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:configure-flags
@@ -3310,11 +3311,13 @@ which can read a large number of file formats.")
            (let ((out               (assoc-ref outputs "out"))
                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
                  (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH"))
-                 (grl-plugin-path   (getenv "GRL_PLUGIN_PATH")))
+                 (grl-plugin-path   (getenv "GRL_PLUGIN_PATH"))
+                 (python-path       (getenv "PYTHONPATH")))
              (wrap-program (string-append out "/bin/rhythmbox")
                `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-               `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))))
+               `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))
+               `("PYTHONPATH"             ":" prefix (,python-path))))
            #t)))))
    (propagated-inputs
     `(("dconf" ,dconf)))
@@ -3360,7 +3363,6 @@ which can read a large number of file formats.")
       ;; TODO:
       ;;  * libgpod
       ;;  * mx
-      ;;  * webkit
       ("brasero" ,brasero)))
    (home-page "https://wiki.gnome.org/Apps/Rhythmbox")
    (synopsis "Music player for GNOME")
@@ -3600,7 +3602,7 @@ work and the interface is well tested.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.20.1")
+    (version "3.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3608,7 +3610,7 @@ work and the interface is well tested.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ry9z6d51gjbv5n8kspwdyfrdai2hrin2ixdicmyiq6xbryzcwbi"))))
+                "18i4nk4k4q2yaj4zw0gbyp7ja2g67pm05p56bbras52cnjyy37ad"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
@@ -3862,7 +3864,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.23.1")
+    (version "0.23.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3870,39 +3872,28 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12imip32mav0zqg1fh4xm6zk4qsgg2435xsyb6ljz47i37zk6kg2"))))
+                "0fgs1rgvkmy79bmpxrsvm5w8rvqml4l1vnwma0xqx5zzm02p8a07"))))
     (build-system glib-or-gtk-build-system)
-    (arguments
-     `(#:tests? #f ;no "check" target
-       #:make-flags '("CC=gcc")
-       #:configure-flags '("--disable-gsettings-convert-install")
-       #:out-of-source? #f))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("itstool" ,itstool)
        ("gettext" ,gnu-gettext)
-       ("m4" ,m4)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("vala" ,vala)
-       ("which" ,which)
-       ("gnome-doc-utils" ,gnome-doc-utils)
-       ;; FIXME: I only added python2-libxml2 because xml2po needs it at
-       ;; runtime.  It should be propagated.
-       ("python2-libxml2" ,python2-libxml2)
-       ("python2" ,python-2)))
+       ("itstool" ,itstool)
+       ("vala" ,vala)))
     (inputs
-     `(("gstreamer" ,gstreamer)
+     `(("glib:bin" ,glib "bin")
+       ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)
        ("libgee" ,libgee)
        ("gexiv2" ,gexiv2)
        ("libraw" ,libraw)
        ("json-glib" ,json-glib)
-       ("rest" ,rest)
        ("webkitgtk" ,webkitgtk)
        ("sqlite" ,sqlite)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
-       ("gtk+" ,gtk+)
        ("libgudev" ,libgudev)
        ("libgphoto2" ,libgphoto2)))
     (home-page "https://wiki.gnome.org/Apps/Shotwell")
@@ -4488,6 +4479,27 @@ available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
 devices, and provides VPN integration with a variety of different VPN
 services.")
     (license license:gpl2+)))
+
+(define-public mobile-broadband-provider-info
+  (package
+    (name "mobile-broadband-provider-info")
+    (version "20151214")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/"
+                    "mobile-broadband-provider-info/" version "/"
+                    "mobile-broadband-provider-info-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1905nab1h8p4hx0m1w0rn4mkg9209x680dcr4l77bngy21pmvr4a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager")
+    (synopsis "Database of broadband connection configuration")
+    (description "Database of broadband connection configuration.")
+    (license license:public-domain)))
 
 (define-public network-manager-applet
   (package
@@ -5458,3 +5470,43 @@ GLib/GObject code.")
      "Libgnomekbd is a keyboard configuration library for the GNOME desktop
 environment, which can notably display keyboard layouts.")
     (license license:lgpl2.0+)))
+
+;;; This package is no longer maintained:
+;;; https://wiki.gnome.org/Attic/LibUnique
+;;; "Unique is now in maintenance mode, and its usage is strongly discouraged.
+;;; Applications should use the GtkApplication class provided by GTK+ 3.0."
+(define-public libunique
+  (package
+    (name "libunique")
+    (version "3.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0f70lkw66v9cj72q0iw1s2546r6bwwcd8idcm3621fg2fgh2rw58"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static"
+                           "--disable-dbus" ; use gdbus
+                           "--enable-introspection")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")
+       ("gtk-doc" ,gtk-doc)))
+    (propagated-inputs
+     ;; Referred to in .h files and .pc.
+     `(("gtk+" ,gtk+)))
+    (home-page "https://wiki.gnome.org/Attic/LibUnique")
+    (synopsis "Library for writing single instance applications")
+    (description
+     "Libunique is a library for writing single instance applications.  If you
+launch a single instance application twice, the second instance will either just
+quit or will send a message to the running instance.  Libunique makes it easy to
+write this kind of application, by providing a base class, taking care of all
+the IPC machinery needed to send messages to a running instance, and also
+handling the startup notification side.")
+    (license license:lgpl2.1+)))

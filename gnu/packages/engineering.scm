@@ -388,7 +388,9 @@ multipole-accelerated algorithm.")
                                                  (assoc-ref outputs "out"))
                                   "phoenix.pro"))))))))
     (inputs
-     `(("qt" ,qt)
+     `(("qtbase" ,qtbase)
+       ("qtserialport" ,qtserialport)
+       ("qtsvg" ,qtsvg)
        ("boost" ,boost)
        ("zlib" ,zlib)
        ("fritzing-parts-db"

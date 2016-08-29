@@ -27,6 +27,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -120,8 +121,12 @@
 (define-public poppler-qt5
   (package (inherit poppler)
    (name "poppler-qt5")
-   (inputs `(("qt" ,qt)
+   (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
+   (arguments
+    (substitute-keyword-arguments (package-arguments poppler)
+     ((#:configure-flags flags)
+       `(cons "CXXFLAGS=-std=gnu++11" ,flags))))
    (synopsis "Qt5 frontend for the Poppler PDF rendering library")))
 
 (define-public python-poppler-qt4
@@ -469,6 +474,8 @@ extracting content or merging files.")
                             name "-" version "-source.tar.gz"))
         (sha256
           (base32 "01n26cy41lc2fjri63s4js23ixxb4nd37aafry3hz4i4id6wd8x2"))
+        (patches (search-patches "mupdf-CVE-2016-6265.patch"
+                                 "mupdf-CVE-2016-6525.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Don't build the bundled-in third party libraries.

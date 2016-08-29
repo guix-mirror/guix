@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,10 +27,12 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python))
 
 (define-public cereal
   (package
@@ -123,3 +127,76 @@ such as compact binary encodings, XML, or JSON.")
     (description "Msgpack is a library for C/C++ that implements binary
 serialization.")
     (license license:boost1.0)))
+
+(define-public yaml-cpp
+  (package
+    (name "yaml-cpp")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/jbeder/yaml-cpp/archive/"
+                    "yaml-cpp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vk6pjh0f5k6jwk2sszb9z5169whmiha9ainbdpa1arxlkq7v3b6"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost)))
+    (native-inputs
+     `(("python" ,python)))
+    (home-page "https://github.com/jbeder/yaml-cpp")
+    (synopsis "YAML parser and emitter in C++")
+    (description "YAML parser and emitter in C++ matching the YAML 1.2 spec.")
+    (license license:bsd-3)))
+
+(define-public jsoncpp
+  (package
+    (name "jsoncpp")
+    (version "1.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/open-source-parsers/jsoncpp/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sgp6nc4c6pfn92f369v08zdwpqswn9j2ihy59bpwwl0grkx1p0h"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/open-source-parsers/jsoncpp")
+    (synopsis "C++ library for interacting with JSON")
+    (description "JsonCpp is a C++ library that allows manipulating JSON values,
+including serialization and deserialization to and from strings.  It can also
+preserve existing comment in unserialization/serialization steps, making
+it a convenient format to store user input files.")
+    (license license:expat)))
+
+(define-public capnproto
+  (package
+    (name "capnproto")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://capnproto.org/capnproto-c++-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1yvaadhgakskqq5wpv53hd6fc3pp17mrdldw4i5cvgck4iwprcfd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'do-not-require-/etc/services
+           (lambda _
+             ;; Workaround for test that tries to resolve port name from
+             ;; /etc/services, which is not present in build environment.
+             (substitute* "src/kj/async-io-test.c++" ((":http") ":80"))
+             #t)))))
+    (home-page "https://capnproto.org")
+    (synopsis "Capability-based RPC and serialization system")
+    (description
+     "Cap'n Proto is a very fast data interchange format and capability-based
+RPC system.  Think JSON, except binary.  Or think Protocol Buffers, except faster.")
+    (license license:expat)))

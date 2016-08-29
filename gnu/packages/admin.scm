@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1244,21 +1245,24 @@ degradation and failure.")
 (define-public fdupes
   (package
     (name "fdupes")
-    (version "1.51")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/adrianlopezroche/fdupes/archive/fdupes-"
+             "https://github.com/adrianlopezroche/fdupes/archive/v"
              version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11j96vxl9vg3jsnxqxskrv3gad6dh7hz2zpyc8n31xzyxka1c7kn"))))
+         "1sj9pa40pbz6xdwbxfwhdhkvhdf1xc5gvggk9mdq26c41gdnyswx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
        #:tests? #f ; no 'check' target
-       #:make-flags (list (string-append "PREFIX="
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))))
     (home-page "https://github.com/adrianlopezroche/fdupes")
     (synopsis "Identify duplicate files")
@@ -1388,7 +1392,7 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.2.4")
+    (version "22.3.4")
     (source
      (origin
        (method url-fetch)
@@ -1397,7 +1401,7 @@ limits.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0xglj7nb8xczaqy2dhn78drqdwqj64rqpymxhqmmwwqzfaqassw1"))))
+         "113rcpr37ngf2xs8da41qdarq5qmj0dwx8ggqy3lhlb0kvqq7g9z"))))
     (build-system gnu-build-system)
     (native-inputs                      ;for tests
      `(("python-mock" ,python-mock)
@@ -1647,7 +1651,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.9")
+    (version "3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1655,7 +1659,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0g4s2vkpl0mqhkdkbzib07qr4xf0cq25fvhdhna52290qgd69pwf"))))
+                "04q2cn8c83f6z6wn1scla1ilrpi5ssjc64987hvmwfvwvb82bvkp"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -1734,3 +1738,36 @@ highly portable.  Great for heterogenous networks.")
 the status of your battery in the system tray.")
     (home-page "https://github.com/valr/cbatticon")
     (license license:gpl2+)))
+
+(define-public interrobang
+  (let ((revision "1")
+        (commit "896543735e1c99144765fdbd7b6e6b5afbd8b881"))
+    (package
+      (name "interrobang")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://github.com/TrilbyWhite/interrobang")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "1n13m70p1hfba5dy3i8hfclbr6k9q3d9dai3dg4jvhdhmxcpjzdf"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)) ; no configure script
+         #:make-flags (list (string-append "PREFIX="
+                                           (assoc-ref %outputs "out")))))
+      (inputs
+       `(("libx11" ,libx11)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (synopsis "Scriptable launcher menu")
+      (description "Interrobang is a scriptable launcher menu with a customizable
+shortcut syntax and completion options.")
+      (home-page "https://github.com/TrilbyWhite/interrobang")
+      (license license:gpl3+))))

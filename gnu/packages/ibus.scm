@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
@@ -36,7 +36,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xorg))
 
 (define-public ibus
   (package
@@ -62,24 +63,42 @@
                            (assoc-ref %outputs "out")
                            "/lib/python2.7/site-packages/gi/overrides/"))
       #:phases
-      (alist-cons-before
-       'configure 'disable-dconf-update
-       (lambda _
-         (substitute* "data/dconf/Makefile.in"
-           (("dconf update") "echo dconf update"))
-         #t)
-       (alist-cons-after
-        'wrap-program 'wrap-with-additional-paths
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
-          ;; GI_TYPELIB_PATH.
-          (let ((out (assoc-ref outputs "out")))
-            (wrap-program (string-append out "/bin/ibus-setup")
-              `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
-              `("GI_TYPELIB_PATH" ":" prefix
-                (,(getenv "GI_TYPELIB_PATH")
-                 ,(string-append out "/lib/girepository-1.0"))))))
-        %standard-phases))))
+      (modify-phases %standard-phases
+        (add-before 'configure 'disable-dconf-update
+          (lambda _
+            (substitute* "data/dconf/Makefile.in"
+              (("dconf update") "echo dconf update"))
+            #t))
+        (add-after 'unpack 'delete-generated-files
+          (lambda _
+            (for-each (lambda (file)
+                        (let ((c (string-append (string-drop-right file 4) "c")))
+                          (when (file-exists? c)
+                            (format #t "deleting ~a\n" c)
+                            (delete-file c))))
+                      (find-files "." "\\.vala"))
+            #t))
+        (add-after 'unpack 'fix-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "src/ibusenginesimple.c"
+              (("/usr/share/X11/locale")
+               (string-append (assoc-ref inputs "libx11")
+                              "/share/X11/locale")))
+            (substitute* "ui/gtk3/xkblayout.vala"
+              (("\"(setxkbmap|xmodmap)\"" _ prog)
+               (string-append "\"" (assoc-ref inputs prog) "\"")))
+            #t))
+        (add-after 'wrap-program 'wrap-with-additional-paths
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
+            ;; GI_TYPELIB_PATH.
+            (let ((out (assoc-ref outputs "out")))
+              (wrap-program (string-append out "/bin/ibus-setup")
+                `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" ":" prefix
+                  (,(getenv "GI_TYPELIB_PATH")
+                   ,(string-append out "/lib/girepository-1.0")))))
+            #t)))))
    (inputs
     `(("dbus" ,dbus)
       ("dconf" ,dconf)
@@ -88,12 +107,16 @@
       ("gtk+" ,gtk+)
       ("intltool" ,intltool)
       ("libnotify" ,libnotify)
+      ("libx11" ,libx11)
+      ("setxkbmap" ,setxkbmap)
+      ("xmodmap" ,xmodmap)
       ("iso-codes" ,iso-codes)
       ("pygobject2" ,python2-pygobject)
       ("python2" ,python-2)))
    (native-inputs
     `(("glib" ,glib "bin") ; for glib-genmarshal
       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+      ("vala" ,vala)
       ("pkg-config" ,pkg-config)))
    (native-search-paths
     (list (search-path-specification

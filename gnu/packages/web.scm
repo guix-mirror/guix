@@ -2615,11 +2615,11 @@ or to multiple server ports.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/"
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Net-SMTP-SSL-" version ".tar.gz"))
        (sha256
-	(base32
-	 "05y94mb1vdw32mvwb0cp2h4ggh32f8j8nwwfjb8kjwxvfkfhyp9h"))))
+        (base32
+         "05y94mb1vdw32mvwb0cp2h4ggh32f8j8nwwfjb8kjwxvfkfhyp9h"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)))

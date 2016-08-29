@@ -21,7 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gstreamer)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1+ bsd-2 bsd-3 gpl2+))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -92,7 +92,7 @@ associated tools for compiling and executing simple programs that operate on
 arrays of data.")
     ;; The source code implementing the Marsenne Twister algorithm is licensed
     ;; under the 3-clause BSD license, the rest is under 2-clause BSD license.
-    (license (list bsd-2 bsd-3))))
+    (license (list license:bsd-2 license:bsd-3))))
 
 (define-public gstreamer
   (package
@@ -140,7 +140,7 @@ transparently.  Developers can add new codecs and filters by writing a
 simple plugin with a clean, generic interface.
 
 This package provides the core library and elements.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public gst-plugins-base
   (package
@@ -192,7 +192,7 @@ This package provides the core library and elements.")
      "Plugins for the GStreamer multimedia library")
     (description "This package provides an essential exemplary set of plug-ins
 for the GStreamer multimedia library.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 
 (define-public gst-plugins-good
@@ -258,7 +258,7 @@ for the GStreamer multimedia library.")
     (description "GStreamer Good Plug-ins is a set of plug-ins for the
 GStreamer multimedia library.  This set contains those plug-ins which the
 developers consider to have good quality code and correct functionality.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public gst-plugins-bad
   (package
@@ -323,7 +323,7 @@ developers consider to have good quality code and correct functionality.")
        ("openssl" ,openssl)
        ("opus" ,opus)
        ("orc" ,orc)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
        ("soundtouch" ,soundtouch)
        ("wayland" ,wayland)))
     (home-page "http://gstreamer.freedesktop.org/")
@@ -331,7 +331,7 @@ developers consider to have good quality code and correct functionality.")
     (description
      "GStreamer Bad Plug-ins is a set of plug-ins whose quality aren't up to
 par compared to the rest.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public gst-plugins-ugly
   (package
@@ -369,7 +369,7 @@ par compared to the rest.")
     (description "GStreamer Ugly Plug-ins.  This set contains those plug-ins
 which the developers consider to have good quality code but that might pose
 distribution problems in some jurisdictions, e.g. due to patent threats.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public gst-libav
   (package
@@ -406,7 +406,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
     (description
      "This GStreamer plugin supports a large number of audio and video
 compression formats through the use of the libav library.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public python-gst
   (package
@@ -446,7 +446,7 @@ compression formats through the use of the libav library.")
     (description
      "This package contains GObject Introspection overrides for Python that can
 be used by Python applications using GStreamer.")
-    (license lgpl2.1+)
+    (license license:lgpl2.1+)
     (properties `((python2-variant . ,(delay python2-gst))))))
 
 (define-public python2-gst

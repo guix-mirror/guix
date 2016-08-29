@@ -14,6 +14,8 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -410,7 +412,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -419,7 +421,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lqm0msc9lzb05ys96bsx8bf2y1qrw27dh5h6qz8lf5i4cbhflw2"))))
+                "0k57f2wqng7510nzyzgjgbapplia23l3zrphl816nfm4s58sy1ka"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -435,7 +437,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.7.0")
+    (version "2.8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -443,7 +445,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1kzd8k2n0lcr04jvn5b6d29zf765mxgshfhzflkzndwmvyxmlqpl"))))
+               "1znvb7inwinrhifqzwp4lp9j6yp1l25j7riczc0zmvcjbpl5yhfq"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -571,7 +573,7 @@ support for Git-SVN.")
               (file-name (string-append "magit-popup-" version ".el"))
               (sha256
                (base32
-                "144nl7j5mn86ccan6qxgg40bsxpkbc83vwnhd5y657gqki74972r"))))
+                "0lmw824zp8c0vhikfkiay9wn4nmaksz6mfy0fldvy4wlx5c26yh3"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -1187,7 +1189,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.12.1")
+    (version "2.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1196,7 +1198,7 @@ and stored in memory.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "082jl7mp4x063bpj5ad2pc5125k0d6p7rb89gcj7ny3lma9h2ij1"))))
+                "1pjlkrzr8n45bnp3xs3dybvy0nz3gwamrfc7vsi1nhpkkw99ihhb"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -1233,7 +1235,7 @@ allows easily move between them.")
 (define-public emacs-s
   (package
     (name "emacs-s")
-    (version "1.9.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1242,7 +1244,7 @@ allows easily move between them.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1gah2k577gvnmxlpw7zrz0jr571vghzhdv2hbgchlgah07czd091"))))
+                "0krq5nz3llfx0vwdqn18pmq777ja0fac185w0h9qymppb1j1hvc2"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -1259,7 +1261,7 @@ strings.")
 (define-public emacs-f
   (package
     (name "emacs-f")
-    (version "0.17.2")
+    (version "0.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1268,7 +1270,7 @@ strings.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1n5gcldf43wmkr7jxgs519v21zavwr0yn8048iv6gvgfwicnyjlx"))))
+                "1926shh2ymdsgz05c6q181mzzz1rci99ch568j151xi865jinyg5"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
@@ -2089,6 +2091,26 @@ It is built on top of the custom theme support in Emacs 24 or later.")
     (description
      "Solarized for Emacs is a port of the Solarized theme for Vim.  This
 package provides a light and a dark variant.")
+    (license license:gpl3+)))
+
+(define-public emacs-ahungry-theme
+  (package
+    (name "emacs-ahungry-theme")
+    (version "1.3.0")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "http://elpa.gnu.org/packages/ahungry-theme-"
+                                 version ".tar"))
+             (sha256
+              (base32
+               "1p2zaq0s4bbl5cx6wyab24wamw7m0mysb0v47dqjmnvfc25z84rq"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ahungry/color-theme-ahungry")
+    (synopsis "Ahungry color theme for Emacs")
+    (description "Ahungry theme for Emacs provides bright and bold colors.
+If you load it from a terminal, you will be able to make use of the
+transparent background.  If you load it from a GUI, it will default to a
+dark background.")
     (license license:gpl3+)))
 
 (define-public emacs-smartparens
@@ -2959,4 +2981,24 @@ passive voice.")
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
     (description "This Emacs package provides a folder tree view.")
+    (license license:gpl3+)))
+
+(define-public emacs-org
+  (package
+    (name "emacs-org")
+    (version "20160815")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://orgmode.org/elpa/org-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0k9pa13kpmpi6irmbavxffgqfanhjnijz4mkmmi0zp7kgjfbaliw"))))
+    (build-system emacs-build-system)
+    (home-page "http://orgmode.org/")
+    (synopsis "Outline-based notes management and organizer")
+    (description "Org is an Emacs mode for keeping notes, maintaining TODO
+lists, and project planning with a fast and effective plain-text system.  It
+also is an authoring system with unique support for literate programming and
+reproducible research.")
     (license license:gpl3+)))

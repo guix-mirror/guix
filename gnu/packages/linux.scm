@@ -40,6 +40,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
@@ -50,6 +51,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
@@ -227,7 +229,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.7.1")
+  (let* ((version "4.7.2")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -305,7 +307,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "08b8yv5grhzacahmhs3q1031d6a4k7qf1qj7i5vsk33fhgg1nvzx"))))
+               "1rp09y2hv0hvdybm2n2im9717kzxmklpgzs8k1bmdfzqxyg8cb85"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -342,13 +344,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.18")
+    (version "4.4.19")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0k8k17in7dkjd9d8zg3i8l1ax466dba6bxw28flxizzyq8znljps"))))
+                "0nddjs7prmb0g7g3w2k4qfyq02a9szm5nvsgflxcaarbq1slibb5"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -359,13 +361,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.30")
+    (version "4.1.31")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0nwmwbskfni3fnbd7v6jh8yfah915zh80xg4g7n38lb66rk3bxvi"))))
+                "0grffah921k136w1qwcswxv6m810s8q54nr2rk7kyqka3a1b81yw"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -2609,7 +2611,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.6.1")
+    (version "4.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2617,7 +2619,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "06c9l6m3w29dndk17jrlpgr01wykl10h34zva8zc2c571z6mrlaf"))))
+                "15jsa12ijc6z49v1csc62x9zidrgcf307lwy1rbffdwk3gsrczww"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2648,6 +2650,7 @@ and copy/paste text in the console and in xterm.")
                      ("libxml2" ,libxml2)
                      ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
+                     ;; For tests
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
@@ -2869,3 +2872,40 @@ as used on certified hardware security devices.")
                    (license:non-copyleft "file://nist/packtest.c")
                    license:public-domain        ; nist/dfft.c
                    license:gpl3+))))            ; everything else
+
+(define-public ecryptfs-utils
+  (package
+    (name "ecryptfs-utils")
+    (version "111")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/ecryptfs/trunk/"
+                           version "/+download/ecryptfs-utils_"
+                           version ".orig.tar.gz"))
+       (sha256
+        (base32
+         "0zwq19siiwf09h7lwa7n7mgmrr8cxifp45lmwgcfr8c1gviv6b0i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-pywrap")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("perl" ,perl)                   ; for pod2man
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("keyutils" ,keyutils)
+       ("linux-pam" ,linux-pam)
+       ("nss" ,nss)))
+    (home-page "http://ecryptfs.org/")
+    (synopsis "eCryptfs cryptographic file system utilities")
+    (description
+     "eCryptfs is a POSIX-compliant stacked cryptographic file system for Linux.
+Each file's cryptographic meta-data is stored inside the file itself, along
+with the encrypted contents.  This allows individual encrypted files to be
+copied between hosts and still be decrypted with the proper key.  eCryptfs is a
+native Linux file system, and has been part of the Linux kernel since version
+2.6.19.  This package contains the userland utilities to manage it.")
+    ;; The files src/key_mod/ecryptfs_key_mod_{openssl,pkcs11_helper,tspi}.c
+    ;; grant additional permission to link with OpenSSL.
+    (license license:gpl2+)))

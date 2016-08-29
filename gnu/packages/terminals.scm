@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,16 +28,20 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages gnome))
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages xdisorg))
 
 (define-public tilda
   (package
@@ -159,3 +164,69 @@ insert mode and command mode where keybindings have different functions.")
 Forget screen recording apps and blurry video.  Enjoy a lightweight, purely
 text-based approach to terminal recording.")
     (license license:gpl3)))
+
+(define-public libtsm
+  (package
+    (name "libtsm")
+    (version "3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://freedesktop.org/software/kmscon/releases/"
+                    "libtsm-" version ".tar.xz"))
+              (sha256
+               (base32
+                "01ygwrsxfii0pngfikgqsb4fxp8n1bbs47l7hck81h9b9bc1ah8i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxkbcommon" ,libxkbcommon)))
+    (synopsis "Xterm state machine library")
+    (description "TSM is a state machine for DEC VT100-VT520 compatible
+terminal emulators.  It tries to support all common standards while keeping
+compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
+    (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
+    ;; Hash table implementation is lgpl2.1+ licensed.
+    ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
+    ;; derived from ISC.
+    ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
+    ;; under the bsd 2 license.
+    (license (list license:expat license:lgpl2.1+ license:isc license:bsd-2))))
+
+(define-public kmscon
+  (package
+    (name "kmscon")
+    (version "8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://freedesktop.org/software/kmscon/releases/"
+                    "kmscon-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libtsm" ,libtsm)
+       ("libxkbcommon" ,libxkbcommon)
+       ("logind" ,elogind)
+       ("mesa" ,mesa)
+       ("pango" ,pango)
+       ("udev" ,eudev)))
+    (synopsis "Simple terminal emulator")
+    (description "Kmscon is a simple terminal emulator based on linux kernel
+mode setting (KMS).  It is an attempt to replace the in-kernel VT implementation
+with a userspace console.  See kmscon(1) man-page for usage information.")
+    (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
+    ;; Hash table implementation is lgpl2.1+ licensed.
+    ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
+    ;; derived from ISC.
+    ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
+    ;; under the bsd 2 license.
+    ;; Unifont-Font is from http://unifoundry.com/unifont.html and licensed
+    ;; under the terms of the GNU GPL.
+    (license (list license:expat license:lgpl2.1+ license:bsd-2 license:gpl2+))))

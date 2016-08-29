@@ -133,6 +133,29 @@ projects.  Software developers are encouraged to migrate software to the GNU
 autotools system.")
     (license license:x11)))
 
+(define-public lndir
+  (package
+    (name "lndir")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/util/"
+                    "lndir-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0pdngiy8zdhsiqx2am75yfcl36l7kd7d7nl0rss8shcdvsqgmx29"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xproto" ,xproto)))
+    (home-page "http://www.x.org")
+    (synopsis "Symlink directory into tree")
+    (description "Create a shadow directory of symbolic links to another
+directory tree.")
+    (license license:x11)))
+
 (define-public bdftopcf
   (package
     (name "bdftopcf")
@@ -2361,7 +2384,7 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.10.1")
+    (version "2.10.3")
     (source
       (origin
         (method url-fetch)
@@ -2371,7 +2394,7 @@ devices, thus making direct access unnecessary.")
                ".tar.bz2"))
         (sha256
           (base32
-            "05z05n39v8s2b0hwhcjb1bca7j8gc62bv9jxnibawwmjym3jp75g"))))
+            "18ijnclnylrr7vkvflalkw4bqfily3scg6baczjjgycdpsj1p8js"))))
     (build-system gnu-build-system)
     (inputs
       `(("udev" ,eudev)
@@ -2511,7 +2534,7 @@ as USB mice.")
 (define-public xf86-input-synaptics
   (package
     (name "xf86-input-synaptics")
-    (version "1.8.3")
+    (version "1.8.99.1")
     (source
       (origin
         (method url-fetch)
@@ -2521,7 +2544,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "009zx199pilcvlaqm6fx4mg94q81d6vvl5rznmw3frzkfh6117yk"))))
+            "1apbcwn20p7sy07ghlldmqcnxag2r9sdjqmb4xxzki0hz8wm72ac"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
@@ -2623,7 +2646,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.6.1")
+    (version "7.7.0")
     (source
       (origin
         (method url-fetch)
@@ -2633,7 +2656,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0k6kw69mcarlmxlb4jlhz887jxqr94qx2pin04xcv2ysp3pdj5i5"))))
+            "1hy1n8an98mflfbdcb3q7wv59x971j7nf9zhivf90p0lgdbiqkc4"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
@@ -3049,7 +3072,7 @@ graphics cards.")
 (define-public xf86-video-openchrome
   (package
     (name "xf86-video-openchrome")
-    (version "0.3.3")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
@@ -3058,9 +3081,8 @@ graphics cards.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-           "1v8j4i1r268n4fc5gq54zg1x50j0rhw71f3lba7411mcblg2z7p4"))
-        (patches (search-patches "xf86-video-openchrome-glibc-2.20.patch"))))
+         (base32
+          "1fsmr455lk89zl795d6b5ypyqjim40j3h2vjch52lcssjw9xdza9"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)

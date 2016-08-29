@@ -71,7 +71,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.19.18")
+    (version "0.19.19")
     (source (origin
               (method url-fetch)
               (uri
@@ -80,7 +80,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0izd0ph570055s1np6dynxhwbh0h6kb6agvfhxzbj34qahf9jk3n"))))
+                "07af1m2lgblyiq0gcs26zv8n22wrhrpmf49xsm338h1n87d6r1dw"))))
     (build-system gnu-build-system)
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
@@ -134,7 +134,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.27")
+    (version "0.28")
     (source (origin
               (method url-fetch)
               (uri
@@ -143,7 +143,7 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0r10wsqxsi07gns6mfnicvpci0sbwwj4qa9iyr1ysrgadl5bx8j5"))))
+                "0iy5mdffkk61255f62si7p8mhyhkib70zlr1i1iimj2xr037scx4"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -156,7 +156,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.24")
+    (version "0.25")
     (source (origin
               (method url-fetch)
               (uri
@@ -165,7 +165,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1sf3nirs3mcx0r5i7acm9bsvzqzlh730m0yjg6jcyj8ln6r7cvqf"))))
+                "196f9s0qmc4srr10n4vk3amvqy5f52y9kvgwqpkfjsnhf75qlckf"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("libmpdclient" ,libmpdclient)
@@ -180,7 +180,7 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -188,7 +188,7 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "0qqy3w2vw3i9rxz0z8n0plmwwfv6gzrxip86l894l1xbvzqja16p"))))
+                "0zg084m06y7dd8ccy6aq9hx8q7qi2s5kl0br5139hrmk40q68kvy"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)

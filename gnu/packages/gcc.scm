@@ -359,14 +359,14 @@ Go.  It also includes runtime support libraries for these languages.")
 (define-public gcc-6
   (package
     (inherit gcc-5)
-    (version "6.1.0")
+    (version "6.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ld3y4rgimyqgx1nwvzqyl5gr4wzc0ch4akkvsqp3fgbmdfcii09"))
+                "1idpf43988v1a6i8lw9ak1r7igcfg1bm5kn011iydlr2qygmhi4r"))
               (patches (search-patches "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update

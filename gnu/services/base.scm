@@ -49,7 +49,7 @@
   #:use-module (ice-9 format)
   #:export (fstab-service-type
             root-file-system-service
-            file-system-service
+            file-system-service-type
             user-unmount-service
             swap-service
             user-processes-service
@@ -86,6 +86,7 @@
             syslog-service-type
             %default-syslog.conf
 
+            %default-authorized-guix-keys
             guix-configuration
             guix-configuration?
             guix-service
@@ -163,7 +164,7 @@
                 (extensions
                  (list (service-extension etc-service-type
                                           file-systems->fstab)))
-                (compose identity)
+                (compose concatenate)
                 (extend append)))
 
 (define %root-file-system-shepherd-service
@@ -229,7 +230,8 @@ FILE-SYSTEM."
      (file-system->shepherd-service-name fs))))
 
 (define (file-system-shepherd-service file-system)
-  "Return a list containing the shepherd service for @var{file-system}."
+  "Return the shepherd service for @var{file-system}, or @code{#f} if
+@var{file-system} is not auto-mounted upon boot."
   (let ((target  (file-system-mount-point file-system))
         (device  (file-system-device file-system))
         (type    (file-system-type file-system))
@@ -237,10 +239,9 @@ FILE-SYSTEM."
         (check?  (file-system-check? file-system))
         (create? (file-system-create-mount-point? file-system))
         (dependencies (file-system-dependencies file-system)))
-    (if (file-system-mount? file-system)
-        (with-imported-modules '((gnu build file-systems)
-                                 (guix build bournish))
-          (list
+    (and (file-system-mount? file-system)
+         (with-imported-modules '((gnu build file-systems)
+                                  (guix build bournish))
            (shepherd-service
             (provision (list (file-system->shepherd-service-name file-system)))
             (requirement `(root-file-system
@@ -289,23 +290,19 @@ FILE-SYSTEM."
             ;; We need an additional module.
             (modules `(((gnu build file-systems)
                         #:select (check-file-system canonicalize-device-spec))
-                       ,@%default-modules)))))
-        '())))
+                       ,@%default-modules)))))))
 
 (define file-system-service-type
-  ;; TODO(?): Make this an extensible service that takes <file-system> objects
-  ;; and returns a list of <shepherd-service>.
-  (service-type (name 'file-system)
+  (service-type (name 'file-systems)
                 (extensions
                  (list (service-extension shepherd-root-service-type
-                                          file-system-shepherd-service)
+                                          (lambda (file-systems)
+                                            (filter-map file-system-shepherd-service
+                                                        file-systems)))
                        (service-extension fstab-service-type
-                                          identity)))))
-
-(define* (file-system-service file-system)
-  "Return a service that mounts @var{file-system}, a @code{<file-system>}
-object."
-  (service file-system-service-type file-system))
+                                          identity)))
+                (compose concatenate)
+                (extend append)))
 
 (define user-unmount-service-type
   (shepherd-service-type
@@ -1003,15 +1000,14 @@ starting at FIRST-UID, and under GID."
           1+
           1))
 
-(define (hydra-key-authorization guix)
-  "Return a gexp with code to register the hydra.gnu.org public key with
-GUIX."
+(define (hydra-key-authorization key guix)
+  "Return a gexp with code to register KEY, a file containing a 'guix archive'
+public key, with GUIX."
   #~(unless (file-exists? "/etc/guix/acl")
       (let ((pid (primitive-fork)))
         (case pid
           ((0)
-           (let* ((key  (string-append #$guix
-                                       "/share/guix/hydra.gnu.org.pub"))
+           (let* ((key  #$key)
                   (port (open-file key "r0b")))
              (format #t "registering public key '~a'...~%" key)
              (close-port (current-input-port))
@@ -1025,6 +1021,10 @@ GUIX."
                (format (current-error-port) "warning: \
 failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
+(define %default-authorized-guix-keys
+  ;; List of authorized substitute keys.
+  (list #~(string-append #$guix "/share/guix/hydra.gnu.org.pub")))
+
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
   guix-configuration?
@@ -1036,6 +1036,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default 10))
   (authorize-key?   guix-configuration-authorize-key? ;Boolean
                     (default #t))
+  (authorized-keys  guix-configuration-authorized-keys ;list of gexps
+                    (default %default-authorized-guix-keys))
   (use-substitutes? guix-configuration-use-substitutes? ;Boolean
                     (default #t))
   (substitute-urls  guix-configuration-substitute-urls ;list of strings
@@ -1053,7 +1055,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 (define (guix-shepherd-service config)
   "Return a <shepherd-service> for the Guix daemon service with CONFIG."
   (match config
-    (($ <guix-configuration> guix build-group build-accounts authorize-key?
+    (($ <guix-configuration> guix build-group build-accounts
+                             authorize-key? keys
                              use-substitutes? substitute-urls extra-options
                              lsof lsh)
      (list (shepherd-service
@@ -1093,14 +1096,15 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 (define (guix-activation config)
   "Return the activation gexp for CONFIG."
   (match config
-    (($ <guix-configuration> guix build-group build-accounts authorize-key?)
+    (($ <guix-configuration> guix build-group build-accounts authorize-key? keys)
      ;; Assume that the store has BUILD-GROUP as its group.  We could
      ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
      ;; Optionally authorize hydra.gnu.org's key.
      (if authorize-key?
-         (hydra-key-authorization guix)
+         #~(begin
+             #$@(map (cut hydra-key-authorization <> guix) keys))
          #~#f))))
 
 (define guix-service-type

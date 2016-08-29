@@ -182,14 +182,14 @@ X11 (yet).")
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
        #:phases
-       (alist-replace 'configure
-                      (lambda* (#:key outputs #:allow-other-keys #:rest args)
-                        (setenv "PREFIX" (assoc-ref outputs "out"))
-                        (setenv "LDFLAGS" (string-append "-Wl,-rpath="
-                                               (assoc-ref
-                                                %outputs "out") "/lib"))
-                        (setenv "CC" "gcc"))
-                      %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys #:rest args)
+             (setenv "PREFIX" (assoc-ref outputs "out"))
+             (setenv "LDFLAGS"
+                     (string-append "-Wl,-rpath="
+                                    (assoc-ref %outputs "out") "/lib"))
+             (setenv "CC" "gcc"))))))
     (native-inputs `(("perl" ,perl))) ; for pod2man
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -514,21 +514,20 @@ include cursor in the resulting image.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
-       #:phases (alist-delete
-                 'configure
-                 (alist-replace
-                  'install
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let* ((out  (assoc-ref outputs "out"))
-                           (bin  (string-append out "/bin"))
-                           (man1 (string-append out "/share/man/man1")))
-                      (mkdir-p bin)
-                      (mkdir-p man1)
-                      (zero?
-                       (system* "make" "install" "install.man"
-                                (string-append "BINDIR=" bin)
-                                (string-append "MANDIR=" man1)))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (man1 (string-append out "/share/man/man1")))
+               (mkdir-p bin)
+               (mkdir-p man1)
+               (zero?
+                 (system* "make" "install" "install.man"
+                          (string-append "BINDIR=" bin)
+                          (string-append "MANDIR=" man1)))))))))
     (inputs `(("libx11" ,libx11)))
     (home-page "http://ftp.x.org/contrib/utilities/")
     (synopsis "Hide idle mouse cursor")

@@ -126,14 +126,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.50")
+   (version "0.9.51")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1mzbqr6sqisppz88mh73bbh5sw57g8l87qvhcjdx5pmbd183idni"))))
+              "1ir3ga328zkyynznnw71dj64wsaz7pmbhl82lqp1y1hrl85vn01h"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -325,7 +325,7 @@ services.")
                 "1p38k1s6a2fmcfc9a7cf1zrdycm9h06kqdyand4s3k500nj6mb4g"))))
     (arguments
      `(#:configure-flags
-       (list "--without-libunique"
+       (list "--with-libunique"
              "--with-qrencode"
              (string-append "--with-gnunet="
                             (assoc-ref %build-inputs "gnunet")))))
@@ -335,7 +335,8 @@ services.")
        ("gtk+" ,gtk+)
        ("libextractor" ,libextractor)
        ("glade3" ,glade3)
-       ("qrencode" ,qrencode)))
+       ("qrencode" ,qrencode)
+       ("libunique" ,libunique)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libglade" ,libglade)))

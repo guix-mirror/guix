@@ -178,9 +178,9 @@
 ;;; Services.
 ;;;
 
-(define (other-file-system-services os)
-  "Return file system services for the file systems of OS that are not marked
-as 'needed-for-boot'."
+(define (non-boot-file-system-service os)
+  "Return the file system service for the file systems of OS that are not
+marked as 'needed-for-boot'."
   (define file-systems
     (remove file-system-needed-for-boot?
             (operating-system-file-systems os)))
@@ -204,7 +204,8 @@ as 'needed-for-boot'."
                                   (file-system-dependencies fs))
                           eq?))))
 
-  (map (compose file-system-service add-dependencies) file-systems))
+  (service file-system-service-type
+           (map add-dependencies file-systems)))
 
 (define (mapped-device-user device file-systems)
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
@@ -270,11 +271,11 @@ a container or that of a \"bare metal\" system."
 
   (let* ((mappings  (device-mapping-services os))
          (root-fs   (root-file-system-service))
-         (other-fs  (other-file-system-services os))
+         (other-fs  (non-boot-file-system-service os))
          (unmount   (user-unmount-service known-fs))
          (swaps     (swap-services os))
          (procs     (user-processes-service
-                     (map service-parameters other-fs)))
+                     (service-parameters other-fs)))
          (host-name (host-name-service (operating-system-host-name os)))
          (entries   (operating-system-directory-base-entries
                      os #:container? container?)))
@@ -302,7 +303,8 @@ a container or that of a \"bare metal\" system."
                     (operating-system-setuid-programs os))
            (service profile-service-type
                     (operating-system-packages os))
-           (append other-fs mappings swaps
+           other-fs
+           (append mappings swaps
 
                    ;; Add the firmware service, unless we are building for a
                    ;; container.

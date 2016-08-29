@@ -69,14 +69,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.6.0")
+    (version "2.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1v1lhhd6m59hqgmiz100g779rjq70pik5v4b3g936ci73djlmb69"))))
+               "1l88iqk0swqccrnjwczgl9arqsvy77bis862zxajy7z3dqdzshj9"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:

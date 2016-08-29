@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,6 +117,10 @@ STORE."
 
     ("/var/guix/gcroots/booted-system" -> "/run/booted-system")
     ("/var/guix/gcroots/current-system" -> "/run/current-system")
+
+    ;; XXX: 'guix-register' creates this symlink with a wrong target, so
+    ;; create it upfront to be sure.
+    ("/var/guix/gcroots/profiles" -> "/var/guix/profiles")
 
     (directory "/bin")
     (directory "/tmp" 0 0 #o1777)                 ; sticky bit

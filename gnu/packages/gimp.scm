@@ -43,16 +43,18 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.10")
+    (version "0.1.18")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://ftp.gtk.org/pub/babl/0.1/babl-"
+              (uri (list (string-append "https://download.gimp.org/pub/babl/"
+                                        "0.1/babl-" version ".tar.bz2")
+                         (string-append "http://ftp.gtk.org/pub/babl/0.1/babl-"
                                         version ".tar.bz2")
                          (string-append "ftp://ftp.gtk.org/pub/babl/0.1/babl-"
                                         version ".tar.bz2")))
               (sha256
                (base32
-                "1x2mb7zfbvk9d0a7h5cpdff9hhjsadxvqml2jay2bpf7x9nc6gwl"))))
+                "1ygvnq22pf0zvf3bj7h67vvbpz7b8hhjvrr79ribws7sr5dljfj8"))))
     (build-system gnu-build-system)
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
@@ -124,23 +126,38 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.8.16")
+    (version "2.8.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.gimp.org/pub/gimp/v"
                                   (version-major+minor version)
                                   "/gimp-" version ".tar.bz2"))
-              (patches (search-patches "gimp-CVE-2016-4994.patch"))
               (sha256
                (base32
-                "1dsgazia9hmab8cw3iis7s69dvqyfj5wga7ds7w2q5mms1xqbqwm"))))
+                "0halh6sl3d2j9gahyabj6h6r3yyldcy7sfb4qrfazpkqqr3j5p9r"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of gtk-doc HTML
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
-                                              "/share/gtk-doc/html"))))
+                                              "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-sitecustomize.py
+           ;; Install 'sitecustomize.py' into gimp's python directory to
+           ;; add pygobject and pygtk to pygimp's search path.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((pythonpath (getenv "PYTHONPATH"))
+                    (out        (assoc-ref outputs "out"))
+                    (sitecustomize.py
+                     (string-append
+                      out "/lib/gimp/2.0/python/sitecustomize.py")))
+               (call-with-output-file sitecustomize.py
+                 (lambda (port)
+                   (format port "import site~%")
+                   (format port "for dir in '~a'.split(':'):~%" pythonpath)
+                   (format port "    site.addsitedir(dir)~%")))))))))
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)

@@ -207,7 +207,7 @@ interface, for the Transmission BitTorrent daemon.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.25.0")
+    (version "1.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -215,10 +215,12 @@ interface, for the Transmission BitTorrent daemon.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d8drwc5m5ps4bw63iq2gng36gyc2vadzixbynk1dj6gfr6fp2gz"))))
+                "1388qswa0in7kb1dx7qb10wp60p58zvvpys7jwim3clsbqvz6a68"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-libaria2")
+     `(#:configure-flags (list "--enable-libaria2"
+                               (string-append "--with-bashcompletiondir="
+                                              %output "/etc/bash_completion.d/"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-socket-tests

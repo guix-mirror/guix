@@ -49,7 +49,10 @@
                (base32
                 "0f2adwg58w37sdi3xrk8xqw486p3pcfjaypcsswjl76r2f3yd0hq"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; no test target
+    (arguments
+     `(#:tests? #f ; no test target
+       #:configure-flags
+       '("-DCMAKE_CXX_FLAGS=-std=gnu++11")))
     (inputs
      `(("cairo" ,cairo)
        ("cups" ,cups)

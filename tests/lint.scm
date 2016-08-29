@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
@@ -202,6 +202,20 @@ string) on HTTP requests."
                   (description
                    "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
        (check-description-style pkg)))))
+
+(test-assert "description: may not contain trademark signs"
+  (and (->bool
+        (string-contains (with-warnings
+                           (let ((pkg (dummy-package "x"
+                                        (description "Does The Right Thing™"))))
+                             (check-description-style pkg)))
+                         "should not contain trademark sign"))
+       (->bool
+        (string-contains (with-warnings
+                           (let ((pkg (dummy-package "x"
+                                        (description "Works with Format®"))))
+                             (check-description-style pkg)))
+                         "should not contain trademark sign"))))
 
 (test-assert "synopsis: not a string"
   (->bool

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,18 +28,21 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public libsvm
   (package
@@ -467,3 +471,64 @@ geometric models.")
      "This package provides functions for feed-forward neural networks with a
 single hidden layer, and for multinomial log-linear models.")
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public dlib
+  (package
+    (name "dlib")
+    (version "19.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dlib.net/files/dlib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0p2pvcdalc6jhb6r99ybvjd9x74sclr0ngswdg9j2xl5pj7knbr4"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete ~13MB of bundled dependencies.
+                  (delete-file-recursively "dlib/external")
+                  (delete-file-recursively "docs/dlib/external")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-asserts
+           (lambda _
+             ;; config.h recommends explicitly enabling or disabling asserts
+             ;; when building as a shared library. By default neither is set.
+             (substitute* "dlib/config.h"
+               (("^//#define DLIB_DISABLE_ASSERTS") "#define DLIB_DISABLE_ASSERTS"))
+             #t))
+         (replace 'check
+           (lambda _
+             ;; No test target, so we build and run the unit tests here.
+             (let ((test-dir (string-append "../dlib-" ,version "/dlib/test/build")))
+               (mkdir-p test-dir)
+               (with-directory-excursion test-dir
+                 (and (zero? (system* "cmake" ".."))
+                      (zero? (system* "cmake" "--build" "." "--config" "Release"))
+                      (zero? (system* "./dtest" "--runall")))))))
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file (string-append (assoc-ref outputs "out") "/lib/libdlib.a")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("giflib" ,giflib)
+       ;("lapack" ,lapack) XXX lapack here causes test failures in some setups.
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("openblas" ,openblas)
+       ("zlib" ,zlib)))
+    (synopsis
+     "Toolkit for making machine learning and data analysis applications in C++")
+    (description
+     "Dlib is a modern C++ toolkit containing machine learning algorithms and
+tools.  It is used in both industry and academia in a wide range of domains
+including robotics, embedded devices, mobile phones, and large high performance
+computing environments.")
+    (home-page "http://dlib.net")
+    (license license:boost1.0)))

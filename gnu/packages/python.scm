@@ -25,6 +25,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,12 +43,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
-                          gpl2 gpl2+ gpl3 gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
-                          isc mpl2.0 psfl public-domain repoze unlicense x11-style
-                          zpl2.1 lgpl3))
-  #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages adns)
@@ -292,7 +288,7 @@ introspection capabilities; intuitive object orientation; natural
 expression of procedural code; full modularity, supporting hierarchical
 packages; exception-based error handling; and very high level dynamic
 data types.")
-    (license psfl)))
+    (license license:psfl)))
 
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
@@ -412,7 +408,7 @@ limiting process resources and management of running processes.  It implements
 many functionalities offered by command line tools such as: ps, top, lsof,
 netstat, ifconfig, who, df, kill, free, nice, ionice, iostat, iotop, uptime,
 pidof, tty, taskset, pmap.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-psutil
   (package-with-python2 python-psutil))
@@ -450,7 +446,7 @@ cross-platform implementations of over 30 password hashing algorithms, as well
 as a framework for managing existing password hashes.  It's designed to be
 useful for a wide range of tasks, from verifying a hash found in /etc/shadow,
 to providing full-strength password hashing for multi-user application.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-passlib
   (package-with-python2 python-passlib))
@@ -487,7 +483,7 @@ John the Ripper).")
     ;; "sha2.c" is under BSD-3;
     ;; "blowfish.c" and "bcrypt.c" are under BSD-4;
     ;; the rest is under ISC.
-    (license (list isc bsd-3 bsd-4))))
+    (license (list license:isc license:bsd-3 license:bsd-4))))
 
 (define-public python2-py-bcrypt
   (package-with-python2 python-py-bcrypt))
@@ -517,7 +513,7 @@ John the Ripper).")
 providing both client and server functionality.  While it leverages a Python C
 extension for low level cryptography (PyCrypto), Paramiko itself is a pure
 Python interface around SSH networking concepts.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python2-paramiko
   (package-with-python2 python-paramiko))
@@ -602,7 +598,7 @@ making them easy to handle and incorporate into other protocols.")
     (synopsis "Cassandra Cluster Manager")
     (description "A script/library to create, launch and remove an Apache
 Cassandra cluster on localhost.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-ccm
   (package-with-python2 python-ccm))
@@ -656,7 +652,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
 - a Python interface to the CLDR (Common Locale Data Repository), providing
 access to various locale display names, localized number and date formatting,
 etc. ")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-babel
   (package-with-python2 python-babel))
@@ -688,7 +684,7 @@ etc. ")
 earlier versions of Python.  The function checks the hostname in the
 certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
-    (license psfl)))
+    (license license:psfl)))
 
 (define-public python-h5py
   (package
@@ -734,7 +730,7 @@ HDF5 library from Python.  The low-level interface is intended to be a
 complete wrapping of the HDF5 API, while the high-level component supports
 access to HDF5 files, datasets and groups using established Python and NumPy
 concepts.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-h5py))))))
 
 (define-public python2-h5py
@@ -826,7 +822,7 @@ test hooks,
 project installation,
 platform-specific details,
 Python 3 support.")
-    (license psfl)))
+    (license license:psfl)))
 
 (define-public python2-setuptools
   (package-with-python2 python-setuptools))
@@ -864,7 +860,7 @@ Python 3 support.")
      "Pycrypto is a collection of both secure hash functions (such as SHA256
 and RIPEMD160), and various encryption algorithms (AES, DES, RSA, ElGamal,
 etc.).  The package is structured to make adding new modules easy.")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public python2-pycrypto
   (let ((pycrypto (package-with-python2 python-pycrypto)))
@@ -900,7 +896,7 @@ etc.).  The package is structured to make adding new modules easy.")
 service from python.  It can be used in any application that needs safe
 password storage.")
     ;; "MIT" and PSF dual license
-    (license x11)
+    (license license:x11)
     (properties `((python2-variant . ,(delay python2-keyring))))))
 
 (define-public python2-keyring
@@ -932,7 +928,7 @@ functions for smoothing over the differences between the Python versions with
 the goal of writing Python code that is compatible on both Python versions.
 Six supports every Python version since 2.5.  It is contained in only one
 Python file, so it can be easily copied into your project.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public python2-six
   (package-with-python2 python-six))
@@ -956,7 +952,7 @@ Python file, so it can be easily copied into your project.")
     (description
      "The dateutil module provides powerful extensions to the standard
 datetime module, available in Python 2.3+.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-dateutil-2))))))
 
 (define-public python2-dateutil-2
@@ -986,7 +982,7 @@ datetime module, available in Python 2.3+.")
     (description
      "The dateutil module provides powerful extensions to the standard
 datetime module, available in Python 2.3+.")
-    (license psfl)))
+    (license license:psfl)))
 
 (define-public python2-dateutil
   (package-with-python2 python-dateutil))
@@ -1011,7 +1007,7 @@ datetime module, available in Python 2.3+.")
      "Parse human-readable date/time text")
     (description
      "Parse human-readable date/time text.")
-    (license asl2.0)
+    (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-parsedatetime))))))
 
 (define-public python2-parsedatetime
@@ -1050,7 +1046,7 @@ structures designed to make working with structured (tabular,
 multidimensional, potentially heterogeneous) and time series data both easy
 and intuitive.  It aims to be the fundamental high-level building block for
 doing practical, real world data analysis in Python.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-pandas))))))
 
 (define-public python2-pandas
@@ -1081,7 +1077,7 @@ doing practical, real world data analysis in Python.")
 This module attempts to fix a glaring hole in pytz, that there is no way to
 get the local timezone information, unless you know the zoneinfo name, and
 under several distributions that's hard or impossible to figure out.")
-    (license cc0)))
+    (license license:cc0)))
 
 (define-public python2-pysqlite
   (package
@@ -1139,8 +1135,9 @@ Database API 2.0T.")
     (description
      "Mechanize implements stateful programmatic web browsing in Python,
 after Andy Lester’s Perl module WWW::Mechanize.")
-    (license (non-copyleft "file://COPYING"
-                           "See COPYING in the distribution."))))
+    (license (license:non-copyleft
+              "file://COPYING"
+              "See COPYING in the distribution."))))
 
 
 (define-public python-simplejson
@@ -1169,7 +1166,7 @@ library contained in Python 2.6, but maintains compatibility with Python 2.5
 and (currently) has significant performance advantages, even without using
 the optional C extension for speedups.  Simplejson is also supported on
 Python 3.3+.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public python2-simplejson
   (package-with-python2 python-simplejson))
@@ -1194,7 +1191,7 @@ Python 3.3+.")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
-    (license x11)
+    (license license:x11)
     (properties `((python2-variant . ,(delay python2-pyicu))))))
 
 (define-public python2-pyicu
@@ -1227,7 +1224,7 @@ Python 3.3+.")
 It uses Accessibility (a11y) technologies to communicate with desktop
 applications. dogtail scripts are written in Python and executed like any
 other Python program.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public python2-empy
   (package
@@ -1262,7 +1259,7 @@ effect as a markup language.  Also supported are callbacks via hooks,
 recording and playback via diversions, and dynamic, chainable filters.  The
 system is highly configurable via command line options and embedded
 commands.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python2-element-tree
   (package
@@ -1284,9 +1281,9 @@ commands.")
     (description
      "ElementTree is a Python library supporting lightweight XML processing.")
     (home-page "http://effbot.org/zone/element-index.htm")
-    (license (x11-style "http://docs.python.org/2/license.html"
-                        "Like \"CWI LICENSE AGREEMENT FOR PYTHON \
-0.9.0 THROUGH 1.2\"."))))
+    (license (license:x11-style
+              "http://docs.python.org/2/license.html"
+              "Like \"CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2\"."))))
 
 (define-public python2-pybugz
   (package
@@ -1313,7 +1310,7 @@ commands.")
 bug tracking system.  It is meant as an aid to speed up interaction with the
 bug tracker.")
     (home-page "http://www.liquidx.net/pybugz/")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public python-enum34
   (package
@@ -1338,7 +1335,7 @@ bug tracker.")
     (description
      "Enum34 is the new Python stdlib enum module available in Python 3.4
 backported for previous versions of Python from 2.4 to 3.3.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-enum34
   (package-with-python2 python-enum34))
@@ -1365,7 +1362,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
     (synopsis "Extended parse module")
     (description
      "Parse_type extends the python parse module.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python-parse
   (package
@@ -1390,7 +1387,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
     (description
      "Parse strings using a specification based on the Python format()
 syntax.")
-    (license x11)))
+    (license license:x11)))
 
 
 (define-public scons
@@ -1417,7 +1414,7 @@ cross-platform substitute for the classic Make utility with integrated
 functionality similar to autoconf/automake and compiler caches such as ccache.
 In short, SCons is an easier, more reliable and faster way to build
 software.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public python-extras
   (package
@@ -1496,7 +1493,7 @@ matching them against a list of media-ranges.")
     (synopsis "Python testing library")
     (description
      "Nose extends the unittest library to make testing easier.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public python2-nose
   (package-with-python2 python-nose))
@@ -1522,7 +1519,7 @@ matching them against a list of media-ranges.")
     (description
      "Unittest2 is a replacement for the unittest module in the Python
 standard library.")
-    (license psfl)))
+    (license license:psfl)))
 
 (define-public python2-unittest2
   (package (inherit python-unittest2)
@@ -1774,7 +1771,7 @@ subprocess and see the output as well as any file modifications.")
      "Testtools extends the Python standard library unit testing framework to
 provide matchers, more debugging information, and cross-Python
 compatibility.")
-    (license psfl)))
+    (license license:psfl)))
 
 (define-public python2-testtools
   (package-with-python2 python-testtools))
@@ -1802,7 +1799,7 @@ compatibility.")
     (description
      "Testscenarios provides clean dependency injection for Python unittest
 style tests.")
-    (license (list bsd-3 asl2.0)))) ; at the user's option
+    (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
 (define-public python2-testscenarios
   (package-with-python2 python-testscenarios))
@@ -1829,7 +1826,7 @@ style tests.")
     (description
      "Testresources is an extension to Python's unittest to allow declarative
 use of resources by test cases.")
-    (license (list bsd-3 asl2.0)))) ; at the user's option
+    (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
 (define-public python2-testresources
   (package-with-python2 python-testresources))
@@ -1858,7 +1855,7 @@ use of resources by test cases.")
     (description
      "Python-subunit is a Python implementation of the subunit test streaming
 protocol.")
-    (license (list bsd-3 asl2.0)))) ; at the user's option
+    (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
 (define-public python2-subunit
   (package-with-python2 python-subunit))
@@ -1893,7 +1890,7 @@ protocol.")
     (description
      "Fixtures provides a way to create reusable state, useful when writing
 Python tests.")
-    (license (list bsd-3 asl2.0)))) ; at user's option
+    (license (list license:bsd-3 license:asl2.0)))) ; at user's option
 
 (define-public python2-fixtures-0.3.16
   (package-with-python2 python-fixtures-0.3.16))
@@ -1923,7 +1920,7 @@ Python tests.")
     (description
       "Python Build Reasonableness (PBR) is a library that injects some useful
 and sensible default behaviors into your setuptools run.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-pbr-0.11
   (package-with-python2 python-pbr-0.11))
@@ -1965,7 +1962,7 @@ and sensible default behaviors into your setuptools run.")
     (description
       "Python Build Reasonableness (PBR) is a library that injects some useful
 and sensible default behaviors into your setuptools run.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-pbr
   (package-with-python2 python-pbr))
@@ -1997,7 +1994,7 @@ and sensible default behaviors into your setuptools run.")
     (description
      "Fixtures provides a way to create reusable state, useful when writing
 Python tests.")
-    (license (list bsd-3 asl2.0)))) ; at user's option
+    (license (list license:bsd-3 license:asl2.0)))) ; at user's option
 
 (define-public python2-fixtures
   (package-with-python2 python-fixtures))
@@ -2028,7 +2025,7 @@ Python tests.")
     (description "Testrepository provides a database of test results which can
 be used as part of a developer's workflow to check things such as what tests
 have failed since the last commit or what tests are currently failing.")
-    (license (list bsd-3 asl2.0)))) ; at user's option
+    (license (list license:bsd-3 license:asl2.0)))) ; at user's option
 
 (define-public python2-testrepository
   (package-with-python2 python-testrepository))
@@ -2054,7 +2051,7 @@ have failed since the last commit or what tests are currently failing.")
 uses the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been
 executed.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-coverage
   (package-with-python2 python-coverage))
@@ -2081,7 +2078,7 @@ executed.")
     (description
      "Discover provides test discovery for unittest, a feature that has been
 backported from Python 2.7 for Python 2.4+.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-discover
   (package-with-python2 python-discover))
@@ -2112,7 +2109,7 @@ Behavior-driven development (or BDD) is an agile software development
 technique that encourages collaboration between developers, QA and
 non-technical or business participants in a software project.  Behave uses
 tests written in a natural language style, backed up by Python code.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public python-exif-read
   (package
@@ -2133,7 +2130,7 @@ tests written in a natural language style, backed up by Python code.")
     (description
      "ExifRead is a Python library to extract EXIF data from tiff and jpeg
 files.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-exif-read
   (package-with-python2 python-exif-read))
@@ -2156,7 +2153,7 @@ files.")
     (synopsis "Python implementation of the JSON-LD specification")
     (description
      "PyLD is an implementation of the JSON-LD specification.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-pyld
   (package-with-python2 python-pyld))
@@ -2180,7 +2177,7 @@ files.")
     (description
      "Certifi is a Python library that contains a CA certificate bundle, which
 is used by the Requests library to verify HTTPS requests.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-certifi
   (package-with-python2 python-certifi))
@@ -2209,7 +2206,7 @@ is used by the Requests library to verify HTTPS requests.")
 composable way with as little code as necessary.  Its name stands for
 \"Command Line Interface Creation Kit\".  It's highly configurable but comes
 with sensible defaults out of the box.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-click
   (package-with-python2 python-click))
@@ -2273,7 +2270,7 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
     (description
      "Requests is a Python HTTP client library.  It aims to be easier to use
 than Python’s urllib2 library.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 ;; Some software requires an older version of Requests, notably Docker
 ;; Compose.
@@ -2309,7 +2306,7 @@ than Python’s urllib2 library.")
 information in a variety of version control systems in order to discover
 version numbers.")
     (home-page "https://github.com/habnabit/vcversioner")
-    (license isc)))
+    (license license:isc)))
 
 (define-public python2-vcversioner
   (package-with-python2 python-vcversioner))
@@ -2367,7 +2364,7 @@ useful when integrating with legacy code that doesn't support Unicode, or for
 ease of entry of non-Roman names on a US keyboard, or when constructing ASCII
 machine identifiers from human-readable Unicode strings that should still be
 somewhat intelligeble.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public python2-unidecode
   (package-with-python2 python-unidecode))
@@ -2422,7 +2419,7 @@ somewhat intelligeble.")
     (description
      "Oauthlib is a generic, spec-compliant, thorough implementation of the
 OAuth request-signing logic.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-oauthlib))))))
 
 (define-public python2-oauthlib
@@ -2452,7 +2449,7 @@ OAuth request-signing logic.")
     (description
      "Itsdangerous provides various helpers to pass trusted data to untrusted
 environments and back.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-itsdangerous))))))
 
 (define-public python2-itsdangerous
@@ -2545,7 +2542,7 @@ object.")
     (description
      "Markupsafe provides an XML/HTML/XHTML markup safe string implementation
 for Python.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-markupsafe
   (package-with-python2 python-markupsafe))
@@ -2570,7 +2567,7 @@ for Python.")
     (description
      "Jinja2 is a small but fast and easy to use stand-alone template engine
 written in pure Python.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-jinja2
   (package-with-python2 python-jinja2))
@@ -2620,7 +2617,7 @@ logic-free templating system Mustache.")
 In particular, joblib offers: transparent disk-caching of the output values
 and lazy re-evaluation (memoize pattern), easy simple parallel computing
 logging and tracing of the execution.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-joblib
   (package-with-python2 python-joblib))
@@ -2651,7 +2648,7 @@ formats, such as HTML, XML, and LaTeX.  For input Docutils supports
 reStructuredText.")
     ;; Most of the source code is public domain, but some source files are
     ;; licensed under the PFSL, BSD 2-clause, and GPLv3+ licenses.
-    (license (list public-domain psfl bsd-2 gpl3+))))
+    (license (list license:public-domain license:psfl license:bsd-2 license:gpl3+))))
 
 (define-public python2-docutils
   (package-with-python2 python-docutils))
@@ -2674,7 +2671,7 @@ reStructuredText.")
     (synopsis "Syntax highlighting")
     (description
      "Pygments is a syntax highlighting package written in Python.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python2-pygments
   (package-with-python2 python-pygments))
@@ -2703,7 +2700,7 @@ reStructuredText.")
     (description "Sphinx is a tool that makes it easy to create documentation
 for Python projects or other documents consisting of multiple reStructuredText
 sources.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-sphinx
   (package-with-python2 python-sphinx))
@@ -2763,7 +2760,7 @@ sources.")
     (description
      "Feedgenerator-py3k is a standalone version of Django's feedgenerator,
 which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-feedgenerator
   (package-with-python2 python-feedgenerator))
@@ -2838,7 +2835,7 @@ interested parties to subscribe to events, or \"signals\".")
      "Pelican is a tool to generate a static blog from reStructuredText,
 Markdown input files, and more.  Pelican uses Jinja2 for templating
 and is very extensible.")
-    (license agpl3+)))
+    (license license:agpl3+)))
 
 (define-public python-scikit-learn
   (package
@@ -2882,7 +2879,7 @@ and is very extensible.")
     (description
      "Scikit-learn provides simple and efficient tools for data
 mining and data analysis.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-scikit-learn
   (let ((scikit (package-with-python2 python-scikit-learn)))
@@ -2922,7 +2919,7 @@ mining and data analysis.")
     (synopsis "Image processing in Python")
     (description
      "Scikit-image is a collection of algorithms for image processing.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-scikit-image
   (let ((scikit-image (package-with-python2 python-scikit-image)))
@@ -2989,7 +2986,7 @@ mining and data analysis.")
      "RQ (Redis Queue) is a simple Python library for queueing jobs and
 processing them in the background with workers.  It is backed by Redis and it
 is designed to have a low barrier to entry.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python2-rq
   (package-with-python2 python-rq))
@@ -3023,7 +3020,7 @@ is designed to have a low barrier to entry.")
     (description "Cython is an optimising static compiler for both the Python
 programming language and the extended Cython programming language.  It makes
 writing C extensions for Python as easy as Python itself.")
-    (license asl2.0)
+    (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-cython))))))
 
 (define-public python2-cython
@@ -3099,7 +3096,7 @@ with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
 and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define python2-numpy-bootstrap
   (package-with-python2 python-numpy-bootstrap))
@@ -3136,7 +3133,7 @@ capabilities.")
      "FaST-LMM, which stands for Factored Spectrally Transformed Linear Mixed
 Models, is a program for performing both single-SNP and SNP-set genome-wide
 association studies (GWAS) on extremely large data sets.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-numpy
   (package (inherit python-numpy-bootstrap)
@@ -3279,7 +3276,7 @@ that client code uses to construct the grammar directly in Python code.")
      "Numpy's Sphinx extensions")
     (description
      "Sphinx extension to support docstrings in Numpy format.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python2-numpydoc
   (package-with-python2 python-numpydoc))
@@ -3444,7 +3441,7 @@ quality figures in a variety of hardcopy formats and interactive environments
 across platforms.  Matplotlib can be used in Python scripts, the python and
 ipython shell, web application servers, and six graphical user interface
 toolkits.")
-    (license psfl)
+    (license license:psfl)
     (properties `((python2-variant . ,(delay python2-matplotlib))))))
 
 (define-public python2-matplotlib
@@ -3493,7 +3490,7 @@ toolkits.")
 can, for example, efficiently read whole PLINK *.bed/bim/fam files or parts of
 those files.  It can also efficiently manipulate ranges of integers using set
 operators such as union, intersection, and difference.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-rpy2
   (package
@@ -3522,7 +3519,7 @@ operators such as union, intersection, and difference.")
 low-level interface to R from Python, a proposed high-level interface,
 including wrappers to graphical libraries, as well as R-like structures and
 functions.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python2-rpy2
   (let ((rpy2 (package-with-python2 python-rpy2)))
@@ -3625,7 +3622,7 @@ atlas_libs = openblas
     (description "The SciPy library is one of the core packages that make up
 the SciPy stack.  It provides many user-friendly and efficient numerical
 routines such as routines for numerical integration and optimization.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-scipy
   (package-with-python2 python-scipy))
@@ -3660,7 +3657,7 @@ gives application developers the full power and flexibility of SQL.  It
 provides a full suite of well known enterprise-level persistence patterns,
 designed for efficient and high-performing database access, adapted into a
 simple and Pythonic domain language.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
@@ -3723,7 +3720,7 @@ SQLAlchemy Database Toolkit for Python.")
      "The python-distutils-extra module enables you to easily integrate
 gettext support, themed icons, and scrollkeeper-based documentation into
 Python's distutils.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public python2-distutils-extra
   (package-with-python2 python-distutils-extra))
@@ -3760,7 +3757,7 @@ Python's distutils.")
     (description
      "The elib.intl module provides enhanced internationalization (I18N)
 services for your Python modules and applications.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python-pillow
   (package
@@ -3819,7 +3816,7 @@ efficient internal representation, and fairly powerful image processing
 capabilities.  The core image library is designed for fast access to data
 stored in a few basic pixel formats.  It should provide a solid foundation for
 a general image processing tool.")
-    (license (x11-style
+    (license (license:x11-style
               "http://www.pythonware.com/products/pil/license.htm"
               "The PIL Software License"))))
 
@@ -3868,7 +3865,7 @@ a general image processing tool.")
      "Pycparser is a complete parser of the C language, written in pure Python
 using the PLY parsing library.  It parses C code into an AST and can serve as
 a front-end for C compilers or analysis tools.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-pycparser
   (package-with-python2 python-pycparser))
@@ -4011,7 +4008,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
 Python bindings and object-oriented API for cairo.  Cairo is a 2D vector
 graphics library with support for multiple backends including image buffers,
 PNG, PostScript, PDF, and SVG file output.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-cairocffi
   (package-with-python2 python-cairocffi))
@@ -4068,7 +4065,7 @@ etc.  The core of this module is a decorator factory.")
       "A Python package for Distributed Resource Management (DRM) job
 submission and control.  This package is an implementation of the DRMAA 1.0
 Python language binding specification.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-drmaa
   (package-with-python2 python-drmaa))
@@ -4099,7 +4096,7 @@ Python language binding specification.")
       "Gridmap is a Python package to allow you to easily create jobs on the
 cluster directly from Python.  You can directly map Python functions onto the
 cluster without needing to write any wrapper code yourself.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python2-gridmap
   (package-with-python2 python-gridmap))
@@ -4129,7 +4126,7 @@ cluster without needing to write any wrapper code yourself.")
 controlling them; and responding to expected patterns in their output.
 Pexpect works like Don Libes’ Expect.  Pexpect allows your script to spawn a
 child application and control it as if a human were typing commands.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public python2-pexpect
   (package-with-python2 python-pexpect))
@@ -4241,7 +4238,7 @@ functions, akin to Python’s built-in generic functions like @code{len()},
 these generic functions use simple lookup tables, akin to those used by
 e.g. @code{pickle.dump()} and other generic functions found in the Python
 standard library.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-simplegeneric
   (package-with-python2 python-simplegeneric))
@@ -4264,7 +4261,7 @@ standard library.")
     (synopsis "Vestigial utilities from IPython")
     (description
      "This package provides retired utilities from IPython.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-ipython-genutils
   (package-with-python2 python-ipython-genutils))
@@ -4300,7 +4297,7 @@ callbacks.  The package also includes a mechanism to use traitlets for
 configuration, loading values from files or from command line arguments.  This
 is a distinct layer on top of traitlets, so you can use traitlets in your code
 without using the configuration machinery.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-traitlets
   (package-with-python2 python-traitlets))
@@ -4398,7 +4395,7 @@ without using the configuration machinery.")
 Powerful interactive shells, a browser-based notebook, support for interactive
 data visualization, embeddable interpreters and tools for parallel
 computing.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-ipython
   (let ((ipython (package-with-python2 python-ipython)))
@@ -4443,7 +4440,7 @@ computing.")
     (description
       "Python-isodate is a python module for parsing and formatting
 ISO 8601 dates, time and duration.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-isodate
   (package-with-python2 python-isodate))
@@ -4481,21 +4478,21 @@ and written in Python.")
 (define-public python-urwid
   (package
     (name "python-urwid")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "urwid" version))
        (sha256
         (base32
-         "18mb0yy94sjc434rd61m2sfnw27sa0nyrszpj5a9r9zh7fnlzw19"))))
+         "18cnd1wdjcas08x5qwa5ayw6jsfcn33w4d9f7q3s29fy6qzc1kng"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          ;; Disable failing test. Bug filed upstream:
          ;; https://github.com/wardi/urwid/issues/164
-         ;; TODO: check again for python-urwid > 1.3.0 or python > 3.4.3.
+         ;; TODO: check again for python-urwid > 1.3.1 or python > 3.4.3.
          (add-after 'unpack 'disable-failing-test
           (lambda _
             (substitute* "urwid/tests/test_event_loops.py"
@@ -4507,7 +4504,7 @@ and written in Python.")
     (description
      "Urwid is a curses-based UI/widget library for Python.  It includes many
 features useful for text console applications.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python2-urwid
   (package-with-python2 python-urwid))
@@ -4515,14 +4512,18 @@ features useful for text console applications.")
 (define-public python-urwidtrees
   (package
     (name "python-urwidtrees")
-    (version "1.0.1.1")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "urwidtrees" version))
+        ;; package author intends on distributing via github rather than pypi:
+        ;; https://github.com/pazz/alot/issues/877#issuecomment-230173331
+        (uri (string-append "https://github.com/pazz/urwidtrees/archive/"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "1zcvy12s7h3fazf33d6y7b4v19p8hg95xqwhqlmw6jz9fq76v9h8"))))
+            "0d30lyd3s2a97rhqfax5w9ssqds2z6aydqx3c6j2c2lk3cb4ngvh"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -4531,7 +4532,7 @@ features useful for text console applications.")
     (synopsis "Tree widgets for urwid")
     (description "Urwidtrees is a Widget Container API for the @code{urwid}
 toolkit.  Use it to build trees of widgets.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python2-urwidtrees
   (package-with-python2 python-urwidtrees))
@@ -4639,7 +4640,7 @@ translate the complete SQLite API into Python.")
     (description
       "The lxml XML toolkit is a Pythonic binding for the C libraries
 libxml2 and libxslt.")
-    (license bsd-3))) ; and a few more, see LICENSES.txt
+    (license license:bsd-3))) ; and a few more, see LICENSES.txt
 
 (define-public python2-lxml
   (package-with-python2 python-lxml))
@@ -4705,7 +4706,7 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
       "Cssutils is a Python package for parsing and building CSS
 Cascading Style Sheets.  Currently it provides a DOM only and no rendering
 options.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python-cssselect
   (package
@@ -4733,7 +4734,7 @@ options.")
       "Cssselect ia a Python module that parses CSS3 Selectors and translates
 them to XPath 1.0 expressions.  Such expressions can be used in lxml or
 another XPath engine to find the matching elements in an XML or HTML document.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-cssselect
   (package-with-python2 python-cssselect))
@@ -4789,7 +4790,7 @@ interfaces in an easy and portable manner.")
     (description
       "NetworkX is a Python package for the creation, manipulation, and study
 of the structure, dynamics, and functions of complex networks.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-networkx
   (package-with-python2 python-networkx))
@@ -4838,7 +4839,7 @@ Python style, together with a fast and comfortable execution environment.")
 graphics in Python.  It is built on top of matplotlib and tightly integrated
 with the PyData stack, including support for numpy and pandas data structures
 and statistical routines from scipy and statsmodels.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-seaborn))))))
 
 (define-public python2-seaborn
@@ -4871,7 +4872,7 @@ and statistical routines from scipy and statsmodels.")
      "SymPy is a Python library for symbolic mathematics.  It aims to become a
 full-featured computer algebra system (CAS) while keeping the code as simple
 as possible in order to be comprehensible and easily extensible.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-sympy
   (package-with-python2 python-sympy))
@@ -4936,7 +4937,7 @@ as possible in order to be comprehensible and easily extensible.")
      "The Python X Library is intended to be a fully functional X client
 library for Python programs.  It is useful to implement low-level X clients.
 It is written entirely in Python.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public python-singledispatch
   (package
@@ -4988,7 +4989,7 @@ originally developed at FriendFeed.  By using non-blocking network I/O,
 Tornado can scale to tens of thousands of open connections, making it ideal
 for long polling, WebSockets, and other applications that require a long-lived
 connection to each user.")
-    (license asl2.0)
+    (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-tornado))))))
 
 (define-public python2-tornado
@@ -5023,7 +5024,7 @@ connection to each user.")
     (description
      "Python-backports-abc provides a backport of additions to the
 'collections.abc' module in Python-3.5.")
-    (license psfl)))
+    (license license:psfl)))
 
 (define-public python2-backports-abc
   (package-with-python2 python-backports-abc))
@@ -5059,7 +5060,7 @@ connection to each user.")
     (description
      "Waf is a Python-based framework for configuring, compiling and installing
 applications.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-waf
   (package-with-python2 python-waf))
@@ -5091,7 +5092,7 @@ applications.")
     (synopsis "Python bindings for 0MQ")
     (description
      "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
-    (license bsd-4)))
+    (license license:bsd-4)))
 
 (define-public python2-pyzmq
   (package-with-python2 python-pyzmq))
@@ -5298,7 +5299,7 @@ complexity of Python source code.")
     (synopsis "Markdown parser in pure Python")
     (description "This package provides a fast markdown parser in pure
 Python.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-mistune
   (package-with-python2 python-mistune))
@@ -5331,7 +5332,7 @@ Python.")
 Markdown.  The library features international input, various Markdown
 extensions, and several HTML output formats.  A command line wrapper
 markdown_py is also provided to convert Markdown files to HTML.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-markdown
   (package-with-python2 python-markdown))
@@ -5364,7 +5365,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
     (description
      "This package provides a Python library used to launch a subprocess in a
 pseudo terminal (pty), and interact with both the process and its pty.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public python2-ptyprocess
   (package-with-python2 python-ptyprocess))
@@ -5396,7 +5397,7 @@ pseudo terminal (pty), and interact with both the process and its pty.")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
 term.js Javascript terminal emulator library.")
-    (license bsd-2)
+    (license license:bsd-2)
     (properties `((python2-variant . ,(delay python2-terminado))))))
 
 (define-public python2-terminado
@@ -5435,8 +5436,9 @@ supports reading and writinfg of TrueType/OpenType fonts, reading and writing
 of AFM files, reading (and partially writing) of PS Type 1 fonts.  The package
 also contains a tool called “TTX” which converts TrueType/OpenType fonts to and
 from an XML-based format.")
-    (license (non-copyleft "file://LICENSE.txt"
-                           "See LICENSE.txt in the distribution."))))
+    (license (license:non-copyleft
+              "file://LICENSE.txt"
+              "See LICENSE.txt in the distribution."))))
 
 (define-public python2-fonttools
   (package-with-python2 python-fonttools))
@@ -5462,7 +5464,7 @@ from an XML-based format.")
 or create documents in LilyPond format.  A command line program ly is also
 provided that can be used to do various manipulations with LilyPond files.")
     (home-page "https://pypi.python.org/pypi/python-ly")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public python-appdirs
   (package
@@ -5495,7 +5497,7 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.1")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5503,7 +5505,7 @@ should be stored on various operating systems.")
                     "llfuse-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ywzbqkahrfl9kkcasxrmgilv6fybapvh6pqvimimnfh7sgxal72"))))
+                "0v6vj9mb286njgd1szg9hz2qdh5f3vkhsvajripfcqg458av310v"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -5515,7 +5517,7 @@ should be stored on various operating systems.")
     (description
      "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
     (home-page "https://bitbucket.org/nikratio/python-llfuse/")
-    (license lgpl2.0+)
+    (license license:lgpl2.0+)
     (properties `((python2-variant . ,(delay python2-llfuse))))))
 
 (define-public python2-llfuse
@@ -5537,25 +5539,25 @@ should be stored on various operating systems.")
                 "1imlqw9b73086y97izr036f58pgc5akv4ihc2rrf8j5h75jbrlaa"))))
     ;; Python-LLFUSE < 0.42 includes underscore.js, which is MIT (expat)
     ;; licensed.  The rest of the package is licensed under LGPL2.0 or later.
-    (license (list license:expat lgpl2.0+))))
+    (license (list license:expat license:lgpl2.0+))))
 
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "0.4.7")
+    (version "0.4.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "msgpack-python" version))
               (sha256
                (base32
-                "0syd7bs83qs9qmxw540jbgsildbqk4yb57fmrlns1021llli402y"))))
+                "11pqk5braa6wndpnr1dhg64js82vjgxnm0lzy73rwl831zgijaqs"))))
     (build-system python-build-system)
     (synopsis "MessagePack (de)serializer")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
     (home-page "https://pypi.python.org/pypi/msgpack-python/")
-    (license asl2.0)
+    (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-msgpack))))))
 
 (define-public python2-msgpack
@@ -5590,7 +5592,7 @@ reading and writing MessagePack data.")
     (description
       "A Python library for representing and manipulating IPv4, IPv6, CIDR, EUI
 and MAC network addresses.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-netaddr
   (package-with-python2 python-netaddr))
@@ -5622,7 +5624,7 @@ and MAC network addresses.")
       "The aim of the wrapt module is to provide a transparent object proxy for
   Python, which can be used as the basis for the construction of function
   wrappers and decorator functions.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python2-wrapt
   (package-with-python2 python-wrapt))
@@ -5673,7 +5675,7 @@ and MAC network addresses.")
     (description
       "This module provides a monotonic() function which returns the value (in
 fractional seconds) of a clock which never goes backwards.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-monotonic
   (package-with-python2 python-monotonic))
@@ -5726,10 +5728,10 @@ object to help create WSGI responses.")
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
     (description "This packages provides a library to extract data from
-spreadsheets using Microsoft Excel® proprietary file formats @samp{.xls} and
+spreadsheets using Microsoft Excel proprietary file formats @samp{.xls} and
 @samp{.xlsx} (versions 2.0 onwards).  It has support for Excel dates and is
 Unicode-aware.  It is not intended as an end-user tool.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-xlrd
   (package-with-python2 python-xlrd))
@@ -5757,7 +5759,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
 tables.  PrettyTable allows for selection of which columns are to be printed,
 independent alignment of columns (left or right justified or centred) and
 printing of sub-tables by specifying a row range.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-prettytable
   (package-with-python2 python-prettytable))
@@ -5814,7 +5816,7 @@ printing of sub-tables by specifying a row range.")
     (synopsis "Hierarchical datasets for Python")
     (description "PyTables is a package for managing hierarchical datasets and
 designed to efficently cope with extremely large amounts of data.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-tables
   (package-with-python2 python-tables))
@@ -5837,7 +5839,7 @@ designed to efficently cope with extremely large amounts of data.")
     (description
      "This is an implementation of ASN.1 types and codecs in Python.  It is
 suitable for a wide range of protocols based on the ASN.1 specification.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python2-pyasn1
   (package-with-python2 python-pyasn1))
@@ -5863,35 +5865,38 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
     (description
      "Pyasn1-modules is a collection of Python modules providing ASN.1 types and
 implementations of ASN.1-based codecs and protocols.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-pyasn1-modules
   (package-with-python2 python-pyasn1-modules))
 
-(define-public python2-ipaddress
+(define-public python-ipaddress
   (package
-    (name "python2-ipaddress")
-    (version "1.0.14")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/i/"
-                           "ipaddress/ipaddress-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0givid4963n57nsjibms2fc347zmcs188q1hw9al1dkc9kj4nvr2"))))
+    (name "python-ipaddress")
+    (version "1.0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "ipaddress" version))
+              (sha256
+               (base32
+                "1c3imabdrw8nfksgjjflzg7h4ynjckqacb188rf541m74arq4cas"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f  ; no tests
-       #:python ,python-2))
     (home-page "https://github.com/phihag/ipaddress")
     (synopsis "IP address manipulation library")
     (description
-     "This package provides a fast, lightweight IPv4/IPv6 manipulation library
-in Python.  This library is used to create, poke at, and manipulate IPv4 and
-IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
-module to older versions of Python.")
-    (license psfl)))
+      "This package provides a fast, lightweight IPv4/IPv6 manipulation library
+ in Python.  This library is used to create, poke at, and manipulate IPv4 and
+ IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
+ module to older versions of Python.")
+    (license license:psfl)
+    (properties `((python2-variant . ,(delay python2-ipaddress))))))
+
+(define-public python2-ipaddress
+  (let ((base (package-with-python2 (strip-python2-variant python-ipaddress))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
 
 (define-public python2-ipaddr
   (package
@@ -5920,7 +5925,7 @@ IPv6 addresses and networks.
 For new implementations you may prefer to use the standard module
 @code{ipaddress}, which was introduced in Python 3.3 and backported to older
 versions of Python.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-idna
   (package
@@ -5947,7 +5952,7 @@ from the earlier standard from 2003.  The library is also intended to act as a
 suitable drop-in replacement for the “encodings.idna” module that comes with
 the Python standard library but currently only supports the older 2003
 specification.")
-    (license bsd-4)))
+    (license license:bsd-4)))
 
 (define-public python2-idna
   (package-with-python2 python-idna))
@@ -5974,7 +5979,7 @@ specification.")
 technique for writing tests.  You may hear the term mixed up with mocks,
 fakes, or doubles.  Basically, a stub is an object that returns pre-canned
 responses, rather than doing any computation.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-pretend
   (package-with-python2 python-pretend))
@@ -5998,7 +6003,7 @@ responses, rather than doing any computation.")
     (description
       "This package contains test vectors for the cryptography package.")
     ;; Distributed under either BSD-3 or ASL2.0
-    (license (list bsd-3 asl2.0))))
+    (license (list license:bsd-3 license:asl2.0))))
 
 (define-public python2-cryptography-vectors
   (package-with-python2 python-cryptography-vectors))
@@ -6040,7 +6045,7 @@ library” for Python.  The package includes both high level recipes, and low
 level interfaces to common cryptographic algorithms such as symmetric ciphers,
 message digests and key derivation functions.")
     ;; Distributed under either BSD-3 or ASL2.0
-    (license (list bsd-3 asl2.0))
+    (license (list license:bsd-3 license:asl2.0))
     (properties `((python2-variant . ,(delay python2-cryptography))))))
 
 (define-public python2-cryptography
@@ -6079,7 +6084,7 @@ message digests and key derivation functions.")
     (description
       "PyOpenSSL is a high-level wrapper around a subset of the OpenSSL
 library.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-pyopenssl
   (package-with-python2 python-pyopenssl))
@@ -6151,7 +6156,7 @@ similar hash values, which allows for the detection of similar objects by
 comparing their hash values.  The byte stream should have a sufficient amount
 of complexity; for example, a byte stream of identical bytes will not generate
 a hash value.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-tlsh
   (package
@@ -6198,7 +6203,7 @@ a hash value.")
      "This package provides Python bindings to libarchive, a C library to
 access possibly compressed archives in many different formats.  It uses
 Python's @code{ctypes} foreign function interface (FFI).")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public python2-libarchive-c
   (package-with-python2 python-libarchive-c))
@@ -6269,7 +6274,7 @@ Debian-related files, such as:
 @end enumerate\n")
 
     ;; Modules are either GPLv2+ or GPLv3+.
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python2-debian
   (package-with-python2 python-debian))
@@ -6296,7 +6301,7 @@ Debian-related files, such as:
     (description
      "This package provides @code{chardet}, a Python module that can
 automatically detect a wide range of file encodings.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python2-chardet
   (package-with-python2 python-chardet))
@@ -6357,7 +6362,7 @@ programatically with command-line parsers like @code{getopt} and
 use by applications which are unaware of any subscribers to their events.  It
 is a simple event-dispatching system on which more sophisticated event
 dispatching systems can be built.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-event
   (package-with-python2 python-zope-event))
@@ -6383,7 +6388,7 @@ methodology")
     (description "Zope.interface provides an implementation of \"object
 interfaces\" for Python.  Interfaces are a mechanism for labeling objects as
 conforming to a given API or contract.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-interface
   (package-with-python2 python-zope-interface))
@@ -6410,7 +6415,7 @@ conforming to a given API or contract.")
     (synopsis "Zope exceptions")
     (description "Zope.exceptions provides general-purpose exception types
 that have uses outside of the Zope framework.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-exceptions
   (package-with-python2 python-zope-exceptions))
@@ -6436,7 +6441,7 @@ that have uses outside of the Zope framework.")
     (synopsis "Zope testing helpers")
     (description "Zope.testing provides a number of testing utilities for HTML
 forms, HTTP servers, regular expressions, and more.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-testing
   (package-with-python2 python-zope-testing))
@@ -6466,7 +6471,7 @@ forms, HTTP servers, regular expressions, and more.")
     (synopsis "Zope testrunner script")
     (description "Zope.testrunner provides a script for running Python
 tests.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-testrunner
   (let ((base (package-with-python2 python-zope-testrunner)))
@@ -6498,7 +6503,7 @@ tests.")
     (synopsis "Message identifiers for internationalization")
     (description "Zope.i18nmessageid provides facilities for declaring
 internationalized messages within program source text.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-i18nmessageid
   (package-with-python2 python-zope-i18nmessageid))
@@ -6525,7 +6530,7 @@ internationalized messages within program source text.")
     (synopsis "Zope data schemas")
     (description "Zope.scheme provides extensions to zope.interface for
 defining data schemas.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-schema
   (package-with-python2 python-zope-schema))
@@ -6550,7 +6555,7 @@ defining data schemas.")
     (synopsis "Zope Configuration Markup Language")
     (description "Zope.configuration implements ZCML, the Zope Configuration
 Markup Language.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-configuration
   (package-with-python2 python-zope-configuration))
@@ -6577,7 +6582,7 @@ Proxies are special objects which serve as mostly-transparent wrappers around
 another object, intervening in the apparent behavior of the wrapped object
 only when necessary to apply the policy (e.g., access checking, location
 brokering, etc.) for which the proxy is responsible.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-proxy
   (package-with-python2 python-zope-proxy))
@@ -6602,7 +6607,7 @@ brokering, etc.) for which the proxy is responsible.")
     (synopsis "Zope location library")
     (description "Zope.location implements the concept of \"locations\" in
 Zope3, which are are special objects that have a structural location.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-location
   (package-with-python2 python-zope-location))
@@ -6632,7 +6637,7 @@ Zope3, which are are special objects that have a structural location.")
     (synopsis "Zope security framework")
     (description "Zope.security provides a generic mechanism to implement
 security policies on Python objects.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-security
   (let ((zope-security (package-with-python2 python-zope-security)))
@@ -6671,7 +6676,7 @@ security policies on Python objects.")
     (description "Zope.component represents the core of the Zope Component
 Architecture.  Together with the zope.interface package, it provides
 facilities for defining, registering and looking up components.")
-    (license zpl2.1)))
+    (license license:zpl2.1)))
 
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
@@ -6708,7 +6713,7 @@ facilities for defining, registering and looking up components.")
     (description "A Python wrapper for the dialog utility.  Its purpose is to
 provide an easy to use, pythonic and comprehensive Python interface to dialog.
 This allows one to make simple text-mode user interfaces on Unix-like systems")
-    (license lgpl2.1)
+    (license license:lgpl2.1)
     (properties `((python2-variant . ,(delay python2-pythondialog))))))
 
 (define-public python2-pythondialog
@@ -6770,7 +6775,7 @@ powerful debugger, full-featured request and response objects, HTTP utilities to
 handle entity tags, cache control headers, HTTP dates, cookie handling, file
 uploads, a powerful URL routing system and a bunch of community-contributed
 addon modules.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public python2-werkzeug
   (package-with-python2 python-werkzeug))
@@ -6800,7 +6805,7 @@ writer: an ini file round tripper.  Its main feature is that it is very easy to
 use, with a straightforward programmer’s interface and a simple syntax for
 config files.")
     (home-page "https://github.com/DiffSK/configobj")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-configobj
   (package-with-python2 python-configobj))
@@ -6852,7 +6857,7 @@ based on PyOpenSSL.  PyOpenSSL provides a more fully featured SSL implementation
 over the default provided with Python and importantly enables full verification
 of the SSL peer.")
     (home-page "https://github.com/cedadev/ndg_httpsclient/")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 ;; python2-openssl requires special care, so package-with-python2 is
 ;; insufficient.
@@ -6889,7 +6894,7 @@ of the SSL peer.")
 provides utilities for common tasks involving decorators and context
 managers.  It also contains additional features that are not part of
 the standard library.")
-    (license psfl)))
+    (license license:psfl)))
 
 (define-public python2-contextlib2
   (package-with-python2 python-contextlib2))
@@ -6911,7 +6916,7 @@ the standard library.")
     (synopsis "Python module for creating simple ASCII tables")
     (description "Texttable is a Python module for creating simple ASCII
 tables.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python2-texttable
   (package-with-python2 python-texttable))
@@ -6936,7 +6941,7 @@ tables.")
     (synopsis "WebSocket client for Python")
     (description "The Websocket-client module provides the low level APIs for
 WebSocket usage in Python programs.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python2-websocket-client
   (package-with-python2 python-websocket-client))
@@ -6985,7 +6990,7 @@ for atomic filesystem operations.")
     (description "This is a toolbelt of useful classes and functions to be used
 with python-requests.")
     (home-page "https://github.com/sigmavirus24/requests-toolbelt")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-click-threading
   (package
@@ -7226,7 +7231,7 @@ processes across test runs.")
     (description "The icalendar package is a parser/generator of iCalendar
 files for use with Python.")
     (home-page "https://github.com/collective/icalendar")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python-sphinxcontrib-newsfeed
   (package
@@ -7246,7 +7251,7 @@ files for use with Python.")
     (description "Sphinxcontrib-newsfeed is an extension for adding a simple
 Blog, News or Announcements section to a Sphinx website.")
     (home-page "https://bitbucket.org/prometheus/sphinxcontrib-newsfeed")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python-args
   (package
@@ -7265,7 +7270,7 @@ Blog, News or Announcements section to a Sphinx website.")
     (synopsis "Command-line argument parser")
     (description
      "This library provides a Python module to parse command-line arguments.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-args
   (package-with-python2 python-args))
@@ -7290,7 +7295,7 @@ Blog, News or Announcements section to a Sphinx website.")
      "Clint is a Python module filled with a set of tools for developing
 command-line applications, including tools for colored and indented
 output, progress bar display, and pipes.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public python2-clint
   (package-with-python2 python-clint))
@@ -7313,7 +7318,7 @@ output, progress bar display, and pipes.")
     (description
      "Astor is designed to allow easy manipulation of Python source via the
 Abstract Syntax Tree.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-astor
   (package-with-python2 python-astor))
@@ -7338,7 +7343,7 @@ Abstract Syntax Tree.")
      "This package provides a pure Python based parser generator, that also
 works with RPython.  It is a more-or-less direct port of David Bazzley's PLY,
 with a new public API, and RPython support.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-rply
   (package-with-python2 python-rply))
@@ -7450,7 +7455,7 @@ authenticated session objects providing things like keep-alive.")
      "The concurrent.futures module provides a high-level interface for
 asynchronously executing callables.  This package backports the
 concurrent.futures package from Python 3.2")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python-urllib3
   (package
@@ -7506,7 +7511,7 @@ supports url redirection and retries, and also gzip and deflate decoding.")
    (description "Colorama is a Python library for rendering colored terminal
 text.")
    (home-page "https://pypi.python.org/pypi/colorama")
-   (license bsd-3)))
+   (license license:bsd-3)))
 
 (define-public python2-colorama
   (package-with-python2 python-colorama))
@@ -7532,7 +7537,7 @@ encryption and decryption, signing and verifying signatures, and key
 generation according to PKCS#1 version 1.5.  It can be used as a Python
 library as well as on the command line.")
    (home-page "http://stuvel.eu/rsa")
-   (license asl2.0)))
+   (license license:asl2.0)))
 
 (define-public python2-rsa
   (package-with-python2 python-rsa))
@@ -7643,7 +7648,7 @@ document.")
    (synopsis "Low-level interface to AWS")
    (description "Botocore is a Python library that provides a low-level
 interface to the Amazon Web Services (AWS) API.")
-   (license asl2.0)))
+   (license license:asl2.0)))
 
 (define-public python2-botocore
   (package-with-python2 python-botocore))
@@ -7677,7 +7682,7 @@ interface to the Amazon Web Services (AWS) API.")
    (synopsis "Command line client for AWS")
    (description "AWS CLI provides a unified command line interface to the
 Amazon Web Services (AWS) API.")
-   (license asl2.0)))
+   (license license:asl2.0)))
 
 (define-public python-hypothesis
   (package
@@ -7699,7 +7704,7 @@ much larger range of examples than you would ever want to write by hand.  It’s
 based on the Haskell library, Quickcheck, and is designed to integrate
 seamlessly into your existing Python unit testing work flow.")
     (home-page "https://github.com/DRMacIver/hypothesis")
-    (license mpl2.0)
+    (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
 
 (define-public python2-hypothesis
@@ -7733,7 +7738,7 @@ unit test functions that use @code{py.test}. This is useful for using
 function multiple times, without setting up or tearing down fixture state as is
 normally the case.")
     (home-page "https://github.com/untitaker/pytest-subtesthack/")
-    (license unlicense)))
+    (license license:unlicense)))
 
 (define-public python2-pytest-subtesthack
   (package-with-python2 python-pytest-subtesthack))
@@ -7762,7 +7767,7 @@ normally the case.")
     (description "Provides bindings to libxdo for manipulating X11 via simulated
 input.  (Note that this is mostly a legacy library; you may wish to look at
 python-xdo for newer bindings.)")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python-wtforms
   (package
@@ -7785,7 +7790,7 @@ python-xdo for newer bindings.)")
      "WTForms is a flexible forms validation and rendering library
 for Python web development.  It is very similar to the web form API
 available in Django, but is a standalone package.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-wtforms))))))
 
 (define-public python2-wtforms
@@ -7842,7 +7847,7 @@ templates into Python modules.")
     (synopsis "Waitress WSGI server")
     (description "Waitress is meant to be a production-quality pure-Python WSGI
 server with very acceptable performance.")
-    (license zpl2.1)
+    (license license:zpl2.1)
     (properties `((python2-variant . ,(delay python2-waitress))))))
 
 (define-public python2-waitress
@@ -8023,7 +8028,7 @@ layouts.")
     (description "pyquery allows you to make jQuery queries on xml documents.
 The API is as much as possible the similar to jQuery.  pyquery uses lxml for
 fast xml and html manipulation.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-pyquery))))))
 
 (define-public python2-pyquery
@@ -8111,7 +8116,7 @@ minimum of WSGI.")
     (description
      "Anyjson loads whichever is the fastest JSON module installed
 and provides a uniform API regardless of which JSON implementation is used.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-anyjson))))))
 
 (define-public python2-anyjson
@@ -8147,7 +8152,7 @@ and provides a uniform API regardless of which JSON implementation is used.")
      "This is a fork of amqplib which was originally written by Barry Pederson.
 It is maintained by the Celery project, and used by kombu as a pure python
 alternative when librabbitmq is not available.")
-    (license lgpl2.1+)
+    (license license:lgpl2.1+)
     (properties `((python2-variant . ,(delay python2-amqp))))))
 
 (define-public python2-amqp
@@ -8189,7 +8194,7 @@ and also provide proven and tested solutions to common messaging problems.
 AMQP is the Advanced Message Queuing Protocol, an open standard protocol for
 message orientation, queuing, routing, reliability and security, for which the
 RabbitMQ messaging server is the most popular implementation.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-kombu))))))
 
 (define-public python2-kombu
@@ -8223,7 +8228,7 @@ RabbitMQ messaging server is the most popular implementation.")
 multiprocessing package itself is a renamed and updated version of R Oudkerk's
 pyprocessing package.  This standalone variant is intended to be compatible with
 Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-billiard))))))
 
 (define-public python2-billiard
@@ -8264,7 +8269,7 @@ supports scheduling as well.  The execution units, called tasks, are executed
 concurrently on a single or more worker servers using multiprocessing,
 Eventlet, or gevent.  Tasks can execute asynchronously (in the background) or
 synchronously (wait until ready).")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-celery))))))
 
 (define-public python2-celery
@@ -8327,7 +8332,7 @@ ISO 8859, etc.).")
   (description
     "python-editor is a library that provides the editor module for
 programmatically interfacing with your system's $EDITOR.")
-  (license asl2.0)
+  (license license:asl2.0)
   (properties `((python2-variant . ,(delay python2-editor))))))
 
 (define-public python2-editor
@@ -8354,7 +8359,7 @@ programmatically interfacing with your system's $EDITOR.")
     (description "A Sphinx extension to literally insert the output of arbitrary
 commands into documents, helping you to keep your command examples up to date.")
     (home-page "https://github.com/lunaryorn/sphinxcontrib-programoutput")
-    (license bsd-2)
+    (license license:bsd-2)
     (properties `((python2-variant . ,(delay python2-sphinxcontrib-programoutput))))))
 
 (define-public python2-sphinxcontrib-programoutput
@@ -8383,7 +8388,7 @@ commands into documents, helping you to keep your command examples up to date.")
 system.  The extension allows generation of API documentation by
 introspection of @code{zope.interface} instances in code.")
     (home-page "https://github.com/repoze/repoze.sphinx.autointerface")
-    (license repoze)))
+    (license license:repoze)))
 
 (define-public python2-sphinx-repoze-autointerface
   (package-with-python2 python-sphinx-repoze-autointerface))
@@ -8410,7 +8415,7 @@ introspection of @code{zope.interface} instances in code.")
     (synopsis "Python PostgreSQL adapter")
     (description
      "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API 2.0. ")
-    (license lgpl3+)
+    (license license:lgpl3+)
     (properties `((python2-variant . ,(delay python2-psycopg2))))))
 
 (define-public python2-psycopg2
@@ -8440,7 +8445,7 @@ are supported and well tested. vCard 3.0 files are supported, and all data
 should be imported, but only a few components are understood in a sophisticated
 way.")
     (home-page "http://eventable.github.io/vobject/")
-    (license asl2.0)
+    (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-vobject))))))
 
 (define-public python2-vobject
@@ -8467,7 +8472,7 @@ way.")
     (description "The Munkres module provides an implementation of the Munkres
 algorithm (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
 useful for solving the Assignment Problem.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-munkres
   (package-with-python2 python-munkres))
@@ -8492,7 +8497,7 @@ useful for solving the Assignment Problem.")
     (description "Flask is a micro web framework based on the Werkzeug toolkit
 and Jinja2 template engine.  It is called a micro framework because it does not
 presume or force a developer to use a particular tool or library.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-flask))))))
 
 (define-public python2-flask
@@ -8555,7 +8560,7 @@ Python.")
     (synopsis "Utility for mocking out the `requests` Python library")
     (description "A utility library for mocking out the `requests` Python
 library.")
-    (license asl2.0)
+    (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-responses))))))
 
 (define-public python2-responses
@@ -8616,7 +8621,7 @@ ambiguities (forward vs. backward slashes, etc.).
     (synopsis "Approximate and phonetic matching of strings")
     (description "Jellyfish uses a variety of string comparison and phonetic
 encoding algorithms to do fuzzy string matching.")
-    (license bsd-2)
+    (license license:bsd-2)
     (properties `((python2-variant . ,(delay python2-jellyfish))))))
 
 (define-public python2-jellyfish
@@ -8652,7 +8657,7 @@ encoding algorithms to do fuzzy string matching.")
     (synopsis "Unicode CSV module for Python 2")
     (description "Unicodecsv is a drop-in replacement for Python 2.7's CSV
 module, adding support for Unicode strings.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python-rarfile
   (package
@@ -8681,7 +8686,7 @@ module, adding support for Unicode strings.")
     (synopsis "RAR archive reader for Python")
     (description "This is Python module for RAR archive reading.  The interface
 is made as zipfile like as possible.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public python2-rarfile
   (package-with-python2 python-rarfile))
@@ -8727,7 +8732,14 @@ is made as zipfile like as possible.")
                (substitute* "magic.py"
                  (("ctypes.util.find_library\\('magic'\\)")
                   (string-append "'" file "/lib/libmagic.so'")))
-           #t))))))
+           #t)))
+         (add-before 'install 'disable-egg-compression
+           (lambda _
+             (let ((port (open-file "setup.cfg" "a")))
+               (display "\n[easy_install]\nzip_ok = 0\n"
+                        port)
+               (close-port port)
+               #t))))))
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
     (inputs
@@ -8784,7 +8796,7 @@ in storage services that are compatible with the Amazon Simple Storage
 Service (S3) protocol, including S3 itself.  It supports rsync-like backup,
 GnuPG encryption, and more.  It also supports management of Amazon's
 CloudFront content delivery network.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public python-pkgconfig
   (package
@@ -8852,7 +8864,7 @@ LDFLAGS and parse the output to build extensions with setup.py.")
 files.  It contains a drop-in replacement for the I/O interface in the
 standard library's @code{bz2} module, including features from the latest
 development version of CPython that are not available in older releases.")
-    (license asl2.0)
+    (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-bz2file))))))
 
 (define-public python2-bz2file
@@ -8944,7 +8956,7 @@ to support both Python 2 and Python 3 with minimal overhead.")
 other signals and errors) in Cython code, using two related approaches,
 for mixed Cython/Python code or external C libraries and pure Cython code,
 respectively.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python2-cysignals
   (package-with-python2 python-cysignals))
@@ -8987,7 +8999,7 @@ respectively.")
   (synopsis "Experimental Python-2 to C++ Compiler")
   (description (string-append "This is an experimental compiler for a subset of
 Python.  It generates C++ code and a Makefile."))
-  (license (list gpl3 bsd-3 license:expat))))
+  (license (list license:gpl3 license:bsd-3 license:expat))))
 
 (define-public python2-rope
   (package
@@ -9014,7 +9026,7 @@ Python.  It generates C++ code and a Makefile."))
 the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
 to occurences in strings and comments.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public python-py3status
   (package
@@ -9035,7 +9047,7 @@ to occurences in strings and comments.")
     (description "py3status is an i3status wrapper which extends i3status
 functionality in a modular way, allowing you to extend your panel with your
 own code, responding to click events and updating clock every second.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python-tblib
   (package
@@ -9075,7 +9087,7 @@ multiple processes (imagine multiprocessing, billiard, futures, celery etc).
 
 @item Parse traceback strings and raise with the parsed tracebacks.
 @end itemize")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-tblib
   (package-with-python2 python-tblib))
@@ -9109,7 +9121,7 @@ multiple processes (imagine multiprocessing, billiard, futures, celery etc).
     (synopsis "Non-validating SQL parser")
     (description "Sqlparse is a non-validating SQL parser for Python.  It
 provides support for parsing, splitting and formatting SQL statements.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-sqlparse
   (package-with-python2 python-sqlparse))
@@ -9134,7 +9146,7 @@ provides support for parsing, splitting and formatting SQL statements.")
 that supports micro-threads called \"tasklets\".  Tasklets run
 pseudo-concurrently (typically in a single or a few OS-level threads) and
 are synchronized with data exchanges on \"channels\".")
-    (license (list psfl license:expat))))
+    (license (list license:psfl license:expat))))
 
 (define-public python2-greenlet
   (package-with-python2 python-greenlet))
@@ -9222,7 +9234,7 @@ focus on event-based network programming and multiprotocol integration.")
     (synopsis "Python Lex & Yacc")
     (description "PLY is a @code{lex}/@code{yacc} implemented purely in Python.
 It uses LR parsing and does extensive error checking.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-ply))))))
 
 (define-public python2-ply
@@ -9286,7 +9298,7 @@ data in Python.")
      "Kazoo is a Python client library for the Apache Zookeeper distributed
 application service.  It is designed to be easy to use and to avoid common
 programming errors.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-kazoo
   (package-with-python2 python-kazoo))
@@ -9320,7 +9332,7 @@ programming errors.")
      "PyKafka is a client for the Apache Kafka distributed messaging system.
 It includes Python implementations of Kafka producers and consumers, which
 are optionally backed by a C extension built on librdkafka.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-pykafka
   (package-with-python2 python-pykafka))
@@ -9381,7 +9393,7 @@ specified in POSIX.1-2001 and POSIX.1-2008.")
 It supports both the original 1.0 specification, as well as the
 new (proposed) 2.0 spec, which includes batch submission, keyword arguments,
 etc.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-chai
   (package
@@ -9401,7 +9413,7 @@ etc.")
     (description
      "Chai provides an api for mocking, stubbing and spying your python
 objects, patterned after the Mocha library for Ruby.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-chai
   (package-with-python2 python-chai))
@@ -9430,7 +9442,7 @@ objects, patterned after the Mocha library for Ruby.")
      "Arrow is a Python library to creating, manipulating, formatting and
 converting dates, times, and timestamps.  It implements and updates the
 datetime type.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-arrow
   (package-with-python2 python-arrow))
@@ -9477,7 +9489,7 @@ underscored string.")
     (description "Pure Python Levenshtein implementation, based off the
 Wikipedia code samples at
 @url{http://en.wikipedia.org/wiki/Levenshtein_distance}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-pylev
   (package-with-python2 python-pylev))
@@ -9529,7 +9541,7 @@ docstring and colored output.")
     (description
      "Lazy object proxy is an object that wraps a callable but defers the call
 until the object is actually required, and caches the result of said call.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python2-lazy-object-proxy
   (package-with-python2 python-lazy-object-proxy))
@@ -9588,7 +9600,7 @@ It supports TSIG authenticated messages and EDNS0.")
     (synopsis "Email address validation library for Python")
     (description
      "This library validates email address syntax and deliverability.")
-    (license cc0)))
+    (license license:cc0)))
 
 (define-public python2-email-validator
   (package-with-python2 python-email-validator))
@@ -9683,7 +9695,7 @@ addresses, and phone numbers.")
     (description
      "pyaml is a PyYAML based python module to produce pretty and readable
 YAML-serialized data.")
-    (license (non-copyleft "http://www.wtfpl.net/txt/copying/"))))
+    (license (license:non-copyleft "http://www.wtfpl.net/txt/copying/"))))
 
 (define-public python2-pyaml
   (package-with-python2 python-pyaml))
@@ -9706,7 +9718,7 @@ YAML-serialized data.")
     (description
      "flexmock is a testing library for Python that makes it easy to create
 mocks, stubs and fakes.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-flexmock
   (package-with-python2 python-flexmock))
@@ -9777,7 +9789,7 @@ interfaces in Python.  It's like GNU Readline but it also features syntax
 highlighting while typing, out-of-the-box multi-line input editing, advanced
 code completion, incremental search, support for Chinese double-width
 characters, mouse support, and auto suggestions.")
-  (license bsd-3)
+  (license license:bsd-3)
   (properties `((python2-variant . ,(delay python2-prompt-toolkit))))))
 
 (define-public python2-prompt-toolkit
@@ -9840,7 +9852,7 @@ characters, mouse support, and auto suggestions.")
 It supports syntax highlighting, multiline editing, autocompletion, mouse,
 color schemes, bracketed paste, Vi and Emacs keybindings, Chinese characters
 etc.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay ptpython-2))))))
 
 (define-public ptpython-2
@@ -9880,7 +9892,7 @@ etc.")
      "Stem is a Python controller library for Tor.  With it you can use Tor's
 control protocol to script against the Tor process and read descriptor data
 relays publish about themselves.")
-    (license lgpl3)))
+    (license license:lgpl3)))
 
 (define-public python2-stem
   (package-with-python2 python-stem))
@@ -9903,7 +9915,7 @@ relays publish about themselves.")
     (description "@code{pyserial} provide serial port bindings for Python.  It
 supports different byte sizes, stop bits, parity and flow control with RTS/CTS
 and/or Xon/Xoff.  The port is accessed in RAW mode.")
-    (license bsd-3)
+    (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-pyserial))))))
 
 (define-public python2-pyserial
@@ -9977,3 +9989,232 @@ hardware-accelerated multitouch applications.")
 
 (define-public python2-kivy-next
   (package-with-python2 python-kivy-next))
+
+(define-public python-binaryornot
+  (package
+    (name "python-binaryornot")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "binaryornot" version))
+              (sha256
+               (base32
+                "1j4f51dxic39mdwf6alj7gd769wy6mhk916v031wjali51xkh3xb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-chardet" ,python-chardet)
+       ("python-hypothesis" ,python-hypothesis)))
+    (home-page "https://github.com/audreyr/binaryornot")
+    (synopsis "Package to check if a file is binary or text")
+    (description "Ultra-lightweight pure Python package to check if a file is
+binary or text.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-binaryornot))))))
+
+(define-public python2-binaryornot
+  (let ((base (package-with-python2 (strip-python2-variant python-binaryornot))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base)))
+      (inputs
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-inputs base))))))
+
+(define-public python-nltk
+  (package
+    (name "python-nltk")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "nltk" version))
+              (sha256
+               (base32
+                "0skxbhnymwlspjkzga0f7x1hg3y50fwpfghs8g8k7fh6f4nknlym"))))
+    (build-system python-build-system)
+    (home-page "http://nltk.org/")
+    (synopsis "Natural Language Toolkit")
+    (description "It provides interfaces to over 50 corpora and lexical
+resources such as WordNet, along with a suite of text processing libraries
+for classification, tokenization, stemming, tagging, parsing, and semantic
+reasoning, wrappers for natural language processing libraries.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-nltk))))))
+
+(define-public python2-nltk
+  (let ((base (package-with-python2 (strip-python2-variant python-nltk))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-pymongo
+  (package
+    (name "python-pymongo")
+    (version "3.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pymongo" version))
+              (sha256
+               (base32
+                "07mra6w86wjqy4lx5fvimidjhhfzd562gfjn8grsnbv2q8pk0i9x"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-certifi" ,python-certifi)))
+    (home-page "http://github.com/mongodb/mongo-python-driver")
+    (synopsis "Python driver for MongoDB")
+    (description "Python driver for MongoDB.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-pymongo))))))
+
+(define-public python2-pymongo
+  (let ((base (package-with-python2 (strip-python2-variant python-pymongo))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-sh
+  (package
+    (name "python-sh")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sh" version))
+              (sha256
+               (base32
+                "192r0mpv6dmkysjzhc43ddffiwb5g7c76bgr1mb1z2xz9awbj3sr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests
+    (home-page "https://github.com/amoffat/sh")
+    (synopsis "Python subprocess interface")
+    (description "Abstracts process invocation by providing a function
+interface for programs.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-sh))))))
+
+(define-public python2-sh
+  (let ((base (package-with-python2 (strip-python2-variant python-sh))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-schematics
+  (package
+    (name "python-schematics")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://github.com/schematics/schematics/archive/v" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19v1i69bf3bzarfxmbv0v6ivpcn758x3shvbiy9l2hy0lvqwnp6l"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)))
+    (arguments
+     `(#:tests? #f)) ; requires a bunch of not very nice packages with fixed
+                     ; version requirements (eg python-coveralls)
+    (home-page "https://github.com/schematics/schematics")
+    (synopsis "Python Data Structures for Humans")
+    (description "Python Data Structures for Humans.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-schematics))))))
+
+(define-public python2-schematics
+  (let ((base (package-with-python2 (strip-python2-variant python-schematics))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-publicsuffix
+  (package
+    (name "python-publicsuffix")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "publicsuffix" version))
+              (sha256
+               (base32
+                "1adx520249z2cy7ykwjr1k190mn2888wqn9jf8qm27ly4qymjxxf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; tests use the internet
+    (home-page "https://www.tablix.org/~avian/git/publicsuffix.git")
+    (synopsis "Get suffix for a domain name")
+    (description "Get a public suffix for a domain name using the Public Suffix
+List.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-nltk))))))
+
+(define-public python2-publicsuffix
+  (let ((base (package-with-python2 (strip-python2-variant python-publicsuffix))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-publicsuffix2
+  (package
+    (name "python-publicsuffix2")
+    (version "2.20160621")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "publicsuffix2" version ".tar.bz2"))
+       (sha256
+        (base32
+         "06lx603gdwad5hc3hmn763ngq0rq9bzz1ni3ga72nzk5n872arkd"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/pombredanne/python-publicsuffix2")
+    (synopsis "Get a public suffix for a domain name using the Public Suffix List")
+    (description "Get a public suffix for a domain name using the Public Suffix
+List.  Forked from and using the same API as the publicsuffix package.")
+    (license (list license:expat license:mpl2.0))
+    (properties `((python2-variant . ,(delay python2-publicsuffix2))))))
+
+(define-public python2-publicsuffix2
+  (let ((base (package-with-python2 (strip-python2-variant python-publicsuffix2))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-url
+  (package
+    (name "python-url")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "url" version))
+              (sha256
+               (base32
+                "0v879yadcz9qxfl41ak6wkga1kimp9cflla9ddz03hjjvgkqy5ki"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-publicsuffix" ,python-publicsuffix)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: tests fail with "ImportError: No module named 'tests'"
+    (home-page "http://github.com/seomoz/url-py")
+    (synopsis "URL Parsing")
+    (description "Library for parsing urls.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-url))))))
+
+(define-public python2-url
+  (let ((base (package-with-python2 (strip-python2-variant python-url))))
+    (package (inherit base)
+      (inputs
+       `(("python2-publicsuffix" ,python2-publicsuffix)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))

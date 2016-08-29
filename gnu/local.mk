@@ -297,6 +297,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rdesktop.scm			\
   %D%/packages/rdf.scm				\
   %D%/packages/readline.scm			\
+  %D%/packages/regex.scm				\
   %D%/packages/rrdtool.scm			\
   %D%/packages/rsync.scm			\
   %D%/packages/ruby.scm				\
@@ -523,7 +524,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
   %D%/packages/patches/ghostscript-runpath.patch		\
-  %D%/packages/patches/gimp-CVE-2016-4994.patch			\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
@@ -668,6 +668,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
+  %D%/packages/patches/mupdf-CVE-2016-6265.patch		\
+  %D%/packages/patches/mupdf-CVE-2016-6525.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/mysql-fix-failing-test.patch		\
@@ -851,7 +853,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-intel-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-nv-remove-mibstore.patch	\
-  %D%/packages/patches/xf86-video-openchrome-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-tga-remove-mibstore.patch	\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-session-fix-xflock4.patch		\

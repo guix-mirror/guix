@@ -85,7 +85,9 @@
                 "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-qt5")
+     `(#:configure-flags
+       '("--enable-qt5"
+         "CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
          ;; Insert an extra space between linker flags.
@@ -2111,10 +2113,15 @@ interface.")
         (base32 "034p6mbwrjnxd9b6h20cidxi4ilkk3cgpjp154j0jzjs1ipf7x2h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; no "check" phase
+     `(#:tests? #f ; no "check" phase
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
+    (native-inputs
+     `(("qttools" ,qttools)))
     (inputs
-     `(("qt" ,qt)
-       ("fluidsynth" ,fluidsynth)))
+     `(("fluidsynth" ,fluidsynth)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
     (home-page "http://qsynth.sourceforge.net")
     (synopsis "Graphical user interface for FluidSynth")
     (description
@@ -2430,7 +2437,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.4.10")
+    (version "0.4.11")
     (source
      (origin
        (method url-fetch)
@@ -2438,7 +2445,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "1syr8qchs8091z9ayivj723szlidx81gll099bmk9kgpykmckd62"))))
+         "0j765drdb7h3y5ipjv9sg1a0if6zh8cksbv3rdk5ppd7kxcrjnlb"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))

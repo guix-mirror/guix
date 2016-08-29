@@ -161,6 +161,18 @@ markup is valid return a plain-text version of DESCRIPTION, otherwise #f."
                       'description)
         #f)))
 
+  (define (check-trademarks description)
+    "Check that DESCRIPTION does not contain '™' or '®' characters.  See
+http://www.gnu.org/prep/standards/html_node/Trademarks.html."
+    (match (string-index description (char-set #\™ #\®))
+      ((and (? number?) index)
+       (emit-warning package
+                     (format #f (_ "description should not contain ~
+trademark sign '~a' at ~d")
+                             (string-ref description index) index)
+                     'description))
+      (else #t)))
+
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
                 (string-prefix-ci? (package-name package) description))
@@ -191,6 +203,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
     (if (string? description)
         (begin
           (check-not-empty description)
+          (check-trademarks description)
           ;; Use raw description for this because Texinfo rendering
           ;; automatically fixes end of sentence space.
           (check-end-of-sentence-space description)

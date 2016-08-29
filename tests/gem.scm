@@ -71,7 +71,7 @@
          ('synopsis "A cool gem")
          ('description "This package provides a cool gem")
          ('home-page "https://example.com")
-         ('license ('list 'expat 'asl2.0)))
+         ('license ('list 'license:expat 'license:asl2.0)))
        #t)
       (x
        (pk 'fail x #f)))))

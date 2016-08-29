@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,6 +22,7 @@
 (define-module (gnu packages gl)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -547,3 +548,36 @@ OpenGL graphics API.")
      "SOIL is a tiny C library used primarily for uploading textures into
 OpenGL.")
     (license license:public-domain)))
+
+(define-public glfw
+  (package
+    (name "glfw")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/glfw/glfw"
+                                  "/releases/download/" version
+                                  "/glfw-" version ".zip"))
+              (sha256
+               (base32
+                "09kk5yc1zhss9add8ryqrngrr16hdmc94rszgng135bhw09mxmdp"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; no test target
+       #:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("unzip" ,unzip)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("libx11" ,libx11)
+       ("libxrandr" ,libxrandr)
+       ("libxinerama" ,libxinerama)
+       ("libxcursor" ,libxcursor)))
+    (home-page "http://www.glfw.org")
+    (synopsis "OpenGL application development library")
+    (description
+     "GLFW is a library for OpenGL, OpenGL ES and Vulkan development for
+desktop computers.  It provides a simple API for creating windows, contexts
+and surfaces, receiving input and events.")
+    (license license:zlib)))

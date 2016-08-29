@@ -83,7 +83,7 @@
     (home-page "http://wordnet.princeton.edu/")
     (synopsis "Lexical database for the English language")
     (description
-     "WordNet® is a large lexical database of English.  Nouns, verbs,
+     "WordNet is a large lexical database of English.  Nouns, verbs,
 adjectives and adverbs are grouped into sets of cognitive synonyms (synsets),
 each expressing a distinct concept.  Synsets are interlinked by means of
 conceptual-semantic and lexical relations.  The resulting network of

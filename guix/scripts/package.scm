@@ -486,7 +486,8 @@ kind of search path~%")
                            #f)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result arg-handler)
-                   (values (alist-cons 'dry-run? #t result)
+                   (values (alist-cons 'dry-run? #t
+                                       (alist-cons 'graft? #f result))
                            #f)))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result arg-handler)

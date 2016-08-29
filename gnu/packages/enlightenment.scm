@@ -53,7 +53,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.17.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -61,7 +61,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1dpq5flygrjg931nzsr2ra8icqffzrzbs1lnrzarbpsbmgq3zacs"))))
+                "17mzbjmz8d2vs8p63r1sk3mppl3l2fhxy2jv24dp75lgqbsvp806"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -69,13 +69,15 @@
      `(("alsa-lib" ,alsa-lib)
        ("compositeproto" ,compositeproto)
        ("curl" ,curl)
+       ("ghostscript" ,ghostscript)
        ("giflib" ,giflib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("harfbuzz" ,harfbuzz)
        ("libexif" ,libexif)
        ("libjpeg" ,libjpeg)
+       ("libraw" ,libraw)
        ("librsvg" ,librsvg)
+       ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
@@ -89,7 +91,10 @@
        ("libxrandr" ,libxrandr)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxtst" ,libxtst)
+       ("lz4" ,lz4)
        ("mesa" ,mesa)
+       ("openjpeg" ,openjpeg-1)
+       ("poppler" ,poppler)
        ("printproto" ,printproto)
        ("scrnsaverproto" ,scrnsaverproto)
        ("xextproto" ,xextproto)
@@ -100,28 +105,41 @@
      ;; All these inputs are in package config files in section
      ;; Require.private.
      `(("bullet" ,bullet) ; ephysics.pc
-       ("dbus" ,dbus) ; eldbus.pc
+       ("dbus" ,dbus) ; eldbus.pc, elementary.pc, elocation.pc, ethumb_client.pc
        ("eudev" ,eudev) ; eeze.pc
-       ("fontconfig" ,fontconfig) ; evas.pc
-       ("freetype" ,freetype) ; evas.pc
-       ("fribidi" ,fribidi) ; evas.pc
-       ("glib" ,glib) ; ecore.pc
+       ("fontconfig" ,fontconfig) ; evas.pc, evas-cxx.pc
+       ("freetype" ,freetype) ; evas.pc, evas-cxx.pc
+       ("fribidi" ,fribidi) ; evas.pc, evas-cxx.pc
+       ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
+       ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
+       ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
-       ("luajit" ,luajit) ; evas.pc, edje.pc
-       ("openssl" ,openssl) ; eet.pc, ecore-con.pc
+       ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
        ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("util-linux" ,util-linux) ; eeze.pc
-       ("zlib" ,zlib))) ; eet.pc
+       ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
     (arguments
-     `(#:configure-flags '("--disable-silent-rules")
+     `(#:configure-flags '("--disable-silent-rules"
+                           "--enable-liblz4"
+                           "--enable-harfbuzz")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-config-files
+         ;; ecore_audio cannot find pulseaudio or libsndfile when compiled.
+         ;; Starting in version 1.18.0, these two libraries are dlopened so
+         ;; we hardcode their locations as a temporary workaround.
+         (add-after 'configure 'hardlink-dlopen-files
            (lambda _
-             (substitute* "po/Makefile.in.in"
-                          (("/bin/sh") (which "bash"))))))))
-    (home-page "http://www.enlightenment.org")
+             (substitute* "src/lib/ecore_audio/ecore_audio.c"
+                          (("libpulse.so.0")
+                           (string-append (assoc-ref %build-inputs "pulseaudio")
+                                          "/lib/libpulse.so.0")))
+             (substitute* "src/lib/ecore_audio/ecore_audio.c"
+                          (("libsndfile.so.1")
+                           (string-append (assoc-ref %build-inputs "libsndfile")
+                                          "/lib/libsndfile.so.1")))
+             #t)))))
+    (home-page "https://www.enlightenment.org")
     (synopsis "Enlightenment Foundation Libraries")
     (description
      "Enlightenment Foundation Libraries is a set of libraries developed
@@ -148,7 +166,7 @@ removable devices or support for multimedia.")
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("efl" ,efl))) ; elementary.pc, elementary-cxx.pc
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Widget library of Enlightenment world")
     (description
      "Elementary is a widget library/toolkit, part of the Enlightenment
@@ -180,7 +198,7 @@ full capabilities of EFL.")
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
        ("poppler" ,poppler)))
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Plugins for integration of various file types into Evas")
     (description
      "Evas-generic-loaders is a collection of interfaces to outside libraries
@@ -207,7 +225,7 @@ files in Evas (EFL canvas library).")
     (inputs
      `(("efl" ,efl)
        ("vlc" ,vlc)))
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Plugins for integrating media players in EFL based applications")
     (description
      "Emotion-generic-players is a collection of interfaces to outside libraries
@@ -231,9 +249,8 @@ The only supported now is VLC.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)
-       ("elementary" ,elementary)))
-    (home-page "http://www.enlightenment.org")
+     `(("efl" ,efl)))
+    (home-page "https://www.enlightenment.org")
     (synopsis "Powerful terminal emulator based on EFL")
     (description
      "Terminology is fast and feature rich terminal emulator.  It is solely
@@ -245,21 +262,21 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.1.4")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
                 "https://download.enlightenment.org/rel/apps/rage/rage-"
-                version ".tar.gz"))
+                version ".tar.xz"))
               (sha256
-               (base32 "10j3n8crk16jzqz2hn5djx6vms5f6x83qyiaphhqx94h9dgv2mgg"))))
+               (base32
+                "07mfh0k83nrm557x72qafxawxizilqgkr6sngbia3ikprc8556zy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)
-       ("elementary" ,elementary)))
+     `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org/about-rage")
     (synopsis "Video and audio player based on EFL")
     (description
@@ -270,7 +287,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.21.1")
+    (version "0.21.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -278,25 +295,22 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "119sxrgrz163c01yx0q9n2jpmmbv0a58akmz0c2z4xy37f1m02rx"))))
+                "0fi5dxrprnvhnn2y51gnfpsjj44snriqi20k20a73vhaqxfn8xx8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
+       ("efl" ,efl)
        ("freetype" ,freetype)
-       ("gettext" ,gnu-gettext)
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
-    (propagated-inputs
-     ;; both these inputs are present in pkgconfig file in Require section
-     `(("efl" ,efl) ; enlightenment.pc
-       ("elementary" ,elementary))) ; enlightenment.pc
     (home-page "https://www.enlightenment.org")
     (synopsis "Lightweight desktop environment")
     (description
@@ -309,14 +323,14 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "python-efl" version))
         (sha256
          (base32
-          "1ihay90agl2jx12m7jj8j1cspd7vsak1w7q95rhb6r2srkq0ppxk"))))
+          "0x49rb7mx7ysjp23m919r2rx8qnl4xackhl9s9x2697m7cs77n1r"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -335,7 +349,6 @@ embedded systems.")
        ("python-cython" ,python-cython)))
     (inputs
      `(("efl" ,efl)
-       ("elementary" ,elementary)
        ("python-dbus" ,python-dbus)))
     (home-page "https://www.enlightenment.org/")
     (synopsis "Python bindings for EFL")

@@ -26,16 +26,24 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages attr)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public extra-cmake-modules
@@ -76,6 +84,60 @@
 modules provided by CMake to find common software.  In addition, it provides
 common build settings used in software produced by the KDE community.")
     (license license:bsd-3)))
+
+(define-public phonon
+  (package
+    (name "phonon")
+    (version "4.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/phonon"
+                            "/" version "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1q5hvsk4sfcb91625wcmldy7kgjmfpmpmkgzi6mxkqdd307v8x5v"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:configure-flags
+       '("-DCMAKE_CXX_FLAGS=-fPIC"
+         "-DPHONON_BUILD_PHONON4QT5=ON")))
+    (home-page "https://phonon.kde.org")
+    (synopsis "KDE's multimedia library")
+    (description "KDE's multimedia library.")
+    (license license:lgpl2.1+)))
+
+(define-public gpgmepp
+  (package
+    (name "gpgmepp")
+    (version "16.04.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/applications"
+                            "/" version "/src/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1850pdysi7c1w0nxnhcbrhnkrfqyrcl0laxyjcw1g1ln764pwcmj"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (propagated-inputs
+     `(("boost" ,boost)
+       ("gpgme" ,gpgme)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "C++ bindings/wrapper for gpgme")
+    (description "C++ bindings/wrapper for gpgme.")
+    (license license:lgpl2.1+)))
+
 
 ;; Tier 1
 ;;
@@ -331,7 +393,7 @@ It is made of two parts: KConfigCore and KConfigGui.
 KConfigCore provides access to the configuration files themselves.
 It features:
 
-@itemize
+@enumerate
 @item Code generation: describe your configuration in an XML file, and use
 `kconfig_compiler to generate classes that read and write configuration
 entries.
@@ -342,7 +404,7 @@ settings).
 @item Optional shell expansion support (see docs/options.md).
 
 @item The ability to lock down configuration options (see docs/options.md).
-@end itemize
+@end enumerate
 
 KConfigGui provides a way to hook widgets to the configuration so that they
 are automatically initialized from the configuration and automatically
@@ -477,13 +539,10 @@ infrastructure.")
     (arguments
      `(#:phases
         (modify-phases %standard-phases
-          (add-before 'check 'start-xorg-server
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; The test suite requires a running X server.
-              (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 &"))
-              (setenv "DISPLAY" ":1")
-             #t)))))
+          (add-before 'check 'check-setup
+            (lambda* _
+              (setenv "QT_QPA_PLATFORM" "offscreen")
+              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Utilities for graphical user interfaces")
     (description "The KDE GUI addons provide utilities for graphical user
@@ -592,7 +651,7 @@ or user activity.")
     (synopsis "Set of item models extending the Qt model-view framework")
     (description "KItemModels provides the following models:
 
-@itemize
+@enumerate
 @item KBreadcrumbSelectionModel - Selects the parents of selected items to
 create breadcrumbs.
 
@@ -617,7 +676,7 @@ model.
 
 @item KSelectionProxyModel - A Proxy Model which presents a subset of its source
 model to observers
-@end itemize")
+@end enumerate")
     (license license:lgpl2.1+)))
 
 (define-public kitemviews
@@ -757,21 +816,25 @@ represented by a QPoint or a QSize.")
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: libGL error: failed to load driver: swrast.
+     `(#:tests? #f ; FIXME: Regression after update to qt 5.7
        #:phases
         (modify-phases %standard-phases
           (add-before 'check 'check-setup
-            (lambda* _
-              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
-              (setenv "LIBGL_DEBUG" "verbose") ; enable debug output
-              (setenv "DBUS_FATAL_WARNINGS" "0")))
+            (lambda _
+              (setenv "QT_QPA_PLATFORM" "offscreen") ; a better solution to Xvfb
+              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug info
+              (setenv "DBUS_FATAL_WARNINGS" "0")
+              #t))
           (add-before 'check 'start-xorg-server
             (lambda* (#:key inputs #:allow-other-keys)
               ;; The test suite requires a running X server.
+              ;; Xvfb doesn't have proper glx support and needs a pixeldepth
+              ;; of 24 bit to avoid "libGL error: failed to load driver: swrast"
+              ;;                    "Could not initialize GLX"
               (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 &"))
+                                     "/bin/Xvfb :1 -screen 0 640x480x24 &"))
               (setenv "DISPLAY" ":1")
-             #t)))))
+              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Large set of desktop widgets")
     (description "Provided are action classes that can be added to toolbars or
@@ -838,9 +901,11 @@ lower level classes for interaction with the X Windowing System.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("dbus" ,dbus)
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ; Headers contain #include <ModemManager/ModemManager.h>
+     `(("modem-manager", modem-manager)))
     (inputs
-     `(("modem-manager", modem-manager)
-       ("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
         (modify-phases %standard-phases
@@ -874,9 +939,12 @@ messages.")
       `(("extra-cmake-modules" ,extra-cmake-modules)
         ("dbus" ,dbus)
         ("pkg-config" ,pkg-config)))
+     (propagated-inputs
+      ; Headers contain #include <NetworkManager.h> and
+      ;                 #include <libnm/NetworkManager.h>
+      `(("network-manager" ,network-manager)))
      (inputs
-      `(("network-manager", network-manager)
-        ("qtbase" ,qtbase)))
+      `(("qtbase" ,qtbase)))
      (arguments
       `(#:phases
          (modify-phases %standard-phases
@@ -991,4 +1059,405 @@ ASpell and HUNSPELL.")
     (synopsis "Helper for multithreaded programming")
     (description "ThreadWeaver is a helper for multithreaded programming.  It
 uses a job-based interface to queue tasks and execute them in an efficient way.")
+    (license license:lgpl2.1+)))
+
+
+;; Tier 2
+;;
+;; Tier 2 frameworks additionally depend on tier 1 frameworks, but still have
+;; easily manageable dependencies.
+
+(define-public kauth
+  (package
+    (name "kauth")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "14sjjfgl3arqyqcr77w9qhpnd8mrnh53r5rfss6bvlk26bmihs49"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("polkit-qt" ,polkit-qt)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (replace 'check
+            (lambda* _
+              (setenv "DBUS_FATAL_WARNINGS" "0")
+              (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Execute actions as privileged user")
+    (description "KAuth provides a convenient, system-integrated way to offload
+actions that need to be performed as a privileged user to small set of helper
+utilities.")
+    (license license:lgpl2.1+)))
+
+(define-public kcompletion
+  (package
+    (name "kcompletion")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1qln0v31gn86kzwhnkijr1ydf129n32jmiybbckrp4w6hyx6xfxv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda _
+              (setenv "QT_QPA_PLATFORM" "offscreen")
+              #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Powerful autocompletion framework and widgets")
+    (description "This framework helps implement autocompletion in Qt-based
+applications.  It provides a set of completion-ready widgets, or can be
+integrated it into your application's other widgets.")
+    (license license:lgpl2.1+)))
+
+(define-public kcrash
+  (package
+    (name "kcrash")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1lahgfwlp9b5rsl244kzp7rsl4ybv1q4qlvpv0xxz5ygssk48l0w"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'start-xorg-server
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The test suite requires a running X server.
+              (system (string-append (assoc-ref inputs "xorg-server")
+                                     "/bin/Xvfb :1 &"))
+              (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Graceful handling of application crashes")
+    (description "KCrash provides support for intercepting and handling
+application crashes.")
+    (license license:lgpl2.1+)))
+
+(define-public kdoctools
+  (package
+    (name "kdoctools")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1r129kpq0d11b9l87cqbal6fm5ycwhsps1g3r1a7jsxz70scz4ri"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("karchive" ,karchive)
+       ("ki18n" ,ki18n)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("perl" ,perl)
+       ("perl-uri" ,perl-uri)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'cmake-find-docbook
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* (find-files "cmake" "\\.cmake$")
+                (("CMAKE_SYSTEM_PREFIX_PATH")
+                  "CMAKE_PREFIX_PATH"))
+               (substitute* "cmake/FindDocBookXML4.cmake"
+                 (("^.*xml/docbook/schema/dtd.*$")
+                   "xml/dtd/docbook\n"))
+               (substitute* "cmake/FindDocBookXSL.cmake"
+                 (("^.*xml/docbook/stylesheet.*$")
+                  (string-append "xml/xsl/docbook-xsl-"
+                                 ,(package-version docbook-xsl) "\n"))))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Create documentation from DocBook")
+    (description "Provides tools to generate documentation in various format
+from DocBook files.")
+    (license license:lgpl2.1+)))
+
+(define-public kfilemetadata
+  (package
+    (name "kfilemetadata")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "02n9qhpr0jlwdgdbid0k34abhs3bzhlsa56ybl5dq1aib6izk1sy"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("python-2" ,python-2)))
+    (inputs
+     `(("attr" ,attr)
+       ("karchive" ,karchive)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Extract metadata from different fileformats")
+    (description "KFileMetaData provides a simple library for extracting the
+text and metadata from a number of different files.  This library is typically
+used by file indexers to retreive the metadata.  This library can also be used
+by applications to write metadata.")
+    (license (list license:lgpl2.0 license:lgpl2.1 license:lgpl3))))
+
+(define-public kimageformats
+  (package
+    (name "kimageformats")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "12mhgckmhnvcnm8k7mk15mipxrnm7i9ip7ykbjh8nxjiwyk1pmwc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
+            #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Plugins to allow QImage to support extra file formats")
+    (description "This framework provides additional image format plugins for
+QtGui.  As such it is not required for the compilation of any other software,
+but may be a runtime requirement for Qt-based software to support certain image
+formats.")
+    (license license:lgpl2.1+)))
+
+(define-public kjobwidgets
+  (package
+    (name "kjobwidgets")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1mcvrz66xcqjgbp08zpqsf943cm462wbqm5gh719p9s25hx8hwrc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Widgets for showing progress of asynchronous jobs")
+    (description "KJobWIdgets provides widgets for showing progress of
+asynchronous jobs.")
+    (license license:lgpl2.1+)))
+
+(define-public knotifications
+  (package
+    (name "knotifications")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0qryp41phnpx4r9wa6rfhmnzy7nxl0ijnyrafadf2n2xb53ipkpa"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* _
+             (setenv "HOME" (getcwd))))
+         (replace 'check
+           (lambda* _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Desktop notifications")
+    (description "KNotification is used to notify the user of an event.  It
+covers feedback and persistent events.")
+    (license license:lgpl2.1+)))
+
+(define-public kpackage
+  (package
+    (name "kpackage")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "03aqzkpqz3c1v4qgwfbs3ncdbapiyg7psrkhxqv3z48rklavk1ri"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; FIXME: 1/4 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
+             (setenv "HOME" (getcwd)))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Installation and loading of additional content as packages")
+    (description "The Package framework lets the user install and load packages
+of non binary content such as scripted extensions or graphic assets, as if they
+were traditional plugins.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public kpty
+  (package
+    (name "kpty")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1ybvdzqpa53kkki9p5da0ff9x3c63rmksk7865wqwlgy8apzi2fs"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; FIXME: 1/1 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+         (lambda _
+           (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+           (substitute* "autotests/kptyprocesstest.cpp"
+             (("/bin/bash") (which "bash")))
+           #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Interfacing with pseudo terminal devices")
+    (description "This library provides primitives to interface with pseudo
+terminal devices as well as a KProcess derived class for running child processes
+and communicating with them using a pty.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public kunitconversion
+  (package
+    (name "kunitconversion")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "03dfjn4lm6sl2zcdrvw0b9irzvkyc2w2j5xixag5j8nw373742h8"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Converting physical units")
+    (description "KUnitConversion provides functions to convert values in
+different physical units.  It supports converting different prefixes (e.g. kilo,
+mega, giga) as well as converting between different unit systems (e.g. liters,
+gallons).")
     (license license:lgpl2.1+)))

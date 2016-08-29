@@ -182,14 +182,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.6.2")
+    (version "1.7.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "13hxmji7v9m2agmvzrs7gzx8s3c9jiwrv7pbkr7z1kc6ckq2xl65"))
+               "0idkamdiwj9fgqaz1vzkfg78cnmkzp74skv0ibw2xjfq6ds9hghx"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -205,6 +205,7 @@ aliasing facilities to work just as they would on normal mail.")
                            "--enable-pop"
                            "--enable-gpgme"
                            "--enable-hcache" ; for header caching
+                           "--enable-sidebar"
                            "--with-ssl"
                            "--with-sasl"
                            ;; so that mutt does not check whether the path
@@ -296,7 +297,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.5")
+    (version "7.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -304,7 +305,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "05wm7qix4ikx6hi57a1qc3hb5fv1vksbg6dgvmd8871y5l1qqrkn"))))
+                "1msg0v5i3v4mvjm2c5alzz91dk5y20h4xdr60lcz3507fv80407m"))))
     (build-system python-build-system)
     (inputs `(("python2-pysqlite" ,python2-pysqlite)
               ("python2-six" ,python2-six)))
@@ -407,7 +408,9 @@ attachments, create new maildirs, and so on.")
     (version "0.3.7")
     (source (origin
               (method url-fetch)
-              ; v0.3.7 not on PyPi yet, so use github instead
+              ;; package author intends on distributing via github rather
+              ;; than pypi:
+              ;; https://github.com/pazz/alot/issues/877#issuecomment-230173331
               (uri (string-append "https://github.com/pazz/alot/archive/"
                                   version ".tar.gz"))
               (file-name (string-append "alot-" version ".tar.gz"))
@@ -417,8 +420,8 @@ attachments, create new maildirs, and so on.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       ; python 3 is unsupported, more info:
-       ; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
+       ;; python 3 is unsupported, more info:
+       ;; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
        #:python ,python-2))
     (inputs
      `(("python2-magic" ,python2-magic)

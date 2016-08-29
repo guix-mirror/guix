@@ -295,6 +295,28 @@ application, or a wayland client itself.  The clients can be traditional
 applications, X servers (rootless or fullscreen) or other display servers.")
     (license license:x11)))
 
+(define-public wayland-protocols
+  (package
+    (name "wayland-protocols")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://wayland.freedesktop.org/releases/"
+                    "wayland-protocols-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0wpm7mz7ww6nn3vrgz7a9iyk7mk6za73wnq0n54lzl8yq8irljh1"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("wayland" ,wayland)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Wayland protocols")
+    (description "This package contains XML definitions of the Wayland protocols.")
+    (home-page "https://wayland.freedesktop.org")
+    (license license:expat)))
+
 (define-public exempi
   (package
     (name "exempi")

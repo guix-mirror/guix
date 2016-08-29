@@ -65,7 +65,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public signify
   (package
     (name "signify")
-    (version "18")
+    (version "19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/aperezdc/signify/"
@@ -73,7 +73,7 @@ communication, encryption, decryption, signatures, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00lbjiy0gv1b1fvrd6ni4qah96ah4qf6aig05vd2hji4vs00jgwg"))))
+                "0d2wrss1xl9wm3yzl571cv6h7zdp170v7a45f953bgsy64hkqavh"))))
     (build-system gnu-build-system)
     ;; TODO Build with libwaive (described in README.md), to implement something
     ;; like OpenBSD's pledge().
@@ -223,3 +223,43 @@ to provide security against off-line attacks, such as a drive falling into
 the wrong hands.")
     (license (list license:lgpl3+                 ;encfs library
                    license:gpl3+))))              ;command-line tools
+
+(define-public keyutils
+  (package
+    (name "keyutils")
+    (version "1.5.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://people.redhat.com/dhowells/keyutils/keyutils-"
+                       version ".tar.bz2"))
+       (sha256
+        (base32
+         "1bl3w03ygxhc0hz69klfdlwqn33jvzxl1zfl2jmnb2v85iawb8jd"))
+       (modules '((guix build utils)))
+       ;; Create relative symbolic links instead of absolute ones to /lib/*
+       (snippet '(substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
+                                          "$(LNS) ")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))          ; no configure script
+       #:make-flags (list "CC=gcc"
+                          "RPATH=-Wl,-rpath,$(DESTDIR)$(LIBDIR)"
+                          (string-append "DESTDIR="
+                                         (assoc-ref %outputs "out"))
+                          "INCLUDEDIR=/include"
+                          "LIBDIR=/lib"
+                          "MANDIR=/share/man"
+                          "SHAREDIR=/share/keyutils")
+       #:test-target "test"))
+    (home-page "https://people.redhat.com/dhowells/keyutils/")
+    (synopsis "Linux key management utilities")
+    (description
+     "Keyutils is a set of utilities for managing the key retention facility in
+the Linux kernel, which can be used by file systems, block devices, and more to
+gain and retain the authorization and encryption keys required to perform
+secure operations. ")
+    (license (list license:lgpl2.1+             ; the files keyutils.*
+                   license:gpl2+))))            ; the rest

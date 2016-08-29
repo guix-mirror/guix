@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
@@ -149,7 +150,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
       (method url-fetch)
@@ -158,7 +159,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0kxdb02z41cwm1xbwfwj9nbc0dzjhwyq8c475mlhhmpcxcy8ihpn"))))
+        "0h53q4sns1jz1pkmhcz5wp9qrfn9f5g9i3vjv6dafwzzlvblyi21"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
@@ -397,9 +398,7 @@ and every application benefits from this.")
              (zero? (system* "make" "check")))))))
     (build-system python-build-system)
     (inputs
-     `(;; setuptools required for python-2 variant
-       ("python-setuptools" ,python-setuptools)
-       ("gnupg" ,gnupg-2.0)
+     `(("gnupg" ,gnupg-2.0)
        ("gpgme" ,gpgme)))
     (home-page "https://launchpad.net/pygpgme")
     (synopsis "Python module for working with OpenPGP messages")
@@ -409,7 +408,12 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
     (license license:lgpl2.1+)))
 
 (define-public python2-pygpgme
-  (package-with-python2 python-pygpgme))
+  (let ((base (package-with-python2 python-pygpgme)))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
 
 (define-public python-gnupg
   (package
@@ -427,20 +431,18 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    (substitute* "test_gnupg.py"
-                      ;; Test keyrings are missing, so this test fails.
-                      (("'test_scan_keys'") "True")
-                      (("def test_scan_keys") "def disabled__scan_keys")
-                      ;; Unsure why this test fails.
-                      (("'test_search_keys'") "True")
-                      (("def test_search_keys") "def disabled__search_keys"))
-                    (setenv "GPGBINARY" "gpg")
-                    (setenv "USERNAME" "guixbuilder")
-                    ;; The doctests are extremely slow and sometimes time out,
-                    ;; so we disable them.
-                    (zero? (system* "python"
-                                    "test_gnupg.py" "--no-doctests")))))))
+           (lambda _
+             (substitute* "test_gnupg.py"
+               ;; Exported keys don't have a version line!
+               (("del k1\\[1\\]") "#")
+               ;; Unsure why this test fails.
+               (("'test_search_keys'") "True")
+               (("def test_search_keys") "def disabled__search_keys"))
+             (setenv "USERNAME" "guixbuilder")
+             ;; The doctests are extremely slow and sometimes time out,
+             ;; so we disable them.
+             (zero? (system* "python"
+                             "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
      `(("gnupg" ,gnupg-1)))
     (home-page "https://packages.python.org/python-gnupg/index.html")
@@ -477,7 +479,7 @@ and signature functionality from Python programs.")
          'build 'set-gpg-file-name
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let* ((gpg (string-append (assoc-ref inputs "gpg")
-                                      "/bin/gpg2")))
+                                      "/bin/gpg")))
              (substitute* "libpius/constants.py"
                (("/usr/bin/gpg2") gpg))))))))
    (synopsis "Programs to simplify GnuPG key signing")
@@ -499,8 +501,8 @@ PGP keysigning parties.")
    (version "1.1.4")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.debian.org/debian/pool/main/s/signing-party/signing-party_"
-                                version ".orig.tar.gz"))
+            (uri (string-append "mirror://debian/pool/main/s/signing-party/"
+                                "signing-party_" version ".orig.tar.gz"))
             (sha256 (base32
                      "188gp0prbh8qs29lq3pbf0qibfd6jq4fk7i0pfrybl8aahvm84rx"))))
    (build-system gnu-build-system)
@@ -508,85 +510,71 @@ PGP keysigning parties.")
    (arguments
     `(#:tests? #f
       #:phases
-      (alist-cons-after
-       'unpack 'remove-spurious-links
-       (lambda _ (delete-file "keyanalyze/pgpring/depcomp"))
-      (alist-replace
-       'configure
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-           (substitute* "keyanalyze/Makefile"
-             (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
-           (substitute* "keyanalyze/Makefile"
-             (("./configure") (string-append "./configure --prefix=" out)))
-           (substitute* "keyanalyze/pgpring/configure"
-             (("/bin/sh") (which "bash")))
-           (substitute* "gpgwrap/Makefile"
-             (("\\} clean") (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
-                                      out "/bin/gpgwrap\n")))
-           (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
-                          "keylookup/Makefile" "sig2dot/Makefile"
-                          "springgraph/Makefile")
-             (("/usr") out))))
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys #:rest args)
-          (let ((out (assoc-ref outputs "out"))
-                (install (assoc-ref %standard-phases 'install)))
-            (apply install args)
-            (for-each
-              (lambda (dir file)
-                (copy-file (string-append dir "/" file)
-                           (string-append out "/bin/" file)))
-              '("caff" "caff" "caff" "gpgdir" "gpg-key2ps"
-                "gpglist" "gpg-mailkeys" "gpgparticipants")
-              '("caff" "pgp-clean" "pgp-fixkey" "gpgdir" "gpg-key2ps"
-                "gpglist" "gpg-mailkeys" "gpgparticipants"))
-            (for-each
-              (lambda (dir file)
-                (copy-file (string-append dir "/" file)
-                           (string-append out "/share/man/man1/" file)))
-              '("caff" "caff" "caff" "gpgdir"
-                "gpg-key2ps" "gpglist" "gpg-mailkeys"
-                "gpgparticipants" "gpgsigs" "gpgwrap/doc"
-                "keyanalyze" "keyanalyze/pgpring" "keyanalyze")
-              '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
-                "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
-                "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
-                "process_keys.1" "pgpring.1" "keyanalyze.1"))))
-      %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'remove-spurious-links
+          (lambda _ (delete-file "keyanalyze/pgpring/depcomp")))
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "keyanalyze/Makefile"
+                (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
+              (substitute* "keyanalyze/Makefile"
+                (("./configure") (string-append "./configure --prefix=" out)))
+              (substitute* "keyanalyze/pgpring/configure"
+                (("/bin/sh") (which "bash")))
+              (substitute* "gpgwrap/Makefile"
+                (("\\} clean")
+                 (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
+                                out "/bin/gpgwrap\n")))
+              (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
+                             "keylookup/Makefile" "sig2dot/Makefile"
+                             "springgraph/Makefile")
+                           (("/usr") out)))))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys #:rest args)
+            (let ((out (assoc-ref outputs "out"))
+                  (install (assoc-ref %standard-phases 'install)))
+              (apply install args)
+              (for-each
+                (lambda (dir file)
+                  (copy-file (string-append dir "/" file)
+                             (string-append out "/bin/" file)))
+                '("caff" "caff" "caff" "gpgdir" "gpg-key2ps"
+                  "gpglist" "gpg-mailkeys" "gpgparticipants")
+                '("caff" "pgp-clean" "pgp-fixkey" "gpgdir" "gpg-key2ps"
+                  "gpglist" "gpg-mailkeys" "gpgparticipants"))
+              (for-each
+                (lambda (dir file)
+                  (copy-file (string-append dir "/" file)
+                             (string-append out "/share/man/man1/" file)))
+                '("caff" "caff" "caff" "gpgdir"
+                  "gpg-key2ps" "gpglist" "gpg-mailkeys"
+                  "gpgparticipants" "gpgsigs" "gpgwrap/doc"
+                  "keyanalyze" "keyanalyze/pgpring" "keyanalyze")
+                '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
+                  "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
+                  "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
+                  "process_keys.1" "pgpring.1" "keyanalyze.1"))))))))
    (synopsis "Collection of scripts for simplifying gnupg key signing")
    (description
     "Signing-party is a collection for all kinds of PGP/GnuPG related things,
 including tools for signing keys, keyring analysis, and party preparation.
-
- * caff: CA - Fire and Forget signs and mails a key
-
- * pgp-clean: removes all non-self signatures from key
-
- * pgp-fixkey: removes broken packets from keys
-
- * gpg-mailkeys: simply mail out a signed key to its owner
-
- * gpg-key2ps: generate PostScript file with fingerprint paper strips
-
- * gpgdir: recursive directory encryption tool
-
- * gpglist: show who signed which of your UIDs
-
- * gpgsigs: annotates list of GnuPG keys with already done signatures
-
- * gpgparticipants: create list of party participants for the organiser
-
- * gpgwrap: a passphrase wrapper
-
- * keyanalyze: minimum signing distance (MSD) analysis on keyrings
-
- * keylookup: ncurses wrapper around gpg --search
-
- * sig2dot: converts a list of GnuPG signatures to a .dot file
-
- * springgraph: creates a graph from a .dot file")
+@enumerate
+@item caff: CA - Fire and Forget signs and mails a key
+@item pgp-clean: removes all non-self signatures from key
+@item pgp-fixkey: removes broken packets from keys
+@item gpg-mailkeys: simply mail out a signed key to its owner
+@item gpg-key2ps: generate PostScript file with fingerprint paper strips
+@item gpgdir: recursive directory encryption tool
+@item gpglist: show who signed which of your UIDs
+@item gpgsigs: annotates list of GnuPG keys with already done signatures
+@item gpgparticipants: create list of party participants for the organiser
+@item gpgwrap: a passphrase wrapper
+@item keyanalyze: minimum signing distance (MSD) analysis on keyrings
+@item keylookup: ncurses wrapper around gpg --search
+@item sig2dot: converts a list of GnuPG signatures to a .dot file
+@item springgraph: creates a graph from a .dot file
+@end enumerate")
    ;; gpl2+ for almost all programs, except for keyanalyze: gpl2
    ;; and caff and gpgsigs: bsd-3, see
    ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
@@ -639,6 +627,8 @@ passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
     (inputs
      `(("qtbase" ,qtbase)
        ,@(package-inputs pinentry-tty)))
+    (arguments
+     `(#:configure-flags '("CXXFLAGS=-std=gnu++11")))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
 passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
@@ -662,13 +652,13 @@ passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'patch-check-scripts
-        (lambda _
-          (substitute* '("checks/roundtrip.sh"
-                         "checks/roundtrip-raw.sh")
-            (("/bin/echo") "echo")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-check-scripts
+           (lambda _
+             (substitute* '("checks/roundtrip.sh"
+                            "checks/roundtrip-raw.sh")
+               (("/bin/echo") "echo"))
+             #t)))))
     (home-page "http://www.jabberwocky.com/software/paperkey/")
     (synopsis "Backup OpenPGP keys to paper")
     (description

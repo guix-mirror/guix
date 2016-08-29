@@ -162,7 +162,7 @@ Export/import one or more packages from/to the store.\n"))
                    (alist-cons 'expression arg result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'dry-run? #t result)))
+                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
 
          %standard-build-options))
 

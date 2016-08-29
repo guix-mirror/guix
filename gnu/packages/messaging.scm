@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,7 +24,7 @@
 (define-module (gnu packages messaging)
   #:use-module ((guix licenses)
                 #:select (gpl3+ gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2 non-copyleft
-                          asl2.0))
+                          asl2.0 x11))
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -45,6 +45,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages ncurses)
@@ -491,5 +492,78 @@ for group chat (with Multi-User Chat protocol), invitation, chat to group chat
 transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
     (license gpl3+)))
+
+(define-public prosody
+  (package
+    (name "prosody")
+    (version "0.9.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://prosody.im/downloads/source/"
+                                  "prosody-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bv6s5c0iizz015hh1lxlwlw1iwvisywajm2rcrbdfyrskzfwdj8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:modules ((ice-9 match)
+                  (srfi srfi-1)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-configure-script
+           (lambda _
+             ;; The configure script aborts when it encounters unexpected
+             ;; arguments.  Make it more tolerant.
+             (substitute* "configure"
+               (("exit 1") ""))
+             #t))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure all executables in "bin" find the required Lua
+             ;; modules at runtime.
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin/"))
+                    (deps  (delete #f (map (match-lambda
+                                             ((label . directory)
+                                              (if (string-prefix? "lua" label)
+                                                  directory #f)))
+                                           inputs)))
+                    (path  (string-join
+                            (map (lambda (path)
+                                   (string-append path "/share/lua/5.1/?.lua;"
+                                                  path "/share/lua/5.1/?/?.lua"))
+                                 (cons out deps))
+                            ";"))
+                    (cpath (string-join
+                            (map (lambda (path)
+                                   (string-append path "/lib/lua/5.1/?.so;"
+                                                  path "/lib/lua/5.1/?/?.so"))
+                                 (cons out deps))
+                            ";")))
+               (for-each (lambda (file)
+                           (wrap-program file
+                             `("LUA_PATH"  ";" = (,path))
+                             `("LUA_CPATH" ";" = (,cpath))))
+                         (find-files bin ".*"))
+               #t))))))
+    (inputs
+     `(("libidn" ,libidn)
+       ("openssl" ,openssl)
+       ("lua" ,lua-5.1)
+       ("lua5.1-expat" ,lua5.1-expat)
+       ("lua5.1-socket" ,lua5.1-socket)
+       ("lua5.1-filesystem" ,lua5.1-filesystem)
+       ("lua5.1-sec" ,lua5.1-sec)))
+    (home-page "https://prosody.im/")
+    (synopsis "Jabber (XMPP) server")
+    (description "Prosody is a modern XMPP communication server.  It aims to
+be easy to set up and configure, and efficient with system resources.
+Additionally, for developers it aims to be easy to extend and give a flexible
+system on which to rapidly develop added functionality, or prototype new
+protocols.")
+    (license x11)))
 
 ;;; messaging.scm ends here
