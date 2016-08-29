@@ -2939,3 +2939,41 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
      "Tools for loading and managing Linux kernel modules, such as `modprobe',
 `insmod', `lsmod', and more.")
     (license license:gpl2+)))
+
+(define-public mcelog
+  (package
+    (name "mcelog")
+    (version "141")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
+                                  "mcelog.git/snapshot/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ws8blq0prj7slcaljyaxxq20kgmlakzac0ri1pvh24xs1jn2xxg"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; The snapshots lack a .git directory, breaking ‘git describe’.
+               `(substitute* "Makefile"
+                  (("\"unknown\"") (string-append "\"v" ,version "\""))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))  ; no configure script
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "CC=gcc"
+                            (string-append "prefix=" out)
+                            (string-append "DOCDIR=" out "/share/doc/mcelog")
+                            "etcprefix=$(DOCDIR)/examples"))
+       ;; The tests will only run as root on certain supported CPU models.
+       #:tests? #f))
+    (supported-systems (list "i686-linux" "x86_64-linux"))
+    (home-page "http://mcelog.org/")
+    (synopsis "Machine check monitor for x86 Linux systems")
+    (description
+     "The mcelog daemon is required by the Linux kernel to log memory, I/O, CPU,
+and other hardware errors on x86 systems.  It can also perform user-defined
+tasks, such as bringing bad pages off-line, when configurable error thresholds
+are exceeded.")
+    (license license:gpl2)))
