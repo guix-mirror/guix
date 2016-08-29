@@ -255,7 +255,7 @@ the wrong hands.")
                           "SHAREDIR=/share/keyutils")
        #:test-target "test"))
     (home-page "https://people.redhat.com/dhowells/keyutils/")
-    (synopsis "Linux key managament utilities")
+    (synopsis "Linux key management utilities")
     (description
      "Keyutils is a set of utilities for managing the key retention facility in
 the Linux kernel, which can be used by file systems, block devices, and more to
