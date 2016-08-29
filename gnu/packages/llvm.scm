@@ -58,10 +58,21 @@
     (arguments
      `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
                            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
                            "-DLLVM_ENABLE_FFI:BOOL=TRUE")
 
        ;; Don't use '-g' during the build, to save space.
-       #:build-type "Release"))
+       #:build-type "Release"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'shared-lib-workaround
+                    ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
+                    ;; doesn't seem to get the correct rpath to be able to run
+                    ;; from the build directory.  Set LD_LIBRARY_PATH as a
+                    ;; workaround.
+                    (lambda _
+                      (setenv "LD_LIBRARY_PATH"
+                              (string-append (getcwd) "/lib"))
+                      #t)))))
     (home-page "http://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
