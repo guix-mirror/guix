@@ -52,8 +52,9 @@
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
        ("perl"   ,perl)))
     (inputs
-     `(("libffi" ,libffi)
-       ("zlib" ,zlib)))
+     `(("libffi" ,libffi)))
+    (propagated-inputs
+     `(("zlib" ,zlib)))                 ;to use output from llvm-config
     (arguments
      `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
                            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
