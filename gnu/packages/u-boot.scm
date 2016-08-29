@@ -22,8 +22,12 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
+  #:use-module ((gnu packages algebra) #:select (bc))
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages flex))
+  #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages python))
 
 (define-public dtc
   (package
@@ -58,3 +62,76 @@
     (description "@command{dtc} compiles device tree source files to device
 tree binary files. These are board description files used by Linux and BSD.")
     (license license:gpl2+)))
+
+(define u-boot
+  (package
+    (name "u-boot")
+    (version "2016.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.denx.de/pub/u-boot/"
+                    "u-boot-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0lqj4ckmfqiap8mc6z2d5albs3g2h5mzccbn60hsgxhabhibfkwp"))))
+    (native-inputs
+     `(("bc" ,bc)
+       ("dtc" ,dtc)
+       ("python-2" ,python-2)))
+    (build-system  gnu-build-system)
+    (home-page "http://www.denx.de/wiki/U-Boot/")
+    (synopsis "ARM bootloader")
+    (description "U-Boot is a bootloader used mostly for ARM boards. It
+also initializes the boards (RAM etc).")
+    (license license:gpl2+)))
+
+(define (make-u-boot-package board triplet)
+  "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
+  (package
+    (inherit u-boot)
+    (name (string-append "u-boot-" (string-downcase board)))
+    (native-inputs
+     `(("cross-gcc" ,(cross-gcc triplet))
+       ("cross-binutils" ,(cross-binutils triplet))
+       ,@(package-native-inputs u-boot)))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "HOSTCC=gcc" (string-append "CROSS_COMPILE=" ,triplet "-"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (let ((config-name (string-append ,board "_defconfig")))
+               (if (file-exists? (string-append "configs/" config-name))
+                   (zero? (apply system* "make" `(,@make-flags ,config-name)))
+                   (begin
+                     (display "Invalid board name. Valid board names are:")
+                     (let ((dir (opendir "configs"))
+                           (suffix-length (string-length "_defconfig")))
+                       (do ((file-name (readdir dir) (readdir dir)))
+                           ((eof-object? file-name))
+                         (when (string-suffix? "_defconfig" file-name)
+                           (format #t "- ~A\n"
+                                   (string-drop-right file-name suffix-length))))
+                       (closedir dir))
+                     #f)))))
+         (replace 'install
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec"))
+                    (uboot-files (find-files "." ".*\\.(bin|efi|spl)$")))
+               (mkdir-p libexec)
+               (for-each
+                (lambda (file)
+                  (let ((target-file (string-append libexec "/" file)))
+                    (mkdir-p (dirname target-file))
+                    (copy-file file target-file)))
+                uboot-files)))))))))
+
+(define-public u-boot-vexpress_ca9x4
+  (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
+
+(define-public u-boot-malta
+  (make-u-boot-package "malta" "mips64el-linux-gnuabi64"))
