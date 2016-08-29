@@ -3047,3 +3047,29 @@ Flx has support for ido (interactively do things) through flx-ido.")
      "Cyberpunk color theme for the emacs 24+ built-in color theme support
 known loosely as deftheme.  Many mode-specific customizations are included.")
     (license license:gpl3+)))
+
+(define-public emacs-auto-complete
+  (package
+    (name "emacs-auto-complete")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/auto-complete/"
+                           "auto-complete/archive/v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jvq4lj00hwml75lpmlciazy8f3bbg13gffsfnl835p4qd8l7yqv"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-popup" ,emacs-popup)))
+    (home-page "https://github.com/auto-complete/auto-complete")
+    (synopsis "Intelligent auto-completion extension for Emacs")
+    (description
+     "Auto-Complete is an intelligent auto-completion extension for Emacs.
+It extends the standard Emacs completion interface and provides an environment
+that allows users to concentrate more on their own work.  Its features are:
+a visual interface, reduce overhead of completion by using statistic method,
+extensibility.")
+    (license license:gpl3+)))
