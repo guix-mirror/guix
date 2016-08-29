@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -617,6 +618,34 @@ modems and setup connections with them.")
 received by the Telepathy framework.  It features pluggable backends to log
 different sorts of messages in different formats.")
     (license license:lgpl2.1+)))
+
+(define-public telepathy-idle
+  (package
+    (name "telepathy-idle")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://telepathy.freedesktop.org/releases/"
+                                  name "/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1argdzbif1vdmwp5vqbgkadq9ancjmgdm2ncp0qfckni715ss4rh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xsltproc" ,libxslt)
+       ("python" ,python-2)
+       ("python-dbus" ,python2-dbus)))
+    (propagated-inputs
+     `(("telepathy-glib" ,telepathy-glib)))
+    (home-page "http://telepathy.freedesktop.org/")
+    (synopsis "Telepathy IRC connection manager")
+    (description
+     "Idle is an IRC connection manager for the Telepathy framework.  This
+package enables usage of IRC channels and private messages in Telepathy instant
+messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
+    (license (list license:lgpl2.1 license:lgpl2.1+))))
 
 (define-public colord-gtk
   (package
