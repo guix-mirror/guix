@@ -272,40 +272,53 @@ on service '~a':~%")
         ((not error)                              ;not an error
          #t)))
 
-(define (call-with-service-upgrade-info new-services mproc)
-  "Call MPROC, a monadic procedure in %STORE-MONAD, passing it the list of
-names of services to load (upgrade), and the list of names of services to
-unload."
+(define (service-upgrade live target)
+  "Return two values: the names of the subset of LIVE (a list of
+<live-service>) that needs to be unloaded, and the subset of TARGET (a list of
+<shepherd-service>) that needs to be loaded."
   (define (essential? service)
     (memq service '(root shepherd)))
 
   (define new-service-names
     (map (compose first shepherd-service-provision)
-         new-services))
+         target))
 
+  (define running
+    (map (compose first live-service-provision)
+         (filter live-service-running live)))
+
+  (define stopped
+    (map (compose first live-service-provision)
+         (remove live-service-running live)))
+
+  (define to-load
+    ;; Only load services that are either new or currently stopped.
+    (remove (lambda (service)
+              (memq (first (shepherd-service-provision service))
+                    running))
+            target))
+
+  (define to-unload
+    ;; Unload services that are (1) no longer required, or (2) are in TO-LOAD.
+    (remove essential?
+            (append (remove (lambda (service)
+                              (memq service new-service-names))
+                            (append running stopped))
+                    (filter (lambda (service)
+                              (memq service stopped))
+                            (map shepherd-service-canonical-name
+                                 to-load)))))
+
+  (values to-unload to-load))
+
+(define (call-with-service-upgrade-info new-services mproc)
+  "Call MPROC, a monadic procedure in %STORE-MONAD, passing it the list of
+names of services to load (upgrade), and the list of names of services to
+unload."
   (match (current-services)
     ((services ...)
-     (let* ((running (map (compose first live-service-provision)
-                          (filter live-service-running services)))
-            (stopped (map (compose first live-service-provision)
-                          (remove live-service-running services)))
-            (to-load
-             ;; Only load services that are either new or currently stopped.
-             (remove (lambda (service)
-                       (memq (first (shepherd-service-provision service))
-                             running))
-                     new-services))
-            (to-unload
-             ;; Unload services that are (1) no longer required, or (2) are
-             ;; in TO-LOAD.
-             (remove essential?
-                     (append (remove (lambda (service)
-                                       (memq service new-service-names))
-                                     (append running stopped))
-                             (filter (lambda (service)
-                                       (memq service stopped))
-                                     (map shepherd-service-canonical-name
-                                          to-load))))))
+     (let-values (((to-unload to-load)
+                   (service-upgrade services new-services)))
        (mproc to-load to-unload)))
     (#f
      (with-monad %store-monad

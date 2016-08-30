@@ -19,6 +19,8 @@
 (define-module (test-system)
   #:use-module (gnu)
   #:use-module (guix store)
+  #:use-module (gnu services herd)
+  #:use-module (gnu services shepherd)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
 
@@ -59,6 +61,11 @@
                         %base-file-systems))
     (users %base-user-accounts)))
 
+(define live-service
+  (@@ (gnu services herd) live-service))
+
+(define service-upgrade
+  (@@ (guix scripts system) service-upgrade))
 
 (test-begin "system")
 
@@ -113,5 +120,32 @@
                            (mount-point "/")
                            (type "ext4"))
                          %base-file-systems)))))
+
+(test-equal "service-upgrade: nothing to do"
+  '(() ())
+  (call-with-values
+      (lambda ()
+        (service-upgrade '() '()))
+    list))
+
+(test-equal "service-upgrade: one unchanged, one upgraded, one new"
+  '((bar)                                         ;unload
+    ((bar) (baz)))                                ;load
+  (call-with-values
+      (lambda ()
+        ;; Here 'foo' is not upgraded because it is still running, whereas
+        ;; 'bar' is upgraded because it is not currently running.  'baz' is
+        ;; loaded because it's a new service.
+        (service-upgrade (list (live-service '(foo) '() #t)
+                               (live-service '(bar) '() #f)
+                               (live-service '(root) '() #t)) ;essential!
+                         (list (shepherd-service (provision '(foo))
+                                                 (start #t))
+                               (shepherd-service (provision '(bar))
+                                                 (start #t))
+                               (shepherd-service (provision '(baz))
+                                                 (start #t)))))
+    (lambda (unload load)
+      (list unload (map shepherd-service-provision load)))))
 
 (test-end)
