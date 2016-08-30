@@ -76,6 +76,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tex)
@@ -3045,6 +3046,62 @@ sequences).")
     (license (license:non-copyleft
               "http://mafft.cbrc.jp/alignment/software/license.txt"
               "BSD-3 with different formatting"))))
+
+(define-public mash
+  (package
+    (name "mash")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/marbl/mash/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08znbvqq5xknfhmpp3wcj574zvi4p7i8zifi67c9qw9a6ikp42fj"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Delete bundled kseq.
+               ;; TODO: Also delete bundled murmurhash and open bloom filter.
+               '(delete-file "src/mash/kseq.h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:configure-flags
+       (list
+        (string-append "--with-capnp=" (assoc-ref %build-inputs "capnproto"))
+        (string-append "--with-gsl=" (assoc-ref %build-inputs "gsl")))
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-includes
+           (lambda _
+             (substitute* '("src/mash/Sketch.cpp" "src/mash/CommandFind.cpp")
+               (("^#include \"kseq\\.h\"")
+                "#include \"htslib/kseq.h\""))
+             #t))
+         (add-before 'configure 'autoconf
+           (lambda _ (zero? (system* "autoconf")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ;; Capnproto and htslib are statically embedded in the final
+       ;; application. Therefore we also list their licenses, below.
+       ("capnproto" ,capnproto)
+       ("htslib" ,htslib)))
+    (inputs
+     `(("gsl" ,gsl)
+       ("zlib" ,zlib)))
+    (supported-systems '("x86_64-linux"))
+    (home-page "https://mash.readthedocs.io")
+    (synopsis "Fast genome and metagenome distance estimation using MinHash")
+    (description "Mash is a fast sequence distance estimator that uses the
+MinHash algorithm and is designed to work with genomes and metagenomes in the
+form of assemblies or reads.")
+    (license (list license:bsd-3          ; Mash
+                   license:expat          ; HTSlib and capnproto
+                   license:public-domain  ; MurmurHash 3
+                   license:cpl1.0))))     ; Open Bloom Filter
 
 (define-public metabat
   (package
