@@ -18,8 +18,10 @@
 
 (define-module (gnu packages astronomy)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages maths)
   #:use-module (guix build-system gnu))
 
 (define-public cfitsio
@@ -78,3 +80,27 @@ in FITS files.")
 keywords and usage that provide for the description of astronomical coordinate
 systems in a FITS image header.")  
     (license license:lgpl3+)))
+
+(define-public gnuastro
+  (package
+    (name "gnuastro")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/gnuastro/gnuastro-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "105s007kw8l3jwwhvh8k9lgbpfbf7sqh2wpxmvpv3qdr6nh9lnjg"))))
+    (inputs
+     `(("cfitsio" ,cfitsio)
+       ("gsl" ,gsl)
+       ("libjpeg" ,libjpeg-8)
+       ("wcslib" ,wcslib)))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/gnuastro")
+    (synopsis "Astronomical data manipulation programs")
+    (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
+programs for the manipulation and analysis of astronomical data.")
+    (license license:gpl3+)))
