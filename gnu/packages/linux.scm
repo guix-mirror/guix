@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,6 +198,30 @@
      "Tools for loading and managing Linux kernel modules, such as `modprobe',
 `insmod', `lsmod', and more.")
     (license license:gpl2+)))
+
+(define-public libnfsidmap
+  (package
+    (name "libnfsidmap")
+    (version "0.25")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.citi.umich.edu/projects/nfsv4/linux/"
+                   name "/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
+    (build-system gnu-build-system)
+    (home-page
+     "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
+    (synopsis
+     "NFSv4 support library for name/ID mapping")
+    (description "Libnfsidmap is a library holding mulitiple methods of
+mapping names to ids and visa versa, mainly for NFSv4.  It provides an
+extensible array of mapping functions, currently consisting of two choices;
+the default @code{nsswitch} and the experimental @{umich_ldap}.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
 
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
