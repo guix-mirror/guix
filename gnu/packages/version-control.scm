@@ -1148,37 +1148,16 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "1.34")
+    (version "1.35")
     (source
      (origin
        (method url-fetch)
-       ;; Upstream source affected by
-       ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=20962
        (uri (string-append
-             "https://web.archive.org/web/20160402202958/"
-             "https://www.fossil-scm.org/download/fossil-src-"
-             version ".tar.gz"))
+             "https://www.fossil-scm.org/index.html/uv/download/"
+             "fossil-src-" version ".tar.gz"))
        (sha256
         (base32
-         "17x4vgjcfihwmq195qg32irp50panvjqfpvhqydfvv4ghwzbi9jk"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Commit 0a2ebe57 on 2015-08-03 18:35:53 changed output formatting
-           ;; for some commands, but affected tests were not updated.  Use
-           ;; substitute here, which is more concise than patching.
-           (substitute* "test/clean.test"
-             (("NEW ") "NEW    "))
-           (substitute* '("test/revert.test" "test/mv-rm.test")
-             (("REVERTED:") "REVERT  ")
-             (("DELETE:")   "DELETE  ")
-             (("UNMANAGE:") "UNMANAGE "))
-           ;; Fix use of __DATE__ and __TIME__
-           (substitute* "src/main.c"
-             (("Compiled on %s %s") "Compiled")
-             (("__DATE__, __TIME__, ") ""))
-           #t))
-       (patches (list (search-patch "fossil-test-fixes.patch")))))
+         "07ds6rhq69bhydpm9a01mgdhxf88p9b6y5hdnhn8gjc7ba92zyf1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
