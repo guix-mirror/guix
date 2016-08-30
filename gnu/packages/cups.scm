@@ -80,7 +80,8 @@
      `(("glib" ,glib "bin") ; for gdbus-codegen
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("fontconfig"   ,fontconfig)
+     `(("avahi"        ,avahi)
+       ("fontconfig"   ,fontconfig)
        ("freetype"     ,freetype)
        ("font-dejavu"  ,font-dejavu) ;needed by test suite
        ("ghostscript"  ,ghostscript)
