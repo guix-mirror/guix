@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il"
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -103,6 +103,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
 
@@ -2772,4 +2773,56 @@ the GNU GPL.")
 Your robot ant can be programmed in many languages: OCaml, Python, C, C++,
 Java, Ruby, Lua, JavaScript, Pascal, Perl, Scheme, Vala, Prolog.  Experienced
 programmers may also add their own favorite language.")
+    (license license:gpl3+)))
+
+(define-public bambam
+  (package
+    (name "bambam")
+    (version "0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/porridge/bambam/archive/"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10w110mjdwbvddzihh9rganvvjr5jfiz8cs9n7w12zndwwcc3ria"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (add-before 'install 'patch-data-dir-location
+           (lambda _
+             (substitute* "bambam.py"
+                          (("'data'")
+                           "'../share/bambam/data'"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share")))
+               (mkdir-p bin)
+               (copy-file "bambam.py" (string-append bin "/bambam"))
+               (install-file "bambam.6" (string-append share "/man/man6"))
+               (copy-recursively "data" (string-append share "/bambam/data")))
+             #t))
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/bambam")))
+               (wrap-program bin
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (inputs
+     `(("python-pygame" ,python-pygame)))
+    (home-page "https://github.com/porridge/bambam")
+    (synopsis "keyboard mashing and doodling game for babies")
+    (description "Bambam is a simple baby keyboard (and gamepad) masher
+application that locks the keyboard and mouse and instead displays bright
+colors, pictures, and sounds.")
     (license license:gpl3+)))
