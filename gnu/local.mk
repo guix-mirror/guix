@@ -626,6 +626,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtiff-CVE-2015-8665+CVE-2015-8683.patch \
+  %D%/packages/patches/libtiff-CVE-2016-3623.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-3945.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-3990.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-3991.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-5314.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-5321.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-5323.patch		\
   %D%/packages/patches/libtiff-oob-accesses-in-decode.patch	\
   %D%/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\

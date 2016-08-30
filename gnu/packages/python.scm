@@ -7216,13 +7216,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.9.1")
+    (version "3.10")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "0fhrczdj3jxy5bvswphp3vys7vwv5c9bpwg7asykqwa3z6253q6q"))))
+               "01amnk3621s7fagfla86npd25knbqirchg7h1jpqxqp103d02bs7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil-2" ,python-dateutil-2)
@@ -10215,6 +10215,46 @@ List.  Forked from and using the same API as the publicsuffix package.")
     (package (inherit base)
       (inputs
        `(("python2-publicsuffix" ,python2-publicsuffix)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-freezegun
+  (package
+    (name "python-freezegun")
+    (version "0.3.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "freezegun" version))
+        (sha256
+          (base32
+            "14l19x06v5jkq4rdwbmfyw4x9lrjb2300afrk21r1ash7y1y9a0w"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-coverage" ,python-coverage)
+       ("python-dateutil-2" ,python-dateutil-2)))
+    (inputs
+     `(("python-six" ,python-six)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+        ;; The tests are normally executed via `make test`, but the PyPi
+        ;; package does not include the Makefile.
+        (replace 'check
+          (lambda _
+            (zero? (system* "nosetests" "./tests/")))))))
+    (home-page "https://github.com/spulec/freezegun")
+    (synopsis "Test utility for mocking the datetime module")
+    (description
+      "FreezeGun is a library that allows your python tests to travel through
+time by mocking the datetime module.")
+    (license license:asl2.0)))
+
+(define-public python2-freezegun
+  (let ((base (package-with-python2 (strip-python2-variant python-freezegun))))
+    (package (inherit base)
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
