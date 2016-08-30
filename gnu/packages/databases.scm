@@ -520,10 +520,12 @@ for example from a shell script.")
    (inputs `(("readline" ,readline)))
    (arguments
     `(#:configure-flags
-      ;; Add -DSQLITE_SECURE_DELETE and -DSQLITE_ENABLE_UNLOCK_NOTIFY to
-      ;; CFLAGS.  GNU Icecat will refuse to use the system SQLite unless these
-      ;; options are enabled.
-      '("CFLAGS=-O2 -DSQLITE_SECURE_DELETE -DSQLITE_ENABLE_UNLOCK_NOTIFY")))
+      ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
+      ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
+      ;; to use the system SQLite unless these options are enabled.
+      (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+                           "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
+                           "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
