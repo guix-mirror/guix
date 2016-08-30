@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages smalltalk)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -63,4 +63,4 @@
      "GNU Smalltalk is a free implementation of the Smalltalk language.  It
 implements the ANSI standard for the language and also includes extra classes
 such as ones for networking and GUI programming.")
-    (license gpl2+)))
+    (license license:gpl2+)))
