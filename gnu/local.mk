@@ -630,6 +630,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-CVE-2016-3945.patch		\
   %D%/packages/patches/libtiff-CVE-2016-3990.patch		\
   %D%/packages/patches/libtiff-CVE-2016-3991.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-5314.patch		\
   %D%/packages/patches/libtiff-CVE-2016-5321.patch		\
   %D%/packages/patches/libtiff-CVE-2016-5323.patch		\
   %D%/packages/patches/libtiff-oob-accesses-in-decode.patch	\
