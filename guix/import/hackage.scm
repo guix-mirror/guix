@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +75,7 @@
 (define (hackage-source-url name version)
   "Given a Hackage package NAME and VERSION, return a url to the source
 tarball."
-  (string-append "http://hackage.haskell.org/package/" name
+  (string-append "https://hackage.haskell.org/package/" name
                  "/" name "-" version ".tar.gz"))
 
 (define* (hackage-cabal-url name #:optional version)
@@ -82,9 +83,9 @@ tarball."
 .cabal file on Hackage.  If VERSION is #f or missing, the url for the latest
 version is returned."
   (if version
-      (string-append "http://hackage.haskell.org/package/"
+      (string-append "https://hackage.haskell.org/package/"
                      name "-" version "/" name ".cabal")
-      (string-append "http://hackage.haskell.org/package/"
+      (string-append "https://hackage.haskell.org/package/"
                      name "/" name ".cabal")))
 
 (define (hackage-name->package-name name)
