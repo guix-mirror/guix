@@ -51,3 +51,30 @@ provides many advanced features for manipulating and filtering the information
 in FITS files.")
     (license (license:non-copyleft "file://License.txt"
                           "See License.txt in the distribution."))))
+
+(define-public wcslib
+  (package
+    (name "wcslib")
+    (version "5.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "1s2nig327g4bimd9xshlk11ww09a7mrjmsbpdcd8smsmn2kl1glb"))))
+    (inputs
+     `(("cfitsio" ,cfitsio)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-/bin/sh
+                    (lambda _
+                      (substitute* "makedefs.in"
+                        (("/bin/sh") "sh")))))))
+    (home-page "http://www.atnf.csiro.au/people/mcalabre/WCS")
+    (synopsis "An implementation of the FITS WCS standard")
+    (description "The FITS \"World Coordinate System\" (WCS) standard defines
+keywords and usage that provide for the description of astronomical coordinate
+systems in a FITS image header.")  
+    (license license:lgpl3+)))
