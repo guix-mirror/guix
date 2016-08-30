@@ -1718,9 +1718,9 @@ version: 3.3.5
 You may also specify the full name of a package to only get details about a
 specific version of it:
 @example
-$ guix package --show=python-3.3.5 | recsel -p name,version
+$ guix package --show=python@@3.4 | recsel -p name,version
 name: python
-version: 3.3.5
+version: 3.4.3
 @end example
 
 
