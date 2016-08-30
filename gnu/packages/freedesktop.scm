@@ -647,6 +647,37 @@ package enables usage of IRC channels and private messages in Telepathy instant
 messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
     (license (list license:lgpl2.1 license:lgpl2.1+))))
 
+(define-public telepathy-mission-control
+  (package
+    (name "telepathy-mission-control")
+    (version "5.16.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://telepathy.freedesktop.org/releases/"
+                                  name "/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0zcbx69k0d3p2pjh3g7sa3q2zkd5xchxkqsmlfn3fwxaz0pmsmvi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dconf" ,dconf)
+       ("gtk-doc" ,gtk-doc)
+       ("libgnome-keyring" ,libgnome-keyring)
+       ("python" ,python-2)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     `(("telepathy-glib" ,telepathy-glib)))
+    (home-page "https://telepathy.freedesktop.org/wiki/Components/Mission_Control/")
+    (synopsis "Telepathy real-time communication framework management daemon")
+    (description
+     "Telepathy Mission Control 5 is an account manager and channel dispatcher
+for the Telepathy framework, allowing user interfaces and other clients to
+share connections to real-time communication services without conflicting.")
+    (license license:lgpl2.1)))
+
 (define-public colord-gtk
   (package
     (name "colord-gtk")
