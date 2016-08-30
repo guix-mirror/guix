@@ -7952,7 +7952,7 @@ configure networking."
 @end deffn
 
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
-  [#:name-service @var{%ntp-servers}]
+  [#:servers @var{%ntp-servers}]
 Return a service that runs the daemon from @var{ntp}, the
 @uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
 keep the system clock synchronized with that of @var{servers}.
