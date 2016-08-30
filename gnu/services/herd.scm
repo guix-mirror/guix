@@ -17,8 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services herd)
-  #:use-module (guix combinators)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -36,6 +36,11 @@
             action-exception-error-arguments
             unknown-shepherd-error?
             unknown-shepherd-error-sexp
+
+            live-service?
+            live-service-provision
+            live-service-requirement
+            live-service-running
 
             current-services
             unload-services
@@ -165,25 +170,27 @@ of pairs."
      (let ((key (and=> (assoc-ref alist 'key) car)) ...)
        exp ...))))
 
+;; Information about live Shepherd services.
+(define-record-type <live-service>
+  (live-service provision requirement running)
+  live-service?
+  (provision    live-service-provision)           ;list of symbols
+  (requirement  live-service-requirement)         ;list of symbols
+  (running      live-service-running))            ;#f | object
+
 (define (current-services)
-  "Return two lists: the list of currently running services, and the list of
-currently stopped services.  Return #f and #f if the list of services could
-not be obtained."
+  "Return the list of currently defined Shepherd services, represented as
+<live-service> objects.  Return #f if the list of services could not be
+obtained."
   (with-shepherd-action 'root ('status) services
     (match services
       ((('service ('version 0 _ ...) _ ...) ...)
-       (fold2 (lambda (service running-services stopped-services)
-                (alist-let* service (provides running)
-                  (if running
-                      (values (cons (first provides) running-services)
-                              stopped-services)
-                      (values running-services
-                              (cons (first provides) stopped-services)))))
-              '()
-              '()
-              services))
+       (map (lambda (service)
+              (alist-let* service (provides requires running)
+                (live-service provides requires running)))
+            services))
       (x
-       (values #f #f)))))
+       #f))))
 
 (define (unload-service service)
   "Unload SERVICE, a symbol name; return #t on success."

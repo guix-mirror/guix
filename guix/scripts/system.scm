@@ -283,29 +283,34 @@ unload."
     (map (compose first shepherd-service-provision)
          new-services))
 
-  (let-values (((running stopped) (current-services)))
-    (if (and running stopped)
-        (let* ((to-load
-                ;; Only load services that are either new or currently stopped.
-                (remove (lambda (service)
-                          (memq (first (shepherd-service-provision service))
-                                running))
-                        new-services))
-               (to-unload
-                ;; Unload services that are (1) no longer required, or (2) are
-                ;; in TO-LOAD.
-                (remove essential?
-                        (append (remove (lambda (service)
-                                          (memq service new-service-names))
-                                        (append running stopped))
-                                (filter (lambda (service)
-                                          (memq service stopped))
-                                        (map shepherd-service-canonical-name
-                                             to-load))))))
-          (mproc to-load to-unload))
-        (with-monad %store-monad
-          (warning (_ "failed to obtain list of shepherd services~%"))
-          (return #f)))))
+  (match (current-services)
+    ((services ...)
+     (let* ((running (map (compose first live-service-provision)
+                          (filter live-service-running services)))
+            (stopped (map (compose first live-service-provision)
+                          (remove live-service-running services)))
+            (to-load
+             ;; Only load services that are either new or currently stopped.
+             (remove (lambda (service)
+                       (memq (first (shepherd-service-provision service))
+                             running))
+                     new-services))
+            (to-unload
+             ;; Unload services that are (1) no longer required, or (2) are
+             ;; in TO-LOAD.
+             (remove essential?
+                     (append (remove (lambda (service)
+                                       (memq service new-service-names))
+                                     (append running stopped))
+                             (filter (lambda (service)
+                                       (memq service stopped))
+                                     (map shepherd-service-canonical-name
+                                          to-load))))))
+       (mproc to-load to-unload)))
+    (#f
+     (with-monad %store-monad
+       (warning (_ "failed to obtain list of shepherd services~%"))
+       (return #f)))))
 
 (define (upgrade-shepherd-services os)
   "Upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
