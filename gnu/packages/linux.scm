@@ -219,7 +219,7 @@
     (description "Libnfsidmap is a library holding mulitiple methods of
 mapping names to ids and visa versa, mainly for NFSv4.  It provides an
 extensible array of mapping functions, currently consisting of two choices;
-the default @code{nsswitch} and the experimental @{umich_ldap}.")
+the default @code{nsswitch} and the experimental @code{umich_ldap}.")
     (license (license:non-copyleft "file://COPYING"
                                    "See COPYING in the distribution."))))
 
