@@ -87,7 +87,19 @@ such as ones for networking and GUI programming.")
                            "Squeak-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0bpwbnpy2sb4gylchfx50sha70z36bwgdxraym4vrr93l8pd3dix"))))
+         "0bpwbnpy2sb4gylchfx50sha70z36bwgdxraym4vrr93l8pd3dix"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Make builds bit-reproducible.
+        '(begin
+           (substitute* "unix/cmake/verstamp"
+             (("vm_date=.*")
+              "vm_date = \"1970-01-01\";\n")
+             (("ux_version=.*")
+              "ux_version = \"GNU\";\n"))
+           (substitute* "unix/vm/config.cmake"
+             (("\\(VM_BUILD_STRING.*")
+              "(VM_BUILD_STRING \\\"Built with GNU Guix\\\")"))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
