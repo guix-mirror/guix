@@ -298,9 +298,14 @@ needs to be loaded."
       (service (and (not (live-service-running service))
                     service))))
 
+  (define live-service-dependents
+    (shepherd-service-back-edges live
+                                 #:provision live-service-provision
+                                 #:requirement live-service-requirement))
+
   (define (obsolete? service)
     (match (lookup-target (first (live-service-provision service)))
-      (#f #t)
+      (#f (every obsolete? (live-service-dependents service)))
       (_  #f)))
 
   (define to-load

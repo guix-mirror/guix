@@ -149,4 +149,36 @@
       (list (map live-service-provision unload)
             (map shepherd-service-provision load)))))
 
+(test-equal "service-upgrade: service depended on is not unloaded"
+  '(((baz))                                       ;unload
+    ())                                           ;load
+  (call-with-values
+      (lambda ()
+        ;; Service 'bar' is not among the target services; yet, it must not be
+        ;; unloaded because 'foo' depends on it.
+        (service-upgrade (list (live-service '(foo) '(bar) #t)
+                               (live-service '(bar) '() #t) ;still used!
+                               (live-service '(baz) '() #t))
+                         (list (shepherd-service (provision '(foo))
+                                                 (start #t)))))
+    (lambda (unload load)
+      (list (map live-service-provision unload)
+            (map shepherd-service-provision load)))))
+
+(test-equal "service-upgrade: obsolete services that depend on each other"
+  '(((foo) (bar) (baz))                           ;unload
+    ((qux)))                                      ;load
+  (call-with-values
+      (lambda ()
+        ;; 'foo', 'bar', and 'baz' depend on each other, but all of them are
+        ;; obsolete, and thus should be unloaded.
+        (service-upgrade (list (live-service '(foo) '(bar) #t) ;obsolete
+                               (live-service '(bar) '(baz) #t) ;obsolete
+                               (live-service '(baz) '() #t))   ;obsolete
+                         (list (shepherd-service (provision '(qux))
+                                                 (start #t)))))
+    (lambda (unload load)
+      (list (map live-service-provision unload)
+            (map shepherd-service-provision load)))))
+
 (test-end)
