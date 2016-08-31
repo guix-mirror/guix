@@ -93,7 +93,7 @@
 (define-public aragorn
   (package
     (name "aragorn")
-    (version "1.2.36")
+    (version "1.2.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -101,7 +101,7 @@
                     version ".tgz"))
               (sha256
                (base32
-                "1dg7jlz1qpqy88igjxd6ncs11ccsirb36qv1z01a0np4i4jh61mb"))))
+                "1c7zxk0h8wsjbix82fmmfyywcq6zn3q9h5y67kcl5y3qal2bv2xr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
