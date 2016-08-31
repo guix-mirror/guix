@@ -75,10 +75,10 @@ in FITS files.")
                       (substitute* "makedefs.in"
                         (("/bin/sh") "sh")))))))
     (home-page "http://www.atnf.csiro.au/people/mcalabre/WCS")
-    (synopsis "An implementation of the FITS WCS standard")
+    (synopsis "Library which implements the FITS WCS standard")
     (description "The FITS \"World Coordinate System\" (WCS) standard defines
 keywords and usage that provide for the description of astronomical coordinate
-systems in a FITS image header.")  
+systems in a FITS image header.")
     (license license:lgpl3+)))
 
 (define-public gnuastro
