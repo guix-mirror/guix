@@ -885,14 +885,15 @@ MIDI functionality to the Linux-based operating system.")
                                (string-append "--with-udev-rules-dir="
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
-       #:phases (alist-cons-before
-                 'install 'pre-install
-                 (lambda _
-                   ;; Don't try to mkdir /var/lib/alsa.
-                   (substitute* "Makefile"
-                     (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
-                      "true\n")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+           'install 'pre-install
+           (lambda _
+             ;; Don't try to mkdir /var/lib/alsa.
+             (substitute* "Makefile"
+               (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
+                "true\n")))))))
     (inputs
      `(("libsamplerate" ,libsamplerate)
        ("ncurses" ,ncurses)
