@@ -52,6 +52,7 @@
 
             shepherd-service-file
 
+            shepherd-service-lookup-procedure
             shepherd-service-back-edges))
 
 ;;; Commentary:
@@ -249,20 +250,29 @@ stored."
 
     (gexp->file "shepherd.conf" config)))
 
+(define* (shepherd-service-lookup-procedure services
+                                            #:optional
+                                            (provision
+                                             shepherd-service-provision))
+  "Return a procedure that, when passed a symbol, return the item among
+SERVICES that provides this symbol.  PROVISION must be a one-argument
+procedure that takes a service and returns the list of symbols it provides."
+  (let ((services (fold (lambda (service result)
+                          (fold (cut vhash-consq <> service <>)
+                                result
+                                (provision service)))
+                        vlist-null
+                        services)))
+    (lambda (name)
+      (match (vhash-assq name services)
+        ((_ . service) service)
+        (#f            #f)))))
+
 (define (shepherd-service-back-edges services)
   "Return a procedure that, when given a <shepherd-service> from SERVICES,
 returns the list of <shepherd-service> that depend on it."
   (define provision->service
-    (let ((services (fold (lambda (service result)
-                            (fold (cut vhash-consq <> service <>)
-                                  result
-                                  (shepherd-service-provision service)))
-                          vlist-null
-                          services)))
-      (lambda (name)
-        (match (vhash-assq name services)
-          ((_ . service) service)
-          (#f            #f)))))
+    (shepherd-service-lookup-procedure services))
 
   (define edges
     (fold (lambda (service edges)

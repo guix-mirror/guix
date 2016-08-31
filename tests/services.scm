@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,6 +104,15 @@
                          s))))
       (fold-services (list s) #:target-type t1)
       #f)))
+
+(test-assert "shepherd-service-lookup-procedure"
+  (let* ((s1 (shepherd-service (provision '(s1 s1b)) (start #f)))
+         (s2 (shepherd-service (provision '(s2 s2b)) (start #f)))
+         (s3 (shepherd-service (provision '(s3 s3b s3c)) (start #f)))
+         (lookup (shepherd-service-lookup-procedure (list s1 s2 s3))))
+    (and (eq? (lookup 's1) (lookup 's1b) s1)
+         (eq? (lookup 's2) (lookup 's2b) s2)
+         (eq? (lookup 's3) (lookup 's3b) s3))))
 
 (test-assert "shepherd-service-back-edges"
   (let* ((s1 (shepherd-service (provision '(s1)) (start #f)))
