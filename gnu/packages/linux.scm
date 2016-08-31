@@ -57,7 +57,6 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -395,9 +394,12 @@ It has been modified to remove all non-free binary blobs.")
         "1fyi04d5nsh8ivd0rn2y0z83ylgc0licz7kifbb6xxi2ylgfs6i4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)))
-    (inputs
-     `(("cracklib" ,cracklib)))
+     `(("flex" ,flex)
+
+       ;; TODO: optional dependencies
+       ;; ("libxcrypt" ,libxcrypt)
+       ;; ("cracklib" ,cracklib)
+       ))
     (arguments
      '(;; Most users, such as `shadow', expect the headers to be under
        ;; `security'.
@@ -405,7 +407,7 @@ It has been modified to remove all non-free binary blobs.")
                                               (assoc-ref %outputs "out")
                                               "/include/security"))
 
-       ;; FIXME: Tests won't run in chroot, presumably because /etc/pam.d
+       ;; XXX: Tests won't run in chroot, presumably because /etc/pam.d
        ;; isn't available.
        #:tests? #f))
     (home-page "http://www.linux-pam.org/")
