@@ -268,11 +268,17 @@ procedure that takes a service and returns the list of symbols it provides."
         ((_ . service) service)
         (#f            #f)))))
 
-(define (shepherd-service-back-edges services)
+(define* (shepherd-service-back-edges services
+                                      #:key
+                                      (provision shepherd-service-provision)
+                                      (requirement shepherd-service-requirement))
   "Return a procedure that, when given a <shepherd-service> from SERVICES,
-returns the list of <shepherd-service> that depend on it."
+returns the list of <shepherd-service> that depend on it.
+
+Use PROVISION and REQUIREMENT as one-argument procedures that return the
+symbols provided/required by a service."
   (define provision->service
-    (shepherd-service-lookup-procedure services))
+    (shepherd-service-lookup-procedure services provision))
 
   (define edges
     (fold (lambda (service edges)
@@ -280,7 +286,7 @@ returns the list of <shepherd-service> that depend on it."
                     (vhash-consq (provision->service requirement) service
                                  edges))
                   edges
-                  (shepherd-service-requirement service)))
+                  (requirement service)))
           vlist-null
           services))
 
