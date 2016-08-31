@@ -26,7 +26,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages slim)
+  #:use-module (gnu packages display-managers)
   #:use-module (gnu packages gnustep)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)

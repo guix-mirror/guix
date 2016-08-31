@@ -96,6 +96,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dictionaries.scm			\
   %D%/packages/dillo.scm			\
   %D%/packages/disk.scm				\
+  %D%/packages/display-managers.scm		\
   %D%/packages/djvu.scm				\
   %D%/packages/dns.scm				\
   %D%/packages/docbook.scm			\
@@ -320,7 +321,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/skarnet.scm			\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
-  %D%/packages/slim.scm				\
   %D%/packages/smalltalk.scm			\
   %D%/packages/speech.scm			\
   %D%/packages/spice.scm			\
