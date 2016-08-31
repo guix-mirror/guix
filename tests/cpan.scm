@@ -66,9 +66,9 @@
              (lambda ()
                (display
                 (match url
-                  ("http://api.metacpan.org/release/Foo-Bar"
+                  ("https://api.metacpan.org/release/Foo-Bar"
                    test-json)
-                  ("http://api.metacpan.org/module/Test::Script"
+                  ("https://api.metacpan.org/module/Test::Script"
                    "{ \"distribution\" : \"Test-Script\" }")
                   ("http://example.com/Foo-Bar-0.1.tar.gz"
                    test-source)
