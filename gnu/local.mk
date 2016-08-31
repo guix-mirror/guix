@@ -576,7 +576,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-CVE-2016-2824.patch		\
   %D%/packages/patches/icecat-CVE-2016-2828.patch		\
   %D%/packages/patches/icecat-CVE-2016-2831.patch		\
-  %D%/packages/patches/icedtea-remove-overrides.patch		\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\

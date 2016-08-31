@@ -337,16 +337,15 @@ build process and its dependencies, whereas Make uses Makefile format.")
 (define-public icedtea-6
   (package
     (name "icedtea")
-    (version "1.13.11")
+    (version "1.13.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://icedtea.wildebeest.org/download/source/icedtea6-"
                     version ".tar.xz"))
-              (patches (search-patches "icedtea-remove-overrides.patch"))
               (sha256
                (base32
-                "1grki39a4rf8n74zc0iglcggxxbpniyfh1gk1lb10p63zvvcsvjj"))
+                "1q5iqm3dzqj8w3dwj6qqhczkkrslrfhmn3110klfwq9kyi2nimj8"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile.in"
@@ -441,13 +440,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
              (substitute* '("patches/jtreg-jrunscript.patch"
                             "patches/hotspot/hs23/drop_unlicensed_test.patch")
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
-
-             ;; fix path to alsa header in patch
-             (substitute* "patches/openjdk/6799141-split_out_versions.patch"
-               (("ALSA_INCLUDE=/usr/include/alsa/version.h")
-                (string-append "ALSA_INCLUDE="
-                               (assoc-ref %build-inputs "alsa-lib")
-                               "/include/alsa/version.h")))))
+             #t))
          (add-after 'unpack 'patch-paths
            (lambda _
              ;; buildtree.make generates shell scripts, so we need to replace
@@ -474,6 +467,13 @@ build process and its dependencies, whereas Make uses Makefile format.")
                                  (assoc-ref %build-inputs "gcc") "/bin/"))
                  (("DEF_OBJCOPY *=.*objcopy")
                   (string-append "DEF_OBJCOPY = " (which "objcopy"))))
+
+               ;; fix path to alsa header
+               (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
+                 (("ALSA_INCLUDE=/usr/include/alsa/version.h")
+                  (string-append "ALSA_INCLUDE="
+                                 (assoc-ref %build-inputs "alsa-lib")
+                                 "/include/alsa/version.h")))
 
                ;; fix hard-coded utility paths
                (substitute* '("openjdk.src/jdk/make/common/shared/Defs-utils.gmk"
@@ -764,10 +764,10 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ("openjdk6-src"
         ,(origin
            (method url-fetch)
-           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b39-03_may_2016.tar.gz")
+           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b40-22_aug_2016.tar.gz")
            (sha256
             (base32
-             "1brxbsgwcj4js26y5lk6capc3pvghgjidvv9cavw6z8n7c7aw8af"))))
+             "01v4q7g9pa6w7m6yxply5yrin08jgv12fck665xnmp09bpxy8sa5"))))
        ("lcms" ,lcms)
        ("zlib" ,zlib)
        ("gtk" ,gtk+-2)
