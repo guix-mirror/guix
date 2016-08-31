@@ -940,7 +940,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -948,17 +948,17 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "1l8vl0mh7i0b1ycifqpg6392f5i4qxlv003m126skfk6fnlfq8hn"))))
+                "0xxx0xpxhrhlhi2axq9867zqrhwqavc1qrr833k1xr0pvm5m0aqc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("pango" ,pango)
+     `(("pango" ,pango)
        ("cairo" ,cairo)
        ("glib" ,glib)
        ("startup-notification" ,startup-notification)
        ("libxkbcommon" ,libxkbcommon)
        ("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
+       ("xcb-util-xrm" ,xcb-util-xrm)
        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
