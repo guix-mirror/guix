@@ -25,6 +25,7 @@
   #:use-module (guix records)
   #:use-module (guix derivations)                 ;imported-modules, etc.
   #:use-module (gnu services)
+  #:use-module (gnu services herd)
   #:use-module (gnu packages admin)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -53,7 +54,8 @@
             shepherd-service-file
 
             shepherd-service-lookup-procedure
-            shepherd-service-back-edges))
+            shepherd-service-back-edges
+            shepherd-service-upgrade))
 
 ;;; Commentary:
 ;;;
@@ -292,5 +294,53 @@ symbols provided/required by a service."
 
   (lambda (service)
     (vhash-foldq* cons '() service edges)))
+
+(define (shepherd-service-upgrade live target)
+  "Return two values: the subset of LIVE (a list of <live-service>) that needs
+to be unloaded, and the subset of TARGET (a list of <shepherd-service>) that
+needs to be loaded."
+  (define (essential? service)
+    (memq (first (live-service-provision service))
+          '(root shepherd)))
+
+  (define lookup-target
+    (shepherd-service-lookup-procedure target
+                                       shepherd-service-provision))
+
+  (define lookup-live
+    (shepherd-service-lookup-procedure live
+                                       live-service-provision))
+
+  (define (running? service)
+    (and=> (lookup-live (shepherd-service-canonical-name service))
+           live-service-running))
+
+  (define (stopped service)
+    (match (lookup-live (shepherd-service-canonical-name service))
+      (#f #f)
+      (service (and (not (live-service-running service))
+                    service))))
+
+  (define live-service-dependents
+    (shepherd-service-back-edges live
+                                 #:provision live-service-provision
+                                 #:requirement live-service-requirement))
+
+  (define (obsolete? service)
+    (match (lookup-target (first (live-service-provision service)))
+      (#f (every obsolete? (live-service-dependents service)))
+      (_  #f)))
+
+  (define to-load
+    ;; Only load services that are either new or currently stopped.
+    (remove running? target))
+
+  (define to-unload
+    ;; Unload services that are (1) no longer required, or (2) are in TO-LOAD.
+    (remove essential?
+            (append (filter obsolete? live)
+                    (filter-map stopped to-load))))
+
+  (values to-unload to-load))
 
 ;;; shepherd.scm ends here

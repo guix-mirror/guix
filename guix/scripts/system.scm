@@ -272,54 +272,6 @@ on service '~a':~%")
         ((not error)                              ;not an error
          #t)))
 
-(define (service-upgrade live target)
-  "Return two values: the subset of LIVE (a list of <live-service>) that needs
-to be unloaded, and the subset of TARGET (a list of <shepherd-service>) that
-needs to be loaded."
-  (define (essential? service)
-    (memq (first (live-service-provision service))
-          '(root shepherd)))
-
-  (define lookup-target
-    (shepherd-service-lookup-procedure target
-                                       shepherd-service-provision))
-
-  (define lookup-live
-    (shepherd-service-lookup-procedure live
-                                       live-service-provision))
-
-  (define (running? service)
-    (and=> (lookup-live (shepherd-service-canonical-name service))
-           live-service-running))
-
-  (define (stopped service)
-    (match (lookup-live (shepherd-service-canonical-name service))
-      (#f #f)
-      (service (and (not (live-service-running service))
-                    service))))
-
-  (define live-service-dependents
-    (shepherd-service-back-edges live
-                                 #:provision live-service-provision
-                                 #:requirement live-service-requirement))
-
-  (define (obsolete? service)
-    (match (lookup-target (first (live-service-provision service)))
-      (#f (every obsolete? (live-service-dependents service)))
-      (_  #f)))
-
-  (define to-load
-    ;; Only load services that are either new or currently stopped.
-    (remove running? target))
-
-  (define to-unload
-    ;; Unload services that are (1) no longer required, or (2) are in TO-LOAD.
-    (remove essential?
-            (append (filter obsolete? live)
-                    (filter-map stopped to-load))))
-
-  (values to-unload to-load))
-
 (define (call-with-service-upgrade-info new-services mproc)
   "Call MPROC, a monadic procedure in %STORE-MONAD, passing it the list of
 names of services to load (upgrade), and the list of names of services to
@@ -327,7 +279,7 @@ unload."
   (match (current-services)
     ((services ...)
      (let-values (((to-unload to-load)
-                   (service-upgrade services new-services)))
+                   (shepherd-service-upgrade services new-services)))
        (mproc to-load
               (map (compose first live-service-provision)
                    to-unload))))

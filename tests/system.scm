@@ -19,8 +19,6 @@
 (define-module (test-system)
   #:use-module (gnu)
   #:use-module (guix store)
-  #:use-module (gnu services herd)
-  #:use-module (gnu services shepherd)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
 
@@ -61,12 +59,7 @@
                         %base-file-systems))
     (users %base-user-accounts)))
 
-(define live-service
-  (@@ (gnu services herd) live-service))
-
-(define service-upgrade
-  (@@ (guix scripts system) service-upgrade))
-
+
 (test-begin "system")
 
 (test-assert "operating-system-store-file-system"
@@ -120,65 +113,5 @@
                            (mount-point "/")
                            (type "ext4"))
                          %base-file-systems)))))
-
-(test-equal "service-upgrade: nothing to do"
-  '(() ())
-  (call-with-values
-      (lambda ()
-        (service-upgrade '() '()))
-    list))
-
-(test-equal "service-upgrade: one unchanged, one upgraded, one new"
-  '(((bar))                                       ;unload
-    ((bar) (baz)))                                ;load
-  (call-with-values
-      (lambda ()
-        ;; Here 'foo' is not upgraded because it is still running, whereas
-        ;; 'bar' is upgraded because it is not currently running.  'baz' is
-        ;; loaded because it's a new service.
-        (service-upgrade (list (live-service '(foo) '() #t)
-                               (live-service '(bar) '() #f)
-                               (live-service '(root) '() #t)) ;essential!
-                         (list (shepherd-service (provision '(foo))
-                                                 (start #t))
-                               (shepherd-service (provision '(bar))
-                                                 (start #t))
-                               (shepherd-service (provision '(baz))
-                                                 (start #t)))))
-    (lambda (unload load)
-      (list (map live-service-provision unload)
-            (map shepherd-service-provision load)))))
-
-(test-equal "service-upgrade: service depended on is not unloaded"
-  '(((baz))                                       ;unload
-    ())                                           ;load
-  (call-with-values
-      (lambda ()
-        ;; Service 'bar' is not among the target services; yet, it must not be
-        ;; unloaded because 'foo' depends on it.
-        (service-upgrade (list (live-service '(foo) '(bar) #t)
-                               (live-service '(bar) '() #t) ;still used!
-                               (live-service '(baz) '() #t))
-                         (list (shepherd-service (provision '(foo))
-                                                 (start #t)))))
-    (lambda (unload load)
-      (list (map live-service-provision unload)
-            (map shepherd-service-provision load)))))
-
-(test-equal "service-upgrade: obsolete services that depend on each other"
-  '(((foo) (bar) (baz))                           ;unload
-    ((qux)))                                      ;load
-  (call-with-values
-      (lambda ()
-        ;; 'foo', 'bar', and 'baz' depend on each other, but all of them are
-        ;; obsolete, and thus should be unloaded.
-        (service-upgrade (list (live-service '(foo) '(bar) #t) ;obsolete
-                               (live-service '(bar) '(baz) #t) ;obsolete
-                               (live-service '(baz) '() #t))   ;obsolete
-                         (list (shepherd-service (provision '(qux))
-                                                 (start #t)))))
-    (lambda (unload load)
-      (list (map live-service-provision unload)
-            (map shepherd-service-provision load)))))
 
 (test-end)
