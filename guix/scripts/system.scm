@@ -273,41 +273,45 @@ on service '~a':~%")
          #t)))
 
 (define (service-upgrade live target)
-  "Return two values: the names of the subset of LIVE (a list of
-<live-service>) that needs to be unloaded, and the subset of TARGET (a list of
-<shepherd-service>) that needs to be loaded."
+  "Return two values: the subset of LIVE (a list of <live-service>) that needs
+to be unloaded, and the subset of TARGET (a list of <shepherd-service>) that
+needs to be loaded."
   (define (essential? service)
-    (memq service '(root shepherd)))
+    (memq (first (live-service-provision service))
+          '(root shepherd)))
 
-  (define new-service-names
-    (map (compose first shepherd-service-provision)
-         target))
+  (define lookup-target
+    (shepherd-service-lookup-procedure target
+                                       shepherd-service-provision))
 
-  (define running
-    (map (compose first live-service-provision)
-         (filter live-service-running live)))
+  (define lookup-live
+    (shepherd-service-lookup-procedure live
+                                       live-service-provision))
 
-  (define stopped
-    (map (compose first live-service-provision)
-         (remove live-service-running live)))
+  (define (running? service)
+    (and=> (lookup-live (shepherd-service-canonical-name service))
+           live-service-running))
+
+  (define (stopped service)
+    (match (lookup-live (shepherd-service-canonical-name service))
+      (#f #f)
+      (service (and (not (live-service-running service))
+                    service))))
+
+  (define (obsolete? service)
+    (match (lookup-target (first (live-service-provision service)))
+      (#f #t)
+      (_  #f)))
 
   (define to-load
     ;; Only load services that are either new or currently stopped.
-    (remove (lambda (service)
-              (memq (first (shepherd-service-provision service))
-                    running))
-            target))
+    (remove running? target))
 
   (define to-unload
     ;; Unload services that are (1) no longer required, or (2) are in TO-LOAD.
     (remove essential?
-            (append (remove (lambda (service)
-                              (memq service new-service-names))
-                            (append running stopped))
-                    (filter (lambda (service)
-                              (memq service stopped))
-                            (map shepherd-service-canonical-name
-                                 to-load)))))
+            (append (filter obsolete? live)
+                    (filter-map stopped to-load))))
 
   (values to-unload to-load))
 
@@ -319,7 +323,9 @@ unload."
     ((services ...)
      (let-values (((to-unload to-load)
                    (service-upgrade services new-services)))
-       (mproc to-load to-unload)))
+       (mproc to-load
+              (map (compose first live-service-provision)
+                   to-unload))))
     (#f
      (with-monad %store-monad
        (warning (_ "failed to obtain list of shepherd services~%"))

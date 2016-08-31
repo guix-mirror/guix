@@ -129,7 +129,7 @@
     list))
 
 (test-equal "service-upgrade: one unchanged, one upgraded, one new"
-  '((bar)                                         ;unload
+  '(((bar))                                       ;unload
     ((bar) (baz)))                                ;load
   (call-with-values
       (lambda ()
@@ -146,6 +146,7 @@
                                (shepherd-service (provision '(baz))
                                                  (start #t)))))
     (lambda (unload load)
-      (list unload (map shepherd-service-provision load)))))
+      (list (map live-service-provision unload)
+            (map shepherd-service-provision load)))))
 
 (test-end)
