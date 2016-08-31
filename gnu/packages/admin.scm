@@ -1415,7 +1415,7 @@ limits.")
                   (replace 'check
                     (lambda _
                       (zero?
-                       (system* "python" "tests/autojump_utils_test.py"))))
+                       (system* "python" "tests/unit/autojump_utils_test.py"))))
                   (replace 'install
                     ;; The install.py script doesn't allow system installation
                     ;; into an arbitrary prefix, so do our own install.
