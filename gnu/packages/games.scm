@@ -2798,8 +2798,7 @@ programmers may also add their own favorite language.")
          (add-before 'install 'patch-data-dir-location
            (lambda _
              (substitute* "bambam.py"
-                          (("'data'")
-                           "'../share/bambam/data'"))
+               (("'data'") "'../share/bambam/data'"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2810,18 +2809,11 @@ programmers may also add their own favorite language.")
                (copy-file "bambam.py" (string-append bin "/bambam"))
                (install-file "bambam.6" (string-append share "/man/man6"))
                (copy-recursively "data" (string-append share "/bambam/data")))
-             #t))
-         (add-after 'install 'wrap-binary
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin/bambam")))
-               (wrap-program bin
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
              #t)))))
     (inputs
      `(("python-pygame" ,python-pygame)))
     (home-page "https://github.com/porridge/bambam")
-    (synopsis "keyboard mashing and doodling game for babies")
+    (synopsis "Keyboard mashing and doodling game for babies")
     (description "Bambam is a simple baby keyboard (and gamepad) masher
 application that locks the keyboard and mouse and instead displays bright
 colors, pictures, and sounds.")
