@@ -3303,17 +3303,11 @@ doing the same calculation in Python.  In addition, its multi-threaded
 capabilities can make use of all your cores, which may accelerate
 computations, most specially if they are not memory-bounded (e.g. those using
 transcendental functions).")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-numexpr))))))
 
 (define-public python2-numexpr
-  (let ((numexpr (package-with-python2 python-numexpr)))
-    (package (inherit numexpr)
-      ;; Make sure to use special packages for Python 2 instead
-      ;; of those automatically rewritten by package-with-python2.
-      (propagated-inputs
-       `(("python2-numpy" ,python2-numpy)
-         ,@(alist-delete "python-numpy"
-                         (package-propagated-inputs numexpr)))))))
+  (package-with-python2 (strip-python2-variant python-numexpr)))
 
 (define-public python-matplotlib
   (package
