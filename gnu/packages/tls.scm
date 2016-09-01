@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,33 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
+
+(define-public asn1c
+  (package
+    (name "asn1c")
+    (version "0.9.27")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://lionet.info/soft/asn1c-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "17nvn2kzvlryasr9dzqg6gs27b9lvqpval0k31pb64bjqbhn8pq2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://lionet.info/asn1c")
+    (synopsis "ASN.1 to C compiler")
+    (description "The ASN.1 to C compiler takes ASN.1 module
+files and generates C++ compatible C source code.  That code can be
+used to serialize the native C structures into compact and unambiguous
+BER/XER/PER-based data files, and deserialize the files back.
+
+Various ASN.1 based formats are widely used in the industry, such as to encode
+the X.509 certificates employed in the HTTPS handshake, to exchange control
+data between mobile phones and cellular networks, to car-to-car communication
+in intelligent transportation networks.")
+    (license license:bsd-2)))
 
 (define-public p11-kit
   (package
