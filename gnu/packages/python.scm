@@ -2853,6 +2853,7 @@ and is very extensible.")
        (uri (string-append
              "https://github.com/scikit-learn/scikit-learn/archive/"
              version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "140skabifgc7lvvj873pnzlwx0ni6q8qkrsyad2ccjb3h8rxzkih"))))
