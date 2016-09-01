@@ -33,6 +33,7 @@
 
 (define-module (gnu packages linux)
   #:use-module (gnu packages)
+  #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages attr)
@@ -2985,3 +2986,35 @@ and other hardware errors on x86 systems.  It can also perform user-defined
 tasks, such as bringing bad pages off-line, when configurable error thresholds
 are exceeded.")
     (license license:gpl2)))
+
+(define-public mtd-utils
+  (package
+    (name "mtd-utils")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.infradead.org/pub/mtd-utils/"
+                    "mtd-utils-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "007lhsd8yb34l899r4m37whhzdw815cz4fnjbpnblfha524p7dax"))))
+    (inputs
+     `(("acl" ,acl)
+       ("libuuid" ,util-linux)
+       ("lzo", lzo)
+       ("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "tests"
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "MTD Flash Storage Utilities")
+    (description "This package provides utilities for testing, partitioning, etc
+of flash storage.")
+    (home-page "http://www.linux-mtd.infradead.org/")
+    (license
+      (list license:gpl2 ; Almost everything is gpl2 or gpl2+
+            license:mpl1.1 ; All ftl* files
+            license:expat)))) ; libiniparser
