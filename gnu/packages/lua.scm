@@ -51,7 +51,7 @@
                   (srfi srfi-1))
        #:test-target "test"
        #:make-flags
-       '("CFLAGS=-fPIC -DLUA_DL_DLOPEN -DLUA_USE_POSIX"
+       '("MYCFLAGS=-fPIC -DLUA_DL_DLOPEN"
          "linux")
        #:phases
        (modify-phases %standard-phases
