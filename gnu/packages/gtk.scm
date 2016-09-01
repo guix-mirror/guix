@@ -1333,3 +1333,29 @@ glass artworks done by Venicians glass blowers.")
      "GtkSpell provides word-processor-style highlighting and replacement of
 misspelled words in a GtkTextView widget.")
     (license license:gpl2+)))
+
+(define-public clipit
+  (package
+    (name "clipit")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/downloads/ClipIt/clipit-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0jrwn8qfgb15rwspdp1p8hb1nc0ngmpvgr87d4k3lhlvqg2cfqva"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
+    (home-page "https://github.com/CristianHenzel/ClipIt")
+    (synopsis "Lightweight GTK+ clipboard manager")
+    (description
+     "ClipIt is a clipboard manager with features such as a history, search
+thereof, global hotkeys and clipboard item actions.  It was forked from
+Parcellite and adds bugfixes and features.")
+    (license license:gpl2+)))
