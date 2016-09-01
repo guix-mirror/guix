@@ -40,7 +40,9 @@
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "155v52palf5fwfcnq696s41whjk0a5dqx98b7maqzdn7xbc2m6bp"))))
+                "155v52palf5fwfcnq696s41whjk0a5dqx98b7maqzdn7xbc2m6bp"))
+              (patches
+                (search-patches "dtc-add-missing-symbols-to-lds.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
