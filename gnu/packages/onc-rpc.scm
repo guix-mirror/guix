@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system gnu))
 
 (define-public libtirpc
@@ -52,3 +54,32 @@
 procedure calls) protocol in a transport-independent manner.  It supports both
 IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
     (license bsd-3)))
+
+(define-public rpcbind
+  (package
+    (name "rpcbind")
+    (version "0.2.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                          version "/"
+                          name "-" version ".tar.bz2"))
+      (sha256
+       (base32
+        "0yyjzv4161rqxrgjcijkrawnk55rb96ha0pav48s03l2klx855wq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       `("--with-systemdsystemunitdir=no")))
+    (inputs
+     `(("libtirpc" ,libtirpc)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://rpcbind.sourceforge.net/")
+    (synopsis "Server to convert RPC program numbers into universal addresses")
+    (description
+     "@command{Rpcbind} is a server that converts RPC program numbers into
+universal addresses.")
+    (license bsd-3)))
+
