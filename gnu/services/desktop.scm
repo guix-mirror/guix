@@ -829,7 +829,7 @@ and extends polkit with the actions from @code{gnome-settings-daemon}."
 
 (define* (xfce-desktop-service #:key (config (xfce-desktop-configuration)))
   "Return a service that adds the @code{xfce} package to the system profile,
-and extends polkit with the abilit for @code{thunar} to manipulate the file
+and extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
 with the administrator's password."
   (service xfce-desktop-service-type config))
