@@ -2919,21 +2919,19 @@ mining and data analysis.")
     (synopsis "Image processing in Python")
     (description
      "Scikit-image is a collection of algorithms for image processing.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-scikit-image))))))
 
 (define-public python2-scikit-image
-  (let ((scikit-image (package-with-python2 python-scikit-image)))
+  (let ((scikit-image (package-with-python2
+                        (strip-python2-variant python-scikit-image))))
     (package (inherit scikit-image)
       (native-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-native-inputs scikit-image)))
       (propagated-inputs
        `(("python2-pytz" ,python2-pytz)
-         ("python2-matplotlib" ,python2-matplotlib)
-         ("python2-numpy" ,python2-numpy)
-         ("python2-scipy" ,python2-scipy)
-         ,@(fold alist-delete (package-propagated-inputs scikit-image)
-                 '("python-matplotlib" "python-numpy" "python-scipy")))))))
+         ,@(package-propagated-inputs scikit-image))))))
 
 (define-public python-redis
   (package
