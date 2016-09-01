@@ -369,7 +369,7 @@ keywords not already present in ARGS."
     (match defaults
       ((kw value rest ...)
        (loop rest
-             (if (assoc-ref kw args)
+             (if (memq kw args)
                  args
                  (cons* kw value args))))
       (()
