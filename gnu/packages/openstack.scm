@@ -237,31 +237,42 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-requests-mock
   (package
     (name "python-requests-mock")
-    (version "0.7.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "requests-mock" version))
        (sha256
         (base32
-         "0s6mrpiv2w0km39qvl1pq2d56xblnm57p369qdp5j1a55ncica7f"))))
+         "0gcjjwsckhqixyffflc54i59x41jnbb37bli077vabii1bjmkin6"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-requests" ,python-requests)
-        ("python-six" ,python-six)))
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
     (inputs
-      `(("python-mock" ,python-mock)
-        ("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)))
+     `(("python-pbr" ,python-pbr)))
+    (native-inputs
+     `(("python-discover" ,python-discover)
+       ("python-fixtures" ,python-fixtures)
+       ("python-mock" ,python-mock)
+       ("python-sphinx" ,python-sphinx)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://requests-mock.readthedocs.org/")
     (synopsis "Mock out responses from the requests package")
     (description
       "This module provides a building block to stub out the HTTP requests
 portions of your testing code.")
-    (license asl2.0)))
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-requests-mock))))))
 
 (define-public python2-requests-mock
-  (package-with-python2 python-requests-mock))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-requests-mock))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
 
 (define-public python-stevedore
   (package
