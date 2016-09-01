@@ -386,26 +386,17 @@ makefiles."
     (when debug-output
       (format #t "debugging output written to ~s using ~s~%"
               debug-output objcopy-command))
-    (file-system-fold (const #t)
-                      (lambda (path stat result)  ; leaf
-                        (and (file-exists? path)  ;discard dangling symlinks
-                             (or (elf-file? path) (ar-file? path))
-                             (or (not debug-output)
-                                 (make-debug-file path))
-                             (zero? (apply system* strip-command
-                                           (append strip-flags (list path))))
-                             (or (not debug-output)
-                                 (add-debug-link path))))
-                      (const #t)                  ; down
-                      (const #t)                  ; up
-                      (const #t)                  ; skip
-                      (lambda (path stat errno result)
-                        (format (current-error-port)
-                                "strip: failed to access `~a': ~a~%"
-                                path (strerror errno))
-                        #f)
-                      #t
-                      dir))
+
+    (for-each (lambda (file)
+                (and (file-exists? file)          ;discard dangling symlinks
+                     (or (elf-file? file) (ar-file? file))
+                     (or (not debug-output)
+                         (make-debug-file file))
+                     (zero? (apply system* strip-command
+                                   (append strip-flags (list file))))
+                     (or (not debug-output)
+                         (add-debug-link file))))
+              (find-files dir)))
 
   (or (not strip-binaries?)
       (every strip-dir
