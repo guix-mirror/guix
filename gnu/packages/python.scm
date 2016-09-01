@@ -2885,18 +2885,11 @@ and is very extensible.")
     (description
      "Scikit-learn provides simple and efficient tools for data
 mining and data analysis.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-scikit-learn))))))
 
 (define-public python2-scikit-learn
-  (let ((scikit (package-with-python2 python-scikit-learn)))
-    (package (inherit scikit)
-      (propagated-inputs
-       `(("python2-numpy" ,python2-numpy)
-         ("python2-scipy" ,python2-scipy)
-         ,@(alist-delete
-            "python-numpy"
-            (alist-delete
-             "python-scipy" (package-propagated-inputs scikit))))))))
+  (package-with-python2 (strip-python2-variant python-scikit-learn)))
 
 (define-public python-scikit-image
   (package
