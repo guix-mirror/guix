@@ -4387,29 +4387,20 @@ without using the configuration machinery.")
 Powerful interactive shells, a browser-based notebook, support for interactive
 data visualization, embeddable interpreters and tools for parallel
 computing.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-ipython))))))
 
 (define-public python2-ipython
-  (let ((ipython (package-with-python2 python-ipython)))
+  (let ((ipython (package-with-python2 (strip-python2-variant python-ipython))))
     (package
       (inherit ipython)
       ;; FIXME: some tests are failing
       (arguments
        `(#:tests? #f ,@(package-arguments ipython)))
-      ;; Make sure we use custom python2-NAME packages.
       ;; FIXME: add pyreadline once available.
-      (propagated-inputs
-       `(("python2-terminado" ,python2-terminado)
-         ,@(alist-delete "python-terminado"
-                         (package-propagated-inputs ipython))))
       (inputs
-       `(("python2-jsonschema" ,python2-jsonschema)
-         ("python2-mock" ,python2-mock)
-         ("python2-matplotlib" ,python2-matplotlib)
-         ("python2-numpy" ,python2-numpy)
-         ("python2-requests" ,python2-requests)
-         ,@(fold alist-delete (package-inputs ipython)
-                 '("python-jsonschema" "python-matplotlib" "python-numpy" "python-requests")))))))
+       `(("python2-mock" ,python2-mock)
+         ,@(package-inputs ipython))))))
 
 (define-public python-isodate
   (package
