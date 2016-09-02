@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,12 +18,17 @@
 
 (define-module (test-services)
   #:use-module (gnu services)
+  #:use-module (gnu services herd)
   #:use-module (gnu services shepherd)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
+(define live-service
+  (@@ (gnu services herd) live-service))
+
+
 (test-begin "services")
 
 (test-assert "service-back-edges"
@@ -105,6 +110,15 @@
       (fold-services (list s) #:target-type t1)
       #f)))
 
+(test-assert "shepherd-service-lookup-procedure"
+  (let* ((s1 (shepherd-service (provision '(s1 s1b)) (start #f)))
+         (s2 (shepherd-service (provision '(s2 s2b)) (start #f)))
+         (s3 (shepherd-service (provision '(s3 s3b s3c)) (start #f)))
+         (lookup (shepherd-service-lookup-procedure (list s1 s2 s3))))
+    (and (eq? (lookup 's1) (lookup 's1b) s1)
+         (eq? (lookup 's2) (lookup 's2b) s2)
+         (eq? (lookup 's3) (lookup 's3b) s3))))
+
 (test-assert "shepherd-service-back-edges"
   (let* ((s1 (shepherd-service (provision '(s1)) (start #f)))
          (s2 (shepherd-service (provision '(s2))
@@ -117,5 +131,68 @@
     (and (lset= eq? (e s1) (list s2 s3))
          (lset= eq? (e s2) (list s3))
          (null? (e s3)))))
+
+(test-equal "shepherd-service-upgrade: nothing to do"
+  '(() ())
+  (call-with-values
+      (lambda ()
+        (shepherd-service-upgrade '() '()))
+    list))
+
+(test-equal "shepherd-service-upgrade: one unchanged, one upgraded, one new"
+  '(((bar))                                       ;unload
+    ((bar) (baz)))                                ;load
+  (call-with-values
+      (lambda ()
+        ;; Here 'foo' is not upgraded because it is still running, whereas
+        ;; 'bar' is upgraded because it is not currently running.  'baz' is
+        ;; loaded because it's a new service.
+        (shepherd-service-upgrade
+         (list (live-service '(foo) '() #t)
+               (live-service '(bar) '() #f)
+               (live-service '(root) '() #t))     ;essential!
+         (list (shepherd-service (provision '(foo))
+                                 (start #t))
+               (shepherd-service (provision '(bar))
+                                 (start #t))
+               (shepherd-service (provision '(baz))
+                                 (start #t)))))
+    (lambda (unload load)
+      (list (map live-service-provision unload)
+            (map shepherd-service-provision load)))))
+
+(test-equal "shepherd-service-upgrade: service depended on is not unloaded"
+  '(((baz))                                       ;unload
+    ())                                           ;load
+  (call-with-values
+      (lambda ()
+        ;; Service 'bar' is not among the target services; yet, it must not be
+        ;; unloaded because 'foo' depends on it.
+        (shepherd-service-upgrade
+         (list (live-service '(foo) '(bar) #t)
+               (live-service '(bar) '() #t)       ;still used!
+               (live-service '(baz) '() #t))
+         (list (shepherd-service (provision '(foo))
+                                 (start #t)))))
+    (lambda (unload load)
+      (list (map live-service-provision unload)
+            (map shepherd-service-provision load)))))
+
+(test-equal "shepherd-service-upgrade: obsolete services that depend on each other"
+  '(((foo) (bar) (baz))                           ;unload
+    ((qux)))                                      ;load
+  (call-with-values
+      (lambda ()
+        ;; 'foo', 'bar', and 'baz' depend on each other, but all of them are
+        ;; obsolete, and thus should be unloaded.
+        (shepherd-service-upgrade
+         (list (live-service '(foo) '(bar) #t)    ;obsolete
+               (live-service '(bar) '(baz) #t)    ;obsolete
+               (live-service '(baz) '() #t))      ;obsolete
+         (list (shepherd-service (provision '(qux))
+                                 (start #t)))))
+    (lambda (unload load)
+      (list (map live-service-provision unload)
+            (map shepherd-service-provision load)))))
 
 (test-end)

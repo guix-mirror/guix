@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,6 +198,30 @@
      "Tools for loading and managing Linux kernel modules, such as `modprobe',
 `insmod', `lsmod', and more.")
     (license license:gpl2+)))
+
+(define-public libnfsidmap
+  (package
+    (name "libnfsidmap")
+    (version "0.25")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.citi.umich.edu/projects/nfsv4/linux/"
+                   name "/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
+    (build-system gnu-build-system)
+    (home-page
+     "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
+    (synopsis
+     "NFSv4 support library for name/ID mapping")
+    (description "Libnfsidmap is a library holding mulitiple methods of
+mapping names to ids and visa versa, mainly for NFSv4.  It provides an
+extensible array of mapping functions, currently consisting of two choices:
+the default @code{nsswitch} and the experimental @code{umich_ldap}.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
 
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
@@ -855,14 +880,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.0")
+    (version "1.1.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1wa88wvqcfhak9x3y65wzzwxmmyxb5bv2gyj7lnm653fnwsk271v"))))
+               "0wcha78c2sm8qqk5r3w83cvm8fp6fb1zpd35kmcm24kxhz007xks"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -873,14 +898,15 @@ MIDI functionality to the Linux-based operating system.")
                                (string-append "--with-udev-rules-dir="
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
-       #:phases (alist-cons-before
-                 'install 'pre-install
-                 (lambda _
-                   ;; Don't try to mkdir /var/lib/alsa.
-                   (substitute* "Makefile"
-                     (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
-                      "true\n")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+           'install 'pre-install
+           (lambda _
+             ;; Don't try to mkdir /var/lib/alsa.
+             (substitute* "Makefile"
+               (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
+                "true\n")))))))
     (inputs
      `(("libsamplerate" ,libsamplerate)
        ("ncurses" ,ncurses)

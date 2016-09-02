@@ -42,6 +42,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/apr.scm				\
   %D%/packages/aspell.scm			\
   %D%/packages/assembly.scm			\
+  %D%/packages/astronomy.scm			\
   %D%/packages/attr.scm				\
   %D%/packages/audacity.scm			\
   %D%/packages/audio.scm			\
@@ -95,6 +96,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dictionaries.scm			\
   %D%/packages/dillo.scm			\
   %D%/packages/disk.scm				\
+  %D%/packages/display-managers.scm		\
   %D%/packages/djvu.scm				\
   %D%/packages/dns.scm				\
   %D%/packages/docbook.scm			\
@@ -319,7 +321,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/skarnet.scm			\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
-  %D%/packages/slim.scm				\
   %D%/packages/smalltalk.scm			\
   %D%/packages/speech.scm			\
   %D%/packages/spice.scm			\
@@ -347,6 +348,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
   %D%/packages/uucp.scm				\
+  %D%/packages/u-boot.scm			\
   %D%/packages/valgrind.scm			\
   %D%/packages/version-control.scm		\
   %D%/packages/video.scm			\
@@ -481,6 +483,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/doxygen-test.patch			\
+  %D%/packages/patches/dtc-add-missing-symbols-to-lds.patch     \
   %D%/packages/patches/duplicity-piped-password.patch		\
   %D%/packages/patches/duplicity-test_selection-tmp.patch	\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
@@ -510,7 +513,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
   %D%/packages/patches/fontforge-svg-modtime.patch		\
-  %D%/packages/patches/fossil-test-fixes.patch			\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
@@ -575,7 +577,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-CVE-2016-2824.patch		\
   %D%/packages/patches/icecat-CVE-2016-2828.patch		\
   %D%/packages/patches/icecat-CVE-2016-2831.patch		\
-  %D%/packages/patches/icedtea-remove-overrides.patch		\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\

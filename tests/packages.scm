@@ -742,6 +742,31 @@
            (and (build-derivations %store (list drv))
                 (file-exists? (string-append out "/bin/make")))))))
 
+(test-assert "package-input-rewriting"
+  (let* ((dep     (dummy-package "chbouib"
+                    (native-inputs `(("x" ,grep)))))
+         (p0      (dummy-package "example"
+                    (inputs `(("foo" ,coreutils)
+                              ("bar" ,grep)
+                              ("baz" ,dep)))))
+         (rewrite (package-input-rewriting `((,coreutils . ,sed)
+                                             (,grep . ,findutils))
+                                           (cut string-append "r-" <>)))
+         (p1      (rewrite p0))
+         (p2      (rewrite p0)))
+    (and (not (eq? p1 p0))
+         (eq? p1 p2)                              ;memoization
+         (string=? "r-example" (package-name p1))
+         (match (package-inputs p1)
+           ((("foo" dep1) ("bar" dep2) ("baz" dep3))
+            (and (eq? dep1 sed)
+                 (eq? dep2 findutils)
+                 (string=? (package-name dep3) "r-chbouib")
+                 (eq? dep3 (rewrite dep))         ;memoization
+                 (match (package-native-inputs dep3)
+                   ((("x" dep))
+                    (eq? dep findutils)))))))))
+
 (test-eq "fold-packages" hello
   (fold-packages (lambda (p r)
                    (if (string=? (package-name p) "hello")

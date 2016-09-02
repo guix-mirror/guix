@@ -1718,9 +1718,9 @@ version: 3.3.5
 You may also specify the full name of a package to only get details about a
 specific version of it:
 @example
-$ guix package --show=python-3.3.5 | recsel -p name,version
+$ guix package --show=python@@3.4 | recsel -p name,version
 name: python
-version: 3.3.5
+version: 3.4.3
 @end example
 
 
@@ -2573,6 +2573,45 @@ and operating system, such as @code{"mips64el-linux-gnu"}
 (@pxref{Configuration Names, GNU configuration triplets,, configure, GNU
 Configure and Build System}).
 @end deffn
+
+@cindex package transformations
+@cindex input rewriting
+@cindex dependency tree rewriting
+Packages can be manipulated in arbitrary ways.  An example of a useful
+transformation is @dfn{input rewriting}, whereby the dependency tree of
+a package is rewritten by replacing specific inputs by others:
+
+@deffn {Scheme Procedure} package-input-rewriting @var{replacements} @
+           [@var{rewrite-name}]
+Return a procedure that, when passed a package, replaces its direct and
+indirect dependencies (but not its implicit inputs) according to
+@var{replacements}.  @var{replacements} is a list of package pairs; the
+first element of each pair is the package to replace, and the second one
+is the replacement.
+
+Optionally, @var{rewrite-name} is a one-argument procedure that takes
+the name of a package and returns its new name after rewrite.
+@end deffn
+
+@noindent
+Consider this example:
+
+@example
+(define libressl-instead-of-openssl
+  ;; This is a procedure to replace OPENSSL by LIBRESSL,
+  ;; recursively.
+  (package-input-rewriting `((,openssl . ,libressl))))
+
+(define git-with-libressl
+  (libressl-instead-of-openssl git))
+@end example
+
+@noindent
+Here we first define a rewriting procedure that replaces @var{openssl}
+with @var{libressl}.  Then we use it to define a @dfn{variant} of the
+@var{git} package that uses @var{libressl} instead of @var{openssl}.
+This is exactly what the @option{--with-input} command-line option does
+(@pxref{Package Transformation Options, @option{--with-input}}).
 
 @menu
 * package Reference ::          The package data type.
@@ -4362,7 +4401,8 @@ This is a recursive, deep replacement.  So in this example, both
 @code{guix} and its dependency @code{guile-json} (which also depends on
 @code{guile}) get rebuilt against @code{guile-next}.
 
-However, implicit inputs are left unchanged.
+This is implemented using the @code{package-input-rewriting} Scheme
+procedure (@pxref{Defining Packages, @code{package-input-rewriting}}).
 @end table
 
 @node Additional Build Options
@@ -7952,7 +7992,7 @@ configure networking."
 @end deffn
 
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
-  [#:name-service @var{%ntp-servers}]
+  [#:servers @var{%ntp-servers}]
 Return a service that runs the daemon from @var{ntp}, the
 @uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
 keep the system clock synchronized with that of @var{servers}.

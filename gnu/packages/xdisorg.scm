@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -938,7 +940,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -946,17 +948,17 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "1l8vl0mh7i0b1ycifqpg6392f5i4qxlv003m126skfk6fnlfq8hn"))))
+                "0xxx0xpxhrhlhi2axq9867zqrhwqavc1qrr833k1xr0pvm5m0aqc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("pango" ,pango)
+     `(("pango" ,pango)
        ("cairo" ,cairo)
        ("glib" ,glib)
        ("startup-notification" ,startup-notification)
        ("libxkbcommon" ,libxkbcommon)
        ("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
+       ("xcb-util-xrm" ,xcb-util-xrm)
        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1021,3 +1023,42 @@ The taskbar includes transparency and color settings for the font, icons,
 border, and background.  It also supports multihead setups, customized mouse
 actions, a built-in clock, a battery monitor and a system tray.")
     (license license:gpl2)))
+
+(define-public xcb-util-xrm
+  (package
+    (name "xcb-util-xrm")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Airblader/xcb-util-xrm/releases"
+                    "/download/v" version "/xcb-util-xrm-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1h5vxwpd37dqfw9yj1l4zd9c5dj30r3g0szgysr6kd7xrqgaq04l"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Drop bundled m4.
+               '(delete-file-recursively "m4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("m4" ,m4)
+       ("libx11" ,libx11))) ; for tests
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)))
+    (home-page "https://github.com/Airblader/xcb-util-xrm")
+    (synopsis "XCB utility functions for the X resource manager")
+    (description
+     "The XCB util module provides a number of libraries which sit on
+top of libxcb, the core X protocol library, and some of the extension
+libraries.  These experimental libraries provide convenience functions
+and interfaces which make the raw X protocol more usable.  Some of the
+libraries also provide client-side code which is not strictly part of
+the X protocol but which has traditionally been provided by Xlib.
+
+XCB util-xrm module provides the following libraries:
+
+- xrm: utility functions for the X resource manager.")
+    (license license:x11)))

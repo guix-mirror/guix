@@ -2977,7 +2977,7 @@ passive voice.")
               (sha256
                (base32
                 "0cr37pdkwjgfijfws5bjskfh1rq9rfngxblcj6v5383vpmn83q7s"))
-              (file-name (string-append name "-" version))))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
     (description "This Emacs package provides a folder tree view.")
@@ -3001,4 +3001,75 @@ passive voice.")
 lists, and project planning with a fast and effective plain-text system.  It
 also is an authoring system with unique support for literate programming and
 reproducible research.")
+    (license license:gpl3+)))
+
+(define-public emacs-flx
+  (package
+    (name "emacs-flx")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lewang/"
+                           "flx/archive/v" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bkcpnf1j4i2fcc2rllwbz62l00sw2mcia6rm5amgwvlkqavmkv6"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/lewang/flx")
+    (synopsis "Fuzzy matching for Emacs")
+    (description
+     "Flx provides fuzzy matching for emacs a la sublime text.
+The sorting algorithm is a balance between word beginnings (abbreviation)
+and contiguous matches (substring).  The longer the substring match,
+the higher it scores. This maps well to how we think about matching.
+Flx has support for ido (interactively do things) through flx-ido.")
+    (license license:gpl3+)))
+
+(define-public emacs-cyberpunk-theme
+  (package
+    (name "emacs-cyberpunk-theme")
+    (version "1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/n3mo/cyberpunk-theme.el/"
+                           "archive/" version ".tar.gz"))
+       (sha256
+        (base32
+         "068jcn4g1bvwgpcvyfqygzw6ahill51c1sqzyyvj2paxckbd7h51"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/n3mo/cyberpunk-theme.el")
+    (synopsis "Cyberpunk theme for emacs built-in color theme support")
+    (description
+     "Cyberpunk color theme for the emacs 24+ built-in color theme support
+known loosely as deftheme.  Many mode-specific customizations are included.")
+    (license license:gpl3+)))
+
+(define-public emacs-auto-complete
+  (package
+    (name "emacs-auto-complete")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/auto-complete/"
+                           "auto-complete/archive/v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jvq4lj00hwml75lpmlciazy8f3bbg13gffsfnl835p4qd8l7yqv"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-popup" ,emacs-popup)))
+    (home-page "https://github.com/auto-complete/auto-complete")
+    (synopsis "Intelligent auto-completion extension for Emacs")
+    (description
+     "Auto-Complete is an intelligent auto-completion extension for Emacs.
+It extends the standard Emacs completion interface and provides an environment
+that allows users to concentrate more on their own work.  Its features are:
+a visual interface, reduce overhead of completion by using statistic method,
+extensibility.")
     (license license:gpl3+)))

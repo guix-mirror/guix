@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages qt)
-  #:use-module ((guix licenses) #:select (bsd-3 gpl2 gpl3 lgpl2.1 lgpl2.1+ lgpl3 x11-style))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
@@ -206,7 +206,7 @@
     (synopsis "Cross-platform GUI library")
     (description "Qt is a cross-platform application and UI framework for
 developers using C++ or QML, a CSS & JavaScript like language.")
-    (license lgpl2.1)
+    (license license:lgpl2.1)
 
     ;; Qt 4: 'QBasicAtomicPointer' leads to build failures on MIPS;
     ;; see <http://hydra.gnu.org/build/112828>.
@@ -474,12 +474,24 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-search-paths
      (list (search-path-specification
             (variable "QMAKEPATH")
-            (files '("")))))
+            (files '("")))
+           (search-path-specification
+            (variable "QML2_IMPORT_PATH")
+            (files '("qml")))
+           (search-path-specification
+            (variable "QT_PLUGIN_PATH")
+            (files '("plugins")))
+           (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc/xdg")))))
     (home-page "https://www.qt.io/")
     (synopsis "Cross-platform GUI library")
     (description "Qt is a cross-platform application and UI framework for
 developers using C++ or QML, a CSS & JavaScript like language.")
-    (license (list lgpl2.1 lgpl3))))
+    (license (list license:lgpl2.1 license:lgpl3))))
 
 (define-public qtsvg
   (package (inherit qtbase)
@@ -908,7 +920,7 @@ is then compiled to create the bindings extension module.  The SIP Python
 module provides support functions to the automatically generated code.")
     ;; There is a choice between a python like license, gpl2 and gpl3.
     ;; For compatibility with pyqt, we need gpl3.
-    (license gpl3)))
+    (license license:gpl3)))
 
 (define-public python2-sip
   (package (inherit python-sip)
@@ -973,7 +985,7 @@ module provides support functions to the automatically generated code.")
      "PyQt is a set of Python v2 and v3 bindings for the Qt application
 framework.  The bindings are implemented as a set of Python modules and
 contain over 620 classes.")
-    (license gpl3)))
+    (license license:gpl3)))
 
 (define-public python2-pyqt
   (package (inherit python-pyqt)
@@ -1055,7 +1067,7 @@ contain over 620 classes.")
                              "--destdir" lib
                              "--sipdir" sip))))
          %standard-phases)))
-    (license (list gpl2 gpl3)))) ; choice of either license
+    (license (list license:gpl2 license:gpl3)))) ; choice of either license
 
 (define-public qtkeychain
   (package
@@ -1089,4 +1101,4 @@ contain over 620 classes.")
     (description
       "QtKeychain is a Qt library to store passwords and other secret data
 securely.  It will not store any data unencrypted unless explicitly requested.")
-    (license bsd-3)))
+    (license license:bsd-3)))

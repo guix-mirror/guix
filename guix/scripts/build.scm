@@ -193,33 +193,17 @@ of \"guile\"."
     (map (lambda (spec)
            (match (string-tokenize spec not-equal)
              ((old new)
-              (cons old (specification->package new)))
+              (cons (specification->package old)
+                    (specification->package new)))
              (_
               (leave (_ "invalid replacement specification: ~s~%") spec))))
          replacement-specs))
 
-  (define (rewrite input)
-    (match input
-      ((label (? package? package) outputs ...)
-       (match (assoc-ref replacements (package-name package))
-         (#f  (cons* label (replace package) outputs))
-         (new (cons* label new outputs))))
-      (_
-       input)))
-
-  (define replace
-    (memoize                                      ;XXX: use eq?
-     (lambda (p)
-       (package
-         (inherit p)
-         (inputs (map rewrite (package-inputs p)))
-         (native-inputs (map rewrite (package-native-inputs p)))
-         (propagated-inputs (map rewrite (package-propagated-inputs p)))))))
-
-  (lambda (store obj)
-    (if (package? obj)
-        (replace obj)
-        obj)))
+  (let ((rewrite (package-input-rewriting replacements)))
+    (lambda (store obj)
+      (if (package? obj)
+          (rewrite obj)
+          obj))))
 
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the

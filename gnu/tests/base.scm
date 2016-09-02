@@ -122,11 +122,13 @@ info --version")
                               (operating-system-user-accounts os))))))
 
           (test-assert "shepherd services"
-            (let ((services (marionette-eval '(begin
-                                                (use-modules (gnu services herd))
-                                                (call-with-values current-services
-                                                  append))
-                                             marionette)))
+            (let ((services (marionette-eval
+                             '(begin
+                                (use-modules (gnu services herd))
+
+                                (map (compose car live-service-provision)
+                                     (current-services)))
+                             marionette)))
               (lset= eq?
                      (pk 'services services)
                      '(root #$@(operating-system-shepherd-service-names os)))))

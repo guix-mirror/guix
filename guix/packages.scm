@@ -95,6 +95,7 @@
             package-transitive-propagated-inputs
             package-transitive-native-search-paths
             package-transitive-supported-systems
+            package-input-rewriting
             package-source-derivation
             package-derivation
             package-cross-derivation
@@ -734,6 +735,35 @@ dependencies are known to build on SYSTEM."
 (define (bag-transitive-target-inputs bag)
   "Return the \"target inputs\" of BAG, recursively."
   (transitive-inputs (bag-target-inputs bag)))
+
+(define* (package-input-rewriting replacements
+                                  #:optional (rewrite-name identity))
+  "Return a procedure that, when passed a package, replaces its direct and
+indirect dependencies (but not its implicit inputs) according to REPLACEMENTS.
+REPLACEMENTS is a list of package pairs; the first element of each pair is the
+package to replace, and the second one is the replacement.
+
+Optionally, REWRITE-NAME is a one-argument procedure that takes the name of a
+package and returns its new name after rewrite."
+  (define (rewrite input)
+    (match input
+      ((label (? package? package) outputs ...)
+       (match (assq-ref replacements package)
+         (#f  (cons* label (replace package) outputs))
+         (new (cons* label new outputs))))
+      (_
+       input)))
+
+  (define-memoized/v (replace p)
+    "Return a variant of P with its inputs rewritten."
+    (package
+      (inherit p)
+      (name (rewrite-name (package-name p)))
+      (inputs (map rewrite (package-inputs p)))
+      (native-inputs (map rewrite (package-native-inputs p)))
+      (propagated-inputs (map rewrite (package-propagated-inputs p)))))
+
+  replace)
 
 
 ;;;

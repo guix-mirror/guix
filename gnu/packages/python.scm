@@ -2861,6 +2861,7 @@ and is very extensible.")
        (uri (string-append
              "https://github.com/scikit-learn/scikit-learn/archive/"
              version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "140skabifgc7lvvj873pnzlwx0ni6q8qkrsyad2ccjb3h8rxzkih"))))
@@ -2893,18 +2894,11 @@ and is very extensible.")
     (description
      "Scikit-learn provides simple and efficient tools for data
 mining and data analysis.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-scikit-learn))))))
 
 (define-public python2-scikit-learn
-  (let ((scikit (package-with-python2 python-scikit-learn)))
-    (package (inherit scikit)
-      (propagated-inputs
-       `(("python2-numpy" ,python2-numpy)
-         ("python2-scipy" ,python2-scipy)
-         ,@(alist-delete
-            "python-numpy"
-            (alist-delete
-             "python-scipy" (package-propagated-inputs scikit))))))))
+  (package-with-python2 (strip-python2-variant python-scikit-learn)))
 
 (define-public python-scikit-image
   (package
@@ -2933,21 +2927,19 @@ mining and data analysis.")
     (synopsis "Image processing in Python")
     (description
      "Scikit-image is a collection of algorithms for image processing.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-scikit-image))))))
 
 (define-public python2-scikit-image
-  (let ((scikit-image (package-with-python2 python-scikit-image)))
+  (let ((scikit-image (package-with-python2
+                        (strip-python2-variant python-scikit-image))))
     (package (inherit scikit-image)
       (native-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-native-inputs scikit-image)))
       (propagated-inputs
        `(("python2-pytz" ,python2-pytz)
-         ("python2-matplotlib" ,python2-matplotlib)
-         ("python2-numpy" ,python2-numpy)
-         ("python2-scipy" ,python2-scipy)
-         ,@(fold alist-delete (package-propagated-inputs scikit-image)
-                 '("python-matplotlib" "python-numpy" "python-scipy")))))))
+         ,@(package-propagated-inputs scikit-image))))))
 
 (define-public python-redis
   (package
@@ -3319,17 +3311,11 @@ doing the same calculation in Python.  In addition, its multi-threaded
 capabilities can make use of all your cores, which may accelerate
 computations, most specially if they are not memory-bounded (e.g. those using
 transcendental functions).")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-numexpr))))))
 
 (define-public python2-numexpr
-  (let ((numexpr (package-with-python2 python-numexpr)))
-    (package (inherit numexpr)
-      ;; Make sure to use special packages for Python 2 instead
-      ;; of those automatically rewritten by package-with-python2.
-      (propagated-inputs
-       `(("python2-numpy" ,python2-numpy)
-         ,@(alist-delete "python-numpy"
-                         (package-propagated-inputs numexpr)))))))
+  (package-with-python2 (strip-python2-variant python-numexpr)))
 
 (define-public python-matplotlib
   (package
@@ -4409,29 +4395,20 @@ without using the configuration machinery.")
 Powerful interactive shells, a browser-based notebook, support for interactive
 data visualization, embeddable interpreters and tools for parallel
 computing.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-ipython))))))
 
 (define-public python2-ipython
-  (let ((ipython (package-with-python2 python-ipython)))
+  (let ((ipython (package-with-python2 (strip-python2-variant python-ipython))))
     (package
       (inherit ipython)
       ;; FIXME: some tests are failing
       (arguments
        `(#:tests? #f ,@(package-arguments ipython)))
-      ;; Make sure we use custom python2-NAME packages.
       ;; FIXME: add pyreadline once available.
-      (propagated-inputs
-       `(("python2-terminado" ,python2-terminado)
-         ,@(alist-delete "python-terminado"
-                         (package-propagated-inputs ipython))))
       (inputs
-       `(("python2-jsonschema" ,python2-jsonschema)
-         ("python2-mock" ,python2-mock)
-         ("python2-matplotlib" ,python2-matplotlib)
-         ("python2-numpy" ,python2-numpy)
-         ("python2-requests" ,python2-requests)
-         ,@(fold alist-delete (package-inputs ipython)
-                 '("python-jsonschema" "python-matplotlib" "python-numpy" "python-requests")))))))
+       `(("python2-mock" ,python2-mock)
+         ,@(package-inputs ipython))))))
 
 (define-public python-isodate
   (package

@@ -110,7 +110,7 @@ library
          ('origin
            ('method 'url-fetch)
            ('uri ('string-append
-                  "http://hackage.haskell.org/package/foo/foo-"
+                  "https://hackage.haskell.org/package/foo/foo-"
                   'version
                   ".tar.gz"))
            ('sha256

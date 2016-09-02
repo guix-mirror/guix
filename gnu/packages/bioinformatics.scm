@@ -93,7 +93,7 @@
 (define-public aragorn
   (package
     (name "aragorn")
-    (version "1.2.36")
+    (version "1.2.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -101,7 +101,7 @@
                     version ".tgz"))
               (sha256
                (base32
-                "1dg7jlz1qpqy88igjxd6ncs11ccsirb36qv1z01a0np4i4jh61mb"))))
+                "1c7zxk0h8wsjbix82fmmfyywcq6zn3q9h5y67kcl5y3qal2bv2xr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -4692,14 +4692,14 @@ sequences.")
 (define-public subread
   (package
     (name "subread")
-    (version "1.4.6-p2")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/subread/subread-"
                                   version "/subread-" version "-source.tar.gz"))
               (sha256
                (base32
-                "06sv9mpcsdj6p68y15d6gi70lca3lxmzk0dn61hg0kfsa7rxmsr3"))))
+                "0gn5zhbvllks0mmdg3qlmsbg91p2mpdc2wixwfqpi85yzfrh8hcy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target

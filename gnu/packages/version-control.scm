@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,10 +28,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages version-control)
-  #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-2 bsd-3
-                          gpl1+ gpl2 gpl2+ gpl3+ lgpl2.1
-                          public-domain x11-style))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -108,7 +106,7 @@
      "GNU Bazaar is a version control system that allows you to record
 changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public git
   (package
@@ -292,7 +290,7 @@ as well as the classic centralized workflow.")
    (description
     "Git is a free distributed version control system designed to handle
 everything from small to very large projects with speed and efficiency.")
-   (license gpl2)
+   (license license:gpl2)
    (home-page "http://git-scm.com/")))
 
 (define-public libgit2
@@ -336,7 +334,7 @@ everything from small to very large projects with speed and efficiency.")
 provided as a re-entrant linkable library with a solid API, allowing you to
 write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public cgit
   (package
@@ -397,7 +395,7 @@ write native speed custom Git applications in any language with bindings.")
     (description
      "CGit is an attempt to create a fast web interface for the Git SCM, using
 a built-in cache to decrease server I/O pressure.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public shflags
   (package
@@ -441,7 +439,7 @@ different versions of getopt on various OSes make writing portable shell
 scripts difficult.  shFlags instead provides an API that doesn't change across
 shell and OS versions so the script writer can be confident that the script
 will work.")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public git-flow
   (package
@@ -484,7 +482,7 @@ management strategy that helps developers keep track of features, hotfixes,
 and releases in bigger software projects.  The git-flow library of git
 subcommands helps automate some parts of the flow to make working with it a
 lot easier.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public git-test-sequence
   (let ((commit "48e5a2f5a13a5f30452647237e23362b459b9c76"))
@@ -519,7 +517,7 @@ lot easier.")
        "git-test-sequence is similar to an automated git bisect except it’s
 linear.  It will test every change between two points in the DAG.  It will
 also walk each side of a merge and test those changes individually.")
-      (license (x11-style "file://LICENSE")))))
+      (license (license:x11-style "file://LICENSE")))))
 
 (define-public gitolite
   (package
@@ -575,7 +573,7 @@ also walk each side of a merge and test those changes individually.")
     (description
      "Gitolite is an access control layer on top of Git, providing fine access
 control to Git repositories.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public mercurial
   (package
@@ -602,7 +600,7 @@ control to Git repositories.")
      "Mercurial is a free, distributed source control management tool.
 It efficiently handles projects of any size
 and offers an easy and intuitive interface.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public neon
   (package
@@ -650,7 +648,7 @@ abstract interface to parsing XML using libxml2 or expat, and wrappers for
 simplifying handling XML HTTP response bodies;
 WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
 property manipulation.")
-    (license gpl2+))) ; for documentation and tests; source under lgpl2.0+
+    (license license:gpl2+))) ; for documentation and tests; source under lgpl2.0+
 
 (define-public subversion
   (package
@@ -717,7 +715,7 @@ centralized version control system characterized by its
 reliability as a safe haven for valuable data; the simplicity of its model and
 usage; and its ability to support the needs of a wide variety of users and
 projects, from individuals to large-scale enterprise operations.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public rcs
   (package
@@ -740,7 +738,7 @@ file-by-file basis, in contrast to subsequent version control systems such as
 CVS, Subversion, and Git.  This can make it suitable for system
 administration files, for example, which are often inherently local to one
 machine.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public cvs
   (package
@@ -768,7 +766,7 @@ machine.")
 Configuration Management (SCM).  Using it, you can record the history of
 sources files, and documents.  It fills a similar role to the free software
 RCS, PRCS, and Aegis packages.")
-    (license gpl1+)))
+    (license license:gpl1+)))
 
 (define-public cvs-fast-export
   (package
@@ -807,7 +805,7 @@ The program can also produce a visualization of the resulting commit directed
 acyclic graph (DAG) in the input format of @uref{http://www.graphviz.org,
 Graphviz}.  The package also includes @command{cvssync}, a tool for mirroring
 masters from remote CVS hosts.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public vc-dwim
   (package
@@ -833,7 +831,7 @@ using version control at the same time, for example by printing a reminder
 when a file change has been described in the ChangeLog but the file has not
 been added to the VC.  vc-chlog scans changed files and generates
 standards-compliant ChangeLog entries based on the changes that it detects.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public diffstat
   (package
@@ -854,7 +852,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
      "Diffstat reads the output of 'diff' and displays a histogram of the
 insertions, deletions, and modifications per-file.  It is useful for reviewing
 large, complex patch files.")
-    (license (x11-style "file://COPYING"))))
+    (license (license:x11-style "file://COPYING"))))
 
 (define-public cssc
   (package
@@ -896,7 +894,7 @@ large, complex patch files.")
     (description  "GNU CSSC provides a replacement for the legacy Unix source
 code control system SCCS.  This allows old code still under that system to be
 accessed and migrated on modern systems.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 ;; This package can unfortunately work only in -TEST mode, since Aegis
 ;; requires that it is installed setuid root.
@@ -980,7 +978,7 @@ changes to a program independently, and Aegis coordinates integrating these
 changes back into the master source of the program, with as little disruption
 as possible.  Resolution of contention for source files, a major headache for
 any project with more than one developer, is one of Aegis's major functions.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public reposurgeon
   (package
@@ -1032,7 +1030,7 @@ and can thus be used to script production of very high-quality conversions
 from Subversion to any supported Distributed Version Control System (DVCS).")
     ;; Most files are distributed under bsd-2, except 'repocutter' which is
     ;; under bsd-3.
-    (license (list bsd-2 bsd-3))))
+    (license (list license:bsd-2 license:bsd-3))))
 
 (define-public tig
   (package
@@ -1058,7 +1056,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
      "Tig is an ncurses text user interface for Git, primarily intended as
 a history browser.  It can also stage hunks for commit, or colorize the
 output of the 'git' command.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public findnewest
   (package
@@ -1085,7 +1083,7 @@ output of the 'git' command.")
     (description
      "Recursively find the newest file in a file tree and print its
 modification time.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public myrepos
   (package
@@ -1114,7 +1112,7 @@ modification time.")
 fetching updates) over a collection of version control repositories.  It
 supports a large number of version control systems: Git, Subversion,
 Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public git-annex-remote-hubic
   (package
@@ -1145,42 +1143,21 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (description
      "This package allows you to use your hubic account as a \"special
 repository\" with git-annex.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public fossil
   (package
     (name "fossil")
-    (version "1.34")
+    (version "1.35")
     (source
      (origin
        (method url-fetch)
-       ;; Upstream source affected by
-       ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=20962
        (uri (string-append
-             "https://web.archive.org/web/20160402202958/"
-             "https://www.fossil-scm.org/download/fossil-src-"
-             version ".tar.gz"))
+             "https://www.fossil-scm.org/index.html/uv/download/"
+             "fossil-src-" version ".tar.gz"))
        (sha256
         (base32
-         "17x4vgjcfihwmq195qg32irp50panvjqfpvhqydfvv4ghwzbi9jk"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Commit 0a2ebe57 on 2015-08-03 18:35:53 changed output formatting
-           ;; for some commands, but affected tests were not updated.  Use
-           ;; substitute here, which is more concise than patching.
-           (substitute* "test/clean.test"
-             (("NEW ") "NEW    "))
-           (substitute* '("test/revert.test" "test/mv-rm.test")
-             (("REVERTED:") "REVERT  ")
-             (("DELETE:")   "DELETE  ")
-             (("UNMANAGE:") "UNMANAGE "))
-           ;; Fix use of __DATE__ and __TIME__
-           (substitute* "src/main.c"
-             (("Compiled on %s %s") "Compiled")
-             (("__DATE__, __TIME__, ") ""))
-           #t))
-       (patches (list (search-patch "fossil-test-fixes.patch")))))
+         "07ds6rhq69bhydpm9a01mgdhxf88p9b6y5hdnhn8gjc7ba92zyf1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
@@ -1219,5 +1196,32 @@ repository\" with git-annex.")
      "Fossil is a distributed source control management system which supports
 access and administration over HTTP CGI or via a built-in HTTP server.  It has
 a built-in wiki, built-in file browsing, built-in tickets system, etc.")
-    (license (list public-domain        ;src/miniz.c, src/shell.c
-                   bsd-2))))
+    (license (list license:public-domain        ;src/miniz.c, src/shell.c
+                   license:bsd-2))))
+
+(define-public stagit
+  (package
+    (name "stagit")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.2f30.org/releases/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0z5r06wqrfnsz24ci4hjqbd62svclvhkgzaq9npsyjcp6jnf7izc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (inputs
+     `(("libgit2" ,libgit2)))
+    (home-page "http://2f30.org")
+    (synopsis "Static git page generator")
+    (description "Stagit creates static pages for git repositories, the results can
+be served with a HTTP file server of your choice.")
+    (license license:expat)))

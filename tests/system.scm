@@ -59,7 +59,7 @@
                         %base-file-systems))
     (users %base-user-accounts)))
 
-
+
 (test-begin "system")
 
 (test-assert "operating-system-store-file-system"

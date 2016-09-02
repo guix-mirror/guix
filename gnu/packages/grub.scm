@@ -129,7 +129,7 @@
        ("parted" ,parted)
        ("qemu" ,qemu-for-tests)
        ("xorriso" ,xorriso)))
-    (home-page "http://www.gnu.org/software/grub/")
+    (home-page "https://www.gnu.org/software/grub/")
     (synopsis "GRand Unified Boot loader")
     (description
      "GRUB is a multiboot bootloader.  It is used for initially loading the

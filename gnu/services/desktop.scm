@@ -27,6 +27,8 @@
   #:use-module (gnu services avahi)
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
+  #:use-module ((gnu system file-systems)
+                #:select (%elogind-file-systems))
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages glib)
@@ -760,7 +762,11 @@ seats.)"
 
                        ;; Extend PAM with pam_elogind.so.
                        (service-extension pam-root-service-type
-                                          pam-extension-procedure)))))
+                                          pam-extension-procedure)
+
+                       ;; We need /run/user, /run/systemd, etc.
+                       (service-extension file-system-service-type
+                                          (const %elogind-file-systems))))))
 
 (define* (elogind-service #:key (config (elogind-configuration)))
   "Return a service that runs the @command{elogind} login and seat management
@@ -823,7 +829,7 @@ and extends polkit with the actions from @code{gnome-settings-daemon}."
 
 (define* (xfce-desktop-service #:key (config (xfce-desktop-configuration)))
   "Return a service that adds the @code{xfce} package to the system profile,
-and extends polkit with the abilit for @code{thunar} to manipulate the file
+and extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
 with the administrator's password."
   (service xfce-desktop-service-type config))

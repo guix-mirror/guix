@@ -26,14 +26,14 @@
 (define-public entr
   (package
     (name "entr")
-    (version "3.5")
+    (version "3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://entrproject.org/code/entr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "05k4jyjna0pr2dalwc1l1dhrcyk6pw7hbss7jl4ykwfadcs5br73"))))
+                "1sy81np6kgmq04kfn2ckf4fp7jcf5d1963shgmapx3al3kc4c9x4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

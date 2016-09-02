@@ -306,7 +306,7 @@ kinds of basic applications for the foundation of a GNU internet.")
        "This package provides Guile bindings to the client libraries of various
 GNUnet services, including the @dfn{identity} and @dfn{file sharing}
 services.")
-      (home-page "http://gnu.org/software/guix")
+      (home-page "https://gnu.org/software/guix")
       (license license:gpl3+))))
 
 ;; FIXME: "gnunet-setup" segfaults under certain conditions and "gnunet-gtk"
