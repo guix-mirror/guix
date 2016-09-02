@@ -291,17 +291,22 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs target #:allow-other-keys)
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
 
+             ;; Set ARCH and CROSS_COMPILE
              (let ((arch ,(system->linux-architecture
                            (or (%current-target-system)
                                (%current-system)))))
-               (setenv "ARCH" arch))
+               (setenv "ARCH" arch)
+               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
-             (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
+               (when target
+                 (setenv "CROSS_COMPILE" (string-append target "-"))
+                 (format #t "`CROSS_COMPILE' set to `~a'~%"
+                         (getenv "CROSS_COMPILE"))))
 
              (let ((build  (assoc-ref %standard-phases 'build))
                    (config (assoc-ref inputs "kconfig")))
@@ -334,10 +339,10 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
 
                (zero? (system* "make" "oldconfig")))))
          (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (moddir (string-append out "/lib/modules"))
-                    (mit    (assoc-ref inputs "module-init-tools")))
+                    (mit    (assoc-ref (or native-inputs inputs) "module-init-tools")))
                (mkdir-p moddir)
                (for-each (lambda (file)
                            (copy-file file
