@@ -174,8 +174,8 @@
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://kernel.org/linux/utils/kernel/module-init-tools/module-init-tools-"
-                   version ".tar.bz2"))
+                   "mirror://kernel.org/linux/utils/kernel/module-init-tools/"
+                   "module-init-tools-" version ".tar.bz2"))
              (sha256
               (base32
                "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
