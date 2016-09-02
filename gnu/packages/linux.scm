@@ -84,7 +84,7 @@
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
-\"x86_64-linux\"."
+\"x86_64-linux\" or a target triplet such as \"arm-linux-gnueabihf\"."
   (let ((arch (car (string-split arch #\-))))
     (cond ((string=? arch "i686") "i386")
           ((string-prefix? "mips" arch) "mips")
@@ -292,7 +292,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'build
-           (lambda* (#:key system inputs #:allow-other-keys #:rest args)
+           (lambda* (#:key inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
@@ -301,12 +301,12 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (system* "patch" "-p1" "--force"
                       "-i" (assoc-ref inputs "patch/freedo+gnu"))
 
-             (let ((arch (car (string-split system #\-))))
-               (setenv "ARCH"
-                       (cond ((string=? arch "i686") "i386")
-                             ((string=? arch "mips64el") "mips")
-                             (else arch)))
-               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
+             (let ((arch ,(system->linux-architecture
+                           (or (%current-target-system)
+                               (%current-system)))))
+               (setenv "ARCH" arch))
+
+             (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
              (let ((build  (assoc-ref %standard-phases 'build))
                    (config (assoc-ref inputs "kconfig")))
