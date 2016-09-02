@@ -204,40 +204,6 @@ output file formats and printers.")
               ("libxt" ,libxt)
               ,@(package-inputs ghostscript)))))
 
-(define (ghostscript-wrapper name ghostscript)
-  ;; Return a GHOSTSCRIPT wrapper that provides the 'gs' command.
-  ;; See <https://lists.gnu.org/archive/html/guix-devel/2016-07/msg00987.html>.
-  (package
-    (name name)
-    (version (package-version ghostscript))
-    (source #f)
-    (build-system trivial-build-system)
-    (inputs `(("ghostscript" ,ghostscript)))
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (gs  (assoc-ref %build-inputs "ghostscript")))
-                     (mkdir-p bin)
-                     (with-directory-excursion bin
-                       (symlink (string-append gs "/bin/gsc") "gs")
-                       #t)))))
-    (synopsis "Wrapper providing Ghostscript's 'gs' command")
-    (description
-     "This package provides the @command{gs} command, which used to be
-provided by Ghostscript itself and no longer is.")
-    (license (package-license ghostscript))
-    (home-page (package-home-page ghostscript))))
-
-(define-public ghostscript-gs
-  (ghostscript-wrapper "ghostscript-gs" ghostscript))
-
-(define-public ghostscript-gs/x
-  (ghostscript-wrapper "ghostscript-gs-with-x" ghostscript/x))
-
 (define-public ijs
   (package
    (name "ijs")
