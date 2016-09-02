@@ -4835,6 +4835,32 @@ data in the form of VCF files.")
     ;; at https://vcftools.github.io/license.html
     (license license:lgpl3)))
 
+(define-public infernal
+  (package
+    (name "infernal")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://eddylab.org/software/infernal/"
+                                  "infernal-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sr2hiz3qxfwqpz3whxr6n82p3x27336v3f34iqznp10hks2935c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl))) ; for tests
+    (home-page "http://eddylab.org/infernal/")
+    (synopsis "Inference of RNA alignments")
+    (description "Infernal (\"INFERence of RNA ALignment\") is a tool for
+searching DNA sequence databases for RNA structure and sequence similarities.
+It is an implementation of a special case of profile stochastic context-free
+grammars called @dfn{covariance models} (CMs).  A CM is like a sequence
+profile, but it scores a combination of sequence consensus and RNA secondary
+structure consensus, so in many cases, it is more capable of identifying RNA
+homologs that conserve their secondary structure more than their primary
+sequence.")
+    (license license:bsd-3)))
+
 (define-public r-vegan
   (package
     (name "r-vegan")
