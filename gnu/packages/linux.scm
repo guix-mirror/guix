@@ -590,6 +590,15 @@ block devices, UUIDs, TTYs, and many other tools.")
                   (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'disable-strtod-test
+           (lambda _
+             ;; Disable the 'strtod' test, which fails on 32-bit systems.
+             ;; This is what upstream does:
+             ;; <https://gitlab.com/procps-ng/procps/commit/100afbc1491be388f1429021ff65d969f4b1e08f>.
+             (substitute* "Makefile"
+               (("^(TESTS|check_PROGRAMS) = .*$" all)
+                (string-append "# " all "\n")))
+             #t))
          (add-after
           'install 'post-install
           ;; Remove commands and man pages redudant with
