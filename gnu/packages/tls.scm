@@ -323,6 +323,41 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
+(define-public openssl-next
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (version "1.1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                       name "-" version ".tar.gz")
+                        (string-append "ftp://ftp.openssl.org/source/old/"
+                                       (string-trim-right version char-set:letter)
+                                       "/" name "-" version ".tar.gz")))
+              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
+              (sha256
+               (base32
+                "10lcpmnxap9nw8ymdglys93cgkwd1lf1rz4fhq5whwhlmkwrzipm"))))
+    (outputs '("out"
+               "doc"        ;1.3MiB of man3 pages
+               "static"))   ; 5.5MiB of .a files
+    (arguments
+     (substitute-keyword-arguments (package-arguments openssl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'patch-tests)          ; These two phases are not needed by
+           (delete 'patch-Makefile.org)   ; OpenSSL 1.1.0.
+
+           (add-after 'configure 'patch-runpath
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+                 (substitute* "Makefile.shared"
+                   (("\\$\\$\\{SHAREDCMD\\} \\$\\$\\{SHAREDFLAGS\\}")
+                    (string-append "$${SHAREDCMD} $${SHAREDFLAGS}"
+                                   " -Wl,-rpath," lib)))
+                 #t)))))))))
+
 (define-public libressl
   (package
     (name "libressl")
