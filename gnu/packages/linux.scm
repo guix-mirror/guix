@@ -258,9 +258,41 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.7.3")
-         (build-phase
-          '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
+  (package
+    (name "linux-libre")
+    (version "4.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (linux-libre-urls version))
+              (sha256
+               (base32
+                "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6"))))
+    (build-system gnu-build-system)
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (native-inputs
+     `(("perl" ,perl)
+       ("bc" ,bc)
+       ("openssl" ,openssl)
+       ("module-init-tools" ,module-init-tools)
+       ("patch/freedo+gnu" ,%boot-logo-patch)
+
+       ,@(let ((conf (kernel-config
+                      (or (%current-target-system)
+                          (%current-system))
+                      #:variant (version-major+minor version))))
+           (if conf
+               `(("kconfig" ,conf))
+               '()))))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (ice-9 match))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
@@ -310,8 +342,8 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
                ;; Call the default `build' phase so `-j' is correctly
                ;; passed.
                (apply build #:make-flags "all" args))))
-         (install-phase
-          `(lambda* (#:key inputs outputs #:allow-other-keys)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (moddir (string-append out "/lib/modules"))
                     (mit    (assoc-ref inputs "module-init-tools")))
@@ -328,47 +360,13 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
                                (string-append "INSTALL_MOD_PATH=" out)
                                "INSTALL_MOD_STRIP=1"
                                "modules_install"))))))
-   (package
-    (name "linux-libre")
-    (version version)
-    (source (origin
-             (method url-fetch)
-             (uri (linux-libre-urls version))
-             (sha256
-              (base32
-               "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6"))))
-    (build-system gnu-build-system)
-    (supported-systems '("x86_64-linux" "i686-linux"))
-    (native-inputs `(("perl" ,perl)
-                     ("bc" ,bc)
-                     ("openssl" ,openssl)
-                     ("module-init-tools" ,module-init-tools)
-                     ("patch/freedo+gnu" ,%boot-logo-patch)
-
-                     ,@(let ((conf (kernel-config
-                                    (or (%current-target-system)
-                                        (%current-system))
-                                    #:variant (version-major+minor version))))
-                         (if conf
-                             `(("kconfig" ,conf))
-                             '()))))
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1)
-                  (ice-9 match))
-       #:phases (alist-replace
-                 'build ,build-phase
-                 (alist-replace
-                  'install ,install-phase
-                  (alist-delete 'configure %standard-phases)))
        #:tests? #f))
+    (home-page "http://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description
      "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.
 It has been modified to remove all non-free binary blobs.")
-    (license license:gpl2)
-    (home-page "http://www.gnu.org/software/linux-libre/"))))
+    (license license:gpl2)))
 
 (define-public linux-libre-4.4
   (package
