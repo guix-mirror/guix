@@ -109,17 +109,36 @@
          version "-gnu.tar.xz")))
 
 (define-public linux-libre-headers
-  (let* ((version "4.4.18")
-         (build-phase
-          (lambda (arch)
-            `(lambda _
-               (setenv "ARCH" ,(system->linux-architecture arch))
+  (package
+    (name "linux-libre-headers")
+    (version "4.4.18")
+    (source (origin
+             (method url-fetch)
+             (uri (linux-libre-urls version))
+             (sha256
+              (base32
+               "0k8k17in7dkjd9d8zg3i8l1ax466dba6bxw28flxizzyq8znljps"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (let ((arch ,(system->linux-architecture
+                          (or (%current-target-system)
+                              (%current-system)))))
+               (setenv "ARCH" arch)
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
                (and (zero? (system* "make" "defconfig"))
                     (zero? (system* "make" "mrproper" "headers_check"))))))
-         (install-phase
-          `(lambda* (#:key outputs #:allow-other-keys)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (and (zero? (system* "make"
                                     (string-append "INSTALL_HDR_PATH=" out)
@@ -139,33 +158,12 @@
                       (for-each delete-file (find-files out "\\.install"))
 
                       #t))))))
-   (package
-    (name "linux-libre-headers")
-    (version version)
-    (source (origin
-             (method url-fetch)
-             (uri (linux-libre-urls version))
-             (sha256
-              (base32
-               "0k8k17in7dkjd9d8zg3i8l1ax466dba6bxw28flxizzyq8znljps"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
-       #:phases (alist-replace
-                 'build ,(build-phase (or (%current-target-system)
-                                          (%current-system)))
-                 (alist-replace
-                  'install ,install-phase
-                  (alist-delete 'configure %standard-phases)))
        #:allowed-references ()
        #:tests? #f))
+    (home-page "http://www.gnu.org/software/linux-libre")
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
-    (license license:gpl2)
-    (home-page "http://www.gnu.org/software/linux-libre/"))))
+    (license license:gpl2)))
 
 (define-public module-init-tools
   (package
