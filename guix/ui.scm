@@ -1187,7 +1187,9 @@ found."
   (let ((command-main (module-ref module
                                   (symbol-append 'guix- command))))
     (parameterize ((program-name command))
-      (apply command-main args))))
+      ;; Disable canonicalization so we don't don't stat unreasonably.
+      (with-fluids ((%file-port-name-canonicalization #f))
+        (apply command-main args)))))
 
 (define (run-guix . args)
   "Run the 'guix' command defined by command line ARGS.
