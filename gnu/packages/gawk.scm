@@ -40,40 +40,38 @@
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel
 
-      #:phases (alist-cons-before
-                'configure 'set-shell-file-name
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Refer to the right shell.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* "io.c"
-                      (("/bin/sh")
-                       (string-append bash "/bin/bash")))
+      #:phases (modify-phases %standard-phases
+                 (add-before 'configure 'set-shell-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Refer to the right shell.
+                     (let ((bash (assoc-ref inputs "bash")))
+                       (substitute* "io.c"
+                         (("/bin/sh")
+                          (string-append bash "/bin/bash")))
 
-                    ;; When cross-compiling, remove dependencies on the
-                    ;; `check-for-shared-lib-support' target, which tries to
-                    ;; run the cross-built `gawk'.
-                    ,@(if (%current-target-system)
-                          '((substitute* "extension/Makefile.in"
-                              (("^.*: check-for-shared-lib-support" match)
-                               (string-append "### " match))))
-                          '())))
+                       ;; When cross-compiling, remove dependencies on the
+                       ;; `check-for-shared-lib-support' target, which tries
+                       ;; to run the cross-built `gawk'.
+                       ,@(if (%current-target-system)
+                             '((substitute* "extension/Makefile.in"
+                                 (("^.*: check-for-shared-lib-support" match)
+                                  (string-append "### " match))))
+                             '()))))
 
-                (alist-cons-before
-                 'check 'adjust-test-infrastructure
-                 (lambda _
-                   ;; Remove dependency on 'more' (from util-linux), which
-                   ;; would needlessly complicate bootstrapping.
-                   (substitute* "test/Makefile"
-                     (("\\| more") ""))
+                 (add-before 'check 'adjust-test-infrastructure
+                   (lambda _
+                     ;; Remove dependency on 'more' (from util-linux), which
+                     ;; would needlessly complicate bootstrapping.
+                     (substitute* "test/Makefile"
+                       (("\\| more") ""))
 
-                   ;; Adjust the shebang in that file since it is then diff'd
-                   ;; against the actual test output.
-                   (substitute* "test/watchpoint1.ok"
-                     (("#! /usr/bin/gawk")
-                      (string-append "#!" (which "gawk"))))
-                   #t)
+                     ;; Adjust the shebang in that file since it is then diff'd
+                     ;; against the actual test output.
+                     (substitute* "test/watchpoint1.ok"
+                       (("#! /usr/bin/gawk")
+                        (string-append "#!" (which "gawk"))))
+                     #t)))))
 
-                 %standard-phases))))
    (inputs `(("libsigsegv" ,libsigsegv)
 
              ,@(if (%current-target-system)
