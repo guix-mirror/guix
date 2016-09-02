@@ -147,6 +147,37 @@ maximum quality factor.")
    (license license:gpl2+)
    (home-page "http://www.kokkonen.net/tjko/projects.html#jpegoptim")))
 
+(define-public libicns
+  (package
+    (name "libicns")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/icns/"
+                    "libicns-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hjm8lwap7bjyyxsyi94fh5817xzqhk4kb5y0b7mb6675xw10prk"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("jasper" ,jasper)))
+    (arguments
+     `(#:tests? #t)) ; No tests.
+    (home-page "http://icns.sourceforge.net/")
+    (synopsis "Library for handling Mac OS icns resource files")
+    (description
+     "Libicns is a library for the manipulation of Mac OS IconFamily resource
+type files (ICNS).  @command{icns2png} and @command{png2icns} are provided to
+convert between PNG and ICNS. @command{icns2png} will extract image files from
+ICNS files under names like \"Foo_48x48x32.png\" useful for installing for use
+with .desktop files.  Additionally, @command{icontainer2png} is provided for
+extracting icontainer icon files.")
+    (license (list license:lgpl2.1+     ; libicns
+                   license:lgpl2.0+     ; src/apidocs.*
+                   license:gpl2+))))    ; icns2png, png2icns, icontainer2png
+
 (define-public libtiff
   (package
    (name "libtiff")
