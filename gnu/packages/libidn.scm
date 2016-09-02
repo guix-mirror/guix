@@ -27,6 +27,7 @@
 (define-public libidn
   (package
    (name "libidn")
+   (replacement libidn-1.33)
    (version "1.32")
    (source (origin
             (method url-fetch)
@@ -45,3 +46,16 @@ names.  It includes native C, C# and Java libraries.")
    ;; the command line tool is gpl3+.
    (license (list gpl2+ gpl3+ lgpl3+ fdl1.3+))
    (home-page "http://www.gnu.org/software/libidn/")))
+
+(define libidn-1.33
+  (package
+    (inherit libidn)
+    (source
+      (let ((version "1.33"))
+        (origin
+          (method url-fetch)
+          (uri (string-append "mirror://gnu/libidn/libidn-" version
+                              ".tar.gz"))
+          (sha256
+           (base32
+            "068fjg2arlppjqqpzd714n1lf6gxkpac9v5yyvp1qwmv6nvam9s4")))))))
