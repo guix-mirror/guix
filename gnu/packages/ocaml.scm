@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -573,7 +574,6 @@ libpanel, librsvg and quartz.")
     (native-inputs
      `(("ocaml" ,ocaml)
        ;; For documentation
-       ("ghostscript-gs" ,ghostscript-gs)
        ("ghostscript" ,ghostscript)
        ("texlive" ,texlive)
        ("hevea" ,hevea)
