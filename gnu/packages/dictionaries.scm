@@ -26,7 +26,9 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages tcl))
+
 
 (define-public vera
   (package
@@ -138,3 +140,63 @@ body of text.  Style instead analyzes surface aspects of a written
 work, such as sentence length and other readability measures.")
     (home-page "https://www.gnu.org/software/diction/")
     (license gpl3+)))
+
+(define-public ding
+  (package
+    (name "ding")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.tu-chemnitz.de/pub/Local/urz/" name
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00z97ndwmzsgig9q6y98y8nbxy76pyi9qyj5qfpbbck24gakpz5l"))))
+    (build-system gnu-build-system)
+    (inputs `(("tk" ,tk)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (delete 'check)
+         (replace
+             'install
+           (lambda _
+             (let ((bindir (string-append
+                            (assoc-ref %outputs "out") "/bin"))
+                   (wish (string-append
+                          (assoc-ref %build-inputs "tk")
+                          "/bin/wish8.6"))
+                   (sharedir (string-append
+                              (assoc-ref %outputs "out")
+                              "/share/applications"))
+                   (libdir (string-append
+                            (assoc-ref %outputs "out") "/lib")))
+               (mkdir-p bindir)
+               (mkdir-p libdir)
+               (mkdir-p sharedir)
+
+               (substitute* "ding.desktop"
+                 (("Exec=/usr/bin/ding")
+                  (string-append "Exec=" bindir "/ding")))
+               (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                 (substitute* "ding" (("exec wish") (string-append "exec " wish))))
+               (substitute* "install.sh"
+                 (("/bin/cp") "cp")
+                 (("/bin/mv") "mv")
+                 (("NEEDPROG=\"wish\"")
+                  (string-append "NEEDPROG=\"" wish "\""))
+                 (("DEFBINDIR=\"/usr/local/bin\"")
+                  (string-append "DEFBINDIR=\"" bindir "\""))
+                 (("DEFLIBDIR=\"/usr/local/lib\"")
+                  (string-append "DEFLIBDIR=\"" libdir "\"")))
+               (install-file "ding.desktop" sharedir)
+               (install-file "ding.png" sharedir)
+               (zero?
+                (system* "./install.sh"))))))))
+    (synopsis "Dictionary lookup program with a German-English dictionary")
+    (description "Ding is a dictionary lookup program for the X window system.
+It comes with a German-English dictionary with approximately 270,000 entries.")
+    (home-page  "http://www-user.tu-chemnitz.de/~fri/ding/")
+    (license gpl2+)))
