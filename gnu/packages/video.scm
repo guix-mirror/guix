@@ -790,7 +790,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.19.0")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -798,7 +798,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1qk7blpg64v47qfnvpgnbf413v5gzn900wmlivs727fd88cq3x9x"))
+                "0mibhjg5skcwcfpg6dx7yi2gj14xawnq2jzmcfwq9knmvv9cjvpy"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
