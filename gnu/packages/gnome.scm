@@ -3711,7 +3711,7 @@ to format Docbook and Mallard documents.")
 (define-public yelp
   (package
     (name "yelp")
-    (version "3.21.3")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3719,7 +3719,7 @@ to format Docbook and Mallard documents.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1x8la7qn0l796p4nhprvkwb6sk6yc39xhq3gabvzrhdlb6mjgmrs"))))
+                "1hh8yqbv0scn9nksk9mq94cb4sdczlzxplclv2wqr41jmm8v186x"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
