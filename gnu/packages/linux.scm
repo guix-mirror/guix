@@ -212,6 +212,11 @@
               (base32
                "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list
+                          (string-append "--with-pluginpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/libnfsidmap"))))
     (home-page
      "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
     (synopsis
