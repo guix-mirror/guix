@@ -25,6 +25,7 @@ Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016 Efraim Flashner@*
+Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0
 
 Permission is granted to copy, distribute and/or modify this document
@@ -10092,6 +10093,31 @@ directories are created when the service is activated.
 
 @node Various Services
 @subsubsection Various Services
+
+
+@subsubheading RPC Bind Service
+@cindex rpcbind
+
+The @code{(gnu services nfs)} module provides the following:
+
+@defvr {Scheme Variable} rpcbind-service-type
+A service type  for the RPC portmapper daemon.
+@end defvr
+
+
+@deftp {Data Type} rpcbind-configuration
+Data type representing the configuration of the RPC Bind Service.
+This type has the following parameters:
+@table @asis
+@item @code{rpcbind} (default: @code{rpcbind})
+The rpcbind package to use.
+
+@item @code{warm-start?} (default: @code{#t})
+If this parameter is @code{#t}, then the daemon will read a
+state file on startup thus reloading state information saved by a previous
+instance.
+@end table
+@end deftp
 
 @cindex lirc
 @subsubheading Lirc Service
