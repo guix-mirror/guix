@@ -32,7 +32,7 @@
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -40,9 +40,7 @@
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "155v52palf5fwfcnq696s41whjk0a5dqx98b7maqzdn7xbc2m6bp"))
-              (patches
-                (search-patches "dtc-add-missing-symbols-to-lds.patch"))))
+                "1b7si8niyca4wxbfah3qw4p4wli81mc1qwfhaswvrfqahklnwi8k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
