@@ -149,6 +149,19 @@ affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "http://cairographics.org/")))
 
+(define-public cairo-xcb
+  (package
+    (inherit cairo)
+    (name "cairo-xcb")
+    (inputs
+     `(("mesa" ,mesa)
+       ,@(package-inputs cairo)))
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       '("--enable-xlib-xcb" "--enable-gl" "--enable-egl")))
+    (synopsis "2D graphics library (with X11 support)")))
+
 (define-public harfbuzz
   (package
    (name "harfbuzz")
