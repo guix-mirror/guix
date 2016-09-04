@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,14 +78,16 @@
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
-                           non-copyleft (expat . license:expat) bsd-3))
+                           non-copyleft (expat . license:expat) bsd-3
+                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial))
 
 (define-public mailutils
   (package
@@ -1308,3 +1311,48 @@ Khard can also be used from within the email client @command{mutt}.")
   (description "Mail::SPF is the Sender Policy Framework implemented
 in Perl.")
   (license bsd-3)))
+
+(define-public mb2md
+  (package
+    (name "mb2md")
+    (version "3.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://batleth.sapienti-sat.org/projects/mb2md/mb2md-"
+                    version ".pl.gz"))
+              (sha256
+               (base32
+                "0bvkky3c90738h3skd2f1b2yy5xzhl25cbh9w2dy97rs86ssjidg"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (perl (assoc-ref %build-inputs "perl"))
+                (gzip (assoc-ref %build-inputs "gzip"))
+                (perl-timedate (assoc-ref %build-inputs "perl-timedate"))
+                (perl5lib (string-append perl-timedate "/lib/perl5/site_perl")))
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (copy-file source "mb2md.gz")
+             (system* (string-append gzip "/bin/gzip") "-d" "mb2md.gz")
+             (substitute* "mb2md"
+               (("#!/usr/bin/perl")
+                (string-append "#!/usr/bin/perl -I " perl5lib)))
+             (patch-shebang "mb2md" (list (string-append perl "/bin")))
+             (chmod "mb2md" #o555))
+           #t))))
+    (native-inputs `(("gzip", gzip)))
+    (inputs `(("perl" ,perl)
+              ("perl-timedate" ,perl-timedate)))
+    (home-page "http://batleth.sapienti-sat.org/projects/mb2md/")
+    (synopsis "Mbox to maildir converter")
+    (description
+     "Mb2md is a Perl script that takes one or more mbox format files and
+converts them to maildir format directories.")
+    (license public-domain)))
