@@ -4859,6 +4859,8 @@ profile, but it scores a combination of sequence consensus and RNA secondary
 structure consensus, so in many cases, it is more capable of identifying RNA
 homologs that conserve their secondary structure more than their primary
 sequence.")
+    ;; Infernal 1.1.2 requires VMX or SSE capability for parallel instructions.
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
 (define-public r-vegan
