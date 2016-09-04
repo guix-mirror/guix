@@ -1352,7 +1352,7 @@ regeneration entirely.")
    "SSL crypto device to use, for valid values run \"openssl engine\".")
 
   (postmaster-address
-   (string "")
+   (string "postmaster@%d")
    "Address to use when sending rejection mails.
 Default is postmaster@@<your domain>.  %d expands to recipient domain.")
 

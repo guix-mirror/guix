@@ -9964,8 +9964,8 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string postmaster-address
 Address to use when sending rejection mails.
-Default is postmaster@@<your domain>.  %d expands to recipient domain.
-Defaults to @samp{""}.
+%d expands to recipient domain.
+Defaults to @samp{"postmaster@@%d"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string hostname
