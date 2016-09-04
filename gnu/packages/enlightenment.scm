@@ -262,7 +262,7 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -271,7 +271,7 @@ contents and more.")
                 version ".tar.xz"))
               (sha256
                (base32
-                "07mfh0k83nrm557x72qafxawxizilqgkr6sngbia3ikprc8556zy"))))
+                "06kbgcnbhl9clhdl7k983m4d0n6ggsl4qvizzi1nrp8c7np87fix"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
