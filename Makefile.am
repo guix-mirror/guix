@@ -41,6 +41,7 @@ MODULES =					\
   guix/combinators.scm				\
   guix/utils.scm				\
   guix/sets.scm					\
+  guix/modules.scm				\
   guix/download.scm				\
   guix/git-download.scm				\
   guix/hg-download.scm				\
@@ -222,6 +223,7 @@ SCM_TESTS =					\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
   tests/sets.scm				\
+  tests/modules.scm				\
   tests/gnu-maintenance.scm			\
   tests/substitute.scm				\
   tests/builders.scm				\

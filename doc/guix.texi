@@ -3825,6 +3825,28 @@ In this example, the @code{(guix build utils)} module is automatically
 pulled into the isolated build environment of our gexp, such that
 @code{(use-modules (guix build utils))} works as expected.
 
+@cindex module closure
+@findex source-module-closure
+Usually you want the @emph{closure} of the module to be imported---i.e.,
+the module itself and all the modules it depends on---rather than just
+the module; failing to do that, attempts to use the module will fail
+because of missing dependent modules.  The @code{source-module-closure}
+procedure computes the closure of a module by looking at its source file
+headers, which comes in handy in this case:
+
+@example
+(use-modules (guix modules))   ;for 'source-module-closure'
+
+(with-imported-modules (source-module-closure
+                         '((guix build utils)
+                           (gnu build vm)))
+  (gexp->derivation "something-with-vms"
+                    #~(begin
+                        (use-modules (guix build utils)
+                                     (gnu build vm))
+                        @dots{})))
+@end example
+
 The syntactic form to construct gexps is summarized below.
 
 @deffn {Scheme Syntax} #~@var{exp}
