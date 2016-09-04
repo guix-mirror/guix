@@ -283,7 +283,8 @@ given TYPES.  READ uses WRAP-FIELDS to return its value."
 
 (define %libc-errno-pointer
   ;; Glibc's 'errno' pointer.
-  (let ((errno-loc (dynamic-func "__errno_location" (dynamic-link))))
+  (let ((errno-loc (false-if-exception
+                    (dynamic-func "__errno_location" (dynamic-link)))))
     (and errno-loc
          (let ((proc (pointer->procedure '* errno-loc '())))
            (proc)))))

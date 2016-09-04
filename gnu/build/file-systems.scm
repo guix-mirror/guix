@@ -19,6 +19,7 @@
 (define-module (gnu build file-systems)
   #:use-module (guix build utils)
   #:use-module (guix build bournish)
+  #:use-module (guix build syscalls)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -41,17 +42,16 @@
             uuid->string
             string->uuid
 
-            MS_RDONLY
-            MS_NOSUID
-            MS_NODEV
-            MS_NOEXEC
-            MS_BIND
-            MS_MOVE
             bind-mount
 
             mount-flags->bit-mask
             check-file-system
-            mount-file-system))
+            mount-file-system)
+  #:re-export (mount
+               umount
+               MS_BIND
+               MS_MOVE
+               MS_RDONLY))
 
 ;;; Commentary:
 ;;;
@@ -61,21 +61,11 @@
 ;;; Code:
 
 ;; 'mount' is already defined in the statically linked Guile used for initial
-;; RAM disks, but in all other cases the (guix build syscalls) module contains
-;; the mount binding.
-(eval-when (expand load eval)
-  (unless (defined? 'mount)
-    (module-use! (current-module)
-                 (resolve-interface '(guix build syscalls)))))
-
-;; Linux mount flags, from libc's <sys/mount.h>.
-(define MS_RDONLY 1)
-(define MS_NOSUID 2)
-(define MS_NODEV  4)
-(define MS_NOEXEC 8)
-(define MS_REMOUNT 32)
-(define MS_BIND 4096)
-(define MS_MOVE 8192)
+;; RAM disks, in which case the bindings in (guix build syscalls) do not work
+;; (the FFI bindings do not work there).  Override them in that case.
+(when (module-defined? the-scm-module 'mount)
+  (set! mount (@ (guile) mount))
+  (set! umount (@ (guile) umount)))
 
 (define (bind-mount source target)
   "Bind-mount SOURCE at TARGET."
