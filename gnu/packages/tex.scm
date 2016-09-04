@@ -28,7 +28,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
@@ -446,3 +448,44 @@ PDF documents.")
     (description "Texmaker is a program that integrates many tools needed to
 develop documents with LaTeX, in a single application.")
     (license license:gpl2+)))
+
+
+(define-public teximpatient
+  (package
+    (name "teximpatient")
+    (version "2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/" name "/" name "-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0h56w22d99dh4fgld4ssik8ggnmhmrrbnrn1lnxi1zr0miphn1sd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         ;; Unfortunately some mistakes have been made in packaging.
+         ;; Work around them here ...
+         (replace 'unpack
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((srcdir "teximpatient-2.4"))
+               (system* "tar" "-xzf" (assoc-ref inputs "source")
+                        (string-append "--one-top-level=" srcdir))
+               (delete-file (string-append srcdir "/book.pdf"))
+               (install-file (car
+                              (find-files
+                               (assoc-ref inputs "automake")
+                               "^install-sh$"))
+                             srcdir)
+               (chdir srcdir)))))))
+    (native-inputs
+     `(("texlive" ,texlive)
+       ("automake" ,automake)))
+    (home-page "http://www.gnu.org/software/teximpatient")
+    (synopsis "Book on TeX, plain TeX and Eplain")
+    (description "@i{TeX for the Impatient} is a ~350 page book on TeX,
+plain TeX, and Eplain, originally written by Paul Abrahams, Kathryn Hargreaves,
+and Karl Berry.")
+    (license license:fdl1.3+)))
