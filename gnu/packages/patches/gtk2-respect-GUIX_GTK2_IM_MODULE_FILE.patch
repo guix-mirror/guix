@@ -1,0 +1,15 @@
+This patch replaces the environment variable "GTK_IM_MODULE" with
+"GUIX_GTK2_IM_MODULE_FILE" to prevent this version of GTK+ from loading input
+method modules for other major versions of GTK+.
+
+--- gtk+-2.24.30/gtk/gtkrc.c	2016-08-21 22:40:22.339660438 +0200
++++ gtk+-2.24.30/gtk/gtkrc.c	2016-08-23 10:11:11.080822710 +0200
+@@ -439,7 +439,7 @@
+ gchar *
+ gtk_rc_get_im_module_file (void)
+ {
+-  const gchar *var = g_getenv ("GTK_IM_MODULE_FILE");
++  const gchar *var = g_getenv ("GUIX_GTK2_IM_MODULE_FILE");
+   gchar *result = NULL;
+ 
+   if (var)
