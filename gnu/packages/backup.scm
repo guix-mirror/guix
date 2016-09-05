@@ -410,10 +410,13 @@ detection, and lossless compression.")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
-
               (sha256
                (base32
-                "1l9iw55w5x51yxl3q89cf6avg80lajxvc8qz584hrsmnk6i56cr0"))))
+                "1l9iw55w5x51yxl3q89cf6avg80lajxvc8qz584hrsmnk6i56cr0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(for-each
+                  delete-file (find-files "borg" "^(c|h|p).*\\.c$")))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -437,7 +440,8 @@ detection, and lossless compression.")
                    (install-file "docs/_build/man/borg.1" man)
                    #t))))))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
+     `(("python-cython" ,python-cython)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
