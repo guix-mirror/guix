@@ -43,7 +43,8 @@
   (call-with-output-file "build.xml"
     (lambda (port)
       (sxml->xml
-       `(project (@ (basedir "."))
+       `(project (@ (basedir ".")
+                    (name ,jar-name))
                  (property (@ (name "classes.dir")
                               (value "${basedir}/build/classes")))
                  (property (@ (name "manifest.dir")
