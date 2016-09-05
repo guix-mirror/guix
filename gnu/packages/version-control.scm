@@ -293,6 +293,20 @@ everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
    (home-page "http://git-scm.com/")))
 
+;; Some dependent packages directly access internal interfaces which
+;; have changed in 2.10
+(define-public git@2.9
+  (package
+    (inherit git)
+    (version "2.9.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://kernel.org/software/scm/git/git-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "0qzs681a64k3shh5p0rg41l1z16fbk5sj0xga45k34hp1hsp654z"))))))
+
 (define-public libgit2
   (package
     (name "libgit2")
@@ -387,7 +401,7 @@ write native speed custom Git applications in any language with bindings.")
        ("xmllint" ,libxml2)
        ("xsltprot" ,libxslt)))
     (inputs
-     `(("git:src" ,(package-source git))
+     `(("git:src" ,(package-source git@2.9))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
