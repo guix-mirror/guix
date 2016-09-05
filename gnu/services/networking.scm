@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -272,7 +273,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
      (let ()
        ;; TODO: Add authentication support.
        (define config
-         (string-append "driftfile /var/run/ntp.drift\n"
+         (string-append "driftfile /var/run/ntpd/ntp.drift\n"
                         (string-join (map (cut string-append "server " <>)
                                           servers)
                                      "\n")
@@ -307,13 +308,27 @@ restrict -6 ::1\n"))
          (home-directory "/var/empty")
          (shell #~(string-append #$shadow "/sbin/nologin")))))
 
+
+(define (ntp-service-activation config)
+  "Return the activation gexp for CONFIG."
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (define %user
+          (getpw "ntpd"))
+
+        (let ((directory "/var/run/ntpd"))
+          (mkdir-p directory)
+          (chown directory (passwd:uid %user) (passwd:gid %user))))))
+
 (define ntp-service-type
   (service-type (name 'ntp)
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           ntp-shepherd-service)
                        (service-extension account-service-type
-                                          (const %ntp-accounts))))))
+                                          (const %ntp-accounts))
+                       (service-extension activation-service-type
+                                          ntp-service-activation)))))
 
 (define* (ntp-service #:key (ntp ntp)
                       (servers %ntp-servers))
