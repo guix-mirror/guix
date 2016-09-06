@@ -4678,7 +4678,7 @@ The general syntax is:
 guix hash @var{option} @var{file}
 @end example
 
-@command{guix hash} has the following option:
+@command{guix hash} has the following options:
 
 @table @code
 
@@ -4706,6 +4706,11 @@ hash (@pxref{Invoking guix archive}).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
 
+@item --exclude-vcs
+@itemx -x
+When combined with @option{--recursive}, exclude version control system
+directories (@file{.bzr}, @file{.git}, @file{.hg}, etc.)
+
 @vindex git-fetch
 As an example, here is how you would compute the hash of a Git checkout,
 which is useful when using the @code{git-fetch} method (@pxref{origin
@@ -4714,8 +4719,7 @@ Reference}):
 @example
 $ git clone http://example.org/foo.git
 $ cd foo
-$ rm -rf .git
-$ guix hash -r .
+$ guix hash -rx .
 @end example
 @end table
 
