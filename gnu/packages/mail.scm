@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1356,3 +1357,34 @@ in Perl.")
      "Mb2md is a Perl script that takes one or more mbox format files and
 converts them to maildir format directories.")
     (license public-domain)))
+
+(define-public mpop
+  (package
+    (name "mpop")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://downloads.sourceforge.net/mpop/mpop-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0n0ij258kn8lfa6nyr6l6plc4hf1wvyf1hkwicvdbjqdqrgjnq81"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("libidn" ,libidn)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags (list "--with-tls=gnutls")))
+    (home-page "http://mpop.sourceforge.net/")
+    (synopsis "POP3 mail client")
+    (description "mpop is a small and fast POP3 client suitable as a
+fetchmail replacement.
+
+mpop supports multiple accounts, header based mail filtering, delivery
+to mbox files, maildir folders or a Mail Delivery Agent (MDA),
+TLS/SSL, several authentication methods, Internationalized Domain
+Names (IDN) and SOCKS proxies.")
+    (license gpl3+)))
