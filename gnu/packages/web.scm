@@ -3609,3 +3609,27 @@ tools they trust (e.g. wget).")
 rendering engine entirely written from scratch.  It is small and capable of
 handling many of the web standards in use today.")
     (license l:gpl2+)))
+
+(define-public surfraw
+  (package
+    (name "surfraw")
+    (version "2.2.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://surfraw.alioth.debian.org/dist/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fy4ph5h9kp0jzj1m6pfylxnnmgdk0mmdppw76z9jhna4jndk5xa"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)
+       ("perl-www-opensearch" ,perl-www-opensearch)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-libwww" ,perl-libwww)))
+    (synopsis "Unix command line interface to the www")
+    (description "Surfraw (Shell Users' Revolutionary Front Rage Against the Web)
+provides a unix command line interface to a variety of popular www search engines
+and similar services.")
+    (home-page "https://surfraw.alioth.debian.org/")
+    (license l:public-domain)))
