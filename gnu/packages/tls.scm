@@ -286,6 +286,7 @@ required structures.")
                                        (string-append target "/"
                                                       (basename file))))
                         (find-files man3))
+              (delete-file-recursively man3)
               #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
