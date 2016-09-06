@@ -357,6 +357,7 @@ par compared to the rest.")
        ("libmpeg2" ,libmpeg2)
        ("libdvdread" ,libdvdread)
        ("libx264" ,libx264)
+       ("mpg123" ,mpg123)
        ;; TODO:
        ;; * opencore-amr (for the AMR-NB decoder and encoder and the
        ;;   AMR-WB decoder) <http://sourceforge.net/projects/opencore-amr/>
