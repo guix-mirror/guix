@@ -305,7 +305,14 @@ return its return value."
      (when fallback?
        (warning (_ "deprecated NAME-VERSION syntax; \
 use NAME@VERSION instead~%")))
-     pkg)
+
+     (match (package-superseded pkg)
+       ((? package? new)
+        (info (_ "package '~a' has been superseded by '~a'~%")
+              (package-name pkg) (package-name new))
+        new)
+       (#f
+        pkg)))
     (_
      (if version
          (leave (_ "~A: package not found for version ~a~%") name version)

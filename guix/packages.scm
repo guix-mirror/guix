@@ -83,6 +83,8 @@
             package-location
             hidden-package
             hidden-package?
+            package-superseded
+            deprecated-package
             package-field-location
 
             package-direct-sources
@@ -305,6 +307,18 @@ user interfaces, ignores."
   "Return true if P is \"hidden\"--i.e., must not be visible to user
 interfaces."
   (assoc-ref (package-properties p) 'hidden?))
+
+(define (package-superseded p)
+  "Return the package the supersedes P, or #f if P is still current."
+  (assoc-ref (package-properties p) 'superseded))
+
+(define (deprecated-package old-name p)
+  "Return a package called OLD-NAME and marked as superseded by P, a package
+object."
+  (package
+    (inherit p)
+    (name old-name)
+    (properties `((superseded . ,p)))))
 
 (define (package-field-location package field)
   "Return the source code location of the definition of FIELD for PACKAGE, or

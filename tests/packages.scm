@@ -84,6 +84,15 @@
   (and (hidden-package? (hidden-package (dummy-package "foo")))
        (not (hidden-package? (dummy-package "foo")))))
 
+(test-assert "package-superseded"
+  (let* ((new (dummy-package "bar"))
+         (old (deprecated-package "foo" new)))
+    (and (eq? (package-superseded old) new)
+         (mock ((gnu packages) find-best-packages-by-name (const (list old)))
+               (specification->package "foo")
+               (and (eq? new (specification->package "foo"))
+                    (eq? new (specification->package+output "foo")))))))
+
 (test-assert "transaction-upgrade-entry, zero upgrades"
   (let* ((old (dummy-package "foo" (version "1")))
          (tx  (mock ((gnu packages) find-newest-available-packages
@@ -111,6 +120,27 @@
            ((($ <manifest-entry> "foo" "2" "out" item))
             (eq? item new)))
          (null? (manifest-transaction-remove tx)))))
+
+(test-assert "transaction-upgrade-entry, superseded package"
+  (let* ((old (dummy-package "foo" (version "1")))
+         (new (dummy-package "bar" (version "2")))
+         (dep (deprecated-package "foo" new))
+         (tx  (mock ((gnu packages) find-newest-available-packages
+                     (const (vhash-cons "foo" (list "2" dep) vlist-null)))
+                    ((@@ (guix scripts package) transaction-upgrade-entry)
+                     (manifest-entry
+                       (inherit (package->manifest-entry old))
+                       (item (string-append (%store-prefix) "/"
+                                            (make-string 32 #\e) "-foo-1")))
+                     (manifest-transaction)))))
+    (and (match (manifest-transaction-install tx)
+           ((($ <manifest-entry> "bar" "2" "out" item))
+            (eq? item new)))
+         (match (manifest-transaction-remove tx)
+           (((? manifest-pattern? pattern))
+            (and (string=? (manifest-pattern-name pattern) "foo")
+                 (string=? (manifest-pattern-version pattern) "1")
+                 (string=? (manifest-pattern-output pattern) "out")))))))
 
 (test-assert "package-field-location"
   (let ()

@@ -264,25 +264,41 @@ synopsis or description matches all of REGEXPS."
 (define (transaction-upgrade-entry entry transaction)
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
 <manifest-entry>."
+  (define (supersede old new)
+    (info (_ "package '~a' has been superseded by '~a'~%")
+          (manifest-entry-name old) (package-name new))
+    (manifest-transaction-install-entry
+     (package->manifest-entry new (manifest-entry-output old))
+     (manifest-transaction-remove-pattern
+      (manifest-pattern
+        (name (manifest-entry-name old))
+        (version (manifest-entry-version old))
+        (output (manifest-entry-output old)))
+      transaction)))
+
   (match entry
     (($ <manifest-entry> name version output (? string? path))
      (match (vhash-assoc name (find-newest-available-packages))
        ((_ candidate-version pkg . rest)
-        (case (version-compare candidate-version version)
-          ((>)
-           (manifest-transaction-install-entry
-            (package->manifest-entry pkg output)
-            transaction))
-          ((<)
-           transaction)
-          ((=)
-           (let ((candidate-path (derivation->output-path
-                                  (package-derivation (%store) pkg))))
-             (if (string=? path candidate-path)
-                 transaction
-                 (manifest-transaction-install-entry
-                  (package->manifest-entry pkg output)
-                  transaction))))))
+        (match (package-superseded pkg)
+          ((? package? new)
+           (supersede entry new))
+          (#f
+           (case (version-compare candidate-version version)
+             ((>)
+              (manifest-transaction-install-entry
+               (package->manifest-entry pkg output)
+               transaction))
+             ((<)
+              transaction)
+             ((=)
+              (let ((candidate-path (derivation->output-path
+                                     (package-derivation (%store) pkg))))
+                (if (string=? path candidate-path)
+                    transaction
+                    (manifest-transaction-install-entry
+                     (package->manifest-entry pkg output)
+                     transaction))))))))
        (#f
         transaction)))))
 
