@@ -111,6 +111,7 @@ numbers of user-defined menu items efficiently.")
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/slock-"
                                   version ".tar.gz"))
+              (patches (search-patches "slock-CVE-2016-6866.patch"))
               (sha256
                (base32
                 "065xa9hl7zn0lv2f7yjxphqsa35rg6dn9hv10gys0sh4ljpa7d5s"))))
