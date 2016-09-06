@@ -22,6 +22,7 @@
 (define-module (gnu packages grub)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -58,7 +59,12 @@
     ;;   ERROR:tests/rtc-test.c:176:check_time: assertion failed (ABS(t - s) <= wiggle): (382597824 <= 2)
     ;; Simply disable the tests.
     (arguments `(#:tests? #f
-                 ,@(package-arguments qemu-minimal)))
+                 ,@(substitute-keyword-arguments (package-arguments qemu-minimal)
+                     ((#:phases phases)
+                      ;; We disable the tests so we also skip the phase disabling
+                      ;; the qga test, which fails due to changes in QEMU
+                      `(modify-phases ,phases
+                         (delete 'disable-test-qga))))))
 
     ;; The manual fails to build with Texinfo 5.x.
     (native-inputs (alist-delete "texinfo" (package-native-inputs qemu)))))

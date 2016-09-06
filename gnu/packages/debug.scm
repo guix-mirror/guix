@@ -161,7 +161,10 @@ tools that process C/C++ code.")
      ;; XXX: Disable tests because of GTester's rejection of duplicate test
      ;; names, which wasn't addressed in this version of QEMU.
      `(#:tests? #f
-       ,@(package-arguments qemu-minimal)))))
+       ,@(substitute-keyword-arguments (package-arguments qemu-minimal)
+           ((#:phases phases)
+            ;; We disable the tests so we skip the phase disabling the qga test.
+            `(modify-phases ,phases (delete 'disable-test-qga))))))))
 
 (define-public american-fuzzy-lop
   (let ((machine (match (or (%current-target-system)
