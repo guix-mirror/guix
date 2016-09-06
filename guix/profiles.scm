@@ -78,6 +78,9 @@
             manifest-transaction?
             manifest-transaction-install
             manifest-transaction-remove
+            manifest-transaction-install-entry
+            manifest-transaction-remove-pattern
+            manifest-transaction-null?
             manifest-perform-transaction
             manifest-transaction-effects
 
@@ -383,6 +386,28 @@ no match.."
   (remove  manifest-transaction-remove  ; list of <manifest-pattern>
            (default '())))
 
+(define (manifest-transaction-install-entry entry transaction)
+  "Augment TRANSACTION's set of installed packages with ENTRY, a
+<manifest-entry>."
+  (manifest-transaction
+   (inherit transaction)
+   (install
+    (cons entry (manifest-transaction-install transaction)))))
+
+(define (manifest-transaction-remove-pattern pattern transaction)
+  "Add PATTERN to TRANSACTION's list of packages to remove."
+  (manifest-transaction
+   (inherit transaction)
+   (remove
+    (cons pattern (manifest-transaction-remove transaction)))))
+
+(define (manifest-transaction-null? transaction)
+  "Return true if TRANSACTION has no effect---i.e., it neither installs nor
+remove software."
+  (match transaction
+    (($ <manifest-transaction> () ()) #t)
+    (($ <manifest-transaction> _ _)   #f)))
+
 (define (manifest-transaction-effects manifest transaction)
   "Compute the effect of applying TRANSACTION to MANIFEST.  Return 4 values:
 the list of packages that would be removed, installed, upgraded, or downgraded
@@ -424,7 +449,7 @@ replace it."
                    downgrade)))))))
 
 (define (manifest-perform-transaction manifest transaction)
-  "Perform TRANSACTION on MANIFEST and return new manifest."
+  "Perform TRANSACTION on MANIFEST and return the new manifest."
   (let ((install (manifest-transaction-install transaction))
         (remove  (manifest-transaction-remove transaction)))
     (manifest-add (manifest-remove manifest remove)
