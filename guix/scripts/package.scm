@@ -261,19 +261,25 @@ synopsis or description matches all of REGEXPS."
        ((<)  #t)
        (else #f)))))
 
-(define (upgradeable? name current-version current-path)
-  "Return #t if there's a version of package NAME newer than CURRENT-VERSION,
-or if the newest available version is equal to CURRENT-VERSION but would have
-an output path different than CURRENT-PATH."
-  (match (vhash-assoc name (find-newest-available-packages))
-    ((_ candidate-version pkg . rest)
-     (case (version-compare candidate-version current-version)
-       ((>) #t)
-       ((<) #f)
-       ((=) (let ((candidate-path (derivation->output-path
-                                   (package-derivation (%store) pkg))))
-              (not (string=? current-path candidate-path))))))
-    (#f #f)))
+(define (upgraded-manifest-entry entry)
+  "Return either a <manifest-entry> corresponding to an upgrade of ENTRY, or
+#f if no upgrade was found."
+  (match entry
+    (($ <manifest-entry> name version output (? string? path))
+     (match (vhash-assoc name (find-newest-available-packages))
+       ((_ candidate-version pkg . rest)
+        (case (version-compare candidate-version version)
+          ((>)
+           (package->manifest-entry pkg output))
+          ((<)
+           #f)
+          ((=)
+           (let ((candidate-path (derivation->output-path
+                                  (package-derivation (%store) pkg))))
+             (and (not (string=? path candidate-path))
+                  (package->manifest-entry pkg output))))))
+       (#f
+        #f)))))
 
 
 ;;;
@@ -560,16 +566,9 @@ return the new list of manifest entries."
     (options->upgrade-predicate opts))
 
   (define to-upgrade
-    (filter-map (match-lambda
-                  (($ <manifest-entry> name version output path _)
-                   (and (upgrade? name)
-                        (upgradeable? name version path)
-                        (let ((output (or output "out")))
-                          (call-with-values
-                              (lambda ()
-                                (specification->package+output name output))
-                            package->manifest-entry))))
-                  (_ #f))
+    (filter-map (lambda (entry)
+                  (and (upgrade? (manifest-entry-name entry))
+                       (upgraded-manifest-entry entry)))
                 (manifest-entries manifest)))
 
   (define to-install
