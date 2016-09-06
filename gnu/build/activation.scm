@@ -234,7 +234,7 @@ numeric gid or #f."
   (touch "/etc/group")
 
   ;; Allow home directories to be created under /var/lib.
-  (mkdir "/var/lib")
+  (mkdir-p "/var/lib")
 
   ;; Create the root account so we can use 'useradd' and 'groupadd'.
   (activate-user (find (match-lambda
