@@ -72,18 +72,18 @@
                (base32
                 "0jd69ynvr3k70mlxxgbsk047l1rd63m1wkj3qdcq7644xy0gllkx"))))
     (build-system gnu-build-system)
-    (arguments `(#:phases
-                 (alist-cons-before
-                  'check 'disable-faulty-test
-                  (lambda _
-                    ;; XXX Disable the 'test-limits' and 'exec_opcodes_sys'
-                    ;; tests, which fail on some machines.  See:
-                    ;; https://bugzilla.gnome.org/show_bug.cgi?id=735273
-                    (substitute* '("testsuite/test-limits.c"
-                                   "testsuite/exec_opcodes_sys.c")
-                      (("if \\(error\\) return 1;")
-                       "if (error) return 77;")))
-                  %standard-phases)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-faulty-test
+           (lambda _
+             ;; XXX Disable the 'test-limits' and 'exec_opcodes_sys'
+             ;; tests, which fail on some machines.  See:
+             ;; https://bugzilla.gnome.org/show_bug.cgi?id=735273
+             (substitute* '("testsuite/test-limits.c"
+                            "testsuite/exec_opcodes_sys.c")
+               (("if \\(error\\) return 1;")
+                "if (error) return 77;")))))))
     (home-page "http://code.entropywave.com/orc/")
     (synopsis "Oil runtime compiler")
     (description
