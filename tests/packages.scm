@@ -49,6 +49,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
+  #:use-module (ice-9 vlist)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match))
 
@@ -82,6 +83,34 @@
 (test-assert "hidden-package"
   (and (hidden-package? (hidden-package (dummy-package "foo")))
        (not (hidden-package? (dummy-package "foo")))))
+
+(test-assert "transaction-upgrade-entry, zero upgrades"
+  (let* ((old (dummy-package "foo" (version "1")))
+         (tx  (mock ((gnu packages) find-newest-available-packages
+                     (const vlist-null))
+                    ((@@ (guix scripts package) transaction-upgrade-entry)
+                     (manifest-entry
+                       (inherit (package->manifest-entry old))
+                       (item (string-append (%store-prefix) "/"
+                                            (make-string 32 #\e) "-foo-1")))
+                     (manifest-transaction)))))
+    (manifest-transaction-null? tx)))
+
+(test-assert "transaction-upgrade-entry, one upgrade"
+  (let* ((old (dummy-package "foo" (version "1")))
+         (new (dummy-package "foo" (version "2")))
+         (tx  (mock ((gnu packages) find-newest-available-packages
+                     (const (vhash-cons "foo" (list "2" new) vlist-null)))
+                    ((@@ (guix scripts package) transaction-upgrade-entry)
+                     (manifest-entry
+                       (inherit (package->manifest-entry old))
+                       (item (string-append (%store-prefix) "/"
+                                            (make-string 32 #\e) "-foo-1")))
+                     (manifest-transaction)))))
+    (and (match (manifest-transaction-install tx)
+           ((($ <manifest-entry> "foo" "2" "out" item))
+            (eq? item new)))
+         (null? (manifest-transaction-remove tx)))))
 
 (test-assert "package-field-location"
   (let ()
