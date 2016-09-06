@@ -6753,8 +6753,7 @@ following in your operating system declaration:
                         (extra-options '("--gc-keep-derivations"))))
     (mingetty-service-type config =>
                            (mingetty-configuration
-                            (inherit config)
-                            (motd (plain-file "motd" "Howdy!"))))))
+                            (inherit config)))))
 
 (operating-system
   ;; @dots{}
@@ -7619,6 +7618,27 @@ this:
 Return a service that sets the host name to @var{name}.
 @end deffn
 
+@deffn {Scheme Procedure} login-service @var{config}
+Return a service to run login according to @var{config}, a
+@code{<login-configuration>} object, which specifies the message of the day,
+among other things.
+@end deffn
+
+@deftp {Data Type} login-configuration
+This is the data type representing the configuration of login.
+
+@table @asis
+
+@item @code{motd}
+A file-like object containing the ``message of the day''.
+
+@item @code{allow-empty-passwords?} (default: @code{#t})
+Allow empty passwords by default so that first-time users can log in when
+the 'root' account has just been created.
+
+@end table
+@end deftp
+
 @deffn {Scheme Procedure} mingetty-service @var{config}
 Return a service to run mingetty according to @var{config}, a
 @code{<mingetty-configuration>} object, which specifies the tty to run, among
@@ -7633,9 +7653,6 @@ implements console log-in.
 
 @item @code{tty}
 The name of the console this Mingetty runs on---e.g., @code{"tty1"}.
-
-@item @code{motd}
-A file-like object containing the ``message of the day''.
 
 @item @code{auto-login} (default: @code{#f})
 When true, this field must be a string denoting the user name under

@@ -66,6 +66,11 @@
             udev-service
             udev-rule
 
+            login-configuration
+            login-configuration?
+            login-service-type
+            login-service
+
             mingetty-configuration
             mingetty-configuration?
             mingetty-service
@@ -656,41 +661,55 @@ strings or string-valued gexps."
   ;; codepoints notably found in the UTF-8 manual.
   (service console-font-service-type (list tty font)))
 
+(define %default-motd
+  (plain-file "motd" "This is the GNU operating system, welcome!\n\n"))
+
+(define-record-type* <login-configuration>
+  login-configuration make-login-configuration
+  login-configuration?
+  (motd                   login-configuration-motd     ;file-like
+                          (default %default-motd))
+  ;; Allow empty passwords by default so that first-time users can log in when
+  ;; the 'root' account has just been created.
+  (allow-empty-passwords? login-configuration-allow-empty-passwords?
+                          (default #t)))               ;Boolean
+
+(define (login-pam-service config)
+  "Return the list of PAM service needed for CONF."
+  ;; Let 'login' be known to PAM.
+  (list (unix-pam-service "login"
+                          #:allow-empty-passwords?
+                          (login-configuration-allow-empty-passwords? config)
+                          #:motd
+                          (login-configuration-motd config))))
+
+(define login-service-type
+  (service-type (name 'login)
+                (extensions (list (service-extension pam-root-service-type
+                                                     login-pam-service)))))
+
+(define* (login-service #:optional (config (login-configuration)))
+  "Return a service configure login according to @var{config}, which specifies
+the message of the day, among other things."
+  (service login-service-type config))
+
 (define-record-type* <mingetty-configuration>
   mingetty-configuration make-mingetty-configuration
   mingetty-configuration?
   (mingetty       mingetty-configuration-mingetty ;<package>
                   (default mingetty))
   (tty            mingetty-configuration-tty)     ;string
-  (motd           mingetty-configuration-motd     ;file-like
-                  (default (plain-file "motd" "Welcome.\n")))
   (auto-login     mingetty-auto-login             ;string | #f
                   (default #f))
   (login-program  mingetty-login-program          ;gexp
                   (default #f))
   (login-pause?   mingetty-login-pause?           ;Boolean
-                  (default #f))
-
-  ;; Allow empty passwords by default so that first-time users can log in when
-  ;; the 'root' account has just been created.
-  (allow-empty-passwords? mingetty-configuration-allow-empty-passwords?
-                          (default #t)))          ;Boolean
-
-(define (mingetty-pam-service conf)
-  "Return the list of PAM service needed for CONF."
-  ;; Let 'login' be known to PAM.  All the mingetty services will have that
-  ;; PAM service, but that's fine because they're all identical and duplicates
-  ;; are removed.
-  (list (unix-pam-service "login"
-                          #:allow-empty-passwords?
-                          (mingetty-configuration-allow-empty-passwords? conf)
-                          #:motd
-                          (mingetty-configuration-motd conf))))
+                  (default #f)))
 
 (define mingetty-shepherd-service
   (match-lambda
-    (($ <mingetty-configuration> mingetty tty motd auto-login login-program
-                                 login-pause? allow-empty-passwords?)
+    (($ <mingetty-configuration> mingetty tty auto-login login-program
+                                 login-pause?)
      (list
       (shepherd-service
        (documentation "Run mingetty on an tty.")
@@ -718,9 +737,7 @@ strings or string-valued gexps."
 (define mingetty-service-type
   (service-type (name 'mingetty)
                 (extensions (list (service-extension shepherd-root-service-type
-                                                     mingetty-shepherd-service)
-                                  (service-extension pam-root-service-type
-                                                     mingetty-pam-service)))))
+                                                     mingetty-shepherd-service)))))
 
 (define* (mingetty-service config)
   "Return a service to run mingetty according to @var{config}, which specifies
@@ -1435,38 +1452,38 @@ This service is not part of @var{%base-services}."
 
 (define %base-services
   ;; Convenience variable holding the basic services.
-  (let ((motd (plain-file "motd" "
-This is the GNU operating system, welcome!\n\n")))
-    (list (console-font-service "tty1")
-          (console-font-service "tty2")
-          (console-font-service "tty3")
-          (console-font-service "tty4")
-          (console-font-service "tty5")
-          (console-font-service "tty6")
+  (list (login-service)
 
-          (mingetty-service (mingetty-configuration
-                             (tty "tty1") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty2") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty3") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty4") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty5") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty6") (motd motd)))
+        (console-font-service "tty1")
+        (console-font-service "tty2")
+        (console-font-service "tty3")
+        (console-font-service "tty4")
+        (console-font-service "tty5")
+        (console-font-service "tty6")
 
-          (static-networking-service "lo" "127.0.0.1"
-                                     #:provision '(loopback))
-          (syslog-service)
-          (urandom-seed-service)
-          (guix-service)
-          (nscd-service)
+        (mingetty-service (mingetty-configuration
+                           (tty "tty1")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty2")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty3")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty4")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty5")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty6")))
 
-          ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
-          ;; used, so enable them by default.  The FUSE and ALSA rules are
-          ;; less critical, but handy.
-          (udev-service #:rules (list lvm2 fuse alsa-utils crda)))))
+        (static-networking-service "lo" "127.0.0.1"
+                                   #:provision '(loopback))
+        (syslog-service)
+        (urandom-seed-service)
+        (guix-service)
+        (nscd-service)
+
+        ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
+        ;; used, so enable them by default.  The FUSE and ALSA rules are
+        ;; less critical, but handy.
+        (udev-service #:rules (list lvm2 fuse alsa-utils crda))))
 
 ;;; base.scm ends here
