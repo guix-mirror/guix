@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,9 +22,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages dns)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
@@ -128,3 +132,32 @@ high-volume and high-reliability applications. The name BIND stands for
     (home-page "https://www.isc.org/downloads/bind")
     (license (list license:isc))))
 
+(define-public libasr
+  (package
+    (name "libasr")
+    (version "201602131606")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.opensmtpd.org/archives/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18kdmbjsxrfai16d66qslp48b1zf7gr8him2jj5dcqgbsl44ls75"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("groff" ,groff)))
+    (home-page "https://www.opensmtpd.org")
+    (synopsis "Asynchronous resolver library by the OpenBSD project")
+    (description
+     "libasr is a free, simple and portable asynchronous resolver library.
+It allows to run DNS queries and perform hostname resolutions in a fully
+asynchronous fashion.")
+    (license (list license:isc
+                   license:bsd-2 ; last part of getrrsetbyname_async.c
+                   license:bsd-3
+                   (license:non-copyleft "file://LICENSE") ; includes.h
+                   license:openssl))))
