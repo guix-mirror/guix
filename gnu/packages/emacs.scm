@@ -320,7 +320,7 @@ metadata.")
 
 (define-public paredit
   (package
-    (name "paredit")
+    (name "emacs-paredit")
     (version "24")
     (source (origin
               (method url-fetch)
@@ -363,6 +363,9 @@ S-expressions and moving around in S-expressions.  Its behavior can be jarring
 for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
+
+(define-public paredit/old-name
+  (deprecated-package "paredit" paredit))
 
 (define-public git-modes
   (package
