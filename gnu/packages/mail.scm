@@ -46,6 +46,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages ghostscript)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
@@ -81,7 +83,8 @@
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
-                           public-domain))
+                           public-domain bsd-4 isc (openssl . license:openssl)
+                           bsd-2))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1541,3 +1544,52 @@ transfer protocols.")
     (license (non-copyleft "file://LICENSE"
                            "See LICENSE in the distribution."))))
 
+(define-public opensmtpd
+  (package
+    (name "opensmtpd")
+    (version "5.9.2p1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.opensmtpd.org/archives/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07d7f1m5sxyz6mkk228rcm7fsf7350994ayvmhgph333q5rz48im"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("libressl" ,libressl)
+       ("libevent" ,libevent)
+       ("libasr" ,libasr)
+       ("linux-pam" ,linux-pam)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)))
+    (arguments
+     `(#:configure-flags (list "--with-table-db" "--localstatedir=/var"
+                               "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
+                               "--with-group-queue=smtpq")
+       #:phases
+       (modify-phases %standard-phases
+         ;; OpenSMTPD provides a single utility smtpctl to control the daemon and
+         ;; the local submission subsystem.  To accomodate systems that require
+         ;; historical interfaces such as sendmail, newaliases or makemap, the
+         ;; smtpctl utility can operate in compatibility mode if called with the
+         ;; historical name.
+         (add-after 'install 'install-compabilitymode
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (sbin (string-append out "/sbin/")))
+               (for-each (lambda (cmd)
+                           (symlink "smtpctl" (string-append sbin cmd)))
+                         '("makemap" "sendmail" "send-mail"
+                           "newaliases" "mailq")))
+             #t)))))
+    (synopsis "Lightweight SMTP daemon")
+    (description
+     "OpenSMTPD is an implementation of the server-side SMTP protocol, with
+some additional standard extensions.  It allows ordinary machines to exchange
+e-mails with other systems speaking the SMTP protocol.")
+    (home-page "https://www.opensmtpd.org")
+    (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
+                   public-domain isc openssl))))
