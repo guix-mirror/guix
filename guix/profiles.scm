@@ -67,6 +67,9 @@
 
             manifest-pattern
             manifest-pattern?
+            manifest-pattern-name
+            manifest-pattern-version
+            manifest-pattern-output
 
             manifest-remove
             manifest-add
