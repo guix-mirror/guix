@@ -160,6 +160,7 @@ This package provides the core library and elements.")
      `(("gstreamer" ,gstreamer))) ; required by gstreamer-plugins-base-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
+       ("opus" ,opus)
        ("orc" ,orc)
        ("pango" ,pango)
        ("libogg" ,libogg)
