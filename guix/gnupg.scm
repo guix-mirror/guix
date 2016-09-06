@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -40,7 +40,7 @@
 
 (define %gpg-command
   ;; The GnuPG 2.x command-line program name.
-  (make-parameter "gpg2"))
+  (make-parameter (or (getenv "GUIX_GPG_COMMAND") "gpg")))
 
 (define %openpgp-key-server
   ;; The default key server.  Note that keys.gnupg.net appears to be
