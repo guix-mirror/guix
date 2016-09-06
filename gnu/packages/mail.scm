@@ -53,6 +53,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -61,6 +62,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -1593,3 +1595,72 @@ e-mails with other systems speaking the SMTP protocol.")
     (home-page "https://www.opensmtpd.org")
     (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
                    public-domain isc openssl))))
+
+(define-public opensmtpd-extras
+  (package
+    (name "opensmtpd-extras")
+    (version "5.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.opensmtpd.org/archives/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kld4hxgz792s0cb2gl7m2n618ikzqkj88w5dhaxdrxg4x2c4vdm"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libressl" ,libressl)
+       ("libevent" ,libevent)
+       ("libasr" ,libasr)
+       ("python-2" ,python-2)
+       ("opensmtpd" ,opensmtpd)
+       ("perl" ,perl)
+       ("lua" ,lua)
+       ("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)
+       ("linux-pam" ,linux-pam)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)
+       ("groff" ,groff)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)))
+    (arguments
+     `(;; We have to configure it like this because the default checks for for example
+       ;; python in /usr/local/bin, /usr/bin and fails otherwise.
+       #:configure-flags (list
+                          "--with-filter-clamav"    "--with-filter-dkim-signer"
+                          "--with-filter-dnsbl"     "--with-filter-lua"
+                          "--with-filter-monkey"    "--with-filter-pause"
+                          "--with-filter-perl"      "--with-filter-python"
+                          "--with-filter-regex"     "--with-filter-spamassassin"
+                          "--with-filter-stub"      "--with-filter-trace"
+                          "--with-filter-void"
+
+                          "--with-queue-null"       "--with-queue-python"
+                          "--with-queue-ram"        "--with-queue-stub"
+
+                          "--with-scheduler-python" "--with-scheduler-ram"
+                          "--with-scheduler-stub"
+
+                          "--with-table-ldap"       ; "--with-table-mysql"
+                          "--with-table-passwd"     "--with-table-postgres"
+                          "--with-table-python"     "--with-table-socketmap"
+                          "--with-table-sqlite"     "--with-table-stub"
+                          ;;"--with-table-redis"    ; TODO: package hiredis
+
+                          "--with-user=smtpd"       "--with-privsep-user=smtpd"
+                          "--localstatedir=/var"    "--sysconfdir=/etc"
+                          "--with-lua-type=lua"     ; can use lua or luajit
+
+                          (string-append "--with-python="
+                                         (assoc-ref %build-inputs "python-2"))
+                          (string-append "--with-lua="
+                                         (assoc-ref %build-inputs "lua")))))
+    (license (list bsd-2 bsd-3 bsd-4 non-copyleft
+                   public-domain isc openssl))
+    (synopsis "Extra tables, filters, and various other addons for OpenSMTPD")
+    (description
+     "This package provides extra tables, filters, and various other addons
+for OpenSMTPD to extend its functionality.")
+    (home-page "https://www.opensmtpd.org")))
