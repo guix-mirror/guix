@@ -632,6 +632,8 @@ See http://minikanren.org/ for more on miniKanren generally.")
     (arguments
      `(#:modules ((guix build utils)
                   (ice-9 match)
+                  (ice-9 rdelim)
+                  (ice-9 popen)
                   (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
@@ -640,50 +642,52 @@ See http://minikanren.org/ for more on miniKanren generally.")
          (delete 'check)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (begin
-               (use-modules (guix build utils)
-                            (ice-9 match))
-               (let* ((out (assoc-ref outputs "out"))
-                      (module-dir (string-append out "/share/guile/site/2.0"))
-                      (source (assoc-ref inputs "source"))
-                      (doc (string-append out "/share/doc/guile-irregex/"))
-                      (guild (string-append (assoc-ref %build-inputs "guile")
-                                            "/bin/guild")))
-                 ;; Make installation directories.
-                 (mkdir-p (string-append module-dir "/rx/source"))
-                 (mkdir-p doc)
+             (let* ((out (assoc-ref outputs "out"))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (module-dir (string-append out "/share/guile/site/"
+                                               effective))
+                    (source (assoc-ref inputs "source"))
+                    (doc (string-append out "/share/doc/guile-irregex/"))
+                    (guild (string-append (assoc-ref %build-inputs "guile")
+                                          "/bin/guild")))
+               ;; Make installation directories.
+               (mkdir-p (string-append module-dir "/rx/source"))
+               (mkdir-p doc)
 
-                 ;; Compile .scm files and install.
-                 (setenv "GUILE_AUTO_COMPILE" "0")
+               ;; Compile .scm files and install.
+               (setenv "GUILE_AUTO_COMPILE" "0")
 
-                 (for-each (lambda (copy-info)
-                             (match copy-info
-                               ((src-file dest-file-basis)
-                                (let* ((dest-file (string-append
-                                                   module-dir dest-file-basis
-                                                   ".scm"))
-                                       (go-file (string-append
+               (for-each (lambda (copy-info)
+                           (match copy-info
+                             ((src-file dest-file-basis)
+                              (let* ((dest-file (string-append
                                                  module-dir dest-file-basis
-                                                 ".go")))
-                                  ;; Install source module.
-                                  (copy-file src-file
-                                             dest-file)
-                                  ;; Install compiled module.
-                                  (unless (zero? (system* guild "compile"
-                                                          "-L" (getcwd)
-                                                          "-o" go-file
-                                                          src-file))
-                                    (error (format #f "Failed to compile ~s to ~s!"
-                                                   src-file dest-file)))))))
-                           '(("irregex-guile.scm" "/rx/irregex")
-                             ("irregex.scm" "/rx/source/irregex")
-                             ;; Not really reachable via guile's packaging system,
-                             ;; but nice to have around
-                             ("irregex-utils.scm" "/rx/source/irregex-utils")))
+                                                 ".scm"))
+                                     (go-file (string-append
+                                               module-dir dest-file-basis
+                                               ".go")))
+                                ;; Install source module.
+                                (copy-file src-file
+                                           dest-file)
+                                ;; Install compiled module.
+                                (unless (zero? (system* guild "compile"
+                                                        "-L" (getcwd)
+                                                        "-o" go-file
+                                                        src-file))
+                                  (error (format #f "Failed to compile ~s to ~s!"
+                                                 src-file dest-file)))))))
+                         '(("irregex-guile.scm" "/rx/irregex")
+                           ("irregex.scm" "/rx/source/irregex")
+                           ;; Not really reachable via guile's packaging system,
+                           ;; but nice to have around
+                           ("irregex-utils.scm" "/rx/source/irregex-utils")))
 
-                 ;; Also copy over the README.
-                 (install-file "irregex.html" doc)
-                 #t)))))))
+               ;; Also copy over the README.
+               (install-file "irregex.html" doc)
+               #t))))))
     (inputs
      `(("guile" ,guile-2.0)))
     (home-page "http://synthcode.com/scheme/irregex")
