@@ -555,15 +555,22 @@ http:://json.org specification.  These are the main features:
                 "0r50jlpzi940jlmxyy3ddqqwmj5r12gb4bcv0ssini9v8km13xz6"))))
     (build-system trivial-build-system)
     (arguments
-     `(#:modules
-       ((guix build utils)
-        (ice-9 match))
+     `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils)
-                      (ice-9 match))
+                      (ice-9 match)
+                      (ice-9 popen)
+                      (ice-9 rdelim))
+
          (let* ((out (assoc-ref %outputs "out"))
-                (module-dir (string-append out "/share/guile/site/2.0"))
+                (guile (assoc-ref %build-inputs "guile"))
+                (effective (read-line
+                            (open-pipe* OPEN_READ
+                                        (string-append guile "/bin/guile")
+                                        "-c" "(display (effective-version))")))
+                (module-dir (string-append out "/share/guile/site/"
+                                           effective))
                 (source (assoc-ref %build-inputs "source"))
                 (doc (string-append out "/share/doc/guile-minikanren"))
                 (scm-files '("minikanren.scm"
