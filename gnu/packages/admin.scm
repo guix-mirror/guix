@@ -736,6 +736,13 @@ over ssh connections.")
                                               "/etc")
                                "--localstatedir=/var")
        #:phases (modify-phases %standard-phases
+                  (add-after 'build 'set-packdir
+                    (lambda _
+                      ;; Set a default location for archived logs.
+                      (substitute* "rc/rc"
+                        (("packdir=\"\"")
+                         "packdir=\"/var/log\""))
+                      #t))
                   (add-after 'install 'install-info
                     (lambda _
                       (zero? (system* "make" "install-info")))))))
