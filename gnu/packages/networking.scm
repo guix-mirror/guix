@@ -135,6 +135,84 @@ establish a relatively secure environment (su and chroot) for running client
 or server shell scripts with network connections.")
     (license license:gpl2)))
 
+(define-public tcp-wrappers
+  (package
+    (name "tcp-wrappers")
+    (version "7.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.porcupine.org/pub/security/tcp_wrappers_"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0p9ilj4v96q32klavx0phw9va21fjp8vpk11nbh6v2ppxnnxfhwm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)  ; there is no configure script
+         (delete 'check)      ; there are no tests
+         (replace 'build
+           (lambda _
+             (chmod "." #o755)
+             ;; Upstream doesn't generate a shared library.  So we have to do it.
+             (setenv "CC" "gcc -fno-builtin -fPIC")
+             (substitute* "Makefile"
+               (("^(all[^\n]*)" line) (string-append line " libwrap.so\n
+libwrap.so: $(LIB_OBJ)\n
+\tgcc -shared $^ -o $@\n")))
+             ;; Deal with some gcc breakage.
+             (substitute* "percent_m.c"
+               (("extern char .sys_errlist.*;") ""))
+             (substitute* "scaffold.c"
+               (("extern char .malloc.*;") ""))
+             ;; This, believe it or not, is the recommended way to build!
+             (zero? (system* "make" "REAL_DAEMON_DIR=/etc" "linux"))))
+         ;; There is no make install stage, so we have to do it ourselves.
+         (replace 'install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out"))
+                   (man-pages `("hosts_access.3"
+                                "hosts_access.5"
+                                "hosts_options.5"
+                                "tcpd.8"
+                                "tcpdchk.8"
+                                "tcpdmatch.8"))
+                   (libs  `("libwrap.a"
+                            "libwrap.so"))
+                   (headers `("tcpd.h"))
+                   (bins `("safe_finger"
+                           "tcpd"
+                           "tcpdchk"
+                           "tcpdmatch"
+                           "try-from")))
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/include")))
+                headers)
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/share/man/man"
+                                                 (string-take-right x 1))))
+                man-pages)
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/lib/")))
+                libs)
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/bin/")))
+                bins)))))))
+    (home-page "http://www.porcupine.org")
+    (synopsis  "Monitor and filter incoming requests for network services")
+    (description "With this package you can monitor and filter incoming requests for
+network services.  It includes a library which may be used by daemons to
+transparently check connection attempts against an access control list.")
+    (license (license:non-copyleft "file://DISCLAIMER"
+                                   "See the file DISCLAIMER in the distribution."))))
+
+
 (define-public zeromq
   (package
     (name "zeromq")
