@@ -1206,7 +1206,18 @@ you send to a FIFO file.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12cb5fqvvgc87f5xp0ih5az305wnjia89l5jba83d0r2p8bfy0b0"))))
+                "12cb5fqvvgc87f5xp0ih5az305wnjia89l5jba83d0r2p8bfy0b0"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Use the real effective version of Guile in directory names
+               ;; instead of a hard-coded "/2.0".
+               '(begin
+                  (substitute* "configure"
+                    (("ac_subst_vars='")
+                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
+                  (substitute* "Makefile.in"
+                    (("/site/2.0")
+                     "/site/@GUILE_EFFECTIVE_VERSION@"))))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.0)))
