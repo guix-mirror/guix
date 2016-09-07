@@ -41,6 +41,13 @@ AC_ARG_WITH([bash-completion-dir],
   [bashcompletiondir='${sysconfdir}/bash_completion.d'])
 AC_SUBST([bashcompletiondir])
 
+AC_ARG_WITH([zsh-completion-dir],
+  AC_HELP_STRING([--with-zsh-completion-dir=DIR],
+    [name of the Zsh completion directory]),
+  [zshcompletiondir="$withval"],
+  [zshcompletiondir='${datadir}/zsh/site-functions'])
+AC_SUBST([zshcompletiondir])
+
 dnl Better be verbose.
 AC_MSG_CHECKING([for the store directory])
 AC_MSG_RESULT([$storedir])

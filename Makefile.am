@@ -344,6 +344,9 @@ dist_pkgdata_DATA = hydra.gnu.org.pub
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix
 
+# Zsh completion file.
+dist_zshcompletion_DATA = etc/completion/zsh/_guix
+
 EXTRA_DIST =						\
   HACKING						\
   ROADMAP						\
