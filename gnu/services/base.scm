@@ -907,8 +907,8 @@ Service Switch}, for an example."
       (requirement '(user-processes))
       (start #~(make-forkexec-constructor
                 (list #$(syslog-configuration-syslogd config)
-                      "--no-detach"
-                      "--rcfile" #$(syslog-configuration-config-file config))))
+                      "--rcfile" #$(syslog-configuration-config-file config))
+                #:pid-file "/var/run/syslog.pid"))
       (stop #~(make-kill-destructor))))))
 
 ;; Snippet adapted from the GNU inetutils manual.
