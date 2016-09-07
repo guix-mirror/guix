@@ -30,6 +30,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages enlightenment)
@@ -39,6 +40,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -665,7 +667,6 @@ many applications simultaneously.
 This package provides the library for GLib applications.")
     (license license:lgpl2.1+)))
 
-
 (define-public dbus-c++
   (package
     (name "dbus-c++")
@@ -704,4 +705,47 @@ This package provides the library for GLib applications.")
 programming langauage.  It also contains the utility
 @command{dbuscxx-xml2cpp}.")
     (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
+    (license license:lgpl2.1+)))
+
+(define-public appstream-glib
+  (package
+    (name "appstream-glib")
+    (version "0.6.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://people.freedesktop.org/~hughsient/"
+                                  "appstream-glib/releases/"
+                                  "appstream-glib-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08mrf4k0jhnpdd4fig2grmi2vbxkgdhrwk0d0zq0j1wp5ip7arwp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libarchive" ,libarchive)
+       ("libsoup" ,libsoup)
+       ("nettle" ,nettle)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:configure-flags
+       '("--disable-firmware" "--disable-dep11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "libappstream-glib/as-self-test.c"
+               (("g_test_add_func.*as_test_store_local_appdata_func);") "")
+               (("g_test_add_func.*as_test_store_speed_appdata_func);") "")
+               (("g_test_add_func.*as_test_store_speed_desktop_func);") ""))
+             #t)))))
+    (home-page "https://github.com/hughsie/appstream-glib")
+    (synopsis "Library for reading and writing AppStream metadata")
+    (description "This library provides objects and helper methods to help
+reading and writing @uref{https://www.freedesktop.org/wiki/Distributions/AppStream,AppStream}
+metadata.")
     (license license:lgpl2.1+)))
