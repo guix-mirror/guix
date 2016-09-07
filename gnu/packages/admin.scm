@@ -731,10 +731,14 @@ over ssh connections.")
                    "true")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list (string-append "ROTT_ETCDIR="
-                                              (assoc-ref %outputs "out")
-                                              "/etc")
+     '(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
                                "--localstatedir=/var")
+
+       ;; Install example config files in OUT/etc.
+       #:make-flags (list (string-append "ROTT_ETCDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/etc"))
+
        #:phases (modify-phases %standard-phases
                   (add-after 'build 'set-packdir
                     (lambda _
