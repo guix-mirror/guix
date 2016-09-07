@@ -239,7 +239,9 @@ re-executing them as necessary.")
               (base32
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
     (build-system gnu-build-system)
-    (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
+    (arguments `(#:configure-flags '("--localstatedir=/var")
+
+                 ;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
                  #:tests? #f))
     (inputs `(("ncurses" ,ncurses)
