@@ -514,19 +514,23 @@ for Guile\".")
     (name "guile-json")
     (version "0.5.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://savannah/guile-json/guile-json-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0l8a34l92nrdszy7ykycfvr8y0n0yi5qb3ccliycvpvf9mzk5n8d"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; Make sure everything goes under .../site/2.0, like Guile's
-              ;; search paths expects.
-              '(substitute* '("Makefile.in" "json/Makefile.in")
-                 (("moddir =.*/share/guile/site" all)
-                  (string-append all "/2.0"))))))
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0l8a34l92nrdszy7ykycfvr8y0n0yi5qb3ccliycvpvf9mzk5n8d"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure everything goes under .../site/X.Y, like Guile's
+               ;; search paths expects.
+               '(begin
+                  (substitute* "configure"
+                    (("ac_subst_vars='")
+                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
+                  (substitute* '("Makefile.in" "json/Makefile.in")
+                    (("moddir =.*/share/guile/site" all)
+                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
     (native-inputs `(("guile" ,guile-2.0)))
     (home-page "http://savannah.nongnu.org/projects/guile-json/")
