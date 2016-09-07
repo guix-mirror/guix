@@ -747,6 +747,15 @@ over ssh connections.")
                         (("packdir=\"\"")
                          "packdir=\"/var/log\""))
                       #t))
+                  (add-before 'install 'tweak-rc-weekly
+                    (lambda _
+                      (substitute* "rc/weekly"
+                        (("/bin/kill")
+                         (which "kill"))
+                        (("syslogd\\.pid")
+                         ;; The file is called 'syslog.pid' (no 'd').
+                         "syslog.pid"))
+                      #t))
                   (add-after 'install 'install-info
                     (lambda _
                       (zero? (system* "make" "install-info")))))))
