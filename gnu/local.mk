@@ -385,6 +385,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/zip.scm				\
 						\
   %D%/services.scm				\
+  %D%/services/admin.scm			\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/databases.scm			\
