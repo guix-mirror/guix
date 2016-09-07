@@ -79,7 +79,13 @@ a flexible and convenient way.")
                              (("#! /bin/sh")
                               (string-append "#!" (which "sh")))))
                          (remove file-is-directory?
-                                 (find-files "src/tests" ".*")))))))
+                                 (find-files "src/tests" ".*"))))))
+         (add-after 'unpack 'patch-iconv-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/man.c"
+               (("\"iconv\"")
+                (string-append "\"" (which "iconv") "\"")))
+             #t)))
        #:configure-flags
        (let ((groff (assoc-ref %build-inputs "groff"))
              (less  (assoc-ref %build-inputs "less"))
