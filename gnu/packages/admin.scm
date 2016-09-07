@@ -735,11 +735,10 @@ over ssh connections.")
                                               (assoc-ref %outputs "out")
                                               "/etc")
                                "--localstatedir=/var")
-       #:phases (alist-cons-after
-                 'install 'install-info
-                 (lambda _
-                   (zero? (system* "make" "install-info")))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-info
+                    (lambda _
+                      (zero? (system* "make" "install-info")))))))
     (native-inputs `(("texinfo" ,texinfo)
                      ("util-linux" ,util-linux))) ; for 'cal'
     (home-page "http://www.gnu.org/software/rottlog/")
