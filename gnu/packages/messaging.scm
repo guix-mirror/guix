@@ -47,6 +47,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages xml)
@@ -213,8 +214,9 @@ dictionaries.  HexChat can be extended with multiple addons.")
     (native-inputs `(("procps" ,procps)
                      ("expect" ,expect)
                      ("inetutils" ,inetutils)))
-    ;; XXX Add libident, libwrap.
+    ;; XXX Add libident.
     (inputs `(("zlib" ,zlib)
+              ("libwrap" ,tcp-wrappers)
               ("gnutls" ,gnutls)
               ,@(if (string-suffix? "-linux"
                                     (or (%current-target-system)
@@ -223,7 +225,7 @@ dictionaries.  HexChat can be extended with multiple addons.")
                     '())))
     (arguments
      `(#:configure-flags
-       '("--with-gnutls" "--with-iconv" "--enable-ipv6"
+       '("--with-gnutls" "--with-iconv" "--enable-ipv6" "--with-tcp-wrappers"
          ,@(if (string-suffix? "-linux"
                                (or (%current-target-system)
                                    (%current-system)))
