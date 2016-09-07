@@ -118,8 +118,7 @@
        (let* ((pipe (open-input-pipe foo))
               (str  (get-string-all pipe)))
          (with-directory-excursion directory
-           (for-each delete-file
-                     '("foo" ".foo-real" ".foo-wrap-01" ".foo-wrap-02")))
+           (for-each delete-file '("foo" ".foo-real")))
          (and (zero? (close-pipe pipe))
               str))))))
 
