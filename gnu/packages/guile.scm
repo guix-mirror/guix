@@ -229,6 +229,21 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/2.2/ccache"
                      "share/guile/site/2.2")))))))
 
+(define (guile-2.2-package-name name)
+  "Return NAME with a \"guile2.2-\" prefix instead of \"guile-\", when
+applicable."
+  (if (string-prefix? "guile-" name)
+      (string-append "guile2.2-"
+                     (string-drop name
+                                  (string-length "guile-")))
+      name))
+
+(define package-for-guile-2.2
+  ;; A procedure that rewrites the dependency tree of the given package to use
+  ;; GUILE-NEXT instead of GUILE-2.0.
+  (package-input-rewriting `((,guile-2.0 . ,guile-next))
+                           guile-2.2-package-name))
+
 (define-public guile-for-guile-emacs
   (package (inherit guile-next)
     (name "guile-for-guile-emacs")
@@ -544,6 +559,9 @@ http:://json.org specification.  These are the main features:
 - Allows JSON pretty printing.")
     (license lgpl3+)))
 
+(define-public guile2.2-json
+  (package-for-guile-2.2 guile-json))
+
 (define-public guile-minikanren
   (package
     (name "guile-minikanren")
@@ -627,6 +645,9 @@ slightly from miniKanren mainline.
 See http://minikanren.org/ for more on miniKanren generally.")
     (license expat)))
 
+(define-public guile2.2-minikanren
+  (package-for-guile-2.2 guile-minikanren))
+
 (define-public guile-irregex
   (package
     (name "guile-irregex")
@@ -708,6 +729,9 @@ See http://minikanren.org/ for more on miniKanren generally.")
 string-based regular expressions.  It implements SRFI 115 and is deeply
 inspired by the SCSH regular expression system.")
     (license bsd-3)))
+
+(define-public guile2.2-irregex
+  (package-for-guile-2.2 guile-irregex))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
@@ -1230,5 +1254,8 @@ follow the @uref{http://commonmark.org/, CommonMark spec}, the main difference
 is no support for parsing block and inline level HTML.")
     (home-page "https://github.com/OrangeShark/guile-commonmark")
     (license lgpl3+)))
+
+(define-public guile2.2-commonmark
+  (package-for-guile-2.2 guile-commonmark))
 
 ;;; guile.scm ends here
