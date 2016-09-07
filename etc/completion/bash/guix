@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -27,7 +27,8 @@ _guix_complete_available_package ()
     then
 	# Cache the complete list because it rarely changes and makes
 	# completion much faster.
-	_guix_available_packages="$(${COMP_WORDS[0]} package -A | cut -f1)"
+	_guix_available_packages="$(${COMP_WORDS[0]} package -A 2> /dev/null \
+                                    | cut -f1)"
     fi
     COMPREPLY=($(compgen -W "$_guix_available_packages" -- "$prefix"))
 }
@@ -37,15 +38,16 @@ _guix_complete_installed_package ()
     # Here we do not cache the list of installed packages because that
     # may change over time and the list is relatively small anyway.
     local prefix="$1"
-    local packages="$(${COMP_WORDS[0]} package -I "^$prefix" | cut -f1)"
+    local packages="$(${COMP_WORDS[0]} package -I "^$prefix" 2> /dev/null \
+                      | cut -f1)"
     COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
 }
 
 _guix_complete_option ()
 {
-    local options="$(${COMP_WORDS[0]} ${COMP_WORDS[1]} --help \
+    local options="$(${COMP_WORDS[0]} ${COMP_WORDS[1]} --help 2> /dev/null \
                             | grep '^  \+-' \
-                            | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g' )"
+                            | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
     compopt -o nospace
     COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[$word_count - 1]}"))
 }
@@ -119,7 +121,8 @@ _guix_complete ()
 	    if [ -z "$_guix_subcommands" ]
 	    then
 		# Cache the list of subcommands to speed things up.
-		_guix_subcommands="$(guix --help | grep '^  ' | cut -c 2-)"
+		_guix_subcommands="$(guix --help 2> /dev/null \
+                                     | grep '^  ' | cut -c 2-)"
 	    fi
 	    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
 	    ;;
