@@ -357,14 +357,14 @@ glxgears, glxheads, and glxinfo.")
 (define-public glew
   (package
     (name "glew")
-    (version "1.11.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/glew/glew/" version
                                   "/glew-" version ".tgz"))
               (sha256
                (base32
-                "1mhkllxz49l1x680dmzrv2i82qjrq017sykah3xc90f2d8qcxfv9"))
+                "0r37fg2s1f0jrvwh6c8cz5x6v4wqmhq42qm15cs9qs349q5c6wn5"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "config/Makefile.linux"
