@@ -4586,6 +4586,49 @@ BioPython in a convenient way.  Instead of having a big mess of scripts, there
 is one that takes arguments.")
     (license license:gpl3)))
 
+(define-public seqtk
+  (package
+    (name "seqtk")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/lh3/seqtk/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ywdyzpmfiz2wp6ampbzqg4y8bj450nfgqarpamg045b8mk32lxx"))
+                            (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove extraneous header files, as is done in the seqtk
+                  ;; master branch.
+                  (for-each (lambda (file) (delete-file file))
+                            (list "ksort.h" "kstring.h" "kvec.h"))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           ;; There are no tests, so we just run a sanity check.
+           (lambda _ (zero? (system* "./seqtk" "seq"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (install-file "seqtk" bin)))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/lh3/seqtk")
+    (synopsis "Toolkit for processing biological sequences in FASTA/Q format")
+    (description
+     "Seqtk is a fast and lightweight tool for processing sequences in the
+FASTA or FASTQ format.  It parses both FASTA and FASTQ files which can be
+optionally compressed by gzip.")
+      (license license:expat)))
+
 (define-public snap-aligner
   (package
     (name "snap-aligner")
