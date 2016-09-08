@@ -47,15 +47,11 @@
        ("flex" ,flex)))
     (arguments
      `(#:make-flags
-       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-paths
-           (lambda _
-             (substitute* "Makefile"
-               (("/usr/bin/install") "install"))
-             (substitute* "Makefile"
-               (("PREFIX = \\$\\(HOME\\)") ""))))
          (delete 'configure))))
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")
