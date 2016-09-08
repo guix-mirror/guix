@@ -397,6 +397,17 @@ It has been modified to remove all non-free binary blobs.")
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
+;; Avoid rebuilding kernel variants when there is a minor version bump.
+(define %linux-libre-version "4.7.3")
+(define %linux-libre-hash "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6")
+
+(define-public linux-libre-arm-generic
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
+
 
 ;;;
 ;;; Pluggable authentication modules (PAM).
