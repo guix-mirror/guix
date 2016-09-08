@@ -266,7 +266,8 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6"))))
+                "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6"))
+              (patches (origin-patches %boot-logo-patch))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs
@@ -274,7 +275,6 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("module-init-tools" ,module-init-tools)
-       ("patch/freedo+gnu" ,%boot-logo-patch)
 
        ,@(let ((conf (kernel-config
                       (or (%current-target-system)
@@ -296,10 +296,6 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
-
-             ;; Apply the neat patch.
-             (system* "patch" "-p1" "--force"
-                      "-i" (assoc-ref inputs "patch/freedo+gnu"))
 
              (let ((arch ,(system->linux-architecture
                            (or (%current-target-system)
