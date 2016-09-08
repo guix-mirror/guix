@@ -290,9 +290,8 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys #:rest args)
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
@@ -333,11 +332,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
                           port)
                  (close-port port))
 
-               (zero? (system* "make" "oldconfig"))
-
-               ;; Call the default `build' phase so `-j' is correctly
-               ;; passed.
-               (apply build #:make-flags "all" args))))
+               (zero? (system* "make" "oldconfig")))))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
