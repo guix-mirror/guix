@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages docbook)
   #:use-module (srfi srfi-26))
 
 (define-public tilda
@@ -209,7 +212,10 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                 "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("libxslt" ,libxslt)                       ;to build the man page
+       ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
+       ("docbook-xsl" ,docbook-xsl)))
     (inputs
      `(("libdrm" ,libdrm)
        ("libtsm" ,libtsm)
