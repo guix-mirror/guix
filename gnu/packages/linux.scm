@@ -272,7 +272,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                     options)
                "\n"))
 
-(define* (make-linux-libre version hash
+(define* (make-linux-libre version hash supported-systems
                            #:key
                            ;; A function that takes an arch and a variant.
                            ;; See kernel-config for an example.
@@ -290,8 +290,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
               (uri (linux-libre-urls version))
               (sha256 (base32 hash))
               (patches (origin-patches %boot-logo-patch))))
+    (supported-systems supported-systems)
     (build-system gnu-build-system)
-    (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs
      `(("perl" ,perl)
        ("bc" ,bc)
@@ -377,19 +377,24 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
+(define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
+
 (define-public linux-libre
   (make-linux-libre "4.7.3"
                     "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6"
+                    %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.20"
                     "1fi0pyyzcf643vdsss0d9ld6jqyxw0k76r0a5vpd4mv3dcl37yyq"
+                    %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
   (make-linux-libre "4.1.31"
                     "0grffah921k136w1qwcswxv6m810s8q54nr2rk7kyqka3a1b81yw"
+                    %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 
