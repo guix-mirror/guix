@@ -209,7 +209,23 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                     "kmscon-" version ".tar.xz"))
               (sha256
                (base32
-                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))))
+                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Use elogind instead of systemd.
+               '(begin
+                  (substitute* "configure"
+                    (("libsystemd-daemon libsystemd-login")
+                     "libelogind"))
+                  (substitute* "src/uterm_systemd.c"
+                    (("#include <systemd/sd-login.h>")
+                     "#include <elogind/sd-login.h>")
+                    ;; We don't have this header.
+                    (("#include <systemd/sd-daemon\\.h>")
+                     "")
+                    ;; Replace the call to 'sd_booted' by the truth value.
+                    (("sd_booted\\(\\)")
+                     "1"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
