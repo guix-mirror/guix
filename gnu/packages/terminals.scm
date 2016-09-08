@@ -41,7 +41,8 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (srfi srfi-26))
 
 (define-public tilda
   (package
@@ -217,10 +218,13 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
        ("mesa" ,mesa)
        ("pango" ,pango)
        ("udev" ,eudev)))
-    (synopsis "Simple terminal emulator")
-    (description "Kmscon is a simple terminal emulator based on linux kernel
-mode setting (KMS).  It is an attempt to replace the in-kernel VT implementation
-with a userspace console.  See kmscon(1) man-page for usage information.")
+    (synopsis "Linux KMS-based terminal emulator")
+    (description "Kmscon is a terminal emulator based on Linux's @dfn{kernel
+mode setting} (KMS).  It can replace the in-kernel virtual terminal (VT)
+implementation with a user-space console.  Compared to the Linux console,
+kmscon provides enhanced features including XKB-compatible internationalized
+keyboard support, UTF-8 input/font support, hardware-accelerated rendering,
+multi-seat support, a replacement for @command{mingetty}, and more.")
     (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
     ;; Hash table implementation is lgpl2.1+ licensed.
     ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
@@ -229,4 +233,7 @@ with a userspace console.  See kmscon(1) man-page for usage information.")
     ;; under the bsd 2 license.
     ;; Unifont-Font is from http://unifoundry.com/unifont.html and licensed
     ;; under the terms of the GNU GPL.
-    (license (list license:expat license:lgpl2.1+ license:bsd-2 license:gpl2+))))
+    (license (list license:expat license:lgpl2.1+ license:bsd-2
+                   license:gpl2+))
+    (supported-systems (filter (cut string-suffix? "-linux" <>)
+                               %supported-systems))))
