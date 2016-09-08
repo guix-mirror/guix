@@ -270,6 +270,10 @@ corresponding to old generations of the system."
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)
+            (format port
+                    "# This file was generated from your GuixSD configuration.  Any changes
+# will be lost upon reconfiguration.
+")
             #$sugar
             (format port "
 set default=~a
