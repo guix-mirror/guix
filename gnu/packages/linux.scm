@@ -276,11 +276,14 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                            #:key
                            ;; A function that takes an arch and a variant.
                            ;; See kernel-config for an example.
+                           (extra-version #f)
                            (configuration-file #f)
                            (defconfig "defconfig")
                            (extra-options %default-extra-linux-options))
   (package
-    (name "linux-libre")
+    (name (if extra-version
+              (string-append "linux-libre-" extra-version)
+              "linux-libre"))
     (version version)
     (source (origin
               (method url-fetch)
@@ -326,6 +329,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (setenv "CROSS_COMPILE" (string-append target "-"))
                  (format #t "`CROSS_COMPILE' set to `~a'~%"
                          (getenv "CROSS_COMPILE"))))
+
+             (setenv "EXTRA_VERSION" ,extra-version)
 
              (let ((build  (assoc-ref %standard-phases 'build))
                    (config (assoc-ref inputs "kconfig")))
