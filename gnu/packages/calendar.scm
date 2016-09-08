@@ -166,3 +166,24 @@ program to be executed.  It also features: sophisticated date calculation,
 moon phases, sunrise/sunset, Hebrew calendar, alarms, PostScript output and
 proper handling of holidays.")
     (license gpl2)))
+
+(define-public libhdate
+  (package
+    (name "libhdate")
+    (version "1.6.02")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/libhdate/libhdate/libhdate-"
+                            version "/" name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "0qkpq412p78znw8gckwcx3l0wcss9s0dgw1pvjb1ih2pxf6hm4rw"))))
+    (build-system gnu-build-system)
+    (home-page "http://libhdate.sourceforge.net/")
+    (synopsis "Library to use Hebrew dates")
+    (description "LibHdate is a small library for the Hebrew calendar and times
+of day, written in C, and including bindings for C++, pascal, perl, php, python,
+and ruby.  It includes two illustrative command-line programs, @code{hcal} and
+@code{hdate}, and some snippets and scripts written in the binding languages.")
+    (license gpl3+)))
