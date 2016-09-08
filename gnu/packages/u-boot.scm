@@ -131,3 +131,6 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-malta
   (make-u-boot-package "malta" "mips64el-linux-gnuabi64"))
+
+(define-public u-boot-beagle-bone-black
+  (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
