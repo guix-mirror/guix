@@ -247,12 +247,38 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (file (string-append "gnu/packages/" name)))
     (if file-exists? (search-path %load-path file) #f)))
 
+(define %default-extra-linux-options
+  `(("CONFIG_NET_9P" . m)
+    ("CONFIG_NET_9P_VIRTIO" . m)
+    ("CONFIG_VIRTIO_BLK" . m)
+    ("CONFIG_VIRTIO_NET" . m)
+    ;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
+    ("CONFIG_VIRTIO_PCI" . m)
+    ("CONFIG_VIRTIO_BALLOON" . m)
+    ("CONFIG_VIRTIO_MMIO" . m)
+    ("CONFIG_FUSE_FS" . m)
+    ("CONFIG_CIFS" . m)
+    ("CONFIG_9P_FS" . m)))
+
+(define (config->string options)
+  (string-join (map (match-lambda
+                      ((option . 'm)
+                       (string-append option "=m"))
+                      ((option . #t)
+                       (string-append option "=y"))
+                      ((option . #f)
+                       (string-append option "=n")))
+                    options)
+               "\n"))
+
 (define* (make-linux-libre version hash
                            #:key
                            ;; A function that takes an arch and a variant.
                            ;; See kernel-config for an example.
                            (configuration-file #f)
-                           (defconfig "defconfig"))
+                           (defconfig "defconfig")
+                           (extra-options %default-extra-linux-options))
   (package
     (name "linux-libre")
     (version version)
@@ -314,20 +340,9 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 
                ;; Appending works even when the option wasn't in the
                ;; file.  The last one prevails if duplicated.
-               (let ((port (open-file ".config" "a")))
-                 (display (string-append "CONFIG_NET_9P=m\n"
-                                         "CONFIG_NET_9P_VIRTIO=m\n"
-                                         "CONFIG_VIRTIO_BLK=m\n"
-                                         "CONFIG_VIRTIO_NET=m\n"
-                                         ;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-                                         "CONFIG_DEVPTS_MULTIPLE_INSTANCES=y\n"
-                                         "CONFIG_VIRTIO_PCI=m\n"
-                                         "CONFIG_VIRTIO_BALLOON=m\n"
-                                         "CONFIG_VIRTIO_MMIO=m\n"
-                                         "CONFIG_FUSE_FS=m\n"
-                                         "CONFIG_CIFS=m\n"
-                                         "CONFIG_9P_FS=m\n")
-                          port)
+               (let ((port (open-file ".config" "a"))
+                     (extra-configuration ,(config->string extra-options)))
+                 (display extra-configuration port)
                  (close-port port))
 
                (zero? (system* "make" "oldconfig")))))
