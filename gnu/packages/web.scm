@@ -3230,6 +3230,20 @@ directory.")
                (base32
                 "0j9bf80grd6gwh7116m575pycv87c0wcwkxsz3gzzfs4aw3pxyr9"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See https://github.com/rstudio/htmltools/pull/68
+         ;; The resource files are in the store and have mode 444.  After
+         ;; copying the files R fails to remove them again because it doesn't
+         ;; have write access to them.
+         (add-after 'unpack 'copy-files-without-mode
+           (lambda _
+             (substitute* "R/html_dependency.R"
+               (("file.copy\\(from, to, " prefix)
+                (string-append prefix
+                               "copy.mode = FALSE, ")))
+             #t)))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-rcpp" ,r-rcpp)))
