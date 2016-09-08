@@ -296,7 +296,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
      `(("perl" ,perl)
        ("bc" ,bc)
        ("openssl" ,openssl)
-       ("module-init-tools" ,module-init-tools)
+       ("kmod" ,kmod)
        ,@(let ((conf (configuration-file
                       (system->linux-architecture
                        (or (%current-target-system)
@@ -355,7 +355,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (moddir (string-append out "/lib/modules"))
-                    (mit    (assoc-ref (or native-inputs inputs) "module-init-tools")))
+                    (kmod    (assoc-ref (or native-inputs inputs) "kmod")))
                (mkdir-p moddir)
                (for-each (lambda (file)
                            (copy-file file
@@ -363,7 +363,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                          (find-files "." "^(bzImage|zImage|vmlinuz|System\\.map)$"))
                (copy-file ".config" (string-append out "/config"))
                (zero? (system* "make"
-                               (string-append "DEPMOD=" mit "/sbin/depmod")
+                               (string-append "DEPMOD=" kmod "/bin/depmod")
                                (string-append "MODULE_DIR=" moddir)
                                (string-append "INSTALL_PATH=" out)
                                (string-append "INSTALL_MOD_PATH=" out)
