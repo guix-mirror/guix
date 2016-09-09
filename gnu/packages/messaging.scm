@@ -24,8 +24,8 @@
 
 (define-module (gnu packages messaging)
   #:use-module ((guix licenses)
-                #:select (gpl3+ gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2 non-copyleft
-                          asl2.0 x11))
+                #:select (gpl3+ gpl3 gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2
+                          non-copyleft asl2.0 x11))
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -65,7 +65,9 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages xiph))
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages fontutils))
 
 (define-public libotr
   (package
@@ -613,5 +615,48 @@ protocols.")
        "C library implementation of the Tox encrypted messenger protocol.")
       (license gpl3+)
       (home-page "https://tox.chat"))))
+
+(define-public utox
+  (package
+   (name "utox")
+   (version "0.9.8")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/GrayHatter/uTox/archive/v"
+                         version ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "13hfqbwzcgvfbvf9yjm62aqsvxnpqppb50c88sys43m7022yqcsy"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:make-flags (list (string-append "PREFIX=" %output)
+                         "CC=gcc")
+      #:tests? #f ; No tests
+      #:phases
+      (modify-phases %standard-phases
+        ;; No configure script
+        (delete 'configure))))
+   (inputs
+    `(("dbus" ,dbus)
+      ("filteraudio" ,filteraudio)
+      ("fontconfig" ,fontconfig)
+      ("freetype" ,freetype)
+      ("libsodium" ,libsodium)
+      ("libtoxcore" ,libtoxcore)
+      ("libvpx" ,libvpx)
+      ("libx11" ,libx11)
+      ("libxext" ,libxext)
+      ("libxrender" ,libxrender)
+      ("openal" ,openal)
+      ("v4l-utils" ,v4l-utils)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (synopsis "Lightweight Tox client")
+   (description "A  lightweight Tox client.  Tox is a distributed and secure
+instant messenger with audio and video chat capabilities.")
+   (home-page "http://utox.org/")
+   (license gpl3)))
 
 ;;; messaging.scm ends here
