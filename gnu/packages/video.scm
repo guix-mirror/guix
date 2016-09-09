@@ -48,11 +48,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
@@ -1608,4 +1610,27 @@ and MPEG system streams.")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libbdplus is a library which implements the BD+ System
 specifications.")
+    (license license:lgpl2.1+)))
+
+(define-public libaacs
+  (package
+    (name "libaacs")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libaacs/"
+                           version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "1s5v075hnbs57995r6lljm79wgrip3gnyf55a0y7bja75jh49hwm"))))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libaacs.html")
+    (synopsis "Library for decrypting certain Blu-Ray discs")
+    (description "libaacs is a library which implements the Advanced Access
+Content System specification.")
     (license license:lgpl2.1+)))
