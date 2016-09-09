@@ -141,17 +141,17 @@ structure of the predicted RNA.")
 (define-public bamm
   (package
     (name "bamm")
-    (version "1.7.2a")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               ;; BamM is not available on pypi.
               (uri (string-append
-                    "https://github.com/Ecogenomics/BamM/archive/v"
+                    "https://github.com/Ecogenomics/BamM/archive/"
                     version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0nb20yml39f8fh0cahpjywsl91irh9yskig549c17xkrkl74czsq"))
+                "1f35yxp4pc8aadsvbpg6r4kg2jh4fkjci0iby4iyljm6980sac0s"))
               (modules '((guix build utils)))
               (snippet
                `(begin
