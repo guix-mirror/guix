@@ -429,8 +429,6 @@ corresponding derivation."
   "Based on LST, a list of output names and packages, return a list of output
 names and file names suitable for the #:allowed-references argument to
 'derivation'."
-  ;; XXX: Currently outputs other than "out" are not supported, and things
-  ;; other than packages aren't either.
   (with-monad %store-monad
     (define lower
       (match-lambda
