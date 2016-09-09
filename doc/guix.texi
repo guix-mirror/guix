@@ -3327,7 +3327,8 @@ parameters, respectively.
 When the original package does not provide a suitable Ant build file,
 the parameter @code{#:jar-name} can be used to generate a minimal Ant
 build file @file{build.xml} with tasks to build the specified jar
-archive.
+archive.  In this case the parameter @code{#:source-dir} can be used to
+specify the source sub-directory, defaulting to ``src''.
 
 The parameter @code{#:build-target} can be used to specify the Ant task
 that should be run during the @code{build} phase.  By default the

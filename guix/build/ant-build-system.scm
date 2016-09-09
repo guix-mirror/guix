@@ -35,7 +35,8 @@
 ;;
 ;; Code:
 
-(define (default-build.xml jar-name prefix)
+(define* (default-build.xml jar-name prefix #:optional
+                            (source-dir "."))
   "Create a simple build.xml with standard targets for Ant."
   (call-with-output-file "build.xml"
     (lambda (port)
@@ -58,7 +59,7 @@
                  (target (@ (name "compile"))
                          (mkdir (@ (dir "${classes.dir}")))
                          (javac (@ (includeantruntime "false")
-                                   (srcdir "src")
+                                   (srcdir ,source-dir)
                                    (destdir "${classes.dir}")
                                    (classpath (@ (refid "classpath"))))))
 
@@ -98,11 +99,12 @@ to the default GNU unpack strategy."
       ((assq-ref gnu:%standard-phases 'unpack) #:source source)))
 
 (define* (configure #:key inputs outputs (jar-name #f)
-                    #:allow-other-keys)
+                    (source-dir "src") #:allow-other-keys)
   (when jar-name
     (default-build.xml jar-name
                        (string-append (assoc-ref outputs "out")
-                                      "/share/java")))
+                                      "/share/java")
+                       source-dir))
   (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
   (setenv "CLASSPATH" (generate-classpath inputs)))
 

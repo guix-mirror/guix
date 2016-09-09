@@ -98,6 +98,7 @@
                     (make-flags ''())
                     (build-target "jar")
                     (jar-name #f)
+                    (source-dir "src")
                     (phases '(@ (guix build ant-build-system)
                                 %standard-phases))
                     (outputs '("out"))
@@ -126,6 +127,7 @@
                   #:test-target ,test-target
                   #:build-target ,build-target
                   #:jar-name ,jar-name
+                  #:source-dir ,source-dir
                   #:phases ,phases
                   #:outputs %outputs
                   #:search-paths ',(map search-path-specification->sexp
