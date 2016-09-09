@@ -1232,3 +1232,33 @@ cli/shell/BourneShell.java"
 Plexus framework to ease working with strings, files, command lines, XML and
 more.")
     (license license:asl2.0)))
+
+(define-public java-plexus-interpolation
+  (package
+    (name "java-plexus-interpolation")
+    (version "1.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/"
+                                  "plexus-interpolation/archive/"
+                                  "plexus-interpolation-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w79ljwk42ymrgy8kqxq4l82pgdj6287gabpfnpkyzbrnclsnfrp"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-interpolation.jar"
+       #:source-dir "src/main"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://codehaus-plexus.github.io/plexus-interpolation/")
+    (synopsis "Java components for interpolating ${} strings and the like")
+    (description "Plexus interpolator is a modular, flexible interpolation
+framework for the expression language style commonly seen in Maven, Plexus,
+and other related projects.
+
+It has its foundation in the @code{org.codehaus.plexus.utils.interpolation}
+package within @code{plexus-utils}, but has been separated in order to allow
+these two libraries to vary independently of one another.")
+    (license license:asl2.0)))
