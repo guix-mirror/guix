@@ -660,7 +660,7 @@ hardware-related operations as necessary when booting a Linux container."
   (mlet %store-monad ((initrd (make-initrd boot-file-systems
                                            #:linux (operating-system-kernel os)
                                            #:mapped-devices mapped-devices)))
-    (return #~(string-append #$initrd "/initrd"))))
+    (return (file-append initrd "/initrd"))))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."
@@ -738,7 +738,7 @@ listed in OS.  The C library expects to find it under
                                    #~(string-append "--load=" #$system
                                                     "/boot")
                                    (operating-system-kernel-arguments os)))
-                           (initrd #~(string-append #$system "/initrd"))))))
+                           (initrd (file-append system "/initrd"))))))
     (grub-configuration-file (operating-system-bootloader os)
                              store-fs entries
                              #:old-entries old-entries)))
