@@ -126,26 +126,45 @@
 
 ;; Compiler for a type of objects that may be introduced in a gexp.
 (define-record-type <gexp-compiler>
-  (gexp-compiler predicate lower)
+  (gexp-compiler predicate lower expand)
   gexp-compiler?
   (predicate  gexp-compiler-predicate)
-  (lower      gexp-compiler-lower))
+  (lower      gexp-compiler-lower)
+  (expand     gexp-compiler-expand))              ;#f | DRV -> M sexp
 
 (define %gexp-compilers
   ;; List of <gexp-compiler>.
   '())
+
+(define (default-expander thing obj output)
+  "This is the default expander for \"things\" that appear in gexps.  It
+returns its output file name of OBJ's OUTPUT."
+  (match obj
+    ((? derivation? drv)
+     (derivation->output-path drv output))
+    ((? string? file)
+     file)))
 
 (define (register-compiler! compiler)
   "Register COMPILER as a gexp compiler."
   (set! %gexp-compilers (cons compiler %gexp-compilers)))
 
 (define (lookup-compiler object)
-  "Search a compiler for OBJECT.  Upon success, return the three argument
+  "Search for a compiler for OBJECT.  Upon success, return the three argument
 procedure to lower it; otherwise return #f."
   (any (match-lambda
         (($ <gexp-compiler> predicate lower)
          (and (predicate object) lower)))
        %gexp-compilers))
+
+(define (lookup-expander object)
+  "Search for an expander for OBJECT.  Upon success, return the three argument
+procedure to expand it; otherwise return #f."
+  (or (any (match-lambda
+             (($ <gexp-compiler> predicate _ expand)
+              (and (predicate object) expand)))
+           %gexp-compilers)
+      default-expander))
 
 (define* (lower-object obj
                        #:optional (system (%current-system))
@@ -157,19 +176,33 @@ OBJ must be an object that has an associated gexp compiler, such as a
   (let ((lower (lookup-compiler obj)))
     (lower obj system target)))
 
-(define-syntax-rule (define-gexp-compiler (name (param predicate)
-                                                system target)
-                      body ...)
-  "Define NAME as a compiler for objects matching PREDICATE encountered in
-gexps.  BODY must return a derivation for PARAM, an object that matches
-PREDICATE, for SYSTEM and TARGET (the latter of which is #f except when
-cross-compiling.)"
-  (begin
-    (define name
-      (gexp-compiler predicate
-                     (lambda (param system target)
-                       body ...)))
-    (register-compiler! name)))
+(define-syntax define-gexp-compiler
+  (syntax-rules (=> compiler expander)
+    "Define NAME as a compiler for objects matching PREDICATE encountered in
+gexps.
+
+In the simplest form of the macro, BODY must return a derivation for PARAM, an
+object that matches PREDICATE, for SYSTEM and TARGET (the latter of which is
+#f except when cross-compiling.)
+
+The more elaborate form allows you to specify an expander:
+
+  (define-gexp-compiler something something?
+    compiler => (lambda (param system target) ...)
+    expander => (lambda (param drv output) ...))
+
+The expander specifies how an object is converted to its sexp representation."
+    ((_ (name (param predicate) system target) body ...)
+     (define-gexp-compiler name predicate
+       compiler => (lambda (param system target) body ...)
+       expander => default-expander))
+    ((_ name predicate
+        compiler => compile
+        expander => expand)
+     (begin
+       (define name
+         (gexp-compiler predicate compile expand))
+       (register-compiler! name)))))
 
 (define-gexp-compiler (derivation-compiler (drv derivation?) system target)
   ;; Derivations are the lowest-level representation, so this is the identity
@@ -704,15 +737,12 @@ and in the current monad setting (system type, etc.)"
                            (or n? native?)))
                         refs)))
         (($ <gexp-input> (? struct? thing) output n?)
-         (let ((target (if (or n? native?) #f target)))
+         (let ((target (if (or n? native?) #f target))
+               (expand (lookup-expander thing)))
            (mlet %store-monad ((obj (lower-object thing system
                                                   #:target target)))
              ;; OBJ must be either a derivation or a store file name.
-             (return (match obj
-                       ((? derivation? drv)
-                        (derivation->output-path drv output))
-                       ((? string? file)
-                        file))))))
+             (return (expand thing obj output)))))
         (($ <gexp-input> x)
          (return x))
         (x
