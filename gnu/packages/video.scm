@@ -978,11 +978,27 @@ YouTube.com and a few more sites.")
                (base32
                 "1q1whviqv5sr9nr372h31zwid1rvbfbx3z4lzr8lnj25xha6cdm6"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--disable-bdjava")))
+    (arguments
+     `(#:configure-flags '("--disable-bdjava")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dlopen-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libaacs (assoc-ref inputs "libaacs"))
+                   (libbdplus (assoc-ref inputs "libbdplus")))
+               (substitute* "src/libbluray/disc/aacs.c"
+                 (("\"libaacs\"")
+                  (string-append "\"" libaacs "/lib/libaacs\"")))
+               (substitute* "src/libbluray/disc/bdplus.c"
+                 (("\"libbdplus\"")
+                  (string-append "\"" libbdplus "/lib/libbdplus\"")))
+               #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("libaacs" ,libaacs)
+       ("libbdplus" ,libbdplus)
        ("libxml2" ,libxml2)))
     (home-page "https://www.videolan.org/developers/libbluray.html")
     (synopsis "Blu-Ray Disc playback library")
