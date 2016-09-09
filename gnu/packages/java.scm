@@ -1623,3 +1623,37 @@ are many features, including:
   such as union, intersection, and closure.
 @end itemize\n")
     (license license:asl2.0)))
+
+(define-public java-commons-io
+  (package
+    (name "java-commons-io")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/io/source/"
+                           "commons-io-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0q5y41jrcjvx9hzs47x5kdhnasdy6rm4bzqd2jxl02w717m7a7v3"))))
+    (build-system ant-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Djunit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "target"))
+         (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/io/")
+    (synopsis "Common useful IO related classes")
+    (description "Commons-IO contains utility classes, stream implementations,
+file filters and endian classes.")
+    (license license:asl2.0)))
