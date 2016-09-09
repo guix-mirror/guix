@@ -390,7 +390,8 @@ work.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1anv0rjkbxw9kx91wvlfpb3dhppibda6kb1papny46bjzi3pzhl2"))))
+          "1anv0rjkbxw9kx91wvlfpb3dhppibda6kb1papny46bjzi3pzhl2"))
+        (patches (search-patches "openjpeg-CVE-2016-7163.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -427,7 +428,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
        (sha256
         (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))
        (patches (search-patches "openjpeg-use-after-free-fix.patch"
-                                "openjpeg-CVE-2015-6581.patch"))))))
+                                "openjpeg-CVE-2015-6581.patch"
+                                "openjpeg-CVE-2016-7163.patch"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
