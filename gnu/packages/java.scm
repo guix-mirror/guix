@@ -1775,3 +1775,40 @@ in the @code{java.lang} package.  The following classes are included:
   @code{hashCode}, @code{compareTo} and @code{toString} methods.
 @end itemize\n")
     (license license:asl2.0)))
+
+(define-public java-commons-cli
+  (package
+    (name "java-commons-cli")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/cli/source/"
+                                  "commons-cli-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1fkjn552i12vp3xxk21ws4p70fi0lyjm004vzxsdaz7gdpgyxxyl"))))
+    (build-system ant-build-system)
+    ;; TODO: javadoc
+    (arguments
+     `(#:jar-name "commons-cli.jar"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/cli/")
+    (synopsis "Command line arguments and options parsing library")
+    (description "The Apache Commons CLI library provides an API for parsing
+command line options passed to programs.  It is also able to print help
+messages detailing the options available for a command line tool.
+
+Commons CLI supports different types of options:
+
+@itemize
+@item POSIX like options (ie. tar -zxvf foo.tar.gz)
+@item GNU like long options (ie. du --human-readable --max-depth=1)
+@item Java like properties (ie. java -Djava.awt.headless=true Foo)
+@item Short options with value attached (ie. gcc -O2 foo.c)
+@item long options with single hyphen (ie. ant -projecthelp)
+@end itemize
+
+This is a part of the Apache Commons Project.")
+    (license license:asl2.0)))
