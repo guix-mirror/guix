@@ -1853,3 +1853,37 @@ phonetic encoding utilities.
 
 This is a part of the Apache Commons Project.")
     (license license:asl2.0)))
+
+(define-public java-commons-daemon
+  (package
+    (name "java-commons-daemon")
+    (version "1.0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/daemon/source/"
+                                  "commons-daemon-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0ci46kq8jpz084ccwq0mmkahcgsmh20ziclp2jf5i0djqv95gvhi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-doc (install-javadoc "dist/docs/api")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/daemon/")
+    (synopsis "Library to launch Java applications as daemons")
+    (description "The Daemon package from Apache Commons can be used to
+implement Java applications which can be launched as daemons.  For example the
+program will be notified about a shutdown so that it can perform cleanup tasks
+before its process of execution is destroyed by the operation system.
+
+This package contains the Java library.  You will also need the actual binary
+for your architecture which is provided by the jsvc package.
+
+This is a part of the Apache Commons Project.")
+    (license license:asl2.0)))
