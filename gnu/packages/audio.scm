@@ -199,7 +199,8 @@ namespace ARDOUR { const char* revision = \"5.3\" ; }"))))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:configure-flags '("--cxx11") ; required by gtkmm
+     `(#:configure-flags '("--cxx11"          ; required by gtkmm
+                           "--no-phone-home") ; don't contact ardour.org
        #:phases
        (modify-phases %standard-phases
          (add-after
