@@ -1712,3 +1712,66 @@ included:
   @code{hashCode}, @code{compareTo} and @code{toString} methods.
 @end itemize\n")
     (license license:asl2.0)))
+
+(define-public java-commons-lang3
+  (package
+    (name "java-commons-lang3")
+    (version "3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/lang/source/"
+                           "commons-lang3-" version "-src.tar.gz"))
+       (sha256
+        (base32 "0xpshb9spjhplq5a7mr0y1bgfw8190ik4xj8f569xidfcki1d6kg"))))
+    (build-system ant-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-all"))
+             (junit    (assoc-ref %build-inputs "java-junit"))
+             (easymock (assoc-ref %build-inputs "java-easymock"))
+             (io       (assoc-ref %build-inputs "java-commons-io")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-all.jar")
+               (string-append "-Dcommons-io.jar=" io
+                              "/share/java/commons-io-"
+                              ,(package-version java-commons-io)
+                              "-SNAPSHOT.jar")
+               (string-append "-Deasymock.jar=" easymock
+                              "/share/java/easymock.jar")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "target"))
+         (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-commons-io" ,java-commons-io)
+       ("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-easymock" ,java-easymock)))
+    (home-page "http://commons.apache.org/lang/")
+    (synopsis "Extension of the java.lang package")
+    (description "The Commons Lang components contains a set of Java classes
+that provide helper methods for standard Java classes, especially those found
+in the @code{java.lang} package.  The following classes are included:
+
+@itemize
+@item StringUtils - Helper for @code{java.lang.String}.
+@item CharSetUtils - Methods for dealing with @code{CharSets}, which are sets of
+  characters such as @code{[a-z]} and @code{[abcdez]}.
+@item RandomStringUtils - Helper for creating randomised strings.
+@item NumberUtils - Helper for @code{java.lang.Number} and its subclasses.
+@item NumberRange - A range of numbers with an upper and lower bound.
+@item ObjectUtils - Helper for @code{java.lang.Object}.
+@item SerializationUtils - Helper for serializing objects.
+@item SystemUtils - Utility class defining the Java system properties.
+@item NestedException package - A sub-package for the creation of nested
+   exceptions.
+@item Enum package - A sub-package for the creation of enumerated types.
+@item Builder package - A sub-package for the creation of @code{equals},
+  @code{hashCode}, @code{compareTo} and @code{toString} methods.
+@end itemize\n")
+    (license license:asl2.0)))
