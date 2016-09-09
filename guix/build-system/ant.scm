@@ -39,6 +39,7 @@
 (define %ant-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build ant-build-system)
+    (guix build java-utils)
     (guix build syscalls)
     ,@%gnu-build-system-modules))
 
@@ -108,6 +109,7 @@
                     (guile #f)
                     (imported-modules %ant-build-system-modules)
                     (modules '((guix build ant-build-system)
+                               (guix build java-utils)
                                (guix build utils))))
   "Build SOURCE with INPUTS."
   (define builder

@@ -124,6 +124,7 @@ MODULES =					\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
+  guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
   guix/build/graft.scm				\
   guix/build/bournish.scm			\
