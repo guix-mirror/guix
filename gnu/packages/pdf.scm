@@ -53,6 +53,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages javascript)
   #:use-module (srfi srfi-1))
 
 (define-public poppler
@@ -466,29 +467,42 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.8")
+    (version "1.9a")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.gz"))
         (sha256
-          (base32 "01n26cy41lc2fjri63s4js23ixxb4nd37aafry3hz4i4id6wd8x2"))
-        (patches (search-patches "mupdf-CVE-2016-6265.patch"
+         (base32
+          "1k64pdapyj8a336jw3j61fhn0rp4q6az7d0dqp9r5n3d9rgwa5c0"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
+                                 "mupdf-CVE-2016-6265.patch"
                                  "mupdf-CVE-2016-6525.patch"))
         (modules '((guix build utils)))
         (snippet
-            ;; Don't build the bundled-in third party libraries.
-            '(delete-file-recursively "thirdparty"))))
+            ;; Delete all the bundled libraries except for mujs, which is
+            ;; developed by the same team as mupdf and has no releases.
+            ;; TODO Package mujs and don't use the bundled copy.
+            '(for-each delete-file-recursively
+                       '("thirdparty/curl"
+                         "thirdparty/freetype"
+                         "thirdparty/glfw"
+                         "thirdparty/harfbuzz"
+                         "thirdparty/jbig2dec"
+                         "thirdparty/jpeg"
+                         "thirdparty/openjpeg"
+                         "thirdparty/zlib")))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
         ("freetype" ,freetype)
+        ("harfbuzz" ,harfbuzz)
         ("jbig2dec" ,jbig2dec)
         ("libjpeg" ,libjpeg)
         ("libx11" ,libx11)
         ("libxext" ,libxext)
-        ("openjpeg" ,openjpeg-2.0)
+        ("openjpeg" ,openjpeg)
         ("openssl" ,openssl)
         ("zlib" ,zlib)))
     (native-inputs

@@ -681,6 +681,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
+  %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
   %D%/packages/patches/mupdf-CVE-2016-6265.patch		\
   %D%/packages/patches/mupdf-CVE-2016-6525.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
