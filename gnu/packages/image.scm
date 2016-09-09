@@ -416,22 +416,6 @@ error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
-(define-public openjpeg-2.0
-  (package (inherit openjpeg)
-    (name "openjpeg")
-    (version "2.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "mirror://sourceforge/openjpeg.mirror/" version "/"
-                       name "-" version ".tar.gz"))
-       (sha256
-        (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))
-       (patches (search-patches "openjpeg-use-after-free-fix.patch"
-                                "openjpeg-CVE-2015-6581.patch"
-                                "openjpeg-CVE-2016-7163.patch"))))))
-
 (define-public openjpeg-1
   (package (inherit openjpeg)
     (name "openjpeg")
