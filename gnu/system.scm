@@ -69,6 +69,7 @@
             operating-system-host-name
             operating-system-hosts-file
             operating-system-kernel
+            operating-system-kernel-file
             operating-system-kernel-arguments
             operating-system-initrd
             operating-system-users
@@ -245,6 +246,19 @@ from the initrd."
 (define (swap-services os)
   "Return the list of swap services for OS."
   (map swap-service (operating-system-swap-devices os)))
+
+(define* (system-linux-image-file-name #:optional (system (%current-system)))
+  "Return the basename of the kernel image file for SYSTEM."
+  ;; FIXME: Evaluate the conditional based on the actual current system.
+  (if (string-prefix? "mips" (%current-system))
+      "vmlinuz"
+      "bzImage"))
+
+(define (operating-system-kernel-file os)
+  "Return an object representing the absolute file name of the kernel image of
+OS."
+  (file-append (operating-system-kernel os)
+               "/" (system-linux-image-file-name os)))
 
 (define* (operating-system-directory-base-entries os #:key container?)
   "Return the basic entries of the 'system' directory of OS for use as the
@@ -710,12 +724,13 @@ listed in OS.  The C library expects to find it under
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (store-fs -> (operating-system-store-file-system os))
-       (kernel ->   (operating-system-kernel os))
+       (label ->    (kernel->grub-label (operating-system-kernel os)))
+       (kernel ->   (operating-system-kernel-file os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
        (entries ->  (list (menu-entry
-                           (label (kernel->grub-label kernel))
+                           (label label)
                            (linux kernel)
                            (linux-arguments
                             (cons* (string-append "--root=" root-device)
@@ -739,7 +754,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                 #~(boot-parameters (version 0)
                                    (label #$label)
                                    (root-device #$(file-system-device root))
-                                   (kernel #$(operating-system-kernel os))
+                                   (kernel #$(operating-system-kernel-file os))
                                    (kernel-arguments
                                     #$(operating-system-kernel-arguments os))
                                    (initrd #$initrd))
@@ -768,7 +783,14 @@ this file is the reconstruction of GRUB menu entries for old configurations."
      (boot-parameters
       (label label)
       (root-device root)
-      (kernel linux)
+
+      ;; In the past, we would store the directory name of the kernel instead
+      ;; of the absolute file name of its image.  Detect that and correct it.
+      (kernel (if (string=? linux (direct-store-path linux))
+                  (string-append linux "/"
+                                 (system-linux-image-file-name))
+                  linux))
+
       (kernel-arguments
        (match (assq 'kernel-arguments rest)
          ((_ args) args)

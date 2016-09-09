@@ -10622,9 +10622,23 @@ The @code{grub-theme} object describing the theme to use.
 
 @end deftp
 
+@cindex dual boot
+@cindex boot menu
 Should you want to list additional boot menu entries @i{via} the
 @code{menu-entries} field above, you will need to create them with the
-@code{menu-entry} form:
+@code{menu-entry} form.  For example, imagine you want to be able to
+boot another distro (hard to imagine!), you can define a menu entry
+along these lines:
+
+@example
+(menu-entry
+  (label "The Other Distro")
+  (linux "/boot/old/vmlinux-2.6.32")
+  (linux-arguments '("root=/dev/sda2"))
+  (initrd "/boot/old/initrd"))
+@end example
+
+Details below.
 
 @deftp {Data Type} menu-entry
 The type of an entry in the GRUB boot menu.
@@ -10635,7 +10649,11 @@ The type of an entry in the GRUB boot menu.
 The label to show in the menu---e.g., @code{"GNU"}.
 
 @item @code{linux}
-The Linux kernel to boot.
+The Linux kernel image to boot, for example:
+
+@example
+(file-append linux-libre "/bzImage")
+@end example
 
 @item @code{linux-arguments} (default: @code{()})
 The list of extra Linux kernel command-line arguments---e.g.,
