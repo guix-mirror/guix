@@ -1812,3 +1812,44 @@ Commons CLI supports different types of options:
 
 This is a part of the Apache Commons Project.")
     (license license:asl2.0)))
+
+(define-public java-commons-codec
+  (package
+    (name "java-commons-codec")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/codec/source/"
+                                  "commons-codec-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1w9qg30y4s0x8gnmr2fgj4lyplfn788jqxbcz27lf5kbr6n8xr65"))))
+    (build-system ant-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
+             (junit    (assoc-ref %build-inputs "java-junit")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-core.jar")
+               ;; Do not append version to jar.
+               "-Dfinal.name=commons-codec"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-doc (install-javadoc "dist/docs/api")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/codec/")
+    (synopsis "Common encoders and decoders such as Base64, Hex, Phonetic and URLs")
+    (description "The codec package contains simple encoder and decoders for
+various formats such as Base64 and Hexadecimal.  In addition to these widely
+used encoders and decoders, the codec package also maintains a collection of
+phonetic encoding utilities.
+
+This is a part of the Apache Commons Project.")
+    (license license:asl2.0)))
