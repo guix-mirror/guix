@@ -3985,7 +3985,7 @@ The @code{local-file}, @code{plain-file}, @code{computed-file},
 these objects lead to a file in the store.  Consider this G-expression:
 
 @example
-#~(system* (string-append #$glibc "/sbin/nscd") "-f"
+#~(system* #$(file-append glibc "/sbin/nscd") "-f"
            #$(local-file "/tmp/my-nscd.conf"))
 @end example
 
@@ -4044,7 +4044,7 @@ command:
 (use-modules (guix gexp) (gnu packages base))
 
 (gexp->script "list-files"
-              #~(execl (string-append #$coreutils "/bin/ls")
+              #~(execl #$(file-append coreutils "/bin/ls")
                        "ls"))
 @end example
 
@@ -4055,8 +4055,7 @@ executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 @example
 #!/gnu/store/@dots{}-guile-2.0.11/bin/guile -ds
 !#
-(execl (string-append "/gnu/store/@dots{}-coreutils-8.22"/bin/ls")
-       "ls")
+(execl "/gnu/store/@dots{}-coreutils-8.22"/bin/ls" "ls")
 @end example
 @end deffn
 
@@ -4125,6 +4124,34 @@ as in:
 
 This is the declarative counterpart of @code{text-file*}.
 @end deffn
+
+@deffn {Scheme Procedure} file-append @var{obj} @var{suffix} @dots{}
+Return a file-like object that expands to the concatenation of @var{obj}
+and @var{suffix}, where @var{obj} is a lowerable object and each
+@var{suffix} is a string.
+
+As an example, consider this gexp:
+
+@example
+(gexp->script "run-uname"
+              #~(system* #$(file-append coreutils
+                                        "/bin/uname")))
+@end example
+
+The same effect could be achieved with:
+
+@example
+(gexp->script "run-uname"
+              #~(system* (string-append #$coreutils
+                                        "/bin/uname")))
+@end example
+
+There is one difference though: in the @code{file-append} case, the
+resulting script contains the absolute file name as a string, whereas in
+the second case, the resulting script contains a @code{(string-append
+@dots{})} expression to construct the file name @emph{at run time}.
+@end deffn
+
 
 Of course, in addition to gexps embedded in ``host'' code, there are
 also modules containing build tools.  To make it clear that they are

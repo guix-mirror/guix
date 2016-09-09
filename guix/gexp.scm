@@ -63,6 +63,11 @@
             scheme-file-name
             scheme-file-gexp
 
+            file-append
+            file-append?
+            file-append-base
+            file-append-suffix
+
             gexp->derivation
             gexp->file
             gexp->script
@@ -367,6 +372,30 @@ This is the declarative counterpart of 'gexp->file'."
   (match file
     (($ <scheme-file> name gexp)
      (gexp->file name gexp))))
+
+;; Appending SUFFIX to BASE's output file name.
+(define-record-type <file-append>
+  (%file-append base suffix)
+  file-append?
+  (base   file-append-base)                    ;<package> | <derivation> | ...
+  (suffix file-append-suffix))                 ;list of strings
+
+(define (file-append base . suffix)
+  "Return a <file-append> object that expands to the concatenation of BASE and
+SUFFIX."
+  (%file-append base suffix))
+
+(define-gexp-compiler file-append-compiler file-append?
+  compiler => (lambda (obj system target)
+                (match obj
+                  (($ <file-append> base _)
+                   (lower-object base system #:target target))))
+  expander => (lambda (obj lowered output)
+                (match obj
+                  (($ <file-append> base suffix)
+                   (let* ((expand (lookup-expander base))
+                          (base   (expand base lowered output)))
+                     (string-append base (string-concatenate suffix)))))))
 
 
 ;;;

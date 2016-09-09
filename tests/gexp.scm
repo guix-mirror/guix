@@ -207,6 +207,47 @@
                (e3 `(display ,txt)))
            (equal? `(begin ,e0 ,e1 ,e2 ,e3) (gexp->sexp* exp))))))
 
+(test-assert "file-append"
+  (let* ((drv (package-derivation %store %bootstrap-guile))
+         (fa  (file-append %bootstrap-guile "/bin/guile"))
+         (exp #~(here we go #$fa)))
+    (and (match (gexp->sexp* exp)
+           (('here 'we 'go (? string? result))
+            (string=? result
+                      (string-append (derivation->output-path drv)
+                                     "/bin/guile"))))
+         (match (gexp-inputs exp)
+           (((thing "out"))
+            (eq? thing fa))))))
+
+(test-assert "file-append, output"
+  (let* ((drv (package-derivation %store glibc))
+         (fa  (file-append glibc "/lib" "/debug"))
+         (exp #~(foo #$fa:debug)))
+    (and (match (gexp->sexp* exp)
+           (('foo (? string? result))
+            (string=? result
+                      (string-append (derivation->output-path drv "debug")
+                                     "/lib/debug"))))
+         (match (gexp-inputs exp)
+           (((thing "debug"))
+            (eq? thing fa))))))
+
+(test-assert "file-append, nested"
+  (let* ((drv   (package-derivation %store glibc))
+         (dir   (file-append glibc "/bin"))
+         (slash (file-append dir "/"))
+         (file  (file-append slash "getent"))
+         (exp   #~(foo #$file)))
+    (and (match (gexp->sexp* exp)
+           (('foo (? string? result))
+            (string=? result
+                      (string-append (derivation->output-path drv)
+                                     "/bin/getent"))))
+         (match (gexp-inputs exp)
+           (((thing "out"))
+            (eq? thing file))))))
+
 (test-assert "ungexp + ungexp-native"
   (let* ((exp    (gexp (list (ungexp-native %bootstrap-guile)
                              (ungexp coreutils)
@@ -336,6 +377,18 @@
                        (done   (built-derivations (list drv)))
                        (refs   ((store-lift references) out)))
     (return (and (equal? sexp (call-with-input-file out read))
+                 (equal? (list guile) refs)))))
+
+(test-assertm "gexp->file + file-append"
+  (mlet* %store-monad ((exp -> #~#$(file-append %bootstrap-guile
+                                                "/bin/guile"))
+                       (guile  (package-file %bootstrap-guile))
+                       (drv    (gexp->file "foo" exp))
+                       (out -> (derivation->output-path drv))
+                       (done   (built-derivations (list drv)))
+                       (refs   ((store-lift references) out)))
+    (return (and (equal? (string-append guile "/bin/guile")
+                         (call-with-input-file out read))
                  (equal? (list guile) refs)))))
 
 (test-assertm "gexp->derivation"
