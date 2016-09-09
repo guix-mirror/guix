@@ -80,7 +80,7 @@
          (format #t "creating nginx run directory '~a'~%" #$run-directory)
          (mkdir-p #$run-directory)
          ;; Check configuration file syntax.
-         (system* (string-append #$nginx "/bin/nginx")
+         (system* (string-append #$nginx "/sbin/nginx")
                   "-c" #$config-file "-t")))))
 
 (define nginx-shepherd-service
