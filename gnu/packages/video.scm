@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -619,6 +619,7 @@ audio/video codec library.")
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gnutls" ,gnutls)
+       ("liba52" ,liba52)
        ("libcddb" ,libcddb)
        ("libgcrypt" ,libgcrypt)
        ("libkate" ,libkate)
@@ -649,9 +650,7 @@ audio/video codec library.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
-       `("--disable-a52" ; FIXME: reenable once available
-
-         ;; Gross workaround for <https://trac.videolan.org/vlc/ticket/16907>.
+       `(;; Gross workaround for <https://trac.videolan.org/vlc/ticket/16907>.
          ;; In our case, this led to a test failure:
          ;;   test_libvlc_equalizer: libvlc/equalizer.c:122: test_equalizer: Assertion `isnan(libvlc_audio_equalizer_get_amp_at_index (equalizer, u_bands))' failed.
          "ac_cv_c_fast_math=no"
