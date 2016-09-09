@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
+;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1588,3 +1589,23 @@ and MPEG system streams.")
                    license:lgpl2.1
                    license:lgpl2.1+
                    license:gpl2))))
+
+(define-public libbdplus
+  (package
+    (name "libbdplus")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libbdplus/"
+                           version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "02n87lysqn4kg2qk7d1ffrp96c44zkdlxdj0n16hbgrlrpiwlcd6"))))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libbdplus.html")
+    (synopsis "Library for decrypting certain Blu-Ray discs")
+    (description "libbdplus is a library which implements the BD+ System
+specifications.")
+    (license license:lgpl2.1+)))
