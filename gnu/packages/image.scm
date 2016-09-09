@@ -380,17 +380,17 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
       (origin
         (method url-fetch)
         (uri
-         (string-append "mirror://sourceforge/openjpeg.mirror/" version "/"
-                        name "-" version ".tar.gz"))
+         (string-append "https://github.com/uclouvain/openjpeg/archive/v"
+                        version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "00zzm303zvv4ijzancrsb1cqbph3pgz0nky92k9qx3fq9y0vnchj"))
-        (patches (search-patches "openjpeg-use-after-free-fix.patch"
-                                 "openjpeg-CVE-2015-6581.patch"))))
+         (base32
+          "1anv0rjkbxw9kx91wvlfpb3dhppibda6kb1papny46bjzi3pzhl2"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
