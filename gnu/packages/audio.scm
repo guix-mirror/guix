@@ -2484,3 +2484,35 @@ with support for HD extensions.")
 flavors EBU R128, ATSC A/85, and ReplayGain 2.0.  It helps normalizing the
 loudness of audio and video files to the same level.")
     (license license:gpl2+)))
+
+(define-public filteraudio
+  (let ((revision "1")
+        (commit "2fc669581e2a0ff87fba8de85861b49133306094"))
+    (package
+      (name "filteraudio")
+      (version (string-append "0.0.0-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/irungentoo/filter_audio.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0hbb290n3wb23f2k692a6bhc23nnqmxqi9sc9j15pnya8wifw64g"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags (list (string-append "PREFIX=" %output)
+                            "CC=gcc")
+         #:tests? #f ; No tests
+         #:phases
+         (modify-phases %standard-phases
+           ;; No configure script
+           (delete 'configure))))
+      (synopsis "Lightweight audio filtering library")
+      (description "An easy to use audio filtering library made from webrtc
+code, used in @code{libtoxcore}.")
+      (home-page "https://github.com/irungentoo/filter_audio")
+      (license license:bsd-3))))
