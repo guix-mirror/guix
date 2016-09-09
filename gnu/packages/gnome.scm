@@ -2423,7 +2423,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.4.3")
+    (version "2.4.4")
     (source
      (origin
        (method url-fetch)
@@ -2432,7 +2432,7 @@ output devices.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0pk07k65dlw37nz8z5spksivsv5nh96xmbi336rf2yfxf2ldpadd"))
+         "0p1ibjf5vzjsahw5xif2si3lj6a00sxhll008jk7w1hj1jfznhww"))
        (patches (search-patches "geoclue-config.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
