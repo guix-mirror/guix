@@ -702,6 +702,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2015-6581.patch		\
+  %D%/packages/patches/openjpeg-CVE-2016-5157.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-7163.patch		\
   %D%/packages/patches/openjpeg-use-after-free-fix.patch	\
   %D%/packages/patches/openssl-runpath.patch			\

@@ -391,7 +391,8 @@ work.")
         (sha256
          (base32
           "1anv0rjkbxw9kx91wvlfpb3dhppibda6kb1papny46bjzi3pzhl2"))
-        (patches (search-patches "openjpeg-CVE-2016-7163.patch"))))
+        (patches (search-patches "openjpeg-CVE-2016-5157.patch"
+                                 "openjpeg-CVE-2016-7163.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
