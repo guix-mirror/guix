@@ -340,7 +340,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
-              (patches (search-patches "gcc-libvtv-runpath.patch"))))))
+              (patches (search-patches "gcc-arm-bug-71399.patch"
+                                       "gcc-libvtv-runpath.patch"))))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
