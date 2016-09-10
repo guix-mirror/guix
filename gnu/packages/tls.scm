@@ -137,6 +137,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
+    (replacement gnutls-3.5.4)
     (version "3.5.2")
     (source (origin
              (method url-fetch)
@@ -209,6 +210,20 @@ required structures.")
     (license license:lgpl2.1+)
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
+
+(define gnutls-3.5.4
+  (package
+    (inherit gnutls)
+    (source
+      (let ((version "3.5.4"))
+        (origin
+          (method url-fetch)
+          (uri (string-append "mirror://gnupg/gnutls/v"
+                              (version-major+minor version)
+                              "/gnutls-" version ".tar.xz"))
+          (sha256
+           (base32
+            "1sx8p7v452s9m854r2c5pvcd1k15a3caiv5h35fhrxz0691h2f2f")))))))
 
 (define-public openssl
   (package
