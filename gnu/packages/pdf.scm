@@ -53,7 +53,6 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages javascript)
   #:use-module (srfi srfi-1))
 
 (define-public poppler
