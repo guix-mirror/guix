@@ -131,15 +131,15 @@
 
 ;; Compiler for a type of objects that may be introduced in a gexp.
 (define-record-type <gexp-compiler>
-  (gexp-compiler predicate lower expand)
+  (gexp-compiler type lower expand)
   gexp-compiler?
-  (predicate  gexp-compiler-predicate)
+  (type       gexp-compiler-type)                 ;record type descriptor
   (lower      gexp-compiler-lower)
-  (expand     gexp-compiler-expand))              ;#f | DRV -> M sexp
+  (expand     gexp-compiler-expand))              ;#f | DRV -> sexp
 
 (define %gexp-compilers
-  ;; List of <gexp-compiler>.
-  '())
+  ;; 'eq?' mapping of record type descriptor to <gexp-compiler>.
+  (make-hash-table 20))
 
 (define (default-expander thing obj output)
   "This is the default expander for \"things\" that appear in gexps.  It
@@ -152,24 +152,20 @@ returns its output file name of OBJ's OUTPUT."
 
 (define (register-compiler! compiler)
   "Register COMPILER as a gexp compiler."
-  (set! %gexp-compilers (cons compiler %gexp-compilers)))
+  (hashq-set! %gexp-compilers
+              (gexp-compiler-type compiler) compiler))
 
 (define (lookup-compiler object)
   "Search for a compiler for OBJECT.  Upon success, return the three argument
 procedure to lower it; otherwise return #f."
-  (any (match-lambda
-        (($ <gexp-compiler> predicate lower)
-         (and (predicate object) lower)))
-       %gexp-compilers))
+  (and=> (hashq-ref %gexp-compilers (struct-vtable object))
+         gexp-compiler-lower))
 
 (define (lookup-expander object)
   "Search for an expander for OBJECT.  Upon success, return the three argument
 procedure to expand it; otherwise return #f."
-  (or (any (match-lambda
-             (($ <gexp-compiler> predicate _ expand)
-              (and (predicate object) expand)))
-           %gexp-compilers)
-      default-expander))
+  (and=> (hashq-ref %gexp-compilers (struct-vtable object))
+         gexp-compiler-expand))
 
 (define* (lower-object obj
                        #:optional (system (%current-system))
@@ -197,19 +193,19 @@ The more elaborate form allows you to specify an expander:
     expander => (lambda (param drv output) ...))
 
 The expander specifies how an object is converted to its sexp representation."
-    ((_ (name (param predicate) system target) body ...)
-     (define-gexp-compiler name predicate
+    ((_ (name (param record-type) system target) body ...)
+     (define-gexp-compiler name record-type
        compiler => (lambda (param system target) body ...)
        expander => default-expander))
-    ((_ name predicate
+    ((_ name record-type
         compiler => compile
         expander => expand)
      (begin
        (define name
-         (gexp-compiler predicate compile expand))
+         (gexp-compiler record-type compile expand))
        (register-compiler! name)))))
 
-(define-gexp-compiler (derivation-compiler (drv derivation?) system target)
+(define-gexp-compiler (derivation-compiler (drv <derivation>) system target)
   ;; Derivations are the lowest-level representation, so this is the identity
   ;; compiler.
   (with-monad %store-monad
@@ -275,7 +271,7 @@ This is the declarative counterpart of the 'interned-file' monadic procedure."
 'system-error' exception is raised if FILE could not be found."
   (force (%local-file-absolute-file-name file)))
 
-(define-gexp-compiler (local-file-compiler (file local-file?) system target)
+(define-gexp-compiler (local-file-compiler (file <local-file>) system target)
   ;; "Compile" FILE by adding it to the store.
   (match file
     (($ <local-file> file (= force absolute) name recursive? select?)
@@ -302,7 +298,7 @@ This is the declarative counterpart of 'text-file'."
   ;; them in a declarative context.
   (%plain-file name content '()))
 
-(define-gexp-compiler (plain-file-compiler (file plain-file?) system target)
+(define-gexp-compiler (plain-file-compiler (file <plain-file>) system target)
   ;; "Compile" FILE by adding it to the store.
   (match file
     (($ <plain-file> name content references)
@@ -324,7 +320,7 @@ to 'gexp->derivation'.
 This is the declarative counterpart of 'gexp->derivation'."
   (%computed-file name gexp options))
 
-(define-gexp-compiler (computed-file-compiler (file computed-file?)
+(define-gexp-compiler (computed-file-compiler (file <computed-file>)
                                               system target)
   ;; Compile FILE by returning a derivation whose build expression is its
   ;; gexp.
@@ -346,7 +342,7 @@ GEXP.  GUILE is the Guile package used to execute that script.
 This is the declarative counterpart of 'gexp->script'."
   (%program-file name gexp guile))
 
-(define-gexp-compiler (program-file-compiler (file program-file?)
+(define-gexp-compiler (program-file-compiler (file <program-file>)
                                              system target)
   ;; Compile FILE by returning a derivation that builds the script.
   (match file
@@ -366,7 +362,7 @@ This is the declarative counterpart of 'gexp->script'."
 This is the declarative counterpart of 'gexp->file'."
   (%scheme-file name gexp))
 
-(define-gexp-compiler (scheme-file-compiler (file scheme-file?)
+(define-gexp-compiler (scheme-file-compiler (file <scheme-file>)
                                             system target)
   ;; Compile FILE by returning a derivation that builds the file.
   (match file
@@ -385,7 +381,7 @@ This is the declarative counterpart of 'gexp->file'."
 SUFFIX."
   (%file-append base suffix))
 
-(define-gexp-compiler file-append-compiler file-append?
+(define-gexp-compiler file-append-compiler <file-append>
   compiler => (lambda (obj system target)
                 (match obj
                   (($ <file-append> base _)

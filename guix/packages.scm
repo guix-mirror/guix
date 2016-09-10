@@ -1179,7 +1179,7 @@ cross-compilation target triplet."
 (define package->cross-derivation
   (store-lift package-cross-derivation))
 
-(define-gexp-compiler (package-compiler (package package?) system target)
+(define-gexp-compiler (package-compiler (package <package>) system target)
   ;; Compile PACKAGE to a derivation for SYSTEM, optionally cross-compiled for
   ;; TARGET.  This is used when referring to a package from within a gexp.
   (if target
@@ -1210,7 +1210,7 @@ cross-compilation target triplet."
                          #:modules modules
                          #:guile-for-build guile)))))
 
-(define-gexp-compiler (origin-compiler (origin origin?) system target)
+(define-gexp-compiler (origin-compiler (origin <origin>) system target)
   ;; Compile ORIGIN to a derivation for SYSTEM.  This is used when referring
   ;; to an origin from within a gexp.
   (origin->derivation origin system))
