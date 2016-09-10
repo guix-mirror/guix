@@ -26,6 +26,8 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
@@ -40,6 +42,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
@@ -275,3 +278,33 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 
 (define-public python2-efl
   (package-with-python2 python-efl))
+
+(define-public edi
+  (package
+    (name "edi")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/ajwillia-ms/edi/releases/"
+                            "download/v" version "/edi-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "0qczz5psryxasphg5km95845h510237rf0k1dy8f0dad52ii90j1"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--with-tests=coverage")))
+    (native-inputs
+     `(("check" ,check)
+       ("lcov" ,lcov)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("clang" ,clang)
+       ("efl" ,efl)))
+    (home-page "https://www.enlightenment.org/about-edi")
+    (synopsis "Development environment for Enlightenment")
+    (description "EDI is a development environment designed for and built using
+the EFL.  It's aim is to create a new, native development environment for Linux
+that tries to lower the barrier to getting involved in Enlightenment development
+and in creating applications based on the Enlightenment Foundation Library suite.")
+    (license (list license:public-domain ; data/extra/skeleton
+                   license:gpl2))))      ; edi
