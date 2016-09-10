@@ -10278,3 +10278,52 @@ Python to manipulate OpenDocument 1.2 files.")
 
 (define-public python2-odfpy
   (package-with-python2 python-odfpy))
+
+(define-public python-cachecontrol
+  (package
+    (name "python-cachecontrol")
+    (version "0.11.6")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Pypi does not have tests.
+       (uri (string-append
+             "https://github.com/ionrock/cachecontrol/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yj60d0f69a2l8p7y86k4zhzzm6rnxpq74sfl240pry9l0lfw2vw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Drop test that requires internet access.
+             (delete-file "tests/test_regressions.py")
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "py.test" "-vv")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-redis" ,python-redis)
+       ("python-webtest" ,python-webtest)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-lockfile" ,python-lockfile)))
+    (home-page "https://github.com/ionrock/cachecontrol")
+    (synopsis "The httplib2 caching algorithms for use with requests")
+    (description "CacheControl is a port of the caching algorithms in
+@code{httplib2} for use with @code{requests} session objects.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-cachecontrol)))
+
+(define-public python2-cachecontrol
+  (let ((base (package-with-python2 (strip-python2-variant python-cachecontrol))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-native-inputs base))))))
