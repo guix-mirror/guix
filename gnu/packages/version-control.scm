@@ -59,6 +59,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
@@ -1060,7 +1061,8 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                 "0k3m894vfkgkj7xbr0j6ph91351dl6id5f0hk2ksjp5lmg9i6llg"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
     (arguments
      `(#:tests? #f)) ; tests require access to /dev/tty
      ;;`(#:test-target "test"))
