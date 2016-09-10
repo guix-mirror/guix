@@ -1060,11 +1060,19 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                (base32
                 "0k3m894vfkgkj7xbr0j6ph91351dl6id5f0hk2ksjp5lmg9i6llg"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("xmlto" ,xmlto)))
     (inputs
      `(("ncurses" ,ncurses)
        ("readline" ,readline)))
     (arguments
-     `(#:tests? #f)) ; tests require access to /dev/tty
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda _
+             (zero? (system* "make" "install-doc")))))
+       #:tests? #f)) ; tests require access to /dev/tty
      ;;`(#:test-target "test"))
     (home-page "http://jonas.nitro.dk/tig/")
     (synopsis "Ncurses-based text user interface for Git")
