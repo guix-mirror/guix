@@ -548,7 +548,8 @@ will be issuing browser-trusted certificates for free.")
 
 (define-public letsencrypt
   (package (inherit certbot)
-    (name "letsencrypt")))
+    (name "letsencrypt")
+    (properties `((superseded . ,certbot)))))
 
 (define-public perl-net-ssleay
   (package
