@@ -76,7 +76,7 @@ host	all	all	::1/128 	trust"))
          (system? #t)
          (comment "PostgreSQL server user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define postgresql-activation
   (match-lambda
@@ -171,7 +171,7 @@ and stores the database cluster in @var{data-directory}."
          (group "mysql")
          (system? #t)
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define mysql-configuration-file
   (match-lambda

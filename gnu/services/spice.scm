@@ -43,7 +43,7 @@
 
   (define spice-vdagentd-command
     (list
-      #~(string-append #$spice-vdagent "/sbin/spice-vdagentd")
+      (file-append spice-vdagent "/sbin/spice-vdagentd")
       "-x"))
 
   (list

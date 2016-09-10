@@ -472,9 +472,9 @@ then
   source /run/current-system/profile/etc/profile.d/bash_completion.sh
 fi\n")))
     (etc-service
-     `(("services" ,#~(string-append #$net-base "/etc/services"))
-       ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
-       ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
+     `(("services" ,(file-append net-base "/etc/services"))
+       ("protocols" ,(file-append net-base "/etc/protocols"))
+       ("rpc" ,(file-append net-base "/etc/rpc"))
        ("login.defs" ,#~#$login.defs)
        ("issue" ,#~#$issue)
        ("nsswitch.conf" ,#~#$nsswitch)
@@ -482,8 +482,8 @@ fi\n")))
        ("bashrc" ,#~#$bashrc)
        ("hosts" ,#~#$(or (operating-system-hosts-file os)
                          (default-/etc/hosts (operating-system-host-name os))))
-       ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
-                                      #$(operating-system-timezone os)))
+       ("localtime" ,(file-append tzdata "/share/zoneinfo/"
+                                  (operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))
 
 (define %root-account
@@ -547,7 +547,7 @@ use 'plain-file' instead~%")
 @var{session-environment-service-type}, to be used in @file{/etc/environment}."
   `(("LANG" . ,(operating-system-locale os))
     ("TZ" . ,(operating-system-timezone os))
-    ("TZDIR" . ,#~(string-append #$tzdata "/share/zoneinfo"))
+    ("TZDIR" . ,(file-append tzdata "/share/zoneinfo"))
     ;; Tell 'modprobe' & co. where to look for modules.
     ("LINUX_MODULE_DIRECTORY" . "/run/booted-system/kernel/lib/modules")
     ;; These variables are honored by OpenSSL (libssl) and Git.
@@ -571,12 +571,12 @@ use 'plain-file' instead~%")
 (define %setuid-programs
   ;; Default set of setuid-root programs.
   (let ((shadow (@ (gnu packages admin) shadow)))
-    (list #~(string-append #$shadow "/bin/passwd")
-          #~(string-append #$shadow "/bin/su")
-          #~(string-append #$inetutils "/bin/ping")
-          #~(string-append #$inetutils "/bin/ping6")
-          #~(string-append #$sudo "/bin/sudo")
-          #~(string-append #$fuse "/bin/fusermount"))))
+    (list (file-append shadow "/bin/passwd")
+          (file-append shadow "/bin/su")
+          (file-append inetutils "/bin/ping")
+          (file-append inetutils "/bin/ping6")
+          (file-append sudo "/bin/sudo")
+          (file-append fuse "/bin/fusermount"))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'

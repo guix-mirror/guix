@@ -67,7 +67,7 @@
          (system? #t)
          (comment "nginx server user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define nginx-activation
   (match-lambda
@@ -86,7 +86,7 @@
 (define nginx-shepherd-service
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory config-file)
-     (let* ((nginx-binary #~(string-append #$nginx "/sbin/nginx"))
+     (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
             (nginx-action
              (lambda args
                #~(lambda _

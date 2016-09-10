@@ -516,7 +516,7 @@ stopped before 'kill' is called."
       (define device (rngd-configuration-device config))
 
       (define rngd-command
-        (list #~(string-append #$rng-tools "/sbin/rngd")
+        (list (file-append rng-tools "/sbin/rngd")
               "-f" "-r" device))
 
       (shepherd-service
@@ -893,7 +893,7 @@ Service Switch}, for an example."
   syslog-configuration  make-syslog-configuration
   syslog-configuration?
   (syslogd              syslog-configuration-syslogd
-                        (default #~(string-append #$inetutils "/libexec/syslogd")))
+                        (default (file-append inetutils "/libexec/syslogd")))
   (config-file          syslog-configuration-config-file
                         (default %default-syslog.conf)))
 
@@ -1009,7 +1009,7 @@ starting at FIRST-UID, and under GID."
 
              (comment (format #f "Guix Build User ~2d" n))
              (home-directory "/var/empty")
-             (shell #~(string-append #$shadow "/sbin/nologin"))))
+             (shell (file-append shadow "/sbin/nologin"))))
           1+
           1))
 
@@ -1036,7 +1036,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
-  (list #~(string-append #$guix "/share/guix/hydra.gnu.org.pub")))
+  (list (file-append guix "/share/guix/hydra.gnu.org.pub")))
 
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
@@ -1167,7 +1167,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
          (system? #t)
          (comment "guix publish user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define guix-publish-service-type
   (service-type (name 'guix-publish)

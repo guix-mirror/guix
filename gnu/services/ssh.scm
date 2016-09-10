@@ -122,7 +122,7 @@
 
   (define lsh-command
     (append
-     (cons #~(string-append #$lsh "/sbin/lshd")
+     (cons (file-append lsh "/sbin/lshd")
            (if daemonic?
                (let ((syslog (if (lsh-configuration-syslog-output? config)
                                  '()

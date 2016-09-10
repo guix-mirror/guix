@@ -73,7 +73,7 @@
          (group "dicod")
          (system? #t)
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define (dicod-configuration-file config)
   (define database->text

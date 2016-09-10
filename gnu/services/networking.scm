@@ -194,7 +194,7 @@ gateway."
    'dhcp-client
    (lambda (dhcp)
      (define dhclient
-       #~(string-append #$dhcp "/sbin/dhclient"))
+       (file-append dhcp "/sbin/dhclient"))
 
      (define pid-file
        "/var/run/dhclient.pid")
@@ -306,7 +306,7 @@ restrict -6 ::1\n"))
          (system? #t)
          (comment "NTP daemon user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 
 (define (ntp-service-activation config)
@@ -361,7 +361,7 @@ keep the system clock synchronized with that of @var{servers}."
          (system? #t)
          (comment "Tor daemon user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define-record-type <hidden-service>
   (hidden-service name mapping)
@@ -554,7 +554,7 @@ project's documentation} for more information."
          (system? #t)
          (comment "BitlBee daemon user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define %bitlbee-activation
   ;; Activation gexp for BitlBee.

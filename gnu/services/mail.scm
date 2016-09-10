@@ -1505,7 +1505,7 @@ greyed out, instead of only later giving \"not selectable\" popup error.
          (system? #t)
          (comment "Dovecot daemon user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))
+         (shell (file-append shadow "/sbin/nologin")))
 
         (user-group (name "dovenull") (system? #t))
         (user-account
@@ -1514,7 +1514,7 @@ greyed out, instead of only later giving \"not selectable\" popup error.
          (system? #t)
          (comment "Dovecot daemon login user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define %dovecot-activation
   ;; Activation gexp.

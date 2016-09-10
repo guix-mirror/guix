@@ -48,9 +48,9 @@
   (numlock                sddm-configuration-numlock
                           (default "on"))
   (halt-command           sddm-configuration-halt-command
-                          (default #~(string-append #$shepherd "/sbin/halt")))
+                          (default (file-append shepherd "/sbin/halt")))
   (reboot-command         sddm-configuration-reboot-command
-                          (default #~(string-append #$shepherd "/sbin/reboot")))
+                          (default (file-append shepherd "/sbin/reboot")))
 
   ;; [Theme]
   ;; valid values are elarun or maldives
@@ -75,24 +75,24 @@
   (hide-users             sddm-configuration-hide-users
                           (default ""))
   (hide-shells            sddm-configuration-hide-shells
-                          (default #~(string-append #$shadow "/sbin/nologin")))
+                          (default (file-append shadow "/sbin/nologin")))
 
   ;; [Wayland]
   (session-command        sddm-configuration-session-command
-                          (default #~(string-append #$sddm "/share/sddm/scripts/wayland-session")))
+                          (default (file-append sddm "/share/sddm/scripts/wayland-session")))
   (sessions-directory     sddm-configuration-sessions-directory
                           (default "/run/current-system/profile/share/wayland-sessions"))
   ;; [X11]
   (xorg-server-path       sddm-configuration-xorg-server-path
                           (default (xorg-start-command)))
   (xauth-path             sddm-configuration-xauth-path
-                          (default #~(string-append #$xauth "/bin/xauth")))
+                          (default (file-append xauth "/bin/xauth")))
   (xephyr-path            sddm-configuration-xephyr-path
-                          (default #~(string-append #$xorg-server "/bin/Xephyr")))
+                          (default (file-append xorg-server "/bin/Xephyr")))
   (xdisplay-start         sddm-configuration-xdisplay-start
-                          (default #~(string-append #$sddm "/share/sddm/scripts/Xsetup")))
+                          (default (file-append sddm "/share/sddm/scripts/Xsetup")))
   (xdisplay-stop          sddm-configuration-xdisplay-stop
-                          (default #~(string-append #$sddm "/share/sddm/scripts/Xstop")))
+                          (default (file-append sddm "/share/sddm/scripts/Xstop")))
   (xsession-command       sddm-configuration-xsession-command
                           (default (xinitrc)))
   (xsessions-directory    sddm-configuration-xsessions-directory
@@ -292,7 +292,7 @@ Relogin="              (if (sddm-configuration-relogin? config)
          (system? #t)
          (comment "SDDM user")
          (home-directory "/var/lib/sddm")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 ;; Add default themes to profile
 (define sddm-profile-service
