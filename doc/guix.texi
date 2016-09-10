@@ -221,6 +221,7 @@ Services
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Web Services::                Web servers.
+* Network File System::         NFS related services.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -7647,6 +7648,7 @@ declaration.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Web Services::                Web servers.
+* Network File System::         NFS related services.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -10366,14 +10368,21 @@ directories are created when the service is activated.
 
 @end deffn
 
-@node Miscellaneous Services
-@subsubsection Miscellaneous Services
+@node Network File System
+@subsubsection Network File System
+@cindex NFS
 
+The @code{(gnu services nfs)} module provides the following services,
+which are most commonly used in relation to mounting or exporting
+directory trees as @dfn{network file systems} (NFS).
 
 @subsubheading RPC Bind Service
 @cindex rpcbind
 
-The @code{(gnu services nfs)} module provides the following:
+The RPC Bind service provides a facility to map program numbers into
+universal addresses.
+Many NFS related services use this facility.  Hence it is automatically
+started when a dependent service starts.
 
 @defvr {Scheme Variable} rpcbind-service-type
 A service type  for the RPC portmapper daemon.
@@ -10393,6 +10402,91 @@ state file on startup thus reloading state information saved by a previous
 instance.
 @end table
 @end deftp
+
+
+@subsubheading Pipefs Pseudo File System
+@cindex pipefs
+@cindex rpc_pipefs
+
+The pipefs file system is used to transfer NFS related data
+between the kernel and user space programs.
+
+@defvr {Scheme Variable} pipefs-service-type
+A service type for the pipefs pseudo file system.
+@end defvr
+
+@deftp {Data Type} pipefs-configuration
+Data type representing the configuration of the pipefs pseudo file system service.
+This type has the following parameters:
+@table @asis
+@item @code{mount-point} (default: @code{"/var/lib/nfs/rpc_pipefs"})
+The directory to which the file system is to be attached.
+@end table
+@end deftp
+
+
+@subsubheading GSS Daemon Service
+@cindex GSSD
+@cindex GSS
+@cindex global security system
+
+The @dfn{global security system} (GSS) daemon provides strong security for RPC
+based protocols.
+Before exchanging RPC requests an RPC client must establish a security
+context.  Typically this is done using the Kerberos command @command{kinit}
+or automatically at login time using PAM services.
+
+@defvr {Scheme Variable} gss-service-type
+A service type for the Global Security System (GSS) daemon.
+@end defvr
+
+@deftp {Data Type} gss-configuration
+Data type representing the configuration of the GSS daemon service.
+This type has the following parameters:
+@table @asis
+@item @code{nfs-utils} (default: @code{nfs-utils})
+The package in which the @command{rpc.gssd} command is to be found.
+
+@item @code{pipefs-directory} (default: @code{"/var/lib/nfs/rpc_pipefs"})
+The directory where the pipefs file system is mounted.
+
+@end table
+@end deftp
+
+
+@subsubheading IDMAP Daemon Service
+@cindex idmapd
+@cindex name mapper
+
+The idmap daemon service provides mapping between user IDs and user names.
+Typically it is required in order to access file systems mounted via NFSv4.
+
+@defvr {Scheme Variable} idmap-service-type
+A service type for the Identity Mapper (IDMAP) daemon.
+@end defvr
+
+@deftp {Data Type} idmap-configuration
+Data type representing the configuration of the IDMAP daemon service.
+This type has the following parameters:
+@table @asis
+@item @code{nfs-utils} (default: @code{nfs-utils})
+The package in which the @command{rpc.idmapd} command is to be found.
+
+@item @code{pipefs-directory} (default: @code{"/var/lib/nfs/rpc_pipefs"})
+The directory where the pipefs file system is mounted.
+
+@item @code{domain} (default: @code{#f})
+The local NFSv4 domain name.
+This must be a string or @code{#f}.
+If it is @code{#f} then the daemon will use the host's fully qualified domain name.
+
+@end table
+@end deftp
+
+
+@node Miscellaneous Services
+@subsubsection Miscellaneous Services
+
 
 @cindex lirc
 @subsubheading Lirc Service
