@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,56 +64,67 @@ and BOOTP/TFTP for network booting of diskless machines.")
     ;; Source files only say GPL2 and GPL3 are allowed.
     (license (list license:gpl2 license:gpl3))))
 
-(define-public bind-utils
+(define-public bind
   (package
-    (name "bind-utils")
-    (version "9.10.4")
+    (name "bind")
+    (version "9.10.4-P2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.isc.org/isc/bind9/" version
-                                  "/bind-" version ".tar.gz"))
+              (uri (string-append
+                    "ftp://ftp.isc.org/isc/bind9/" version "/" name "-"
+                    version ".tar.gz"))
               (sha256
                (base32
-                "0mmhzi4483mkak47wj255a36g3v0yilxwfwlbckr1hssinri5m7q"))))
+                "08s48h5p916ixjiwgar4w6skc20crmg7yj1y7g89c083zvw8lnxk"))))
     (build-system gnu-build-system)
+    (outputs `("out" "utils"))
     (inputs
      ;; it would be nice to add GeoIP and gssapi once there is package
      `(("libcap" ,libcap)
        ("libxml2" ,libxml2)
-       ("mysql" ,mysql)
        ("openssl" ,openssl)
-       ("perl" ,perl)
        ("p11-kit" ,p11-kit)))
+    (native-inputs `(("perl" ,perl)
+                     ("net-tools" ,net-tools)))
     (arguments
-     `(#:tests? #f ; no test phase implemented
-       #:configure-flags
+     `(#:configure-flags
        (list (string-append "--with-openssl="
                             (assoc-ref %build-inputs "openssl"))
-             (string-append "--with-dlz-mysql="
-                            (assoc-ref %build-inputs "mysql"))
              (string-append "--with-pkcs11="
                             (assoc-ref %build-inputs "p11-kit")))
-       #:modules ((srfi srfi-1)
-                  (srfi srfi-26)
-                  ,@%gnu-build-system-modules)
        #:phases
-       (let ((libs '("dns" "isc" "bind9" "isccfg" "lwres"))
-             (bins '("dig" "nsupdate")))
-         (modify-phases %standard-phases
-           (replace 'build
-             (lambda _
-               (every (lambda (dir)
-                        (zero? (system* "make" "-C" dir)))
-                      (append (map (cut string-append "lib/" <>) libs)
-                              (map (cut string-append "bin/" <>) bins)))))
-           (replace 'install
-             (lambda _
-               (every (lambda (dir)
-                        (zero? (system* "make" "-C" dir "install")))
-                      (map (cut string-append "bin/" <>) bins))))))))
-    (home-page "https://www.isc.org/downloads/bind/")
-    (synopsis "Tools for querying nameservers")
-    (description
-     "These tools, included with ISC BIND, are useful for analysis of DNS
-issues or verification of configuration.")
+       (modify-phases %standard-phases
+         (add-after 'strip 'move-to-utils
+           (lambda _
+             (for-each
+              (lambda (file)
+                (let ((target  (string-append (assoc-ref %outputs "utils") file))
+                      (src  (string-append (assoc-ref %outputs "out") file)))
+                  (mkdir-p (dirname target))
+                  (link src target)
+                  (delete-file src)))
+              '("/bin/dig" "/bin/delv" "/bin/nslookup" "/bin/host" "/bin/nsupdate"
+                "/share/man/man1/dig.1"
+                "/share/man/man1/host.1"
+                "/share/man/man1/nslookup.1"
+                "/share/man/man1/nsupdate.1"))))
+         ;; When and if guix provides user namespaces for the build process,
+         ;; then the following can be uncommented and the subsequent "force-test"
+         ;; will not be necessary.
+         ;;
+         ;;   (add-before 'check 'set-up-loopback
+         ;;     (lambda _
+         ;;          (system "bin/tests/system/ifconfig.sh up")))
+         (replace 'check
+           (lambda _
+             (zero? (system* "make" "force-test")))))))
+    (synopsis "An implementation of the Domain Name System")
+    (description "BIND is an implementation of the Domain Name System (DNS)
+protocols for the Internet.  It is a reference implementation of those
+protocols, but it is also production-grade software, suitable for use in
+high-volume and high-reliability applications. The name BIND stands for
+\"Berkeley Internet Name Domain\", because the software originated in the early
+1980s at the University of California at Berkeley.")
+    (home-page "https://www.isc.org/downloads/bind")
     (license (list license:isc))))
+
