@@ -879,7 +879,7 @@ Cflags: -I${includedir}
                #t))))))
     (synopsis "Small XML parser for C++")
     (description "TinyXML is a small and simple XML parsing library for the
-C++ programming langauge.")
+C++ programming language.")
     (home-page "http://www.grinninglizard.com/tinyxml/index.html")
     (license license:zlib)))
 
