@@ -1638,6 +1638,52 @@ for improved Amiga ProTracker 2/3 compatibility.")
     ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
     (license (list license:bsd-3 license:gpl3+))))
 
+(define-public schismtracker
+  (package
+    (name "schismtracker")
+    (version "20160521")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/" name "/" name "/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c6r24wm3rldm4j8cskl9xnixj3rwi3lnrhckw5gv43wpy6h4jcz"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
+               `(substitute* "schism/version.c"
+                  (("Schism Tracker build %s %s.*$")
+                   (string-append "Schism Tracker version " ,version "\");"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+         (add-before 'configure 'link-libm
+           (lambda _ (setenv "LIBS" "-lm") #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("python" ,python)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib) ; for asound dependency
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("sdl" ,sdl)))
+    (home-page "http://schismtracker.org")
+    (synopsis "Oldschool sample-based music composition tool")
+    (description
+     "Schism Tracker is a reimplementation of Impulse Tracker, a program used to
+create high quality music without the requirements of specialized, expensive
+equipment, and with a unique \"finger feel\" that is difficult to replicate in
+part.  The player is based on a highly modified version of the ModPlug engine,
+with a number of bugfixes and changes to improve IT playback.")
+    (license license:gpl2+)))
+
 (define-public moc
   (package
     (name "moc")
