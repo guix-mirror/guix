@@ -20,6 +20,7 @@
 
 (define-module (gnu packages openstack)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (guix build-system python)
@@ -796,12 +797,26 @@ permanence.")
         (base32
          "07d1jn9ryff5j5ic6qj5pbk10m1ccmpllj0wyalrcms1q9yhlzh8"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; tests require a running Gerrit server
+    (arguments
+     '(#:tests? #f ; tests require a running Gerrit server
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (git (assoc-ref inputs "git"))
+                    (openssh (assoc-ref inputs "openssh")))
+               (wrap-program (string-append out "/bin/git-review")
+                 `("PATH" ":" prefix
+                   ,(map (lambda (dir)
+                           (string-append dir "/bin"))
+                         (list git openssh))))))))))
     (native-inputs
      `(("python-pbr" ,python-pbr)))
     (inputs
      `(("python-requests" ,python-requests)
-       ("git" ,git)))
+       ("git" ,git)
+       ("openssh" ,openssh)))
     (home-page "http://docs.openstack.org/infra/git-review/")
     (synopsis "Command-line tool for Gerrit")
     (description
