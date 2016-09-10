@@ -158,7 +158,7 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.50.1")
+   (version "7.50.2-1")
    (source (origin
             (method url-fetch)
             (uri (let ((version-with-underscores
@@ -167,7 +167,7 @@ and support for SSL3 and TLS.")
                                   name "-" version-with-underscores ".tar.bz2")))
             (sha256
              (base32
-              "0irb8df3lqd9w1pb627q260hn448vbkh0sn4l6p6jh0q8lqscv84"))))
+              "0bxm2015xvcazgh103hi5rpdnl2hbipx0gd5z6a65bj6nzky0pml"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
@@ -189,21 +189,16 @@ and support for SSL3 and TLS.")
                           "--disable-telnet" "--disable-tftp" "--disable-pop3"
                           "--disable-imap" "--disable-smtp" "--disable-gopher"
                           "--disable-file" "--disable-ftp" "--disable-smb")
-     #:test-target "test"
-     #:parallel-tests? #f
-     #:phases
-     ;; We have to patch runtests.pl in tests/ directory
+      #:test-target "test"
+      #:parallel-tests? #f
+      #:phases
+      ;; We have to patch runtests.pl in tests/ directory
       (alist-cons-before
        'check 'patch-runtests
        (lambda _
          (substitute* "tests/runtests.pl"
            (("/bin/sh") (which "sh"))))
-       ;; To be discussed with upstream.
-       (alist-cons-before
-        'check 'delete-failing-test1139
-        (lambda _
-          (delete-file "tests/data/test1139"))
-       %standard-phases))))
+       %standard-phases)))
    (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
    (description
     "Gnurl is a microfork of cURL, a command line tool for transferring data
