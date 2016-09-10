@@ -1049,7 +1049,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.1.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1057,7 +1057,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0bw5wivswwh7vx897q8xc2cqgkqhdzk8gh6fnav2kf34sngigiah"))))
+                "0k3m894vfkgkj7xbr0j6ph91351dl6id5f0hk2ksjp5lmg9i6llg"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
