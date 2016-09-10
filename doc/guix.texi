@@ -219,7 +219,7 @@ Services
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Web Services::                Web servers.
-* Various Services::            Other services.
+* Miscellaneous Services::      Other services.
 
 Defining Services
 
@@ -7587,7 +7587,7 @@ declaration.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Web Services::                Web servers.
-* Various Services::            Other services.
+* Miscellaneous Services::      Other services.
 @end menu
 
 @node Base Services
@@ -10166,8 +10166,8 @@ directories are created when the service is activated.
 
 @end deffn
 
-@node Various Services
-@subsubsection Various Services
+@node Miscellaneous Services
+@subsubsection Miscellaneous Services
 
 
 @subsubheading RPC Bind Service
