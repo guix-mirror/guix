@@ -27,7 +27,6 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
