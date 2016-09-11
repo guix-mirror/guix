@@ -31,6 +31,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages w3m))
@@ -145,3 +146,102 @@ flexible configuration and can be customized to suit individual needs and
 tastes.  It has application for both stand-alone systems and multi-user
 networks.")
     (license gpl2+)))
+
+(define-public onionshare
+  (package
+    (name "onionshare")
+    (version "0.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/micahflee/onionshare/archive/v"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0pc3xbq379415s0i0y6rz02hay20zbvgra1jmg4mgrl9vbdr8zmw"))
+        (patches (search-patches "onionshare-fix-install-paths.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out        (assoc-ref outputs "out"))
+                    (onionshare (string-append out "/share/onionshare")))
+               (substitute*
+                 "install/pyinstaller.spec"
+                 ;; inform onionshare where the 'resources' files are installed
+                 (("../resources") onionshare))
+               (substitute*
+                 "onionshare/strings.py"
+                 ;; correct the locale directory
+                 (("helpers.get_resource_path\\('locale'\\)")
+                  (string-append "'" onionshare "/locale'")))
+               (substitute*
+                 "onionshare/helpers.py"
+                 ;; correct the location of version.txt
+                 (("/usr") out)
+                 (("get_resource_path\\('version.txt'\\)")
+                  (string-append "'" onionshare "/version.txt'"))
+                 (("get_resource_path\\('wordlist.txt'\\)")
+                  (string-append "'" onionshare "/wordlist.txt'")))
+               (substitute*
+                 "onionshare/web.py"
+                 ;; fix the location of the html files
+                 (("helpers.get_resource_path\\('html/denied.html'\\)")
+                  (string-append "'" onionshare "/html/denied.html'"))
+                 (("helpers.get_resource_path\\('html/404.html'\\)")
+                  (string-append "'" onionshare "/html/404.html'"))
+                 (("helpers.get_resource_path\\('html/index.html'\\)")
+                  (string-append "'" onionshare "/html/index.html'")))
+               (substitute*
+                 "onionshare_gui/file_selection.py"
+                 (("helpers.get_resource_path\\('images/drop_files.png'\\)")
+                  (string-append "'" onionshare "/images/drop_files.png'")))
+               (substitute*
+                 "onionshare_gui/server_status.py"
+                 (("helpers.get_resource_path\\('images/server_stopped.png'\\)")
+                  (string-append "'" onionshare "/images/server_stopped.png'"))
+                 (("helpers.get_resource_path\\('images/server_working.png'\\)")
+                  (string-append "'" onionshare "/images/server_working.png'"))
+                 (("helpers.get_resource_path\\('images/server_started.png'\\)")
+                  (string-append "'" onionshare "/images/server_started.png'")))
+               (substitute*
+                 "onionshare_gui/onionshare_gui.py"
+                 (("helpers.get_resource_path\\('images/logo.png'\\)")
+                  (string-append "'" onionshare "/images/logo.png'")))
+               (substitute*
+                 "install/onionshare.desktop"
+                 (("/usr") out))
+             #t)))
+         (delete 'check)
+         (add-before 'strip 'tests
+           ;; After all the patching we run the tests after installing.
+           ;; This is also a known issue:
+           ;; https://github.com/micahflee/onionshare/issues/284
+           (lambda _ (zero? (system* "nosetests" "test")))))
+       ;; can't compress the egg because it expects to find all the resources
+       ;; inside the egg as though it were a folder.
+       #:configure-flags '("--single-version-externally-managed" "--root=/")
+       ))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (inputs
+     `(("python-flask" ,python-flask)
+       ("python-nautilus" ,python-nautilus)
+       ("python-sip" ,python-sip)
+       ("python-stem" ,python-stem)
+       ("python-pyqt" ,python-pyqt)))
+    (home-page "https://onionshare.org/")
+    (synopsis "Securely and anonymously share files")
+    (description "OnionShare lets you securely and anonymously share files of
+any size.  It works by starting a web server, making it accessible as a Tor
+hidden service, and generating an unguessable URL to access and download the
+files.  It doesn't require setting up a server on the internet somewhere or
+using a third party filesharing service.  You host the file on your own computer
+and use a Tor hidden service to make it temporarily accessible over the
+internet.  The other user just needs to use Tor Browser to download the file
+from you.")
+    (license (list license:gpl3+
+                   license:bsd-3)))) ; onionshare/socks.py

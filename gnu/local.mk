@@ -702,6 +702,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-db4.patch				\
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
+  %D%/packages/patches/onionshare-fix-install-paths.patch		\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2015-6581.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-5157.patch		\
