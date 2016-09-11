@@ -10426,3 +10426,52 @@ failures.")
              (native-inputs
               `(("python2-setuptools" ,python2-setuptools)
                 ,@(package-native-inputs base))))))
+
+(define-public python-natsort
+  (package
+    (name "python-natsort")
+    (version "5.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "natsort" version))
+              (sha256
+               (base32
+                "1abld5p4a6n5zjnyw5mi2pv37gqalcybv2brjr2y6l9l2p8v9mja"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-cachedir
+           ;; Tests require write access to $HOME by default
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flakes" ,python-pytest-flakes)
+       ("python-pytest-pep8" ,python-pytest-pep8)))
+    (propagated-inputs ; TODO: Add python-fastnumbers.
+     `(("python-pyicu" ,python-pyicu)))
+    (home-page "https://github.com/SethMMorton/natsort")
+    (synopsis "Natural sorting for python and shell")
+    (description
+     "Natsort lets you apply natural sorting on lists instead of
+lexicographical.  If you use the built-in @code{sorted} method in python
+on a list such as @code{['a20', 'a9', 'a1', 'a4', 'a10']}, it would be
+returned as @code{['a1', 'a10', 'a20', 'a4', 'a9']}.  Natsort provides a
+function @code{natsorted} that identifies numbers and sorts them separately
+from strings.  It can also sort version numbers, real numbers, mixed types
+and more, and comes with a shell command @command{natsort} that exposes this
+functionality in the command line.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-natsort))))))
+
+(define-public python2-natsort
+  (let ((base (package-with-python2 (strip-python2-variant python-natsort))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ("python2-pathlib" ,python2-pathlib)
+                ("python2-mock" ,python2-mock)
+                ("python2-enum34" ,python2-enum34)
+                ,@(package-native-inputs base))))))
