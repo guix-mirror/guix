@@ -96,13 +96,13 @@ library.  It supports almost all PNG features and is extensible.")
 (define-public libjpeg
   (package
    (name "libjpeg")
-   (version "9a")
+   (version "9b")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
-                     "19q5zr4n60sjcvfbyv06n4pcl1mai3ipvnd2akflayciinj3wx9s"))))
+                     "0lnhpahgdwlrkd41lx6cr90r199f8mc6ydlh7jznj5klvacd63r4"))))
    (build-system gnu-build-system)
    (synopsis "Library for handling JPEG files")
    (description
