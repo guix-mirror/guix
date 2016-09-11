@@ -64,6 +64,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
@@ -1120,3 +1121,32 @@ PostgreSQL database back-end.  The database back-end can be local or it may be
 on another machine, accessed via TCP/IP.")
     (home-page "http://pqxx.org/")
     (license license:bsd-3)))
+
+(define-public python-peewee
+  (package
+    (name "python-peewee")
+    (version "2.8.3")
+      (source
+        (origin
+        (method url-fetch)
+        (uri (pypi-uri "peewee" version))
+        (sha256
+         (base32
+          "1605bk11s7aap2q4qyba93rx7yfh8b11kk0cqi08z8klx2iar8yd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Fails to import test data
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://github.com/coleifer/peewee/")
+    (synopsis "Small object-relational mapping utility")
+    (description
+     "Peewee is a simple and small ORM (object-relation mapping) tool.  Peewee
+handles converting between pythonic values and those used by databases, so you
+can use Python types in your code without having to worry.  It has built-in
+support for sqlite, mysql and postgresql.  If you already have a database, you
+can autogenerate peewee models using @code{pwiz}, a model generator.")
+    (license license:expat)))
+
+(define-public python2-peewee
+  (package-with-python2 python-peewee))
