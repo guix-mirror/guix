@@ -193,12 +193,12 @@ and support for SSL3 and TLS.")
       #:parallel-tests? #f
       #:phases
       ;; We have to patch runtests.pl in tests/ directory
-      (alist-cons-before
-       'check 'patch-runtests
-       (lambda _
-         (substitute* "tests/runtests.pl"
-           (("/bin/sh") (which "sh"))))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'check 'patch-runtests
+          (lambda _
+            (substitute* "tests/runtests.pl"
+              (("/bin/sh") (which "sh")))
+            #t)))))
    (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
    (description
     "Gnurl is a microfork of cURL, a command line tool for transferring data
