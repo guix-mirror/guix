@@ -10385,3 +10385,44 @@ failures.")
              (native-inputs
               `(("python2-setuptools" ,python2-setuptools)
                 ,@(package-native-inputs base))))))
+
+(define-public python-pytest-flakes
+  (package
+    (name "python-pytest-flakes")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-flakes" version))
+              (sha256
+               (base32
+                "0flag3n33kbhyjrhzmq990rvg4yb8hhhl0i48q9hw0ll89jp28lw"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765 .
+       #:configure-flags '("--single-version-externally-managed" "--root=/")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda _ ; It's easier to run tests after install.
+             (zero? (system* "py.test" "-vv")))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-pep8" ,python-pytest-pep8)))
+    (propagated-inputs
+     `(("python-pyflakes" ,python-pyflakes)))
+    (home-page "https://github.com/fschulze/pytest-flakes")
+    (synopsis "Py.test plugin to check source code with pyflakes")
+    (description "Pytest plugin for checking Python source code with pyflakes.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-flakes))))))
+
+(define-public python2-pytest-flakes
+  (let ((base (package-with-python2 (strip-python2-variant python-pytest-flakes))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-native-inputs base))))))
