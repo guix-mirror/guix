@@ -240,6 +240,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mcrypt.scm			\
   %D%/packages/messaging.scm			\
   %D%/packages/mg.scm				\
+  %D%/packages/microcom.scm			\
   %D%/packages/mit-krb5.scm			\
   %D%/packages/moe.scm				\
   %D%/packages/mono.scm				\
