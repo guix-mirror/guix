@@ -810,7 +810,7 @@ ISO/IEC 15444-1).")
 (define-public zimg
   (package
     (name "zimg")
-    (version "2.1")
+    (version "2.2.1")
     (source
       (origin
         (method url-fetch)
@@ -819,7 +819,7 @@ ISO/IEC 15444-1).")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1hqp1gcsa2zhypms5dnasb1srjgxdqm7cip3w5i571kk9nxkn289"))))
+          "0m2gjpkb0dlg4j77nr41z284zvyfq9qg3ahsv8p1xy8jfr7h1hqa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
