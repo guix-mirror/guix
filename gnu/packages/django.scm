@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,3 +123,42 @@ with arguments to the field constructor.")
 
 (define-public python2-django-simple-math-captcha
   (package-with-python2 python-django-simple-math-captcha))
+
+(define-public python-pytest-django
+  (package
+    (name "python-pytest-django")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-django" version))
+              (sha256
+               (base32
+                "1mmc7zsz3dlhs6sx4sppkj1vgshabi362r1a8b8wpj1qfximpqcb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setuppy
+           (lambda _
+             (substitute* "setup.py"
+                          (("setuptools_scm==1.8.0") "setuptools_scm"))
+             #t)))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (inputs
+     `(("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)))
+    (home-page "http://pytest-django.readthedocs.org/")
+    (synopsis "Django plugin for py.test")
+    (description "Pytest-django is a plugin for py.test that provides a set of
+useful tools for testing Django applications and projects.")
+    (properties `((python2-variant . ,(delay python2-pytest-django))))
+    (license license:bsd-3)))
+
+(define-public python2-pytest-django
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pytest-django))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
