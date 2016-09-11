@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Coypright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages gtk))
 
 (define-public aide
@@ -1792,3 +1794,55 @@ the status of your battery in the system tray.")
 shortcut syntax and completion options.")
       (home-page "https://github.com/TrilbyWhite/interrobang")
       (license license:gpl3+))))
+
+
+
+(define-public pam-krb5
+  (package
+    (name "pam-krb5")
+    (version "4.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://archives.eyrie.org/software/kerberos/" name "-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0abf8cfpkprmhw5ca8iyqgrggh65lgqvmfllc1y6qz7zw1gas894"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-tests
+           (lambda _
+             ;; The build container seems to interfere with some tests.
+             (substitute* "tests/TESTS"
+               (("module/basic\n")  ""))
+             (substitute* "tests/TESTS"
+               (("pam-util/vector\n")  ""))
+             #t)))))
+    (inputs
+     `(("linux-pam" ,linux-pam)
+       ("mit-krb5" ,mit-krb5)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("perl-test-pod" ,perl-test-pod))) ; required for tests
+    (synopsis "Kerberos PAM module")
+    (description
+     "Pam-krb5 is a Kerberos PAM module for either MIT Kerberos or Heimdal.
+It supports ticket refreshing by screen savers, configurable
+authorization handling, authentication of non-local accounts for network
+services, password changing, and password expiration, as well as all the
+standard expected PAM features.  It works correctly with OpenSSH, even
+with ChallengeResponseAuthentication and PrivilegeSeparation enabled,
+and supports extensive configuration either by PAM options or in
+krb5.conf or both.  PKINIT is supported with recent versions of both MIT
+Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
+    (home-page "http://www.eyrie.org/~eagle/software/pam-krb5")
+    ;; Dual licenced under  a homebrew non-copyleft OR GPL (any version)
+    ;; However, the tarball does not contain a copy of the GPL,  so unless
+    ;; we put one in, we cannot distribute it under GPL without violating
+    ;; clause requiring us to give all recipients a copy.
+    (license license:gpl1+)))
+
+;;http://archives.eyrie.org/software/kerberos/pam-krb5-4.7.tar.xz
