@@ -72,6 +72,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -90,7 +91,6 @@
   #:use-module (gnu packages zip)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages bdw-gc)
-  #:use-module (gnu packages pcre)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -10852,3 +10852,41 @@ with an associated set of resolve methods that know how to fetch data.")
        `(("python2-setuptools" ,python2-setuptools)
          ("python2-sqlalchemy" ,python2-sqlalchemy)
          ,@(package-native-inputs base))))))
+
+(define-public python-nautilus
+  (package
+    (name "python-nautilus")
+    (version "0.4.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nautilus" version))
+        (sha256
+         (base32
+          "01hwzjc1zshk4vvxrcghm398fpy4jls66dyz06g07mrwqif8878p"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; fails to import test modules
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-bcrypt" ,python-bcrypt)
+       ("python-click" ,python-click)
+       ("python-consul" ,python-consul)
+       ("python-graphql-core" ,python-graphql-core)
+       ("python-graphql-relay" ,python-graphql-relay)
+       ("python-graphene" ,python-graphene)
+       ("python-jinja2" ,python-jinja2)
+       ("python-nose2" ,python-nose2)
+       ("python-peewee" ,python-peewee)
+       ("python-pika" ,python-pika)
+       ("python-pycparser" ,python-pycparser)
+       ("python-requests" ,python-requests)
+       ("python-tornado" ,python-tornado)
+       ("python-wtforms" ,python-wtforms)))
+    (home-page "https://github.com/AlecAivazis/nautilus")
+    (synopsis "Library for creating microservice applications")
+    (description
+     "Nautilus is a framework for flux based microservices that looks to
+provide extendible implementations of common aspects of a cloud so that you can
+focus on building massively scalable web applications.")
+    (license license:expat)))
