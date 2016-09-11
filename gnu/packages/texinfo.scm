@@ -62,6 +62,18 @@ their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
 
+(define-public texinfo-6.3
+  (package
+    (inherit texinfo)
+    (version "6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/texinfo/texinfo-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0fpr9kdjjl6nj2pc50k2zr7134hvqz8bi8pfqa7131a9lpzz6v14"))))))
+
 (define-public texinfo-5
   (package (inherit texinfo)
     (version "5.2")
