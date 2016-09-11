@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,10 +31,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
@@ -52,6 +57,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
   #:use-module (srfi srfi-1))
 
@@ -636,3 +642,57 @@ vector formats.")
     (inherit (package-with-python2
               (strip-python2-variant python-reportlab)))
     (native-inputs `(("python2-pip" ,python2-pip)))))
+
+(define-public impressive
+  (package
+    (name "impressive")
+    (version "0.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/impressive/Impressive/"
+                    version "/Impressive-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b3rmy6acp2vmf5nill3aknxvr9a5aawk1vnphkah61anxp62gsr"))))
+    (build-system python-build-system)
+
+    ;; TODO: Add dependency on pdftk.
+    (inputs `(("python-pygame" ,python-pygame)
+              ("python2-pillow" ,python2-pillow)
+              ("sdl" ,sdl)
+              ("xpdf" ,xpdf)))
+
+    (arguments
+     `(#:python ,python-2
+       #:phases (modify-phases %standard-phases
+                  (delete 'build)
+                  (delete 'configure)
+                  (delete 'check)
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; There's no 'setup.py' so install things manually.
+                      (let* ((out  (assoc-ref outputs "out"))
+                             (bin  (string-append out "/bin"))
+                             (man1 (string-append out "/share/man/man1"))
+                             (sdl  (assoc-ref inputs "sdl"))
+                             (xpdf (assoc-ref inputs "xpdf")))
+                        (mkdir-p bin)
+                        (copy-file "impressive.py"
+                                   (string-append bin "/impressive"))
+                        (wrap-program (string-append bin "/impressive")
+                          `("LIBRARY_PATH" ":" prefix ;for ctypes
+                            (,(string-append sdl "/lib")))
+                          `("PATH" ":" prefix     ;for pdftoppm
+                            (,(string-append xpdf "/bin"))))
+                        (mkdir-p man1)
+                        (install-file "impressive.1" man1)
+                        #t))))))
+    (home-page "http://impressive.sourceforge.net")
+    (synopsis "PDF presentation tool with visual effects")
+    (description
+     "Impressive is a tool to display PDF files that provides visual effects
+such as smooth alpha-blended slide transitions.  It provides additional tools
+such as zooming, highlighting an area of the screen, and a tool to navigate
+the PDF pages.")
+    (license license:gpl2)))
