@@ -10607,3 +10607,48 @@ CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-graphql-core
+  (package
+    (name "python-graphql-core")
+    (version "0.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "graphql-core" version))
+        (sha256
+         (base32
+          "0rsaarx2sj4xnw9966rhh4haiqaapm4lm2mfqm48ywd51j5vh1a0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-hardcoded-version
+           (lambda _ (substitute*
+                       "setup.py"
+                       (("'gevent==1.1rc1'") "'gevent'"))
+             #t)))))
+    (native-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-mock" ,python-mock)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (inputs
+     `(("python-promise" ,python-promise)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/graphql-python/graphql-core")
+    (synopsis "GraphQL implementation for Python")
+    (description
+     "GraphQL implementation for Python.  GraphQL is a data query language and
+runtime designed and used to request and deliver data to mobile and web apps.
+This library is a port of @url{https://github.com/graphql/graphql-js,graphql-js}
+to Python.")
+    (properties `((python2-variant . ,(delay python2-graphql-core))))
+    (license license:expat)))
+
+(define-public python2-graphql-core
+  (let ((base (package-with-python2
+                (strip-python2-variant python-graphql-core))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
