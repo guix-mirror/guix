@@ -9200,6 +9200,31 @@ focus on event-based network programming and multiprotocol integration.")
 (define-public python2-twisted
   (package-with-python2 python-twisted))
 
+(define-public python-pika
+  (package
+    (name "python-pika")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pika" version))
+        (sha256
+         (base32
+          "0nb4h08di432lv7dy2v9kpwgk0w92f24sqc2hw2s9vwr5b8v8xvj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-twisted" ,python-twisted)))
+    (home-page "https://pika.readthedocs.org")
+    (synopsis "Pure Python AMQP Client Library")
+    (description
+     "Pika is a pure-Python implementation of the AMQP (Advanced Message Queuing
+Protocol) 0-9-1 protocol that tries to stay fairly independent of the underlying
+network support library.")
+    (license license:bsd-3)))
+
+(define-public python2-pika
+  (package-with-python2 python-pika))
+
 (define-public python-ply
   (package
     (name "python-ply")
