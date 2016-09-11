@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -881,6 +882,27 @@ Cflags: -I${includedir}
     (description "TinyXML is a small and simple XML parsing library for the
 C++ programming language.")
     (home-page "http://www.grinninglizard.com/tinyxml/index.html")
+    (license license:zlib)))
+
+(define-public tinyxml2
+  (package
+    (name "tinyxml2")
+    (version "4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/leethomason/tinyxml2/archive/"
+                           version ".tar.gz"))
+       (sha256
+       (base32
+        "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))    ; no tests
+    (synopsis "Small XML parser for C++")
+    (description "TinyXML2 is a small and simple XML parsing library for the
+C++ programming language.")
+    (home-page "http://www.grinninglizard.com/tinyxml2/")
     (license license:zlib)))
 
 (define-public xmlstarlet
