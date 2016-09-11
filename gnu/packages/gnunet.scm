@@ -247,19 +247,17 @@ supports HTTP, HTTPS and GnuTLS.")
       ;; test_gnunet_service_arm fails; reported upstream
       #:tests? #f
       #:phases
+      (modify-phases %standard-phases
         ;; swap check and install phases and set paths to installed binaries
-        (alist-cons-before
-         'check 'set-path-for-check
-         (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-           (setenv "GNUNET_PREFIX" (string-append out "/lib"))
-           (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))))
-         (alist-cons-after
-          'install 'check
-          (assoc-ref %standard-phases 'check)
-          (alist-delete
-           'check
-           %standard-phases)))))
+        (add-before 'check 'set-path-for-check
+          (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (setenv "GNUNET_PREFIX" (string-append out "/lib"))
+             (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin")))
+           #t))
+        (add-after 'install 'check
+          (assoc-ref %standard-phases 'check))
+        (delete 'check))))
    (synopsis "Secure, decentralized, peer-to-peer networking framework")
    (description
      "GNUnet is a framework for secure peer-to-peer networking.  The
