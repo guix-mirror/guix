@@ -53,6 +53,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages django)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -10719,4 +10720,46 @@ from Facebook.")
     (package (inherit base)
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-graphene
+  (package
+    (name "python-graphene")
+    (version "0.10.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "graphene" version))
+        (sha256
+         (base32
+          "09zhac7igh9ixdz0ay6csy35b40l1jwbf2wrbxmgxwfhy51iy06q"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-django-filter" ,python-django-filter)
+       ("python-mock" ,python-mock)
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-pytest-django" ,python-pytest-django)
+       ("python-sqlalchemy-utils" ,python-sqlalchemy-utils)))
+    (inputs
+     `(("python-graphql-core" ,python-graphql-core)
+       ("python-graphql-relay" ,python-graphql-relay)
+       ("python-iso8601" ,python-iso8601)
+       ("python-promise" ,python-promise)
+       ("python-six" ,python-six)))
+    (home-page "http://graphene-python.org/")
+    (synopsis "GraphQL Framework for Python")
+    (description
+     "Graphene is a Python library for building GraphQL schemas/types.
+A GraphQL schema describes your data model, and provides a GraphQL server
+with an associated set of resolve methods that know how to fetch data.")
+    (properties `((python2-variant . ,(delay python2-graphene))))
+    (license license:expat)))
+
+(define-public python2-graphene
+  (let ((base (package-with-python2
+                (strip-python2-variant python-graphene))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ("python2-sqlalchemy" ,python2-sqlalchemy)
          ,@(package-native-inputs base))))))
