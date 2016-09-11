@@ -3695,6 +3695,37 @@ simple and Pythonic domain language.")
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
 
+(define-public python-sqlalchemy-utils
+  (package
+    (name "python-sqlalchemy-utils")
+    (version "0.32.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "SQLAlchemy-Utils" version))
+        (sha256
+         (base32
+          "1zbmmh7n8m01ikizn2mj1mfwch26nsr1awv9mvskqry7av0mpy98"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (home-page "https://github.com/kvesteri/sqlalchemy-utils")
+    (synopsis "Various utility functions for SQLAlchemy")
+    (description
+     "SQLAlchemy-utils provides various utility functions and custom data types
+for SQLAlchemy.  SQLAlchemy is an SQL database abstraction library for Python.")
+    (properties `((python2-variant . ,(delay python2-sqlalchemy-utils))))
+    (license license:bsd-3)))
+
+(define-public python2-sqlalchemy-utils
+  (let ((base (package-with-python2
+                (strip-python2-variant python-sqlalchemy-utils))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-alembic
   (package
     (name "python-alembic")
