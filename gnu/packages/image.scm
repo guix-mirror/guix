@@ -351,15 +351,14 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.11")
+    (version "0.13")
     (source
       (origin
         (method url-fetch)
-        (uri             ;; The link on the homepage is dead.
-          (string-append "http://distfiles.gentoo.org/distfiles/" name "-"
-                          version ".tar.gz"))
+        (uri (string-append "http://downloads.ghostscript.com/public/" name "/"
+                            name "-" version ".tar.gz"))
         (sha256
-          (base32 "1ffhgmf2fqzk0h4k736pp06z7q5y4x41fg844bd6a9vgncq86bby"))
+          (base32 "04akiwab8iy5iy34razcvh9mcja9wy737civ3sbjxk4j143s1b2s"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
 
     (build-system gnu-build-system)
@@ -374,7 +373,7 @@ This is a decoder only implementation, and currently is in the alpha
 stage, meaning it doesn't completely work yet.  However, it is
 maintaining parity with available encoders, so it is useful for real
 work.")
-    (home-page "http://jbig2dec.sourceforge.net/")
+    (home-page "http://www.ghostscript.com/jbig2dec.html")
     (license license:gpl2+)))
 
 (define-public openjpeg
