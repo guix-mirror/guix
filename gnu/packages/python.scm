@@ -10352,3 +10352,36 @@ failures.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-pytest-pep8
+  (package
+    (name "python-pytest-pep8")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-pep8" version))
+              (sha256
+               (base32
+                "06032agzhw1i9d9qlhfblnl3dw5hcyxhagn7b120zhrszbjzfbh3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Fails with recent pytest and pep8. See upstream issues #8 and #12.
+       ;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765 .
+       #:configure-flags '("--single-version-externally-managed" "--root=/")))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-pep8" ,python-pep8)))
+    (home-page "https://bitbucket.org/pytest-dev/pytest-pep8")
+    (synopsis "Py.test plugin to check PEP8 requirements")
+    (description "Pytest plugin for checking PEP8 compliance.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-pep8))))))
+
+(define-public python2-pytest-pep8
+  (let ((base (package-with-python2 (strip-python2-variant python-pytest-pep8))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-native-inputs base))))))
