@@ -268,21 +268,21 @@ You have been warned.  Thanks for being so brave.
 ")))
     (define (normal-tty tty)
       (mingetty-service (mingetty-configuration (tty tty)
-                                                (motd motd)
                                                 (auto-login "root")
                                                 (login-pause? #t))))
 
     (list (mingetty-service (mingetty-configuration
                              (tty "tty1")
-                             (motd motd)
                              (auto-login "root")))
+
+          (login-service (login-configuration
+                          (motd motd)))
 
           ;; Documentation.  The manual is in UTF-8, but
           ;; 'console-font-service' sets up Unicode support and loads a font
           ;; with all the useful glyphs like em dash and quotation marks.
           (mingetty-service (mingetty-configuration
                              (tty "tty2")
-                             (motd motd)
                              (auto-login "guest")
                              (login-program (log-to-info))))
 
