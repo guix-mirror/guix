@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cryptsetup)
@@ -42,11 +43,14 @@
   #:use-module (gnu packages search)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public libsodium
@@ -193,7 +197,7 @@ communication.")
 (define-public encfs
   (package
     (name "encfs")
-    (version "1.8.1")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
@@ -202,27 +206,26 @@ communication.")
                        version "/encfs-" version ".tar.gz"))
        (sha256
         (base32
-         "1lfmcsk187qr6ahy8c8959p7jrk9d5rd9kcsx572850ca3zmf0la"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags '("--with-boost-serialization=boost_wserialization"
-                           "--with-boost-filesystem=boost_filesystem")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'autoconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
+         "1gzlhq2dlwan3hll414wqinj92lb05wd4j370j190dgcalaxplih"))
+       (modules '((guix build utils)))
+       ;; Remove bundled dependencies in favour of proper inputs.
+       (snippet '(for-each delete-file-recursively
+                           (find-files "internal" "^tinyxml2-[0-9]"
+                                       #:directories? #t)))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
-       ("libtool" ,libtool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     `(("gettext" ,gnu-gettext)
+
+       ;; Test dependencies.
+       ("expect" ,expect)
+       ("perl" ,perl)))
     (inputs
-     `(("boost" ,boost)
+     `(("attr" ,attr)
        ("fuse" ,fuse)
        ("openssl" ,openssl)
-       ("rlog" ,rlog)))
+       ("tinyxml2" ,tinyxml2)))
+    (arguments
+     `(#:configure-flags (list "-DUSE_INTERNAL_TINYXML=OFF")))
     (home-page "https://vgough.github.io/encfs")
     (synopsis "Encrypted virtual file system")
     (description
@@ -231,8 +234,9 @@ created under an EncFS mount point is stored as a separate encrypted file on
 the underlying file system.  Like most encrypted file systems, EncFS is meant
 to provide security against off-line attacks, such as a drive falling into
 the wrong hands.")
-    (license (list license:lgpl3+                 ;encfs library
-                   license:gpl3+))))              ;command-line tools
+    (license (list license:expat                  ; internal/easylogging++.h
+                   license:lgpl3+                 ; encfs library
+                   license:gpl3+))))              ; command-line tools
 
 (define-public keyutils
   (package
