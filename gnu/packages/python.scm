@@ -10213,6 +10213,36 @@ interface for programs.")
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
 
+(define-public python-consul
+  (package
+    (name "python-consul")
+    (version "0.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-consul" version))
+        (sha256
+         (base32
+          "0rfyxcy4cr3x848vhx876ifalxd5ghq6l5x813m49h4vq2d4jiq8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/cablehead/python-consul")
+    (synopsis "Python client for Consul")
+    (description
+     "Python client for @url{http://www.consul.io/,Consul}, a tool for service
+discovery, monitoring and configuration.")
+    (license license:expat)))
+
+(define-public python2-consul
+  (let ((consul (package-with-python2 python-consul)))
+    (package (inherit consul)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs consul))))))
+
 (define-public python-schematics
   (package
     (name "python-schematics")
