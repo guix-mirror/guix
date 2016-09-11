@@ -7442,6 +7442,40 @@ asynchronously executing callables.  This package backports the
 concurrent.futures package from Python 3.2")
     (license license:bsd-3)))
 
+(define-public python-promise
+  (package
+    (name "python-promise")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "promise" version))
+        (sha256
+         (base32
+          "1k19ms8l3d5jzjh557rgkxb5sg4mqgfc315rn4hx1z3n8qq6lr3h"))))
+    (build-system python-build-system)
+    ;; Tests wants python-futures, which is a python2 only program, and
+    ;; can't be found by python-promise at test time.
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/syrusakbary/promise")
+    (synopsis "Promises/A+ implementation for Python")
+    (description
+     "Promises/A+ implementation for Python")
+    (properties `((python2-variant . ,(delay python2-promise))))
+    (license license:expat)))
+
+(define-public python2-promise
+  (let ((promise (package-with-python2
+                   (strip-python2-variant python-promise))))
+    (package (inherit promise)
+      (arguments (substitute-keyword-arguments (package-arguments promise)
+                   ((#:tests? _) #t)))
+      (native-inputs
+       `(("python2-futures" ,python2-futures)
+         ("python2-pytest" ,python2-pytest)
+         ("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs promise))))))
+
 (define-public python-urllib3
   (package
     (name "python-urllib3")
