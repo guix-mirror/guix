@@ -1684,6 +1684,45 @@ supports coverage of subprocesses.")
 (define-public python2-pytest-runner
   (package-with-python2 python-pytest-runner))
 
+(define-public python-pytest-mock
+  (package
+    (name "python-pytest-mock")
+    (version "1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest-mock" version ".zip"))
+        (sha256
+         (base32
+          "03zxar5drzm7ksqyrwypjaza3cri6wqvpr6iam92djvg6znp32gp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pytest-dev/pytest-mock/")
+    (synopsis "Thin-wrapper around the mock package for easier use with py.test")
+    (description
+     "This plugin installs a @code{mocker} fixture which is a thin-wrapper
+around the patching API provided by the @code{mock} package, but with the
+benefit of not having to worry about undoing patches at the end of a test.
+The mocker fixture has the same API as @code{mock.patch}, supporting the
+same arguments.")
+    (properties `((python2-variant . ,(delay python2-pytest-mock))))
+    (license license:expat)))
+
+(define-public python2-pytest-mock
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pytest-mock))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base)))
+      (inputs
+       `(("python2-mock" ,python2-mock)
+         ,@(package-inputs base))))))
+
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
