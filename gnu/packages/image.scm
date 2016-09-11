@@ -130,13 +130,13 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
 (define-public jpegoptim
   (package
    (name "jpegoptim")
-   (version "1.4.3")
+   (version "1.4.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.kokkonen.net/tjko/src/jpegoptim-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "0k53q7dc8w5ashz8v261x2b5vvz7gdvg8w962rz9gjvkjbh4lg93"))))
+                     "1cn1i0g1xjdwa12w0ifbnzgb1vqbpr8ji6h05vxksj79vyi3x849"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg" ,libjpeg)))
    (arguments
