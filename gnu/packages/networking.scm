@@ -40,6 +40,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
@@ -54,7 +55,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind))
 
 (define-public macchanger
   (package
@@ -857,3 +860,70 @@ other similar tasks that are particularly application specific so that the
 library remains flexible, portable, and easily embeddable.")
     (home-page "http://enet.bespin.org")
     (license license:expat)))
+
+(define-public sslh
+  (package
+    (name "sslh")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/yrutschle/sslh/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vzw7a7s9lhspbn5zn3hw8hir4pkjgbd68yys4hfsnjp1h7bzjpn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(;; Tests dependencies.
+       ("lcov" ,lcov)
+       ("perl" ,perl)
+       ("perl-io-socket-inet6" ,perl-io-socket-inet6)
+       ("perl-socket6" ,perl-socket6)
+       ("psmisc" ,psmisc)
+       ("valgrind" ,valgrind)))
+    (inputs
+     `(("libcap" ,libcap)
+       ("libconfig" ,libconfig)
+       ("tcp-wrappers" ,tcp-wrappers)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'check 'fix-tests
+                     (lambda _
+                       (substitute* "./t"
+                         (("\"/tmp") "$ENV{\"TMPDIR\"} . \"")
+                         ;; The Guix build environment lacks ‘ip6-localhost’.
+                         (("ip6-localhost") "localhost"))
+                       #t))
+         ;; Many of these files are mentioned in the man page. Install them.
+         (add-after 'install 'install-documentation
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (doc (string-append out "/share/doc/sslh")))
+                        (install-file "README.md" doc)
+                        (for-each
+                         (lambda (file)
+                           (install-file file (string-append doc "/examples")))
+                         (append (find-files "." "\\.cfg")
+                                 (find-files "scripts"))))
+                      #t)))
+       #:make-flags (list "CC=gcc"
+                          "USELIBCAP=1"
+                          "USELIBWRAP=1"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"))
+    (home-page "http://www.rutschle.net/tech/sslh.shtml")
+    (synopsis "Applicative network protocol demultiplexer")
+    (description
+     "sslh is a network protocol demultiplexer.  It acts like a switchboard,
+accepting connections from clients on one port and forwarding them to different
+servers based on the contents of the first received data packet.  Detection of
+common protocols like HTTP(S), SSL, SSH, OpenVPN, tinc, and XMPP is already
+implemented, but any other protocol that matches a regular expression can be
+added.  sslh's name comes from its original application of serving both SSH and
+HTTPS on port 443, allowing SSH connections from inside corporate firewalls
+that block port 22.")
+    (license (list license:bsd-2        ; tls.[ch]
+                   license:gpl2+))))    ; everything else
