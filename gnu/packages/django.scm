@@ -162,3 +162,32 @@ useful tools for testing Django applications and projects.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-django-filter
+  (package
+    (name "python-django-filter")
+    (version "0.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-filter" version))
+              (sha256
+               (base32
+                "0f78hmk8c903zwfzlsiw7ivgag81ymmb5hi73rzxbhnlg2v0l3fx"))))
+    (build-system python-build-system)
+    (home-page "https://django-filter.readthedocs.io/en/latest/")
+    (synopsis "Reusable Django application to filter querysets dynamically")
+    (description
+     "Django-filter is a generic, reusable application to alleviate writing
+some of the more mundane bits of view code.  Specifically, it allows users to
+filter down a queryset based on a model’s fields, displaying the form to let
+them do this.")
+    (properties `((python2-variant . ,(delay python2-django-filter))))
+    (license license:bsd-3)))
+
+(define-public python2-django-filter
+  (let ((base (package-with-python2
+                (strip-python2-variant python-django-filter))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
