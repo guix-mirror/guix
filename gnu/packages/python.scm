@@ -10652,3 +10652,40 @@ to Python.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-graphql-relay
+  (package
+    (name "python-graphql-relay")
+    (version "0.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "graphql-relay" version))
+        (sha256
+         (base32
+          "04wr9ayshxjjdcg2v21c7ffbz36kif1wjl3604fqd3qignb3fbxi"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python-graphql-core" ,python-graphql-core)
+       ("python-promise" ,python-promise)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/graphql-python/graphql-relay-py")
+    (synopsis "Relay implementation for Python")
+    (description
+     "This is a library to allow the easy creation of Relay-compliant servers
+using the GraphQL Python reference implementation of a GraphQL server.  It
+should be noted that the code is a exact port of the original
+@url{https://github.com/graphql/graphql-relay-js,graphql-relay js implementation}
+from Facebook.")
+    (properties `((python2-variant . ,(delay python2-graphql-relay))))
+    (license license:expat)))
+
+(define-public python2-graphql-relay
+  (let ((base (package-with-python2
+                (strip-python2-variant python-graphql-relay))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
