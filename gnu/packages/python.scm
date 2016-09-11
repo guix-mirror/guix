@@ -1507,6 +1507,37 @@ matching them against a list of media-ranges.")
 (define-public python2-nose
   (package-with-python2 python-nose))
 
+(define-public python-nose2
+  (package
+    (name "python-nose2")
+    (version "0.6.5")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "nose2" version))
+          (sha256
+           (base32
+            "1x4zjq1zlyrh8b9ba0cmafd3w94pxhid408kibyjd3s6h1lap6s7"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; 'module' object has no attribute 'collector'
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-cov-core" ,python-cov-core)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/nose-devs/nose2")
+    (synopsis "Next generation of nicer testing for Python")
+    (description
+     "Nose2 is the next generation of nicer testing for Python, based on the
+plugins branch of unittest2.  Nose2 aims to improve on nose by providing a
+better plugin api, being easier for users to configure, and simplifying internal
+interfaces and processes.")
+    (license license:bsd-2)))
+
+(define-public python2-nose2
+  (package-with-python2 python-nose2))
+
 (define-public python-unittest2
   (package
     (name "python-unittest2")
