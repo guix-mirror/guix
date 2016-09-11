@@ -10319,7 +10319,7 @@ Python to manipulate OpenDocument 1.2 files.")
     (description "CacheControl is a port of the caching algorithms in
 @code{httplib2} for use with @code{requests} session objects.")
     (license license:asl2.0)
-    (properties `((python2-variant . ,(delay python2-cachecontrol)))
+    (properties `((python2-variant . ,(delay python2-cachecontrol))))))
 
 (define-public python2-cachecontrol
   (let ((base (package-with-python2 (strip-python2-variant python-cachecontrol))))
