@@ -2104,6 +2104,34 @@ executed.")
 (define-public python2-coverage
   (package-with-python2 python-coverage))
 
+(define-public python-cov-core
+  (package
+    (name "python-cov-core")
+    (version "1.15.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "cov-core" version))
+        (sha256
+         (base32
+          "0k3np9ymh06yv1ib96sb6wfsxjkqhmik8qfsn119vnhga9ywc52a"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)))
+    (home-page "https://github.com/schlamar/cov-core")
+    (synopsis "plugin core for use by pytest-cov, nose-cov and nose2-cov")
+    (description
+     "This is a library package for use by pytest-cov, nose-cov and nose2-cov.
+It is useful for developing coverage plugins for these testing frameworks.")
+    (license license:expat)))
+
+(define-public python2-cov-core
+  (let ((cov-core (package-with-python2 python-cov-core)))
+    (package (inherit cov-core)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs cov-core))))))
+
 (define-public python-discover
   (package
     (name "python-discover")
