@@ -334,3 +334,38 @@ through the pass command.")
     (description "Argon2 provides a key derivation function that was declared
 winner of the 2015 Password Hashing Competition.")
     (license license:cc0)))
+
+(define-public python-bcrypt
+  (package
+    (name "python-bcrypt")
+    (version "3.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "bcrypt" version))
+        (sha256
+         (base32
+          "1giy0dvd8gvq6flxh44np1v2nqwsji5qsnrz038mgwzgp7c20j75"))))
+        (build-system python-build-system)
+    (native-inputs
+     `(("python-pycparser" ,python-pycparser)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/pyca/bcrypt/")
+    (synopsis
+     "Modern password hashing library")
+    (description
+     "Bcrypt is a Python module which provides a password hashing method based
+on the Blowfish password hashing algorithm, as described in
+@url{http://static.usenix.org/events/usenix99/provos.html,\"A Future-Adaptable
+Password Scheme\"} by Niels Provos and David Mazieres.")
+    (license license:asl2.0)))
+
+(define-public python2-bcrypt
+  (let ((bcrypt (package-with-python2 python-bcrypt)))
+    (package (inherit bcrypt)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs bcrypt))))))
