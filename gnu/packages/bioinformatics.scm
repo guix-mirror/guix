@@ -4923,14 +4923,14 @@ sequence.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-0")
+    (version "2.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "10cygzkyg2m0y054ygivqxrkvqz792qsg6bmbdfzaqq37qv4wc7z"))))
+         "0i0c7rc0nzgbysd1nlxzxd2rvy75qcnw3yc7nggzqjzzj5d7yzsd"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
