@@ -1191,6 +1191,27 @@ sparse system of linear equations A x = b using Guassian elimination.")
     (inputs
      (alist-delete "pt-scotch" (package-inputs mumps-openmpi)))))
 
+(define-public r-quadprog
+  (package
+    (name "r-quadprog")
+    (version "1.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "quadprog" version))
+       (sha256
+        (base32
+         "0jg3r6abmhp8r9vkbhpx9ldjfw6vyl1m4c5vwlyjhk1mi03656fr"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/quadprog")
+    (synopsis "Functions to solve quadratic programming problems")
+    (description
+     "This package contains routines and documentation for solving quadratic
+programming problems.")
+    (license license:gpl3+)))
+
 (define-public r-pracma
   (package
     (name "r-pracma")
