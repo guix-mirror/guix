@@ -2412,14 +2412,14 @@ flexible than the orphaned \"base64\" package.")
 (define-public r-irlba
   (package
     (name "r-irlba")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "irlba" version))
        (sha256
         (base32
-         "1gms3rxrm24ri4vjvnpl4v47m7bx0zk63z8y85rbhsvx230xdy0m"))))
+         "0yb8b8g6f3cb0f56r702fn2px8nf5rx8cyy2scq36xai9w7f25jj"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/irlba")
     (synopsis "Methods for eigendecomposition of large matrices")
