@@ -555,7 +555,7 @@ security, and applying best practice development processes.")
        ("python2-psutil" ,python2-psutil)
        ("python2-requests" ,python2-requests)
        ("python2-pytz" ,python2-pytz)))
-    (synopsis "Let's Encrypt client")
+    (synopsis "Let's Encrypt client by the Electronic Frontier Foundation")
     (description "Tool to automatically receive and install X.509 certificates
 to enable TLS on servers.  The client will interoperate with the Let’s Encrypt CA which
 will be issuing browser-trusted certificates for free.")
