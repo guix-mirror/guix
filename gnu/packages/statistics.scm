@@ -1814,13 +1814,13 @@ scaling functions for R.")
 (define-public r-lattice
   (package
     (name "r-lattice")
-    (version "0.20-33")
+    (version "0.20-34")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lattice" version))
               (sha256
                (base32
-                "0car12x5vl9k180i9pc86lq3cvwqakdpqn3lgdf98k9n2h52cilg"))))
+                "0615h69czr73k47whhzimf1qxv5qk0cabcrkljwhyrn6m6piq6ja"))))
     (build-system r-build-system)
     (home-page "http://lattice.r-forge.r-project.org/")
     (synopsis "High-level data visualization system")
