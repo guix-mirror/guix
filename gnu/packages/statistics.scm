@@ -1479,13 +1479,13 @@ jackknifed confidence intervals are available for most estimates.")
 (define-public r-rversions
   (package
     (name "r-rversions")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rversions" version))
               (sha256
                (base32
-                "0xmi461g1rf5ngb7r1sri798jn6icld1xq25wj9jii2ca8j8xv68"))))
+                "0i2gi05nrvknr7g89rbppkswyfcwwd4r9gp75fdfhpah8sgq1l11"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
