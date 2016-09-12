@@ -1858,13 +1858,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.6.700.6.0")
+    (version "0.7.400.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0x736cjg1pbvn8c6h91c88qmmz4pddvvqg88k9c9kwhn24fjrra0"))
+                "0g2658iy43higy1cay00ljibgnwh0zv5gcwvbhckjs48y8z1a2pb"))
               (modules '((guix build utils)))
               ;; Remove bundled armadillo sources
               (snippet

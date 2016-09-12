@@ -1816,14 +1816,14 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
 
 (define-public armadillo-for-rcpparmadillo
   (package (inherit armadillo)
-    (version "6.700.6")
+    (version "7.400.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "1cdpjxb0fz5f28y5qrqgpw53s7qi8s2v3al9lfdldqxngb21vpx8"))))))
+                "0xmpnqhm9mwr1lssjyarj0cl8b4svbqv6z1xa1dxlwd2ly1srkg4"))))))
 
 (define-public muparser
   ;; When switching download sites, muparser re-issued a 2.2.5 release with a
