@@ -453,7 +453,7 @@ interface.")
                 (uri (git-reference
                       (url "https://github.com/blakemcbride/LISPF4.git")
                       (commit commit)))
-                (file-name (string-append name "-" version))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "18k8kfn30za637y4bfbm9x3vv4psa3q8f7bi9h4h0qlb8rz8m92c"))))
@@ -463,14 +463,12 @@ interface.")
       (arguments
        `(#:make-flags
          '("-f" "Makefile.unx" "CC=gcc")
-         ;; no check phase
-         #:tests? #f
+         #:tests? #f ; No 'check phase
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
-           (replace
-            'install
-            (lambda* (#:key outputs inputs #:allow-other-keys)
+           (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (bin (string-append out "/bin"))
                      (doc (string-append (assoc-ref outputs "doc")
