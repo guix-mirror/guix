@@ -9015,14 +9015,14 @@ to occurences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "2.9")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
         (base32
-         "09y7h8rjay5kzwk5akq7f5f9wqnvjkxhivck04hdc8ny1nw3vqzp"))))
+         "0i283z1pivmir61z8kbiycigc94l61v33ygzkhczf1ifq7cppyds"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
