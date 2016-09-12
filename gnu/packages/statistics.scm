@@ -2792,14 +2792,14 @@ most common form of color blindness.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.4.1")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "0xp6lyr2l4ix2mrilx4qmca7wm5qmbhvi24m4nf7qsgwp54gnv2h"))))
+         "1bpwbphgl43ym433b0nrshwhr7pprmj1wkpkamdzix1zvf9dcbc2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
