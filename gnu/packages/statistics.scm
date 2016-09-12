@@ -2160,13 +2160,13 @@ options defined in other packages.")
 (define-public r-futile-logger
   (package
     (name "r-futile-logger")
-    (version "1.4.1")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "futile.logger" version))
               (sha256
                (base32
-                "1plld1icxrcay7llplbd4i8inpg97crpnczk58mbk26j8glqbr51"))))
+                "1r3nayk0z9n1svbf8640vw90dal5q07nkn0gv4bnva3pbzb352sy"))))
     (properties `((upstream-name . "futile.logger")))
     (build-system r-build-system)
     (propagated-inputs
