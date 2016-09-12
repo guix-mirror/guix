@@ -2225,13 +2225,13 @@ worker processes and collect and return the results on the master.")
 (define-public r-sparsem
   (package
     (name "r-sparsem")
-    (version "1.7")
+    (version "1.72")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "SparseM" version))
               (sha256
                (base32
-                "0s9kab5khk7daqf6nfp1wm1qnhkssnnwnymisfwyk3kz4q5maqfz"))))
+                "0zpb1swn9xjkb22sky10ixff7vqfiz9m36nkbc1qqbm9frcldnka"))))
     (properties
      `((upstream-name . "SparseM")))
     (inputs
