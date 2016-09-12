@@ -6086,7 +6086,7 @@ annotations for the human genome.")
 (define-public r-org-ce-eg-db
   (package
     (name "r-org-ce-eg-db")
-    (version "3.2.3")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -6096,7 +6096,7 @@ annotations for the human genome.")
                                   "org.Ce.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "1d0lx00ybq34yqs6mziaa0lrh77xm0ggsmi76g6k95f77gi7m1sw"))))
+                "17mvb2ci2jgac3zi420cbf70n4zswqinzxlk1v2fjnp8vvydl2fw"))))
     (properties
      `((upstream-name . "org.Ce.eg.db")))
     (build-system r-build-system)
