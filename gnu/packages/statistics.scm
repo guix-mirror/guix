@@ -1943,19 +1943,21 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "0.9.6")
+    (version "1.0")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "09ajq5miqzz46q0i9svvbh93dbi7xbjn4702d6z3scdz272gx7l2"))))
+            "0c7gs9c8xdjfxviw0syh13pf3vys2b2ssixmnyqbji64xdscn7pz"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-catools" ,r-catools)
        ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-base64enc" ,r-base64enc)
        ("r-knitr" ,r-knitr)
        ("r-yaml" ,r-yaml)
        ("ghc-pandoc" ,ghc-pandoc)))
