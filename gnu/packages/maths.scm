@@ -1215,13 +1215,15 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "1.8.8")
+    (version "1.9.5")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "0ans9l5rrb7a38gyi4qx4258sd5r5668vyrk02yzjpg9k3h8l165"))))
+        (base32 "19nr2jlkbcdgvw3gx5hry12av565lmvqd5q4h7zlch3q13avwwl2"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quadprog" ,r-quadprog)))
     (home-page "http://cran.r-project.org/web/packages/pracma")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
