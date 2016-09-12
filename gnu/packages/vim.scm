@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,13 @@
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-bit-reproducable
+           (lambda _
+             (substitute* "src/version.c"
+               ((" VIM_VERSION_LONG_DATE") " VIM_VERSION_LONG")
+               ((" __DATE__") "")
+               ((" __TIME__") ""))
+             #t))
          (add-after 'configure 'patch-config-files
            (lambda _
              (substitute* "runtime/tools/mve.awk"
