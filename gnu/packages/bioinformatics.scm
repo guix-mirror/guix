@@ -6138,7 +6138,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
 (define-public r-org-mm-eg-db
   (package
     (name "r-org-mm-eg-db")
-    (version "3.2.3")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -6148,7 +6148,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
                                   "org.Mm.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "0wh1pm3npdg7070875kfgiid3bqkz3q7rq6snhk6bxfvph00298y"))))
+                "0r939vfmsqqdwfimix1nv0bkhnixawy9c6avbclrncfanw3kgjax"))))
     (properties
      `((upstream-name . "org.Mm.eg.db")))
     (build-system r-build-system)
