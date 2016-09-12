@@ -43,7 +43,8 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
            (lambda _
-             (substitute* "Makefile.in" (("/bin/") "")))))))
+             (substitute* "Makefile.in" (("/bin/") ""))
+             #t)))))
     (home-page "http://heasarc.gsfc.nasa.gov/fitsio/fitsio.html")
     (synopsis "Library for reading and writing FITS files")
     (description "CFITSIO provides simple high-level routines for reading and
@@ -62,7 +63,8 @@ in FITS files.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version ".tar.bz2"))
+             "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version
+             ".tar.bz2"))
        (sha256
         (base32 "1s2nig327g4bimd9xshlk11ww09a7mrjmsbpdcd8smsmn2kl1glb"))))
     (inputs
@@ -73,7 +75,8 @@ in FITS files.")
                   (add-before 'configure 'patch-/bin/sh
                     (lambda _
                       (substitute* "makedefs.in"
-                        (("/bin/sh") "sh")))))))
+                        (("/bin/sh") "sh"))
+                      #t)))))
     (home-page "http://www.atnf.csiro.au/people/mcalabre/WCS")
     (synopsis "Library which implements the FITS WCS standard")
     (description "The FITS \"World Coordinate System\" (WCS) standard defines
