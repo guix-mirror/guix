@@ -383,14 +383,14 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-12")
+   (version "1.8-14")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "1khzy36nn6xbnzqfc2953ng0sv8w91mns1ymhibaqn1150x1qid0"))))
+       "0ly9x23q6kd7aqrsb8qjsj8jc597h3068iaqjmkkdv56r5dln29f"))))
    (build-system r-build-system)
    (home-page "http://cran.r-project.org/web/packages/mgcv")
    (synopsis "Mixed generalised additive model computation")
