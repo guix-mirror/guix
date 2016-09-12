@@ -1754,17 +1754,20 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "0.2.2")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "156422xwvskynna5kjc8h1qqnn50kxgjrihl2h2b7vm9sxxdyr2m"))))
+                "0xji0dbal6xcxnsmjj678fw29n7wrj45wrd5ng99yhqqijcm9f6g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
        ("r-rcpp" ,r-rcpp)
+       ("r-hms" ,r-hms)
+       ("r-tibble" ,r-tibble)
+       ("r-r6" ,r-r6)
        ("r-bh" ,r-bh)))
     (home-page "https://github.com/hadley/readr")
     (synopsis "Read tabular data")
