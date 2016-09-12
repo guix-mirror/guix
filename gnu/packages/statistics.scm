@@ -862,13 +862,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.13")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "0v69846myi4fbjp8wiik4295fhba67s3i6ccysghm6x031i2f26q"))))
+                "1v0s0knb294p7a2xkwy35bhg0w8p3qcgyphd748sj86hh8a30vds"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
