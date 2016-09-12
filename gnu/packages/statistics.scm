@@ -1645,13 +1645,13 @@ pure C implementation of the Git core methods.")
 (define-public r-rstudioapi
   (package
     (name "r-rstudioapi")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rstudioapi" version))
               (sha256
                (base32
-                "0sgnqfx0m3hzh57k10s7ndrbw7yqjjjcgfikafya98jcc7wmpwym"))))
+                "1zkvz72z6nw0xc8bhb21y5x1nk6avijs0w8n4vsbvw9sn76wc96s"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/rstudioapi")
     (synopsis "Safely access the RStudio API")
