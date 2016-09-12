@@ -2136,6 +2136,26 @@ convenient and easy to use replacement for @code{cat} and @code{print}
 statements.")
     (license license:lgpl3+)))
 
+(define-public r-segmented
+  (package
+    (name "r-segmented")
+    (version "0.5-1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "segmented" version))
+       (sha256
+        (base32
+         "1740cvx2q4v23g4q0zkvg50s5bv8jcrlzzhm7fac4xn0riwmzp5i"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/segmented")
+    (synopsis "Regression models with breakpoints estimation")
+    (description
+     "Given a regression model, segmented updates the model by adding one or
+more segmented (i.e., piecewise-linear) relationships.  Several variables with
+multiple breakpoints are allowed.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-snow
   (package
     (name "r-snow")
