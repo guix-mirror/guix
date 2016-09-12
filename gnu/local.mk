@@ -495,9 +495,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
-  %D%/packages/patches/expat-CVE-2012-6702-and-CVE-2016-5300.patch	\
-  %D%/packages/patches/expat-CVE-2015-1283-refix.patch		\
-  %D%/packages/patches/expat-CVE-2016-0718.patch		\
+  %D%/packages/patches/expat-CVE-2016-0718-fix-regression.patch	\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
   %D%/packages/patches/fasthenry-spAllocate.patch		\
