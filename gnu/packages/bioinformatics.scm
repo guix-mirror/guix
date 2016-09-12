@@ -5839,7 +5839,7 @@ extracting the desired features in a convenient format.")
 (define-public r-go-db
   (package
     (name "r-go-db")
-    (version "3.2.2")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.bioconductor.org/packages/"
@@ -5847,7 +5847,7 @@ extracting the desired features in a convenient format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00gariag9ampz82dh0xllrc26r85d7vdcwc0vca5zdy147rwxr7f"))))
+                "0x2hkbhg9d8waw32hdn05887vv3zbs5aqff3mf5vfyzvl7xhgxy0"))))
     (properties
      `((upstream-name . "GO.db")))
     (build-system r-build-system)
