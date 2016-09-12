@@ -1732,6 +1732,25 @@ in which global state has been temporarily modified.  Many of these functions
 were originally a part of the r-devtools package.")
     (license license:gpl2+)))
 
+(define-public r-hms
+  (package
+    (name "r-hms")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hms" version))
+       (sha256
+        (base32
+         "0ln1dc26mkl5pc26vvyf01d35x75q6cjaj39cccxp67chbwbdlds"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/rstats-db/hms")
+    (synopsis "Pretty time of day")
+    (description
+     "This package implements an S3 class for storing and formatting
+time-of-day values, based on the @code{difftime} class.")
+    (license license:gpl3+)))
+
 (define-public r-readr
   (package
     (name "r-readr")
