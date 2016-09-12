@@ -3264,13 +3264,13 @@ applications.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "0.9.7")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "1p24bcaf1wbfdi1r9ibyyp0l0zp4kzs4g3srv8vikz93hycm1qa6"))))
+                "04fwasg400v8dvkcn1fcha1jzdz8lbyxi0679q7flsyrp57b3jrf"))))
     (build-system r-build-system)
     (inputs
      `(("libcurl" ,curl)))
