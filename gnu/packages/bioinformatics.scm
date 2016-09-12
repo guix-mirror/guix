@@ -5299,17 +5299,18 @@ S4Vectors package itself.")
 (define-public r-seqinr
   (package
     (name "r-seqinr")
-    (version "3.1-3")
+    (version "3.3-1")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "seqinr" version))
         (sha256
           (base32
-            "0bbjfwbqg74wsamb3iz01g0ssdpdpg65gh00y9xlnpk4wb990n4n"))))
+            "1al83y6m7739dz2j895yihksm0s5l45ialid4yw911ylbg3w6cm1"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ade4" ,r-ade4)))
+     `(("r-ade4" ,r-ade4)
+       ("r-segmented" ,r-segmented)))
     (inputs
      `(("zlib" ,zlib)))
     (home-page "http://seqinr.r-forge.r-project.org/")
