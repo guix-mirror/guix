@@ -1034,7 +1034,7 @@ errors at the end of reads.")
 (define-public bowtie
   (package
     (name "bowtie")
-    (version "2.2.6")
+    (version "2.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
@@ -1042,7 +1042,7 @@ errors at the end of reads.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ssfvymxfrap6f9pf86s9bvsbqdgka4abr2r7j3mgr4w1l289m86"))
+                "1vp5db8i7is57iwjybcdg18f5ivyzlj5g1ix1nlvxainzivhz55g"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
