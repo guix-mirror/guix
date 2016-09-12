@@ -404,14 +404,14 @@ distributions beyond the exponential family.")
 (define-public r-permute
   (package
    (name "r-permute")
-   (version "0.9-0")
+   (version "0.9-4")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "permute" version))
      (sha256
       (base32
-       "0w68cqw6s4pixix8bh1qzsy1pm64jqh1cjznw74h82ygp8sj7p73"))))
+       "1w8wzk1fg9q7wvisnfp2js70dg0m9wi12gkdhpyngpbdcgssahd5"))))
    (build-system r-build-system)
    ;; Tests do not run correctly, but running them properly would entail a
    ;; circular dependency with vegan.
