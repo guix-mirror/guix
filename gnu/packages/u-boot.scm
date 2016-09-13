@@ -126,7 +126,7 @@ also initializes the boards (RAM etc).")
                     (copy-file file target-file)))
                 uboot-files)))))))))
 
-(define-public u-boot-vexpress_ca9x4
+(define-public u-boot-vexpress
   (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
 
 (define-public u-boot-malta
