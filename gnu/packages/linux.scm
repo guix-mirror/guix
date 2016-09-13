@@ -199,35 +199,6 @@
 `insmod', `lsmod', and more.")
     (license license:gpl2+)))
 
-(define-public libnfsidmap
-  (package
-    (name "libnfsidmap")
-    (version "0.25")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://www.citi.umich.edu/projects/nfsv4/linux/"
-                   name "/" name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags (list
-                          (string-append "--with-pluginpath="
-                                         (assoc-ref %outputs "out")
-                                         "/lib/libnfsidmap"))))
-    (home-page
-     "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
-    (synopsis
-     "NFSv4 support library for name/ID mapping")
-    (description "Libnfsidmap is a library holding mulitiple methods of
-mapping names to ids and visa versa, mainly for NFSv4.  It provides an
-extensible array of mapping functions, currently consisting of two choices:
-the default @code{nsswitch} and the experimental @code{umich_ldap}.")
-    (license (license:non-copyleft "file://COPYING"
-                                   "See COPYING in the distribution."))))
-
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
   (origin
@@ -2940,3 +2911,32 @@ native Linux file system, and has been part of the Linux kernel since version
     ;; The files src/key_mod/ecryptfs_key_mod_{openssl,pkcs11_helper,tspi}.c
     ;; grant additional permission to link with OpenSSL.
     (license license:gpl2+)))
+
+(define-public libnfsidmap
+  (package
+    (name "libnfsidmap")
+    (version "0.25")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.citi.umich.edu/projects/nfsv4/linux/"
+                   name "/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list
+                          (string-append "--with-pluginpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/libnfsidmap"))))
+    (home-page
+     "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
+    (synopsis
+     "NFSv4 support library for name/ID mapping")
+    (description "Libnfsidmap is a library holding mulitiple methods of
+mapping names to ids and visa versa, mainly for NFSv4.  It provides an
+extensible array of mapping functions, currently consisting of two choices:
+the default @code{nsswitch} and the experimental @code{umich_ldap}.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
