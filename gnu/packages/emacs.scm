@@ -1330,6 +1330,34 @@ Expectations, but it can be used in other contexts.")
 definitions for testing with the Ecukes framework.")
     (license license:gpl3+)))
 
+(define-public emacs-es-mode
+  (package
+    (name "emacs-es-mode")
+    (version "4.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dakrone/es-mode/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02as82clm553yss7jfjac888308zr1h2229cch4z1yij70j25c8y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     ;; The version of org in Emacs 24.5 is not sufficient, and causes tables
+     ;; to be rendered incorrectly
+     `(("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/dakrone/es-mode")
+    (synopsis "Major mode for editing Elasticsearch queries")
+    (description "@code{es-mode} includes highlighting, completion and
+indentation support for Elasticsearch queries.  Also supported are
+@code{es-mode} blocks in @code{org-mode}, for which the results of queries can
+be processed through @code{jq}, or in the case of aggregations, can be
+rendered in to a table.  In addition, there is an @code{es-command-center}
+mode, which displays information about Elasticsearch clusters.")
+    (license license:gpl3+)))
+
 (define-public emacs-expand-region
   (package
     (name "emacs-expand-region")
