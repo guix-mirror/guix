@@ -955,6 +955,9 @@ above command-line parameters.")
 key-value cache and store.")
     (license lgpl3+)))
 
+(define-public guile2.2-redis
+  (package-for-guile-2.2 guile-redis))
+
 (define-public guile-wisp
   (package
     (name "guile-wisp")
