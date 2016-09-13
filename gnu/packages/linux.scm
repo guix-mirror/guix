@@ -184,7 +184,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                               (if variant (string-append variant "-") "")
                               arch ".conf"))
          (file (string-append "gnu/packages/" name)))
-    (if file-exists? (search-path %load-path file) #f)))
+    (search-path %load-path file)))
 
 (define %default-extra-linux-options
   `(("CONFIG_NET_9P" . m)
