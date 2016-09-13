@@ -3794,7 +3794,7 @@ native package build:
                 "-s"
                 (string-append #$emacs "/bin/emacs")
                 (string-append #$output "/bin/vi")))
-   #:target "mips64el-linux")
+   #:target "mips64el-linux-gnu")
 @end example
 
 @noindent
