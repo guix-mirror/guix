@@ -503,19 +503,11 @@ the InterLisp Standard.")
                   "04rnwllxnl86zw8c6pwxznn49bvkvh0f1lfliy085vjzvlq3rgja"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags '("CC=gcc")
-         #:tests? #f ; No make check
+       `(#:make-flags '("CC=gcc" "release")
+         #:test-target "test"
          #:phases
          (modify-phases %standard-phases
            (delete 'configure) ; No configure script
-           ;; We have to remove the 'test phase because it requires
-           ;; the flisp binary to be present. Instead we run
-           ;; bootstrap.sh after the 'install phase.
-           (add-before 'build 'patch-makefile
-             (lambda _
-               (substitute* "Makefile"
-                 (("default: release test") "default: release"))
-               #t))
            (replace 'install ; Makefile has no 'install phase
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
