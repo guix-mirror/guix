@@ -167,38 +167,6 @@
     (license license:gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
-(define-public module-init-tools
-  (package
-    (name "module-init-tools")
-    (version "3.16")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://kernel.org/linux/utils/kernel/module-init-tools/"
-                   "module-init-tools-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
-             (patches (search-patches "module-init-tools-moduledir.patch"))))
-    (build-system gnu-build-system)
-    (arguments
-     ;; FIXME: The upstream tarball lacks man pages, and building them would
-     ;; require DocBook & co.  We used to use Gentoo's pre-built man pages,
-     ;; but they vanished.  In the meantime, fake it.
-     '(#:phases (alist-cons-before
-                 'configure 'fake-docbook
-                 (lambda _
-                   (substitute* "Makefile.in"
-                     (("^DOCBOOKTOMAN.*$")
-                      "DOCBOOKTOMAN = true\n")))
-                 %standard-phases)))
-    (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
-    (synopsis "Tools for loading and managing Linux kernel modules")
-    (description
-     "Tools for loading and managing Linux kernel modules, such as `modprobe',
-`insmod', `lsmod', and more.")
-    (license license:gpl2+)))
-
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
   (origin
@@ -2940,3 +2908,35 @@ extensible array of mapping functions, currently consisting of two choices:
 the default @code{nsswitch} and the experimental @code{umich_ldap}.")
     (license (license:non-copyleft "file://COPYING"
                                    "See COPYING in the distribution."))))
+
+(define-public module-init-tools
+  (package
+    (name "module-init-tools")
+    (version "3.16")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://kernel.org/linux/utils/kernel/module-init-tools/"
+                   "module-init-tools-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
+             (patches (search-patches "module-init-tools-moduledir.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; FIXME: The upstream tarball lacks man pages, and building them would
+     ;; require DocBook & co.  We used to use Gentoo's pre-built man pages,
+     ;; but they vanished.  In the meantime, fake it.
+     '(#:phases (alist-cons-before
+                 'configure 'fake-docbook
+                 (lambda _
+                   (substitute* "Makefile.in"
+                     (("^DOCBOOKTOMAN.*$")
+                      "DOCBOOKTOMAN = true\n")))
+                 %standard-phases)))
+    (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
+    (synopsis "Tools for loading and managing Linux kernel modules")
+    (description
+     "Tools for loading and managing Linux kernel modules, such as `modprobe',
+`insmod', `lsmod', and more.")
+    (license license:gpl2+)))
