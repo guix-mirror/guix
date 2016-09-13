@@ -935,13 +935,17 @@ above command-line parameters.")
                 "0vx6if6b4r3kwx64vzbs6vpc0cpcr85x11w9vkzq27gw8n7isv56"))
               (modules '((guix build utils)))
               (snippet
-               ;; Make sure everything goes under .../site/2.0, like Guile's
+               ;; Make sure everything goes under .../site/X.Y, like Guile's
                ;; search paths expects.
-               '(substitute* '("Makefile.in"
-                               "redis/Makefile.in"
-                               "redis/commands/Makefile.in")
-                  (("moddir =.*/share/guile/site" all)
-                   (string-append all "/2.0"))))))
+               '(begin
+                  (substitute* "configure"
+                    (("ac_subst_vars='")
+                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
+                  (substitute* '("Makefile.in"
+                                 "redis/Makefile.in"
+                                 "redis/commands/Makefile.in")
+                    (("moddir =.*/share/guile/site" all)
+                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.0)))
