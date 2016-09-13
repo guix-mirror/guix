@@ -28,6 +28,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -98,6 +99,42 @@ parts of files that have changed since the last backup.  Because duplicity
 uses GnuPG to encrypt and/or sign these archives, they will be safe from
 spying and/or modification by the server.")
     (license license:gpl2+)))
+
+(define-public par2cmdline
+  (package
+    (name "par2cmdline")
+    (version "0.6.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ykfb7ar0x0flfdgf6i8xphyv5b93dalbjj2jb6hx7sdjax33n1g"))
+              ;; This test merely needs a file to test recovery on, but
+              ;; /dev/random is essentially /dev/urandom plus minimum entropy
+              ;; locking, making the test hang indefinitely. This change is
+              ;; already upstream: remove on upgrade to future 0.6.15.
+              ;; https://github.com/Parchive/par2cmdline/commit/27723a678f780da82c79b98592592009c779a4fb
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "tests/test20" (("if=/dev/random") "if=/dev/urandom")))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    (synopsis "File verification and repair tool")
+    (description "Par2cmdline is a tool for generating RAID-like PAR2 recovery
+files using Reed-Solomon coding.  PAR2 files can be stored along side backups
+or distributed files for recovering from bitrot.")
+    (home-page "https://github.com/Parchive/par2cmdline")
+    (license license:gpl3+)))
 
 (define-public hdup
   (package
