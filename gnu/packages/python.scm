@@ -10324,3 +10324,31 @@ Python to manipulate OpenDocument 1.2 files.")
              (native-inputs
               `(("python2-setuptools" ,python2-setuptools)
                 ,@(package-native-inputs base))))))
+
+(define-public python-lit
+  (package
+    (name "python-lit")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "lit" version))
+        (sha256
+         (base32
+          "135m2b9cwih85g66rjggavck328z7lj37srgpq3jxszbg0g2b91y"))))
+    (build-system python-build-system)
+    (home-page "http://llvm.org/")
+    (synopsis "LLVM Software Testing Tool")
+    (description "@code{lit} is a portable tool for executing LLVM and Clang
+style test suites, summarizing their results, and providing indication of
+failures.")
+    (license license:ncsa)
+    (properties `((python2-variant . ,(delay python2-lit))))))
+
+(define-public python2-lit
+  (let ((base (package-with-python2 (strip-python2-variant python-lit))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
