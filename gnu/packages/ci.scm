@@ -39,23 +39,22 @@
   #:use-module (guix build-system gnu))
 
 (define-public hydra
-  (let ((commit "4c0e3e47034545ad3e9e86dd069138bcebb8ccee"))
+  (let ((commit "1ff48da3d3d4a425063f5b7dd0b89d35270f8932"))
     (package
       (name "hydra")
-      (version (string-append "20150407." (string-take commit 7)))
+      (version (string-append "20151030." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/NixOS/hydra")
                       (commit commit)))
                 (file-name (string-append name "-" version))
+                (patches (search-patches
+                          ;; TODO: Remove once we have a darcs input
+                          "hydra-disable-darcs-test.patch"))
                 (sha256
                  (base32
-                  "08vc76xb7f42hh65j7qvjf58hw36aki5ml343170pq94vk75b1nh"))
-                (patches (search-patches
-                          "hydra-automake-1.15.patch"
-                          ;; TODO: Remove once we have a darcs input
-                          "hydra-disable-darcs-test.patch"))))
+                  "0ni8i8v1nxxfr51rz8m6znwpbm77vr7i05k506hmgmg32r938lap"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("unzip" ,unzip)
@@ -74,7 +73,8 @@
          ("mercurial" ,mercurial)
          ("bazaar" ,bazaar)))
       (inputs
-       `(("perl" ,perl)
+       `(("libpqxx" ,libpqxx)
+         ("perl" ,perl)
          ("guile" ,guile-2.0)
          ("openssl" ,openssl)
          ("bzip2" ,bzip2)
@@ -125,6 +125,7 @@
          ("perl-libwww" ,perl-libwww)
          ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
          ("perl-net-amazon-s3" ,perl-net-amazon-s3)
+         ("perl-net-statsd" ,perl-net-statsd)
          ("perl-padwalker" ,perl-padwalker)
          ("perl-readonly" ,perl-readonly)
          ("perl-set-scalar" ,perl-set-scalar)

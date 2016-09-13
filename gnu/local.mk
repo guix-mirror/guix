@@ -565,7 +565,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-bigloo-4.0b.patch			\
   %D%/packages/patches/hop-linker-flags.patch			\
-  %D%/packages/patches/hydra-automake-1.15.patch		\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
