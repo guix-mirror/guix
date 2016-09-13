@@ -147,9 +147,10 @@ OpenBSD tool of the same name.")
     (inputs
      `(("gnutls" ,gnutls)
        ("nettle" ,nettle)
-       ("msgpack" ,msgpack)
        ("readline" ,readline)
        ("argon2" ,argon2)))
+    (propagated-inputs
+     `(("msgpack" ,msgpack)))           ;included in several installed headers
     (native-inputs
      `(("autoconf" ,autoconf)
        ("pkg-config" ,pkg-config)
