@@ -485,3 +485,56 @@ in the early 80's.  It was converted to C by Blake McBride and supports much of
 the InterLisp Standard.")
       (home-page "https://github.com/blakemcbride/LISPF4.git")
       (license license:expat))))
+
+(define-public femtolisp
+  (let ((commit "68c5b1225572ecf2c52baf62f928063e5a30511b")
+        (revision "1"))
+    (package
+      (name "femtolisp")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/JeffBezanson/femtolisp.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "04rnwllxnl86zw8c6pwxznn49bvkvh0f1lfliy085vjzvlq3rgja"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags '("CC=gcc")
+         #:tests? #f ; No make check
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No configure script
+           ;; We have to remove the 'test phase because it requires
+           ;; the flisp binary to be present. Instead we run
+           ;; bootstrap.sh after the 'install phase.
+           (add-before 'build 'patch-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("default: release test") "default: release"))
+               #t))
+           (replace 'install ; Makefile has no 'install phase
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                (install-file "flisp" bin)
+                #t)))
+           ;; The flisp binary is now available, run bootstrap to
+           ;; generate flisp.boot and afterwards runs make test.
+           (add-after 'install 'bootstrap-gen-and-test
+             (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                (and
+                 (zero? (system* "./bootstrap.sh"))
+                 (install-file "flisp.boot" bin))))))))
+      (synopsis "Scheme-like lisp implementation")
+      (description
+       "@code{femtolisp} is a scheme-like lisp implementation with a
+simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
+The core is 12 builtin special forms and 33 builtin functions.")
+      (home-page "https://github.com/JeffBezanson/femtolisp")
+      (license license:bsd-3))))
