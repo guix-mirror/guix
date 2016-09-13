@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4364,6 +4365,28 @@ declared or imported symbols at the end of the current package's compile
 cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
+
+(define-public perl-net-statsd
+  (package
+   (name "perl-net-statsd")
+   (version "0.12")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/C/CO/COSIMO/Net-Statsd-"
+            version
+            ".tar.gz"))
+      (sha256
+       (base32
+        "0p2nhrwamic2fyj094y583q088ixv9gbb82c3invqrd17mh57r33"))))
+   (build-system perl-build-system)
+   (home-page
+    "http://search.cpan.org/dist/Net-Statsd")
+   (synopsis "Perl client for Etsy's statsd daemon")
+   (description "This module implement a UDP client for the statsd statistics
+collector daemon in use at Etsy.com.")
+   (license (package-license perl))))
 
 (define-public perl-number-compare
   (package
