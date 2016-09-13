@@ -168,32 +168,6 @@ be used to manage peer-to-peer network connections as needed for real time
 communication.")
     (license license:gpl3)))
 
-(define rlog
-  (package
-    (name "rlog")
-    (version "1.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "http://rlog.googlecode.com/files/rlog-"
-                       version ".tar.gz"))
-       (sha256
-        (base32
-         "0y9zg0pd7vmnskwac1qdyzl282z7kb01nmn57lsg2mjdxgnywf59"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-/bin/sh
-                    (lambda _
-                      (substitute* "docs/Makefile.in"
-                        (("/bin/sh") "sh")))))))
-    (home-page "http://www.arg0.net/rlog")
-    (synopsis "Flexible message logging library for EncFS")
-    (description
-     "RLog provides message logging for EncFS.  It is no longer maintained.")
-    (license license:lgpl2.1+)))
-
 (define-public encfs
   (package
     (name "encfs")
