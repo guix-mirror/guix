@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1093,3 +1094,29 @@ trees (LSM), for sustained throughput under random insert workloads.")
     (synopsis "Lightning memory-mapped database library")
     (description "Lightning memory-mapped database library.")
     (license license:openldap2.8)))
+
+(define-public libpqxx
+  (package
+    (name "libpqxx")
+    (version "4.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://pqxx.org/download/software/libpqxx/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0f6wxspp6rx12fkasanb0z2g2gc8dhcfwnxagx8wwqbpg6ifsz09"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python-2)))
+    (inputs `(("postgresql" ,postgresql)))
+    (arguments
+     `(#:tests? #f)) ; # FAIL:  1
+    (synopsis "C++ connector for PostgreSQL")
+    (description
+     "Libpqxx is a C++ library to enable user programs to communicate with the
+PostgreSQL database back-end.  The database back-end can be local or it may be
+on another machine, accessed via TCP/IP.")
+    (home-page "http://pqxx.org/")
+    (license license:bsd-3)))
