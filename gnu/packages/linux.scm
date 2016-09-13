@@ -238,35 +238,28 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
 
-(define* (kernel-config system #:key variant)
+(define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
-for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
-  (and-let* ((arch (match system
-                     ("i686-linux"
-                      "i686")
-                     ("x86_64-linux"
-                      "x86_64")
-                     (_
-                      #f)))
-             (name (string-append "linux-libre-"
-                                  (if variant
-                                      (string-append variant "-")
-                                      "")
-                                  arch
-                                  ".conf"))
-             (file (string-append "gnu/packages/" name)))
-    (search-path %load-path file)))
+for ARCH and optionally VARIANT, or #f if there is no such configuration."
+  (let* ((name (string-append "linux-libre-"
+                              (if variant (string-append variant "-") "")
+                              arch ".conf"))
+         (file (string-append "gnu/packages/" name)))
+    (if file-exists? (search-path %load-path file) #f)))
 
-(define-public linux-libre
+(define* (make-linux-libre version hash
+                           #:key
+                           ;; A function that takes an arch and a variant.
+                           ;; See kernel-config for an example.
+                           (configuration-file #f)
+                           (defconfig "defconfig"))
   (package
     (name "linux-libre")
-    (version "4.7.3")
+    (version version)
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
-              (sha256
-               (base32
-                "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6"))
+              (sha256 (base32 hash))
               (patches (origin-patches %boot-logo-patch))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
@@ -275,11 +268,11 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("module-init-tools" ,module-init-tools)
-
-       ,@(let ((conf (kernel-config
-                      (or (%current-target-system)
-                          (%current-system))
-                      #:variant (version-major+minor version))))
+       ,@(let ((conf (configuration-file
+                      (system->linux-architecture
+                       (or (%current-target-system)
+                           (%current-system)))
+                       #:variant (version-major+minor version))))
            (if conf
                `(("kconfig" ,conf))
                '()))))
@@ -317,7 +310,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
                    (begin
                      (copy-file config ".config")
                      (chmod ".config" #o666))
-                   (system* "make" "defconfig"))
+                   (system* "make" ,defconfig))
 
                ;; Appending works even when the option wasn't in the
                ;; file.  The last one prevails if duplicated.
@@ -364,39 +357,20 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
+(define-public linux-libre
+  (make-linux-libre "4.7.3"
+                    "18sy1vh4x66hsk0qbq8g5299my082d530zm8c7xnbakq7350igi6"
+                    #:configuration-file kernel-config))
+
 (define-public linux-libre-4.4
-  (package
-    (inherit linux-libre)
-    (version "4.4.20")
-    (source (origin
-              (method url-fetch)
-              (uri (linux-libre-urls version))
-              (sha256
-               (base32
-                "1fi0pyyzcf643vdsss0d9ld6jqyxw0k76r0a5vpd4mv3dcl37yyq"))))
-    (native-inputs
-     (let ((conf (kernel-config (or (%current-target-system)
-                                    (%current-system))
-                                #:variant "4.4")))
-       `(,@(alist-delete "kconfig" (package-native-inputs linux-libre))
-         ("kconfig" ,conf))))))
+  (make-linux-libre "4.4.20"
+                    "1fi0pyyzcf643vdsss0d9ld6jqyxw0k76r0a5vpd4mv3dcl37yyq"
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (package
-    (inherit linux-libre)
-    (version "4.1.32")
-    (source (origin
-              (method url-fetch)
-              (uri (linux-libre-urls version))
-              (sha256
-               (base32
-                "0lkksxpxsw6b8vcgbivn2kp6xbml69yx8frrsfrk49sqigz0xds6"))))
-    (native-inputs
-     (let ((conf (kernel-config (or (%current-target-system)
-                                    (%current-system))
-                                #:variant "4.1")))
-       `(,@(alist-delete "kconfig" (package-native-inputs linux-libre))
-         ("kconfig" ,conf))))))
+  (make-linux-libre "4.1.31"
+                    "0grffah921k136w1qwcswxv6m810s8q54nr2rk7kyqka3a1b81yw"
+                    #:configuration-file kernel-config))
 
 
 ;;;
