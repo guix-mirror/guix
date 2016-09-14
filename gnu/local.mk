@@ -658,6 +658,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
+  %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \
   %D%/packages/patches/lua-pkgconfig.patch                      \

@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -267,3 +268,10 @@ code analysis tools.")
 (define-public clang-3.5
   (clang-from-llvm llvm-3.5 clang-runtime-3.5
                    "0846h8vn3zlc00jkmvrmy88gc6ql6014c02l4jv78fpvfigmgssg"))
+
+(define-public llvm-for-extempore
+  (package (inherit llvm-3.7)
+    (source
+     (origin
+       (inherit (package-source llvm-3.7))
+       (patches (list (search-patch "llvm-for-extempore.patch")))))))
