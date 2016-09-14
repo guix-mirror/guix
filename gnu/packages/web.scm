@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3633,3 +3634,40 @@ provides a unix command line interface to a variety of popular www search engine
 and similar services.")
     (home-page "https://surfraw.alioth.debian.org/")
     (license l:public-domain)))
+
+(define-public darkhttpd
+  (package
+    (name "darkhttpd")
+    (version "1.12")
+    (source
+     (origin
+       ;; The darkhttpd release tarball URL fails to download with a
+       ;; 'TLS warning alert'. Download from the darkhttpd git repo
+       ;; until the problem has been fixed upstream.
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append "https://unix4lyfe.org/git/darkhttpd"))
+             (commit "41b68476c35270f47dcd2ddebe27cbcd87e43d41")))
+       (sha256
+        (base32
+         "0wi8dfgj4ic0fsy4dszl69xgxdxlwxz4c30vsw2i2dpnczgjm04k"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "darkhttpd"
+                           (string-append (assoc-ref outputs "out")
+                                          "/bin"))
+             #t)))))
+    (synopsis "Simple static web server")
+    (description "darkhttpd is a simple static web server.  It is
+standalone and does not need inetd or ucspi-tcp.  It does not need any
+config files---you only have to specify the www root.")
+    (home-page "https://unix4lyfe.org/darkhttpd/")
+    (license l:isc)))
