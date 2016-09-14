@@ -1081,6 +1081,23 @@ projects.")
 using a system-independent interface.")
     (license license:expat)))
 
+(define-public portmidi-for-extempore
+  (package (inherit portmidi)
+    (name "portmidi-for-extempore")
+    (version "217")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/extemporelang/portmidi/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjikwciyr8kk4y3qiv1pcq58xpgw38ql1m2gs6g0qc1s8sx4235"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; no tests
+    (native-inputs '())
+    (home-page "https://github.com/extemporelang/portmidi/")))
+
 (define-public python-pyportmidi
   (package
     (name "python-pyportmidi")
