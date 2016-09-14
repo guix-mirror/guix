@@ -42,23 +42,23 @@
                (base32 "01a4mbpvf7450ymqarjkpmzrm0z2zyd9lvqwg7x9kcd36i9hjln2"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; The tarball uses a very old version of autconf. It doesn't
-                   ;; understand extra flags like `--enable-fast-install', so
-                   ;; we need to invoke it with just what it understands.
-                   (let ((out (assoc-ref outputs "out")))
-                     ;; 'configure' doesn't understand '--host'.
-                     ,@(if (%current-target-system)
-                           `((setenv "CHOST" ,(%current-target-system)))
-                           '())
-                     (setenv "CONFIG_SHELL" (which "bash"))
-                     (zero?
-                      (system* "./configure"
-                               (string-append "--prefix=" out)
-                               "--enable-graphics"))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The tarball uses a very old version of autconf. It doesn't
+             ;; understand extra flags like `--enable-fast-install', so
+             ;; we need to invoke it with just what it understands.
+             (let ((out (assoc-ref outputs "out")))
+               ;; 'configure' doesn't understand '--host'.
+               ,@(if (%current-target-system)
+                     `((setenv "CHOST" ,(%current-target-system)))
+                     '())
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         "--enable-graphics"))))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("zlib" ,zlib)
               ("openssl" ,openssl)
