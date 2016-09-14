@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,13 +33,13 @@
 (define-public links
   (package
     (name "links")
-    (version "2.12")
+    (version "2.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   name "-" version ".tar.bz2"))
               (sha256
-               (base32 "0knq15yrp60s4jh92aacw8yfc2pcv3bqsw7dba7h5s6ivq8ihhcq"))))
+               (base32 "01a4mbpvf7450ymqarjkpmzrm0z2zyd9lvqwg7x9kcd36i9hjln2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-replace
