@@ -5132,6 +5132,11 @@ over Xlib, including:
              (string-append "--with-xkb-bin-directory="
                             (assoc-ref %build-inputs "xkbcomp")
                             "/bin")
+             ;; By default, it ends up with invalid '${prefix}/...', causes:
+             ;;   _FontTransOpen: Unable to Parse address ${prefix}/share/...
+             ;; It's not used anyway, so set it to empty.
+             "--with-default-font-path="
+
 
              ;; For the log file, etc.
              "--localstatedir=/var"
