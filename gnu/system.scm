@@ -727,6 +727,7 @@ listed in OS.  The C library expects to find it under
        (store-fs -> (operating-system-store-file-system os))
        (label ->    (kernel->grub-label (operating-system-kernel os)))
        (kernel ->   (operating-system-kernel-file os))
+       (initrd      (operating-system-initrd-file os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
@@ -739,7 +740,7 @@ listed in OS.  The C library expects to find it under
                                    #~(string-append "--load=" #$system
                                                     "/boot")
                                    (operating-system-kernel-arguments os)))
-                           (initrd (file-append system "/initrd"))))))
+                           (initrd initrd)))))
     (grub-configuration-file (operating-system-bootloader os)
                              store-fs entries
                              #:old-entries old-entries)))

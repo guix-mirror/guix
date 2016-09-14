@@ -62,6 +62,17 @@
 ;;;
 ;;; Code:
 
+(define (strip-mount-point fs file)
+  "Strip the mount point of FS from FILE, which is a gexp or other lowerable
+object denoting a file name."
+  (let ((mount-point (file-system-mount-point fs)))
+    (if (string=? mount-point "/")
+	file
+	#~(let ((file #$file))
+            (if (string-prefix? #$mount-point file)
+                (substring #$file #$(string-length mount-point))
+                file)))))
+
 (define-record-type* <grub-image>
   grub-image make-grub-image
   grub-image?
@@ -183,7 +194,8 @@ the store is.  SYSTEM must be the target system string---e.g.,
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    #~(string-append #$grub "/share/grub/unicode.pf2"))
+    (strip-mount-point root-fs
+                       (file-append grub "/share/grub/unicode.pf2")))
 
   (mlet* %store-monad ((image (grub-background-image config)))
     (return (and image
@@ -209,7 +221,7 @@ fi~%"
                            #$(grub-root-search root-fs font-file)
                            #$font-file
 
-                           #$image
+                           #$(strip-mount-point root-fs image)
                            #$(theme-colors grub-theme-color-normal)
                            #$(theme-colors grub-theme-color-highlight))))))
 
@@ -249,15 +261,19 @@ corresponding to old generations of the system."
   (define entry->gexp
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
-      #~(format port "menuentry ~s {
+      ;; Use the right file names for LINUX and STORE-FS in case STORE-FS is
+      ;; not the "/" file system.
+      (let ((linux  (strip-mount-point store-fs linux))
+            (initrd (strip-mount-point store-fs initrd)))
+        #~(format port "menuentry ~s {
   ~a
   linux ~a ~a
   initrd ~a
 }~%"
-                #$label
-                #$(grub-root-search store-fs linux)
-                #$linux (string-join (list #$@arguments))
-                #$initrd))))
+                  #$label
+                  #$(grub-root-search store-fs linux)
+                  #$linux (string-join (list #$@arguments))
+                  #$initrd)))))
 
   (mlet %store-monad ((sugar (eye-candy config store-fs system #~port)))
     (define builder
