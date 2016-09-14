@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 
 (define-module (gnu packages shellutils)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages python)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -88,3 +90,35 @@ FreeDesktop.org trash can used by GNOME, KDE, XFCE, and other common desktop
 environments.  It can move files to the trash, and remove or list files that
 are already there.")
     (license gpl2+)))
+
+(define-public direnv
+  (package
+    (name "direnv")
+    (version "2.9.0")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "https://github.com/direnv/" name
+                                 "/archive/v" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "04v3v2sz9m6ivgbxcplxscj1dsvpaqpqnxgls4060naj3iz9sg82"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
+    (native-inputs
+      `(("go" ,go)
+        ("which" ,which)))
+    (home-page "http://direnv.net/")
+    (synopsis "Environment switcher for the shell")
+    (description "direnv can hook into bash, zsh, tcsh and fish shell to load
+or unload environment variables depending on the current directory.  This
+allows project-specific environment variables without using the ~/.profile
+file.
+
+Before each prompt, direnv checks for the existence of a .envrc file in the
+current and parent directories.  This file is then used to alter the
+environmental variables of the current shell.")
+    (license expat)))
