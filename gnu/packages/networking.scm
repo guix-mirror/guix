@@ -391,8 +391,14 @@ and min/max network usage.")
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'fix-ifconfig-path
+           ;; This package works only with the net-tools version of ifconfig.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/tun.c"
+               (("PATH=[^ ]* ")
+                (string-append (assoc-ref inputs "net-tools") "/sbin/")))))
          (add-before 'check 'delete-failing-tests
-           ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105
+           ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105.
            (lambda _
              (substitute* "tests/common.c"
                (("tcase_add_test\\(tc, \
@@ -401,7 +407,8 @@ test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
-    (inputs `(("zlib" ,zlib)))
+    (inputs `(("net-tools" ,net-tools)
+              ("zlib" ,zlib)))
     (native-inputs `(("check" ,check)
                      ("pkg-config" ,pkg-config)))
     (home-page "http://code.kryo.se/iodine/")
