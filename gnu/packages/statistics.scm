@@ -2529,6 +2529,30 @@ for reproducibility.  Notably, convenient default methods greatly facilitate
 the way current RNG settings can be changed.")
     (license license:gpl3+)))
 
+(define-public r-rtsne
+  (package
+    (name "r-rtsne")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rtsne" version))
+       (sha256
+        (base32
+         "0zi4nxgpiv1gpdmcnqdhz5kymzp8m5xj02zpf290p1yyydl76bhy"))))
+    (properties `((upstream-name . "Rtsne")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/jkrijthe/Rtsne")
+    (synopsis "T-distributed stochastic neighbor embedding")
+    (description
+     "This package provides an R wrapper around the fast T-distributed
+Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
+    ;; The declared license for this package is BSD-3, but it also includes
+    ;; code licensed under BSD-4.
+    (license (list license:bsd-3 license:bsd-4))))
+
 (define-public r-nmf
   (package
     (name "r-nmf")
