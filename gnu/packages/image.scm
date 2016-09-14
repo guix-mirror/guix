@@ -49,6 +49,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (srfi srfi-1))
@@ -904,3 +905,28 @@ kinds of image- and audio-files.  The color- respectivly sample-frequencies
 are not changed thus making the embedding resistant against first-order
 statistical tests.")
     (license license:gpl2+)))
+
+(define-public stb-image-for-extempore
+  (let ((revision "1")
+        (commit "152a250a702bf28951bb0220d63bc0c99830c498"))
+    (package
+      (name "stb-image-for-extempore")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source
+       (origin (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/extemporelang/stb.git")
+                     (commit commit)))
+               (sha256
+                (base32
+                 "0y0aa20pj9311x2ii06zg8xs34idg14hfgldqc5ymizc6cf1qiqv"))
+               (file-name (string-append name "-" version "-checkout"))))
+      (build-system cmake-build-system)
+      (arguments `(#:tests? #f))        ; no tests included
+      (home-page "https://github.com/extemporelang/stb")
+      (synopsis "Image library for Extempore")
+      (description
+       "This package is a collection of assorted single-file libraries.  Of
+all included libraries only the image loading and decoding library is
+installed as @code{stb_image}.")
+      (license license:public-domain))))
