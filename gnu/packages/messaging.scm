@@ -166,14 +166,14 @@ identi.ca and status.net).")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.12.0")
+    (version "2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "17fncwza5r80z9r6j1lrh7h375hp4w6pay08zgnfc3qca6bjy1y2"))))
+                "0svwz9ldrry1sn35jywgpacjj1cf3xl3k74ynwn8rjvxs73b00aj"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
@@ -185,14 +185,17 @@ identi.ca and status.net).")
               ("libcanberra" ,libcanberra)
               ("libnotify" ,libnotify)
               ("openssl" ,openssl)
-              ("perl-xml-parser" ,perl-xml-parser) ;for addons
-              ("python-2" ,python-2)))             ;for addons
+
+              ;; Bindings for add-on scripts.
+              ("luajit" ,luajit)
+              ("perl-xml-parser" ,perl-xml-parser)
+              ("python-2" ,python-2)))
     (synopsis "Graphical IRC Client")
     (description
-     "HexChat lets you connect to multiple IRC networks at once.  The main window
-shows the list of currently connected networks and their channels, the current
-conversation and the list of users.  It uses colors to differentiate between
-users and to highlight messages.  It checks spelling using available
+     "HexChat lets you connect to multiple IRC networks at once.  The main
+window shows the list of currently connected networks and their channels, the
+current conversation and the list of users.  It uses colors to differentiate
+between users and to highlight messages.  It checks spelling using available
 dictionaries.  HexChat can be extended with multiple addons.")
     (home-page "http://hexchat.net/")
     (license license:gpl2+)))
