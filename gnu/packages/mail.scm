@@ -1388,3 +1388,25 @@ to mbox files, maildir folders or a Mail Delivery Agent (MDA),
 TLS/SSL, several authentication methods, Internationalized Domain
 Names (IDN) and SOCKS proxies.")
     (license gpl3+)))
+
+(define-public mhonarc
+  (package
+    (name "mhonarc")
+    (version "2.6.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EH/EHOOD/MHonArc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ll3v93yji334zqp6xfzfxc0127pmjcznmai1l5q6dzawrs2igzq"))))
+    (build-system perl-build-system)
+    (home-page "https://www.mhonarc.org/")
+    (synopsis "Create HTML archives of mail/news messages")
+    (description
+     "MHonArc is a Perl mail-to-HTML converter.  MHonArc
+provides HTML mail archiving with index, mail thread linking,
+etc; plus other capabilities including support for MIME and
+powerful user customization features.")
+    (license gpl2+)))
