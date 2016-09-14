@@ -60,7 +60,8 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip))
 
 (define-public blender
   (package
@@ -137,6 +138,34 @@ the 3D pipeline—modeling, rigging, animation, simulation, rendering,
 compositing and motion tracking, even video editing and game creation.  The
 application can be customized via its API for Python scripting.")
     (license license:gpl2+)))
+
+(define-public assimp
+  (package
+    (name "assimp")
+    (version "3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/assimp/assimp/archive/v"
+                                  version ".zip"))
+              (file-name (string-append name "-" version ".zip"))
+              (sha256
+               (base32
+                "11sfahmbwnjjpd8vpzdsng1bx5mb0cmaqb20dz6sdwapqanqwmar"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://assimp.org/")
+    (synopsis "Asset import library")
+    (description
+     "The Open Asset Import Library loads more than 40 3D file formats into
+one unified data structure.  Additionally, assimp features various mesh post
+processing tools: normals and tangent space generation, triangulation, vertex
+cache locality optimization, removal of degenerate primitives and duplicate
+vertices, sorting by primitive type, merging of redundant materials and many
+more.")
+    (license license:bsd-3)))
 
 (define-public cgal
   (package
