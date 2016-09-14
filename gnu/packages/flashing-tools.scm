@@ -38,16 +38,15 @@
 (define-public flashrom
   (package
     (name "flashrom")
-    (version "0.9.7")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://download.flashrom.org/releases/flashrom-"
+                    "https://download.flashrom.org/releases/flashrom-"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1s9pc4yls2s1gcg2ar4q75nym2z5v6lxq36bl6lq26br00nj2mas"))
-              (patches (search-patches "flashrom-use-libftdi1.patch"))))
+                "0i9wg1lyfg99bld7d00zqjm9f0lk6m0q3h3n9c195c9yysq5ccfb"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
@@ -55,7 +54,9 @@
               ("libftdi" ,libftdi)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output)
+                          "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
        #:tests? #f   ; no 'check' target
        #:phases
        (alist-delete
