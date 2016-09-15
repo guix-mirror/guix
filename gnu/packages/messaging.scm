@@ -518,6 +518,7 @@ end-to-end encryption support; XML console.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
+       #:configure-flags (list "--no-example-certs")
        #:modules ((ice-9 match)
                   (srfi srfi-1)
                   (guix build gnu-build-system)
