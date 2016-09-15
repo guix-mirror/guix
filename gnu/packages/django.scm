@@ -55,16 +55,17 @@
                      (string-append ".:" (getenv "PYTHONPATH")))
              (zero? (system* "python" "tests/runtests.py")))))))
     ;; TODO: Install extras/django_bash_completion.
-    (native-inputs
+    (propagated-inputs
      ;; Django uses 'pkg_resources' (part of setuptools) to locate templates
      ;; at run-time.
-     `(("python-setuptools" ,python-setuptools)
-       ("tzdata", tzdata)))
-    (propagated-inputs
-     `( ;; bcrypt and argon2-cffi are extra requirements not yet in guix
+     `(("python-setuptools" ,python-setuptools)))
+    (native-inputs
+     `(("tzdata", tzdata)
+       ;; bcrypt and argon2-cffi are extra requirements not yet in guix
        ;;("python-argon2-cffi" ,python-argon2-cffi) ; >= 16.1.0
        ;;("python-bcrypt" ,python-bcrypt) ; not py-bcrypt!
-       ;; Taken from tests/requirements/py3.txt.
+       ;; Remaining packages are test requirements taken from
+       ;; tests/requirements/py3.txt
        ("python-docutils" ,python-docutils)
        ;; optional for tests: ("python-geoip2" ,python-geoip2)
        ("python-jinja2" ,python-jinja2)           ; >= 2.7
@@ -90,8 +91,9 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
   (let ((base (package-with-python2 (strip-python2-variant python-django))))
     (package
       (inherit base)
-      (propagated-inputs
-       `(;; Required for Python 2: enum34 and mock.
+      (native-inputs
+       `(;; Test requirements for Python 2 taken from
+         ;; tests/requirements/py3.txt: enum34 and mock.
          ("python2-enum34" ,python2-enum34)
          ("python2-mock" ,python2-mock)
          ;; When adding memcached mind: for Python 2 memcached <= 1.53 is
