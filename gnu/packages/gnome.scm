@@ -5165,6 +5165,36 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 desktop.  It supports multiple calendars, monthly view and yearly view.")
     (license license:gpl3+)))
 
+(define-public gnome-dictionary
+  (package
+    (name "gnome-dictionary")
+    (version "3.20.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08b1f5s5aqka3dwxnzmwr2fmyddjm9xw7zmqsf8r5zvfsivn7czg"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)))
+    (home-page "https://wiki.gnome.org/Apps/Dictionary")
+    (synopsis "Look up words in dictionary sources")
+    (description
+     "GNOME Dictionary can look for the definition or translation of a word in
+existing databases over the internet.")
+    (license license:gpl3+)))
+
 (define-public gnome-tweak-tool
   (package
     (name "gnome-tweak-tool")
