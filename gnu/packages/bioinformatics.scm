@@ -5315,6 +5315,25 @@ barplots or heatmaps.")
 packages.")
     (license license:artistic2.0)))
 
+(define-public r-biocinstaller
+  (package
+    (name "r-biocinstaller")
+    (version "1.22.3")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocInstaller" version))
+              (sha256
+               (base32
+                "02qkfq6f2b7v9klri6d1nv21r54bywv1zd5x47ka0jhhp946cqpr"))))
+    (properties
+     `((upstream-name . "BiocInstaller")))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/BiocInstaller")
+    (synopsis "Install Bioconductor packages")
+    (description "This package is used to install and update R packages from
+Bioconductor, CRAN, and Github.")
+    (license license:artistic2.0)))
+
 (define-public r-dnacopy
   (package
     (name "r-dnacopy")
