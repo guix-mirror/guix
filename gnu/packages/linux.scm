@@ -182,7 +182,7 @@
 for ARCH and optionally VARIANT, or #f if there is no such configuration."
   (let* ((name (string-append "linux-libre-"
                               (if variant (string-append variant "-") "")
-                              arch ".conf"))
+                              (if (string=? "i386" arch) "i686" arch) ".conf"))
          (file (string-append "gnu/packages/" name)))
     (search-path %load-path file)))
 
@@ -228,7 +228,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256 (base32 hash))
-              (patches (origin-patches %boot-logo-patch))))
+              (patches (list %boot-logo-patch))))
     (supported-systems supported-systems)
     (build-system gnu-build-system)
     (native-inputs
