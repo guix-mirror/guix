@@ -831,3 +831,29 @@ in dynamically linked programs and redirects them through one or more SOCKS or
 HTTP proxies.")
     (home-page "https://github.com/rofl0r/proxychains-ng")
     (license license:gpl2+)))
+
+(define-public enet
+  (package
+    (name "enet")
+    (version "1.3.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://enet.bespin.org/download/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0p53mnmjbm56wizwraznynx13fcibcxiqny110dp6a5a3w174q73"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis
+     "Network communication layer on top of UDP")
+    (description
+     "ENet's purpose is to provide a relatively thin, simple and robust network
+communication layer on top of UDP.  The primary feature it provides is optional
+reliable, in-order delivery of packets.  ENet omits certain higher level
+networking features such as authentication, server discovery, encryption, or
+other similar tasks that are particularly application specific so that the
+library remains flexible, portable, and easily embeddable.")
+    (home-page "http://enet.bespin.org")
+    (license license:expat)))
