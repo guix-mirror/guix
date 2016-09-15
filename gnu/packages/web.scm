@@ -586,8 +586,8 @@ unavailable.")
     (native-inputs `(("texinfo" ,texinfo)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (alist-delete 'configure %standard-phases)
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
                             (string-append "LOCAL_ROOT="
