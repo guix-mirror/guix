@@ -571,14 +571,11 @@ mixed.")
        (file-name (string-append "chibi-scheme-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (alist-delete
-        'configure
-        (alist-cons-before
-         'build 'set-cc
-         (lambda _
-           (setenv "CC" "gcc"))
-         %standard-phases))
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'set-cc
+                    (lambda _
+                      (setenv "CC" "gcc"))))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))
