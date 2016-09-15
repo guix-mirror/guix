@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -759,7 +759,6 @@ for sending encrypted messages to one person or many subscribers.")
     (synopsis "Distributed peer-to-peer communication")
     (home-page "https://bitmessage.org/")))
 
-
 (define-public ytalk
   (package
     (name "ytalk")
@@ -783,5 +782,32 @@ once.  It supports both talk protocols (\"talk\" and \"ntalk\") and can communic
 with several different talk daemons at the same time.")
     (license license:gpl2+)))
 
+(define-public gloox
+  (package
+    (name "gloox")
+    (version "1.0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://camaya.net/download/gloox-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "09c01jr5nrm7f1ly42wg0pqqscmp48pv8y2fjx1vwbavjxdq59ri"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libidn" ,libidn)
+       ("gnutls" ,gnutls)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Portable high-level Jabber/XMPP library for C++")
+    (description
+     "gloox is a full-featured Jabber/XMPP client library,
+written in ANSI C++.  It makes writing spec-compliant clients easy
+and allows for hassle-free integration of Jabber/XMPP functionality
+into existing applications.")
+    (home-page "https://camaya.net/gloox")
+    (license license:gpl3)))
 
 ;;; messaging.scm ends here
