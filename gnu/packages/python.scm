@@ -27,6 +27,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10475,3 +10476,36 @@ functionality in the command line.")
                 ("python2-mock" ,python2-mock)
                 ("python2-enum34" ,python2-enum34)
                 ,@(package-native-inputs base))))))
+
+(define-public python-glances
+  (package
+  (name "python-glances")
+  (version "2.7.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Glances" version))
+      (sha256
+        (base32
+          "11jbq40g8alsbirnd4kiagznqg270247i0m8qhi48ldf2i5xppxg"))))
+  (build-system python-build-system)
+  (inputs
+   `(("python-psutil" ,python-psutil)))
+  (home-page
+    "https://github.com/nicolargo/glances")
+  (synopsis
+    "A cross-platform curses-based monitoring tool")
+  (description
+    "Glances is a curses-based monitoring tool for a wide variety of platforms.
+Glances uses the PsUtil library to get information from your system. It monitors
+CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
+  (license license:lgpl3+)
+  (properties `((python2-variant . ,(delay python2-glances))))))
+
+(define-public python2-glances
+  (let ((base (package-with-python2 (strip-python2-variant python-glances))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
