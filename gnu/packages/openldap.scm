@@ -55,14 +55,11 @@
               "0044p20hx07fwgw2mbwj1fkx04615hhs1qyx4mawj2bhqvrnppnp"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb-5.3)
-             ("openssl" ,openssl)
              ("cyrus-sasl" ,cyrus-sasl)
+             ("gnutls" ,gnutls)
              ("groff" ,groff)
              ("icu4c" ,icu4c)
              ("libgcrypt" ,libgcrypt)
-             ;; FIXME: currently, openldap requires openssl or gnutls<3, see
-             ;; http://www.openldap.org/its/index.cgi/Incoming?id=7430;page=17
-             ;; Once this is fixed, switch to gnutls.
              ("zlib" ,zlib)))
    (native-inputs `(("libtool" ,libtool)))
    (arguments
