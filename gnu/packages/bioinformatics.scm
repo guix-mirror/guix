@@ -1290,13 +1290,13 @@ multiple sequence alignments.")
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.8.4")
+    (version "0.9.1.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pysam" version))
               (sha256
                (base32
-                "1slx5mb94mzm5qzk52q270sab0sar95j67w1g1k452nz3s9j7krh"))))
+                "1i1djacqbr88y7w18b4aa78zxnsyr4sz7yqdq2spi7gs0y6pzvjn"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; tests are excluded in the manifest
