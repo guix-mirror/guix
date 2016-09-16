@@ -34,14 +34,18 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
@@ -49,6 +53,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages backup)
   #:use-module ((guix licenses) #:prefix license:)
@@ -217,8 +222,9 @@ supports HTTP, HTTPS and GnuTLS.")
       (method url-fetch)
       (uri (string-append "mirror://gnu/gnunet/gnunet-" version
                           ".tar.gz"))
-      (sha256 (base32
-               "04wxzm3wkgqbn42b8ksr4cx6m5cckyig5cls1adh0nwdczwvnp7n"))))
+      (sha256
+       (base32
+        "04wxzm3wkgqbn42b8ksr4cx6m5cckyig5cls1adh0nwdczwvnp7n"))))
    (build-system gnu-build-system)
    (inputs
     `(("glpk" ,glpk)
@@ -229,17 +235,24 @@ supports HTTP, HTTPS and GnuTLS.")
       ("libextractor" ,libextractor)
       ("libgcrypt" ,libgcrypt)
       ("libidn" ,libidn)
-      ("libmicrohttpd" ,libmicrohttpd)
+      ("libmicrohttpd" ,libmicrohttpd) ; hostlist, pt, contrib, and more
       ("libltdl" ,libltdl)
-      ("libunistring" ,libunistring)
-      ("openssl" ,openssl)
-      ("opus" ,opus)
-      ("pulseaudio" ,pulseaudio)
-      ("sqlite" ,sqlite)
-      ("zlib" ,zlib)))
+      ("libunistring" ,libunistring) ; fs and more
+      ("openssl" ,openssl) ; transport, certificate creation, contribs
+      ("opus" ,opus) ; gnunet-conversation
+      ("pulseaudio" ,pulseaudio) ; conversation
+      ("sqlite" ,sqlite) ; sqlite bindings, *store
+      ("zlib" ,zlib)
+      ("perl" ,perl) ; doxygen and more
+      ("jansson" ,jansson) ; identity, taler (external), gnunet-json, gns
+      ("nss" ,nss) ; gns
+      ("gmp" ,gmp) ; util
+      ("bluez" ,bluez) ; gnunet-transport
+      ("glib" ,glib)
+      ("libogg" ,libogg) ; gnunet-conversation
+      ("python-2" ,python-2))) ; tests, gnunet-qr
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("python" ,python-2)))
+    `(("pkg-config" ,pkg-config)))
    (arguments
     '(#:configure-flags
       (list (string-append "--with-nssdir=" %output "/lib"))
