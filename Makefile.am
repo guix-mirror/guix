@@ -208,6 +208,12 @@ endif INSTALL_SRFI_37
 # Handy way to remove the .go files without removing all the rest.
 clean-go:
 	-$(RM) -f $(GOBJECTS)
+	@find . -name '*.go' -print | \
+	  if test -t 1; then \
+	    xargs -r echo -e "\033[31mwarning:\033[0m stray .go files:"; \
+	  else \
+	    xargs -r echo "warning: stray .go files:"; \
+	  fi
 
 
 # Test extensions; has to be unconditional.
