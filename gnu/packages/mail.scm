@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1410,3 +1411,85 @@ provides HTML mail archiving with index, mail thread linking,
 etc; plus other capabilities including support for MIME and
 powerful user customization features.")
     (license gpl2+)))
+
+
+(define-public sendmail
+  (package
+    (name "sendmail")
+    (version "8.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "ftp://ftp.sendmail.org/pub/sendmail/sendmail."
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0fdl9ndmspqspdlmghzxlaqk56j3yajk52d7jxcg21b7sxglpy94"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'replace-/bin/sh
+           (lambda _
+             (substitute*
+                 (append
+                  (list "smrsh/smrsh.c" "sendmail/conf.c" "contrib/mailprio"
+                        "contrib/mmuegel" "devtools/bin/configure.sh")
+                  (find-files "." ".*\\.m4")
+                  (find-files "." ".*\\.cf"))
+               (("/bin/sh") (which "bash")))
+
+             (substitute* "devtools/bin/Build"
+               (("SHELL=/bin/sh") (string-append "SHELL=" (which "bash"))))
+             #t))
+         (replace 'configure
+           (lambda _
+
+             ;; Render harmless any attempts to chown or chgrp
+             (substitute* "devtools/bin/install.sh"
+               (("owner=\\$2") "owner=''")
+               (("group=\\$2") "group=''"))
+
+             (with-output-to-file "devtools/Site/site.config.m4"
+               (lambda ()
+                 (format #t "
+define(`confCC', `gcc')
+define(`confOPTIMIZE', `-g -O2')
+define(`confLIBS', `-lresolv')
+define(`confINSTALL', `~a/devtools/bin/install.sh')
+define(`confDEPEND_TYPE', `CC-M')
+define(`confINST_DEP', `')
+" (getcwd))))))
+         (replace 'build
+           (lambda _
+             (and (zero? (system* "sh" "Build"))
+                  (with-directory-excursion "cf/cf"
+                    (begin
+                      (copy-file "generic-linux.mc" "sendmail.mc")
+                      (zero? (system* "sh" "Build" "sendmail.cf")))))))
+         (add-before 'install 'pre-install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (mkdir-p (string-append out "/usr/bin"))
+               (mkdir-p (string-append out "/usr/sbin"))
+               (mkdir-p (string-append out "/etc/mail"))
+               (setenv "DESTDIR" out)
+               (with-directory-excursion "cf/cf"
+                 (zero? (system* "sh" "Build" "install-cf")))))))
+       ;; There is no make check.  There are some post installation tests, but those
+       ;; require root privileges
+       #:tests? #f))
+    (inputs
+     `(("m4" ,m4)
+       ("perl" ,perl)))
+    (home-page "http://sendmail.org")
+    (synopsis
+     "Highly configurable Mail Transfer Agent (MTA)")
+    (description
+     "Sendmail is a mail transfer agent (MTA) originally developed by Eric
+Allman.  It is highly configurable and supports many delivery methods and many
+transfer protocols.")
+    (license (non-copyleft "file://LICENSE"
+                           "See LICENSE in the distribution."))))
+
