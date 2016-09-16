@@ -5008,6 +5008,35 @@ as possible in order to be comprehensible and easily extensible.")
 (define-public python2-sympy
   (package-with-python2 python-sympy))
 
+(define-public python-q
+  (package
+    (name "python-q")
+    (version "2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "q" version))
+       (sha256
+        (base32
+         "1mgfazh8fkizh6walra2zv885f3lcgr3nb02v1frfm4p8ddcy3yy"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/zestyping/q")
+    (synopsis "Quick-and-dirty debugging output for tired programmers")
+    (description
+     "q is a Python module for \"print\" style of debugging Python code.  It
+provides convenient short API for print out of values, tracebacks, and
+falling into the Python interpreter.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-q))))))
+
+(define-public python2-q
+  (let ((base (package-with-python2 (strip-python2-variant python-q))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-testlib
   (package
     (name "python-testlib")
