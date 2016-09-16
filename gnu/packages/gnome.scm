@@ -3469,9 +3469,9 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("nettle" ,nettle) ; XXX: required by libarchive.pc
        ("udisks" ,udisks)))
     (home-page "https://wiki.gnome.org/gvfs/")
-    (synopsis "Userspace virtual filesystem for GIO")
+    (synopsis "Userspace virtual file system for GIO")
     (description
-     "GVFS is a userspace virtual filesystem designed to work with the I/O
+     "GVFS is a userspace virtual file system designed to work with the I/O
 abstraction of GIO.  It contains a GIO module that seamlessly adds GVFS support
 to all applications using the GIO API.  It also supports exposing the GVFS
 mounts to non-GIO applications using FUSE.

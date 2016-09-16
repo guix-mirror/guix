@@ -664,14 +664,14 @@ time for compression ratio.")
        ("xz" ,xz)
        ("zlib" ,zlib)))
     (home-page "http://squashfs.sourceforge.net/")
-    (synopsis "Tools to create and extract squashfs filesystems")
+    (synopsis "Tools to create and extract squashfs file systems")
     (description
-     "Squashfs is a highly compressed read-only filesystem for Linux.  It uses
+     "Squashfs is a highly compressed read-only file system for Linux.  It uses
 zlib to compress files, inodes, and directories.  All blocks are packed to
 minimize the data overhead, and block sizes of between 4K and 1M are supported.
 It is intended to be used for archival use, for live CDs, and for embedded
 systems where low overhead is needed.  This package allows you to create and
-extract such filesystems.")
+extract such file systems.")
     (license license:gpl2+)))
 
 (define-public pigz

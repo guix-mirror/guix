@@ -673,7 +673,7 @@ to the other.")
      "The \"findlib\" library provides a scheme to manage reusable software
 components (packages), and includes tools that support this scheme.  Packages
 are collections of OCaml modules for which metainformation can be stored.  The
-packages are kept in the filesystem hierarchy, but with strict directory
+packages are kept in the file system hierarchy, but with strict directory
 structure.  The library contains functions to look the directory up that
 stores a package, to query metainformation about a package, and to retrieve
 dependency information about multiple packages.  There is also a tool that

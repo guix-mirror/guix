@@ -1213,7 +1213,7 @@ deliver it in various ways.")
                       #t)))
        #:tests? #f)) ;; There are no tests indicating a successful
     ;; build.  Some tests of basic locking mechanisms provided by the
-    ;; filesystem are performed during 'make install'.  However, these
+    ;; file system are performed during 'make install'.  However, these
     ;; are performed before the actual build process.
     (build-system gnu-build-system)
     (inputs `(("exim" ,exim)))

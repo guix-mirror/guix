@@ -987,7 +987,7 @@ could allow a user to delete others' mailboxes, or ln -s
 
   (mail-full-filesystem-access?
    (boolean #f)
-   "Allow full filesystem access to clients.  There's no access checks
+   "Allow full file system access to clients.  There's no access checks
 other than what the operating system does for the active UID/GID.  It
 works with both maildir and mboxes, allowing you to prefix mailboxes
 names with e.g. /path/ or ~user/.")
@@ -997,7 +997,7 @@ names with e.g. /path/ or ~user/.")
   (mmap-disable?
    (boolean #f)
    "Don't use mmap() at all.  This is required if you store indexes to
-shared filesystems (NFS or clustered filesystem).")
+shared file systems (NFS or clustered file system).")
 
   (dotlock-use-excl?
    (boolean #t)
@@ -1229,7 +1229,7 @@ disabled.")
    (boolean #f)
    "When creating new mdbox files, immediately preallocate their size to
 @samp{mdbox-rotate-size}.  This setting currently works only in Linux
-with some filesystems (ext4, xfs).")
+with some file systems (ext4, xfs).")
 
   (mail-attachment-dir
    (string "")
@@ -1249,7 +1249,7 @@ externally.")
 
   (mail-attachment-fs
    (string "sis posix")
-   "Filesystem backend to use for saving attachments:
+   "File system backend to use for saving attachments:
 @table @code
 @item posix
 No SiS done by Dovecot (but this might help FS's own deduplication)

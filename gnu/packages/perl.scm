@@ -404,7 +404,7 @@ in web applications to store data locally to save repeated and redundant
 expensive calls to remote machines or databases.  People have also been known
 to use Cache::Cache for its straightforward interface in sharing data between
 runs of an application or invocations of a CGI-style script or simply as an
-easy to use abstraction of the filesystem or shared memory.")
+easy to use abstraction of the file system or shared memory.")
     (license (package-license perl))))
 
 (define-public perl-cache-fastmmap
@@ -2115,7 +2115,7 @@ modules separately and deal with them after the module is done installing.")
     (synopsis "Advanced operations on path variables")
     (description "@code{Env::Path} presents an object-oriented interface to
 path variables, defined as that subclass of environment variables which name
-an ordered list of filesystem elements separated by a platform-standard
+an ordered list of file system elements separated by a platform-standard
 separator.")
     (license (package-license perl))))
 
@@ -2461,7 +2461,7 @@ platforms.")
     (synopsis "Create or remove directory trees")
     (description "This module provide a convenient way to create directories
 of arbitrary depth and to delete an entire directory subtree from the
-filesystem.")
+file system.")
     (license (package-license perl))))
 
 (define-public perl-file-list
@@ -6348,7 +6348,7 @@ generally slower on larger files.")
     (home-page "http://search.cpan.org/dist/Text-Glob")
     (synopsis "Match globbing patterns against text")
     (description "Text::Glob implements glob(3) style matching that can be
-used to match against text, rather than fetching names from a filesystem.  If
+used to match against text, rather than fetching names from a file system.  If
 you want to do full file globbing use the File::Glob module instead.")
     (license (package-license perl))))
 

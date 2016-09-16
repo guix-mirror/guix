@@ -165,7 +165,7 @@ for parsing HTML files.")
                 "0gi6y52gkakhhlnzy0p6izc36nqhyfx5830qirhvk3qrzrwxyqrh"))))
     (build-system gnu-build-system)
     (home-page "https://fedorahosted.org/mlocate/")
-    (synopsis "Locate files on the filesystem")
+    (synopsis "Locate files on the file system")
     (description
      "mlocate is a locate/updatedb implementation.  The 'm' stands for
 \"merging\": @code{updatedb} reuses the existing database to avoid rereading

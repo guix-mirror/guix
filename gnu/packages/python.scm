@@ -6943,7 +6943,7 @@ WebSocket usage in Python programs.")
     (build-system python-build-system)
     (synopsis "Atomic file writes in Python")
     (description "Library for atomic file writes using platform dependent tools
-for atomic filesystem operations.")
+for atomic file system operations.")
     (home-page "https://github.com/untitaker/python-atomicwrites")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-atomicwrites))))))
@@ -8571,8 +8571,8 @@ library.")
          (replace 'check
            (lambda _ (zero? (system* "python" "./test_pathlib.py")))))))
     (home-page "https://pathlib.readthedocs.org/")
-    (synopsis "Object-oriented filesystem paths")
-    (description "Pathlib offers a set of classes to handle filesystem paths.
+    (synopsis "Object-oriented file system paths")
+    (description "Pathlib offers a set of classes to handle file system paths.
 It offers the following advantages over using string objects:
 
 @enumerate

@@ -262,9 +262,9 @@ and extensible with plugins and scripts.")
        (modify-phases %standard-phases
          (delete 'configure)))) ; no configure
     (home-page "http://tools.suckless.org/ii/")
-    (synopsis "FIFO and filesystem-based IRC client")
+    (synopsis "FIFO and file system based IRC client")
     (description
-     "ii (Irc it) is a minimalist FIFO and filesystem based IRC client.")
+     "ii (Irc it) is a minimalist FIFO and file system based IRC client.")
     (license license:expat)))
 
 (define-public sic

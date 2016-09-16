@@ -420,10 +420,10 @@ at login.  Local and dynamic reconfiguration are its key features.")
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://psmisc.sourceforge.net/")
     (synopsis
-     "Small utilities that use the proc filesystem")
+     "Small utilities that use the proc file system")
     (description
      "This PSmisc package is a set of some small useful utilities that
-use the proc filesystem.  We're not about changing the world, but
+use the proc file system.  We're not about changing the world, but
 providing the system administrator with some help in common tasks.")
     (license license:gpl2+)))
 
@@ -501,7 +501,7 @@ providing the system administrator with some help in common tasks.")
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
-utilities.  It provides dmesg and includes tools for working with filesystems,
+utilities.  It provides dmesg and includes tools for working with file systems,
 block devices, UUIDs, TTYs, and many other tools.")
 
     ;; Note that util-linux doesn't use the same license for all the
@@ -643,7 +643,7 @@ slabtop, and skill.")
 
        ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
        ;; they fail because we get an extra line that says "Can't check if
-       ;; filesystem is mounted due to missing mtab file".
+       ;; file system is mounted due to missing mtab file".
        #:tests? #f))
     (home-page "http://e2fsprogs.sourceforge.net/")
     (synopsis "Creating and checking ext2/ext3/ext4 file systems")
@@ -2185,7 +2185,7 @@ specified in /etc/acpi/events and execute the rules that match the event.")
     (home-page "http://linux-diag.sourceforge.net/Sysfsutils.html")
     (synopsis "System utilities based on Linux sysfs")
     (description
-     "These are a set of utilities built upon sysfs, a virtual filesystem in
+     "These are a set of utilities built upon sysfs, a virtual file system in
 Linux kernel versions 2.5+ that exposes a system's device tree.  The package
 also contains the libsysfs library.")
     ;; The library is under lgpl2.1+ (all files say "or any later version").
@@ -2623,7 +2623,7 @@ and copy/paste text in the console and in xterm.")
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
-    (description "Btrfs is a copy-on-write (CoW) filesystem for Linux aimed at
+    (description "Btrfs is a copy-on-write (CoW) file system for Linux aimed at
 implementing advanced features while focusing on fault tolerance, repair and
 easy administration.")
     ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.

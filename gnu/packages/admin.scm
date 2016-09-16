@@ -1461,9 +1461,9 @@ limits.")
                           `("PYTHONPATH" ":" prefix (,py)))
                         #t))))))
     (home-page "https://github.com/wting/autojump")
-    (synopsis "Shell extension for filesystem navigation")
+    (synopsis "Shell extension for file system navigation")
     (description
-     "Autojump provides a faster way to navigate your filesystem, with a \"cd
+     "Autojump provides a faster way to navigate your file system, with a \"cd
 command that learns\".  It works by maintaining a database of the directories
 you use the most from the command line and allows you to \"jump\" to
 frequently used directories by typing only a small pattern.")

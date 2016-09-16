@@ -9544,7 +9544,7 @@ Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
-Allow full filesystem access to clients.  There's no access checks
+Allow full file system access to clients.  There's no access checks
 other than what the operating system does for the active UID/GID.  It
 works with both maildir and mboxes, allowing you to prefix mailboxes
 names with e.g. /path/ or ~user/.
@@ -9553,7 +9553,7 @@ Defaults to @samp{#f}.
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mmap-disable?
 Don't use mmap() at all.  This is required if you store indexes to
-shared filesystems (NFS or clustered filesystem).
+shared file systems (NFS or clustered file system).
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -9815,7 +9815,7 @@ Defaults to @samp{"1d"}.
 @deftypevr {@code{dovecot-configuration} parameter} boolean mdbox-preallocate-space?
 When creating new mdbox files, immediately preallocate their size to
 @samp{mdbox-rotate-size}.  This setting currently works only in Linux
-with some filesystems (ext4, xfs).
+with some file systems (ext4, xfs).
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -9838,7 +9838,7 @@ Defaults to @samp{128000}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string mail-attachment-fs
-Filesystem backend to use for saving attachments:
+File system backend to use for saving attachments:
 @table @code
 @item posix
 No SiS done by Dovecot (but this might help FS's own deduplication)

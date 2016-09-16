@@ -208,7 +208,7 @@ terminal using ncurses.")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions
 for library searches, extended song format, items filtering, the ability to
-sort playlists, and a local filesystem browser.")
+sort playlists, and a local file system browser.")
     (home-page "http://ncmpcpp.rybczak.net/")
     (license license:gpl2+)))
 

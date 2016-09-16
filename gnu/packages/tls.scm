@@ -161,7 +161,7 @@ living in the same process.")
              ;; the location of the system-wide trust store.  Instead it has a
              ;; configure-time option.  Unless specified, its configure script
              ;; attempts to auto-detect the location by looking for common
-             ;; places in the filesystem, none of which are present in our
+             ;; places in the file system, none of which are present in our
              ;; chroot build environment.  If not found, then no default trust
              ;; store is used, so each program has to provide its own
              ;; fallback, and users have to configure each program
