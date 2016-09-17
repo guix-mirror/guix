@@ -171,6 +171,7 @@ successful, or false to signal an error."
 
         ;; XXX: This one is used bare-bones, without a libc, so add a case
         ;; here just so we can keep going.
+        ((string=? system "arm-eabi") "no-ld.so")
         ((string=? system "xtensa-elf") "no-ld.so")
         ((string=? system "avr") "no-ld.so")
         ((string=? system "i686-mingw") "no-ld.so")

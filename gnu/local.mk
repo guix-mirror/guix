@@ -110,6 +110,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/education.scm			\
   %D%/packages/elf.scm				\
   %D%/packages/elixir.scm			\
+  %D%/packages/embedded.scm			\
   %D%/packages/emacs.scm			\
   %D%/packages/enchant.scm			\
   %D%/packages/engineering.scm			\
