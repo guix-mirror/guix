@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -728,6 +729,30 @@ also available, with Unicode interface variants and conversions between
 different Unicode encodings which happen automatically during
 parsing/saving.")
     (license license:expat)))
+
+(define-public python-pyxb
+  (package
+    (name "python-pyxb")
+    (version "1.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "PyXB" version))
+              (sha256
+               (base32
+                "0rzzwibfqa28gxgcxx4cybx1qcg0g6fand06ykj3gz7z5kp653sf"))))
+    (build-system python-build-system)
+    (home-page "http://pyxb.sourceforge.net/")
+    (synopsis "Python XML Schema Bindings")
+    (description
+     "PyXB (\"pixbee\") is a pure Python package that generates Python source
+code for classes that correspond to data structures defined by XMLSchema.")
+    (license (list license:asl2.0    ; Most files.
+                   license:expat     ; pyxb/utils/six.py
+                   license:gpl2      ; bundled jquery in doc is dual MIT/GPL2
+                   license:psfl))))  ; pyxb/utils/activestate.py
+
+(define-public python2-pyxb
+  (package-with-python2 python-pyxb))
 
 (define-public xmlto
   (package
