@@ -139,3 +139,27 @@ systems.  It is a conglomeration of several library parts that are easily
 usable on embedded products.")
     (license (license:non-copyleft
               "https://www.sourceware.org/newlib/COPYING.NEWLIB"))))
+
+(define-public newlib-nano-arm-none-eabi
+  (package (inherit newlib-arm-none-eabi)
+    (name "newlib-nano")
+    (arguments
+     (substitute-keyword-arguments (package-arguments newlib-arm-none-eabi)
+       ;; The configure flags are identical to the flags used by the "GCC ARM
+       ;; embedded" project.  They optimize newlib for use on small embedded
+       ;; systems with limited memory.
+       ((#:configure-flags flags)
+        ''("--target=arm-none-eabi"
+           "--enable-multilib"
+           "--disable-newlib-supplied-syscalls"
+           "--enable-newlib-reent-small"
+           "--disable-newlib-fvwrite-in-streamio"
+           "--disable-newlib-fseek-optimization"
+           "--disable-newlib-wide-orient"
+           "--enable-newlib-nano-malloc"
+           "--disable-newlib-unbuf-stream-opt"
+           "--enable-lite-exit"
+           "--enable-newlib-global-atexit"
+           "--enable-newlib-nano-formatted-io"
+           "--disable-nls"))))
+    (synopsis "Newlib variant for small systems with limited memory")))
