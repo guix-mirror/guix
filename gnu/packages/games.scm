@@ -2856,3 +2856,50 @@ programmers may also add their own favorite language.")
 application that locks the keyboard and mouse and instead displays bright
 colors, pictures, and sounds.")
     (license license:gpl3+)))
+
+(define-public mrrescue
+  (package
+    (name "mrrescue")
+    (version "1.02e")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/SimonLarsen/mrrescue/releases/"
+                    "download/" version "/" name version ".love"))
+              (file-name (string-append name "-" version ".love"))
+              (sha256
+               (base32
+                "0jwzbwkgp1l5ia6c7s760gmdirbsncp6nfqp7vqdqsfb63la9gl2"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out     (assoc-ref %outputs "out"))
+                (bindir  (string-append out "/bin"))
+                (prog    (string-append bindir "/mrrescue"))
+                (source  (assoc-ref %build-inputs "source"))
+                (bash    (string-append (assoc-ref %build-inputs "bash")
+                                        "/bin/bash"))
+                (love    (string-append (assoc-ref %build-inputs "love")
+                                        "/bin/love")))
+           (mkdir-p bindir)
+           (with-output-to-file prog
+             (lambda ()
+               (format #t "#!~a~%" bash)
+               (format #t "exec -a mrrescue \"~a\" \"~a\"~%" love source)))
+           (chmod prog #o755)
+           #t))))
+    (inputs
+     `(("bash" ,bash)
+       ("love" ,love)))
+    (home-page "http://tangramgames.dk/games/mrrescue")
+    (synopsis "Arcade-style fire fighting game")
+    (description
+     "Mr. Rescue is an arcade styled 2d action game centered around evacuating
+civilians from burning buildings.  The game features fast paced fire
+extinguishing action, intense boss battles, a catchy soundtrack and lots of
+throwing people around in pseudo-randomly generated buildings.")
+    (license (list license:zlib             ; for source code
+                   license:cc-by-sa3.0))))  ; for graphics and music assets
