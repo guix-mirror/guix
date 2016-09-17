@@ -3376,13 +3376,13 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
 (define-public python2-pbcore
   (package
     (name "python2-pbcore")
-    (version "1.2.8")
+    (version "1.2.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pbcore" version))
               (sha256
                (base32
-                "02pfn5raa3zf739672bg0dkx7z3j2c4nx7vmpfjqy5b12jrqpymk"))))
+                "1kjmv891d6qbpp4shhhvkl02ff4q5xlpnls2513sm2cjcrs52f1i"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; pbcore requires Python 2.7
     (inputs
@@ -3395,6 +3395,8 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
        ("python-nose" ,python2-nose)
        ("python-setuptools" ,python2-setuptools)
        ("python-sphinx" ,python2-sphinx)))
+    (propagated-inputs
+     `(("python-pyxb" ,python2-pyxb)))
     (home-page "http://pacificbiosciences.github.io/pbcore/")
     (synopsis "Library for reading and writing PacBio data files")
     (description
