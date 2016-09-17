@@ -96,3 +96,46 @@
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
               (files '("arm-none-eabi/lib"))))))))
+
+(define-public newlib-arm-none-eabi
+  (package
+    (name "newlib")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://sourceware.org/pub/newlib/newlib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "01i7qllwicf05vsvh39qj7qp5fdifpvvky0x95hjq39mbqiksnsl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:out-of-source? #t
+       ;; The configure flags are identical to the flags used by the "GCC ARM
+       ;; embedded" project.
+       #:configure-flags '("--target=arm-none-eabi"
+                           "--enable-newlib-io-long-long"
+                           "--enable-newlib-register-fini"
+                           "--disable-newlib-supplied-syscalls"
+                           "--disable-nls")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-references-to-/bin/sh
+           (lambda _
+             (substitute* '("libgloss/arm/cpu-init/Makefile.in"
+                            "libgloss/arm/Makefile.in"
+                            "libgloss/libnosys/Makefile.in"
+                            "libgloss/Makefile.in")
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (native-inputs
+     `(("xbinutils" ,(cross-binutils "arm-none-eabi"))
+       ("xgcc" ,gcc-arm-none-eabi-4.9)
+       ("texinfo" ,texinfo)))
+    (home-page "http://www.sourceware.org/newlib/")
+    (synopsis "C library for use on embedded systems")
+    (description "Newlib is a C library intended for use on embedded
+systems.  It is a conglomeration of several library parts that are easily
+usable on embedded products.")
+    (license (license:non-copyleft
+              "https://www.sourceware.org/newlib/COPYING.NEWLIB"))))
