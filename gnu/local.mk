@@ -142,6 +142,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/geo.scm				\
   %D%/packages/geeqie.scm			\
   %D%/packages/gettext.scm			\
+  %D%/packages/gforth.scm			\
   %D%/packages/ghostscript.scm			\
   %D%/packages/gimp.scm				\
   %D%/packages/gkrellm.scm			\
