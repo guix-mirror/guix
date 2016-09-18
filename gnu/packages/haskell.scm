@@ -6950,4 +6950,26 @@ files and directories in a portable way.")
      "This package contains libraries for dealing with system processes.")
     (license license:bsd-3)))
 
+(define-public ghc-wl-pprint-text
+  (package
+    (name "ghc-wl-pprint-text")
+    (version "1.1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/wl-pprint-text/wl-pprint-text-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1xgizzimfw17mpmw2afvmnvyag976j8ggn7k5r564rkw9f0m6bgz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)))
+    (home-page "http://hackage.haskell.org/package/wl-pprint-text")
+    (synopsis "Wadler/Leijen Pretty Printer for Text values")
+    (description
+     "A clone of wl-pprint for use with the text library.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
