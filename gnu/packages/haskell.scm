@@ -6783,6 +6783,19 @@ which automatically lift operations introduced by monad transformers through
 other transformers.")
     (license license:bsd-3)))
 
+;; darcs-2.12.0 requires transformers-0.4.2.0
+(define-public ghc-transformers-0.4.2.0
+  (package
+    (inherit ghc-transformers)
+    (version "0.4.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/transformers/"
+                                  "transformers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0a364zfcm17mhpy0c4ms2j88sys4yvgd6071qsgk93la2wjm8mkr"))))))
+
 (define-public ghc-findbin
   (package
     (name "ghc-findbin")
