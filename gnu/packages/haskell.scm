@@ -3032,7 +3032,7 @@ variety of traversals.")
 (define-public ghc-fgl
   (package
     (name "ghc-fgl")
-    (version "5.5.1.0")
+    (version "5.5.3.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3043,9 +3043,12 @@ variety of traversals.")
              ".tar.gz"))
        (sha256
         (base32
-         "0rcmz0xlyr1wj490ffja29z1jgl51gz19ka609da6bx39bwx7nga"))))
+         "0fbyb6jxy9whgrv6dgnkzz70cmy98arx3q2gnkhgl4a3d7idh36p"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "http://web.engr.oregonstate.edu/~erwig/fgl/haskell")
     (synopsis
      "Martin Erwig's Functional Graph Library")
