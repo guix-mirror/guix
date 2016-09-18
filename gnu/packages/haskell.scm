@@ -6909,4 +6909,25 @@ Colours can be blended and composed.  Various colour spaces are
 supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
   (license license:expat)))
 
+(define-public ghc-directory
+  (package
+    (name "ghc-directory")
+    (version "1.2.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/directory/directory-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0h3hrqskadmbigaxbz2k5xxjjjlmfaq2zdn2g7jh1wv9k6yrxraa"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/directory")
+    (synopsis "Platform-agnostic library for filesystem operations")
+    (description
+     "This library provides a basic set of operations for manipulating
+files and directories in a portable way.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
