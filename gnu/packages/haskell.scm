@@ -6666,4 +6666,32 @@ test-framework-th package, modified to work with tasty instead of
 test-framework.")
     (license license:bsd-3)))
 
+(define-public ghc-sandi
+  (package
+    (name "ghc-sandi")
+    (version "0.4.0") ; darcs-2.12.4 needs == 0.4.*
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/sandi/sandi-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1smf3bq44qni4zbgxpw7cy7b9g95fbrr73j8njjf6139naj9bj20"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-stringsearch" ,ghc-stringsearch)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-th" ,ghc-tasty-th)))
+    (home-page "http://hackage.haskell.org/package/sandi")
+    (synopsis "Data encoding library")
+    (description "Reasonably fast data encoding library.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
