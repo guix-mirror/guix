@@ -7002,4 +7002,46 @@ available to others.  Also available are non-fgl-specific functions
 for generating graph-like data structures.")
     (license license:bsd-3)))
 
+(define-public ghc-graphviz
+  (package
+    (name "ghc-graphviz")
+    (version "2999.18.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "graphviz/graphviz-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z453is01v0rnxlv6xx4iyaqv5vrp3bpz829mpv1a341sck2135h"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-colour" ,ghc-colour)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-fgl" ,ghc-fgl)
+       ("ghc-fgl-arbitrary" ,ghc-fgl-arbitrary)
+       ("ghc-polyparse" ,ghc-polyparse)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-text" ,ghc-text)
+       ("ghc-wl-pprint-text" ,ghc-wl-pprint-text)))
+    (home-page "https://hackage.haskell.org/package/graphviz")
+    (synopsis "Bindings to Graphviz for graph visualisation")
+    (description
+     "This library provides bindings for the Dot language used by
+the @uref{http://graphviz.org/, Graphviz} suite of programs for
+visualising graphs, as well as functions to call those programs.
+Main features of the graphviz library include:
+
+@enumerate
+@item Almost complete coverage of all Graphviz attributes and syntax
+@item Support for specifying clusters
+@item The ability to use a custom node type
+@item Functions for running a Graphviz layout tool with all specified output types
+@item Generate and parse Dot code with two options: strict and liberal
+@item Functions to convert FGL graphs and other graph-like data structures
+@item Round-trip support for passing an FGL graph through Graphviz to augment node
+and edge labels with positional information, etc.
+@end enumerate\n")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
