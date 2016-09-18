@@ -7250,4 +7250,33 @@ spirit to POSIX shells.  Shelly is originally forked  from the Shellish package.
 easily work with command-line options.")
     (license license:expat)))
 
+(define-public ghc-chell
+  (package
+    (name "ghc-chell")
+    (version "0.4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/chell/chell-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0lb95abzxl4a87nfqxsxpb3a39pd52cci43hcvj8615hyhqvs2jz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-options-bootstrap" ,ghc-options-bootstrap)
+       ("ghc-patience" ,ghc-patience)
+       ("ghc-random" ,ghc-random)
+       ("ghc-text" ,ghc-text)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)))
+    (home-page "https://john-millikin.com/software/chell/")
+    (synopsis "Simple and intuitive library for automated testing")
+    (description
+     "Chell is a simple and intuitive library for automated testing.
+It natively supports assertion-based testing, and can use companion
+libraries such as @code{chell-quickcheck} to support more complex
+testing strategies.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
