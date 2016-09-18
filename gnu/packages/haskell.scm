@@ -6536,4 +6536,31 @@ that hides the C implementation.")
      "This module provides set and multiset operations on ordered lists.")
     (license license:bsd-3)))
 
+(define-public ghc-haskeline
+  (package
+    (name "ghc-haskeline")
+    (version "0.7.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/haskeline/haskeline-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "09wd6sxgn65xxpk7dhy1cg3ywlbk0ccqq7xylycwk4zazy3gjgkd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:configure-flags (list "-fterminfo")))
+    (home-page "https://github.com/judah/haskeline")
+    (synopsis "Command-line interface for user input")
+    (description
+     "Haskeline provides a user interface for line input in command-line
+programs.  This library is similar in purpose to readline, but since it
+is written in Haskell it is (hopefully) more easily used in other Haskell
+programs.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
