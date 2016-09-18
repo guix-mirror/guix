@@ -6850,4 +6850,41 @@ Polymorphism', by Mark P Jones.  This package is almost a compatible replacement
 the @code{mtl-tf} package.")
     (license license:bsd-3)))
 
+(define-public ghc-bytestring
+  (package
+    (name "ghc-bytestring")
+    (version "0.10.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/bytestring/bytestring-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "16zwb1p83z7vc5wlhvknpy80b5a2jxc5awx67rk52qnp9idmyq9d"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-random" ,ghc-random)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-byteorder" ,ghc-byteorder)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-mtl" ,ghc-mtl)))
+    (arguments
+     `(#:tests? #f)) ; Test number two becomes non-responsive for 20+ minutes
+    (home-page "https://github.com/haskell/bytestring")
+    (synopsis "Fast, compact, strict and lazy byte strings with a list interface")
+    (description
+     "An efficient compact, immutable byte string type (both strict and lazy)
+suitable for binary or 8-bit character data.  The 'ByteString' type represents
+sequences of bytes or 8-bit characters.  It is suitable for high performance use,
+both in terms of large data quantities, or high speed requirements.  The 'ByteString'
+functions follow the same style as ordinary lists, so it is easy to convert code
+from using 'String' to 'ByteString'.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
