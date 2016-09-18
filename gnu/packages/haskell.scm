@@ -7224,4 +7224,30 @@ which can't be decoded in the current locale encoding.")
 spirit to POSIX shells.  Shelly is originally forked  from the Shellish package.")
     (license license:bsd-3)))
 
+;; See ghc-system-filepath-bootstrap, chell and chell-quickcheck are required for tests.
+(define ghc-options-bootstrap
+  (package
+    (name "ghc-options-bootstrap")
+    (version "1.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/options/options-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0qjs0v1ny52w51n5582d4z8wy9h6n0zw1xb5dh686ff5wadflgi8"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f))
+    (inputs
+     `(("ghc-monads-tf" ,ghc-monads-tf)))
+    (home-page "https://john-millikin.com/software/haskell-options/")
+    (synopsis "Powerful and easy-to-use command-line option parser")
+    (description
+     "The @code{options} package lets library and application developers
+easily work with command-line options.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
