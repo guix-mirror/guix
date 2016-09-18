@@ -6694,4 +6694,29 @@ test-framework.")
     (description "Reasonably fast data encoding library.")
     (license license:bsd-3)))
 
+(define-public ghc-bytestring-handle
+  (package
+    (name "ghc-bytestring-handle")
+    (version "0.1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/bytestring-handle/bytestring-handle-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0q5yzx90ad9w7qvaix05bynxwlsbqjrgfc4hqb355ibf991wd0rh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)))
+    (home-page "http://hub.darcs.net/ganesh/bytestring-handle")
+    (synopsis "ByteString-backed Handles")
+    (description "ByteString-backed Handles") ; There is no description
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
