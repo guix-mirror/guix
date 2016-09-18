@@ -6780,4 +6780,27 @@ which automatically lift operations introduced by monad transformers through
 other transformers.")
     (license license:bsd-3)))
 
+(define-public ghc-findbin
+  (package
+    (name "ghc-findbin")
+    (version "0.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/FindBin/FindBin-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "197xvn05yysmibm1p5wzxfa256lvpbknr5d1l2ws6g40w1kpk717"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/audreyt/findbin")
+    (synopsis "Get the absolute path of the running program")
+    (description
+     "This module locates the full directory of the running program, to allow
+the use of paths relative to it.  FindBin supports invocation of Haskell
+programs via \"ghci\", via \"runhaskell/runghc\", as well as compiled as
+an executable.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
