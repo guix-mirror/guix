@@ -6563,4 +6563,30 @@ is written in Haskell it is (hopefully) more easily used in other Haskell
 programs.")
     (license license:bsd-3)))
 
+(define-public ghc-regex-applicative
+  (package
+    (name "ghc-regex-applicative")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/regex-applicative/"
+             "regex-applicative-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1riv7jqf26lbv4rm54sd6mrx8xdh4dvh4xbzymzdfdw13k6a4nb6"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/feuerbach/regex-applicative")
+    (synopsis "Regex-based parsing with applicative interface")
+    (description
+     "@code{regex-applicative} is a Haskell library for parsing using
+regular expressions.  Parsers can be built using Applicative interface.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
