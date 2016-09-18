@@ -5979,7 +5979,7 @@ tasty.")
 (define-public ghc-cryptonite
   (package
     (name "ghc-cryptonite")
-    (version "0.9")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5987,7 +5987,7 @@ tasty.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1h22x22lq2m8h456v5j50xm0l25bcm3h1pchsk83br909hjxql4z"))))
+                "1rw5k34vpn4134yrzdhf0rsshsrkixfbv9ap18di2n00z2cw1shw"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-memory" ,ghc-memory)
