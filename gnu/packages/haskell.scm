@@ -7328,4 +7328,29 @@ testing strategies.")
     (description "More complex tests for @code{chell}.")
     (license license:expat)))
 
+(define-public ghc-options
+  (package
+    (name "ghc-options")
+    (version "1.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/options/options-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0qjs0v1ny52w51n5582d4z8wy9h6n0zw1xb5dh686ff5wadflgi8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-monads-tf" ,ghc-monads-tf)
+       ("ghc-chell" ,ghc-chell)
+       ("ghc-chell-quickcheck" ,ghc-chell-quickcheck)))
+    (home-page "https://john-millikin.com/software/haskell-options/")
+    (synopsis "Powerful and easy-to-use command-line option parser")
+    (description
+     "The @code{options} package lets library and application developers
+easily work with command-line options.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
