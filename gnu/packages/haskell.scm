@@ -7304,4 +7304,28 @@ testing strategies.")
     (description "More complex tests for @code{chell}.")
     (license license:expat)))
 
+(define-public ghc-chell-quickcheck
+  (package
+    (name "ghc-chell-quickcheck")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/chell-quickcheck/chell-quickcheck-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "02bkcnx5k6r5csdnnkvk4wfd0l36nxb87i1463ynw17n7ym9s4cs"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-chell" ,ghc-chell)
+       ("ghc-chell-quickcheck-bootstrap" ,ghc-chell-quickcheck-bootstrap)
+       ("ghc-random" ,ghc-random)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://john-millikin.com/software/chell/")
+    (synopsis "QuickCheck support for the Chell testing library")
+    (description "More complex tests for @code{chell}.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
