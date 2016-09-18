@@ -6827,4 +6827,27 @@ of two versions of a source file.  It provides a good balance between
 performance, nice output for humans, and simplicity of implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-monads-tf
+  (package
+    (name "ghc-monads-tf")
+    (version "0.1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/monads-tf/monads-tf-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1wdhskwa6dw8qljbvwpyxj8ca6y95q2np7z4y4q6bpf4anmd5794"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/monads-tf")
+    (synopsis "Monad classes, using type families")
+    (description
+     "Monad classes using type families, with instances for various monad transformers,
+inspired by the paper 'Functional Programming with Overloading and Higher-Order
+Polymorphism', by Mark P Jones.  This package is almost a compatible replacement for
+the @code{mtl-tf} package.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
