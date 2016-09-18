@@ -6803,4 +6803,28 @@ programs via \"ghci\", via \"runhaskell/runghc\", as well as compiled as
 an executable.")
     (license license:bsd-3)))
 
+(define-public ghc-patience
+  (package
+    (name "ghc-patience")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/patience/patience-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0qyv20gqy9pb1acy700ahv70lc6vprcwb26cc7fcpcs4scsc7irm"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/patience")
+    (synopsis "Patience diff and longest increasing subsequence")
+    (description
+     "This library implements the 'patience diff' algorithm, as well as the
+patience algorithm for the longest increasing subsequence problem.
+Patience diff computes the difference between two lists, for example the lines
+of two versions of a source file.  It provides a good balance between
+performance, nice output for humans, and simplicity of implementation.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
