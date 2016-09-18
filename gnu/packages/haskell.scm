@@ -7125,4 +7125,35 @@ a vocabulary for working with them.")
 instance of @code{MonadBase} or @code{MonadBaseControl}.")
     (license license:bsd-3)))
 
+;; Ghc-shelly depends on ghc-system-filepath and ghc-system-fileio, who in turn depend on
+;; ghc-chell and ghc-chell-quickcheck for the test phase. Ghc-chell depends on ghc-options
+;; which depends on ghc-chell and ghc-chell-quickcheck.
+;; Therefore we bootstrap it with tests disabled.
+(define ghc-system-filepath-bootstrap
+  (package
+    (name "ghc-system-filepath-bootstrap")
+    (version "0.4.13.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/system-filepath/system-filepath-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1yy5zsmmimhg6iaw9fmpwrxvxrgi5s6bfyqfihdsnx4bjvn7sp9l"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f))
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/fpco/haskell-filesystem")
+    (synopsis "High-level, byte-based file and directory path manipulations")
+    (description
+     "Provides a FilePath datatype and utility functions for operating on it.
+Unlike the filepath package, this package does not simply reuse String,
+increasing type safety.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
