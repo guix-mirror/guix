@@ -6887,4 +6887,26 @@ functions follow the same style as ordinary lists, so it is easy to convert code
 from using 'String' to 'ByteString'.")
     (license license:bsd-3)))
 
+(define-public ghc-colour
+(package
+  (name "ghc-colour")
+  (version "2.3.3")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://hackage.haskell.org/package/colour/colour-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1qmn1778xzg07jg9nx4k1spdz2llivpblf6wwrps1qpqjhsac5cd"))))
+  (build-system haskell-build-system)
+  (home-page "http://www.haskell.org/haskellwiki/Colour")
+  (synopsis "Model for human colour perception")
+  (description
+   "This package provides a data type for colours and transparency.
+Colours can be blended and composed.  Various colour spaces are
+supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
+  (license license:expat)))
+
 ;;; haskell.scm ends here
