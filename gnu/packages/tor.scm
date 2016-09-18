@@ -20,11 +20,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tor)
-  #:use-module ((guix licenses) #:select (bsd-3 gpl2+ gpl2))
+  #:use-module ((guix licenses) #:select (bsd-3 gpl3+ gpl2+ gpl2))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages compression)
@@ -243,5 +244,5 @@ using a third party filesharing service.  You host the file on your own computer
 and use a Tor hidden service to make it temporarily accessible over the
 internet.  The other user just needs to use Tor Browser to download the file
 from you.")
-    (license (list license:gpl3+
-                   license:bsd-3)))) ; onionshare/socks.py
+    (license (list gpl3+
+                   bsd-3)))) ; onionshare/socks.py
