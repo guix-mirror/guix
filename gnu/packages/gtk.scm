@@ -673,20 +673,18 @@ application suites.")
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
                                              "/share/gtk-doc/html"))
-      #:phases
-      (alist-cons-before
-       'configure 'pre-configure
-       (lambda _
-         ;; Disable most tests, failing in the chroot with the message:
-         ;; D-Bus library appears to be incorrectly set up; failed to read
-         ;; machine uuid: Failed to open "/etc/machine-id": No such file or
-         ;; directory.
-         ;; See the manual page for dbus-uuidgen to correct this issue.
-         (substitute* "testsuite/Makefile.in"
-           (("SUBDIRS = gdk gtk a11y css reftests")
-            "SUBDIRS = gdk"))
-         #t)
-       %standard-phases)))
+      #:phases (modify-phases %standard-phases
+        (add-before 'configure 'pre-configure
+          (lambda _
+            ;; Disable most tests, failing in the chroot with the message:
+            ;; D-Bus library appears to be incorrectly set up; failed to read
+            ;; machine uuid: Failed to open "/etc/machine-id": No such file or
+            ;; directory.
+            ;; See the manual page for dbus-uuidgen to correct this issue.
+            (substitute* "testsuite/Makefile.in"
+              (("SUBDIRS = gdk gtk a11y css reftests")
+               "SUBDIRS = gdk"))
+            #t)))))
    (native-search-paths
     (list (search-path-specification
            (variable "GUIX_GTK3_PATH")
