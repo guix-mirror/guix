@@ -6516,4 +6516,24 @@ other languages.  The implementations are made in C with a haskell FFI wrapper
 that hides the C implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-data-ordlist
+  (package
+    (name "ghc-data-ordlist")
+    (version "0.4.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/data-ordlist/data-ordlist-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "03a9ix1fcx08viwv2jg5ndw1qbkydyyrmjvqr9wasmcik9x1wv3g"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/data-ordlist")
+    (synopsis "Set and bag operations on ordered lists")
+    (description
+     "This module provides set and multiset operations on ordered lists.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
