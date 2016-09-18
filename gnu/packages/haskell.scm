@@ -6751,4 +6751,33 @@ preserved.  It also provides features for random access to archive content using
 an index.")
     (license license:bsd-3)))
 
+(define-public ghc-transformers
+  (package
+    (name "ghc-transformers")
+    (version "0.5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/transformers/transformers-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1qkhi8ssf8c4jnmrw9dzym3igqbzq7h48iisaykdfzdsm09qfh3c"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/transformers")
+    (synopsis "Concrete functor and monad transformers")
+    (description
+     "A portable library of functor and monad transformers, inspired by the paper
+'Functional Programming with Overloading and Higher-Order Polymorphism',
+by Mark P Jones.  This package contains the monad transformer class and IO monad class,
+concrete functor and monad transformers, each with associated operations and functions
+to lift operations associated with other transformers.  The package can be used on
+its own in portable Haskell code, in which case operations need to be manually lifted
+through transformer stacks.  Alternatively, it can be used with the
+non-portable monad classes in the @code{mtl} or @code{monads-tf} packages,
+which automatically lift operations introduced by monad transformers through
+other transformers.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
