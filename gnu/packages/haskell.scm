@@ -7353,4 +7353,31 @@ testing strategies.")
 easily work with command-line options.")
     (license license:expat)))
 
+(define-public ghc-system-filepath
+  (package
+    (name "ghc-system-filepath")
+    (version "0.4.13.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/system-filepath/system-filepath-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1yy5zsmmimhg6iaw9fmpwrxvxrgi5s6bfyqfihdsnx4bjvn7sp9l"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-chell" ,ghc-chell)
+       ("ghc-chell-quickcheck" ,ghc-chell-quickcheck)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/fpco/haskell-filesystem")
+    (synopsis "High-level, byte-based file and directory path manipulations")
+    (description
+     "Provides a FilePath datatype and utility functions for operating on it.
+Unlike the filepath package, this package does not simply reuse String,
+increasing type safety.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
