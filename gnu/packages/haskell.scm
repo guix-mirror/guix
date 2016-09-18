@@ -6975,4 +6975,31 @@ files and directories in a portable way.")
      "A clone of wl-pprint for use with the text library.")
     (license license:bsd-3)))
 
+(define-public ghc-fgl-arbitrary
+  (package
+    (name "ghc-fgl-arbitrary")
+    (version "0.2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/fgl-arbitrary/fgl-arbitrary-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "12qbsla4vivffris6y3gj29vrafkpyazqdbdy2m55nggypqpf7ah"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-fgl" ,ghc-fgl)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "http://hackage.haskell.org/package/fgl-arbitrary")
+    (synopsis "QuickCheck support for fgl")
+    (description
+     "Provides Arbitrary instances for fgl graphs to avoid adding a
+QuickCheck dependency for fgl whilst still making the instances
+available to others.  Also available are non-fgl-specific functions
+for generating graph-like data structures.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
