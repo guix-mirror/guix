@@ -7188,4 +7188,40 @@ In particular, this library supports working with POSIX files that have paths
 which can't be decoded in the current locale encoding.")
     (license license:expat)))
 
+(define-public ghc-shelly
+  (package
+    (name "ghc-shelly")
+    (version "1.6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/shelly/shelly-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0bg1pj5bhswfgwfgz66xr82i8cmjgrnx5ljvjy37052zxb82imnk"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-system-filepath-bootstrap" ,ghc-system-filepath-bootstrap)
+       ("ghc-system-fileio-bootstrap" ,ghc-system-fileio-bootstrap)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-lifted-async" ,ghc-lifted-async)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-enclosed-exceptions" ,ghc-enclosed-exceptions)
+       ("ghc-text" ,ghc-text)
+       ("ghc-async" ,ghc-async)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/yesodweb/Shelly.hs")
+    (synopsis "Shell-like (systems) programming in Haskell")
+    (description
+     "Shelly provides convenient systems programming in Haskell, similar in
+spirit to POSIX shells.  Shelly is originally forked  from the Shellish package.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
