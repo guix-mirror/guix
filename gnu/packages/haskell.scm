@@ -6589,4 +6589,30 @@ programs.")
 regular expressions.  Parsers can be built using Applicative interface.")
     (license license:expat)))
 
+(define-public ghc-regex-tdfa
+  (package
+    (name "ghc-regex-tdfa")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/regex-tdfa/regex-tdfa-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0f8x8wyr6m21g8dnxvnvalz5bsq37l125l6qhs0fscbvprsxc4nb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-regex-base" ,ghc-regex-base)))
+    (home-page "https://github.com/ChrisKuklewicz/regex-tdfa")
+    (synopsis "POSIX extended regular expressions in Haskell.")
+    (description
+     "Regex-tdfa is a pure Haskell regular expression library implementing POSIX
+extended regular expressions.  It is a \"tagged\" DFA regex engine. It is
+inspired by libtre.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
