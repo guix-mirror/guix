@@ -7093,4 +7093,36 @@ They stopped crashing the compiler in GHC 7.6.  This package provides
 a vocabulary for working with them.")
     (license license:bsd-3)))
 
+(define-public ghc-lifted-async
+  (package
+    (name "ghc-lifted-async")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/lifted-async/lifted-async-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "00fnwfcnc6niq9jbbb9rap9rkdgv5qhcglwanzc5fi8834j94c1r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-constraints" ,ghc-constraints)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-th" ,ghc-tasty-th)))
+    (home-page "https://github.com/maoe/lifted-async")
+    (synopsis "Run lifted IO operations asynchronously and wait for their results")
+    (description
+     "This package provides IO operations from @code{async} package lifted to any
+instance of @code{MonadBase} or @code{MonadBaseControl}.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
