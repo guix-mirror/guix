@@ -7044,4 +7044,27 @@ and edge labels with positional information, etc.
 @end enumerate\n")
     (license license:bsd-3)))
 
+(define-public ghc-array
+  (package
+    (name "ghc-array")
+    (version "0.5.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/array/array-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "08r2rq4blvc737mrg3xhlwiw13jmsz5dlf2fd0ghb9cdaxc6kjc9"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/array")
+    (synopsis "Mutable and immutable arrays")
+    (description
+     "In addition to providing the @code{Data.Array} module, this package also defines
+the classes @code{IArray} of immutable arrays and @code{MArray} of arrays mutable
+within appropriate monads, as well as some instances of these classes.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
