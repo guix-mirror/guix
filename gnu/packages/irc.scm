@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autogen)
@@ -48,7 +49,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public quassel
   (package
@@ -291,3 +293,39 @@ and extensible with plugins and scripts.")
     (description
      "sic is a simple IRC client, even more minimalistic than ii.")
     (license license:expat)))
+
+(define-public limnoria
+  (package
+    (name "limnoria")
+    (version "2016.08.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "limnoria" version))
+       (sha256
+        (base32
+         "0w1d98hfhn4iqrczam7zahhqsvxa79n3xfcrm4jwkg5lba4f9ccm"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-pytz" ,python-pytz)
+       ("python-chardet" ,python-chardet)
+       ("python-dateutil" ,python-dateutil)
+       ("python-gnupg" ,python-gnupg)
+       ("python-feedparser" ,python-feedparser)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-socksipy-branch" ,python-socksipy-branch)
+       ("python-ecdsa" ,python-ecdsa)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    ;; Despite the existence of a test folder there is no test phase.
+    ;; We need to package https://github.com/ProgVal/irctest and write
+    ;; our own testphase.
+    (arguments
+     `(#:tests? #f))
+    (home-page "https://github.com/ProgVal/Limnoria")
+    (synopsis "Modified version of Supybot (an IRC bot and framework)")
+    (description
+     "Modified version of Supybot with Python 3 and IRCv3 support,
+embedded web server, translations (fr, fi, it, hu, de), and many
+other enhancements and bug fixes.")
+    (license license:bsd-3)))
