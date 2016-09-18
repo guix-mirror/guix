@@ -6615,4 +6615,30 @@ extended regular expressions.  It is a \"tagged\" DFA regex engine. It is
 inspired by libtre.")
     (license license:bsd-3)))
 
+(define-public ghc-regex-compat-tdfa
+  (package
+    (name "ghc-regex-compat-tdfa")
+    (version "0.95.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/regex-compat-tdfa/regex-compat-tdfa-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1p90fn90yhp7fvljjdqjp41cszidcfz4pw7fwvzyx4739b98x8sg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
+    (home-page "http://hub.darcs.net/shelarcy/regex-compat-tdfa")
+    (synopsis "Unicode Support version of Text.Regex, using regex-tdfa")
+    (description
+     "One module layer over @code{regex-tdfa} to replace @code{Text.Regex}.
+@code{regex-compat} can't use Unicode characters correctly because of using regex-posix.
+This is not good for Unicode users.  This modified regex-compat uses regex-tdfa to solve
+this problem.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
