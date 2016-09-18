@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
             epl1.0
             expat
             freetype
+            freebsd-doc
             giftware
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             gfl1.0
@@ -285,6 +287,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "FDL 1.3+"
            "https://www.gnu.org/licenses/fdl.html"
            "https://www.gnu.org/licenses/license-list#FDL"))
+
+(define freebsd-doc
+  (license "FreeBSD Documentation License"
+           "https://www.freebsd.org/copyright/freebsd-doc-license.html"
+           "https://www.gnu.org/licenses/license-list.html#FreeBSDDL"))
 
 (define opl1.0+
   (license "Open Publication License 1.0 or later"
