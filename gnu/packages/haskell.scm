@@ -7380,4 +7380,32 @@ Unlike the filepath package, this package does not simply reuse String,
 increasing type safety.")
     (license license:expat)))
 
+(define-public ghc-system-fileio
+  (package
+    (name "ghc-system-fileio")
+    (version "0.3.16.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/system-fileio/system-fileio-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1484hcl27s2qcby8ws5djj11q9bz68bspcifz9h5gii2ndy70x9i"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-text" ,ghc-text)
+       ("ghc-chell" ,ghc-chell)
+       ("ghc-temporary" ,ghc-temporary)))
+    (home-page "https://github.com/fpco/haskell-filesystem")
+    (synopsis "Consistent filesystem interaction across GHC versions")
+    (description
+     "This is a small wrapper around the directory, unix, and Win32 packages,
+for use with system-filepath.  It provides a consistent API to the various
+versions of these packages distributed with different versions of GHC.
+In particular, this library supports working with POSIX files that have paths
+which can't be decoded in the current locale encoding.")
+    (license license:expat)))
 ;;; haskell.scm ends here
