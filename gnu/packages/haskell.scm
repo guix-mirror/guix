@@ -6453,4 +6453,35 @@ Epigram and Agda.")
 data quickly and efficiently, using the ByteString type.")
     (license license:bsd-3)))
 
+(define-public ghc-binary
+  (package
+    (name "ghc-binary")
+    (version "0.8.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/binary/binary-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1fp7wxnf57cjzhbb7rgqs6fgws4690zh0dxgl924dj4nzq0cf4wd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-random" ,ghc-random)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/kolmodin/binary")
+    (synopsis
+     "Binary serialisation for Haskell values using lazy ByteStrings")
+    (description
+     "Efficient, pure binary serialisation using lazy ByteStrings.  Haskell values
+may be encoded to and from binary formats, written to disk as binary, or sent over
+the network.  The format used can be automatically generated, or you can choose to
+implement a custom format if needed.  Serialisation speeds of over 1 G\\/sec have
+been observed, so this library should be suitable for high performance scenarios.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
