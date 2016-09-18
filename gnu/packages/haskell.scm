@@ -6641,4 +6641,29 @@ This is not good for Unicode users.  This modified regex-compat uses regex-tdfa 
 this problem.")
     (license license:bsd-3)))
 
+(define-public ghc-tasty-th
+  (package
+    (name "ghc-tasty-th")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/tasty-th/tasty-th-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0dff9si8i1qp0s7p4hlk0l29vq7wxfglw6mvlgmld43h7rllv88q"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tasty" ,ghc-tasty)))
+    (home-page "http://github.com/bennofs/tasty-th")
+    (synopsis "Automatically generate tasty TestTrees")
+    (description
+      "Tasty-th automatically generates tasty TestTrees from functions of the
+current module, using TemplateHaskell.  This is a fork the original
+test-framework-th package, modified to work with tasty instead of
+test-framework.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
