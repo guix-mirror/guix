@@ -45,6 +45,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages documentation)
@@ -3147,6 +3148,34 @@ http://opensearch.a9.com} compatible search engines.")
 /robots.txt file to forbid conforming robots from accessing parts of
 their web site.")
     (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))
+
+(define-public python-feedparser
+  (package
+    (name "python-feedparser")
+    (version "5.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "feedparser" version ".tar.bz2"))
+       (sha256
+        (base32
+         "00hb4qg2am06g81mygfi1jsbx8830024jm45g6qp9g8fr6am91yf"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/kurtmckee/feedparser")
+    (synopsis "Parse feeds in Python")
+    (description
+     "Universal feed parser which handles RSS 0.9x, RSS 1.0, RSS 2.0,
+CDF, Atom 0.3, and Atom 1.0 feeds.")
+    (license (list l:bsd-2 ; source code
+                   l:freebsd-doc)))) ; documentation
+
+(define-public python2-feedparser
+  (let ((base (package-with-python2
+               (strip-python2-variant python-feedparser))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools))))))
 
 (define-public r-httpuv
   (package
