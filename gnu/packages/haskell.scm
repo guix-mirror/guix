@@ -6930,4 +6930,24 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
 files and directories in a portable way.")
     (license license:bsd-3)))
 
+(define-public ghc-process
+  (package
+    (name "ghc-process")
+    (version "1.4.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/process/process-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1v1bav5isqxq9fc4lw714x94qbfsjbm2nn12kjp69r1ql8jaaaqw"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/process")
+    (synopsis "System process libraries")
+    (description
+     "This package contains libraries for dealing with system processes.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
