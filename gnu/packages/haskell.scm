@@ -6484,4 +6484,36 @@ implement a custom format if needed.  Serialisation speeds of over 1 G\\/sec hav
 been observed, so this library should be suitable for high performance scenarios.")
     (license license:bsd-3)))
 
+(define-public ghc-cryptohash
+  (package
+    (name "ghc-cryptohash")
+    (version "0.11.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/cryptohash/cryptohash-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1yr2iyb779znj79j3fq4ky8l1y8a600a2x1fx9p5pmpwq5zq93y2"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-byteable" ,ghc-byteable)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "http://github.com/vincenthz/hs-cryptohash")
+    (synopsis "Collection of cryptographic hashes in Haskell")
+    (description
+     "A collection of crypto hashes, with a practical incremental and one-pass,
+pure APIs, with performance close to the fastest implementations available in
+other languages.  The implementations are made in C with a haskell FFI wrapper
+that hides the C implementation.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
