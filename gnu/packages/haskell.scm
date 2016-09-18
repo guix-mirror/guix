@@ -6719,4 +6719,36 @@ test-framework.")
     (description "ByteString-backed Handles") ; There is no description
     (license license:bsd-3)))
 
+(define-public ghc-tar
+  (package
+    (name "ghc-tar")
+    (version "0.5.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/tar/tar-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "18qq94j9bm91iswnxq2dm5dws5c7wm4k01q2rpf8py35cf3svnfq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bytestring-handle" ,ghc-bytestring-handle)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-array" ,ghc-array)))
+    (home-page "http://hackage.haskell.org/package/tar")
+    (synopsis "Reading, writing and manipulating \".tar\" archive files")
+    (description
+     "This library is for working with \\\"@.tar@\\\" archive files.
+It can read and write a range of common variations of the tar archive format
+including V7, POSIX USTAR and GNU formats.  It provides support for packing and
+unpacking portable archives.  This makes it suitable for distribution but not
+backup because details like file ownership and exact permissions are not
+preserved.  It also provides features for random access to archive content using
+an index.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
