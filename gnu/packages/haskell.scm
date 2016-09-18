@@ -6432,4 +6432,25 @@ can be specified precisely in the type.  The language is closely related to
 Epigram and Agda.")
     (license license:bsd-3)))
 
+(define-public ghc-base16-bytestring
+  (package
+    (name "ghc-base16-bytestring")
+    (version "0.1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/base16-bytestring/"
+             "base16-bytestring-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jf40m3yijqw6wd1rwwvviww46fasphaay9m9rgqyhf5aahnbzjs"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/bos/base16-bytestring")
+    (synopsis "Fast base16 (hex) encoding and decoding for ByteStrings")
+    (description
+     "This package provides a Haskell library for working with base16-encoded
+data quickly and efficiently, using the ByteString type.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
