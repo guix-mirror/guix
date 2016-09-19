@@ -4593,7 +4593,11 @@ bioinformatics file formats, sequence alignment, and more.")
          ;; https://github.com/fhcrc/seqmagick/issues/55
          (replace 'check (lambda _ (zero? (system* "nosetests")))))))
     (inputs
-     `(("python-biopython" ,python2-biopython)))
+     ;; biopython-1.66 is required due to
+     ;; https://github.com/fhcrc/seqmagick/issues/59
+     ;; When that issue is resolved the 'python2-biopython-1.66' package
+     ;; should be removed.
+     `(("python-biopython" ,python2-biopython-1.66)))
     (native-inputs
      `(("python-setuptools" ,python2-setuptools)
        ("python-nose" ,python2-nose)))
