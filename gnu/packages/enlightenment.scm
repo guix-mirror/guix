@@ -82,6 +82,7 @@
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
@@ -125,6 +126,11 @@
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--enable-liblz4"
+                           "--enable-xinput22"
+                           "--enable-image-loader-webp"
+                           "--enable-multisense"
+                           "--with-opengl=es"
+                           "--enable-egl"
                            "--enable-harfbuzz")
        #:phases
        (modify-phases %standard-phases
