@@ -1,0 +1,78 @@
+Fix a test that has an expiration date of 2016-09-17:
+
+https://bugs.gnupg.org/gnupg/issue2393
+
+Patch adapted from upstream source repository:
+
+https://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=commit;h=e584d6468a2e72cd01e55f46104f9f96b56c0b66
+
+The patch has been altered by commenting out a diff that does not apply
+to the version of GnuPG that we are applying it to, 2.1.13. This is
+what the patch author refers to below with "This commit includes changes
+to the old test as well, for those who need to backport it." We keep the
+old test and comment out the new test.
+
+From e584d6468a2e72cd01e55f46104f9f96b56c0b66 Mon Sep 17 00:00:00 2001
+From: Justus Winter <justus@g10code.com>
+Date: Thu, 23 Jun 2016 17:24:23 +0200
+Subject: [PATCH] tests/openpgp: Fake the system time for the tofu test.
+
+The keys in the tofu test are set to expire on 2016-09-17.  Fake the
+system time for this test.
+
+This commit includes changes to the old test as well, for those who
+need to backport it.
+
+* tests/openpgp/gpg-agent.conf.tmpl: Drop trailing newlines.
+* tests/openpgp/tofu.scm: Fake system time.
+* tests/openpgp/tofu.test: Likewise.
+
+GnuPG-bug-id: 2393
+Signed-off-by: Justus Winter <justus@g10code.com>
+---
+ tests/openpgp/gpg-agent.conf.tmpl | 2 --
+ tests/openpgp/tofu.scm            | 4 +++-
+ tests/openpgp/tofu.test           | 3 +++
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/tests/openpgp/gpg-agent.conf.tmpl b/tests/openpgp/gpg-agent.conf.tmpl
+index b3cb54f..70e1633 100644
+--- a/tests/openpgp/gpg-agent.conf.tmpl
++++ b/tests/openpgp/gpg-agent.conf.tmpl
+@@ -1,4 +1,2 @@
+ allow-preset-passphrase
+ no-grab
+-
+-
+#diff --git a/tests/openpgp/tofu.scm b/tests/openpgp/tofu.scm
+#index 24fa9df..38b6a0f 100755
+#--- a/tests/openpgp/tofu.scm
+#+++ b/tests/openpgp/tofu.scm
+#@@ -19,7 +19,9 @@
+# 
+# (load (with-path "defs.scm"))
+# 
+#-(define GPG `(,(tool 'gpg) --no-permission-warning)) ;; w/o --always-trust
+#+ ;; Redefine GPG without --always-trust and a fixed time.
+#+(define GPG `(,(tool 'gpg) --no-permission-warning
+#+	      --faked-system-time=1466684990))
+# (define GNUPGHOME (getenv "GNUPGHOME"))
+# (if (string=? "" GNUPGHOME)
+#     (error "GNUPGHOME not set"))
+diff --git a/tests/openpgp/tofu.test b/tests/openpgp/tofu.test
+index 18c1756..0d34af4 100755
+--- a/tests/openpgp/tofu.test
++++ b/tests/openpgp/tofu.test
+@@ -4,6 +4,9 @@
+ 
+ # set -x
+ 
++# Redefine GPG with a fixed time.
++GPG="$GPG --faked-system-time=1466684990"
++
+ KEYS="2183839A BC15C85A EE37CF96"
+ 
+ # Make sure $srcdir is set.
+-- 
+2.10.0
+

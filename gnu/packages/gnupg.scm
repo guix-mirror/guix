@@ -243,6 +243,7 @@ compatible to GNU Pth.")
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
+              (patches (search-patches "gnupg-fix-expired-test.patch"))
               (sha256
                (base32
                 "0xcn46vcb5x5qx0bc803vpzhzhnn6wfhp7x71w9n1ahx4ak877ag"))))
