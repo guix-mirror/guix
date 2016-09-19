@@ -497,7 +497,7 @@ Python.")
       (base32
        "1n25w3p1rixbpac8iysmzcja6m4ip5r6sz19l8y6wlwi49hxn278"))))
    (build-system python-build-system)
-   (inputs
+   (propagated-inputs
     `(("python-numpy" ,python-numpy)
       ("python-scipy" ,python-scipy)
       ("python-future" ,python-future)
