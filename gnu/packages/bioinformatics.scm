@@ -630,6 +630,20 @@ into separate processes; and more.")
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs base))))))
 
+;; An outdated version of biopython is required for seqmagick, see
+;; https://github.com/fhcrc/seqmagick/issues/59
+;; When that issue has been resolved this package should be removed.
+(define python2-biopython-1.66
+  (package
+    (inherit python2-biopython)
+    (version "1.66")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "biopython" version))
+              (sha256
+               (base32
+                "1gdv92593klimg22icf5j9by7xiq86jnwzkpz4abaa05ylkdf6hp"))))))
+
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
