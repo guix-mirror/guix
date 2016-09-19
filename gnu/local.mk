@@ -259,6 +259,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/nettle.scm			\
   %D%/packages/networking.scm			\
   %D%/packages/nfs.scm                          \
+  %D%/packages/nickle.scm                       \
   %D%/packages/ninja.scm			\
   %D%/packages/node.scm				\
   %D%/packages/noweb.scm			\
