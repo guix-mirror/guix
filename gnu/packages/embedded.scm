@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo))
 
@@ -96,6 +98,17 @@
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
               (files '("arm-none-eabi/lib"))))))))
+
+(define-public gcc-arm-none-eabi-6
+  (package
+    (inherit gcc-arm-none-eabi-4.9)
+    (version (package-version gcc-6))
+    (source (origin (inherit (package-source gcc-6))
+                    (patches
+                     (append
+                      (origin-patches (package-source gcc-6))
+                      (search-patches "gcc-6-cross-environment-variables.patch"
+                                      "gcc-6-arm-none-eabi-multilib.patch")))))))
 
 (define-public newlib-arm-none-eabi
   (package

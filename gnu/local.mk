@@ -534,6 +534,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
+  %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
+  %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gd-CVE-2016-7568.patch			\
   %D%/packages/patches/gd-CVE-2016-8670.patch			\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\

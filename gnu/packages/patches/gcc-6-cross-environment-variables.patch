@@ -1,0 +1,65 @@
+Search path environment variables for cross-compilers.  See the discussion
+at <http://gcc.gnu.org/ml/gcc/2013-02/msg00124.html>.
+
+Note: Touch 'C_INCLUDE_PATH' et al. rather than 'CPATH', as discussed
+at <http://bugs.gnu.org/22186>.
+
+--- a/gcc/incpath.c
++++ b/gcc/incpath.c
+@@ -461,8 +461,8 @@ register_include_chains (cpp_reader *pfile, const char *sysroot,
+ 			 int stdinc, int cxx_stdinc, int verbose)
+ {
+   static const char *const lang_env_vars[] =
+-    { "C_INCLUDE_PATH", "CPLUS_INCLUDE_PATH",
+-      "OBJC_INCLUDE_PATH", "OBJCPLUS_INCLUDE_PATH" };
++    { "CROSS_C_INCLUDE_PATH", "CROSS_CPLUS_INCLUDE_PATH",
++      "CROSS_OBJC_INCLUDE_PATH", "CROSS_OBJCPLUS_INCLUDE_PATH" };
+   cpp_options *cpp_opts = cpp_get_options (pfile);
+   size_t idx = (cpp_opts->objc ? 2: 0);
+ 
+@@ -473,7 +473,7 @@ register_include_chains (cpp_reader *pfile, const char *sysroot,
+ 
+   /* CPATH and language-dependent environment variables may add to the
+      include chain.  */
+-  add_env_var_paths ("CPATH", BRACKET);
++  add_env_var_paths ("CROSS_CPATH", BRACKET);
+   add_env_var_paths (lang_env_vars[idx], SYSTEM);
+ 
+   target_c_incpath.extra_pre_includes (sysroot, iprefix, stdinc);
+diff --git a/gcc/system.h b/gcc/system.h
+index 42bc509..af3b9ad 100644
+--- a/gcc/system.h
++++ b/gcc/system.h
+@@ -1063,4 +1063,6 @@ helper_const_non_const_cast (const char *p)
+ /* Get definitions of HOST_WIDE_INT and HOST_WIDEST_INT.  */
+ #include "hwint.h"
+ 
++#define LIBRARY_PATH_ENV "CROSS_LIBRARY_PATH"
++
+ #endif /* ! GCC_SYSTEM_H */
+diff --git a/gcc/tlink.c b/gcc/tlink.c
+index bc358b8..ad6242f 100644
+--- a/gcc/tlink.c
++++ b/gcc/tlink.c
+@@ -458,7 +458,7 @@ recompile_files (void)
+   file *f;
+ 
+   putenv (xstrdup ("COMPILER_PATH="));
+-  putenv (xstrdup ("LIBRARY_PATH="));
++  putenv (xstrdup (LIBRARY_PATH_ENV "="));
+ 
+   while ((f = file_pop ()) != NULL)
+     {
+diff --git a/gcc/gcc.c b/gcc/gcc.c
+index 0f042b0..c23fb0b 100644
+--- a/gcc/gcc.c
++++ b/gcc/gcc.c
+@@ -4264,7 +4264,7 @@ process_command (unsigned int decoded_options_count,
+     }
+ 
+   temp = env.get (LIBRARY_PATH_ENV);
+-  if (temp && *cross_compile == '0')
++  if (temp)
+     {
+       const char *startp, *endp;
+       char *nstore = (char *) alloca (strlen (temp) + 3);
