@@ -313,12 +313,10 @@ You have been warned.  Thanks for being so brave.
           (cow-store-service)
 
           ;; Install Unicode support and a suitable font.
-          (console-font-service "tty1")
-          (console-font-service "tty2")
-          (console-font-service "tty3")
-          (console-font-service "tty4")
-          (console-font-service "tty5")
-          (console-font-service "tty6")
+          (service console-font-service-type
+                   (map (lambda (tty)
+                          (cons tty %default-console-font))
+                        '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
           ;; To facilitate copy/paste.
           (gpm-service)

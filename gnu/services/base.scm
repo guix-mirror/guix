@@ -58,6 +58,8 @@
             session-environment-service-type
             host-name-service
             console-keymap-service
+            %default-console-font
+            console-font-service-type
             console-font-service
 
             udev-configuration
@@ -635,37 +637,51 @@ strings or string-valued gexps."
   "Return a service to load console keymaps from @var{files}."
   (service console-keymap-service-type files))
 
-(define console-font-service-type
-  (shepherd-service-type
-   'console-font
-   (match-lambda
-     ((tty font)
-      (let ((device (string-append "/dev/" tty)))
-        (shepherd-service
-         (documentation "Load a Unicode console font.")
-         (provision (list (symbol-append 'console-font-
-                                         (string->symbol tty))))
-
-         ;; Start after mingetty has been started on TTY, otherwise the settings
-         ;; are ignored.
-         (requirement (list (symbol-append 'term-
-                                           (string->symbol tty))))
-
-         (start #~(lambda _
-                    (and #$(unicode-start device)
-                         (zero?
-                          (system* (string-append #$kbd "/bin/setfont")
-                                   "-C" #$device #$font)))))
-         (stop #~(const #t))
-         (respawn? #f)))))))
-
-(define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
-  "Return a service that sets up Unicode support in @var{tty} and loads
-@var{font} for that tty (fonts are per virtual console in Linux.)"
+(define %default-console-font
   ;; Note: 'LatGrkCyr-8x16' has the advantage of providing three common
   ;; scripts as well as glyphs for em dash, quotation marks, and other Unicode
   ;; codepoints notably found in the UTF-8 manual.
-  (service console-font-service-type (list tty font)))
+  "LatGrkCyr-8x16")
+
+(define (console-font-shepherd-services tty+font)
+  "Return a list of Shepherd services for each pair in TTY+FONT."
+  (map (match-lambda
+         ((tty . font)
+          (let ((device (string-append "/dev/" tty)))
+            (shepherd-service
+             (documentation "Load a Unicode console font.")
+             (provision (list (symbol-append 'console-font-
+                                             (string->symbol tty))))
+
+             ;; Start after mingetty has been started on TTY, otherwise the settings
+             ;; are ignored.
+             (requirement (list (symbol-append 'term-
+                                               (string->symbol tty))))
+
+             (start #~(lambda _
+                        (and #$(unicode-start device)
+                             (zero?
+                              (system* (string-append #$kbd "/bin/setfont")
+                                       "-C" #$device #$font)))))
+             (stop #~(const #t))
+             (respawn? #f)))))
+       tty+font))
+
+(define console-font-service-type
+  (service-type (name 'console-fonts)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          console-font-shepherd-services)))
+                (compose concatenate)
+                (extend append)))
+
+(define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
+  "This procedure is deprecated in favor of @code{console-font-service-type}.
+
+Return a service that sets up Unicode support in @var{tty} and loads
+@var{font} for that tty (fonts are per virtual console in Linux.)"
+  (simple-service (symbol-append 'console-font- (string->symbol tty))
+                  console-font-service-type `((,tty . ,font))))
 
 (define %default-motd
   (plain-file "motd" "This is the GNU operating system, welcome!\n\n"))
@@ -1497,12 +1513,10 @@ This service is not part of @var{%base-services}."
   ;; Convenience variable holding the basic services.
   (list (login-service)
 
-        (console-font-service "tty1")
-        (console-font-service "tty2")
-        (console-font-service "tty3")
-        (console-font-service "tty4")
-        (console-font-service "tty5")
-        (console-font-service "tty6")
+        (service console-font-service-type
+                 (map (lambda (tty)
+                        (cons tty %default-console-font))
+                      '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
         (mingetty-service (mingetty-configuration
                            (tty "tty1")))
