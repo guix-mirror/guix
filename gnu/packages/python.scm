@@ -2154,10 +2154,11 @@ executed.")
     (description
      "This is a library package for use by pytest-cov, nose-cov and nose2-cov.
 It is useful for developing coverage plugins for these testing frameworks.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-cov-core))))))
 
 (define-public python2-cov-core
-  (let ((cov-core (package-with-python2 python-cov-core)))
+  (let ((cov-core (package-with-python2 (strip-python2-variant python-cov-core))))
     (package (inherit cov-core)
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
