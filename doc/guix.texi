@@ -11348,6 +11348,25 @@ the extension; it must return a valid value for the target service.
 Return true if @var{obj} is a service extension.
 @end deffn
 
+Occasionally, you might want to simply extend an existing service.  This
+involves creating a new service type and specifying the extension of
+interest, which can be verbose; the @code{simple-service} procedure
+provides a shorthand for this.
+
+@deffn {Scheme Procedure} simple-service @var{name} @var{target} @var{value}
+Return a service that extends @var{target} with @var{value}.  This works
+by creating a singleton service type @var{name}, of which the returned
+service is an instance.
+
+For example, this extends mcron (@pxref{Scheduled Job Execution}) with
+an additional job:
+
+@example
+(simple-service 'my-mcron-job mcron-service-type
+                #~(job '(next-hour (3)) "guix gc -F 2G"))
+@end example
+@end deffn
+
 At the core of the service abstraction lies the @code{fold-services}
 procedure, which is responsible for ``compiling'' a list of services
 down to a single directory that contains everything needed to boot and

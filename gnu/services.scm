@@ -50,6 +50,7 @@
             service-kind
             service-parameters
 
+            simple-service
             modify-services
             service-back-edges
             fold-services
@@ -141,6 +142,13 @@
   (type       service-kind)
   (parameters service-parameters))
 
+(define (simple-service name target value)
+  "Return a service that extends TARGET with VALUE.  This works by creating a
+singleton service type NAME, of which the returned service is an instance."
+  (let* ((extension (service-extension target identity))
+         (type      (service-type (name name)
+                                  (extensions (list extension)))))
+    (service type value)))
 
 (define-syntax %modify-service
   (syntax-rules (=>)
