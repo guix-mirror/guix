@@ -611,8 +611,6 @@ provide a coordinated and extensible framework to do computational biology.")
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (inputs
      `(("python-numpy" ,python-numpy)))
-    (native-inputs
-     `(("python-setuptools" ,python2-setuptools)))
     (home-page "http://biopython.org/")
     (synopsis "Tools for biological computation in Python")
     (description
@@ -622,12 +620,15 @@ bioinformatics programs; a standard sequence class and tools for performing
 common operations on them; code to perform data classification; code for
 dealing with alignments; code making it easy to split up parallelizable tasks
 into separate processes; and more.")
-    (license (license:non-copyleft "http://www.biopython.org/DIST/LICENSE"))))
+    (license (license:non-copyleft "http://www.biopython.org/DIST/LICENSE"))
+    (properties `((python2-variant . ,(delay python2-biopython))))))
 
 (define-public python2-biopython
-  (package (inherit (package-with-python2 python-biopython))
-    (inputs
-     `(("python2-numpy" ,python2-numpy)))))
+  (let ((base (package-with-python2 (strip-python2-variant python-biopython))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
