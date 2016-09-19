@@ -62,22 +62,24 @@
      '(#:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'setup-configure
+           (lambda _
+             ;; Use the right path for `pwd'.
+             (substitute* "dist/PathTools/Cwd.pm"
+               (("/bin/pwd")
+                (which "pwd")))
+
+             ;; Build in GNU89 mode to tolerate C++-style comment in libc's
+             ;; <bits/string3.h>.
+             (substitute* "cflags.SH"
+               (("-std=c89")
+                "-std=gnu89"))
+             #t))
          (replace
           'configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out  (assoc-ref outputs "out"))
                   (libc (assoc-ref inputs "libc")))
-              ;; Use the right path for `pwd'.
-              (substitute* "dist/PathTools/Cwd.pm"
-                (("/bin/pwd")
-                 (which "pwd")))
-
-              ;; Build in GNU89 mode to tolerate C++-style comment in libc's
-              ;; <bits/string3.h>.
-              (substitute* "cflags.SH"
-                (("-std=c89")
-                 "-std=gnu89"))
-
               (zero?
                (system* "./Configure"
                         (string-append "-Dprefix=" out)
