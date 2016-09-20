@@ -734,8 +734,8 @@ threads.")
                                                    "/" name ".boot")))
                     (find-files lib "scheme.boot"))
                #t))))))
-    ;; According to the documentation MIPS is not supported.
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    ;; According to the documentation MIPS and ARM are not supported.
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (home-page "http://www.scheme.com")
     (synopsis "R6RS Scheme compiler and run-time")
     (description
