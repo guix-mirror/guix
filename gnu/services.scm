@@ -25,6 +25,7 @@
   #:use-module (guix profiles)
   #:use-module (guix sets)
   #:use-module (guix ui)
+  #:use-module (guix modules)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (srfi srfi-1)
@@ -320,16 +321,6 @@ ACTIVATION-SCRIPT-TYPE."
 
 (define (activation-script gexps)
   "Return the system's activation script, which evaluates GEXPS."
-  (define %modules
-    '((gnu build activation)
-      (gnu build linux-boot)
-      (gnu build linux-modules)
-      (gnu build file-systems)
-      (guix build utils)
-      (guix build syscalls)
-      (guix build bournish)
-      (guix elf)))
-
   (define (service-activations)
     ;; Return the activation scripts for SERVICES.
     (mapm %store-monad
@@ -338,7 +329,8 @@ ACTIVATION-SCRIPT-TYPE."
 
   (mlet* %store-monad ((actions (service-activations)))
     (gexp->file "activate"
-                (with-imported-modules %modules
+                (with-imported-modules (source-module-closure
+                                        '((gnu build activation)))
                   #~(begin
                       (use-modules (gnu build activation))
 
