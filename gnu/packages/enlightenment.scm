@@ -131,23 +131,7 @@
                            "--enable-multisense"
                            "--with-opengl=es"
                            "--enable-egl"
-                           "--enable-harfbuzz")
-       #:phases
-       (modify-phases %standard-phases
-         ;; ecore_audio cannot find pulseaudio or libsndfile when compiled.
-         ;; Starting in version 1.18.0, these two libraries are dlopened so
-         ;; we hardcode their locations as a temporary workaround.
-         (add-after 'configure 'hardlink-dlopen-files
-           (lambda _
-             (substitute* "src/lib/ecore_audio/ecore_audio.c"
-                          (("libpulse.so.0")
-                           (string-append (assoc-ref %build-inputs "pulseaudio")
-                                          "/lib/libpulse.so.0")))
-             (substitute* "src/lib/ecore_audio/ecore_audio.c"
-                          (("libsndfile.so.1")
-                           (string-append (assoc-ref %build-inputs "libsndfile")
-                                          "/lib/libsndfile.so.1")))
-             #t)))))
+                           "--enable-harfbuzz")))
     (home-page "https://www.enlightenment.org")
     (synopsis "Enlightenment Foundation Libraries")
     (description
