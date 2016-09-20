@@ -375,13 +375,24 @@ keywords not already present in ARGS."
       (()
        args))))
 
+(define-syntax collect-default-args
+  (syntax-rules ()
+    ((_)
+     '())
+    ((_ (_ _) rest ...)
+     (collect-default-args rest ...))
+    ((_ (kw _ dflt) rest ...)
+     (cons* kw dflt (collect-default-args rest ...)))))
+
 (define-syntax substitute-keyword-arguments
   (syntax-rules ()
     "Return a new list of arguments where the value for keyword arg KW is
-replaced by EXP.  EXP is evaluated in a context where VAR is boud to the
-previous value of the keyword argument."
-    ((_ original-args ((kw var) exp) ...)
-     (let loop ((args    original-args)
+replaced by EXP.  EXP is evaluated in a context where VAR is bound to the
+previous value of the keyword argument, or DFLT if given."
+    ((_ original-args ((kw var dflt ...) exp) ...)
+     (let loop ((args (default-keyword-arguments
+                        original-args
+                        (collect-default-args (kw var dflt ...) ...)))
                 (before '()))
        (match args
          ((kw var rest (... ...))
