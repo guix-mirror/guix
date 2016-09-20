@@ -5,6 +5,7 @@
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+# Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 #
 # This file is part of GNU Guix.
 #
@@ -651,6 +652,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
+  %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \

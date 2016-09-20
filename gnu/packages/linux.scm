@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -414,7 +415,9 @@ It has been modified to remove all non-free binary blobs.")
             "Linux-PAM-" version ".tar.bz2"))
       (sha256
        (base32
-        "1fyi04d5nsh8ivd0rn2y0z83ylgc0licz7kifbb6xxi2ylgfs6i4"))))
+        "1fyi04d5nsh8ivd0rn2y0z83ylgc0licz7kifbb6xxi2ylgfs6i4"))
+      (patches (search-patches "linux-pam-no-setfsuid.patch"))))
+
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -455,8 +458,8 @@ at login.  Local and dynamic reconfiguration are its key features.")
             "Linux-PAM-" version ".tar.bz2"))
       (sha256
        (base32
-        "1n9lnf9gjs72kbj1g354v1xhi2j27aqaah15vykh7cnkq08i4arl"))))))
-
+        "1n9lnf9gjs72kbj1g354v1xhi2j27aqaah15vykh7cnkq08i4arl"))
+      (patches (search-patches "linux-pam-no-setfsuid.patch"))))))
 
 
 ;;;
