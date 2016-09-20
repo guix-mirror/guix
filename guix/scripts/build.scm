@@ -195,7 +195,7 @@ of \"guile\"."
              ((old new)
               (cons (specification->package old)
                     (specification->package new)))
-             (_
+             (x
               (leave (_ "invalid replacement specification: ~s~%") spec))))
          replacement-specs))
 

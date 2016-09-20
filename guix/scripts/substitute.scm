@@ -300,7 +300,7 @@ Otherwise return #f."
 (define (narinfo-signature->canonical-sexp str)
   "Return the value of a narinfo's 'Signature' field as a canonical sexp."
   (match (string-split str #\;)
-    ((version _ sig)
+    ((version host-name sig)
      (let ((maybe-number (string->number version)))
        (cond ((not (number? maybe-number))
               (leave (_ "signature version must be a number: ~s~%")

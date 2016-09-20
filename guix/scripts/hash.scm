@@ -149,5 +149,5 @@ and 'hexadecimal' can be used as well).\n"))
          (lambda args
            (leave (_ "~a~%")
                   (strerror (system-error-errno args))))))
-      (_
+      (x
        (leave (_ "wrong number of arguments~%"))))))

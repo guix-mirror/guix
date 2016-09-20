@@ -313,7 +313,7 @@ use NAME@VERSION instead~%")))
         new)
        (#f
         pkg)))
-    (_
+    (x
      (if version
          (leave (_ "~A: package not found for version ~a~%") name version)
          (if (not fallback?)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,7 +68,7 @@ Return a package declaration template for PACKAGE, a GNU package.\n"))
                      ((or "interactive" "always" "never")
                       (alist-cons 'key-download (string->symbol arg)
                                   result))
-                     (_
+                     (x
                       (leave (_ "unsupported policy: ~a~%")
                              arg)))))
          %standard-import-options))
@@ -99,7 +99,7 @@ Return a package declaration template for PACKAGE, a GNU package.\n"))
        (with-error-handling
          (gnu->guix-package name
                             #:key-download (assoc-ref opts 'key-download))))
-      (_
+      (x
        (leave (_ "wrong number of arguments~%"))))))
 
 ;;; gnu.scm ends here
