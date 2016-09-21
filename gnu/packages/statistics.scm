@@ -1610,6 +1610,29 @@ previous R versions and their release dates.")
 limited to R.")
     (license license:gpl3+)))
 
+(define-public r-backports
+  (package
+    (name "r-backports")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "backports" version))
+       (sha256
+        (base32
+         "0s04mbb7imqc00jl37i081y4yf7qdimk687dyrkvb20nixvjvjyh"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/backports")
+    (synopsis "Reimplementations of functions introduced since R 3.0.0")
+    (description
+     "Provides implementations of functions which have been introduced in R
+since version 3.0.0.  The backports are conditionally exported which results
+in R resolving the function names to the version shipped with R (if available)
+and uses the implemented backports as fallback.  This way package developers
+can make use of the new functions without worrying about the minimum required
+R version.")
+    (license license:gpl2+)))
+
 (define-public r-brew
   (package
     (name "r-brew")
