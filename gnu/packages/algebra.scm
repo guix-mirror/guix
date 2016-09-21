@@ -521,6 +521,8 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
                 "0hkp9l6l4c92fb1l2sh6a6zv1hynpvb2s4d03vd8vxyvybc0l4pv"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; no tests included
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/extemporelang/kiss_fft")
     (synopsis "Mixed-radix Fast Fourier Transform")
     (description

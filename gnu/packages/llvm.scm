@@ -274,4 +274,6 @@ code analysis tools.")
     (source
      (origin
        (inherit (package-source llvm-3.7))
-       (patches (list (search-patch "llvm-for-extempore.patch")))))))
+       (patches (list (search-patch "llvm-for-extempore.patch")))))
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))))

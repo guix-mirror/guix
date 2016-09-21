@@ -923,6 +923,8 @@ statistical tests.")
                (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments `(#:tests? #f))        ; no tests included
+      ;; Extempore refuses to build on architectures other than x86_64
+      (supported-systems '("x86_64-linux"))
       (home-page "https://github.com/extemporelang/stb")
       (synopsis "Image library for Extempore")
       (description

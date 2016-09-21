@@ -591,6 +591,8 @@ and surfaces, receiving input and events.")
     (arguments `(#:tests? #f)) ; no tests included
     (inputs
      `(("mesa" ,mesa)))
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/extemporelang/nanovg")
     (synopsis "2D vector drawing library on top of OpenGL")
     (description "NanoVG is small antialiased vector graphics rendering

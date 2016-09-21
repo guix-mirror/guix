@@ -396,6 +396,8 @@ enable professional yet simple and intuitive pattern-based drum programming.")
     (native-inputs
      `(("perl" ,perl)
        ("emacs" ,emacs-no-x)))
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))
     (home-page "http://benswift.me/extempore-docs/index.html")
     (synopsis "Programming environment for live coding of multimedia")
     (description
@@ -1243,6 +1245,8 @@ using a system-independent interface.")
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; no tests
     (native-inputs '())
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/extemporelang/portmidi/")))
 
 (define-public python-pyportmidi
