@@ -2307,6 +2307,17 @@ is used by the Requests library to verify HTTPS requests.")
         (base32
          "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((glibc (assoc-ref inputs ,(if (%current-target-system)
+                                                 "cross-libc" "libc"))))
+               (substitute* "click/_unicodefun.py"
+                 (("'locale'")
+                  (string-append "'" glibc "/bin/locale'"))))
+             #t)))))
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
     (home-page "http://click.pocoo.org")
