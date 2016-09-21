@@ -2299,10 +2299,7 @@ is used by the Requests library to verify HTTPS requests.")
     (source
      (origin
        (method url-fetch)
-         (uri (string-append
-                "https://pypi.python.org/packages/"
-                "7a/00/c14926d8232b36b08218067bcd5853caefb4737cda3f0a47437151344792/"
-                "click-" version ".tar.gz"))
+       (uri (pypi-uri "click" version))
        (sha256
         (base32
          "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc"))))
