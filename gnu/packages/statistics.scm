@@ -1633,6 +1633,28 @@ can make use of the new functions without worrying about the minimum required
 R version.")
     (license license:gpl2+)))
 
+(define-public r-checkmate
+  (package
+    (name "r-checkmate")
+    (version "1.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "checkmate" version))
+       (sha256
+        (base32
+         "1nqyi58jl33af82y8kw8iy9xbna2080y1khhy90kf6lim6q74024"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)))
+    (home-page "https://github.com/mllg/checkmate")
+    (synopsis "Fast and versatile argument checks")
+    (description
+     "This package provides tests and assertions to perform frequent argument
+checks.  A substantial part of the package was written in C to minimize any
+worries about execution time overhead.")
+    (license license:bsd-3)))
+
 (define-public r-brew
   (package
     (name "r-brew")
