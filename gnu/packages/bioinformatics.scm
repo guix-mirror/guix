@@ -5350,6 +5350,52 @@ purposes.  The package also contains legacy support for early single-end,
 ungapped alignment formats.")
     (license license:artistic2.0)))
 
+(define-public r-systempiper
+  (package
+    (name "r-systempiper")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "systemPipeR" version))
+       (sha256
+        (base32
+         "0s2g46a5d5bvx45i3cgmib48wf8hrniyladhm0f7kgcbfx57248m"))))
+    (properties `((upstream-name . "systemPipeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-batchjobs" ,r-batchjobs)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-deseq2" ,r-deseq2)
+       ("r-edger" ,r-edger)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-go-db" ,r-go-db)
+       ("r-gostats" ,r-gostats)
+       ("r-limma" ,r-limma)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-rjson" ,r-rjson)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-shortread" ,r-shortread)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://github.com/tgirke/systemPipeR")
+    (synopsis "Next generation sequencing workflow and reporting environment")
+    (description
+     "This R package provides tools for building and running automated
+end-to-end analysis workflows for a wide range of @dfn{next generation
+sequence} (NGS) applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq.
+Important features include a uniform workflow interface across different NGS
+applications, automated report generation, and support for running both R and
+command-line software, such as NGS aligners or peak/variant callers, on local
+computers or compute clusters.  Efficient handling of complex sample sets and
+experimental designs is facilitated by a consistently implemented sample
+annotation infrastructure.")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
