@@ -5220,6 +5220,33 @@ databases.  Packages produced are intended to be used with AnnotationDbi.")
 the graph algorithms contained in the Boost library.")
     (license license:artistic2.0)))
 
+(define-public r-gseabase
+  (package
+    (name "r-gseabase")
+    (version "1.34.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GSEABase" version))
+       (sha256
+        (base32
+         "1mvgja8malrnbzfakzjl5mmi7g080kj8zgxwc5964hcmn33i937j"))))
+    (properties `((upstream-name . "GSEABase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-graph" ,r-graph)
+       ("r-xml" ,r-xml)))
+    (home-page "http://bioconductor.org/packages/GSEABase")
+    (synopsis "Gene set enrichment data structures and methods")
+    (description
+     "This package provides classes and methods to support @dfn{Gene Set
+Enrichment Analysis} (GSEA).")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
