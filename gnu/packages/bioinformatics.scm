@@ -5048,6 +5048,32 @@ dissimilarity analysis.  Most of its multivariate tools can be used for other
 data types as well.")
     (license license:gpl2+)))
 
+(define-public r-annotate
+  (package
+    (name "r-annotate")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "annotate" version))
+       (sha256
+        (base32
+         "00wnhbjp5i6a5vyvlq4f5hs8qngjxz7fm869kla1spmd0dp2ynsy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-xml" ,r-xml)
+       ("r-xtable" ,r-xtable)))
+    (home-page
+     "http://bioconductor.org/packages/annotate")
+    (synopsis "Annotation for microarrays")
+    (description "This package provides R enviroments for the annotation of
+microarrays.")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
