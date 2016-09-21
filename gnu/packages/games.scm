@@ -1780,7 +1780,7 @@ towards a working Mupen64Plus for casual users.")
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
-    (version "1.46.2")
+    (version "1.47")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1789,7 +1789,7 @@ towards a working Mupen64Plus for casual users.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07h49xwvg61dx20rk5p4r3ax2ar5y0ppvm60cqwqljyi9rdfbh7p"))
+                "1dzrrjmvyqks64q5l5pfly80jb6qcsbj5b3dm40fijd5xnpbapci"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1815,21 +1815,14 @@ towards a working Mupen64Plus for casual users.")
        (modify-phases %standard-phases
          ;; The Nestopia build system consists solely of a Makefile.
          (delete 'configure)
-         ;; XXX Should be unnecessary with the next release.
-         (add-before
-          'build 'patch-makefile
-          (lambda _
-            (substitute* "Makefile"
-              (("@mkdir \\$@") "@mkdir -p $@")
-              (("CC =") "CC ?=")
-              (("CXX =") "CXX ?=")
-              (("PREFIX =") "PREFIX ?=")
-              (("^install:\n$") "install:\n\tmkdir -p $(BINDIR)\n"))))
-         (add-before
-          'build 'remove-xdg-desktop-menu-call
-          (lambda _
-            (substitute* "Makefile"
-              (("xdg-desktop-menu install .*") "")))))
+         (add-before 'build 'remove-xdg-desktop-menu-call
+           (lambda _
+             (substitute* "Makefile"
+               (("xdg-desktop-menu install .*") ""))))
+         (add-before 'build 'remove-gdkwayland-include
+           (lambda _
+             (substitute* "source/unix/gtkui/gtkui.h"
+               (("#include <gdk/gdkwayland\\.h>") "")))))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "CC=gcc" "CXX=g++" (string-append "PREFIX=" out)))
        ;; There are no tests.
