@@ -5199,6 +5199,27 @@ distribution.")
 databases.  Packages produced are intended to be used with AnnotationDbi.")
     (license license:artistic2.0)))
 
+(define-public r-rbgl
+  (package
+    (name "r-rbgl")
+    (version "1.48.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RBGL" version))
+       (sha256
+        (base32
+         "1k82zcbyfx3p9hc8r0hwq73krbhakjan8fgbfr6w8z2crfkv3zmz"))))
+    (properties `((upstream-name . "RBGL")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-graph" ,r-graph)))
+    (home-page "http://www.bioconductor.org/packages/RBGL")
+    (synopsis "Interface to the Boost graph library")
+    (description
+     "This package provides a fairly extensive and comprehensive interface to
+the graph algorithms contained in the Boost library.")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
