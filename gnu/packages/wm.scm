@@ -35,6 +35,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
@@ -202,6 +203,48 @@ commands would.")
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
     (license license:bsd-3)))
+
+(define-public python-i3-py
+  (package
+    (name "python-i3-py")
+    (version "0.6.5")
+    (source
+     (origin
+       ;; The latest release is not tagged in Git nor has an entry in PyPi,
+       ;; but there is still a clear commit for it, and it's been the last one
+       ;; for years.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ziberna/i3-py.git")
+             (commit "27f88a616e9ecc340e7d041d3d00782f8a1964c1")))
+       (sha256
+        (base32
+         "1nm719dc2xqlll7vj4c4m7mpjb27lpn3bg3c66gajvnrz2x1nmxs"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests yet
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-doc
+                    ;; Copy readme file to documentation directory.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((doc (string-append (assoc-ref outputs "out")
+                                                "/share/doc/" ,name)))
+                        (install-file "README.md" doc)
+                        ;; Avoid unspecified return value.
+                        #t))))))
+    (propagated-inputs
+     `(("i3-wm" ,i3-wm)))
+    (home-page "https://github.com/ziberna/i3-py")
+    (synopsis "Python interface to the i3 window manager")
+    (description "This package allows you to interact from a Python program
+with the i3 window manager via its IPC socket.  It can send commands and other
+kinds of messages to i3, select the affected containers, filter results and
+subscribe to events.")
+    (license license:gpl3+)))
+
+(define-public python2-i3-py
+  (package-with-python2 python-i3-py))
 
 (define-public xmonad
   (package
