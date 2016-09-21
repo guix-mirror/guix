@@ -5396,6 +5396,32 @@ experimental designs is facilitated by a consistently implemented sample
 annotation infrastructure.")
     (license license:artistic2.0)))
 
+(define-public r-grohmm
+  (package
+    (name "r-grohmm")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "groHMM" version))
+       (sha256
+        (base32
+         "1l9mcyzyc548114ysb9r0q7hgzw3yy7gpiahrzkzj6hblc4f1jyp"))))
+    (properties `((upstream-name . "groHMM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/Kraus-Lab/groHMM")
+    (synopsis "GRO-seq analysis pipeline")
+    (description
+     "This package provides a pipeline for the analysis of GRO-seq data.")
+    (license license:gpl3+)))
+
 (define-public vsearch
   (package
     (name "vsearch")
