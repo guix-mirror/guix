@@ -5099,6 +5099,32 @@ microarrays.")
      "This package provides functions for plotting genomic data.")
     (license license:artistic2.0)))
 
+(define-public r-genefilter
+  (package
+    (name "r-genefilter")
+    (version "1.54.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "genefilter" version))
+       (sha256
+        (base32
+         "1hmz6as0njvrsrdbgmk72jyclnnqvfdvp6kqv456h43ldq2ajfv5"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/genefilter")
+    (synopsis "Filter genes from high-throughput experiments")
+    (description
+     "This package provides basic functions for filtering genes from
+high-throughput sequencing experiments.")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
