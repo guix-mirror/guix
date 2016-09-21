@@ -1,0 +1,32 @@
+Fix check for dmenu (open file mode, dependency on which).
+
+See <https://github.com/proxypoke/quickswitch-for-i3/pull/24>.
+
+--- quickswitch-i3-2.2/quickswitch.py	2016-09-18 19:59:10.257765542 +0200
++++ quickswitch-i3-2.2/quickswitch.py	2016-09-21 10:43:01.277577819 +0200
+@@ -24,9 +24,10 @@
+ 
+ import argparse
+ import subprocess
+-import os
+ import re
+ 
++from distutils.spawn import find_executable
++
+ try:
+     import i3
+ except ImportError:
+@@ -37,11 +38,8 @@
+ 
+ def check_dmenu():
+     '''Check if dmenu is available.'''
+-    devnull = open(os.devnull)
+-    retcode = subprocess.call(["which", "dmenu"],
+-                              stdout=devnull,
+-                              stderr=devnull)
+-    return True if retcode == 0 else False
++    executable = find_executable("dmenu")
++    return executable != None
+ 
+ 
+ def dmenu(options, dmenu):
