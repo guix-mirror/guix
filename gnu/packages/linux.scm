@@ -1855,20 +1855,16 @@ country-specific regulations for the wireless spectrum.")
 (define-public lm-sensors
   (package
     (name "lm-sensors")
-    (version "3.3.5")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
-                           "ftp://ftp.netroedge.com/pub/lm-sensors/"
-                           "lm_sensors-" version ".tar.bz2")
-                         (string-append
-                           "http://pkgs.fedoraproject.org/repo/pkgs/"
-                           "lm_sensors/lm_sensors-3.3.5.tar.bz2/"
-                           "da506dedceb41822e64865f6ba34828a/"
-                           "lm_sensors-3.3.5.tar.bz2")))
+                           "https://github.com/groeck/lm-sensors/archive/V"
+                           (string-join (string-split version #\.) "-")
+                           ".tar.gz")))
               (sha256
                (base32
-                "1ksgrynxgrq590nb2fwxrl1gwzisjkqlyg3ljfd1al0ibrk6mbjx"))
+                "0knb09s9lvx0wzfsaizx3xq58q6kllqf7nkbwvir0wkgn31c2d73"))
               (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
