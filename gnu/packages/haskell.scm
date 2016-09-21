@@ -7067,4 +7067,30 @@ the classes @code{IArray} of immutable arrays and @code{MArray} of arrays mutabl
 within appropriate monads, as well as some instances of these classes.")
     (license license:bsd-3)))
 
+(define-public ghc-constraints
+  (package
+    (name "ghc-constraints")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/constraints/constraints-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "120mmv9rwbahslisc1z8zx9lw7v6hl5fzid4l0hiy5as6ijqgl2c"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "http://github.com/ekmett/constraints/")
+    (synopsis "Constraint manipulation")
+    (description
+     "GHC 7.4 gave us the ability to talk about @code{ConstraintKinds}.
+They stopped crashing the compiler in GHC 7.6.  This package provides
+a vocabulary for working with them.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
