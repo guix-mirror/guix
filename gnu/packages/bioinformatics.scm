@@ -5125,6 +5125,51 @@ microarrays.")
 high-throughput sequencing experiments.")
     (license license:artistic2.0)))
 
+(define-public r-deseq2
+  (package
+    (name "r-deseq2")
+    (version "1.12.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DESeq2" version))
+       (sha256
+        (base32
+         "12h77f0dpi5xaj7aqf50kkyn6lq9j7bcsly1r0ffmyfcszrp1sfx"))))
+    (properties `((upstream-name . "DESeq2")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-against-armadillo
+           (lambda _
+             (substitute* "src/Makevars"
+               (("PKG_LIBS =" prefix)
+                (string-append prefix "-larmadillo"))))))))
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-genefilter" ,r-genefilter)
+       ("r-geneplotter" ,r-geneplotter)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)
+       ("r-iranges" ,r-iranges)
+       ("r-locfit" ,r-locfit)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "http://bioconductor.org/packages/DESeq2")
+    (synopsis "Differential gene expression analysis")
+    (description
+     "This package provides functions to estimate variance-mean dependence in
+count data from high-throughput nucleotide sequencing assays and test for
+differential expression based on a model using the negative binomial
+distribution.")
+    (license license:lgpl3+)))
+
 (define-public vsearch
   (package
     (name "vsearch")
