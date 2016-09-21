@@ -33,6 +33,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
@@ -269,3 +270,25 @@ ksh, and tcsh.")
     ;; The whole thing is under an MIT/X11-style license, but there's one
     ;; command, 'Completion/Unix/Command/_darcs', which is under GPLv2+.
     (license gpl2+)))
+
+(define-public xonsh
+  (package
+    (name "xonsh")
+    (version "0.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "xonsh" version))
+        (sha256
+          (base32
+            "0byxd9kjl99q2pyvjh9jy18l0di1i35wr0qqgnw4i6jh6ig3zcki"))))
+    (build-system python-build-system)
+    (home-page "http://xon.sh/")
+    (synopsis "Python-ish shell")
+    (description
+     "Xonsh is a Python-ish, BASHwards-looking shell language and command
+prompt. The language is a superset of Python 3.4+ with additional shell
+primitives that you are used to from Bash and IPython. It works on all major
+systems including Linux, Mac OSX, and Windows. Xonsh is meant for the daily
+use of experts and novices alike.")
+    (license bsd-2)))
