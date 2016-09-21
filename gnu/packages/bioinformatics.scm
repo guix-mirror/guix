@@ -5247,6 +5247,37 @@ the graph algorithms contained in the Boost library.")
 Enrichment Analysis} (GSEA).")
     (license license:artistic2.0)))
 
+(define-public r-category
+  (package
+    (name "r-category")
+    (version "2.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Category" version))
+       (sha256
+        (base32
+         "0c8px9ar589f3iqkbk9vfhwj30dpnxj81h8sfq20cl1cbmcx2a04"))))
+    (properties `((upstream-name . "Category")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genefilter" ,r-genefilter)
+       ("r-graph" ,r-graph)
+       ("r-gseabase" ,r-gseabase)
+       ("r-matrix" ,r-matrix)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "http://bioconductor.org/packages/Category")
+    (synopsis "Category analysis")
+    (description
+     "This package provides a collection of tools for performing category
+analysis.")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
