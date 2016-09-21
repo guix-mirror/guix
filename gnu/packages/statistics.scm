@@ -299,6 +299,30 @@ non-estimable cases correctly.")
 \"tables\" of grobs.")
     (license license:gpl2+)))
 
+(define-public r-pheatmap
+  (package
+    (name "r-pheatmap")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pheatmap" version))
+       (sha256
+        (base32
+         "1ik0k69kb4n7xl3bkx4p09kw08ri93855zcsxq1c668171jqfiji"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gtable" ,r-gtable)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-scales" ,r-scales)))
+    (home-page
+     "http://cran.r-project.org/web/packages/pheatmap")
+    (synopsis "Pretty heatmaps")
+    (description
+     "This package provides an implementation of heatmaps that offers more
+control over dimensions and appearance.")
+    (license license:gpl2+)))
+
 (define-public r-labeling
   (package
     (name "r-labeling")
