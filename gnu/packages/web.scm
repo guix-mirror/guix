@@ -3315,6 +3315,25 @@ where data can be processed either in memory, on disk, or streaming via the
 callback or connection interfaces.")
     (license l:expat)))
 
+(define-public r-hwriter
+  (package
+    (name "r-hwriter")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hwriter" version))
+       (sha256
+        (base32
+         "0arjsz854rfkfqhgvpqbm9lfni97dcjs66isdsfvwfd2wz932dbb"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/hwriter")
+    (synopsis "Output R objects in HTML format")
+    (description
+     "This package provides easy-to-use and versatile functions to output R
+objects in HTML format.")
+    (license l:lgpl2.1+)))
+
 (define-public gumbo-parser
   (package
     (name "gumbo-parser")
