@@ -2958,6 +2958,25 @@ noncentral hypergeometric distribution (also called extended hypergeometric
 distribution).")
    (license license:gpl3+)))
 
+(define-public r-rpart
+  (package
+    (name "r-rpart")
+    (version "4.1-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rpart" version))
+       (sha256
+        (base32
+         "119dvh2cpab4vq9blvbkil5hgq6w018amiwlda3ii0fki39axpf5"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/rpart")
+    (synopsis "Recursive partitioning and regression trees")
+    (description
+     "This package provides recursive partitioning functions for
+classification, regression and survival trees.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-runit
   (package
     (name "r-runit")
