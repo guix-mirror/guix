@@ -1655,6 +1655,28 @@ checks.  A substantial part of the package was written in C to minimize any
 worries about execution time overhead.")
     (license license:bsd-3)))
 
+(define-public r-bbmisc
+  (package
+    (name "r-bbmisc")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BBmisc" version))
+       (sha256
+        (base32
+         "0cw2mhw7qhdrx91zzd5iwyh7ch9fy4wxga8j63731q6sxr1airjl"))))
+    (properties `((upstream-name . "BBmisc")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)))
+    (home-page "https://github.com/berndbischl/BBmisc")
+    (synopsis "Miscellaneous functions for R package development")
+    (description
+     "This package provides miscellaneous helper functions for the development
+of R packages.")
+    (license license:bsd-3)))
+
 (define-public r-brew
   (package
     (name "r-brew")
