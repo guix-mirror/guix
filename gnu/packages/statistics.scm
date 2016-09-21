@@ -530,6 +530,29 @@ designed by Cynthia Brewer as described at http://colorbrewer2.org")
     ;; Includes code licensed under bsd-4
     (license license:asl2.0)))
 
+(define-public r-sendmailr
+  (package
+    (name "r-sendmailr")
+    (version "1.2-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sendmailR" version))
+       (sha256
+        (base32
+         "0z7ipywnzgkhfvl4zb2fjwl1xq7b5wib296vn9c9qgbndj6b1zh4"))))
+    (properties `((upstream-name . "sendmailR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)))
+    (home-page
+     "http://cran.r-project.org/web/packages/sendmailR")
+    (synopsis "Send email using R")
+    (description
+     "This package contains a simple SMTP client which provides a portable
+solution for sending email, including attachments, from within R.")
+    (license license:gpl2+)))
+
 (define-public r-stringi
   (package
     (name "r-stringi")
