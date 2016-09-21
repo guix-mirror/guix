@@ -1699,6 +1699,37 @@ of R packages.")
 or source files in a key-value fashion.")
     (license license:bsd-3)))
 
+(define-public r-batchjobs
+  (package
+    (name "r-batchjobs")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BatchJobs" version))
+       (sha256
+        (base32
+         "1kb99024jih5bycc226bl4jyvbbl1sg72q3m2wnlshl7s8p6vva0"))))
+    (properties `((upstream-name . "BatchJobs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bbmisc" ,r-bbmisc)
+       ("r-brew" ,r-brew)
+       ("r-checkmate" ,r-checkmate)
+       ("r-dbi" ,r-dbi)
+       ("r-digest" ,r-digest)
+       ("r-fail" ,r-fail)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-sendmailr" ,r-sendmailr)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/tudo-r/BatchJobs")
+    (synopsis "Batch computing with R")
+    (description
+     "This package provides @code{Map}, @code{Reduce} and @code{Filter}
+variants to generate jobs on batch computing systems like PBS/Torque, LSF,
+SLURM and Sun Grid Engine.  Multicore and SSH systems are also supported.")
+    (license license:bsd-2)))
+
 (define-public r-brew
   (package
     (name "r-brew")
