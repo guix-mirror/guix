@@ -5170,6 +5170,35 @@ differential expression based on a model using the negative binomial
 distribution.")
     (license license:lgpl3+)))
 
+(define-public r-annotationforge
+  (package
+    (name "r-annotationforge")
+    (version "1.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AnnotationForge" version))
+       (sha256
+        (base32
+         "1vkdd1qdv5g680ipw4vwjvn52xn66xpg6ngmwyknz77ckxnnpf4q"))))
+    (properties
+     `((upstream-name . "AnnotationForge")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xml" ,r-xml)))
+    (home-page "http://bioconductor.org/packages/AnnotationForge")
+    (synopsis "Code for building annotation database packages")
+    (description
+     "This package provides code for generating Annotation packages and their
+databases.  Packages produced are intended to be used with AnnotationDbi.")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
