@@ -2868,6 +2868,8 @@ DNA sequences.  It outputs its k-mer counts in a binary format, which can be
 translated into a human-readable text format using the @code{jellyfish dump}
 command, or queried for specific k-mers with @code{jellyfish query}.")
     (home-page "http://www.genome.umd.edu/jellyfish.html")
+    ;; From their website: JELLYFISH runs on 64-bit Intel-compatible processors
+    (supported-systems '("x86_64-linux"))
     ;; The combined work is published under the GPLv3 or later.  Individual
     ;; files such as lib/jsoncpp.cpp are released under the Expat license.
     (license (list license:gpl3+ license:expat))))
