@@ -5074,6 +5074,31 @@ data types as well.")
 microarrays.")
     (license license:artistic2.0)))
 
+(define-public r-geneplotter
+  (package
+    (name "r-geneplotter")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "geneplotter" version))
+       (sha256
+        (base32
+         "0lvrywl0251g4y0h0qlgkbg4l83ja5544c85z1wj30qxiy77iqc2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-lattice" ,r-lattice)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "http://bioconductor.org/packages/geneplotter")
+    (synopsis "Graphics functions for genomic data")
+    (description
+     "This package provides functions for plotting genomic data.")
+    (license license:artistic2.0)))
+
 (define-public vsearch
   (package
     (name "vsearch")
