@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,11 +35,13 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
@@ -1152,3 +1155,53 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 
 (define-public python2-peewee
   (package-with-python2 python-peewee))
+
+(define-public sqlcipher
+  (package
+    (name "sqlcipher")
+    (version "3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sqlcipher/" name
+                           "/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "1gv58dlbpzrmznly52yqbxgvii0ib88zr3aszla1bsypwjr6flff"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libcrypto" ,openssl)
+       ("libtcl8.6" ,tcl))) ; required for running the tests
+    (native-inputs
+     `(("tcl" ,tcl)))
+    (arguments
+     '(#:configure-flags
+       '("--enable-tempstore=yes"
+         "CFLAGS=-DSQLITE_HAS_CODEC -DSQLITE_ENABLE_FTS3"
+         "LDFLAGS=-lcrypto -ltcl8.6"
+         "--disable-tcl")
+       ;; tests cannot be run from the Makefile
+       ;; see: <https://github.com/sqlcipher/sqlcipher/issues/172>
+       #:test-target "testfixture"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'build-test-runner
+           (assoc-ref %standard-phases 'check))
+         (replace 'check
+           (lambda _
+             (zero?
+              (system* "./testfixture" "test/crypto.test")))))))
+    (home-page "https://www.zetetic.net/sqlcipher/")
+    (synopsis
+     "Library providing transparent encryption of SQLite database files")
+    (description "SQLCipher is an implementation of SQLite, extended to
+provide transparent 256-bit AES encryption of database files.  Pages are
+encrypted before being written to disk and are decrypted when read back.  It’s
+well suited for protecting embedded application databases and for mobile
+development.")
+    ;; The source files
+    ;; src/{crypto.c,crypto_impl.c,crypto.h,crypto_cc.c,crypto_libtomcrypt.c},
+    ;; src/{crypto_openssl.c,sqlcipher.h}, tool/crypto-speedtest.tcl,
+    ;; test/crypto.test are licensed under a 3-clause BSD license. All other
+    ;; source files are in the public domain.
+    (license (list license:public-domain license:bsd-3))))
