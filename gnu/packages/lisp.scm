@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,7 +44,8 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages version-control)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define-public gcl
   (package
@@ -501,6 +502,11 @@ the InterLisp Standard.")
                 (sha256
                  (base32
                   "04rnwllxnl86zw8c6pwxznn49bvkvh0f1lfliy085vjzvlq3rgja"))))
+      ;; See "utils.h" for supported systems. Upstream bug:
+      ;; https://github.com/JeffBezanson/femtolisp/issues/25
+      (supported-systems
+       (fold delete %supported-systems
+             '("armhf-linux" "mips64el-linux")))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags '("CC=gcc" "release")
