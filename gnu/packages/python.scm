@@ -9816,24 +9816,14 @@ parsing UK postcodes.")
 (define-public python-fake-factory
   (package
   (name "python-fake-factory")
-  (version "0.5.7")
+  (version "0.7.2")
   (source (origin
             (method url-fetch)
             (uri (pypi-uri "fake-factory" version))
             (sha256
              (base32
-              "1chmarnrdzn4r017n8qlic0m0bbnhw04s3hkwribjvm3mqpb6pa0"))))
+              "0vs0dkmg0dlaxf8w6q2i3k0i03gmp56ablldv7ci9x3nbadkn71g"))))
   (build-system python-build-system)
-  (arguments
-   '(#:phases
-     (modify-phases %standard-phases
-       (add-before 'check 'disable-failing-test
-         ;; XXX: faker/tests/ne_np/__init__.py, line 40, in test_names
-         ;;      first_name, last_name = name.split()
-         ;; ValueError: too many values to unpack (expected 2)
-         (lambda _
-           (delete-file "faker/tests/ne_np/__init__.py")
-           #t)))))
   (native-inputs
    `(("python-setuptools" ,python-setuptools)
      ;; For testing
@@ -9843,7 +9833,7 @@ parsing UK postcodes.")
   (propagated-inputs
    `(("python-dateutil" ,python-dateutil-2)
      ("python-six" ,python-six)))
-  (home-page "http://github.com/joke2k/faker")
+  (home-page "https://github.com/joke2k/faker")
   (synopsis "Python package that generates fake data")
   (description
    "Faker is a Python package that generates fake data such as names,
