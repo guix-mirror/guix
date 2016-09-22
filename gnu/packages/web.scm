@@ -162,6 +162,7 @@ and its related documentation.")
              (let ((flags
                     (list (string-append "--prefix=" (assoc-ref outputs "out"))
                           "--with-http_ssl_module"
+                          "--with-http_v2_module"
                           "--with-pcre-jit"
                           "--with-debug"
                           ;; Even when not cross-building, we pass the
