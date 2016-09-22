@@ -1351,18 +1351,21 @@ multiple sequence alignments.")
     (version "0.9.1.4")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "pysam" version))
+              ;; Test data is missing on PyPi.
+              (uri (string-append
+                    "https://github.com/pysam-developers/pysam/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i1djacqbr88y7w18b4aa78zxnsyr4sz7yqdq2spi7gs0y6pzvjn"))
+                "0y41ssbg6nvn2jgcbnrvkzblpjcwszaiv1rgyd8dwzjkrbfsgsmc"))
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled htslib. TODO: Also remove samtools and bcftools.
                '(delete-file-recursively "htslib"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; tests are excluded in the manifest
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-flags
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1373,7 +1376,24 @@ multiple sequence alignments.")
                      (string-append (assoc-ref inputs "htslib") "/include"))
              (setenv "LDFLAGS" "-lncurses")
              (setenv "CFLAGS" "-D_CURSES_LIB=1")
-             #t)))))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getenv "PYTHONPATH")
+                      ":" (assoc-ref outputs "out")
+                      "/lib/python"
+                      (string-take (string-take-right
+                                    (assoc-ref inputs "python") 5) 3)
+                      "/site-packages"))
+             ;; Step out of source dir so python does not import from CWD.
+             (chdir "tests")
+             (setenv "HOME" "/tmp")
+             (and (zero? (system* "make" "-C" "pysam_data"))
+                  (zero? (system* "make" "-C" "cbcf_data"))
+                  (zero? (system* "nosetests" "-v"))))))))
     (propagated-inputs
      `(("htslib"            ,htslib))) ; Included from installed header files.
     (inputs
@@ -1381,7 +1401,11 @@ multiple sequence alignments.")
        ("zlib"              ,zlib)))
     (native-inputs
      `(("python-cython"     ,python-cython)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-setuptools" ,python-setuptools)
+       ;; Dependencies below are are for tests only.
+       ("samtools"          ,samtools)
+       ("bcftools"          ,bcftools)
+       ("python-nose"       ,python-nose)))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
     (description
