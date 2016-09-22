@@ -5267,6 +5267,11 @@ signatures,, emacs, The GNU Emacs Manual}).
 identifier.
 @end itemize
 @end table
+
+@item crate
+@cindex crate
+Import metadata from the crates.io Rust package repository
+@uref{https://crates.io, crates.io}.
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be

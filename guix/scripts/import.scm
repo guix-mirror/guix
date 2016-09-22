@@ -73,7 +73,7 @@ rather than \\n."
 ;;; Entry point.
 ;;;
 
-(define importers '("gnu" "nix" "pypi" "cpan" "hackage" "elpa" "gem" "cran"))
+(define importers '("gnu" "nix" "pypi" "cpan" "hackage" "elpa" "gem" "cran" "crate"))
 
 (define (resolve-importer name)
   (let ((module (resolve-interface

@@ -39,6 +39,7 @@
                           %kernel.org-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
+  #:use-module (guix import crate)
   #:use-module (guix import hackage)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)

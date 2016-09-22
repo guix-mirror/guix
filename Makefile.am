@@ -122,6 +122,7 @@ MODULES =					\
   guix/import/snix.scm				\
   guix/import/cabal.scm				\
   guix/import/cran.scm				\
+  guix/import/crate.scm				\
   guix/import/hackage.scm			\
   guix/import/elpa.scm   			\
   guix/scripts.scm				\
@@ -141,6 +142,7 @@ MODULES =					\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
   guix/scripts/import/cran.scm			\
+  guix/scripts/import/crate.scm			\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
@@ -282,7 +284,8 @@ if HAVE_GUILE_JSON
 SCM_TESTS += 					\
   tests/pypi.scm				\
   tests/cpan.scm				\
-  tests/gem.scm
+  tests/gem.scm					\
+  tests/crate.scm
 
 endif
 
