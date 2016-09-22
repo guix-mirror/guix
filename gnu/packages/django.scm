@@ -98,7 +98,7 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
          ("python2-mock" ,python2-mock)
          ;; When adding memcached mind: for Python 2 memcached <= 1.53 is
          ;; required.
-         ,@(package-inputs base))))))
+         ,@(package-native-inputs base))))))
 
 (define-public python-django-simple-math-captcha
   (package
