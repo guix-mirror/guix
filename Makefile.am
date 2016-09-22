@@ -61,6 +61,7 @@ MODULES =					\
   guix/zlib.scm					\
   guix/build-system.scm				\
   guix/build-system/ant.scm			\
+  guix/build-system/cargo.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/asdf.scm			\
@@ -83,6 +84,7 @@ MODULES =					\
   guix/ui.scm					\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
+  guix/build/cargo-build-system.scm		\
   guix/build/cmake-build-system.scm		\
   guix/build/emacs-build-system.scm		\
   guix/build/asdf-build-system.scm		\
