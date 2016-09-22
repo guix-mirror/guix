@@ -3529,6 +3529,12 @@ generated using the PacBio Iso-Seq protocol.")
             (lambda _
               (chdir "src")
               #t))
+         (add-after 'unpack 'remove-m64-flag
+           ;; Prank will build with the correct 'bit-ness' without this flag
+           ;; and this allows building on 32-bit machines.
+           (lambda _ (substitute* "src/Makefile"
+                                  (("-m64") ""))
+             #t))
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
