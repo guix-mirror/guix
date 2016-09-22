@@ -17,14 +17,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix import utils)
-  #:use-module (ice-9 match)
-  #:use-module (ice-9 regex)
-  #:use-module (srfi srfi-1)
-  #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module ((guix build download) #:prefix build:)
+  #:use-module (guix hash)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
-  #:use-module ((guix build download) #:prefix build:)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
+  #:use-module (json)
+  #:use-module (srfi srfi-1)
   #:export (factorize-uri
 
             hash-table->alist
