@@ -1354,17 +1354,28 @@ multiple sequence alignments.")
               (uri (pypi-uri "pysam" version))
               (sha256
                (base32
-                "1i1djacqbr88y7w18b4aa78zxnsyr4sz7yqdq2spi7gs0y6pzvjn"))))
+                "1i1djacqbr88y7w18b4aa78zxnsyr4sz7yqdq2spi7gs0y6pzvjn"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Drop bundled htslib. TODO: Also remove samtools and bcftools.
+               '(delete-file-recursively "htslib"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; tests are excluded in the manifest
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-flags
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "HTSLIB_MODE" "external")
+             (setenv "HTSLIB_LIBRARY_DIR"
+                     (string-append (assoc-ref inputs "htslib") "/lib"))
+             (setenv "HTSLIB_INCLUDE_DIR"
+                     (string-append (assoc-ref inputs "htslib") "/include"))
              (setenv "LDFLAGS" "-lncurses")
              (setenv "CFLAGS" "-D_CURSES_LIB=1")
              #t)))))
+    (propagated-inputs
+     `(("htslib"            ,htslib))) ; Included from installed header files.
     (inputs
      `(("ncurses"           ,ncurses)
        ("zlib"              ,zlib)))
