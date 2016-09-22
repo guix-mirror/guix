@@ -321,6 +321,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rsync.scm			\
   %D%/packages/ruby.scm				\
   %D%/packages/rush.scm				\
+  %D%/packages/rust.scm				\
   %D%/packages/samba.scm			\
   %D%/packages/sawfish.scm			\
   %D%/packages/scanner.scm			\
