@@ -36,7 +36,8 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
   #:export (crate->guix-package
-            guix-package->crate-name))
+            guix-package->crate-name
+            %crate-updater))
 
 (define (crate-fetch crate-name callback)
   "Fetch the metadata for CRATE-NAME from crates.io and call the callback."
@@ -122,4 +123,37 @@ VERSION, INPUTS, NATIVE-INPUTS, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
 
 (define (crate-name->package-name name)
   (string-append "rust-" (string-join (string-split name #\_) "-")))
+
+;;;
+;;; Updater
+;;;
+
+(define (crate-package? package)
+  "Return true if PACKAGE is a Rust crate from crates.io."
+  (let ((source-url (and=> (package-source package) origin-uri))
+        (fetch-method (and=> (package-source package) origin-method)))
+    (and (eq? fetch-method download:url-fetch)
+         (match source-url
+           ((? string?)
+            (crate-url? source-url))
+           ((source-url ...)
+            (any crate-url? source-url))))))
+
+(define (latest-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
+  (let* ((crate-name (guix-package->crate-name package))
+         (callback (lambda* (#:key version #:allow-other-keys) version))
+         (version (crate-fetch crate-name callback))
+         (url (crate-uri crate-name version)))
+    (upstream-source
+     (package (package-name package))
+     (version version)
+     (urls (list url)))))
+
+(define %crate-updater
+  (upstream-updater
+   (name 'crates)
+   (description "Updater for crates.io packages")
+   (pred crate-package?)
+   (latest latest-release)))
 
