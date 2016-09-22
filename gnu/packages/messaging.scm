@@ -759,4 +759,29 @@ for sending encrypted messages to one person or many subscribers.")
     (synopsis "Distributed peer-to-peer communication")
     (home-page "https://bitmessage.org/")))
 
+
+(define-public ytalk
+  (package
+    (name "ytalk")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.ourproject.org/pub/ytalk/ytalk-"
+                           version  ".tar.gz"))
+       (sha256
+        (base32
+         "1d3jhnj8rgzxyxjwfa22vh45qwzjvxw1qh8fz6b7nfkj3zvk9jvf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "http://ytalk.ourproject.org")
+    (synopsis "Multi-user chat program")
+    (description "Ytalk is a replacement for the BSD talk program.  Its main
+advantage is the ability to communicate with any arbitrary number of users at
+once.  It supports both talk protocols (\"talk\" and \"ntalk\") and can communicate
+with several different talk daemons at the same time.")
+    (license license:gpl2+)))
+
+
 ;;; messaging.scm ends here
