@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -185,15 +186,10 @@ recursively apply the procedure to the sub-list."
 (define (license->symbol license)
   "Convert license to a symbol representing the variable the object is bound
 to in the (guix licenses) module, or #f if there is no such known license."
-  ;; TODO: Traverse list public variables in (guix licenses) instead so we
-  ;; don't have to maintain a list manualy.
-  (assoc-ref `((,license:lgpl2.0 . license:lgpl2.0)
-               (,license:gpl3 . license:gpl3)
-               (,license:bsd-3 . license:bsd-3)
-               (,license:expat . license:expat)
-               (,license:public-domain . license:public-domain)
-               (,license:asl2.0 . license:asl2.0))
-             license))
+  (define licenses
+    (module-map (lambda (sym var) `(,(variable-ref var) . ,sym))
+                (resolve-interface '(guix licenses) #:prefix 'license:)))
+  (assoc-ref licenses license))
 
 (define (snake-case str)
   "Return a downcased version of the string STR where underscores are replaced

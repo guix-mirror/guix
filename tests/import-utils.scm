@@ -20,6 +20,7 @@
 (define-module (test-import-utils)
   #:use-module (guix tests)
   #:use-module (guix import utils)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-64))
 
 (test-begin "import-utils")
@@ -32,5 +33,9 @@
 (test-equal "beautify-description: transform fragment into sentence"
   "This package provides a function to establish world peace"
   (beautify-description "A function to establish world peace"))
+
+(test-equal "license->symbol"
+  'license:lgpl2.0
+  (license->symbol license:lgpl2.0))
 
 (test-end "import-utils")
