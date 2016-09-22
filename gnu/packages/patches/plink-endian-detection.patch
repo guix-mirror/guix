@@ -1,0 +1,30 @@
+This patch is borrowed from Debian's patches for plink
+
+Author: Peter Green <plugwash@p10link.net>
+Puropose: Fallback to endian.h if all else fails on 64bit machines
+Closes: #528659
+Forwarded: Shaun Purcell <plink@chgr.mgh.harvard.edu>
+License: same as plink itself.
+===================================================================
+--- plink-1.06.orig/Rsrv.h	2009-05-15 03:35:29.000000000 +0100
++++ plink-1.06/Rsrv.h	2009-05-15 03:35:41.000000000 +0100
+@@ -313,7 +313,18 @@
+ #define __BIG_ENDIAN__ 1
+ #define SWAPEND 1
+ #elif ! defined Win32 /* Windows is little-endian is most cases, anywhere else we're stuck */
+-#error "Cannot determine endianness. Make sure config.h is included or __{BIG|LITTLE}_ENDIAN__ is defined ."
++  //try endian.h before we finally bail out
++  #include <endian.h>
++  #if __BYTE_ORDER == __LITTLE_ENDIAN
++    #warning using little endian based on information from endian.h
++    #define __LITTLE_ENDIAN__ 1
++  #elif __BYTE_ORDER == __BIG_ENDIAN
++    #warning using big endian based on information from endian.h
++    #define __BIG_ENDIAN__ 1
++    #define SWAPEND 1
++  #else    
++    #error "Cannot determine endianness. Make sure config.h is included or __{BIG|LITTLE}_ENDIAN__ is defined ."
++  #endif    
+ #endif
+ 
+ /* FIXME: all the mess below needs more efficient implementation - the current one is so messy to work around alignment problems on some platforms like Sun and HP 9000 */

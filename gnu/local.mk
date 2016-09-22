@@ -745,6 +745,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pinball-system-ltdl.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
+  %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/polkit-drop-test.patch			\
   %D%/packages/patches/portaudio-audacity-compat.patch		\

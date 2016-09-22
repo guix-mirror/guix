@@ -4279,7 +4279,8 @@ accessed/downloaded on demand across HTTP.")
              version "-src.zip"))
        (sha256
         (base32 "0as8gxm4pjyc8dxmm1sl873rrd7wn5qs0l29nqfnl31x8i467xaa"))
-       (patches (search-patches "plink-1.07-unclobber-i.patch"))))
+       (patches (search-patches "plink-1.07-unclobber-i.patch"
+                                "plink-endian-detection.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
