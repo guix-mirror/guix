@@ -35,7 +35,6 @@
             url-fetch
             guix-hash-url
 
-            string->license
             license->symbol
 
             snake-case
@@ -110,15 +109,7 @@ recursively apply the procedure to the sub-list."
   "Return the hash of FILENAME in nix-base32 format."
   (bytevector->nix-base32-string (file-sha256 filename)))
 
-(define (string->license str)
-  "Convert the string STR into a license object."
   (match str
-    ("GNU LGPL" license:lgpl2.0)
-    ("GPL" license:gpl3)
-    ((or "BSD" "BSD License") license:bsd-3)
-    ((or "MIT" "MIT license" "Expat license") license:expat)
-    ("Public domain" license:public-domain)
-    ((or "Apache License, Version 2.0" "Apache 2.0") license:asl2.0)
     (_ #f)))
 
 (define (license->symbol license)
