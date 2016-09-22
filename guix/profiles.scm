@@ -472,21 +472,30 @@ replace it."
                 (cons (gexp-input thing output) deps)))
               (manifest-entries manifest)))
 
-(define (manifest-lookup-package manifest name)
+(define* (manifest-lookup-package manifest name #:optional version)
   "Return as a monadic value the first package or store path referenced by
-MANIFEST that named NAME, or #f if not found."
+MANIFEST that is named NAME and optionally has the given VERSION prefix, or #f
+if not found."
   ;; Return as a monadic value the package or store path referenced by the
   ;; manifest ENTRY, or #f if not referenced.
   (define (entry-lookup-package entry)
     (define (find-among-inputs inputs)
       (find (lambda (input)
               (and (package? input)
-                   (equal? name (package-name input))))
+                   (equal? name (package-name input))
+                   (if version
+                       (string-prefix? version (package-version input))
+                       #t)))
             inputs))
     (define (find-among-store-items items)
       (find (lambda (item)
-              (equal? name (package-name->name+version
-                            (store-path-package-name item))))
+              (let-values (((pkg-name pkg-version)
+                            (package-name->name+version
+                             (store-path-package-name item))))
+                (and (equal? name pkg-name)
+                     (if version
+                         (string-prefix? version pkg-version)
+                         #t))))
             items))
 
     ;; TODO: Factorize.
