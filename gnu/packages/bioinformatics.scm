@@ -265,6 +265,64 @@ instance, it implements several methods to assess contig-wise read coverage.")
 BAM files.")
     (license license:expat)))
 
+(define-public bcftools
+  (package
+    (name "bcftools")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/bcftools/releases/download/"
+                    version "/bcftools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "095ry68vmz9q5s1scjsa698dhgyvgw5aicz24c19iwfbai07mhqj"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Delete bundled htslib.
+               '(delete-file-recursively "htslib-1.3.1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list
+        "USE_GPL=1"
+        (string-append "prefix=" (assoc-ref %outputs "out"))
+        (string-append "HTSDIR=" (assoc-ref %build-inputs "htslib") "/include")
+        (string-append "HTSLIB=" (assoc-ref %build-inputs "htslib") "/lib/libhts.a")
+        (string-append "BGZIP=" (assoc-ref %build-inputs "htslib") "/bin/bgzip")
+        (string-append "TABIX=" (assoc-ref %build-inputs "htslib") "/bin/tabix"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; Do not attempt to build htslib.
+               (("^include \\$\\(HTSDIR\\)/htslib\\.mk") "")
+               ;; Link against GSL cblas.
+               (("-lcblas") "-lgslcblas"))
+             #t))
+         (delete 'configure)
+         (add-before 'check 'patch-tests
+           (lambda _
+             (substitute* "test/test.pl"
+               (("/bin/bash") (which "bash")))
+             #t)))))
+    (native-inputs
+     `(("htslib" ,htslib)
+       ("perl" ,perl)))
+    (inputs
+     `(("gsl" ,gsl)
+       ("zlib" ,zlib)))
+    (home-page "https://samtools.github.io/bcftools/")
+    (synopsis "Utilities for variant calling and manipulating VCFs and BCFs")
+    (description
+     "BCFtools is a set of utilities that manipulate variant calls in the
+Variant Call Format (VCF) and its binary counterpart BCF.  All commands work
+transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
+    ;; The sources are dual MIT/GPL, but becomes GPL-only when USE_GPL=1.
+    (license (list license:gpl3+ license:expat))))
+
 (define-public bedops
   (package
     (name "bedops")
