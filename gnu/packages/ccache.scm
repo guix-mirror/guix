@@ -43,14 +43,13 @@
                      ("which" ,(@ (gnu packages base) which))))
     (inputs `(("zlib" ,zlib)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'check 'setup-tests
-                 (lambda _
-                   (substitute* '("test/test_hashutil.c" "test.sh")
-                     (("#!/bin/sh") (string-append "#!" (which "sh")))
-                     (("which") (which "which")))
-                   #t)
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                 (add-before 'check 'setup-tests
+                   (lambda _
+                     (substitute* '("test/test_hashutil.c" "test.sh")
+                       (("#!/bin/sh") (string-append "#!" (which "sh")))
+                       (("which") (which "which")))
+                     #t)))))
     (home-page "https://ccache.samba.org/")
     (synopsis "Compiler cache")
     (description
