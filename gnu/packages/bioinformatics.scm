@@ -4463,7 +4463,7 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.5.7")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4473,7 +4473,7 @@ sequence itself can be retrieved from these databases.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0q93qg744x787d08qmjmdafki1wkbvkdwynayjnjd454gkd26jl5"))))
+         "13paw7bq6y47d2pl0ac5gpgcqp1xsy1g7v1fwysm3hr8lb2dck17"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
