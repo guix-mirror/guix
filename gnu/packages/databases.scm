@@ -222,7 +222,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                "0mlrxcvkn6bf869hjw9fb6m24ak26ndffnd91b4mknmz8cqkb1ch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        '("-DBUILD_CONFIG=mysql_release"
          "-DWITH_SSL=system"
          "-DWITH_ZLIB=system"
@@ -249,7 +249,9 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                    (lambda _
                      ;; Mysql wants boost-1.59.0 specifically
                      (substitute* "cmake/boost.cmake"
-                                  (("59") "60"))))
+                       (("59")
+                        ,(match (string-split (package-version boost) #\.)
+                           ((_ minor . _) minor))))))
                   (add-after
                    'install 'remove-extra-binaries
                    (lambda* (#:key outputs #:allow-other-keys)
