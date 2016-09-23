@@ -259,3 +259,38 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
                    license:gpl2+))
     (supported-systems (filter (cut string-suffix? "-linux" <>)
                                %supported-systems))))
+
+(define-public picocom
+  (package
+    (name "picocom")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/npat-efault/picocom"
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v891cx18vx3lnpfaq90f5y6njgigkn4qsikhrmyzshnz32jy5bb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "picocom" bin)
+               (install-file "picocom.1" man)))))))
+    (home-page "https://github.com/npat-efault/picocom")
+    (synopsis "Minimal dumb-terminal emulation program")
+    (description "It was designed to serve as a simple, manual, modem
+configuration, testing, and debugging tool.  It has also serves well
+as a low-tech serial communications program to allow access to all
+types of devices that provide serial consoles.")
+    (license license:gpl2+)))
