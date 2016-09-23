@@ -3223,14 +3223,14 @@ that TURN is no longer being maintained.")
 (define-public ruby-mime-types-data
   (package
     (name "ruby-mime-types-data")
-    (version "3.2016.0221")
+    (version "3.2016.0521")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mime-types-data" version))
        (sha256
         (base32
-         "05ygjn0nnfh6yp1wsi574jckk95wqg9a6g598wk4svvrkmkrzkpn"))))
+         "04my3746hwa4yvbx1ranhfaqkgf6vavi1kyijjnw8w3dy37vqhkm"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
