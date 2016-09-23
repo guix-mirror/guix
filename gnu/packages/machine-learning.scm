@@ -267,6 +267,9 @@ networks) based on simulation of (stochastic) flow in graphs.")
     (native-inputs
      `(("gfortran" ,gfortran)
        ("gfortran:lib" ,gfortran "lib")))
+    ;; Non-portable assembly instructions are used so building fails on
+    ;; platforms other than x86_64 or i686.
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (home-page "http://www.imbs-luebeck.de/imbs/de/node/227/")
     (synopsis "Implementation of the Random Forests machine learning method")
     (description
