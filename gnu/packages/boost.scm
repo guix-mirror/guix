@@ -90,7 +90,9 @@
          (replace
              'build
            (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (zero? (apply system* "./b2" make-flags))))
+             (zero? (apply system* "./b2"
+                           (format #f "-j~a" (parallel-job-count))
+                           make-flags))))
          (replace
              'install
            (lambda* (#:key outputs make-flags #:allow-other-keys)
