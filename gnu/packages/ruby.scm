@@ -4041,14 +4041,14 @@ generation.")
 (define-public ruby-sequel
   (package
     (name "ruby-sequel")
-    (version "4.34.0")
+    (version "4.39.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sequel" version))
        (sha256
         (base32
-         "0qscddpfwcajggxvbm4a4jv8kkpn6q056bgdg03km34bz8bis1x1"))))
+         "01zqd6mi9wvhbg76b91k35jppha0c944ar9f816gi400cf9817bg"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; Avoid dependency loop with ruby-minitest-hooks.
