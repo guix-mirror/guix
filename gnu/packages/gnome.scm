@@ -14,7 +14,6 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -110,6 +109,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages ncurses)
@@ -5501,3 +5501,33 @@ write this kind of application, by providing a base class, taking care of all
 the IPC machinery needed to send messages to a running instance, and also
 handling the startup notification side.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-calculator
+  (package
+    (name "gnome-calculator")
+    (version "3.20.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1yx86kyd54y3k3b6rmdazvmpxzl0zn791zr1q87zjc5228mc3w9a"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtksourceview" ,gtksourceview)
+       ("libsoup" ,libsoup)
+       ("mpfr" ,mpfr)))
+    (home-page "https://wiki.gnome.org/Apps/Calculator")
+    (synopsis "Desktop calculator")
+    (description
+     "Calculator is an application that solves mathematical equations and
+is suitable as a default application in a Desktop environment.")
+    (license license:gpl3)))
