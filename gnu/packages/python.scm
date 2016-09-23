@@ -5868,19 +5868,19 @@ object to help create WSGI responses.")
 (define-public python-xlrd
   (package
     (name "python-xlrd")
-    (version "0.9.4")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pypi.python.org/packages/source/x/"
                                   "xlrd/xlrd-" version ".tar.gz"))
               (sha256
                (base32
-                "0wpa55nvidmm5m2qr622dsh3cj46akdk0h3zjgzschcmydck73cf"))))
+                "0s8hjiz01vbhy85xalrz0qlsmd9ypf36zjqrf97hh984spapvy0g"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Current test in setup.py does not work as of 0.9.4, so use nose to
+         ;; Current test in setup.py does not work as of 1.0.0, so use nose to
          ;; run tests instead for now.
          (replace 'check (lambda _ (zero? (system* "nosetests")))))))
     (native-inputs `(("python-nose"       ,python-nose)
