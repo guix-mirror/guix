@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,7 +63,12 @@
             (setenv "SHELL" (which "bash"))
             (setenv "LIBS" "-logg")     ;doesn't declare its use of libogg
             (zero?
-             (system* "./configure" (string-append "--prefix=" out)))))
+             (system* "./configure" (string-append "--prefix=" out)
+                                    ,@(if (string=? "mips64el-linux"
+                                                    (%current-system))
+                                          '("--host=mips64el-unknown-linux-gnu")
+                                          '())
+                      ))))
         (alist-cons-after
          'configure 'configure-players
          (lambda* (#:key inputs #:allow-other-keys)
