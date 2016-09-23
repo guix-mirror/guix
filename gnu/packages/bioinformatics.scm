@@ -4184,7 +4184,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.5.7")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4194,7 +4194,7 @@ simultaneously.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hay5hy8ynva3mi5wbn4wmq1q23qwxc3aqzbb86hg3x4f1r73270"))))
+         "0x1cg1x8vy0yjlkp0snc1533zcjhxqzqsaiwqk598n7vvw37n8lf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
