@@ -3287,6 +3287,20 @@ applications.")
                (base32
                 "04fwasg400v8dvkcn1fcha1jzdz8lbyxi0679q7flsyrp57b3jrf"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The environment variable CURL_CA_BUNDLE is only respected when
+         ;; running Windows, so we disable the platform checks.
+         ;; This can be removed once the libcurl has been patched.
+         (add-after 'unpack 'allow-CURL_CA_BUNDLE
+           (lambda _
+             (substitute* "R/onload.R"
+               (("if \\(!grepl\\(\"mingw\".*")
+                "if (FALSE)\n"))
+             (substitute* "src/handle.c"
+               (("#ifdef _WIN32") "#if 1"))
+             #t)))))
     (inputs
      `(("libcurl" ,curl)))
     (home-page "https://github.com/jeroenooms/curl")
