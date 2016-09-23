@@ -1359,12 +1359,12 @@ multiple sequence alignments.")
     (arguments
      `(#:tests? #f ; tests are excluded in the manifest
        #:phases
-       (alist-cons-before
-        'build 'set-flags
-        (lambda _
-          (setenv "LDFLAGS" "-lncurses")
-          (setenv "CFLAGS" "-D_CURSES_LIB=1"))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'build 'set-flags
+           (lambda _
+             (setenv "LDFLAGS" "-lncurses")
+             (setenv "CFLAGS" "-D_CURSES_LIB=1")
+             #t)))))
     (inputs
      `(("ncurses"           ,ncurses)
        ("zlib"              ,zlib)))
