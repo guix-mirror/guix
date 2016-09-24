@@ -101,6 +101,7 @@
             boot-parameters-root-device
             boot-parameters-kernel
             boot-parameters-kernel-arguments
+            boot-parameters-initrd
             read-boot-parameters
 
             local-host-aliases
@@ -770,7 +771,8 @@ this file is the reconstruction of GRUB menu entries for old configurations."
   (label            boot-parameters-label)
   (root-device      boot-parameters-root-device)
   (kernel           boot-parameters-kernel)
-  (kernel-arguments boot-parameters-kernel-arguments))
+  (kernel-arguments boot-parameters-kernel-arguments)
+  (initrd           boot-parameters-initrd))
 
 (define (read-boot-parameters port)
   "Read boot parameters from PORT and return the corresponding
@@ -794,7 +796,14 @@ this file is the reconstruction of GRUB menu entries for old configurations."
       (kernel-arguments
        (match (assq 'kernel-arguments rest)
          ((_ args) args)
-         (#f       '())))))                       ;the old format
+         (#f       '())))                         ;the old format
+
+      (initrd
+       (match (assq 'initrd rest)
+         (('initrd ('string-append directory file)) ;the old format
+          (string-append directory file))
+         (('initrd (? string? file))
+          file)))))
     (x                                            ;unsupported format
      (warning (_ "unrecognized boot parameters for '~a'~%")
               system)
