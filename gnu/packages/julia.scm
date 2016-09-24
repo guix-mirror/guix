@@ -40,16 +40,17 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages wget)
   #:use-module (ice-9 match))
 
 (define libuv-julia
-  (let ((commit "efb40768b7c7bd9f173a7868f74b92b1c5a61a0e")
-        (revision "3"))
+  (let ((commit "8d5131b6c1595920dd30644cd1435b4f344b46c8")
+        (revision "4"))
     (package (inherit libuv)
       (name "libuv-julia")
-      (version (string-append "0.11.26." revision "-" (string-take commit 8)))
+      (version (string-append "1.9.0-" revision "." (string-take commit 8)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -58,7 +59,7 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "16k6pm2jl0ymz5j4ldxn94imdimahqqfd2izgr3zf1vwyyay77w3"))))
+                  "1fq0vhiprdryw8iisxxwyld3xdr5za6y8458p22ff56al98h22fv"))))
       (build-system gnu-build-system)
       (arguments
        (substitute-keyword-arguments (package-arguments libuv)
@@ -67,10 +68,22 @@
              (delete 'autogen)))))
       (home-page "https://github.com/JuliaLang/libuv"))))
 
+(define libunwind-for-julia
+  (package
+    (inherit libunwind)
+    (version "1.1-julia2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://s3.amazonaws.com/julialang/src/"
+                                  "libunwind-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0499x7sg2v18a6cry6l8y713cgmic0adnjph8i0xr1db9p7n8qyv"))))))
+
 (define-public julia
   (package
     (name "julia")
-    (version "0.4.5")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -78,7 +91,7 @@
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "09gc6yf3v4in0qwhrbgjrjgvblp941di0mli4zax22mvf4dzc7s4"))))
+                "0bhickil88lalp9jdj1kmf4is70zinhx8ha9rng0g3z50r4a2qmv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -86,6 +99,9 @@
                   (guix build gnu-build-system)
                   (guix build utils))
 
+       ;; Do not strip binaries to keep support for full backtraces.
+       ;; See https://github.com/JuliaLang/julia/issues/17831
+       #:strip-binaries? #f
 
        ;; The DSOs use $ORIGIN to refer to each other, but (guix build
        ;; gremlin) doesn't support it yet, so skip this phase.
@@ -96,24 +112,33 @@
          (delete 'configure)
          (add-after 'unpack 'prepare-deps
            (lambda* (#:key inputs #:allow-other-keys)
-             (copy-file (assoc-ref inputs "rmath-julia")
-                        "deps/Rmath-julia-0.1.tar.gz")
+             (mkdir "deps/srccache")
              (copy-file (assoc-ref inputs "dsfmt")
-                        "deps/dsfmt-2.2.3.tar.gz")
+                        "deps/srccache/dsfmt-2.2.3.tar.gz")
              (copy-file (assoc-ref inputs "objconv")
-                        "deps/objconv.zip")
+                        "deps/srccache/objconv.zip")
              (copy-file (assoc-ref inputs "suitesparse")
-                        "deps/SuiteSparse-4.4.2.tar.gz")
-             (copy-file (assoc-ref inputs "virtualenv")
-                        "deps/virtualenv-1.11.6.tar.gz")
+                        "deps/srccache/SuiteSparse-4.4.5.tar.gz")
+             (copy-file (string-append (assoc-ref inputs "virtualenv")
+                                       "/bin/virtualenv")
+                        "julia-env")
              #t))
+         (add-after 'unpack 'fix-llvm-flag
+           (lambda _
+             (substitute* "src/Makefile"
+               (("-lLLVM-\\$\\(shell \\$\\(LLVM_CONFIG_HOST\\) --version\\)")
+                "$(shell $(LLVM_CONFIG_HOST) --libs)"))
+             #t))
+         (add-before 'check 'set-home
+           ;; Some tests require a home directory to be set.
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (add-after 'unpack 'hardcode-soname-map
-          ;; ./src/ccall.cpp creates a map from library names to paths using the
-          ;; output of "/sbin/ldconfig -p".  Since ldconfig is not used in Guix,
-          ;; we patch ccall.cpp to contain a static map.
+          ;; ./src/runtime_ccall.cpp creates a map from library names to paths
+          ;; using the output of "/sbin/ldconfig -p".  Since ldconfig is not
+          ;; used in Guix, we patch runtime_ccall.cpp to contain a static map.
           (lambda* (#:key inputs #:allow-other-keys)
             (use-modules (ice-9 match))
-            (substitute* "src/ccall.cpp"
+            (substitute* "src/runtime_ccall.cpp"
               (("jl_read_sonames.*;")
                (string-join
                 (map (match-lambda
@@ -133,6 +158,31 @@
                        ("openspecfun" "libopenspecfun" "libopenspecfun.so")
                        ("fftw"        "libfftw3"       "libfftw3.so")
                        ("fftwf"       "libfftw3f"      "libfftw3f.so"))))))
+            (substitute* "base/fft/FFTW.jl"
+              (("const libfftw = Base.libfftw_name")
+               (string-append "const libfftw = \""
+                              (assoc-ref inputs "fftw") "/lib/libfftw3.so"
+                              "\""))
+              (("const libfftwf = Base.libfftwf_name")
+               (string-append "const libfftwf = \""
+                              (assoc-ref inputs "fftwf") "/lib/libfftw3f.so"
+                              "\"")))
+            (substitute* "base/math.jl"
+              (("const libm = Base.libm_name")
+               (string-append "const libm = \""
+                              (assoc-ref inputs "openlibm")
+                              "/lib/libopenlibm.so"
+                              "\""))
+              (("const openspecfun = \"libopenspecfun\"")
+               (string-append "const openspecfun = \""
+                              (assoc-ref inputs "openspecfun")
+                              "/lib/libopenspecfun.so"
+                              "\"")))
+            (substitute* "base/pcre.jl"
+              (("const PCRE_LIB = \"libpcre2-8\"")
+               (string-append "const PCRE_LIB = \""
+                              (assoc-ref inputs "pcre2")
+                              "/lib/libpcre2-8.so" "\"")))
             #t))
          (add-before 'build 'fix-include-and-link-paths
           (lambda* (#:key inputs #:allow-other-keys)
@@ -153,10 +203,6 @@
                               (assoc-ref %build-inputs "libuv")
                               "/lib/libuv.so ")))
 
-            (substitute* "deps/Makefile"
-              (("/usr/include/double-conversion")
-               (string-append (assoc-ref %build-inputs "double-conversion")
-                              "/include/double-conversion")))
             (substitute* "base/Makefile"
               (("\\$\\(build_includedir\\)/uv-errno.h")
                (string-append (assoc-ref inputs "libuv")
@@ -176,15 +222,13 @@
          (add-before 'check 'disable-broken-tests
            (lambda _
              (substitute* "test/choosetests.jl"
-               ;; These tests time out.  See
-               ;; https://github.com/JuliaLang/julia/issues/14374 for ongoing
-               ;; discussion.
-               (("\"replcompletions\",") "")
-               (("\"repl\",") ""))
-             (substitute* "test/repl.jl"
-               ;; This test fails because we cannot escape the build
-               ;; directory.
-               (("@test pwd\\(\\) == homedir\\(\\)") "#"))
+               ;; These tests fail, probably because some of the input
+               ;; binaries have been stripped and thus backtraces don't look
+               ;; as expected.
+               (("\"backtrace\",") "")
+               (("\"compile\",") "")
+               (("\"replutil\",") "")
+               (("\"cmdlineargs\",") ""))
              #t)))
        #:make-flags
        (list
@@ -203,9 +247,6 @@
         "CONFIG_SHELL=bash"     ;needed to build bundled libraries
         "USE_SYSTEM_DSFMT=0"    ;not packaged for Guix and upstream has no
                                 ;build system for a shared library.
-        "USE_SYSTEM_RMATH=0"    ;Julia uses a bundled version of R's math
-                                ;library, patched to use the DSFMT RNG.
-
         "USE_SYSTEM_LAPACK=1"
         "USE_SYSTEM_BLAS=1"
         "USE_BLAS64=0"          ;needed when USE_SYSTEM_BLAS=1
@@ -222,7 +263,6 @@
         ;;                "/include")
 
         "USE_GPL_LIBS=1"        ;proudly
-        "USE_SYSTEM_GRISU=1"    ;for double-conversion
         "USE_SYSTEM_UTF8PROC=1"
         (string-append "UTF8PROC_INC="
                        (assoc-ref %build-inputs "utf8proc")
@@ -245,15 +285,14 @@
         "USE_SYSTEM_LIBGIT2=1"
         "USE_SYSTEM_OPENSPECFUN=1")))
     (inputs
-     `(("llvm" ,llvm-3.5)
+     `(("llvm" ,llvm)
        ("arpack-ng" ,arpack-ng)
        ("coreutils" ,coreutils) ;for bindings to "mkdir" and the like
        ("lapack" ,lapack)
        ("openblas" ,openblas) ;Julia does not build with Atlas
-       ("libunwind" ,libunwind)
+       ("libunwind" ,libunwind-for-julia)
        ("openlibm" ,openlibm)
        ("openspecfun" ,openspecfun)
-       ("double-conversion" ,double-conversion)
        ("libgit2" ,libgit2)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
@@ -266,24 +305,19 @@
        ("which" ,which)
        ("zlib" ,zlib)
        ("gmp" ,gmp)
+       ("virtualenv" ,python2-virtualenv)
        ;; FIXME: The following inputs are downloaded from upstream to allow us
        ;; to use the lightweight Julia release tarball.  Ideally, these inputs
        ;; would eventually be replaced with proper Guix packages.
-       ("rmath-julia"
-        ,(origin
-           (method url-fetch)
-           (uri "https://api.github.com/repos/JuliaLang/Rmath-julia/tarball/v0.1")
-           (file-name "rmath-julia-0.1.tar.gz")
-           (sha256
-            (base32
-             "0ai5dhjc43zcvangz123ryxmlbm51s21rg13bllwyn98w67arhb4"))))
+
+       ;; TODO: run "make -f contrib/repackage_system_suitesparse4.make" to copy static lib
        ("suitesparse"
         ,(origin
            (method url-fetch)
-           (uri "http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-4.4.2.tar.gz")
+           (uri "http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-4.4.5.tar.gz")
            (sha256
             (base32
-             "1dg0qsv07n71nbn9cgcvn73933rgy1jnxw5bfqkwfq3bidk44cqc"))))
+             "1jcbxb8jx5wlcixzf6n5dca2rcfx6mlcms1k2rl5gp67ay3bix43"))))
        ("objconv"
         ,(origin
            (method url-fetch)
@@ -299,18 +333,10 @@
                  "SFMT/dSFMT-src-2.2.3.tar.gz"))
            (sha256
             (base32
-             "03kaqbjbi6viz0n33dk5jlf6ayxqlsq4804n7kwkndiga9s4hd42"))))
-       ("virtualenv"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append "https://pypi.python.org/packages/24/cc/"
-                               "a3cdf0a49ffcaef483b7e2511476aa520cf7260c199a6928fda6c43ba916/"
-                               "virtualenv-1.11.6.tar.gz"))
-           (sha256
-            (base32
-             "1xq4prmg25n9cz5zcvbqx68lmc3kl39by582vd8pzs9f3qalqyiy"))))))
+             "03kaqbjbi6viz0n33dk5jlf6ayxqlsq4804n7kwkndiga9s4hd42"))))))
     (native-inputs
-     `(("perl" ,perl)
+     `(("openssl" ,openssl)
+       ("perl" ,perl)
        ("patchelf" ,patchelf)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))
