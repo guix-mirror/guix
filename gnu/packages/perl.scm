@@ -73,7 +73,8 @@
           "-Dinstallstyle=lib/perl5"
           "-Duseshrplib"
           (string-append "-Dlocincpth=" libc "/include")
-          (string-append "-Dloclibpth=" libc "/lib")))
+          (string-append "-Dloclibpth=" libc "/lib")
+          "-Dusethreads"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'setup-configure

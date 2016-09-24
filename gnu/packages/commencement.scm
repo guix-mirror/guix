@@ -284,7 +284,11 @@
                            (lambda _
                              (substitute* "Configure"
                                (("^libswanted=(.*)pthread" _ before)
-                                (string-append "libswanted=" before)))))))))))))
+                                (string-append "libswanted=" before)))))))
+                     ;; Do not configure with '-Dusethreads' since pthread
+                     ;; support is missing.
+                     ((#:configure-flags configure-flags)
+                      `(delete "-Dusethreads" ,configure-flags))))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs perl
                                    %boot0-inputs
