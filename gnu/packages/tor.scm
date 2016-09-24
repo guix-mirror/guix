@@ -107,7 +107,7 @@ rejects UDP traffic from the application you're using.")
 (define-public privoxy
   (package
     (name "privoxy")
-    (version "3.0.24")
+    (version "3.0.26")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/ijbswa/Sources/"
@@ -115,7 +115,7 @@ rejects UDP traffic from the application you're using.")
                                  version "-stable-src.tar.gz"))
              (sha256
               (base32
-               "04mhkz5g713i2crvjd6s783hhrlsjjjlfb9llbaf13ghg3fgd0d3"))))
+               "1n4wpxmahl8m2y3d1azxa8lrdbpaad007k458skxrpz57ss1br2p"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The default 'sysconfdir' is $out/etc; change that to
@@ -137,7 +137,7 @@ rejects UDP traffic from the application you're using.")
        ("zlib" ,zlib)
        ("autoconf" ,autoconf)
        ("automake" ,automake)))
-    (home-page "http://www.privoxy.org")
+    (home-page "https://www.privoxy.org")
     (synopsis "Web proxy with advanced filtering capabilities for enhancing privacy")
     (description
      "Privoxy is a non-caching web proxy with advanced filtering capabilities
