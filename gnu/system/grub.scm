@@ -234,18 +234,23 @@ fi~%"
   "Return the GRUB 'search' command to look for ROOT-FS, which contains FILE,
 a gexp.  The result is a gexp that can be inserted in the grub.cfg-generation
 code."
-  (case (file-system-title root-fs)
-    ;; Preferably refer to ROOT-FS by its UUID or label.  This is more
-    ;; efficient and less ambiguous, see <>.
-    ((uuid)
-     (format #f "search --fs-uuid --set ~a"
-             (uuid->string (file-system-device root-fs))))
-    ((label)
-     (format #f "search --label --set ~a"
-             (file-system-device root-fs)))
-    (else
-     ;; As a last resort, look for any device containing FILE.
-     #~(format #f "search --file --set ~a" #$file))))
+  ;; Usually FILE is a file name gexp like "/gnu/store/…-linux/vmlinuz", but
+  ;; it can also be something like "(hd0,msdos1)/vmlinuz" in the case of
+  ;; custom menu entries.  In the latter case, don't emit a 'search' command.
+  (if (and (string? file) (not (string-prefix? "/" file)))
+      ""
+      (case (file-system-title root-fs)
+        ;; Preferably refer to ROOT-FS by its UUID or label.  This is more
+        ;; efficient and less ambiguous, see <>.
+        ((uuid)
+         (format #f "search --fs-uuid --set ~a"
+                 (uuid->string (file-system-device root-fs))))
+        ((label)
+         (format #f "search --label --set ~a"
+                 (file-system-device root-fs)))
+        (else
+         ;; As a last resort, look for any device containing FILE.
+         #~(format #f "search --file --set ~a" #$file)))))
 
 (define* (grub-configuration-file config store-fs entries
                                   #:key
