@@ -184,7 +184,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
      `(("perl" ,perl)
        ;; TODO: Add these optional dependencies.
        ;; ("perl-LocaleGettext" ,perl-LocaleGettext)
-       ;; ("gettext" ,gnu-gettext)
+       ;; ("gettext" ,gettext-minimal)
        ))
     (home-page "http://www.gnu.org/software/help2man/")
     (synopsis "Automatically generate man pages from program --help")

@@ -189,7 +189,7 @@ the freedesktop.org XDG Base Directory specification.")
                                         "/libexec/elogind/elogind\n"))))))))
     (native-inputs
      `(("intltool" ,intltool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml)
        ("xsltproc" ,libxslt)

@@ -261,7 +261,7 @@ without requiring the source code to be rewritten.")
        ("libtool" ,libtool)
        ("flex" ,flex)
        ("texinfo" ,texinfo)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ,@(package-native-inputs guile-next)))
     ;; Same as in guile-2.0
     (native-search-paths

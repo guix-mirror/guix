@@ -576,13 +576,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
   (let ((gettext-minimal
-         (package (inherit gnu-gettext)
+         (package (inherit gettext-minimal)
            (name "gettext-boot0")
            (inputs '())                           ;zero dependencies
            (arguments
             (substitute-keyword-arguments
                 `(#:tests? #f
-                  ,@(package-arguments gnu-gettext))
+                  ,@(package-arguments gettext-minimal))
               ((#:phases phases)
                `(modify-phases ,phases
                   ;; Build only the tools.

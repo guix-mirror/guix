@@ -205,7 +205,7 @@ reconstruction capability.")
     (inputs
      `(("gtk+" ,gtk+-2)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (arguments

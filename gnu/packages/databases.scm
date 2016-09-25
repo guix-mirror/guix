@@ -86,7 +86,7 @@
        ("python" ,python-2)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("pcre" ,pcre "bin")                       ;for 'pcre-config'
        ("pkg-config" ,pkg-config)))

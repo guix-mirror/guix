@@ -642,7 +642,7 @@ store.")
    ;; install the message catalogs, with 'msgfmt'.
    (native-inputs `(("texinfo" ,texinfo)
                     ("perl" ,perl)
-                    ("gettext" ,gnu-gettext)))
+                    ("gettext" ,gettext-minimal)))
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful

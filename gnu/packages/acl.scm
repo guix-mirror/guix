@@ -59,7 +59,7 @@
           %standard-phases))))
     (inputs `(("attr" ,attr)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("perl" ,perl)))
     (home-page "http://savannah.nongnu.org/projects/acl")
     (synopsis

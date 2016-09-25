@@ -31,16 +31,9 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages xml))
 
-;; Use that name to avoid clashes with Guile's 'gettext' procedure.
-;;
-;; We used to resort to #:renamer on the user side, but that prevented
-;; circular dependencies involving (gnu packages gettext).  This is because
-;; 'resolve-interface' (as of Guile 2.0.9) iterates eagerly over the used
-;; module when there's a #:renamer, and that module may be empty at that point
-;; in case or circular dependencies.
-(define-public gnu-gettext
+(define-public gettext-minimal
   (package
-    (name "gettext")
+    (name "gettext-minimal")
     (version "0.19.8.1")
     (source (origin
              (method url-fetch)
@@ -90,14 +83,27 @@
        ;; When tests fail, we want to know the details.
        #:make-flags '("VERBOSE=yes")))
     (home-page "http://www.gnu.org/software/gettext/")
-    (synopsis "Tools and documentation for translation")
+    (synopsis
+     "Tools and documentation for translation (used to build other packages)")
     (description
      "GNU Gettext is a package providing a framework for translating the
 textual output of programs into multiple languages.  It provides translators
-with the means to create message catalogs, as well as an Emacs mode to work
-with them, and a runtime library to load translated messages from the
-catalogs.  Nearly all GNU packages use Gettext.")
+with the means to create message catalogs, and a runtime library to load
+translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
     (license gpl3+)))                             ;some files are under GPLv2+
+
+;; Use that name to avoid clashes with Guile's 'gettext' procedure.
+;;
+;; We used to resort to #:renamer on the user side, but that prevented
+;; circular dependencies involving (gnu packages gettext).  This is because
+;; 'resolve-interface' (as of Guile 2.0.9) iterates eagerly over the used
+;; module when there's a #:renamer, and that module may be empty at that point
+;; in case or circular dependencies.
+(define-public gnu-gettext
+  (package
+    (inherit gettext-minimal)
+    (name "gettext")
+    (synopsis "Tools and documentation for translation")))
 
 (define-public po4a
   (package
@@ -140,7 +146,7 @@ catalogs.  Nearly all GNU packages use Gettext.")
                         (find-files bin "\\.*$"))
               #t))))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("perl-module-build" ,perl-module-build)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml) ;for tests

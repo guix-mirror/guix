@@ -443,7 +443,7 @@ ready for production.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("po4a" ,po4a)
        ("pkg-config" ,pkg-config)))
     (inputs

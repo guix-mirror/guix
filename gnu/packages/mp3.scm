@@ -443,7 +443,7 @@ format.")
                (install-file "mpc123" bin)))))
        #:tests? #f))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
      `(("libao" ,ao)
        ("libmpcdec" ,libmpcdec)))

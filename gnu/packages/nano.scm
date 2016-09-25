@@ -39,7 +39,7 @@
         "1vhjrcydcfxqq1719vcsvqqnbjbq2523m00dhzag5vwzkc961c5j"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("ncurses" ,ncurses)))
     (home-page "http://www.nano-editor.org/")
     (synopsis "Small, user-friendly console text editor")

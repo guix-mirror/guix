@@ -400,7 +400,7 @@ network frames.")
          "1110r3gpsj9xmybdw7w4zkhj3zmn5mnv2nq0ijbvrywbn019zdfs"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
      `(("fftw" ,fftw)
        ("ncurses" ,ncurses)

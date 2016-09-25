@@ -87,7 +87,7 @@
                                    "/include/gstreamer-1.0")))))))
     (native-inputs
      `(("bison" ,bison)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("gperf" ,gperf)

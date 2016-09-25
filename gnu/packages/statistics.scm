@@ -74,7 +74,7 @@
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("gsl" ,gsl)
        ("libxml2" ,libxml2)
        ("pango" ,pango)

@@ -152,7 +152,7 @@ backend of Sawfish.")
                            "/lib/sawfish/sawfish-menu")))
          %standard-phases))))
     (native-inputs
-     `(("gettext"     ,gnu-gettext)
+     `(("gettext"     ,gettext-minimal)
        ("makeinfo"    ,texinfo)
        ("pkg-config"  ,pkg-config)
        ("which"       ,which)))

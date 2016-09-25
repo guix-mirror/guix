@@ -153,7 +153,7 @@ shared NFS home directories.")
       ("zlib" ,zlib)
       ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
    (native-inputs
-    `(("gettext" ,gnu-gettext)
+    `(("gettext" ,gettext-minimal)
       ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
@@ -343,7 +343,7 @@ bindings to call into the C library.")
     (propagated-inputs
      `(;; Propagate gettext because users expect it to be there, and so does
        ;; the `intltool-update' script.
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
 
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl" ,perl)))

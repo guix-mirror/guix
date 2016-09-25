@@ -65,7 +65,7 @@
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib "bin")

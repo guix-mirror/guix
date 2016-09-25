@@ -523,7 +523,7 @@ definitions.")
    (inputs `(("cairo"           ,cairo)
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
-             ("gettext"         ,gnu-gettext)
+             ("gettext"         ,gettext-minimal)
              ("glib"            ,glib) ;needed for pango detection
              ("libICE"          ,libice)
              ("libSM"           ,libsm)

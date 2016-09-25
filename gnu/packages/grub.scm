@@ -112,7 +112,7 @@
                      #t)))))
     (inputs
      `(;; ("lvm2" ,lvm2)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
        ;; ("fuse" ,fuse)

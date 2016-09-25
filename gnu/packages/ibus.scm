@@ -265,7 +265,7 @@ Chinese pinyin input methods.")
                 '("ibus-engine-anthy" "ibus-setup-anthy"))
                #t))))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)))

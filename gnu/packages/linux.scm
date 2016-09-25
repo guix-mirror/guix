@@ -919,7 +919,7 @@ MIDI functionality to the Linux-based operating system.")
        ("ncurses" ,ncurses)
        ("alsa-lib" ,alsa-lib)
        ("xmlto" ,xmlto)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -1108,7 +1108,7 @@ manpages.")
                          (sha256
                           (base32
                            "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p"))))))
-    (native-inputs `(("gettext" ,gnu-gettext)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
 
     (synopsis "Tools for controlling the network subsystem in Linux")
     (description
@@ -2528,7 +2528,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("glib" ,glib)
        ("dbus" ,dbus)
@@ -2868,7 +2868,7 @@ from that to the system kernel's @file{/dev/random} machinery.")
                             "DEBUG=false"
                             "PACKAGE_BUGREPORT=bug-guix@gnu.org"))
        #:tests? #f)) ;no tests
-    (native-inputs `(("gettext" ,gnu-gettext)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (inputs `(("pciutils" ,pciutils)))
     (home-page (package-home-page linux-libre))
     (synopsis "CPU frequency and voltage scaling tools for Linux")

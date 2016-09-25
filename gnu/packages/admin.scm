@@ -176,7 +176,7 @@ interface and is based on GNU Guile.")
         "0zk1ppx93ijimf4sbgqilxxikpsa2gmpbynknyh41xy7jbdjxp0b"))))
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
-   (native-inputs `(("gettext" ,gnu-gettext)))
+   (native-inputs `(("gettext" ,gettext-minimal)))
    (home-page "http://projects.gw-computing.net/projects/dfc")
    (synopsis "Display file system space usage using graphs and colors")
    (description
@@ -1729,7 +1729,7 @@ highly portable.  Great for heterogenous networks.")
          (delete 'configure)))) ; no configure script
     (inputs
      `(("gtk+" ,gtk+)
-       ("gnu-gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libnotify" ,libnotify)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

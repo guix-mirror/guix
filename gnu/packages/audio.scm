@@ -358,7 +358,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
        ("liblo" ,liblo)
        ("ladspa" ,ladspa)
        ("jack" ,jack-1)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
@@ -909,7 +909,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
      `(("gperf" ,gperf)
        ("faust" ,faust)
        ("intltool" ,intltool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification

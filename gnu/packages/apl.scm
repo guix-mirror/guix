@@ -41,7 +41,7 @@
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/apl/")
     (inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("lapack" ,lapack)
        ("sqlite" ,sqlite)
        ("readline" ,readline)))

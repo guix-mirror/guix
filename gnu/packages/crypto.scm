@@ -204,7 +204,7 @@ communication.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))

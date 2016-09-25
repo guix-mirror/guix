@@ -2405,7 +2405,7 @@ evaluates expressions using the standard order of operations.")
                (base32
                 "15cd1cx1dyygw6g2nhjqq3bsfdj8sj8m4va9n75i0f3ryww3x7wq"))))
     (build-system gnu-build-system)
-    (native-inputs `(("gettext" ,gnu-gettext)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (inputs `(("libx11" ,libx11)
               ("zlib" ,zlib)
               ("libpng" ,libpng)

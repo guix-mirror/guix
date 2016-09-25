@@ -63,7 +63,7 @@
                 "1nmd65knzyh8b0yhxlqqvzai5rpnmhhm0c46n789zr5hj74jm6fg"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gnu-gettext)
+                     ("gettext" ,gettext-minimal)
                      ("flex" ,flex)
                      ("bison" ,bison)
                      ("perl" ,perl)))

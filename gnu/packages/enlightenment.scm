@@ -300,7 +300,7 @@ Libraries with some extra bells and whistles.")
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)

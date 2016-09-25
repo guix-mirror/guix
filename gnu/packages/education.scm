@@ -59,7 +59,7 @@
         ("zlib" ,zlib)
         ("qtserialport" ,qtserialport)
         ("qtscript" ,qtscript)
-        ("gettext" ,gnu-gettext)))
+        ("gettext" ,gettext-minimal)))
     (native-inputs
       `(("qtbase" ,qtbase)                   ;Qt MOC is needed at compile time
         ("qttools" ,qttools)

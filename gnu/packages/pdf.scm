@@ -396,7 +396,7 @@ by using the poppler rendering engine.")
               (patches (search-patches
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gnu-gettext)))
+                     ("gettext" ,gettext-minimal)))
     (inputs `(("girara" ,girara)
               ("sqlite" ,sqlite)
               ("gtk+" ,gtk+)))

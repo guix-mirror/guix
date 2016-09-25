@@ -3568,7 +3568,7 @@ USB transfers with your high-level application or system daemon.")
        ("gusb" ,gusb)
        ("libsane" ,sane-backends)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
        ("colord" ,colord)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
@@ -3879,7 +3879,7 @@ metadata in photo and video files of various formats.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("itstool" ,itstool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
        ("vala" ,vala)))
     (inputs
@@ -4153,7 +4153,7 @@ powerful general purpose text editor.")
                 "0j2sy6imwp41l75hy3fwr68n35drvanbwgmr42kc04zqjy9pbs02"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (inputs

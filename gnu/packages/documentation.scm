@@ -126,7 +126,7 @@ and to some extent D.")
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (home-page "http://docpp.sourceforge.net/")
     (synopsis "Documentation system for C, C++, IDL, and Java")
     (description

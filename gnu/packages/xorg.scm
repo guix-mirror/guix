@@ -1430,7 +1430,7 @@ treat it as part of their software base when porting.")
             "07041q4k8m4nirzl7lrqn8by2zylx0xvh6n0za301qqs3njszgf5"))))
     (build-system gnu-build-system)
     (inputs
-      `(("gettext" ,gnu-gettext)
+      `(("gettext" ,gettext-minimal)
         ("libxt" ,libxt)
         ("xproto" ,xproto)
         ("libxext" ,libxext)))
@@ -3800,7 +3800,7 @@ extension to the X11 protocol.  It includes:
             "1l6x2w357ja8vm94ns79s7yj9a5dlr01r9dxrjvzwncadiyr27f4"))))
     (build-system gnu-build-system)
     (inputs
-      `(("gettext" ,gnu-gettext)
+      `(("gettext" ,gettext-minimal)
         ("libx11" ,libx11)
         ("xkbcomp-intermediate" ,xkbcomp-intermediate)))
     (native-inputs
@@ -4006,7 +4006,7 @@ Font Description (XLFD) full name for a font.")
        ("libxmu" ,libxmu)
        ("libxrender" ,libxrender)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display all the characters in an X font")
