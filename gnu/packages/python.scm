@@ -11183,3 +11183,46 @@ is used by PostgreSQL and the OpenSSH Server for example.")
       (inherit base)
       (native-inputs `(("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
+
+(define-public python-validictory
+  (package
+    (name "python-validictory")
+    (version "1.0.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "validictory" version))
+      (sha256
+       (base32
+        "1zf1g9sw47xzp5f80bd94pb42j9yqv82lcrgcvdwr6nkaphfi37q"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           ;; Move the tests out of the package directory to avoid
+           ;; packaging them.
+           (lambda* _
+             (rename-file "validictory/tests" "tests")
+             (delete-file "tests/__init__.py")))
+         (replace 'check
+           (lambda _
+             ;; Extend PYTHONPATH so the built package will be found.
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "py.test" "-vv" )))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/jamesturk/validictory")
+    (synopsis "General purpose Python data validator")
+    (description "It allows validation of arbitrary Python data structures.
+
+The schema format is based on the JSON Schema
+proposal (http://json-schema.org), so combined with json the library is also
+useful as a validator for JSON data.")
+  (license license:expat)))
+
+(define-public python2-validictory
+    (package-with-python2 python-validictory))
