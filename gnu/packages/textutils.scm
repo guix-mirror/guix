@@ -102,7 +102,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "1.3.1")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
@@ -111,7 +111,7 @@ libenca and several charset conversion libraries and tools.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1k48as5kjkar4yj3dwxyll8ykj4k723ib5a6mnw1g86q3zi0zdl3"))))
+        (base32 "140vib1m6n5kwzkw1n9fbsi5gl6xymbd7yndwqx1sj15aakak776"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
@@ -124,7 +124,7 @@ libenca and several charset conversion libraries and tools.")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
 normalization, case-folding, and other operations for data in the UTF-8
-encoding, supporting Unicode version 7.0.")
+encoding, supporting Unicode version 9.0.0.")
     (license license:expat)))
 
 (define-public libgtextutils
