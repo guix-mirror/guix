@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -932,3 +933,35 @@ statistical tests.")
 all included libraries only the image loading and decoding library is
 installed as @code{stb_image}.")
       (license license:public-domain))))
+
+(define-public optipng
+  (package
+    (name "optipng")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://prdownloads.sourceforge.net/optipng/optipng-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "105yk5qykvhiahzag67gm36s2kplxf6qn5hay02md0nkrcgn6w28"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; configure script does not accept arguments CONFIG_SHELL and SHELL
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "sh" "configure"
+                             (string-append "--prefix=" (assoc-ref outputs "out")))))))))
+    (synopsis "Optimizer that recompresses PNG image files to a
+smaller size")
+    (description "OptiPNG is a PNG optimizer that recompresses image
+files to a smaller size, without losing any information.  This program
+also converts external formats (BMP, GIF, PNM and TIFF) to optimized
+PNG, and performs PNG integrity checks and corrections.")
+    (home-page "http://optipng.sourceforge.net/")
+    (license license:zlib)))
