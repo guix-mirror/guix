@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,9 +28,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tex)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (guix utils))
 
 (define-public gettext-minimal
   (package
@@ -103,6 +106,19 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
   (package
     (inherit gettext-minimal)
     (name "gettext")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gettext-minimal)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'add-emacs-autoloads
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Make 'po-mode' and other things available by default.
+               (with-directory-excursion
+                   (string-append (assoc-ref outputs "out")
+                                  "/share/emacs/site-lisp")
+                 (symlink "start-po.el" "gettext-autoloads.el")
+                 #t)))))))
+    (native-inputs `(("emacs" ,emacs-minimal))) ; for Emacs tools
     (synopsis "Tools and documentation for translation")))
 
 (define-public po4a
