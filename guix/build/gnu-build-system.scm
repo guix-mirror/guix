@@ -544,6 +544,47 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
             outputs)
   #t)
 
+
+(define* (patch-dot-desktop-files #:key outputs inputs #:allow-other-keys)
+  "Replace any references to executables in '.desktop' files with their
+absolute file names."
+  (define bin-directories
+    (append-map (match-lambda
+                  ((_ . directory)
+                   (list (string-append directory "/bin")
+                         (string-append directory "/sbin"))))
+                outputs))
+
+  (define (which program)
+    (or (search-path bin-directories program)
+        (begin
+          (format (current-error-port)
+                  "warning: '.desktop' file refers to '~a', \
+which cannot be found~%"
+                  program)
+          program)))
+
+  (for-each (match-lambda
+              ((_ . directory)
+               (let ((applications (string-append directory
+                                                  "/share/applications")))
+                 (when (directory-exists? applications)
+                   (let ((files (find-files applications "\\.desktop$")))
+                     (format #t "adjusting ~a '.desktop' files in ~s~%"
+                             (length files) applications)
+
+                     ;; '.desktop' files contain translations and are always
+                     ;; UTF-8-encoded.
+                     (with-fluids ((%default-port-encoding "UTF-8"))
+                       (substitute* files
+                         (("^Exec=([^/[:blank:]\r\n]*)(.*)$" _ binary rest)
+                          (string-append "Exec=" (which binary) rest))
+                         (("^TryExec=([^/[:blank:]\r\n]*)(.*)$" _ binary rest)
+                          (string-append "TryExec="
+                                         (which binary) rest)))))))))
+            outputs)
+  #t)
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -556,6 +597,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
             validate-runpath
             validate-documentation-location
             delete-info-dir-file
+            patch-dot-desktop-files
             compress-documentation)))
 
 
