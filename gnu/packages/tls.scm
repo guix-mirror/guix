@@ -391,7 +391,7 @@ required structures.")
     (inherit openssl)
     (name "openssl")
     (replacement #f)
-    (version "1.1.0a")
+    (version "1.1.0b")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -402,7 +402,7 @@ required structures.")
               (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "0as40a1lipl9qfax7495jc1xfb049ygavkaxxk4y5kcn8birdrn2"))))
+                "1xznrqvb1dbngv2k2nb6da6fdw00c01sy2i36yjdxr4vpxrf0pd4"))))
     (outputs '("out"
                "doc"        ;1.3MiB of man3 pages
                "static"))   ; 5.5MiB of .a files
