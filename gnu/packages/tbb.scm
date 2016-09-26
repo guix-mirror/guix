@@ -51,6 +51,11 @@
                                          (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fail-on-test-errors
+           (lambda _
+             (substitute* "Makefile"
+               (("-\\$\\(MAKE") "$(MAKE"))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "build/linux.gcc.inc"
