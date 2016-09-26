@@ -1540,14 +1540,14 @@ computer's keyboard.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.7.7")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0q8kvy1ynlg64v1w7jxix1rpq0lp2ixgb2y8cbbwxd2b28r3r2vl"))))
+                "0pp459kfgrnngj373gnwwl43xjz32lmyf7v62p2nnjh6c7wr1ryq"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs
