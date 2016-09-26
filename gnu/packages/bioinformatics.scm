@@ -4216,6 +4216,10 @@ simultaneously.")
               (("LIBRARIES_TO_INSTALL =")
                "LIBRARIES_TO_INSTALL = kdf5.$(VERSION_LIBX) kdf5.$(VERSION_SHLX)"))
 
+            (substitute* "build/Makefile.env"
+              (("CFLAGS	=" prefix)
+               (string-append prefix "-msse2 ")))
+
             ;; The 'configure' script doesn't recognize things like
             ;; '--enable-fast-install'.
             (zero? (system*
@@ -4258,6 +4262,8 @@ simultaneously.")
        ("libmagic" ,file)
        ("hdf5" ,hdf5)))
     (native-inputs `(("perl" ,perl)))
+    ;; NCBI-VDB requires SSE capability.
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "https://github.com/ncbi/ncbi-vdb")
     (synopsis "Database engine for genetic information")
     (description
