@@ -1448,13 +1448,13 @@ UCSC genome browser.")
 (define-public python-plastid
   (package
     (name "python-plastid")
-    (version "0.4.5")
+    (version "0.4.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "plastid" version))
               (sha256
                (base32
-                "1nhxw8a5gn9as58i2ih52c5cjwj48ik418pzsjwph3s66mmy9yvq"))))
+                "1sqkz5d3b9kf688mp7k771c87ins42j7j0whmkb49cb3fsg8s8lj"))))
     (properties `((python2-variant . ,(delay python2-plastid))))
     (build-system python-build-system)
     (arguments
@@ -1467,7 +1467,8 @@ UCSC genome browser.")
        ("python-pysam" ,python-pysam)
        ("python-matplotlib" ,python-matplotlib)
        ("python-biopython" ,python-biopython)
-       ("python-twobitreader" ,python-twobitreader)))
+       ("python-twobitreader" ,python-twobitreader)
+       ("python-termcolor" ,python-termcolor)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-nose" ,python-nose)))
