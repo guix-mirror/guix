@@ -187,18 +187,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define %default-extra-linux-options
-  `(("CONFIG_NET_9P" . m)
-    ("CONFIG_NET_9P_VIRTIO" . m)
-    ("CONFIG_VIRTIO_BLK" . m)
-    ("CONFIG_VIRTIO_NET" . m)
-    ;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
-    ("CONFIG_VIRTIO_PCI" . m)
-    ("CONFIG_VIRTIO_BALLOON" . m)
-    ("CONFIG_VIRTIO_MMIO" . m)
-    ("CONFIG_FUSE_FS" . m)
-    ("CONFIG_CIFS" . m)
-    ("CONFIG_9P_FS" . m)))
+  `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)))
 
 (define (config->string options)
   (string-join (map (match-lambda
