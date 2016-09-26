@@ -6280,7 +6280,7 @@ libraries, such as http-conduit.")
 (define-public ghc-pandoc
   (package
     (name "ghc-pandoc")
-    (version "1.15.2.1")
+    (version "1.17.2")
     (source
      (origin
        (method url-fetch)
@@ -6288,7 +6288,7 @@ libraries, such as http-conduit.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0nfzwsdvrvg9zypgyqk0246p10yzlpqsqnkds8yraqybbvkb1g30"))))
+         "1v78zq12p71gq0pc24h08inxcq5gxd0xb7m5ds0xw9pv9l2pswl1"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-syb" ,ghc-syb)
