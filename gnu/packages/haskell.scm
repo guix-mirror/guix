@@ -5116,7 +5116,7 @@ providing an 'rnf' implementation.")
 (define-public ghc-pandoc-types
   (package
     (name "ghc-pandoc-types")
-    (version "1.12.4.7")
+    (version "1.16.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5124,7 +5124,7 @@ providing an 'rnf' implementation.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "108n11kbdaj2ii3cyf0xczhsx90p1gjbxwqp1f0wyn2m3cls632n"))))
+                "094mzgdxva84kcpjf9m8b5n3chm1wm44bzflh5x6xhddz6pb7zpq"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-syb" ,ghc-syb)
