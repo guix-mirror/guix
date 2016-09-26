@@ -4291,7 +4291,7 @@ indexed variants.")
 (define-public ghc-tagsoup
   (package
     (name "ghc-tagsoup")
-    (version "0.13.3")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -4301,7 +4301,7 @@ indexed variants.")
              ".tar.gz"))
        (sha256
         (base32
-         "13b6zy6346r3cxhaivys84fnxarg8wbv7r2znazfjdkqil8n5a1j"))))
+         "07pax7i0bl79dmqqz58zy09yrgpnyyr2ya0z183hv96kp65jv0lh"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-text" ,ghc-text)))
     (home-page
