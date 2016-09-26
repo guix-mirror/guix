@@ -266,12 +266,15 @@ engineers, musicians, soundtrack editors and composers.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "18mdw6nc0vgj6k9rsy0x8w64wvzld0frqshrxxbxfj9qi9843vlc"))))
+                "18mdw6nc0vgj6k9rsy0x8w64wvzld0frqshrxxbxfj9qi9843vlc"))
+              (patches (search-patches "azr3.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
        #:make-flags
        (list "LV2PEG=ttl2c"
+             "CXXFLAGS=-std=gnu++11"
+             "CFLAGS=-std=gnu++11"
              (string-append "prefix=" %output)
              (string-append "pkgdatadir=" %output "/share/azr3-jack"))))
     (inputs
