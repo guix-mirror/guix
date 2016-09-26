@@ -263,8 +263,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              (let ((build  (assoc-ref %standard-phases 'build))
                    (config (assoc-ref inputs "kconfig")))
 
-               ;; Use the architecture-specific config if available, and
-               ;; 'defconfig' otherwise.
+               ;; Use a custom kernel configuration file or a default
+               ;; configuration file.
                (if config
                    (begin
                      (copy-file config ".config")
@@ -283,13 +283,16 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (moddir (string-append out "/lib/modules"))
-                    (kmod    (assoc-ref (or native-inputs inputs) "kmod")))
+                    (dtbdir (string-append out "/lib/dtbs"))
+                    (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
+               ;; Install kernel image, kernel configuration and link map.
+               (for-each (lambda (file) (install-file file out))
+                         (find-files "." "^(\\.config|bzImage|zImage|vmlinuz|System\\.map)$"))
+               ;; Install device tree files
+               (for-each (lambda (file) (install-file file dtbdir))
+                         (find-files "." "\\.dtb$"))
+               ;; Install kernel modules
                (mkdir-p moddir)
-               (for-each (lambda (file)
-                           (copy-file file
-                                      (string-append out "/" (basename file))))
-                         (find-files "." "^(bzImage|zImage|vmlinuz|System\\.map)$"))
-               (copy-file ".config" (string-append out "/config"))
                (zero? (system* "make"
                                (string-append "DEPMOD=" kmod "/bin/depmod")
                                (string-append "MODULE_DIR=" moddir)
