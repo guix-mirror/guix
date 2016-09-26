@@ -6295,6 +6295,30 @@ a hash value.")
     (name "python2-tlsh")
     (inputs `(("python" ,python-2)))))
 
+(define-public python-termcolor
+  (package
+    (name "python-termcolor")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-termcolor" version))
+       (sha256
+        (base32
+         "0fv1vq14rpqwgazxg4981904lfyp84mnammw7y046491cv76jv8x"))))
+    (build-system python-build-system)
+    (arguments
+     ;; There are no tests.
+     `(#:tests? #f))
+    (home-page "http://pypi.python.org/pypi/termcolor")
+    (synopsis "ANSII Color formatting for terminal output")
+    (description
+     "This package provides ANSII Color formatting for output in terminals.")
+    (license license:expat)))
+
+(define-public python2-termcolor
+  (package-with-python2 python-termcolor))
+
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
