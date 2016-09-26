@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -49,35 +49,34 @@
      `(#:test-target "test"
        #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib"))
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (substitute* "build/linux.gcc.inc"
-                     (("LIB_LINK_FLAGS =")
-                      (string-append "LIB_LINK_FLAGS = -Wl,-rpath="
-                                     (assoc-ref outputs "out") "/lib"))))
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((doc      (string-append
-                                      (assoc-ref outputs "doc") "/doc"))
-                           (examples (string-append doc "/examples"))
-                           (lib      (string-append
-                                      (assoc-ref outputs "out") "/lib"))
-                           (include  (string-append
-                                      (assoc-ref outputs "out") "/include")))
-                      (mkdir-p lib)
-                      (for-each
-                       (lambda (f)
-                         (copy-file f
-                                    (string-append lib "/"
-                                                   (basename f))))
-                       (find-files "build/guix_release" "\\.so"))
-                      (copy-recursively "doc" doc)
-                      (copy-recursively "examples" examples)
-                      (copy-recursively "include" include)
-                      #t))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "build/linux.gcc.inc"
+               (("LIB_LINK_FLAGS =")
+                (string-append "LIB_LINK_FLAGS = -Wl,-rpath="
+                               (assoc-ref outputs "out") "/lib")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc      (string-append
+                               (assoc-ref outputs "doc") "/doc"))
+                    (examples (string-append doc "/examples"))
+                    (lib      (string-append
+                               (assoc-ref outputs "out") "/lib"))
+                    (include  (string-append
+                               (assoc-ref outputs "out") "/include")))
+               (mkdir-p lib)
+               (for-each
+                (lambda (f)
+                  (copy-file f
+                             (string-append lib "/"
+                                            (basename f))))
+                (find-files "build/guix_release" "\\.so"))
+               (copy-recursively "doc" doc)
+               (copy-recursively "examples" examples)
+               (copy-recursively "include" include)
+               #t))))))
     (home-page "https://www.threadingbuildingblocks.org")
     (synopsis "C++ library for parallel programming")
     (description
