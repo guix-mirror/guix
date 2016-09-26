@@ -5248,14 +5248,14 @@ descriptions.")
 (define-public ghc-cmark
   (package
     (name "ghc-cmark")
-    (version "0.4.1")
+    (version "0.5.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "cmark/cmark-" version ".tar.gz"))
               (sha256
                (base32
-                "0c134qh65viaq4q6pv7bnnr5wchzivg94nv0dj8pc1326sx0dw12"))))
+                "09515h9b26az9c2mbl6l7azimaixa6yff8w359k0ml8jwykjvqaa"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-text" ,ghc-text)))
