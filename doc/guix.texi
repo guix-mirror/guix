@@ -27,7 +27,8 @@ Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
-Copyright @copyright{} 2016 Jan Nieuwenhuizen
+Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016 Julien Lepiller
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -10397,6 +10398,7 @@ The @code{(gnu services web)} module provides the following service:
 @deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
        [#:log-directory ``/var/log/nginx''] @
        [#:run-directory ``/var/run/nginx''] @
+       [#:vhost-list (list (nginx-vhost-configuration))] @
        [#:config-file]
 
 Return a service that runs @var{nginx}, the nginx web server.
@@ -10407,7 +10409,53 @@ files are written to @var{run-directory}.  For proper operation, these
 arguments should match what is in @var{config-file} to ensure that the
 directories are created when the service is activated.
 
+As an alternative to using a @var{config-file}, @var{vhost-list} can be
+used to specify the list of @dfn{virtual hosts} required on the host.  For
+this to work, use the default value for @var{config-file}.
+
 @end deffn
+
+@deftp {Data Type} nginx-vhost-configuration
+Data type representing the configuration of an nginx virtual host.
+This type has the following parameters:
+
+@table @asis
+@item @code{http-port} (default: @code{80})
+Nginx will listen for HTTP connection on this port.  Set it at @code{#f} if
+nginx should not listen for HTTP (non secure) connection for this
+@dfn{virtual host}.
+
+@item @code{https-port} (default: @code{443})
+Nginx will listen for HTTPS connection on this port.  Set it at @code{#f} if
+nginx should not listen for HTTPS (secure) connection for this @dfn{virtual host}.
+
+Note that nginx can listen for HTTP and HTTPS connections in the same
+@dfn{virtual host}.
+
+@item @code{server-name} (default: @code{(list 'default)})
+A list of server names this vhost represents. @code{'default} represents the
+default vhost for connections matching no other vhost.
+
+@item @code{root} (default: @code{"/srv/http"})
+Root of the website nginx will serve.
+
+@item @code{index} (default: @code{(list "index.html")})
+Index files to look for when clients ask for a directory.  If it cannot be found,
+Nginx will send the list of files in the directory.
+
+@item @code{ssl-certificate} (default: @code{"/etc/nginx/cert.pem"})
+Where to find the certificate for secure connections.  Set it to @code{#f} if
+you don't have a certificate or you don't want to use HTTPS.
+
+@item @code{ssl-certificate-key} (default: @code{"/etc/nginx/key.pem"})
+Where to find the private key for secure connections.  Set it to @code{#f} if
+you don't have a key or you don't want to use HTTPS.
+
+@item @code{server-tokens?} (default: @code{#f})
+Whether the server should add its configuration to response.
+
+@end table
+@end deftp
 
 @node Network File System
 @subsubsection Network File System
