@@ -143,6 +143,7 @@ as well as the classic centralized workflow.")
 
       ;; For 'git-svn'.
       ("subversion" ,subversion)
+      ("perl-term-readkey" ,perl-term-readkey)
 
       ;; For 'git-send-email'
       ("perl-authen-sasl" ,perl-authen-sasl)
@@ -227,14 +228,15 @@ as well as the classic centralized workflow.")
                         (list gitk git-gui git-cit git-se git-svn)
                         (list gitk* git-gui* git-cit* git-se* git-svn*))
 
-              ;; Tell 'git-svn' where Subversion is.
+              ;; Tell 'git-svn' where Subversion and perl-term-readkey are.
               (wrap-program git-svn*
                 `("PATH" ":" prefix
                   (,(string-append (assoc-ref inputs "subversion")
                                    "/bin")))
                 `("PERL5LIB" ":" prefix
-                  (,(string-append (assoc-ref inputs "subversion")
-                                   "/lib/perl5/site_perl")))
+                  ,(map (lambda (i) (string-append (assoc-ref inputs i)
+                                                   "/lib/perl5/site_perl"))
+                        '("subversion" "perl-term-readkey")))
 
                 ;; XXX: The .so for SVN/Core.pm lacks a RUNPATH, so
                 ;; help it find 'libsvn_client-1.so'.
