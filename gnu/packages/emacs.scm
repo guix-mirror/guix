@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages gettext)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
@@ -3104,3 +3106,37 @@ that allows users to concentrate more on their own work.  Its features are:
 a visual interface, reduce overhead of completion by using statistic method,
 extensibility.")
     (license license:gpl3+)))
+
+(define-public m17n-db
+  (package
+    (name "m17n-db")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/m17n/m17n-db-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1w08hnsbknrcjlzp42c99bgwc9hzsnf5m4apdv0dacql2s09zfm2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gettext" ,gnu-gettext)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-charmaps="
+                            (assoc-ref %build-inputs "libc")
+                            "/share/i18n/charmaps"))))
+    ;; With `guix lint' the home-page URI returns a small page saying
+    ;; that your browser does not handle frames. This triggers the "URI
+    ;; returns suspiciously small file" warning.
+    (home-page "http://www.nongnu.org/m17n/")
+    (synopsis "Multilingual text processing library (database)")
+    (description "The m17n library realizes multilingualization of
+many aspects of applications.  The m17n library represents
+multilingual text as an object named M-text.  M-text is a string with
+attributes called text properties, and designed to substitute for
+string in C.  Text properties carry any information required to input,
+display and edit the text.
+
+This package contains the library database.")
+    (license license:lgpl2.1+)))
