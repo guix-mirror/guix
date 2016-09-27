@@ -228,3 +228,47 @@ For synthesis, the compiler generates netlists in the desired format.")
     (description "Project IceStorm - Lattice iCE40 FPGAs Bitstream Tools.
 Includes the actual FTDI connector.")
     (license license:isc))))
+
+(define-public arachne-pnr
+  (let ((commit "52e69ed207342710080d85c7c639480e74a021d7")
+        (revision "1"))
+   (package
+    (name "arachne-pnr")
+    (version (string-append "0.0-" revision "-" (string-take commit 9)))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cseed/arachne-pnr.git")
+                     (commit commit)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+                (base32
+                   "15bdw5yxj76lxrwksp6liwmr6l1x77isf4bs50ys9rsnmiwh8c3w"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases (modify-phases %standard-phases
+       (replace 'configure
+         (lambda* (#:key outputs inputs #:allow-other-keys)
+           (substitute* '("Makefile")
+             (("DESTDIR = .*") (string-append "DESTDIR = "
+                                             (assoc-ref outputs "out")
+                                             "\n"))
+             (("ICEBOX = .*") (string-append "ICEBOX = "
+                                             (assoc-ref inputs "icestorm")
+                                             "/share/icebox\n")))
+           (substitute* '("./tests/fsm/generate.py"
+                          "./tests/combinatorial/generate.py")
+             (("#!/usr/bin/python") "#!/usr/bin/python2"))
+           #t)))))
+    (inputs
+     `(("icestorm" ,icestorm)))
+    (native-inputs
+     `(("git" ,git)  ; for determining its own version string
+       ("yosys" ,yosys) ; for tests
+       ("perl" ,perl) ; for shasum
+       ("python-2" ,python-2))) ; for tests
+    (home-page "https://github.com/cseed/arachne-pnr")
+    (synopsis "Place-and-Route tool for FPGAs")
+    (description "Arachne-PNR is a Place-and-Route Tool For FPGAs.")
+    (license license:gpl2))))
