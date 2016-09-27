@@ -95,3 +95,37 @@
      "Library that provides synced document buffers.  It supports multiple
 documents in one session.  Obby is used by the Gobby collaborative editor.")
     (license license:gpl2+)))
+
+(define-public gobby
+  (package
+    (name "gobby")
+    (version "0.4.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://releases.0x539.de/gobby/gobby-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0w8q01lf6bcdz537b29m7rwlbc7k87b12vnpm1h6219ypvzqkgcc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libxml++-2" ,libxml++-2)
+       ("gnutls" ,gnutls)
+       ("gtkmm-2" ,gtkmm-2)
+       ("gtksourceview-2" ,gtksourceview-2)
+       ("libnet6" ,libnet6)
+       ("obby" ,obby)))
+    (arguments
+     ;; Required by libsigc++.
+     `(#:configure-flags '("CXXFLAGS=-std=c++11")))
+    (home-page "https://gobby.github.io/")
+    (synopsis "Collaborative editor")
+    (description
+     "Collaborative editor that supports multiple documents in one session and
+a multi-user chat.  Gobby allows multiple users to edit the same document
+together over the internet in real-time.")
+    (license license:gpl2+)))
