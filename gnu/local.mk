@@ -156,6 +156,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gnustep.scm			\
   %D%/packages/gnuzilla.scm			\
   %D%/packages/gnu-pw-mgr.scm			\
+  %D%/packages/gobby.scm			\
   %D%/packages/golang.scm			\
   %D%/packages/gperf.scm			\
   %D%/packages/gprolog.scm			\
