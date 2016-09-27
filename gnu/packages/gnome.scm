@@ -4531,6 +4531,20 @@ the available networks and allows users to easily switch between them.")
 libxml2.")
     (license license:lgpl2.1+)))
 
+(define-public libxml++-2
+  (package
+    (inherit libxml++)
+    (name "libxml++")
+    (version "2.40.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1sb3akryklvh2v6m6dihdnbpf1lkx441v972q9hlz1sq6bfspm2a"))))))
+
 (define-public gdm
   (package
     (name "gdm")
