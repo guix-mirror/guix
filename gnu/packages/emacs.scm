@@ -76,6 +76,9 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages gd)
+  #:use-module (gnu packages fontutils)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
@@ -3139,4 +3142,41 @@ string in C.  Text properties carry any information required to input,
 display and edit the text.
 
 This package contains the library database.")
+    (license license:lgpl2.1+)))
+
+(define-public m17n-lib
+  (package
+    (name "m17n-lib")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.savannah.gnu.org/releases/m17n/m17n-lib-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "10yv730i25g1rpzv6q49m6xn4p8fjm7jdwvik2h70sn8w3hm7f4f"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fribidi" ,fribidi)
+       ("gd" ,gd)
+       ("libotf" ,libotf)
+       ("libxft" ,libxft)
+       ("libxml2" ,libxml2)
+       ("m17n-db" ,m17n-db)))
+    (arguments
+     `(#:parallel-build? #f))
+    ;; With `guix lint' the home-page URI returns a small page saying
+    ;; that your browser does not handle frames. This triggers the "URI
+    ;; returns suspiciously small file" warning.
+    (home-page "http://www.nongnu.org/m17n/")
+    (synopsis "Multilingual text processing library (runtime)")
+    (description "The m17n library realizes multilingualization of
+many aspects of applications.  The m17n library represents
+multilingual text as an object named M-text.  M-text is a string with
+attributes called text properties, and designed to substitute for
+string in C.  Text properties carry any information required to input,
+display and edit the text.
+
+This package contains the library runtime.")
     (license license:lgpl2.1+)))
