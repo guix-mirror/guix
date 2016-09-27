@@ -30,10 +30,12 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages libftdi))
@@ -272,3 +274,38 @@ Includes the actual FTDI connector.")
     (synopsis "Place-and-Route tool for FPGAs")
     (description "Arachne-PNR is a Place-and-Route Tool For FPGAs.")
     (license license:gpl2))))
+
+(define-public gtkwave
+  (package
+    (name "gtkwave")
+    (version "3.3.76")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://gtkwave.sourceforge.net/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vlvavszb1jwwiixiagld88agjrjg0ix8qa4xnxj4ziw0q87jbmn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gperf" ,gperf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("tcl" ,tcl)
+       ("tk" ,tk)
+       ("gtk+-2" ,gtk+-2)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-tcl="
+                            (assoc-ref %build-inputs "tcl")
+                            "/lib")
+             (string-append "--with-tk="
+                            (assoc-ref %build-inputs "tk")
+                            "/lib"))))
+
+    (synopsis "Waveform viewer for FPGA simulator trace files")
+    (description "This package is a waveform viewer for FPGA
+simulator trace files (FST).")
+    (home-page "http://gtkwave.sourceforge.net/")
+    ;; Exception against free government use in tcl_np.c and tcl_np.h
+    (license (list license:gpl2+ license:expat license:tcl/tk))))
