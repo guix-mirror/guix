@@ -47,6 +47,7 @@
             %binary-format-file-system
             %shared-memory-file-system
             %pseudo-terminal-file-system
+            %tty-gid
             %immutable-store
             %control-groups
             %elogind-file-systems

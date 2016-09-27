@@ -33,6 +33,8 @@
   #:export (%python-build-system-modules
             package-with-python2
             strip-python2-variant
+            default-python
+            default-python2
             python-build
             python-build-system
             pypi-uri))
