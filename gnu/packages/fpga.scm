@@ -188,3 +188,43 @@ For synthesis, the compiler generates netlists in the desired format.")
     (synopsis "FPGA Verilog RTL synthesizer")
     (description "Yosys synthesizes Verilog-2005.")
     (license license:isc)))
+
+(define-public icestorm
+  (let ((commit "12b2295c9087d94b75e374bb205ae4d76cf17e2f")
+        (revision "1"))
+   (package
+    (name "icestorm")
+    (version (string-append "0.0-" revision "-" (string-take commit 9)))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cliffordwolf/icestorm.git")
+                     (commit commit)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+                (base32
+                   "1mmzlqvap6w8n4qzv3idvy51arkgn03692ssplwncy3akjrbsd2b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no unit tests that don't need an FPGA exist.
+       #:make-flags (list "CC=gcc" "CXX=g++"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'remove-usr-local
+            (lambda _
+              (substitute* "iceprog/Makefile"
+                (("-I/usr/local/include") "")
+                (("-L/usr/local/lib") ""))
+              #t))
+          (delete 'configure))))
+    (inputs
+     `(("libftdi" ,libftdi)))
+    (native-inputs
+     `(("python-3" ,python)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.clifford.at/icestorm/")
+    (synopsis "Project IceStorm - Lattice iCE40 FPGAs bitstream tools")
+    (description "Project IceStorm - Lattice iCE40 FPGAs Bitstream Tools.
+Includes the actual FTDI connector.")
+    (license license:isc))))
