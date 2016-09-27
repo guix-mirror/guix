@@ -66,3 +66,32 @@
     (description
      "Library which that provides a TCP protocol abstraction for C++.")
     (license license:lgpl2.1)))
+
+(define-public obby
+  (package
+    (name "obby")
+    (version "0.4.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://releases.0x539.de/obby/obby-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rwvp0kzsb8y6mq73rzb8yk4kvsrz64i2zf4lfqs3kh0x2k7n7bx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsigc++" ,libsigc++)
+       ("gnutls" ,gnutls)
+       ("libnet6" ,libnet6)))
+    (arguments
+     ;; Required by libsigc++.
+     `(#:configure-flags '("CXXFLAGS=-std=c++11")))
+    (home-page "https://gobby.github.io/")
+    (synopsis "Library for building collaborative editors")
+    (description
+     "Library that provides synced document buffers.  It supports multiple
+documents in one session.  Obby is used by the Gobby collaborative editor.")
+    (license license:gpl2+)))
