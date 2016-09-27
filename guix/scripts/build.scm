@@ -595,8 +595,16 @@ build."
                        (#f
                         (list (package->derivation store p system)))
                        (#t
-                        (let ((s (package-source p)))
-                          (list (package-source-derivation store s))))
+                        (match (package-source p)
+                          (#f
+                           (format (current-error-port)
+                                   (_ "~a: warning: \
+package '~a' has no source~%")
+                                   (location->string (package-location p))
+                                   (package-name p))
+                           '())
+                          (s
+                           (list (package-source-derivation store s)))))
                        (proc
                         (map (cut package-source-derivation store <>)
                              (proc p))))))
