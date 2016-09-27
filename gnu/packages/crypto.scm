@@ -171,7 +171,7 @@ communication.")
 (define-public encfs
   (package
     (name "encfs")
-    (version "1.9")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
@@ -180,7 +180,7 @@ communication.")
                        version "/encfs-" version ".tar.gz"))
        (sha256
         (base32
-         "1gzlhq2dlwan3hll414wqinj92lb05wd4j370j190dgcalaxplih"))
+         "1906254dg5hwljh0h4gyrw09ms3b57dlhjfzhfzffv50yzpkl837"))
        (modules '((guix build utils)))
        ;; Remove bundled dependencies in favour of proper inputs.
        (snippet '(for-each delete-file-recursively
