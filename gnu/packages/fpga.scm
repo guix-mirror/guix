@@ -73,3 +73,38 @@
 formal verification.")
     (license
       (license:non-copyleft "https://fedoraproject.org/wiki/Licensing:MIT#Modern_Variants")))))
+
+(define-public iverilog
+  (package
+    (name "iverilog")
+    (version "10.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "ftp://ftp.icarus.com/pub/eda/verilog/v10/"
+                              "verilog-" version ".tar.gz"))
+              (sha256
+                (base32
+                   "1nnassxvq30rnn0r2p85rkb2zwxk97p109y13x3vr365wzgpbapx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)
+       ("ghostscript" ,ghostscript))) ; ps2pdf
+    (home-page "http://iverilog.icarus.com/")
+    (synopsis "FPGA Verilog simulation and synthesis tool")
+    (description "Icarus Verilog is a Verilog simulation and synthesis tool.
+It operates as a compiler, compiling source code written in Verilog
+(IEEE-1364) into some target format.
+For batch simulation, the compiler can generate an intermediate form
+called vvp assembly.
+This intermediate form is executed by the ``vvp'' command.
+For synthesis, the compiler generates netlists in the desired format.")
+    ;; GPL2 only because of:
+    ;; - ./driver/iverilog.man.in
+    ;; - ./iverilog-vpi.man.in
+    ;; - ./tgt-fpga/iverilog-fpga.man
+    ;; - ./vvp/vvp.man.in
+    ;; Otherwise would be GPL2+.
+    ;; You have to accept both GPL2 and LGPL2.1+.
+    (license (list license:gpl2 license:lgpl2.1+))))
