@@ -108,3 +108,83 @@ For synthesis, the compiler generates netlists in the desired format.")
     ;; Otherwise would be GPL2+.
     ;; You have to accept both GPL2 and LGPL2.1+.
     (license (list license:gpl2 license:lgpl2.1+))))
+
+(define-public yosys
+  (package
+    (name "yosys")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/cliffordwolf/yosys/archive/"
+                              name "-" version ".tar.gz"))
+              (sha256
+                (base32
+                   "02j0c0m9dfyjccynalf0aggj6gy20k7iphpkg5cn6sdirlkv8gmx"))
+              (file-name (string-append name "-" version "-checkout.tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+                '(substitute* "Makefile"
+                   (("ABCREV = .*") "ABCREV = default\n")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list "CC=gcc"
+                          "CXX=g++"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "config-gcc" make-flags))))
+         (add-after 'configure 'prepare-abc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((sourceabc (assoc-ref inputs "abc"))
+                    (sourcebin (string-append sourceabc "/bin"))
+                    (source (string-append sourcebin "/abc")))
+                   (mkdir-p "abc")
+                   (call-with-output-file "abc/Makefile"
+                     (lambda (port)
+                       (format port ".PHONY: all\nall:\n\tcp -f abc abc-default\n")))
+                   (copy-file source "abc/abc")
+                   (zero? (system* "chmod" "+w" "abc/abc")))))
+          (add-before 'check 'fix-iverilog-references
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (let* ((xinputs (or native-inputs inputs))
+                      (xdirname (assoc-ref xinputs "iverilog"))
+                      (iverilog (string-append xdirname "/bin/iverilog")))
+                     (substitute* '("./manual/CHAPTER_StateOfTheArt/synth.sh"
+                                    "./manual/CHAPTER_StateOfTheArt/validate_tb.sh"
+                                    "./techlibs/ice40/tests/test_bram.sh"
+                                    "./techlibs/ice40/tests/test_ffs.sh"
+                                    "./techlibs/xilinx/tests/bram1.sh"
+                                    "./techlibs/xilinx/tests/bram2.sh"
+                                    "./tests/bram/run-single.sh"
+                                    "./tests/realmath/run-test.sh"
+                                    "./tests/simple/run-test.sh"
+                                    "./tests/techmap/mem_simple_4x1_runtest.sh"
+                                    "./tests/tools/autotest.sh"
+                                    "./tests/vloghtb/common.sh")
+                        (("if ! which iverilog") "if ! true")
+                        (("iverilog ") (string-append iverilog " "))
+                        (("iverilog_bin=\".*\"") (string-append "iverilog_bin=\""
+                                                                iverilog "\"")))
+                     #t))))))
+    ;; TODO add xdot [patch the path to it here] as soon as I find out where it is.
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("gawk" , gawk) ; for the tests and "make" progress pretty-printing
+       ("tcl" ,tcl) ; tclsh for the tests
+       ("iverilog" ,iverilog))) ; for the tests
+    (inputs
+     `(("tcl" ,tcl)
+       ("readline" ,readline)
+       ("libffi" ,libffi)
+       ("abc" ,abc)))
+    (home-page "http://www.clifford.at/yosys/")
+    (synopsis "FPGA Verilog RTL synthesizer")
+    (description "Yosys synthesizes Verilog-2005.")
+    (license license:isc)))
