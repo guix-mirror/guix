@@ -160,7 +160,11 @@
        ("libsm" ,libsm)
        ("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
-       ("guix-src" ,(package-source guix))))
+       ("guix-src" ,(package-source guix))
+
+       ;; multilingualization support
+       ("libotf" ,libotf)
+       ("m17n-lib" ,m17n-lib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
