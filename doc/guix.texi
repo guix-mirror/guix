@@ -11410,6 +11410,58 @@ which may be insufficient for some operations.
 The file name of the qcow2 image.
 @end table
 
+The default @command{run-vm.sh} script that is returned by an invokation of
+@command{guix system vm} does not add a @command{-net user} flag by default.
+To get network access from within the vm add the @code{(dhcp-client-service)}
+to your system definition and start the VM using
+@command{`guix system vm config.scm` -net user}.  An important caveat of using
+@command{-net user} for networking is that @command{ping} will not work, because
+it uses the ICMP protocol.  You'll have to use a different command to check for
+network connectivity, like for example @command{curl}.
+
+@subsubsection Connecting Through SSH
+
+To enable SSH inside a VM you need to add a SSH server like @code{(dropbear-service)}
+or @code{(lsh-service)} to your VM.  The @code{(lsh-service}) doesn't currently
+boot unsupervised.  It requires you to type some characters to initialize the
+randomness generator.  In addition you need to forward the SSH port, 22 by
+default, to the host.  You can do this with
+
+@example
+`guix system vm config.scm` -net user,hostfwd=tcp::10022-:22
+@end example
+
+To connect to the VM you can run
+
+@example
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 10022
+@end example
+
+The @command{-p} tells @command{ssh} the port you want to connect to.
+@command{-o UserKnownHostsFile=/dev/null} prevents @command{ssh} from complaining
+every time you modify your @command{config.scm} file and the
+@command{-o StrictHostKeyChecking=no} prevents you from having to allow a
+connection to an unknown host every time you connect.
+
+@subsubsection Using @command{virt-viewer} with Spice
+
+As an alternative to the default @command{qemu} graphical client you can
+use the @command{remote-viewer} from the @command{virt-viewer} package.  To
+connect pass the @command{-spice port=5930,disable-ticketing} flag to
+@command{qemu}.  See previous section for further information on how to do this.
+
+Spice also allows you to do some nice stuff like share your clipboard with your
+VM.  To enable that you'll also have to pass the following flags to @command{qemu}:
+
+@example
+-device virtio-serial-pci,id=virtio-serial0,max_ports=16,bus=pci.0,addr=0x5
+-chardev spicevmc,name=vdagent,id=vdagent
+-device virtserialport,nr=1,bus=virtio-serial0.0,chardev=vdagent,
+name=com.redhat.spice.0
+@end example
+
+You'll also need to add the @pxref{Miscellaneous Services, Spice service}.
+
 @node Defining Services
 @subsection Defining Services
 
