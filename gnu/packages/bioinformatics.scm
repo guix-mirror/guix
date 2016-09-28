@@ -4580,6 +4580,14 @@ sequence itself can be retrieved from these databases.")
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
+       #:make-flags
+       (list (string-append "VDB_LIBDIR="
+                            (assoc-ref %build-inputs "ncbi-vdb")
+                            ,(if (string-prefix? "x86_64"
+                                                 (or (%current-target-system)
+                                                     (%current-system)))
+                                 "/lib64"
+                                 "/lib32")))
        #:phases
        (alist-replace
         'configure
@@ -4597,6 +4605,10 @@ sequence itself can be retrieved from these databases.")
             ;; Look for interface libraries in ncbi-vdb's "ilib" directory.
             (("my \\$ilibdir = File::Spec->catdir\\(\\$builddir, 'ilib'\\);")
              "my $ilibdir = File::Spec->catdir($dir, 'ilib');"))
+
+          ;; Dynamic linking
+          (substitute* "tools/copycat/Makefile"
+            (("smagic-static") "lmagic"))
 
           ;; The 'configure' script doesn't recognize things like
           ;; '--enable-fast-install'.
