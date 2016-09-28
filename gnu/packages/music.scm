@@ -1787,7 +1787,6 @@ MusicBrainz database.")
      `(;; Python 3 is not supported:
        ;; https://github.com/echonest/pyechonest/issues/42
        #:python ,python-2))
-    (native-inputs `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://github.com/echonest/pyechonest")
     (synopsis "Python interface to The Echo Nest APIs")
     (description "Pyechonest is a Python library for the Echo Nest API.  With
@@ -1863,7 +1862,6 @@ websites such as Libre.fm.")
     (native-inputs
      `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
        ("python2-flask" ,python2-flask)
-       ("python2-setuptools" ,python2-setuptools)
        ("python2-mock" ,python2-mock)
        ("python2-mpd2" ,python2-mpd2)
        ("python2-nose" ,python2-nose)

@@ -874,8 +874,6 @@ python-pypdf2 instead.")
     (inputs
      ;; pdfposter 0.6.0 still uses the old pyPdf
      `(("python2-pypdf" ,python2-pypdf)))
-    (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://pythonhosted.org/pdftools.pdfposter/")
     (synopsis "Scale and tile PDF images/pages to print on multiple pages")
     (description "@command{pdfposter} can be used to create a large poster by
