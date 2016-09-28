@@ -250,8 +250,7 @@ random passwords that pass the checks.")
     (native-inputs
      `(("help2man" ,help2man)))
     (inputs
-     `(("python-setuptools" ,python2-setuptools)
-       ("python2-xdo" ,python2-xdo)
+     `(("python2-xdo" ,python2-xdo)
        ("python2-pygpgme" ,python2-pygpgme)
        ("python2-pygtk" ,python2-pygtk)))
     (propagated-inputs

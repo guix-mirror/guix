@@ -463,8 +463,7 @@ pidof, tty, taskset, pmap.")
          "1z27wdxs5rj5xhhqfzvzn3yg682irkxw6dcs5jj7mcf97psk8gd8"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-nose" ,python-nose)))
     (inputs
      `(("python-py-bcrypt" ,python-py-bcrypt)))
     (arguments
@@ -667,8 +666,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
         "0k43pi0p1dwpds2w0km3fw92wixzxv2vw7p09capxmjz5cfh23lw"))))
     (build-system python-build-system)
     (inputs
-     `(("python-pytz" ,python-pytz)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-pytz" ,python-pytz)))
     (arguments `(#:tests? #f)) ; no test target
     (home-page "http://babel.pocoo.org/")
     (synopsis
@@ -1371,8 +1369,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
         "0iv1c34npr4iynwpgv1vkjx9rjd18a85ir8c01gc5f7wp8iv7l1x"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)
+     `(("python-six" ,python-six)
        ("python-parse" ,python-parse)))
     (arguments '(#:tests? #f))            ;TODO: tests require pytest
     (home-page "https://github.com/jenisys/parse_type")
@@ -1641,8 +1638,7 @@ code introspection, and logging.")
             "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):")))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-py" ,python-py)
+     `(("python-py" ,python-py)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
     (home-page "http://pytest.org")
@@ -1858,8 +1854,7 @@ result back.")
          "0f4w84k8ck82syys7yg9maz93mqzc8p5ymis941x034v44jzq74m"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://pythonpaste.org/scripttest/")
     (synopsis "Python library to test command-line scripts")
     (description "Scripttest is a Python helper library for testing
@@ -1887,8 +1882,7 @@ subprocess and see the output as well as any file modifications.")
     (propagated-inputs
      `(("python-mimeparse" ,python-mimeparse)))
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-extras" ,python-extras)))
+     `(("python-extras" ,python-extras)))
     (home-page "https://github.com/testing-cabal/testtools")
     (synopsis
      "Extensions to the Python standard library unit testing framework")
@@ -1916,8 +1910,7 @@ compatibility.")
          "1671jvrvqlmbnc42j7pc5y6vc37q44aiwrq0zic652pxyy2fxvjg"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-testtools" ,python-testtools)
+     `(("python-testtools" ,python-testtools)
        ("python-mimeparse" ,python-mimeparse)))
     (home-page "https://launchpad.net/testscenarios")
     (synopsis "Pyunit extension for dependency injection")
@@ -1969,8 +1962,7 @@ use of resources by test cases.")
          "1nkw9wfbvizmpajbj3in8ns07g7lwkiv8hip14jjlwk3cacls6jv"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-testtools" ,python-testtools)
+     `(("python-testtools" ,python-testtools)
        ("python-mimeparse" ,python-mimeparse)
        ("python-testscenarios" ,python-testscenarios)))
     (home-page "http://launchpad.net/subunit")
@@ -2033,9 +2025,7 @@ Python tests.")
     (arguments
      `(#:tests? #f)) ;; Most tests seem to use the Internet.
     (inputs
-      `(("python-fixtures-0.3.16" ,python-fixtures-0.3.16)
-        ("python-pip" ,python-pip)
-        ("python-setuptools" ,python-setuptools)))
+      `(("python-fixtures-0.3.16" ,python-fixtures-0.3.16)))
     (home-page "https://launchpad.net/pbr")
     (synopsis "Change the default behavior of Python’s setuptools")
     (description
@@ -2070,8 +2060,7 @@ and sensible default behaviors into your setuptools run.")
       `(("python-fixtures" ,python-fixtures)
         ("python-mimeparse" ,python-mimeparse)
         ("python-mock" ,python-mock)
-        ("python-setuptools" ,python-setuptools)
-        ("python-six" ,python-six)
+         ("python-six" ,python-six)
         ("python-sphinx" ,python-sphinx)
         ("python-testrepository" ,python-testrepository)
         ("python-testresources" ,python-testresources)
@@ -2137,8 +2126,7 @@ Python tests.")
      `(("python-fixtures-0.3.16" ,python-fixtures-0.3.16)
        ("python-testtools" ,python-testtools)))
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-subunit" ,python-subunit)
+     `(("python-subunit" ,python-subunit)
        ("python-mimeparse" ,python-mimeparse)))
     (home-page "https://launchpad.net/testrepository")
     (synopsis "Database for Python test results")
@@ -2240,8 +2228,7 @@ backported from Python 2.7 for Python 2.4+.")
                "1iypp6z46r19n4xmgx6m1lwmlpfjh8vapq8izigrqlaarvp2y64c"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)
+     `(("python-six" ,python-six)
        ("python-parse" ,python-parse)
        ("python-parse-type" ,python-parse-type)))
     (arguments `(#:tests? #f))          ;TODO: tests require nose>=1.3 and
@@ -2369,8 +2356,7 @@ with sensible defaults out of the box.")
           "0j0n38hg1jvrmyy68f9ikvzq1gs9g0sx4ws7maf8wi3bwbbqmfqy"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-jsonschema" ,python-jsonschema)
+     `(("python-jsonschema" ,python-jsonschema)
        ("python-pytest-cov" ,python-pytest-cov)))
     (home-page "https://bitbucket.org/pypa/wheel/")
     (synopsis "Format for built Python packages")
@@ -2405,8 +2391,7 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
                "0zsqrzlybf25xscgi7ja4s48y2abf9wvjkn47wh984qgs1fq2xy5"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-py" ,python-py)
+     `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-wheel" ,python-wheel)))
@@ -2493,7 +2478,6 @@ version numbers.")
     (package (inherit jsonschema)
              (native-inputs
               `(("python2-mock" ,python2-mock)
-                ("python2-setuptools" ,python2-setuptools)
                 ,@(package-native-inputs jsonschema)))
              (propagated-inputs
               `(("python2-functools32" ,python2-functools32))))))
@@ -2535,8 +2519,7 @@ somewhat intelligeble.")
          "1556v2jppd8mjkkj66pxb5rcazm35jq81r233mdl8hfmz9n3icp1"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     `(("python-pytest-runner" ,python-pytest-runner)))
     (arguments
      '(#:tests? #f)) ; test suite doesn't work
     (home-page "http://github.com/progrium/pyjwt")
@@ -2665,8 +2648,7 @@ object.")
                (("skipif.*") "skipif(True, reason=\"Guix\")\n"))
              (zero? (system* "py.test")))))))
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-mock" ,python-mock)
+     `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
     (home-page "https://virtualenv.pypa.io/")
     (synopsis "Virtual Python environment builder")
@@ -2714,8 +2696,7 @@ for Python.")
          "1x0v41lp5m1pjix3l46zx02b7lqp2hflgpnxwkywxynvi3zz47xw"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-markupsafe" ,python-markupsafe)))
+     `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
     (synopsis "Python template engine")
     (description
@@ -2778,8 +2759,7 @@ logic-free templating system Mustache.")
                 (string-append "@SkipTest\n" line)))
              #t)))))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-nose"       ,python-nose)
+     `(("python-nose"       ,python-nose)
        ("python-sphinx"     ,python-sphinx)
        ("python-docutils"   ,python-docutils)
        ("python-numpydoc"   ,python-numpydoc)))
@@ -2860,8 +2840,7 @@ reStructuredText.")
          "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-jinja2" ,python-jinja2)
+     `(("python-jinja2" ,python-jinja2)
        ("python-docutils" ,python-docutils)
        ("python-pygments" ,python-pygments)))
     (home-page "http://sphinx-doc.org/")
@@ -2918,8 +2897,7 @@ sources.")
          "0mkimp1fpdan4p3882vzcws4l594k71ich4g0wq97jbra7p602n0"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-pytz" ,python-pytz)
+     `(("python-pytz" ,python-pytz)
        ("python-six" ,python-six)))
     (home-page "https://github.com/getpelican/feedgenerator")
     (synopsis
@@ -3072,8 +3050,7 @@ mining and data analysis.")
        ("python-six" ,python-six)
        ("python-pillow" ,python-pillow)))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-cython" ,python-cython)))
     (home-page "http://scikit-image.org/")
     (synopsis "Image processing in Python")
     (description
@@ -3108,8 +3085,7 @@ mining and data analysis.")
     ;; Tests require a running Redis server
     (arguments '(#:tests? #f))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/andymccurdy/redis-py")
     (synopsis "Redis Python client")
     (description
@@ -3200,8 +3176,7 @@ writing C extensions for Python as easy as Python itself.")
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (native-inputs
-     `(("python2-pytest" ,python2-pytest) ; needed for running tests
-       ("python2-setuptools" ,python2-setuptools)))
+     `(("python2-pytest" ,python2-pytest))) ; needed for running tests
     (home-page "https://rpython.readthedocs.org")
     (synopsis "Framework for implementing interpreters and virtual machines")
     (description "RPython is a translation and support framework for
@@ -3304,8 +3279,7 @@ capabilities.")
        ("python2-pysnptools" ,python2-pysnptools)))
     (native-inputs
      `(("unzip" ,unzip)
-       ("python2-mock" ,python2-mock)
-       ("python2-setuptools" ,python2-setuptools)))
+       ("python2-mock" ,python2-mock)))
     (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/fastlmm/")
     (synopsis "Perform genome-wide association studies on large data sets")
     (description
@@ -3445,8 +3419,7 @@ that client code uses to construct the grammar directly in Python code.")
              (("3") "2"))))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-docutils" ,python-docutils)
+     `(("python-docutils" ,python-docutils)
        ("python-sphinx" ,python-sphinx)
        ("python-nose" ,python-nose)))
     (home-page "https://pypi.python.org/pypi/numpydoc")
@@ -3526,8 +3499,7 @@ transcendental functions).")
        ("python-pycairo" ,python-pycairo)
        ("python-cairocffi" ,python-cairocffi)))
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-dateutil" ,python-dateutil-2)
+     `(("python-dateutil" ,python-dateutil-2)
        ("python-six" ,python-six)
        ("python-pytz" ,python-pytz)
        ("python-numpy" ,python-numpy-bootstrap)
@@ -3653,8 +3625,7 @@ toolkits.")
        ("python2-pandas" ,python2-pandas)
        ("python2-six" ,python2-six)))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python2-setuptools" ,python2-setuptools)))
+     `(("unzip" ,unzip)))
     (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/")
     (synopsis "Library for reading and manipulating genetic data")
     (description
@@ -3683,8 +3654,7 @@ operators such as union, intersection, and difference.")
        ("pcre" ,pcre)
        ("r" ,r)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("zlib" ,zlib)))
+     `(("zlib" ,zlib)))
     (home-page "http://rpy.sourceforge.net/")
     (synopsis "Python interface to the R language")
     (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
@@ -4148,8 +4118,7 @@ services for your Python modules and applications.")
          "0xkv0p1d73gz0a1qaasf0ai4262g8f334j07vd60bjrxs2wr3nmj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-nose"       ,python-nose)))
+     `(("python-nose"       ,python-nose)))
     (inputs
      `(("freetype" ,freetype)
        ("lcms"     ,lcms)
@@ -4211,8 +4180,7 @@ a general image processing tool.")
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-setuptools" ,python-setuptools)))
+     `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases
        (alist-replace
@@ -4263,8 +4231,7 @@ a front-end for C compilers or analysis tools.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-pytest" ,python-pytest)))
     (arguments
      `(#:phases
        (alist-cons-after
@@ -4349,8 +4316,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
-       ("python-docutils" ,python-docutils)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-docutils" ,python-docutils)))
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
@@ -4427,8 +4393,7 @@ etc.  The core of this module is a decorator factory.")
     ;; should be set to the path of the libdrmaa library.
     (arguments '(#:tests? #f))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-nose" ,python-nose)))
     (home-page "https://pypi.python.org/pypi/drmaa")
     (synopsis "Python bindings for the DRMAA library")
     (description
@@ -4536,8 +4501,7 @@ them as the version argument or in a SCM managed file.")
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-setuptools-scm" ,python-setuptools-scm)
+     `(("python-setuptools-scm" ,python-setuptools-scm)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "http://github.com/jaraco/path.py")
@@ -4592,8 +4556,7 @@ PickleShare.")
         (base32 "0wwi1c6md4vkbcsfsf8dklf3vr4mcdj4mpxkanwgb6jb1432x5yw"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("unzip" ,unzip)))
+     `(("unzip" ,unzip)))
     (home-page "http://cheeseshop.python.org/pypi/simplegeneric")
     (synopsis "Python module for simple generic functions")
     (description
@@ -4828,8 +4791,7 @@ tools for mocking system commands and recording calls to those.")
        ("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
        ("texlive" ,texlive)
-       ("texinfo" ,texinfo)
-       ("python-setuptools" ,python-setuptools)))
+       ("texinfo" ,texinfo)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -5091,8 +5053,7 @@ implementation of D-Bus.")
            "0w4jb0wpx785qw42r3h4fh7gl5w2968q48i7gygybsfxck8nzffs"))))
     (build-system python-build-system)
     (inputs
-      `(("python-setuptools" ,python-setuptools)
-        ("sqlite" ,sqlite)))
+      `(("sqlite" ,sqlite)))
     (arguments
      `(#:phases
         ;; swap check and install phases
@@ -5127,8 +5088,7 @@ translate the complete SQLite API into Python.")
     (build-system python-build-system)
     (inputs
       `(("libxml2" ,libxml2)
-        ("libxslt" ,libxslt)
-        ("python-setuptools" ,python-setuptools)))
+        ("libxslt" ,libxslt)))
     (home-page "http://lxml.de/")
     (synopsis
       "Python XML processing library")
@@ -5283,8 +5243,7 @@ interfaces in an easy and portable manner.")
     (propagated-inputs
      `(("python-decorator" ,python-decorator)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)))
     (home-page "http://networkx.github.io/")
     (synopsis "Python module for creating and manipulating graphs and networks")
     (description
@@ -5602,8 +5561,7 @@ applications.")
      `(("zeromq" ,zeromq)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-nose" ,python-nose)))
     (home-page "http://github.com/zeromq/pyzmq")
     (synopsis "Python bindings for 0MQ")
     (description
@@ -5671,8 +5629,7 @@ PEP 8.")
     (build-system python-build-system)
     (inputs
       `(("python-pytest" ,python-pytest)
-        ("python-pytest-runner" ,python-pytest-runner)
-        ("python-setuptools" ,python-setuptools)))
+        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/flintwork/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
     (description
@@ -5692,8 +5649,7 @@ complexity of Python source code.")
         (uri (pypi-uri "mccabe" version))
         (sha256
           (base32
-            "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))
-    (inputs `(("python-setuptools" ,python-setuptools)))))
+            "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))))
 
 (define-public python2-mccabe-0.2.1
   (package-with-python2 python-mccabe-0.2.1))
@@ -5749,8 +5705,7 @@ complexity of Python source code.")
             "0bs9cz4fr99r2rwig1b8jwaadl1nan7kgpdzqwj0bwbckwbmh7nc"))))
     (build-system python-build-system)
     (inputs
-      `(("python-setuptools" ,python-setuptools)
-        ("python-pep8" ,python-pep8)
+      `(("python-pep8" ,python-pep8)
         ("python-pyflakes" ,python-pyflakes)
         ("python-mccabe" ,python-mccabe)
         ("python-mock" ,python-mock)
@@ -5770,8 +5725,7 @@ complexity of Python source code.")
 (define-public python-flake8-2.2.4
   (package (inherit python-flake8)
     (inputs
-      `(("python-setuptools" ,python-setuptools)
-        ("python-pep8" ,python-pep8-1.5.7)
+      `(("python-pep8" ,python-pep8-1.5.7)
         ("python-pyflakes" ,python-pyflakes-0.8.1)
         ("python-mccabe" ,python-mccabe-0.2.1)
         ("python-mock" ,python-mock)
@@ -5804,8 +5758,7 @@ complexity of Python source code.")
          "17zqjp9m4d1w3jf2rbbq5xshcw24q1vlcv24gkgfqqyyymajxahx"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-nose" ,python-nose)
+     `(("python-nose" ,python-nose)
        ("python-cython" ,python-cython)))
     (home-page "https://github.com/lepture/mistune")
     (synopsis "Markdown parser in pure Python")
@@ -5864,8 +5817,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
          "0nggns5kikn32yyda2zrj1xdmh49pi3v0drggcdwljbv36r8zdyw"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -6016,8 +5968,7 @@ should be stored on various operating systems.")
      `(("fuse" ,fuse)
        ("attr" ,attr)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-setuptools" ,python-setuptools)))
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Python bindings for FUSE")
     (description
      "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
@@ -6187,8 +6138,7 @@ fractional seconds) of a clock which never goes backwards.")
          "02bhhzijfhv8hmi1i54d4b0v43liwhnywhflvxsv4x3zax9s3afq"))))
     (build-system python-build-system)
     (inputs
-      `(("python-nose" ,python-nose)
-        ("python-setuptools" ,python-setuptools)))
+      `(("python-nose" ,python-nose)))
     (home-page "http://webob.org/")
     (synopsis "WSGI request and response object")
     (description
@@ -6216,8 +6166,7 @@ object to help create WSGI responses.")
          ;; Current test in setup.py does not work as of 1.0.0, so use nose to
          ;; run tests instead for now.
          (replace 'check (lambda _ (zero? (system* "nosetests")))))))
-    (native-inputs `(("python-nose"       ,python-nose)
-                     ("python-setuptools" ,python-setuptools)))
+    (native-inputs `(("python-nose"       ,python-nose)))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
     (description "This packages provides a library to extract data from
@@ -6296,8 +6245,7 @@ printing of sub-tables by specifying a row range.")
      `(("python-numexpr" ,python-numexpr)
        ("python-numpy" ,python-numpy)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-cython" ,python-cython)
+     `(("python-cython" ,python-cython)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("hdf5" ,hdf5)
@@ -6595,8 +6543,7 @@ library.")
          "08cm8d4228fj0qnrysy3qv1a6022zr3dcs25amd14lgxil6vvx26"))))
     (build-system python-build-system)
     (inputs
-      `(("python-setuptools" ,python-setuptools)
-        ("python-virtualenv" ,python-virtualenv)
+      `(("python-virtualenv" ,python-virtualenv)
         ;; Tests
         ("python-mock" ,python-mock)
         ("python-pytest" ,python-pytest)
@@ -6712,8 +6659,7 @@ a hash value.")
                        (close-port port)
                        #t))))))
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("libarchive" ,libarchive)))
+     `(("libarchive" ,libarchive)))
     (home-page "https://github.com/Changaco/python-libarchive-c")
     (synopsis "Python interface to libarchive")
     (description
@@ -6995,8 +6941,7 @@ interactive computing.")
     (propagated-inputs
      `(("python-notebook" ,python-notebook)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-nose" ,python-nose)))
     (home-page "http://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "This package provides interactive HTML widgets for Jupyter
@@ -7055,8 +7000,7 @@ in the data.")
        ("python-ipython" ,python-ipython)
        ("python-jupyter-client" ,python-jupyter-client)
        ("python-prompt-toolkit" ,python-prompt-toolkit)
-       ("python-pygments" ,python-pygments)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-pygments" ,python-pygments)))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter terminal console")
     (description "This package provides a terminal-based console frontend for
@@ -7086,8 +7030,7 @@ Jupyter kernels such as IJulia and IRKernel.")
        ("python-ipywidgets" ,python-ipywidgets)
        ("python-jupyter-console" ,python-jupyter-console)
        ("python-nbconvert" ,python-nbconvert)
-       ("python-notebook" ,python-notebook)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-notebook" ,python-notebook)))
     (home-page "http://jupyter.org")
     (synopsis "Web application for interactive documents")
     (description
@@ -7139,8 +7082,7 @@ automatically detect a wide range of file encodings.")
          "16bf890xbdz3m30rsv2qacklh2rdn1zrfspfnwzx9g7vwz8yw4r1"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-pytest" ,python-pytest)))
     (arguments
      `(#:phases (alist-replace
                  'check
@@ -7561,8 +7503,7 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-nose" ,python-nose)))
     (home-page "https://github.com/kurtraschke/pyRFC3339")
     (synopsis "Python timestamp library")
     (description "Python library for generating and parsing RFC 3339-compliant
@@ -7615,8 +7556,7 @@ addon modules.")
               (patches (search-patches "python-configobj-setuptools.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (synopsis "Config file reading, writing and validation")
     (description "ConfigObj is a simple but powerful config file reader and
 writer: an ini file round tripper.  Its main feature is that it is very easy to
@@ -8115,8 +8055,7 @@ Blog, News or Announcements section to a Sphinx website.")
                 "1an5lkkqk1zha47198p42ji3m94xmzx1a03dn7866m87n4r4q8h5"))))
     (build-system python-build-system)
     (inputs
-     `(("python-args" ,python-args)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-args" ,python-args)))
     (home-page "https://github.com/kennethreitz/clint")
     (synopsis "Command-line interface tools")
     (description
@@ -8161,8 +8100,7 @@ Abstract Syntax Tree.")
                 "12rp1d9ba7nvd5rhaxi6xzx1rm67r1k1ylsrkzhpwnphqpb06cvj"))))
     (build-system python-build-system)
     (inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-appdirs" ,python-appdirs)))
     (home-page "https://github.com/alex/rply")
     (synopsis "Parser generator for Python")
     (description
@@ -8188,8 +8126,7 @@ with a new public API, and RPython support.")
     (inputs
      `(("python-astor" ,python-astor)
        ("python-clint" ,python-clint)
-       ("python-rply" ,python-rply)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-rply" ,python-rply)))
     (home-page "http://hylang.org/")
     (synopsis "Lisp frontend to Python")
     (description
@@ -8326,8 +8263,7 @@ concurrent.futures package from Python 3.2")
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ;; some packages for tests
+     `(;; some packages for tests
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
        ("python-tornado" ,python-tornado)))
@@ -8382,8 +8318,7 @@ text.")
        "1dcxvszbikgzh99ybdc7jq0zb9wspy2ds8z9mjsqiyv3q884xpr5"))))
    (build-system python-build-system)
    (inputs
-    `(("python-pyasn1" ,python-pyasn1)
-      ("python-setuptools" ,python-setuptools)))
+    `(("python-pyasn1" ,python-pyasn1)))
    (synopsis "Pure-Python RSA implementation")
    (description "Python-RSA is a pure-Python RSA implementation.  It supports
 encryption and decryption, signing and verifying signatures, and key
@@ -8433,8 +8368,7 @@ Pytest but stripped of Pytest specific details.")
     ;; pytest breaks other packages.
     '(#:tests? #f))
    (inputs
-    `(("python-setuptools" ,python-setuptools)
-      ("python-pluggy" ,python-pluggy)
+    `(("python-pluggy" ,python-pluggy)
       ("python-py" ,python-py)
       ("python-virtualenv" ,python-virtualenv)
       ("python-pytest" ,python-pytest)))
@@ -8558,8 +8492,7 @@ seamlessly into your existing Python unit testing work flow.")
                      (strip-python2-variant python-hypothesis))))
     (package (inherit hypothesis)
       (native-inputs
-       `(("python2-enum34" ,python2-enum34)
-         ("python2-setuptools" ,python2-setuptools))))))
+       `(("python2-enum34" ,python2-enum34))))))
 
 (define-public python-pytest-subtesthack
   (package
@@ -8796,10 +8729,9 @@ file.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
+    ;; Note: setuptools used at runtime for pkg_resources
     (propagated-inputs
-     `(;; Uses pkg_resources provided by setuptools internally.
-       ("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (arguments
      '(;; Tests don't pass on Python 3, but work fine on Python 2.
        ;; (As of 2.0.2, Python 3 support in Paste is presently a bit broken,
@@ -8840,10 +8772,9 @@ follows ideas flowing from WSGI (Web Standard Gateway Interface).")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
+    ;; Note: setuptools used at runtime for pkg_resources
     (propagated-inputs
-     `(;; Uses pkg_resources provided by setuptools internally.
-       ("python-setuptools" ,python-setuptools)
-       ("python-paste" ,python-paste)
+     `(("python-paste" ,python-paste)
        ("python-pastedeploy" ,python-pastedeploy)))
     (home-page "http://pythonpaste.org/script/")
     (arguments
@@ -9456,8 +9387,7 @@ library.")
          "10qsqdjpbc85fykc1vgcs8xwbgn4l2l52c8d83xf1q59pwyn79bw"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://bitbucket.org/mchaput/whoosh")
     (synopsis "Full text indexing, search, and spell checking library")
     (description
@@ -9527,8 +9457,7 @@ anymore.")
     (arguments
      `(#:python ,python-2))
     (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)
-       ("python2-six" ,python2-six)))
+     `(("python2-six" ,python2-six)))
     (home-page "http://pypi.python.org/pypi/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
@@ -9596,8 +9525,7 @@ encoding algorithms to do fuzzy string matching.")
      `(;; It supports Python 3, but Python 3 can already do Unicode CSV.
        #:python ,python-2))
     (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)
-       ("python2-unittest2" ,python2-unittest2)))
+     `(("python2-unittest2" ,python2-unittest2)))
     (home-page "https://github.com/jdunck/python-unicodecsv")
     (synopsis "Unicode CSV module for Python 2")
     (description "Unicodecsv is a drop-in replacement for Python 2.7's CSV
@@ -9752,8 +9680,7 @@ CloudFront content delivery network.")
             "1pw0kmvc57sjmaxi6c54fqsnihqj6hvhc9y1vaz36axafzqam7bh"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-nose" ,python-nose)
-        ("python-setuptools" ,python-setuptools)))
+      `(("python-nose" ,python-nose)))
     (inputs
       `(("pkg-config" ,pkg-config)))
     (arguments
@@ -9955,8 +9882,7 @@ Python.  It generates C++ code and a Makefile."))
      `(#:python ,python-2))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-unittest2" ,python2-unittest2)
-       ("python2-setuptools" ,python2-setuptools)))
+     `(("python2-unittest2" ,python2-unittest2)))
     (home-page "https://github.com/python-rope/rope")
     (synopsis "Refactoring library for Python")
     (description "Rope is a refactoring library for Python.  It facilitates
@@ -10049,8 +9975,7 @@ multiple processes (imagine multiprocessing, billiard, futures, celery etc).
                (system* "2to3" "--no-diff" "-wn" "sqlparse" "tests"))
              (zero? (system* "py.test")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/andialbrecht/sqlparse")
     (synopsis "Non-validating SQL parser")
     (description "Sqlparse is a non-validating SQL parser for Python.  It
@@ -10107,8 +10032,7 @@ are synchronized with data exchanges on \"channels\".")
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (inputs
      `(("c-ares" ,c-ares)
        ("libev" ,libev)))
@@ -10219,8 +10143,7 @@ It uses LR parsing and does extensive error checking.")
                          (("from common") "from nose.tools")))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ;; For testing
+     `(;; For testing
        ("python-nose" ,python-nose)))
     (home-page "https://bitbucket.org/astanin/python-tabulate")
     (synopsis "Pretty-print tabular data")
@@ -10379,8 +10302,7 @@ objects, patterned after the Mocha library for Ruby.")
                 "1bz7hkdgpqcjs866y58z8jywpy7al0f4rxdr00bh2l5qddyw245j"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ;; For testing
+     `(;; For testing
        ("python-chai" ,python-chai)
        ("python-simplejson" ,python-simplejson)))
     (propagated-inputs
@@ -10451,8 +10373,7 @@ Wikipedia code samples at
                 "1k2dcl6mqpn5bljyl6w42rqyd9mb3y9kh2mg7m2x3kfjwvg0rpva"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ;; For testing
+     `(;; For testing
        ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
@@ -10577,8 +10498,7 @@ parsing UK postcodes.")
               "0vs0dkmg0dlaxf8w6q2i3k0i03gmp56ablldv7ci9x3nbadkn71g"))))
   (build-system python-build-system)
   (native-inputs
-   `(("python-setuptools" ,python-setuptools)
-     ;; For testing
+   `(;; For testing
      ("python-email-validator" ,python-email-validator)
      ("python-mock" ,python-mock)
      ("python-ukpostcodeparser" ,python-ukpostcodeparser)))
@@ -10763,8 +10683,7 @@ characters, mouse support, and auto suggestions.")
      `(("python-docopt" ,python-docopt)
        ("python-jedi" ,python-jedi)
        ("python-prompt-toolkit" ,python-prompt-toolkit)
-       ("python-pygments" ,python-pygments)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-pygments" ,python-pygments)))
     (home-page "https://github.com/jonathanslenders/ptpython")
     (synopsis "Python Read-Eval-Print-Loop with nice IDE-like features")
     (description
