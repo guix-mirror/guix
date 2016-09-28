@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -1688,3 +1688,35 @@ e-mails with other systems speaking the SMTP protocol.")
      "This package provides extra tables, filters, and various other addons
 for OpenSMTPD to extend its functionality.")
     (home-page "https://www.opensmtpd.org")))
+
+(define-public python-mailmanclient
+  (package
+    (name "python-mailmanclient")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mailmanclient" version))
+       (sha256
+        (base32
+         "1cfjh45fgbsax5hjj2inq9nk33dhdvh63xhysc8dhnqidgqgm8c5"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Requires mailman running
+    (inputs
+     `(("python-six" ,python-six)
+       ("python-httplib2" ,python-httplib2)))
+    (home-page "https://launchpad.net/mailman.client")
+    (synopsis "Python bindings for the Mailman 3 REST API")
+    (description
+     "The mailmanclient library provides official Python bindings for
+the GNU Mailman 3 REST API.")
+    (properties `((python2-variant . ,(delay python2-mailmainclient))))
+    (license lgpl3+)))
+
+(define-public python2-mailmanclient
+  (let ((base (package-with-python2
+               (strip-python2-variant python-mailmanclient))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools))))))
