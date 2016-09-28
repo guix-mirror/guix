@@ -448,7 +448,6 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public linux-pam-1.2
   (package
     (inherit linux-pam)
-    (name "linux-pam-1.2")
     (version "1.2.1")
     (source
      (origin
