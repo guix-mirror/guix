@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,9 +20,14 @@
 (define-module (gnu packages rust)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages version-control)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
@@ -182,3 +188,79 @@ manager, which is required to build itself.")
     (description "Meta package for a rust environment. Provides pre-compiled
 rustc-bootstrap and cargo-bootstrap packages.")
     (license license:asl2.0)))
+
+(define-public rustc
+  (package
+    (name "rustc")
+    (version (rustc-version %rust-bootstrap-binaries-version))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://static.rust-lang.org/dist/"
+                    "rustc-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "112h7qgbn8c7s5880vplpgy5n58sc8css32dq7z5wylpr9slgf7c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("git" ,git)
+       ("python-2" ,python-2)
+       ("rust-bootstrap" ,rust-bootstrap)
+       ("which" ,which)))
+    (inputs
+     `(("jemalloc" ,jemalloc)
+       ("llvm" ,llvm)))
+    (arguments
+     ;; FIXME: Test failure with llvm 3.8; Update llvm.
+     ;; https://github.com/rust-lang/rust/issues/36835
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configure
+           (lambda _
+             ;; Detect target CPU correctly.
+             (substitute* "configure"
+               (("/usr/bin/env") (which "env")))
+             ;; Avoid curl as a build dependency.
+             (substitute* "configure"
+               (("probe_need CFG_CURL curl") ""))))
+         (add-after 'unpack 'set-env
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))))
+         (add-after 'unpack 'patch-lockfile-test
+           (lambda _
+             (substitute* "src/tools/tidy/src/main.rs"
+               (("^.*cargo.*::check.*$") ""))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (gcc (assoc-ref inputs "gcc"))
+                    (python (assoc-ref inputs "python-2"))
+                    (rustc (assoc-ref inputs "rustc-bootstrap"))
+                    (llvm (assoc-ref inputs "llvm"))
+                    (jemalloc (assoc-ref inputs "jemalloc"))
+                    (flags (list
+                            (string-append "--prefix=" out)
+                            (string-append "--datadir=" out "/share")
+                            (string-append "--infodir=" out "/share/info")
+                            (string-append "--default-linker=" gcc "/bin/gcc")
+                            (string-append "--default-ar=" gcc "/bin/ar")
+                            (string-append "--python=" python "/bin/python2")
+                            (string-append "--local-rust-root=" rustc)
+                            (string-append "--llvm-root=" llvm)
+                            (string-append "--jemalloc-root=" jemalloc "/lib")
+                            "--release-channel=stable"
+                            "--enable-rpath"
+                            "--enable-local-rust"
+                            ;;"--enable-rustbuild"
+                            "--disable-manage-submodules")))
+               ;; Rust uses a custom configure script (no autoconf).
+               (zero? (apply system* "./configure" flags))))))))
+    (synopsis "Compiler for the Rust progamming language")
+    (description "Rust is a systems programming language that provides memory
+safety and thread safety guarantees.")
+    (home-page "https://www.rust-lang.org")
+    ;; Dual licensed.
+    (license (list license:asl2.0 license:expat))))
