@@ -386,7 +386,8 @@ change.  GNU make offers many powerful extensions over the standard utility.")
              (base32
               "125clslv17xh1sab74343fg6v31msavpmaa1c1394zsqa773g5rn"))
             (patches (search-patches "binutils-ld-new-dtags.patch"
-                                     "binutils-loongson-workaround.patch"))))
+                                     "binutils-loongson-workaround.patch"
+                                     "binutils-mips-bash-bug.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.

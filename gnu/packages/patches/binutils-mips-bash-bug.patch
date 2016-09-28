@@ -1,0 +1,22 @@
+Bash 4.2.0(1)-release, which we use during bootstrap, does not yield the
+"x" case in:
+
+  case x"$EMULATION_NAME" in x) ;; *) ;; esac
+
+when 'EMULATION_NAME' is undefined.  Bash 4.3.30(1)-release doesn't have this
+problem.  Work around it.
+
+This Bash bug was fixed
+in <http://ftp.gnu.org/gnu/bash/bash-4.2-patches/bash42-007>.
+
+--- a/ld/emulparams/elf32bmipn32-defs.sh
++++ b/ld/emulparams/elf32bmipn32-defs.sh
+@@ -13,7 +13,7 @@ LITTLE_OUTPUT_FORMAT="elf32-littlemips"
+ TEMPLATE_NAME=elf32
+ EXTRA_EM_FILE=mipself
+ 
+-case x"$EMULATION_NAME" in
++case "x$EMULATION_NAME" in
+ xelf32*n32*) ELFSIZE=32 ;;
+ xelf64*) ELFSIZE=64 ;;
+ x) ;;
