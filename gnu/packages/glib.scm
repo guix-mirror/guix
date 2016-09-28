@@ -702,4 +702,4 @@ This package provides the library for GLib applications.")
 programming langauage.  It also contains the utility
 @command{dbuscxx-xml2cpp}.")
     (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
-    (license license:lgpl2.1)))
+    (license license:lgpl2.1+)))
