@@ -1829,16 +1829,10 @@ detailed track info including timbre, pitch, rhythm and loudness information.
     (synopsis "Python interface to Last.fm and Libre.fm")
     (description "A Python interface to Last.fm and other API-compatible
 websites such as Libre.fm.")
-    (license license:asl2.0)
-    (properties `((python2-variant . ,(delay python2-pylast))))))
+    (license license:asl2.0)))
 
 (define-public python2-pylast
-  (let ((pylast (package-with-python2
-                 (strip-python2-variant python-pylast))))
-    (package (inherit pylast)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs pylast))))))
+  (package-with-python2 python-pylast))
 
 (define-public beets
   (package
