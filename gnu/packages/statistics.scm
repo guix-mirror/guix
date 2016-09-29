@@ -3145,27 +3145,30 @@ features present in other programming languages.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "3.6.0")
+    (version "4.5.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "15hvqa0sf4z6l6vvr614zjszfphwpv66zpc665iyiynq0pd1jv2c"))))
+                "08shs0qhy9js0fpj3d4rzfbwmw11ki3z5vg8jszfm6m69mfkgzw1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
        ("r-digest" ,r-digest)
+       ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
        ("r-hexbin" ,r-hexbin)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
+       ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
-       ("r-plyr" ,r-plyr)
+       ("r-purrr" ,r-purrr)
        ("r-scales" ,r-scales)
+       ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
-       ("r-viridis" ,r-viridis)))
+       ("r-viridislite" ,r-viridislite)))
     (home-page "https://plot.ly/r")
     (synopsis "Create interactive web graphics")
     (description
