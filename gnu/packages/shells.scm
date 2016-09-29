@@ -281,8 +281,18 @@ ksh, and tcsh.")
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "0byxd9kjl99q2pyvjh9jy18l0di1i35wr0qqgnw4i6jh6ig3zcki"))))
+            "0byxd9kjl99q2pyvjh9jy18l0di1i35wr0qqgnw4i6jh6ig3zcki"))
+        (modules '((guix build utils)))
+        (snippet
+         `(begin
+            ;; Delete bundled ply.
+            (delete-file-recursively "xonsh/ply")
+            (substitute* '("setup.py")
+              (("'xonsh\\.ply',") ""))
+            #t))))
     (build-system python-build-system)
+    (inputs
+     `(("python-ply" ,python-ply)))
     (home-page "http://xon.sh/")
     (synopsis "Python-ish shell")
     (description
