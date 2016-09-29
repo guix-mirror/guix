@@ -3040,6 +3040,31 @@ black-and-white.  They are also designed to be perceived by readers with the
 most common form of color blindness.")
     (license license:x11)))
 
+(define-public r-viridislite
+  (package
+    (name "r-viridislite")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "viridisLite" version))
+       (sha256
+        (base32
+         "1b0fhj8i1m9jsz91gzag60k7vy7kk5xkdg31rc3h3spq96l66psp"))))
+    (properties `((upstream-name . "viridisLite")))
+    (build-system r-build-system)
+    (home-page "https://github.com/sjmgarnier/viridisLite")
+    (synopsis "Default color maps from matplotlib")
+    (description
+     "This package is a port of the new @code{matplotlib} color maps ('viridis',
+'magma', 'plasma' and 'inferno') to R.  matplotlib is a popular plotting
+library for Python.  These color maps are designed in such a way that they
+will analytically be perfectly perceptually-uniform, both in regular form and
+also when converted to black-and-white.  They are also designed to be
+perceived by readers with the most common form of color blindness.  This is
+the 'lite' version of the more complete @code{viridis} package.")
+    (license license:expat)))
+
 (define-public r-tidyr
   (package
     (name "r-tidyr")
