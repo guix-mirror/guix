@@ -32,14 +32,14 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "6.1")
+    (version "6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ll3d0l8izygdxqz96wfr2631kxahifwdknpgsx2090vw963js5c"))))
+                "0fpr9kdjjl6nj2pc50k2zr7134hvqz8bi8pfqa7131a9lpzz6v14"))))
     (build-system gnu-build-system)
     (native-inputs `(("procps" ,procps)))  ;one of the tests needs pgrep
     (inputs `(("ncurses" ,ncurses)
@@ -61,18 +61,6 @@ package includes both the tools necessary to produce Info documents from
 their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
-
-(define-public texinfo-6.3
-  (package
-    (inherit texinfo)
-    (version "6.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/texinfo/texinfo-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0fpr9kdjjl6nj2pc50k2zr7134hvqz8bi8pfqa7131a9lpzz6v14"))))))
 
 (define-public texinfo-5
   (package (inherit texinfo)
