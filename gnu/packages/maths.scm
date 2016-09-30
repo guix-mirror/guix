@@ -544,6 +544,41 @@ extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
+(define-public hdf-eos2
+  (package
+    (name "hdf-eos2")
+    (version "19.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "ftp://edhs1.gsfc.nasa.gov\
+/edhs/hdfeos/latest_release/HDF-EOS2.19v1.00.tar.Z")
+       (sha256
+        (base32 "0c9fcz25s292ldap12wxmlrvnyz99z24p63d8fwx51bf8s0s1zrz"))
+       (patches (search-patches "hdf-eos2-remove-gctp.patch"
+                                "hdf-eos2-build-shared.patch"
+                                "hdf-eos2-fortrantests.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     `(("hdf4" ,hdf4-alt) ; assume most HDF-EOS2 users won't use the HDF4 netCDF API
+       ("zlib" ,zlib)
+       ("libjpeg" ,libjpeg)
+       ("gctp" ,gctp)))
+    (arguments
+     `( #:configure-flags '("--enable-install-include" "--enable-shared"
+                            "CC=h4cc -Df2cFortran" "LIBS=-lgctp")
+        #:parallel-tests? #f))
+    (home-page "http://hdfeos.org/software/library.php#HDF-EOS2")
+    (synopsis "HDF4-based data format for NASA's Earth Observing System")
+    (description "HDF-EOS2 is a software library built on HDF4 which supports
+the construction of data structures used in NASA's Earth Observing
+System (Grid, Point and Swath).")
+
+    ;; Source files carry a permissive license header.
+    (license (license:non-copyleft home-page))))
+
 (define-public hdf-eos5
   (package
     (name "hdf-eos5")

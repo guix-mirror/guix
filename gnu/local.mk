@@ -590,6 +590,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
   %D%/packages/patches/hdf4-shared-fortran.patch 		\
   %D%/packages/patches/hdf5-config-date.patch			\
+  %D%/packages/patches/hdf-eos2-build-shared.patch 		\
+  %D%/packages/patches/hdf-eos2-remove-gctp.patch		\
+  %D%/packages/patches/hdf-eos2-fortrantests.patch		\
   %D%/packages/patches/hdf-eos5-build-shared.patch 		\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\

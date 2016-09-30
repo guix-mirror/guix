@@ -1,0 +1,25 @@
+Changes necessary for shared library linking to succeed.
+
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 9534473..12411bf 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -73,7 +73,7 @@ LTCOMPILE = $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) \
+ 	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+ 	$(AM_CFLAGS) $(CFLAGS)
+ CCLD = $(CC)
+-LINK = $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++LINK = HDF4_USE_SHLIB=yes $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+ SOURCES = $(libhdfeos_la_SOURCES)
+ DIST_SOURCES = $(libhdfeos_la_SOURCES)
+@@ -125,8 +125,6 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
+ INSTALL_SCRIPT = @INSTALL_SCRIPT@
+ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+ 
+-# Set LDFLAGS to alow the HDF-EOS library to use extern variables from HDF4
+-LDFLAGS = -Wl,-single_module
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
+ LIBTOOL = @LIBTOOL@
+
