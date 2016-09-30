@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,20 +75,24 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages gd)
+  #:use-module (gnu packages fontutils)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
 (define-public emacs
   (package
     (name "emacs")
-    (version "24.5")
+    (version "25.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
+               "0cwgyiyymnx4xdg99dm2drfxcyhy2jmyf0rkr9fwj9mwwf77kwhr"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
                                       "emacs-source-date-epoch.patch"))
@@ -155,7 +160,11 @@
        ("libsm" ,libsm)
        ("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
-       ("guix-src" ,(package-source guix))))
+       ("guix-src" ,(package-source guix))
+
+       ;; multilingualization support
+       ("libotf" ,libotf)
+       ("m17n-lib" ,m17n-lib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
@@ -320,7 +329,7 @@ metadata.")
 
 (define-public paredit
   (package
-    (name "paredit")
+    (name "emacs-paredit")
     (version "24")
     (source (origin
               (method url-fetch)
@@ -363,6 +372,9 @@ S-expressions and moving around in S-expressions.  Its behavior can be jarring
 for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
+
+(define-public paredit/old-name
+  (deprecated-package "paredit" paredit))
 
 (define-public git-modes
   (package
@@ -652,7 +664,7 @@ programs.")
     (version "1.0.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/let-alist-"
+              (uri (string-append "https://elpa.gnu.org/packages/let-alist-"
                                   version ".el"))
               (sha256
                (base32
@@ -681,7 +693,7 @@ programs.")
                      (emacs-byte-compile-directory lispdir)
                      #t))))
     (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "http://elpa.gnu.org/packages/let-alist.html")
+    (home-page "https://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
     (description
      "This package offers a single Emacs Lisp macro, @code{let-alist}.  This
@@ -1038,13 +1050,13 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (version "1.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/async-"
+              (uri (string-append "https://elpa.gnu.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
                 "1ip5nc8xyln5szvqwp6wqva9xr84pn8ssn3nnphrszr19y4js2bm"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/async.html")
+    (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
     (description
      "This package provides the ability to call asynchronous functions and
@@ -1061,7 +1073,7 @@ as a library for other Emacs packages.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://elpa.gnu.org/packages/auctex-"
+             "https://elpa.gnu.org/packages/auctex-"
              version
              ".tar"))
        (sha256
@@ -1325,6 +1337,34 @@ Expectations, but it can be used in other contexts.")
     (synopsis "Common step definitions for Ecukes")
     (description "Espuds is a collection of the most commonly used step
 definitions for testing with the Ecukes framework.")
+    (license license:gpl3+)))
+
+(define-public emacs-es-mode
+  (package
+    (name "emacs-es-mode")
+    (version "4.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dakrone/es-mode/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02as82clm553yss7jfjac888308zr1h2229cch4z1yij70j25c8y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     ;; The version of org in Emacs 24.5 is not sufficient, and causes tables
+     ;; to be rendered incorrectly
+     `(("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/dakrone/es-mode")
+    (synopsis "Major mode for editing Elasticsearch queries")
+    (description "@code{es-mode} includes highlighting, completion and
+indentation support for Elasticsearch queries.  Also supported are
+@code{es-mode} blocks in @code{org-mode}, for which the results of queries can
+be processed through @code{jq}, or in the case of aggregations, can be
+rendered in to a table.  In addition, there is an @code{es-command-center}
+mode, which displays information about Elasticsearch clusters.")
     (license license:gpl3+)))
 
 (define-public emacs-expand-region
@@ -1619,7 +1659,7 @@ source code using IPython.")
     (version "0.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/debbugs-"
+              (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
@@ -1627,7 +1667,7 @@ source code using IPython.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))
-    (home-page "http://elpa.gnu.org/packages/debbugs.html")
+    (home-page "https://elpa.gnu.org/packages/debbugs.html")
     (synopsis "Access the Debbugs bug tracker in Emacs")
     (description
      "This package lets you access the @uref{http://bugs.gnu.org,GNU Bug
@@ -2099,7 +2139,7 @@ package provides a light and a dark variant.")
     (version "1.3.0")
     (source
      (origin (method url-fetch)
-             (uri (string-append "http://elpa.gnu.org/packages/ahungry-theme-"
+             (uri (string-append "https://elpa.gnu.org/packages/ahungry-theme-"
                                  version ".tar"))
              (sha256
               (base32
@@ -2405,7 +2445,7 @@ The purpose of this library is to wrap all the quirks and hassle of
     (version "0.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/queue-"
+              (uri (string-append "https://elpa.gnu.org/packages/queue-"
                                   version ".el"))
               (sha256
                (base32
@@ -2448,7 +2488,7 @@ be removed from the front.  This type of data structure is sometimes called an
     (version "1.7.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/spinner-"
+              (uri (string-append "https://elpa.gnu.org/packages/spinner-"
                                   version ".el"))
               (sha256
                (base32
@@ -2467,13 +2507,13 @@ ongoing operations.")
     (version "2.15")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/seq-"
+              (uri (string-append "https://elpa.gnu.org/packages/seq-"
                                   version ".tar"))
               (sha256
                (base32
                 "09wi1765bmn7i8fg6ajjfaxgs4ipc42d58zx2fdqpidrdg9c7q73"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/seq.html")
+    (home-page "https://elpa.gnu.org/packages/seq.html")
     (synopsis "Sequence manipulation functions for Emacs")
     (description
      "This Emacs library provides sequence-manipulation functions that
@@ -2986,14 +3026,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20160815")
+    (version "20160912")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://orgmode.org/elpa/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0k9pa13kpmpi6irmbavxffgqfanhjnijz4mkmmi0zp7kgjfbaliw"))))
+                "1xawj0pdvqrgzlixxgbfa01gzajfaz47anr5m4aw035rhc6s02r7"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -3073,3 +3113,74 @@ that allows users to concentrate more on their own work.  Its features are:
 a visual interface, reduce overhead of completion by using statistic method,
 extensibility.")
     (license license:gpl3+)))
+
+(define-public m17n-db
+  (package
+    (name "m17n-db")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/m17n/m17n-db-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1w08hnsbknrcjlzp42c99bgwc9hzsnf5m4apdv0dacql2s09zfm2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gettext" ,gnu-gettext)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-charmaps="
+                            (assoc-ref %build-inputs "libc")
+                            "/share/i18n/charmaps"))))
+    ;; With `guix lint' the home-page URI returns a small page saying
+    ;; that your browser does not handle frames. This triggers the "URI
+    ;; returns suspiciously small file" warning.
+    (home-page "http://www.nongnu.org/m17n/")
+    (synopsis "Multilingual text processing library (database)")
+    (description "The m17n library realizes multilingualization of
+many aspects of applications.  The m17n library represents
+multilingual text as an object named M-text.  M-text is a string with
+attributes called text properties, and designed to substitute for
+string in C.  Text properties carry any information required to input,
+display and edit the text.
+
+This package contains the library database.")
+    (license license:lgpl2.1+)))
+
+(define-public m17n-lib
+  (package
+    (name "m17n-lib")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.savannah.gnu.org/releases/m17n/m17n-lib-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "10yv730i25g1rpzv6q49m6xn4p8fjm7jdwvik2h70sn8w3hm7f4f"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fribidi" ,fribidi)
+       ("gd" ,gd)
+       ("libotf" ,libotf)
+       ("libxft" ,libxft)
+       ("libxml2" ,libxml2)
+       ("m17n-db" ,m17n-db)))
+    (arguments
+     `(#:parallel-build? #f))
+    ;; With `guix lint' the home-page URI returns a small page saying
+    ;; that your browser does not handle frames. This triggers the "URI
+    ;; returns suspiciously small file" warning.
+    (home-page "http://www.nongnu.org/m17n/")
+    (synopsis "Multilingual text processing library (runtime)")
+    (description "The m17n library realizes multilingualization of
+many aspects of applications.  The m17n library represents
+multilingual text as an object named M-text.  M-text is a string with
+attributes called text properties, and designed to substitute for
+string in C.  Text properties carry any information required to input,
+display and edit the text.
+
+This package contains the library runtime.")
+    (license license:lgpl2.1+)))

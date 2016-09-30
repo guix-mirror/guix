@@ -25,6 +25,7 @@
   #:use-module (guix profiles)
   #:use-module (guix sets)
   #:use-module (guix ui)
+  #:use-module (guix modules)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (srfi srfi-1)
@@ -50,6 +51,7 @@
             service-kind
             service-parameters
 
+            simple-service
             modify-services
             service-back-edges
             fold-services
@@ -141,6 +143,13 @@
   (type       service-kind)
   (parameters service-parameters))
 
+(define (simple-service name target value)
+  "Return a service that extends TARGET with VALUE.  This works by creating a
+singleton service type NAME, of which the returned service is an instance."
+  (let* ((extension (service-extension target identity))
+         (type      (service-type (name name)
+                                  (extensions (list extension)))))
+    (service type value)))
 
 (define-syntax %modify-service
   (syntax-rules (=>)
@@ -312,16 +321,6 @@ ACTIVATION-SCRIPT-TYPE."
 
 (define (activation-script gexps)
   "Return the system's activation script, which evaluates GEXPS."
-  (define %modules
-    '((gnu build activation)
-      (gnu build linux-boot)
-      (gnu build linux-modules)
-      (gnu build file-systems)
-      (guix build utils)
-      (guix build syscalls)
-      (guix build bournish)
-      (guix elf)))
-
   (define (service-activations)
     ;; Return the activation scripts for SERVICES.
     (mapm %store-monad
@@ -330,7 +329,8 @@ ACTIVATION-SCRIPT-TYPE."
 
   (mlet* %store-monad ((actions (service-activations)))
     (gexp->file "activate"
-                (with-imported-modules %modules
+                (with-imported-modules (source-module-closure
+                                        '((gnu build activation)))
                   #~(begin
                       (use-modules (gnu build activation))
 

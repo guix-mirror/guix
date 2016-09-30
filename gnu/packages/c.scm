@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,8 @@
                                               (assoc-ref %build-inputs "libc")
                                               "/lib"))
        #:test-target "test"))
+    ;; Fails to build on MIPS: "Unsupported CPU"
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     (synopsis "Tiny and fast C compiler")
     (description
      "TCC, also referred to as \"TinyCC\", is a small and fast C compiler

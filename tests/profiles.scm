@@ -187,6 +187,9 @@
       (and (null? remove) (null? install) (null? downgrade)
            (equal? (list (cons guile-2.0.9 guile-2.0.9)) upgrade)))))
 
+(test-assert "manifest-transaction-null?"
+  (manifest-transaction-null? (manifest-transaction)))
+
 (test-assertm "profile-derivation"
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry %bootstrap-guile))

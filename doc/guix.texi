@@ -10,7 +10,7 @@
 @include version.texi
 
 @c Identifier of the OpenPGP key used to sign tarballs and such.
-@set OPENPGP-SIGNING-KEY-ID 090B11993D9AEBB5
+@set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016 Ludovic Courtès@*
@@ -25,6 +25,7 @@ Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016 Efraim Flashner@*
+Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0
 
 Permission is granted to copy, distribute and/or modify this document
@@ -218,7 +219,7 @@ Services
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Web Services::                Web servers.
-* Various Services::            Other services.
+* Miscellaneous Services::      Other services.
 
 Defining Services
 
@@ -3793,7 +3794,7 @@ native package build:
                 "-s"
                 (string-append #$emacs "/bin/emacs")
                 (string-append #$output "/bin/vi")))
-   #:target "mips64el-linux")
+   #:target "mips64el-linux-gnu")
 @end example
 
 @noindent
@@ -3824,6 +3825,28 @@ The @code{with-imported-modules} form allows you to express that:
 In this example, the @code{(guix build utils)} module is automatically
 pulled into the isolated build environment of our gexp, such that
 @code{(use-modules (guix build utils))} works as expected.
+
+@cindex module closure
+@findex source-module-closure
+Usually you want the @emph{closure} of the module to be imported---i.e.,
+the module itself and all the modules it depends on---rather than just
+the module; failing to do that, attempts to use the module will fail
+because of missing dependent modules.  The @code{source-module-closure}
+procedure computes the closure of a module by looking at its source file
+headers, which comes in handy in this case:
+
+@example
+(use-modules (guix modules))   ;for 'source-module-closure'
+
+(with-imported-modules (source-module-closure
+                         '((guix build utils)
+                           (gnu build vm)))
+  (gexp->derivation "something-with-vms"
+                    #~(begin
+                        (use-modules (guix build utils)
+                                     (gnu build vm))
+                        @dots{})))
+@end example
 
 The syntactic form to construct gexps is summarized below.
 
@@ -3962,7 +3985,7 @@ The @code{local-file}, @code{plain-file}, @code{computed-file},
 these objects lead to a file in the store.  Consider this G-expression:
 
 @example
-#~(system* (string-append #$glibc "/sbin/nscd") "-f"
+#~(system* #$(file-append glibc "/sbin/nscd") "-f"
            #$(local-file "/tmp/my-nscd.conf"))
 @end example
 
@@ -4021,7 +4044,7 @@ command:
 (use-modules (guix gexp) (gnu packages base))
 
 (gexp->script "list-files"
-              #~(execl (string-append #$coreutils "/bin/ls")
+              #~(execl #$(file-append coreutils "/bin/ls")
                        "ls"))
 @end example
 
@@ -4032,8 +4055,7 @@ executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 @example
 #!/gnu/store/@dots{}-guile-2.0.11/bin/guile -ds
 !#
-(execl (string-append "/gnu/store/@dots{}-coreutils-8.22"/bin/ls")
-       "ls")
+(execl "/gnu/store/@dots{}-coreutils-8.22"/bin/ls" "ls")
 @end example
 @end deffn
 
@@ -4102,6 +4124,34 @@ as in:
 
 This is the declarative counterpart of @code{text-file*}.
 @end deffn
+
+@deffn {Scheme Procedure} file-append @var{obj} @var{suffix} @dots{}
+Return a file-like object that expands to the concatenation of @var{obj}
+and @var{suffix}, where @var{obj} is a lowerable object and each
+@var{suffix} is a string.
+
+As an example, consider this gexp:
+
+@example
+(gexp->script "run-uname"
+              #~(system* #$(file-append coreutils
+                                        "/bin/uname")))
+@end example
+
+The same effect could be achieved with:
+
+@example
+(gexp->script "run-uname"
+              #~(system* (string-append #$coreutils
+                                        "/bin/uname")))
+@end example
+
+There is one difference though: in the @code{file-append} case, the
+resulting script contains the absolute file name as a string, whereas in
+the second case, the resulting script contains a @code{(string-append
+@dots{})} expression to construct the file name @emph{at run time}.
+@end deffn
+
 
 Of course, in addition to gexps embedded in ``host'' code, there are
 also modules containing build tools.  To make it clear that they are
@@ -4656,7 +4706,7 @@ The general syntax is:
 guix hash @var{option} @var{file}
 @end example
 
-@command{guix hash} has the following option:
+@command{guix hash} has the following options:
 
 @table @code
 
@@ -4684,6 +4734,11 @@ hash (@pxref{Invoking guix archive}).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
 
+@item --exclude-vcs
+@itemx -x
+When combined with @option{--recursive}, exclude version control system
+directories (@file{.bzr}, @file{.git}, @file{.hg}, etc.)
+
 @vindex git-fetch
 As an example, here is how you would compute the hash of a Git checkout,
 which is useful when using the @code{git-fetch} method (@pxref{origin
@@ -4692,8 +4747,7 @@ Reference}):
 @example
 $ git clone http://example.org/foo.git
 $ cd foo
-$ rm -rf .git
-$ guix hash -r .
+$ guix hash -rx .
 @end example
 @end table
 
@@ -6129,7 +6183,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-More than 3,200 packages are available, but you may
+More than 4,000 packages are available, but you may
 occasionally find that a useful package is missing.
 
 @item
@@ -6699,8 +6753,7 @@ following in your operating system declaration:
                         (extra-options '("--gc-keep-derivations"))))
     (mingetty-service-type config =>
                            (mingetty-configuration
-                            (inherit config)
-                            (motd (plain-file "motd" "Howdy!"))))))
+                            (inherit config)))))
 
 (operating-system
   ;; @dots{}
@@ -7534,7 +7587,7 @@ declaration.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Web Services::                Web servers.
-* Various Services::            Other services.
+* Miscellaneous Services::      Other services.
 @end menu
 
 @node Base Services
@@ -7565,6 +7618,27 @@ this:
 Return a service that sets the host name to @var{name}.
 @end deffn
 
+@deffn {Scheme Procedure} login-service @var{config}
+Return a service to run login according to @var{config}, a
+@code{<login-configuration>} object, which specifies the message of the day,
+among other things.
+@end deffn
+
+@deftp {Data Type} login-configuration
+This is the data type representing the configuration of login.
+
+@table @asis
+
+@item @code{motd}
+A file-like object containing the ``message of the day''.
+
+@item @code{allow-empty-passwords?} (default: @code{#t})
+Allow empty passwords by default so that first-time users can log in when
+the 'root' account has just been created.
+
+@end table
+@end deftp
+
 @deffn {Scheme Procedure} mingetty-service @var{config}
 Return a service to run mingetty according to @var{config}, a
 @code{<mingetty-configuration>} object, which specifies the tty to run, among
@@ -7579,9 +7653,6 @@ implements console log-in.
 
 @item @code{tty}
 The name of the console this Mingetty runs on---e.g., @code{"tty1"}.
-
-@item @code{motd}
-A file-like object containing the ``message of the day''.
 
 @item @code{auto-login} (default: @code{#f})
 When true, this field must be a string denoting the user name under
@@ -7599,6 +7670,37 @@ will have to press a key before the log-in shell is launched.
 
 @item @code{mingetty} (default: @var{mingetty})
 The Mingetty package to use.
+
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} kmscon-service-type @var{config}
+Return a service to run @uref{https://www.freedesktop.org/wiki/Software/kmscon,kmscon}
+according to @var{config}, a @code{<kmscon-configuration>} object, which
+specifies the tty to run, among other things.
+@end deffn
+
+@deftp {Data Type} kmscon-configuration
+This is the data type representing the configuration of Kmscon, which
+implements console log-in.
+
+@table @asis
+
+@item @code{virtual-terminal}
+The name of the console this Kmscon runs on---e.g., @code{"tty1"}.
+
+@item @code{login-program} (default: @code{#~(string-append #$shadow "/bin/login")})
+A gexp denoting the name of the log-in program. The default log-in program is
+@command{login} from the Shadow tool suite.
+
+@item @code{login-arguments} (default: @code{'("-p")})
+A list of arguments to pass to @command{login}.
+
+@item @code{hardware-acceleration?} (default: #f)
+Whether to use hardware acceleration.
+
+@item @code{kmscon} (default: @var{kmscon})
+The Kmscon package to use.
 
 @end table
 @end deftp
@@ -7697,12 +7799,23 @@ privacy---often the result of host name lookups is in local cache, so
 external name servers do not even need to be queried.
 @end defvr
 
+@anchor{syslog-configuration-type}
+@deftp {Data Type} syslog-configuration
+This data type represents the configuration of the syslog daemon.
 
-@deffn {Scheme Procedure} syslog-service @
-             [#:config-file @var{%default-syslog.conf}]
-Return a service that runs @command{syslogd}.  If the configuration file
-name @var{config-file} is not specified, use some reasonable default
-settings.
+@table @asis
+@item @code{syslogd} (default: @code{#~(string-append #$inetutils "/libexec/syslogd")})
+The syslog daemon to use.
+
+@item @code{config-file} (default: @code{%default-syslog.conf})
+The syslog configuration file to use.
+
+@end table
+@end deftp
+
+@anchor{syslog-service}
+@deffn {Scheme Procedure} syslog-service @var{config}
+Return a service that runs a syslog daemon according to @var{config}.
 
 @xref{syslogd invocation,,, inetutils, GNU Inetutils}, for more
 information on the configuration file syntax.
@@ -8086,6 +8199,40 @@ root.
 The other options should be self-descriptive.
 @end deffn
 
+@deffn {Scheme Procedure} openssh-service [#:pid-file "/var/run/sshd.pid"] @
+       [#:port-number 22] [#:permit-root-login 'without-password] @
+       [#:allow-empty-passwords #f] [#:password-authentication? #t] @
+       [#:pubkey-authentication? #t] [#:rsa-authentication? #t] @
+       [#:x11-forwarding? #f] [#:protocol-number "2"]
+Run the @command{sshd} program from @var{openssh} on port
+@var{port-number}.  @command{sshd} runs an SSH daemon and writes its PID
+to @var{pid-file}.  It understands SSH protocol
+@var{protocol-number}. The @var{protocol-number} can be either 1 or 2.
+
+@var{permit-root-login} takes one of @code{#t}, @code{'without-password}
+and @code{#f}.  It is used to allow root login through SSH.
+@code{'without-password} means that root login is allowed, but not with
+password-based authentication.
+
+When @var{allow-empty-passwords?} is true, users with empty passwords
+may log in.  When false, they may not.
+
+When @var{password-authentication?} is true, users may log in with their
+password.  When false, they have to use other means of authentication.
+
+When @var{pubkey-authentication?} is true, users may log in using public
+key authentication.  When false, users have to use other means of
+authentication.  Authorized public keys are stored in
+@file{~/.ssh/authorized_keys}.  This is used only by protocol version 2.
+
+When @var{rsa-authentication?} is true, users may log in using pure RSA
+authentication.  When false, users have to use other means of
+authentication.  This is used only by protocol 1.
+
+When @var{x11-forwarding?} is true, @command{ssh} options @option{-X}
+and @option{-Y} will work.
+@end deffn
+
 @deffn {Scheme Procedure} dropbear-service [@var{config}]
 Run the @uref{https://matt.ucc.asn.au/dropbear/dropbear.html,Dropbear SSH
 daemon} with the given @var{config}, a @code{<dropbear-configuration>}
@@ -8192,6 +8339,109 @@ Support for the X Window graphical display system---specifically
 Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
 started by the @dfn{login manager}, currently SLiM.
+
+@deftp {Data Type} sddm-configuration
+This is the data type representing the sddm service configuration.
+
+@table @asis
+@item @code{display-server} (default: "x11")
+Select display server to use for the greeter. Valid values are "x11"
+or "wayland".
+
+@item @code{numlock} (default: "on")
+Valid values are "on", "off" or "none".
+
+@item @code{halt-command} (default @code{#~(string-apppend #$shepherd "/sbin/halt")})
+Command to run when halting.
+
+@item @code{reboot-command} (default @code{#~(string-append #$shepherd "/sbin/reboot")})
+Command to run when rebooting.
+
+@item @code{theme} (default "maldives")
+Theme to use. Default themes provided by SDDM are "elarun" or "maldives".
+
+@item @code{themes-directory} (default "/run/current-system/profile/share/sddm/themes")
+Directory to look for themes.
+
+@item @code{faces-directory} (default "/run/current-system/profile/share/sddm/faces")
+Directory to look for faces.
+
+@item @code{default-path} (default "/run/current-system/profile/bin")
+Default PATH to use.
+
+@item @code{minimum-uid} (default 1000)
+Minimum UID to display in SDDM.
+
+@item @code{maximum-uid} (default 2000)
+Maximum UID to display in SDDM
+
+@item @code{remember-last-user?} (default #t)
+Remember last user.
+
+@item @code{remember-last-session?} (default #t)
+Remember last session.
+
+@item @code{hide-users} (default "")
+Usernames to hide from SDDM greeter.
+
+@item @code{hide-shells} (default @code{#~(string-append #$shadow "/sbin/nologin")})
+Users with shells listed will be hidden from the SDDM greeter.
+
+@item @code{session-command} (default @code{#~(string-append #$sddm "/share/sddm/scripts/wayland-session")})
+Script to run before starting a wayland session.
+
+@item @code{sessions-directory} (default "/run/current-system/profile/share/wayland-sessions")
+Directory to look for desktop files starting wayland sessions.
+
+@item @code{xorg-server-path} (default @code{xorg-start-command})
+Path to xorg-server.
+
+@item @code{xauth-path} (default @code{#~(string-append #$xauth "/bin/xauth")})
+Path to xauth.
+
+@item @code{xephyr-path} (default @code{#~(string-append #$xorg-server "/bin/Xephyr")})
+Path to Xephyr.
+
+@item @code{xdisplay-start} (default @code{#~(string-append #$sddm "/share/sddm/scripts/Xsetup")})
+Script to run after starting xorg-server.
+
+@item @code{xdisplay-stop} (default @code{#~(string-append #$sddm "/share/sddm/scripts/Xstop")})
+Script to run before stopping xorg-server.
+
+@item @code{xsession-command} (default: @code{xinitr })
+Script to run before starting a X session.
+
+@item @code{xsessions-directory} (default: "/run/current-system/profile/share/xsessions")
+Directory to look for desktop files starting X sessions.
+
+@item @code{minimum-vt} (default: 7)
+Minimum VT to use.
+
+@item @code{xserver-arguments} (default "-nolisten tcp")
+Arguments to pass to xorg-server.
+
+@item @code{auto-login-user} (default "")
+User to use for auto-login.
+
+@item @code{auto-login-session} (default "")
+Desktop file to use for auto-login.
+
+@item @code{relogin?} (default #f)
+Relogin after logout.
+
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} sddm-service config
+Return a service that spawns the SDDM graphical login manager for config of
+type @code{<sddm-configuration>}.
+
+@example
+  (sddm-service (sddm-configuration
+                 (auto-login-user "Alice")
+                 (auto-login-session "xfce.desktop")))
+@end example
+@end deffn
 
 @deffn {Scheme Procedure} slim-service [#:allow-empty-passwords? #f] @
   [#:auto-login? #f] [#:default-user ""] [#:startx] @
@@ -8324,7 +8574,7 @@ profile, and extends polkit with the actions from
 
 @deffn {Scheme Procedure} xfce-desktop-service
 Return a service that adds the @code{xfce} package to the system profile,
-and extends polkit with the abilit for @code{thunar} to manipulate the
+and extends polkit with the ability for @code{thunar} to manipulate the
 file system as root from within a user session, after the user has
 authenticated with the administrator's password.
 @end deffn
@@ -9328,7 +9578,7 @@ Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
-Allow full filesystem access to clients.  There's no access checks
+Allow full file system access to clients.  There's no access checks
 other than what the operating system does for the active UID/GID.  It
 works with both maildir and mboxes, allowing you to prefix mailboxes
 names with e.g. /path/ or ~user/.
@@ -9337,7 +9587,7 @@ Defaults to @samp{#f}.
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mmap-disable?
 Don't use mmap() at all.  This is required if you store indexes to
-shared filesystems (NFS or clustered filesystem).
+shared file systems (NFS or clustered file system).
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -9599,7 +9849,7 @@ Defaults to @samp{"1d"}.
 @deftypevr {@code{dovecot-configuration} parameter} boolean mdbox-preallocate-space?
 When creating new mdbox files, immediately preallocate their size to
 @samp{mdbox-rotate-size}.  This setting currently works only in Linux
-with some filesystems (ext4, xfs).
+with some file systems (ext4, xfs).
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -9622,7 +9872,7 @@ Defaults to @samp{128000}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string mail-attachment-fs
-Filesystem backend to use for saving attachments:
+File system backend to use for saving attachments:
 @table @code
 @item posix
 No SiS done by Dovecot (but this might help FS's own deduplication)
@@ -9748,8 +9998,8 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string postmaster-address
 Address to use when sending rejection mails.
-Default is postmaster@@<your domain>.  %d expands to recipient domain.
-Defaults to @samp{""}.
+%d expands to recipient domain.
+Defaults to @samp{"postmaster@@%d"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string hostname
@@ -9950,8 +10200,33 @@ directories are created when the service is activated.
 
 @end deffn
 
-@node Various Services
-@subsubsection Various Services
+@node Miscellaneous Services
+@subsubsection Miscellaneous Services
+
+
+@subsubheading RPC Bind Service
+@cindex rpcbind
+
+The @code{(gnu services nfs)} module provides the following:
+
+@defvr {Scheme Variable} rpcbind-service-type
+A service type  for the RPC portmapper daemon.
+@end defvr
+
+
+@deftp {Data Type} rpcbind-configuration
+Data type representing the configuration of the RPC Bind Service.
+This type has the following parameters:
+@table @asis
+@item @code{rpcbind} (default: @code{rpcbind})
+The rpcbind package to use.
+
+@item @code{warm-start?} (default: @code{#t})
+If this parameter is @code{#t}, then the daemon will read a
+state file on startup thus reloading state information saved by a previous
+instance.
+@end table
+@end deftp
 
 @cindex lirc
 @subsubheading Lirc Service
@@ -10429,9 +10704,23 @@ The @code{grub-theme} object describing the theme to use.
 
 @end deftp
 
+@cindex dual boot
+@cindex boot menu
 Should you want to list additional boot menu entries @i{via} the
 @code{menu-entries} field above, you will need to create them with the
-@code{menu-entry} form:
+@code{menu-entry} form.  For example, imagine you want to be able to
+boot another distro (hard to imagine!), you can define a menu entry
+along these lines:
+
+@example
+(menu-entry
+  (label "The Other Distro")
+  (linux "/boot/old/vmlinux-2.6.32")
+  (linux-arguments '("root=/dev/sda2"))
+  (initrd "/boot/old/initrd"))
+@end example
+
+Details below.
 
 @deftp {Data Type} menu-entry
 The type of an entry in the GRUB boot menu.
@@ -10442,7 +10731,11 @@ The type of an entry in the GRUB boot menu.
 The label to show in the menu---e.g., @code{"GNU"}.
 
 @item @code{linux}
-The Linux kernel to boot.
+The Linux kernel image to boot, for example:
+
+@example
+(file-append linux-libre "/bzImage")
+@end example
 
 @item @code{linux-arguments} (default: @code{()})
 The list of extra Linux kernel command-line arguments---e.g.,
@@ -11087,6 +11380,25 @@ the extension; it must return a valid value for the target service.
 
 @deffn {Scheme Procedure} service-extension? @var{obj}
 Return true if @var{obj} is a service extension.
+@end deffn
+
+Occasionally, you might want to simply extend an existing service.  This
+involves creating a new service type and specifying the extension of
+interest, which can be verbose; the @code{simple-service} procedure
+provides a shorthand for this.
+
+@deffn {Scheme Procedure} simple-service @var{name} @var{target} @var{value}
+Return a service that extends @var{target} with @var{value}.  This works
+by creating a singleton service type @var{name}, of which the returned
+service is an instance.
+
+For example, this extends mcron (@pxref{Scheduled Job Execution}) with
+an additional job:
+
+@example
+(simple-service 'my-mcron-job mcron-service-type
+                #~(job '(next-hour (3)) "guix gc -F 2G"))
+@end example
 @end deffn
 
 At the core of the service abstraction lies the @code{fold-services}

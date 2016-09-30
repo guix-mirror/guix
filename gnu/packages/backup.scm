@@ -28,6 +28,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -98,6 +99,42 @@ parts of files that have changed since the last backup.  Because duplicity
 uses GnuPG to encrypt and/or sign these archives, they will be safe from
 spying and/or modification by the server.")
     (license license:gpl2+)))
+
+(define-public par2cmdline
+  (package
+    (name "par2cmdline")
+    (version "0.6.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ykfb7ar0x0flfdgf6i8xphyv5b93dalbjj2jb6hx7sdjax33n1g"))
+              ;; This test merely needs a file to test recovery on, but
+              ;; /dev/random is essentially /dev/urandom plus minimum entropy
+              ;; locking, making the test hang indefinitely. This change is
+              ;; already upstream: remove on upgrade to future 0.6.15.
+              ;; https://github.com/Parchive/par2cmdline/commit/27723a678f780da82c79b98592592009c779a4fb
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "tests/test20" (("if=/dev/random") "if=/dev/urandom")))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    (synopsis "File verification and repair tool")
+    (description "Par2cmdline is a tool for generating RAID-like PAR2 recovery
+files using Reed-Solomon coding.  PAR2 files can be stored along side backups
+or distributed files for recovering from bitrot.")
+    (home-page "https://github.com/Parchive/par2cmdline")
+    (license license:gpl3+)))
 
 (define-public hdup
   (package
@@ -321,48 +358,6 @@ to a remote location, and only the differences will be transmitted.  Finally,
 rdiff-backup is easy to use and settings have sensible defaults.")
     (license license:gpl2+)))
 
-(define-public attic
-  (package
-    (name "attic")
-    (version "0.16")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/A/Attic/Attic-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before
-          'build 'set-openssl-prefix
-          (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "ATTIC_OPENSSL_PREFIX" (assoc-ref inputs "openssl"))
-            #t)))))
-    (inputs
-     `(("acl" ,acl)
-       ("openssl" ,openssl)
-       ("python-msgpack" ,python-msgpack)
-
-       ;; Attic is probably incompatible with llfuse > 0.41.
-       ;; These links are to discussions of llfuse compatibility from
-       ;; the borg project. Borg is a recent fork of attic, and attic
-       ;; has not been updated since the fork, so it's likely that
-       ;; llfuse compatibility requirements are still the same.
-       ;; https://github.com/borgbackup/borg/issues/642
-       ;; https://github.com/borgbackup/borg/issues/643
-       ("python-llfuse" ,python-llfuse-0.41)))
-    (synopsis "Deduplicating backup program")
-    (description "Attic is a deduplicating backup program.  The main goal of
-Attic is to provide an efficient and secure way to backup data.  The data
-deduplication technique used makes Attic suitable for daily backups since only
-changes are stored.")
-    (home-page "https://attic-backup.org/")
-    (license license:bsd-3)))
-
 (define-public libchop
   (package
     (name "libchop")
@@ -410,10 +405,13 @@ detection, and lossless compression.")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
-
               (sha256
                (base32
-                "1l9iw55w5x51yxl3q89cf6avg80lajxvc8qz584hrsmnk6i56cr0"))))
+                "1l9iw55w5x51yxl3q89cf6avg80lajxvc8qz584hrsmnk6i56cr0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(for-each
+                  delete-file (find-files "borg" "^(c|h|p).*\\.c$")))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -437,7 +435,8 @@ detection, and lossless compression.")
                    (install-file "docs/_build/man/borg.1" man)
                    #t))))))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
+     `(("python-cython" ,python-cython)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
@@ -456,3 +455,46 @@ stored.  The authenticated encryption technique makes it suitable for backups
 to not fully trusted targets.  Borg is a fork of Attic.")
     (home-page "https://borgbackup.github.io/borgbackup/")
     (license license:bsd-3)))
+
+(define-public attic
+  (package
+    (name "attic")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/A/Attic/Attic-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'build 'set-openssl-prefix
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "ATTIC_OPENSSL_PREFIX" (assoc-ref inputs "openssl"))
+            #t)))))
+    (inputs
+     `(("acl" ,acl)
+       ("openssl" ,openssl)
+       ("python-msgpack" ,python-msgpack)
+
+       ;; Attic is probably incompatible with llfuse > 0.41.
+       ;; These links are to discussions of llfuse compatibility from
+       ;; the borg project. Borg is a recent fork of attic, and attic
+       ;; has not been updated since the fork, so it's likely that
+       ;; llfuse compatibility requirements are still the same.
+       ;; https://github.com/borgbackup/borg/issues/642
+       ;; https://github.com/borgbackup/borg/issues/643
+       ("python-llfuse" ,python-llfuse-0.41)))
+    (synopsis "Deduplicating backup program")
+    (description "Attic is a deduplicating backup program.  The main goal of
+Attic is to provide an efficient and secure way to backup data.  The data
+deduplication technique used makes Attic suitable for daily backups since only
+changes are stored.")
+    (home-page "https://attic-backup.org/")
+    (license license:bsd-3)
+    (properties `((superseded . ,borg)))))

@@ -149,6 +149,19 @@ affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "http://cairographics.org/")))
 
+(define-public cairo-xcb
+  (package
+    (inherit cairo)
+    (name "cairo-xcb")
+    (inputs
+     `(("mesa" ,mesa)
+       ,@(package-inputs cairo)))
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       '("--enable-xlib-xcb" "--enable-gl" "--enable-egl")))
+    (synopsis "2D graphics library (with X11 support)")))
+
 (define-public harfbuzz
   (package
    (name "harfbuzz")
@@ -563,6 +576,7 @@ is part of the GNOME accessibility project.")
              (base32
               "0l6aqk86aw5w132ygy6hv6nlxvd1h6xg7c85qbm60p6mnv1ww58d"))
             (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
+                                     "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
                                      "gtk2-theme-paths.patch"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
@@ -623,8 +637,9 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "05xcwvy68p7f4hdhi4bgdm3aycvqqr4pr5kkkr8ba91l5yx0k9l3"))
-            (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"))))
+              "157nh9gg0p2avw765hrnkvr8lsh2w811397yxgjv6q5j4fzz6d1q"))
+            (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
+                                     "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
@@ -659,20 +674,18 @@ application suites.")
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
                                              "/share/gtk-doc/html"))
-      #:phases
-      (alist-cons-before
-       'configure 'pre-configure
-       (lambda _
-         ;; Disable most tests, failing in the chroot with the message:
-         ;; D-Bus library appears to be incorrectly set up; failed to read
-         ;; machine uuid: Failed to open "/etc/machine-id": No such file or
-         ;; directory.
-         ;; See the manual page for dbus-uuidgen to correct this issue.
-         (substitute* "testsuite/Makefile.in"
-           (("SUBDIRS = gdk gtk a11y css reftests")
-            "SUBDIRS = gdk"))
-         #t)
-       %standard-phases)))
+      #:phases (modify-phases %standard-phases
+        (add-before 'configure 'pre-configure
+          (lambda _
+            ;; Disable most tests, failing in the chroot with the message:
+            ;; D-Bus library appears to be incorrectly set up; failed to read
+            ;; machine uuid: Failed to open "/etc/machine-id": No such file or
+            ;; directory.
+            ;; See the manual page for dbus-uuidgen to correct this issue.
+            (substitute* "testsuite/Makefile.in"
+              (("SUBDIRS = gdk gtk a11y css reftests")
+               "SUBDIRS = gdk"))
+            #t)))))
    (native-search-paths
     (list (search-path-specification
            (variable "GUIX_GTK3_PATH")
@@ -1331,4 +1344,30 @@ glass artworks done by Venicians glass blowers.")
     (description
      "GtkSpell provides word-processor-style highlighting and replacement of
 misspelled words in a GtkTextView widget.")
+    (license license:gpl2+)))
+
+(define-public clipit
+  (package
+    (name "clipit")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/downloads/ClipIt/clipit-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0jrwn8qfgb15rwspdp1p8hb1nc0ngmpvgr87d4k3lhlvqg2cfqva"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
+    (home-page "https://github.com/CristianHenzel/ClipIt")
+    (synopsis "Lightweight GTK+ clipboard manager")
+    (description
+     "ClipIt is a clipboard manager with features such as a history, search
+thereof, global hotkeys and clipboard item actions.  It was forked from
+Parcellite and adds bugfixes and features.")
     (license license:gpl2+)))

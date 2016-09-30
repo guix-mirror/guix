@@ -1,0 +1,33 @@
+Borrowed from Debian.
+
+--- swish-e-2.4.7/src/parser.c	2009-04-05 03:58:32.000000000 +0200
++++ swish-e-2.4.7/src/parser.c	2013-06-11 13:53:08.196559035 +0200
+@@ -1760,7 +1760,7 @@
+     va_start(args, msg);
+     vsnprintf(str, 1000, msg, args );
+     va_end(args);
+-    xmlParserError(parse_data->ctxt, str);
++    xmlParserError(parse_data->ctxt, "%s", str);
+ }
+ 
+ static void warning(void *data, const char *msg, ...)
+@@ -1772,7 +1772,7 @@
+     va_start(args, msg);
+     vsnprintf(str, 1000, msg, args );
+     va_end(args);
+-    xmlParserWarning(parse_data->ctxt, str);
++    xmlParserWarning(parse_data->ctxt, "%s", str);
+ }
+ 
+ 
+--- swish-e-2.4.7/src/result_output.c	2009-04-05 03:58:32.000000000 +0200
++++ swish-e-2.4.7/src/result_output.c	2013-06-11 13:53:38.593550825 +0200
+@@ -752,7 +752,7 @@
+             s = (char *) emalloc(MAXWORDLEN + 1);
+             n = strftime(s, (size_t) MAXWORDLEN, fmt, localtime(&(pv->value.v_date)));
+             if (n && f)
+-                fprintf(f, s);
++                fprintf(f, "%s", s);
+             efree(s);
+         }
+         break;

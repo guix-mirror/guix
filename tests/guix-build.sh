@@ -93,6 +93,9 @@ cat > "$module_dir/foo.scm"<<EOF
 (define-public baz
   (dummy-package "baz" (replacement foo)))
 
+(define-public superseded
+  (deprecated-package "superseded" bar))
+
 EOF
 
 GUIX_PACKAGE_PATH="$module_dir"
@@ -167,6 +170,9 @@ test "$drv1" = "$drv2"
 
 if guix build guile --with-input=libunistring=something-really-silly
 then false; else true; fi
+
+# Deprecated/superseded packages.
+test "`guix build superseded -d`" = "`guix build bar -d`"
 
 # Parsing package names and versions.
 guix build -n time		# PASS

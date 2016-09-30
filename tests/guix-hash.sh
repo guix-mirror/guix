@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -46,3 +47,18 @@ then false; else true; fi
 # the archive format doesn't support.
 if guix hash -r /dev/null
 then false; else true; fi
+
+# Adding a .git directory
+mkdir "$tmpdir/.git"
+touch "$tmpdir/.git/foo"
+
+# ...changes the hash
+test `guix hash -r $tmpdir` = 0a50z04zyzf7pidwxv0nwbj82pgzbrhdy9562kncnvkcfvb48m59
+
+# ...but remains the same when using `-x'
+test `guix hash -r $tmpdir -x` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
+
+# Without '-r', this should fail.
+if guix hash "$tmpdir"
+then false; else true; fi
+

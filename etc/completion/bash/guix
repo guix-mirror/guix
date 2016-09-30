@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -20,6 +20,15 @@
 
 declare _guix_available_packages
 
+_guix_complete_subcommand ()
+{
+    local command="${COMP_WORDS[1]}"
+    local subcommands="$(${COMP_WORDS[0]} $command --help 2> /dev/null \
+                         | grep '^   [a-z]' \
+                         | sed -e's/^ \+\([a-z-]\+\).*$/\1/g')"
+    COMPREPLY=($(compgen -W "$subcommands" -- "${COMP_WORDS[${#COMP_WORDS[*]} - 1]}"))
+}
+
 _guix_complete_available_package ()
 {
     local prefix="$1"
@@ -27,7 +36,8 @@ _guix_complete_available_package ()
     then
 	# Cache the complete list because it rarely changes and makes
 	# completion much faster.
-	_guix_available_packages="$(${COMP_WORDS[0]} package -A | cut -f1)"
+	_guix_available_packages="$(${COMP_WORDS[0]} package -A 2> /dev/null \
+                                    | cut -f1)"
     fi
     COMPREPLY=($(compgen -W "$_guix_available_packages" -- "$prefix"))
 }
@@ -37,17 +47,23 @@ _guix_complete_installed_package ()
     # Here we do not cache the list of installed packages because that
     # may change over time and the list is relatively small anyway.
     local prefix="$1"
-    local packages="$(${COMP_WORDS[0]} package -I "^$prefix" | cut -f1)"
+    local packages="$(${COMP_WORDS[0]} package -I "^$prefix" 2> /dev/null \
+                      | cut -f1)"
     COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
 }
 
 _guix_complete_option ()
 {
-    local options="$(${COMP_WORDS[0]} ${COMP_WORDS[1]} --help \
+    local subcommand
+    case "${COMP_WORDS[2]}" in
+	-*)     subcommand="";;
+	[a-z]*) subcommand="${COMP_WORDS[2]}";;
+    esac
+    local options="$(${COMP_WORDS[0]} ${COMP_WORDS[1]} $subcommand --help 2> /dev/null \
                             | grep '^  \+-' \
-                            | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g' )"
+                            | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
     compopt -o nospace
-    COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[$word_count - 1]}"))
+    COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[${#COMP_WORDS[*]} - 1]}"))
 }
 
 _guix_is_command ()
@@ -119,7 +135,8 @@ _guix_complete ()
 	    if [ -z "$_guix_subcommands" ]
 	    then
 		# Cache the list of subcommands to speed things up.
-		_guix_subcommands="$(guix --help | grep '^  ' | cut -c 2-)"
+		_guix_subcommands="$(guix --help 2> /dev/null \
+                                     | grep '^  ' | cut -c 2-)"
 	    fi
 	    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
 	    ;;
@@ -137,13 +154,13 @@ _guix_complete ()
 		fi
 	    elif _guix_is_command "system"
 	    then
-		_guix_complete_file # TODO: complete sub-commands
+		_guix_complete_subcommand
+	    elif _guix_is_command "import"
+	    then
+		_guix_complete_subcommand
 	    elif _guix_is_command "hash"
 	    then
-		 _guix_complete_file
-	    elif _guix_is_command "import" # TODO: complete sub-commands
-	    then
-		 _guix_complete_file
+		_guix_complete_file
 	    else
 		_guix_complete_available_package "$word_at_point"
 	    fi

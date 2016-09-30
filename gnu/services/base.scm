@@ -39,6 +39,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages lsof)
+  #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
                 #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
@@ -57,6 +58,8 @@
             session-environment-service-type
             host-name-service
             console-keymap-service
+            %default-console-font
+            console-font-service-type
             console-font-service
 
             udev-configuration
@@ -65,6 +68,11 @@
             udev-service-type
             udev-service
             udev-rule
+
+            login-configuration
+            login-configuration?
+            login-service-type
+            login-service
 
             mingetty-configuration
             mingetty-configuration?
@@ -82,6 +90,9 @@
 
             nscd-service-type
             nscd-service
+
+            syslog-configuration
+            syslog-configuration?
             syslog-service
             syslog-service-type
             %default-syslog.conf
@@ -108,6 +119,11 @@
             rngd-configuration?
             rngd-service-type
             rngd-service
+
+            kmscon-configuration
+            kmscon-configuration?
+            kmscon-service-type
+
             pam-limits-service-type
             pam-limits-service
 
@@ -513,7 +529,7 @@ stopped before 'kill' is called."
       (define device (rngd-configuration-device config))
 
       (define rngd-command
-        (list #~(string-append #$rng-tools "/sbin/rngd")
+        (list (file-append rng-tools "/sbin/rngd")
               "-f" "-r" device))
 
       (shepherd-service
@@ -621,37 +637,83 @@ strings or string-valued gexps."
   "Return a service to load console keymaps from @var{files}."
   (service console-keymap-service-type files))
 
-(define console-font-service-type
-  (shepherd-service-type
-   'console-font
-   (match-lambda
-     ((tty font)
-      (let ((device (string-append "/dev/" tty)))
-        (shepherd-service
-         (documentation "Load a Unicode console font.")
-         (provision (list (symbol-append 'console-font-
-                                         (string->symbol tty))))
-
-         ;; Start after mingetty has been started on TTY, otherwise the settings
-         ;; are ignored.
-         (requirement (list (symbol-append 'term-
-                                           (string->symbol tty))))
-
-         (start #~(lambda _
-                    (and #$(unicode-start device)
-                         (zero?
-                          (system* (string-append #$kbd "/bin/setfont")
-                                   "-C" #$device #$font)))))
-         (stop #~(const #t))
-         (respawn? #f)))))))
-
-(define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
-  "Return a service that sets up Unicode support in @var{tty} and loads
-@var{font} for that tty (fonts are per virtual console in Linux.)"
+(define %default-console-font
   ;; Note: 'LatGrkCyr-8x16' has the advantage of providing three common
   ;; scripts as well as glyphs for em dash, quotation marks, and other Unicode
   ;; codepoints notably found in the UTF-8 manual.
-  (service console-font-service-type (list tty font)))
+  "LatGrkCyr-8x16")
+
+(define (console-font-shepherd-services tty+font)
+  "Return a list of Shepherd services for each pair in TTY+FONT."
+  (map (match-lambda
+         ((tty . font)
+          (let ((device (string-append "/dev/" tty)))
+            (shepherd-service
+             (documentation "Load a Unicode console font.")
+             (provision (list (symbol-append 'console-font-
+                                             (string->symbol tty))))
+
+             ;; Start after mingetty has been started on TTY, otherwise the settings
+             ;; are ignored.
+             (requirement (list (symbol-append 'term-
+                                               (string->symbol tty))))
+
+             (start #~(lambda _
+                        (and #$(unicode-start device)
+                             (zero?
+                              (system* (string-append #$kbd "/bin/setfont")
+                                       "-C" #$device #$font)))))
+             (stop #~(const #t))
+             (respawn? #f)))))
+       tty+font))
+
+(define console-font-service-type
+  (service-type (name 'console-fonts)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          console-font-shepherd-services)))
+                (compose concatenate)
+                (extend append)))
+
+(define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
+  "This procedure is deprecated in favor of @code{console-font-service-type}.
+
+Return a service that sets up Unicode support in @var{tty} and loads
+@var{font} for that tty (fonts are per virtual console in Linux.)"
+  (simple-service (symbol-append 'console-font- (string->symbol tty))
+                  console-font-service-type `((,tty . ,font))))
+
+(define %default-motd
+  (plain-file "motd" "This is the GNU operating system, welcome!\n\n"))
+
+(define-record-type* <login-configuration>
+  login-configuration make-login-configuration
+  login-configuration?
+  (motd                   login-configuration-motd     ;file-like
+                          (default %default-motd))
+  ;; Allow empty passwords by default so that first-time users can log in when
+  ;; the 'root' account has just been created.
+  (allow-empty-passwords? login-configuration-allow-empty-passwords?
+                          (default #t)))               ;Boolean
+
+(define (login-pam-service config)
+  "Return the list of PAM service needed for CONF."
+  ;; Let 'login' be known to PAM.
+  (list (unix-pam-service "login"
+                          #:allow-empty-passwords?
+                          (login-configuration-allow-empty-passwords? config)
+                          #:motd
+                          (login-configuration-motd config))))
+
+(define login-service-type
+  (service-type (name 'login)
+                (extensions (list (service-extension pam-root-service-type
+                                                     login-pam-service)))))
+
+(define* (login-service #:optional (config (login-configuration)))
+  "Return a service configure login according to @var{config}, which specifies
+the message of the day, among other things."
+  (service login-service-type config))
 
 (define-record-type* <mingetty-configuration>
   mingetty-configuration make-mingetty-configuration
@@ -659,35 +721,17 @@ strings or string-valued gexps."
   (mingetty       mingetty-configuration-mingetty ;<package>
                   (default mingetty))
   (tty            mingetty-configuration-tty)     ;string
-  (motd           mingetty-configuration-motd     ;file-like
-                  (default (plain-file "motd" "Welcome.\n")))
   (auto-login     mingetty-auto-login             ;string | #f
                   (default #f))
   (login-program  mingetty-login-program          ;gexp
                   (default #f))
   (login-pause?   mingetty-login-pause?           ;Boolean
-                  (default #f))
-
-  ;; Allow empty passwords by default so that first-time users can log in when
-  ;; the 'root' account has just been created.
-  (allow-empty-passwords? mingetty-configuration-allow-empty-passwords?
-                          (default #t)))          ;Boolean
-
-(define (mingetty-pam-service conf)
-  "Return the list of PAM service needed for CONF."
-  ;; Let 'login' be known to PAM.  All the mingetty services will have that
-  ;; PAM service, but that's fine because they're all identical and duplicates
-  ;; are removed.
-  (list (unix-pam-service "login"
-                          #:allow-empty-passwords?
-                          (mingetty-configuration-allow-empty-passwords? conf)
-                          #:motd
-                          (mingetty-configuration-motd conf))))
+                  (default #f)))
 
 (define mingetty-shepherd-service
   (match-lambda
-    (($ <mingetty-configuration> mingetty tty motd auto-login login-program
-                                 login-pause? allow-empty-passwords?)
+    (($ <mingetty-configuration> mingetty tty auto-login login-program
+                                 login-pause?)
      (list
       (shepherd-service
        (documentation "Run mingetty on an tty.")
@@ -715,9 +759,7 @@ strings or string-valued gexps."
 (define mingetty-service-type
   (service-type (name 'mingetty)
                 (extensions (list (service-extension shepherd-root-service-type
-                                                     mingetty-shepherd-service)
-                                  (service-extension pam-root-service-type
-                                                     mingetty-pam-service)))))
+                                                     mingetty-shepherd-service)))))
 
 (define* (mingetty-service config)
   "Return a service to run mingetty according to @var{config}, which specifies
@@ -885,17 +927,27 @@ given @var{config}---an @code{<nscd-configuration>} object.  @xref{Name
 Service Switch}, for an example."
   (service nscd-service-type config))
 
+
+(define-record-type* <syslog-configuration>
+  syslog-configuration  make-syslog-configuration
+  syslog-configuration?
+  (syslogd              syslog-configuration-syslogd
+                        (default (file-append inetutils "/libexec/syslogd")))
+  (config-file          syslog-configuration-config-file
+                        (default %default-syslog.conf)))
+
 (define syslog-service-type
   (shepherd-service-type
    'syslog
-   (lambda (config-file)
+   (lambda (config)
      (shepherd-service
       (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
       (requirement '(user-processes))
       (start #~(make-forkexec-constructor
-                (list (string-append #$inetutils "/libexec/syslogd")
-                      "--no-detach" "--rcfile" #$config-file)))
+                (list #$(syslog-configuration-syslogd config)
+                      "--rcfile" #$(syslog-configuration-config-file config))
+                #:pid-file "/var/run/syslog.pid"))
       (stop #~(make-kill-destructor))))))
 
 ;; Snippet adapted from the GNU inetutils manual.
@@ -921,14 +973,14 @@ Service Switch}, for an example."
      mail.*                                  /var/log/maillog
 "))
 
-(define* (syslog-service #:key (config-file %default-syslog.conf))
-  "Return a service that runs @command{syslogd}.  If configuration file
-name @var{config-file} is not specified, use some reasonable default
-settings.
+(define* (syslog-service #:optional (config (syslog-configuration)))
+  "Return a service that runs @command{syslogd} and takes
+@var{<syslog-configuration>} as a parameter.
 
 @xref{syslogd invocation,,, inetutils, GNU Inetutils}, for more
 information on the configuration file syntax."
-  (service syslog-service-type config-file))
+  (service syslog-service-type config))
+
 
 (define pam-limits-service-type
   (let ((security-limits
@@ -996,7 +1048,7 @@ starting at FIRST-UID, and under GID."
 
              (comment (format #f "Guix Build User ~2d" n))
              (home-directory "/var/empty")
-             (shell #~(string-append #$shadow "/sbin/nologin"))))
+             (shell (file-append shadow "/sbin/nologin"))))
           1+
           1))
 
@@ -1023,7 +1075,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
-  (list #~(string-append #$guix "/share/guix/hydra.gnu.org.pub")))
+  (list (file-append guix "/share/guix/hydra.gnu.org.pub")))
 
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
@@ -1154,7 +1206,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
          (system? #t)
          (comment "guix publish user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define guix-publish-service-type
   (service-type (name 'guix-publish)
@@ -1419,41 +1471,76 @@ This service is not part of @var{%base-services}."
   (service gpm-service-type
            (gpm-configuration (gpm gpm) (options options))))
 
+(define-record-type* <kmscon-configuration>
+  kmscon-configuration     make-kmscon-configuration
+  kmscon-configuration?
+  (kmscon                  kmscon-configuration-kmscon
+                           (default kmscon))
+  (virtual-terminal        kmscon-configuration-virtual-terminal)
+  (login-program           kmscon-configuration-login-program
+                           (default #~(string-append #$shadow "/bin/login")))
+  (login-arguments         kmscon-configuration-login-arguments
+                           (default '("-p")))
+  (hardware-acceleration?  kmscon-configuration-hardware-acceleration?
+                           (default #f))) ; #t causes failure
+
+(define kmscon-service-type
+  (shepherd-service-type
+   'kmscon
+   (lambda (config)
+     (let ((kmscon (kmscon-configuration-kmscon config))
+           (virtual-terminal (kmscon-configuration-virtual-terminal config))
+           (login-program (kmscon-configuration-login-program config))
+           (login-arguments (kmscon-configuration-login-arguments config))
+           (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config)))
+
+       (define kmscon-command
+         #~(list
+            (string-append #$kmscon "/bin/kmscon") "--login"
+            "--vt" #$virtual-terminal
+            #$@(if hardware-acceleration? '("--hwaccel") '())
+            "--" #$login-program #$@login-arguments))
+
+       (shepherd-service
+        (documentation "kmscon virtual terminal")
+        (requirement '(user-processes udev dbus-system))
+        (provision (list (symbol-append 'term- (string->symbol virtual-terminal))))
+        (start #~(make-forkexec-constructor #$kmscon-command))
+        (stop #~(make-kill-destructor)))))))
+
 
 (define %base-services
   ;; Convenience variable holding the basic services.
-  (let ((motd (plain-file "motd" "
-This is the GNU operating system, welcome!\n\n")))
-    (list (console-font-service "tty1")
-          (console-font-service "tty2")
-          (console-font-service "tty3")
-          (console-font-service "tty4")
-          (console-font-service "tty5")
-          (console-font-service "tty6")
+  (list (login-service)
 
-          (mingetty-service (mingetty-configuration
-                             (tty "tty1") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty2") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty3") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty4") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty5") (motd motd)))
-          (mingetty-service (mingetty-configuration
-                             (tty "tty6") (motd motd)))
+        (service console-font-service-type
+                 (map (lambda (tty)
+                        (cons tty %default-console-font))
+                      '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
-          (static-networking-service "lo" "127.0.0.1"
-                                     #:provision '(loopback))
-          (syslog-service)
-          (urandom-seed-service)
-          (guix-service)
-          (nscd-service)
+        (mingetty-service (mingetty-configuration
+                           (tty "tty1")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty2")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty3")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty4")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty5")))
+        (mingetty-service (mingetty-configuration
+                           (tty "tty6")))
 
-          ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
-          ;; used, so enable them by default.  The FUSE and ALSA rules are
-          ;; less critical, but handy.
-          (udev-service #:rules (list lvm2 fuse alsa-utils crda)))))
+        (static-networking-service "lo" "127.0.0.1"
+                                   #:provision '(loopback))
+        (syslog-service)
+        (urandom-seed-service)
+        (guix-service)
+        (nscd-service)
+
+        ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
+        ;; used, so enable them by default.  The FUSE and ALSA rules are
+        ;; less critical, but handy.
+        (udev-service #:rules (list lvm2 fuse alsa-utils crda))))
 
 ;;; base.scm ends here

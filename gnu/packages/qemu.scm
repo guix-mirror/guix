@@ -69,14 +69,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.6.1")
+    (version "2.7.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1l88iqk0swqccrnjwczgl9arqsvy77bis862zxajy7z3dqdzshj9"))))
+               "0lqyz01z90nvxpc3nx4djbci7hx62cwvs5zwd6phssds0sap6vij"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -125,7 +125,7 @@
              (setenv "V" "1")))
          (add-before 'check 'disable-test-qga
            (lambda _
-             (substitute* "tests/Makefile"
+             (substitute* "tests/Makefile.include"
                ;; Comment out the test-qga test, which needs /sys and
                ;; fails within the build environment.
                (("check-unit-.* tests/test-qga" all)

@@ -95,7 +95,7 @@ irssi, but graphical.")
 (define-public irssi
   (package
     (name "irssi")
-    (version "0.8.19")
+    (version "0.8.20")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/irssi/irssi/"
@@ -103,7 +103,7 @@ irssi, but graphical.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1lz57v3nkki30lb883pipp5syyfkssvjlq3xxf9yl578902h982c"))))
+               "0njh43xmpad9h5g6fp1805hrix1mwbbnk7p6qmlw9apm47lc90kq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -262,9 +262,9 @@ and extensible with plugins and scripts.")
        (modify-phases %standard-phases
          (delete 'configure)))) ; no configure
     (home-page "http://tools.suckless.org/ii/")
-    (synopsis "FIFO and filesystem-based IRC client")
+    (synopsis "FIFO and file system based IRC client")
     (description
-     "ii (Irc it) is a minimalist FIFO and filesystem based IRC client.")
+     "ii (Irc it) is a minimalist FIFO and file system based IRC client.")
     (license license:expat)))
 
 (define-public sic

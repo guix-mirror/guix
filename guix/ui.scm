@@ -247,7 +247,7 @@ messages."
   "Report the failure to load FILE, a user-provided Scheme file.
 ARGS is the list of arguments received by the 'throw' handler."
   (match args
-    (('system-error . _)
+    (('system-error . rest)
      (let ((err (system-error-errno args)))
        (report-error (_ "failed to load '~a': ~a~%") file (strerror err))))
     (('syntax-error proc message properties form . rest)
@@ -264,7 +264,7 @@ ARGS is the list of arguments received by the 'throw' handler."
   "Report the failure to load FILE, a user-provided Scheme file, without
 exiting.  ARGS is the list of arguments received by the 'throw' handler."
   (match args
-    (('system-error . _)
+    (('system-error . rest)
      (let ((err (system-error-errno args)))
        (warning (_ "failed to load '~a': ~a~%") file (strerror err))))
     (('syntax-error proc message properties form . rest)
@@ -409,7 +409,7 @@ interpreted."
           ("ZB"  (expt 10 21))
           ("YB"  (expt 10 24))
           (""    1)
-          (_
+          (x
            (leave (_ "unknown unit: ~a~%") unit)))))))
 
 (define (call-with-error-handling thunk)
@@ -535,7 +535,7 @@ similar."
 error."
   (match (read/eval str)
     ((? package? p) p)
-    (_
+    (x
      (leave (_ "expression ~s does not evaluate to a package~%")
             str))))
 
@@ -1187,7 +1187,9 @@ found."
   (let ((command-main (module-ref module
                                   (symbol-append 'guix- command))))
     (parameterize ((program-name command))
-      (apply command-main args))))
+      ;; Disable canonicalization so we don't don't stat unreasonably.
+      (with-fluids ((%file-port-name-canonicalization #f))
+        (apply command-main args)))))
 
 (define (run-guix . args)
   "Run the 'guix' command defined by command line ARGS.

@@ -16,6 +16,9 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,14 +80,16 @@
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
-                           non-copyleft (expat . license:expat) bsd-3))
+                           non-copyleft (expat . license:expat) bsd-3
+                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial))
 
 (define-public mailutils
   (package
@@ -297,7 +302,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.6")
+    (version "7.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -305,7 +310,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1msg0v5i3v4mvjm2c5alzz91dk5y20h4xdr60lcz3507fv80407m"))))
+                "1719xnw0xah5knypd5vrpsxi337576q1r8axpziw8wa7zms7abl0"))))
     (build-system python-build-system)
     (inputs `(("python2-pysqlite" ,python2-pysqlite)
               ("python2-six" ,python2-six)))
@@ -1209,7 +1214,7 @@ deliver it in various ways.")
                       #t)))
        #:tests? #f)) ;; There are no tests indicating a successful
     ;; build.  Some tests of basic locking mechanisms provided by the
-    ;; filesystem are performed during 'make install'.  However, these
+    ;; file system are performed during 'make install'.  However, these
     ;; are performed before the actual build process.
     (build-system gnu-build-system)
     (inputs `(("exim" ,exim)))
@@ -1308,3 +1313,183 @@ Khard can also be used from within the email client @command{mutt}.")
   (description "Mail::SPF is the Sender Policy Framework implemented
 in Perl.")
   (license bsd-3)))
+
+(define-public mb2md
+  (package
+    (name "mb2md")
+    (version "3.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://batleth.sapienti-sat.org/projects/mb2md/mb2md-"
+                    version ".pl.gz"))
+              (sha256
+               (base32
+                "0bvkky3c90738h3skd2f1b2yy5xzhl25cbh9w2dy97rs86ssjidg"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (perl (assoc-ref %build-inputs "perl"))
+                (gzip (assoc-ref %build-inputs "gzip"))
+                (perl-timedate (assoc-ref %build-inputs "perl-timedate"))
+                (perl5lib (string-append perl-timedate "/lib/perl5/site_perl")))
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (copy-file source "mb2md.gz")
+             (system* (string-append gzip "/bin/gzip") "-d" "mb2md.gz")
+             (substitute* "mb2md"
+               (("#!/usr/bin/perl")
+                (string-append "#!/usr/bin/perl -I " perl5lib)))
+             (patch-shebang "mb2md" (list (string-append perl "/bin")))
+             (chmod "mb2md" #o555))
+           #t))))
+    (native-inputs `(("gzip", gzip)))
+    (inputs `(("perl" ,perl)
+              ("perl-timedate" ,perl-timedate)))
+    (home-page "http://batleth.sapienti-sat.org/projects/mb2md/")
+    (synopsis "Mbox to maildir converter")
+    (description
+     "Mb2md is a Perl script that takes one or more mbox format files and
+converts them to maildir format directories.")
+    (license public-domain)))
+
+(define-public mpop
+  (package
+    (name "mpop")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://downloads.sourceforge.net/mpop/mpop-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0n0ij258kn8lfa6nyr6l6plc4hf1wvyf1hkwicvdbjqdqrgjnq81"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("libidn" ,libidn)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags (list "--with-tls=gnutls")))
+    (home-page "http://mpop.sourceforge.net/")
+    (synopsis "POP3 mail client")
+    (description "mpop is a small and fast POP3 client suitable as a
+fetchmail replacement.
+
+mpop supports multiple accounts, header based mail filtering, delivery
+to mbox files, maildir folders or a Mail Delivery Agent (MDA),
+TLS/SSL, several authentication methods, Internationalized Domain
+Names (IDN) and SOCKS proxies.")
+    (license gpl3+)))
+
+(define-public mhonarc
+  (package
+    (name "mhonarc")
+    (version "2.6.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EH/EHOOD/MHonArc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ll3v93yji334zqp6xfzfxc0127pmjcznmai1l5q6dzawrs2igzq"))))
+    (build-system perl-build-system)
+    (home-page "https://www.mhonarc.org/")
+    (synopsis "Create HTML archives of mail/news messages")
+    (description
+     "MHonArc is a Perl mail-to-HTML converter.  MHonArc
+provides HTML mail archiving with index, mail thread linking,
+etc; plus other capabilities including support for MIME and
+powerful user customization features.")
+    (license gpl2+)))
+
+
+(define-public sendmail
+  (package
+    (name "sendmail")
+    (version "8.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "ftp://ftp.sendmail.org/pub/sendmail/sendmail."
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0fdl9ndmspqspdlmghzxlaqk56j3yajk52d7jxcg21b7sxglpy94"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'replace-/bin/sh
+           (lambda _
+             (substitute*
+                 (append
+                  (list "smrsh/smrsh.c" "sendmail/conf.c" "contrib/mailprio"
+                        "contrib/mmuegel" "devtools/bin/configure.sh")
+                  (find-files "." ".*\\.m4")
+                  (find-files "." ".*\\.cf"))
+               (("/bin/sh") (which "bash")))
+
+             (substitute* "devtools/bin/Build"
+               (("SHELL=/bin/sh") (string-append "SHELL=" (which "bash"))))
+             #t))
+         (replace 'configure
+           (lambda _
+
+             ;; Render harmless any attempts to chown or chgrp
+             (substitute* "devtools/bin/install.sh"
+               (("owner=\\$2") "owner=''")
+               (("group=\\$2") "group=''"))
+
+             (with-output-to-file "devtools/Site/site.config.m4"
+               (lambda ()
+                 (format #t "
+define(`confCC', `gcc')
+define(`confOPTIMIZE', `-g -O2')
+define(`confLIBS', `-lresolv')
+define(`confINSTALL', `~a/devtools/bin/install.sh')
+define(`confDEPEND_TYPE', `CC-M')
+define(`confINST_DEP', `')
+" (getcwd))))))
+         (replace 'build
+           (lambda _
+             (and (zero? (system* "sh" "Build"))
+                  (with-directory-excursion "cf/cf"
+                    (begin
+                      (copy-file "generic-linux.mc" "sendmail.mc")
+                      (zero? (system* "sh" "Build" "sendmail.cf")))))))
+         (add-before 'install 'pre-install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (mkdir-p (string-append out "/usr/bin"))
+               (mkdir-p (string-append out "/usr/sbin"))
+               (mkdir-p (string-append out "/etc/mail"))
+               (setenv "DESTDIR" out)
+               (with-directory-excursion "cf/cf"
+                 (zero? (system* "sh" "Build" "install-cf")))))))
+       ;; There is no make check.  There are some post installation tests, but those
+       ;; require root privileges
+       #:tests? #f))
+    (inputs
+     `(("m4" ,m4)
+       ("perl" ,perl)))
+    (home-page "http://sendmail.org")
+    (synopsis
+     "Highly configurable Mail Transfer Agent (MTA)")
+    (description
+     "Sendmail is a mail transfer agent (MTA) originally developed by Eric
+Allman.  It is highly configurable and supports many delivery methods and many
+transfer protocols.")
+    (license (non-copyleft "file://LICENSE"
+                           "See LICENSE in the distribution."))))
+

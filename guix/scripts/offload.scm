@@ -118,7 +118,7 @@ determined."
          (primitive-load file))))
     (lambda args
       (match args
-        (('system-error . _)
+        (('system-error . rest)
          (let ((err (system-error-errno args)))
            ;; Silently ignore missing file since this is a common case.
            (if (= ENOENT err)
@@ -129,7 +129,7 @@ determined."
          (let ((loc (source-properties->location properties)))
            (leave (_ "~a: ~a~%")
                   (location->string loc) message)))
-        (_
+        (x
          (leave (_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 

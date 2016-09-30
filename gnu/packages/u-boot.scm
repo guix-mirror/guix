@@ -32,7 +32,7 @@
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -40,24 +40,18 @@
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "155v52palf5fwfcnq696s41whjk0a5dqx98b7maqzdn7xbc2m6bp"))
-              (patches
-                (search-patches "dtc-add-missing-symbols-to-lds.patch"))))
+                "1b7si8niyca4wxbfah3qw4p4wli81mc1qwfhaswvrfqahklnwi8k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
     (arguments
      `(#:make-flags
-       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-paths
-           (lambda _
-             (substitute* "Makefile"
-               (("/usr/bin/install") "install"))
-             (substitute* "Makefile"
-               (("PREFIX = \\$\\(HOME\\)") ""))))
          (delete 'configure))))
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")
@@ -132,8 +126,11 @@ also initializes the boards (RAM etc).")
                     (copy-file file target-file)))
                 uboot-files)))))))))
 
-(define-public u-boot-vexpress_ca9x4
+(define-public u-boot-vexpress
   (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
 
 (define-public u-boot-malta
   (make-u-boot-package "malta" "mips64el-linux-gnuabi64"))
+
+(define-public u-boot-beagle-bone-black
+  (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))

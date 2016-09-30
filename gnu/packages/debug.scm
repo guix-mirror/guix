@@ -88,7 +88,7 @@ program to exhibit a bug.")
 (define-public c-reduce
   (package
     (name "c-reduce")
-    (version "2.3.0")
+    (version "2.5.0")
     (source
      (origin
       (method url-fetch)
@@ -97,26 +97,21 @@ program to exhibit a bug.")
                            "creduce-" version ".tar.gz")))
       (sha256
        (base32
-        "0r9lvnifjcnsrkrk8k4mha1kmmb93jya7alm523ck59y3173bpi0"))
-      (modules '((guix build utils)))
-      (snippet
-       '(substitute* "clang_delta/TransformationManager.cpp"
-          (("llvm/Config/config.h") "llvm/Config/llvm-config.h")))))
+        "1r23lhzq3dz8vi2dalxk5las8bf0av2w94hxxbs61pr73m77ik9d"))))
     (build-system gnu-build-system)
     (inputs
      `(("astyle"          ,astyle)
-       ("delta"           ,delta)
        ("llvm"            ,llvm)
        ("clang"           ,clang)
        ("flex"            ,flex)
        ("indent"          ,indent)
        ("perl"            ,perl)
-       ("benchmark-timer" ,perl-benchmark-timer)
        ("exporter-lite"   ,perl-exporter-lite)
        ("file-which"      ,perl-file-which)
        ("getopt-tabular"  ,perl-getopt-tabular)
        ("regex-common"    ,perl-regexp-common)
-       ("sys-cpu"         ,perl-sys-cpu)))
+       ("sys-cpu"         ,perl-sys-cpu)
+       ("term-readkey"    ,perl-term-readkey)))
     (arguments
      `(#:phases (alist-cons-after
                  'install 'set-load-paths
@@ -131,7 +126,7 @@ program to exhibit a bug.")
                                 (string-append (assoc-ref inputs p)
                                                "/lib/perl5/site_perl/"
                                                ,(package-version perl)))
-                              '("benchmark-timer" "exporter-lite"
+                              '("term-readkey"    "exporter-lite"
                                 "file-which"      "getopt-tabular"
                                 "regex-common"    "sys-cpu"))))))
                  %standard-phases)))
@@ -161,7 +156,10 @@ tools that process C/C++ code.")
      ;; XXX: Disable tests because of GTester's rejection of duplicate test
      ;; names, which wasn't addressed in this version of QEMU.
      `(#:tests? #f
-       ,@(package-arguments qemu-minimal)))))
+       ,@(substitute-keyword-arguments (package-arguments qemu-minimal)
+           ((#:phases phases)
+            ;; We disable the tests so we skip the phase disabling the qga test.
+            `(modify-phases ,phases (delete 'disable-test-qga))))))))
 
 (define-public american-fuzzy-lop
   (let ((machine (match (or (%current-target-system)

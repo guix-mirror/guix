@@ -34,7 +34,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.60.0")
+    (version "1.61.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -43,7 +43,7 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "0fzx6dwqbrkd4bcd8pjv0fpapwmrxxwr8yx9g67lihlsk3zzysk8"))))
+                "0h5nk7pgxf7xsvvshj9qfpsfp9wx6gq9r78n3nx736pxq83bsix5"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (native-inputs
@@ -90,7 +90,9 @@
          (replace
              'build
            (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (zero? (apply system* "./b2" make-flags))))
+             (zero? (apply system* "./b2"
+                           (format #f "-j~a" (parallel-job-count))
+                           make-flags))))
          (replace
              'install
            (lambda* (#:key outputs make-flags #:allow-other-keys)

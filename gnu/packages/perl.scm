@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -402,7 +403,7 @@ in web applications to store data locally to save repeated and redundant
 expensive calls to remote machines or databases.  People have also been known
 to use Cache::Cache for its straightforward interface in sharing data between
 runs of an application or invocations of a CGI-style script or simply as an
-easy to use abstraction of the filesystem or shared memory.")
+easy to use abstraction of the file system or shared memory.")
     (license (package-license perl))))
 
 (define-public perl-cache-fastmmap
@@ -697,6 +698,27 @@ subclasses and can be overridden.")
     (synopsis "Class for easy date and time manipulation")
     (description "This module provides a general-purpose date and datetime
 type for perl.")
+    (license (package-license perl))))
+
+(define-public perl-class-errorhandler
+  (package
+    (name "perl-class-errorhandler")
+    (version "0.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+                                  "Class-ErrorHandler-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00j5f0z4riyq7i95jww291dpmbn0hmmvkcbrh7p0p8lpqz7jsb9l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-ErrorHandler")
+    (synopsis "Base class for error handling")
+    (description
+     "@code{Class::ErrorHandler} provides an error-handling mechanism that is generic
+enough to be used as the base class for a variety of OO classes.  Subclasses inherit
+its two error-handling methods, error and errstr, to communicate error messages back
+to the calling program.")
     (license (package-license perl))))
 
 (define-public perl-class-factory-util
@@ -1770,6 +1792,53 @@ to create DateTime objects, with some custom tweaks to smooth out the rough
 edges (mainly concerning timezone detection and selection).")
     (license (package-license perl))))
 
+(define-public perl-datetime-format-mail
+  (package
+    (name "perl-datetime-format-mail")
+    (version "0.403")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BO/BOOK/"
+                                  "DateTime-Format-Mail-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c7wapbi9g9p2za52l3skhh31vg4da5kx2yfqzsqyf3p8iff7y4d"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-params-validate" ,perl-params-validate)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Mail")
+    (synopsis "Convert between DateTime and RFC2822/822 formats")
+    (description "RFCs 2822 and 822 specify date formats to be used by email.
+This module parses and emits such dates.")
+    (license (package-license perl))))
+
+(define-public perl-datetime-format-w3cdtf
+  (package
+    (name "perl-datetime-format-w3cdtf")
+    (version "0.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GW/GWILLIAMS/"
+                                  "DateTime-Format-W3CDTF-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ymxizwd2zfx8b4bmrmv4k439qwfwf2522jrvn4hlay5v6z459dr"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-datetime" ,perl-datetime)))
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-W3CDTF")
+    (synopsis "Parse and format W3CDTF datetime strings")
+    (description
+     "This module understands the W3CDTF date/time format, an ISO 8601 profile,
+defined at https://www.w3.org/TR/NOTE-datetime.  This format is the native date
+format of RSS 1.0.  It can be used to parse these formats in order to create
+the appropriate objects.")
+    (license (package-license perl))))
+
 (define-public perl-devel-caller
   (package
     (name "perl-devel-caller")
@@ -2045,7 +2114,7 @@ modules separately and deal with them after the module is done installing.")
     (synopsis "Advanced operations on path variables")
     (description "@code{Env::Path} presents an object-oriented interface to
 path variables, defined as that subclass of environment variables which name
-an ordered list of filesystem elements separated by a platform-standard
+an ordered list of file system elements separated by a platform-standard
 separator.")
     (license (package-license perl))))
 
@@ -2391,7 +2460,7 @@ platforms.")
     (synopsis "Create or remove directory trees")
     (description "This module provide a convenient way to create directories
 of arbitrary depth and to delete an entire directory subtree from the
-filesystem.")
+file system.")
     (license (package-license perl))))
 
 (define-public perl-file-list
@@ -4296,6 +4365,28 @@ cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
 
+(define-public perl-net-statsd
+  (package
+   (name "perl-net-statsd")
+   (version "0.12")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/C/CO/COSIMO/Net-Statsd-"
+            version
+            ".tar.gz"))
+      (sha256
+       (base32
+        "0p2nhrwamic2fyj094y583q088ixv9gbb82c3invqrd17mh57r33"))))
+   (build-system perl-build-system)
+   (home-page
+    "http://search.cpan.org/dist/Net-Statsd")
+   (synopsis "Perl client for Etsy's statsd daemon")
+   (description "This module implement a UDP client for the statsd statistics
+collector daemon in use at Etsy.com.")
+   (license (package-license perl))))
+
 (define-public perl-number-compare
   (package
     (name "perl-number-compare")
@@ -4564,6 +4655,31 @@ up inheritance from those modules at the same time.")
     (description "Path::Class is a module for manipulation of file and
 directory specifications in a cross-platform manner.")
     (license (package-license perl))))
+
+(define-public perl-path-tiny
+  (package
+    (name "perl-path-tiny")
+    (version "0.096")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                                  "Path-Tiny-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08dmr6ijjg3dp7h9dxix0nmad0fw16c6qzs4qc0hdz500gd64sr2"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require additional test modules to be packaged
+    ;; (native-inputs
+    ;;  `(("perl-test-failwarnings" ,perl-test-failwarnings)
+    ;;    ("perl-test-mockrandom" ,perl-test-mockrandom)))
+    (inputs
+     `(("perl-unicode-utf8" ,perl-unicode-utf8)))
+    (home-page "http://search.cpan.org/dist/Path-Tiny")
+    (synopsis "File path utility")
+    (description "This module provides a small, fast utility for working
+with file paths.")
+    (license asl2.0)))
 
 (define-public perl-perlio-utf8_strict
   (package
@@ -5679,6 +5795,29 @@ string comparison functions of Test::More, but which are more suitable when
 you test against long strings.")
     (license (package-license perl))))
 
+(define-public perl-test-manifest
+  (package
+    (name "perl-test-manifest")
+    (version "2.02")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                                  "Test-Manifest-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15ik52l9macrrfizf4y6wj71d4lx7w590h2dfajnkmbxmz786iq6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Test-Manifest")
+    (synopsis "Interact with a t/test_manifest file")
+    (description "@code{Test::Manifest} overrides the default test file order.  Instead of
+running all of the t/*.t files in ASCII-betical order, it looks in the t/test_manifest
+file to find out which tests you want to run and the order in which you want to run them.
+It constructs the right value for the build system to do the right thing.")
+    (license (package-license perl))))
+
 (define-public perl-test-mockobject
   (package
     (name "perl-test-mockobject")
@@ -6208,7 +6347,7 @@ generally slower on larger files.")
     (home-page "http://search.cpan.org/dist/Text-Glob")
     (synopsis "Match globbing patterns against text")
     (description "Text::Glob implements glob(3) style matching that can be
-used to match against text, rather than fetching names from a filesystem.  If
+used to match against text, rather than fetching names from a file system.  If
 you want to do full file globbing use the File::Glob module instead.")
     (license (package-license perl))))
 
@@ -6608,6 +6747,30 @@ common serialisation formats such as JSON or CBOR.")
      "@code{Unicode::LineBreak} implements the line breaking algorithm
 described in Unicode Standard Annex #14.  The @code{East_Asian_Width} property
 defined by Annex #11 is used to determine breaking positions.")
+    (license (package-license perl))))
+
+(define-public perl-unicode-utf8
+  (package
+    (name "perl-unicode-utf8")
+    (version "0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/C/CH/CHANSEN/"
+                                  "Unicode-UTF8-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g3fp47slsk7wbz3189kpg342lfs7lpsy570jxnx7s9v59dg5k7n"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)
+       ("perl-variable-magic" ,perl-variable-magic)
+       ("perl-test-pod" ,perl-test-pod)))
+    (home-page "http://search.cpan.org/dist/Unicode-UTF8")
+    (synopsis "Encoding and decoding of UTF-8 encoding form")
+    (description
+     "This module provides functions to encode and decode UTF-8 encoding form
+as specified by Unicode and ISO/IEC 10646:2011.")
     (license (package-license perl))))
 
 (define-public perl-universal-can

@@ -27,6 +27,7 @@
                 #:select (%store-prefix))
   #:use-module ((guix derivations)
                 #:select (derivation->output-path))
+  #:use-module (guix modules)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
@@ -66,10 +67,8 @@ the derivations referenced by EXP are automatically copied to the initrd."
   (mlet %store-monad ((init (gexp->script "init" exp
                                           #:guile guile)))
     (define builder
-      (with-imported-modules '((guix cpio)
-                               (guix build utils)
-                               (guix build store-copy)
-                               (gnu build linux-initrd))
+      (with-imported-modules (source-module-closure
+                              '((gnu build linux-initrd)))
         #~(begin
             (use-modules (gnu build linux-initrd))
 
@@ -88,9 +87,9 @@ the derivations referenced by EXP are automatically copied to the initrd."
   "Return a flat directory containing the Linux kernel modules listed in
 MODULES and taken from LINUX."
   (define build-exp
-    (with-imported-modules '((guix build utils)
-                             (guix elf)
-                             (gnu build linux-modules))
+    (with-imported-modules (source-module-closure
+                            '((guix build utils)
+                              (gnu build linux-modules)))
       #~(begin
           (use-modules (ice-9 match) (ice-9 regex)
                        (srfi srfi-1)
@@ -223,13 +222,11 @@ loaded at boot time in the order in which they appear."
   (mlet %store-monad ((kodir (flat-linux-module-directory linux
                                                           linux-modules)))
     (expression->initrd
-     (with-imported-modules '((guix build bournish)
-                              (guix build utils)
-                              (guix build syscalls)
-                              (gnu build linux-boot)
-                              (gnu build linux-modules)
-                              (gnu build file-systems)
-                              (guix elf))
+     (with-imported-modules (source-module-closure
+                             '((gnu build linux-boot)
+                               (guix build utils)
+                               (guix build bournish)
+                               (gnu build file-systems)))
        #~(begin
            (use-modules (gnu build linux-boot)
                         (guix build utils)

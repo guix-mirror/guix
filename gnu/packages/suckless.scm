@@ -106,14 +106,15 @@ numbers of user-defined menu items efficiently.")
 (define-public slock
   (package
     (name "slock")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/slock-"
                                   version ".tar.gz"))
+              (patches (search-patches "slock-CVE-2016-6866.patch"))
               (sha256
                (base32
-                "1crkyr4vblhciy6vnbjwwjnlkm9yg2hzq16v6hzxm20ai67na0il"))))
+                "065xa9hl7zn0lv2f7yjxphqsa35rg6dn9hv10gys0sh4ljpa7d5s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -123,7 +124,8 @@ numbers of user-defined menu items efficiently.")
     (inputs
      `(("libx11" ,libx11)
        ("libxext" ,libxext)
-       ("libxinerama" ,libxinerama)))
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)))
     (home-page "http://tools.suckless.org/slock/")
     (synopsis "Simple X session lock")
     (description

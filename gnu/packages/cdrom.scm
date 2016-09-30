@@ -130,14 +130,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.4.4")
+    (version "1.4.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1izv8dvwacyh432vv1rm6lyjrq0v205kyakfra6iwa146c9m9fgr"))))
+               "112p0ghwzxrcjbsir1n2jxhq103ckrw93wzvd55qqvzfgs674vsj"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
@@ -146,10 +146,10 @@ libcdio.")
        ("zlib" ,zlib)
        ("libcdio" ,libcdio)))
     (home-page "https://www.gnu.org/software/xorriso/")
-    (synopsis "Create, manipulate, burn ISO-9660 filesystems")
+    (synopsis "Create, manipulate, burn ISO-9660 file systems")
     (description
      "GNU Xorriso is a tool for copying files to and from ISO 9660 Rock
-Ridge, a.k.a. Compact Disc File System, filesystems and it allows
+Ridge, a.k.a. Compact Disc File System, file systems and it allows
 session-wise manipulation of them.  It features a formatter and burner for
 CD, DVD and BD.  It can operate on existing ISO images or it can create new
 ones.  xorriso can then be used to copy files directly into or out of ISO

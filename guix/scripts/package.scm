@@ -261,19 +261,46 @@ synopsis or description matches all of REGEXPS."
        ((<)  #t)
        (else #f)))))
 
-(define (upgradeable? name current-version current-path)
-  "Return #t if there's a version of package NAME newer than CURRENT-VERSION,
-or if the newest available version is equal to CURRENT-VERSION but would have
-an output path different than CURRENT-PATH."
-  (match (vhash-assoc name (find-newest-available-packages))
-    ((_ candidate-version pkg . rest)
-     (case (version-compare candidate-version current-version)
-       ((>) #t)
-       ((<) #f)
-       ((=) (let ((candidate-path (derivation->output-path
-                                   (package-derivation (%store) pkg))))
-              (not (string=? current-path candidate-path))))))
-    (#f #f)))
+(define (transaction-upgrade-entry entry transaction)
+  "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
+<manifest-entry>."
+  (define (supersede old new)
+    (info (_ "package '~a' has been superseded by '~a'~%")
+          (manifest-entry-name old) (package-name new))
+    (manifest-transaction-install-entry
+     (package->manifest-entry new (manifest-entry-output old))
+     (manifest-transaction-remove-pattern
+      (manifest-pattern
+        (name (manifest-entry-name old))
+        (version (manifest-entry-version old))
+        (output (manifest-entry-output old)))
+      transaction)))
+
+  (match entry
+    (($ <manifest-entry> name version output (? string? path))
+     (match (vhash-assoc name (find-newest-available-packages))
+       ((_ candidate-version pkg . rest)
+        (match (package-superseded pkg)
+          ((? package? new)
+           (supersede entry new))
+          (#f
+           (case (version-compare candidate-version version)
+             ((>)
+              (manifest-transaction-install-entry
+               (package->manifest-entry pkg output)
+               transaction))
+             ((<)
+              transaction)
+             ((=)
+              (let ((candidate-path (derivation->output-path
+                                     (package-derivation (%store) pkg))))
+                (if (string=? path candidate-path)
+                    transaction
+                    (manifest-transaction-install-entry
+                     (package->manifest-entry pkg output)
+                     transaction))))))))
+       (#f
+        transaction)))))
 
 
 ;;;
@@ -553,24 +580,20 @@ upgrading, #f otherwise."
       (output #f)
       (item item))))
 
-(define (options->installable opts manifest)
+(define (options->installable opts manifest transaction)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
-return the new list of manifest entries."
+return an variant of TRANSACTION that accounts for the specified installations
+and upgrades."
   (define upgrade?
     (options->upgrade-predicate opts))
 
-  (define to-upgrade
-    (filter-map (match-lambda
-                  (($ <manifest-entry> name version output path _)
-                   (and (upgrade? name)
-                        (upgradeable? name version path)
-                        (let ((output (or output "out")))
-                          (call-with-values
-                              (lambda ()
-                                (specification->package+output name output))
-                            package->manifest-entry))))
-                  (_ #f))
-                (manifest-entries manifest)))
+  (define upgraded
+    (fold (lambda (entry transaction)
+            (if (upgrade? (manifest-entry-name entry))
+                (transaction-upgrade-entry entry transaction)
+                transaction))
+          transaction
+          (manifest-entries manifest)))
 
   (define to-install
     (filter-map (match-lambda
@@ -587,23 +610,29 @@ return the new list of manifest entries."
                   (_ #f))
                 opts))
 
-  (append to-upgrade to-install))
+  (fold manifest-transaction-install-entry
+        upgraded
+        to-install))
 
-(define (options->removable options manifest)
-  "Given options, return the list of manifest patterns of packages to be
-removed from MANIFEST."
-  (filter-map (match-lambda
-               (('remove . spec)
-                (call-with-values
-                    (lambda ()
-                      (package-specification->name+version+output spec))
-                  (lambda (name version output)
-                    (manifest-pattern
-                      (name name)
-                      (version version)
-                      (output output)))))
-               (_ #f))
-              options))
+(define (options->removable options manifest transaction)
+  "Given options, return a variant of TRANSACTION augmented with the list of
+patterns of packages to remove."
+  (fold (lambda (opt transaction)
+          (match opt
+            (('remove . spec)
+             (call-with-values
+                 (lambda ()
+                   (package-specification->name+version+output spec))
+               (lambda (name version output)
+                 (manifest-transaction-remove-pattern
+                  (manifest-pattern
+                    (name name)
+                    (version version)
+                    (output output))
+                  transaction))))
+            (_ transaction)))
+        transaction
+        options))
 
 (define (register-gc-root store profile)
   "Register PROFILE, a profile generation symlink, as a GC root, unless it
@@ -814,16 +843,18 @@ processed, #f otherwise."
             opts)
 
   ;; Then, process normal package installation/removal/upgrade.
-  (let* ((manifest    (profile-manifest profile))
-         (install     (options->installable opts manifest))
-         (remove      (options->removable opts manifest))
-         (transaction (manifest-transaction
-                       (install (map transform-entry install))
-                       (remove remove)))
-         (new         (manifest-perform-transaction manifest transaction)))
+  (let* ((manifest (profile-manifest profile))
+         (step1    (options->installable opts manifest
+                                         (manifest-transaction)))
+         (step2    (options->removable opts manifest step1))
+         (step3    (manifest-transaction
+                    (inherit step2)
+                    (install (map transform-entry
+                                  (manifest-transaction-install step2)))))
+         (new      (manifest-perform-transaction manifest step3)))
 
-    (unless (and (null? install) (null? remove))
-      (show-manifest-transaction store manifest transaction
+    (unless (manifest-transaction-null? step3)
+      (show-manifest-transaction store manifest step3
                                  #:dry-run? dry-run?)
       (build-and-use-profile store profile new
                              #:bootstrap? bootstrap?

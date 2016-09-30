@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1068,6 +1069,15 @@ contain over 620 classes.")
                              "--sipdir" sip))))
          %standard-phases)))
     (license (list license:gpl2 license:gpl3)))) ; choice of either license
+
+(define-public python2-pyqt-4
+  (package (inherit python-pyqt-4)
+           (name "python2-pyqt-4")
+           (native-inputs
+            `(("python-sip" ,python2-sip)
+              ("qt" ,qt-4)))
+           (inputs
+            `(("python" ,python-2)))))
 
 (define-public qtkeychain
   (package

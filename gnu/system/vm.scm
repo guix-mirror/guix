@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix monads)
   #:use-module (guix records)
+  #:use-module (guix modules)
 
   #:use-module ((gnu build vm)
                 #:select (qemu-command))
@@ -90,21 +91,6 @@
           (options "trans=virtio")
           (check? #f))))
 
-(define %vm-module-closure
-  ;; The closure of (gnu build vm), roughly.
-  ;; FIXME: Compute it automatically.
-  '((gnu build vm)
-    (gnu build install)
-    (gnu build linux-boot)
-    (gnu build linux-modules)
-    (gnu build file-systems)
-    (guix elf)
-    (guix records)
-    (guix build utils)
-    (guix build syscalls)
-    (guix build bournish)
-    (guix build store-copy)))
-
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
                                              (system (%current-system))
@@ -148,7 +134,8 @@ made available under the /xchg CIFS share."
 
     (define builder
       ;; Code that launches the VM that evaluates EXP.
-      (with-imported-modules %vm-module-closure
+      (with-imported-modules (source-module-closure '((guix build utils)
+                                                      (gnu build vm)))
         #~(begin
             (use-modules (guix build utils)
                          (gnu build vm))
@@ -205,7 +192,8 @@ register INPUTS in the store database of the image so that Guix can be used in
 the image."
   (expression->derivation-in-linux-vm
    name
-   (with-imported-modules %vm-module-closure
+   (with-imported-modules (source-module-closure '((gnu build vm)
+                                                   (guix build utils)))
      #~(begin
          (use-modules (gnu build vm)
                       (guix build utils))
@@ -462,7 +450,6 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
            "")
      " -no-reboot -net nic,model=virtio \
   " #$@(map virtfs-option shared-fs) " \
-  -net user \
   -vga std \
   -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly \

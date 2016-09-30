@@ -105,7 +105,7 @@
                     ((or "interactive" "always" "never")
                      (alist-cons 'key-download (string->symbol arg)
                                  result))
-                    (_
+                    (x
                      (leave (_ "unsupported policy: ~a~%")
                             arg)))))
 

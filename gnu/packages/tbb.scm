@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,16 +28,16 @@
 (define-public tbb
   (package
     (name "tbb")
-    (version "4.3.2")
+    (version "2017")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://www.threadingbuildingblocks.org/sites/default"
                     "/files/software_releases/source/"
-                    "tbb43_20141204oss_src.tgz"))
+                    "tbb" version "_20160722oss_src.tgz"))
               (sha256
                (base32
-                "0jsczl99jfgj47kj7c4sd4fk7v3rbaiax1ng9ypykz1hh0lrrsws"))
+                "038rmv3s8si51bjrzwyv8ldqw742fjjdfayi8pmjaq5zw32b8pzx"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "build/common.inc"
@@ -48,35 +49,39 @@
      `(#:test-target "test"
        #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib"))
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (substitute* "build/linux.gcc.inc"
-                     (("LIB_LINK_FLAGS =")
-                      (string-append "LIB_LINK_FLAGS = -Wl,-rpath="
-                                     (assoc-ref outputs "out") "/lib"))))
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((doc      (string-append
-                                      (assoc-ref outputs "doc") "/doc"))
-                           (examples (string-append doc "/examples"))
-                           (lib      (string-append
-                                      (assoc-ref outputs "out") "/lib"))
-                           (include  (string-append
-                                      (assoc-ref outputs "out") "/include")))
-                      (mkdir-p lib)
-                      (for-each
-                       (lambda (f)
-                         (copy-file f
-                                    (string-append lib "/"
-                                                   (basename f))))
-                       (find-files "build/guix_release" "\\.so"))
-                      (copy-recursively "doc" doc)
-                      (copy-recursively "examples" examples)
-                      (copy-recursively "include" include)
-                      #t))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fail-on-test-errors
+           (lambda _
+             (substitute* "Makefile"
+               (("-\\$\\(MAKE") "$(MAKE"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "build/linux.gcc.inc"
+               (("LIB_LINK_FLAGS =")
+                (string-append "LIB_LINK_FLAGS = -Wl,-rpath="
+                               (assoc-ref outputs "out") "/lib")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc      (string-append
+                               (assoc-ref outputs "doc") "/doc"))
+                    (examples (string-append doc "/examples"))
+                    (lib      (string-append
+                               (assoc-ref outputs "out") "/lib"))
+                    (include  (string-append
+                               (assoc-ref outputs "out") "/include")))
+               (mkdir-p lib)
+               (for-each
+                (lambda (f)
+                  (copy-file f
+                             (string-append lib "/"
+                                            (basename f))))
+                (find-files "build/guix_release" "\\.so"))
+               (copy-recursively "doc" doc)
+               (copy-recursively "examples" examples)
+               (copy-recursively "include" include)
+               #t))))))
     (home-page "https://www.threadingbuildingblocks.org")
     (synopsis "C++ library for parallel programming")
     (description
@@ -85,6 +90,4 @@ the low-level threading details necessary for optimal multi-core performance.
 It uses common C++ templates and coding style to eliminate tedious threading
 implementation work.  It provides parallel loop constructs, asynchronous
 tasks, synchronization primitives, atomic operations, and more.")
-    ;; GPLv2 with run-time exception:
-    ;; <https://www.threadingbuildingblocks.org/licensing#runtime-exception>
-    (license gpl2)))
+    (license asl2.0)))

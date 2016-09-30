@@ -85,7 +85,7 @@
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
-\"x86_64-linux\"."
+\"x86_64-linux\" or a target triplet such as \"arm-linux-gnueabihf\"."
   (let ((arch (car (string-split arch #\-))))
     (cond ((string=? arch "i686") "i386")
           ((string-prefix? "mips" arch) "mips")
@@ -166,62 +166,6 @@
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define-public module-init-tools
-  (package
-    (name "module-init-tools")
-    (version "3.16")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://kernel.org/linux/utils/kernel/module-init-tools/module-init-tools-"
-                   version ".tar.bz2"))
-             (sha256
-              (base32
-               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
-             (patches (search-patches "module-init-tools-moduledir.patch"))))
-    (build-system gnu-build-system)
-    (arguments
-     ;; FIXME: The upstream tarball lacks man pages, and building them would
-     ;; require DocBook & co.  We used to use Gentoo's pre-built man pages,
-     ;; but they vanished.  In the meantime, fake it.
-     '(#:phases (alist-cons-before
-                 'configure 'fake-docbook
-                 (lambda _
-                   (substitute* "Makefile.in"
-                     (("^DOCBOOKTOMAN.*$")
-                      "DOCBOOKTOMAN = true\n")))
-                 %standard-phases)))
-    (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
-    (synopsis "Tools for loading and managing Linux kernel modules")
-    (description
-     "Tools for loading and managing Linux kernel modules, such as `modprobe',
-`insmod', `lsmod', and more.")
-    (license license:gpl2+)))
-
-(define-public libnfsidmap
-  (package
-    (name "libnfsidmap")
-    (version "0.25")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://www.citi.umich.edu/projects/nfsv4/linux/"
-                   name "/" name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
-    (build-system gnu-build-system)
-    (home-page
-     "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
-    (synopsis
-     "NFSv4 support library for name/ID mapping")
-    (description "Libnfsidmap is a library holding mulitiple methods of
-mapping names to ids and visa versa, mainly for NFSv4.  It provides an
-extensible array of mapping functions, currently consisting of two choices:
-the default @code{nsswitch} and the experimental @code{umich_ldap}.")
-    (license (license:non-copyleft "file://COPYING"
-                                   "See COPYING in the distribution."))))
-
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
   (origin
@@ -232,171 +176,178 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
 
-(define* (kernel-config system #:key variant)
+(define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
-for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
-  (and-let* ((arch (match system
-                     ("i686-linux"
-                      "i686")
-                     ("x86_64-linux"
-                      "x86_64")
-                     (_
-                      #f)))
-             (name (string-append "linux-libre-"
-                                  (if variant
-                                      (string-append variant "-")
-                                      "")
-                                  arch
-                                  ".conf"))
-             (file (string-append "gnu/packages/" name)))
+for ARCH and optionally VARIANT, or #f if there is no such configuration."
+  (let* ((name (string-append "linux-libre-"
+                              (if variant (string-append variant "-") "")
+                              (if (string=? "i386" arch) "i686" arch) ".conf"))
+         (file (string-append "gnu/packages/" name)))
     (search-path %load-path file)))
 
-(define-public linux-libre
-  (let* ((version "4.7.2")
-         (build-phase
-          '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
-             ;; Avoid introducing timestamps
-             (setenv "KCONFIG_NOTIMESTAMP" "1")
-             (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
+(define %default-extra-linux-options
+  `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
+    ;; Modules required for initrd:
+    ("CONFIG_NET_9P" . m)
+    ("CONFIG_NET_9P_VIRTIO" . m)
+    ("CONFIG_VIRTIO_BLK" . m)
+    ("CONFIG_VIRTIO_NET" . m)
+    ("CONFIG_VIRTIO_PCI" . m)
+    ("CONFIG_VIRTIO_BALLOON" . m)
+    ("CONFIG_VIRTIO_MMIO" . m)
+    ("CONFIG_FUSE_FS" . m)
+    ("CONFIG_CIFS" . m)
+    ("CONFIG_9P_FS" . m)))
 
-             ;; Apply the neat patch.
-             (system* "patch" "-p1" "--force"
-                      "-i" (assoc-ref inputs "patch/freedo+gnu"))
+(define (config->string options)
+  (string-join (map (match-lambda
+                      ((option . 'm)
+                       (string-append option "=m"))
+                      ((option . #t)
+                       (string-append option "=y"))
+                      ((option . #f)
+                       (string-append option "=n")))
+                    options)
+               "\n"))
 
-             (let ((arch (car (string-split system #\-))))
-               (setenv "ARCH"
-                       (cond ((string=? arch "i686") "i386")
-                             ((string=? arch "mips64el") "mips")
-                             (else arch)))
-               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
-
-             (let ((build  (assoc-ref %standard-phases 'build))
-                   (config (assoc-ref inputs "kconfig")))
-
-               ;; Use the architecture-specific config if available, and
-               ;; 'defconfig' otherwise.
-               (if config
-                   (begin
-                     (copy-file config ".config")
-                     (chmod ".config" #o666))
-                   (system* "make" "defconfig"))
-
-               ;; Appending works even when the option wasn't in the
-               ;; file.  The last one prevails if duplicated.
-               (let ((port (open-file ".config" "a")))
-                 (display (string-append "CONFIG_NET_9P=m\n"
-                                         "CONFIG_NET_9P_VIRTIO=m\n"
-                                         "CONFIG_VIRTIO_BLK=m\n"
-                                         "CONFIG_VIRTIO_NET=m\n"
-                                         ;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-                                         "CONFIG_DEVPTS_MULTIPLE_INSTANCES=y\n"
-                                         "CONFIG_VIRTIO_PCI=m\n"
-                                         "CONFIG_VIRTIO_BALLOON=m\n"
-                                         "CONFIG_VIRTIO_MMIO=m\n"
-                                         "CONFIG_FUSE_FS=m\n"
-                                         "CONFIG_CIFS=m\n"
-                                         "CONFIG_9P_FS=m\n")
-                          port)
-                 (close-port port))
-
-               (zero? (system* "make" "oldconfig"))
-
-               ;; Call the default `build' phase so `-j' is correctly
-               ;; passed.
-               (apply build #:make-flags "all" args))))
-         (install-phase
-          `(lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (moddir (string-append out "/lib/modules"))
-                    (mit    (assoc-ref inputs "module-init-tools")))
-               (mkdir-p moddir)
-               (for-each (lambda (file)
-                           (copy-file file
-                                      (string-append out "/" (basename file))))
-                         (find-files "." "^(bzImage|vmlinuz|System\\.map)$"))
-               (copy-file ".config" (string-append out "/config"))
-               (zero? (system* "make"
-                               (string-append "DEPMOD=" mit "/sbin/depmod")
-                               (string-append "MODULE_DIR=" moddir)
-                               (string-append "INSTALL_PATH=" out)
-                               (string-append "INSTALL_MOD_PATH=" out)
-                               "INSTALL_MOD_STRIP=1"
-                               "modules_install"))))))
-   (package
-    (name "linux-libre")
+(define* (make-linux-libre version hash supported-systems
+                           #:key
+                           ;; A function that takes an arch and a variant.
+                           ;; See kernel-config for an example.
+                           (extra-version #f)
+                           (configuration-file #f)
+                           (defconfig "defconfig")
+                           (extra-options %default-extra-linux-options))
+  (package
+    (name (if extra-version
+              (string-append "linux-libre-" extra-version)
+              "linux-libre"))
     (version version)
     (source (origin
-             (method url-fetch)
-             (uri (linux-libre-urls version))
-             (sha256
-              (base32
-               "1rp09y2hv0hvdybm2n2im9717kzxmklpgzs8k1bmdfzqxyg8cb85"))))
+              (method url-fetch)
+              (uri (linux-libre-urls version))
+              (sha256 (base32 hash))
+              (patches (list %boot-logo-patch))))
+    (supported-systems supported-systems)
     (build-system gnu-build-system)
-    (supported-systems '("x86_64-linux" "i686-linux"))
-    (native-inputs `(("perl" ,perl)
-                     ("bc" ,bc)
-                     ("openssl" ,openssl)
-                     ("module-init-tools" ,module-init-tools)
-                     ("patch/freedo+gnu" ,%boot-logo-patch)
-
-                     ,@(let ((conf (kernel-config
-                                    (or (%current-target-system)
-                                        (%current-system))
-                                    #:variant (version-major+minor version))))
-                         (if conf
-                             `(("kconfig" ,conf))
-                             '()))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("bc" ,bc)
+       ("openssl" ,openssl)
+       ("kmod" ,kmod)
+       ,@(if configuration-file
+             `(("kconfig" ,(configuration-file
+                            (system->linux-architecture
+                             (or (%current-target-system)
+                                 (%current-system)))
+                            #:variant (version-major+minor version))))
+             '())))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1)
                   (ice-9 match))
-       #:phases (alist-replace
-                 'build ,build-phase
-                 (alist-replace
-                  'install ,install-phase
-                  (alist-delete 'configure %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs native-inputs target #:allow-other-keys)
+             ;; Avoid introducing timestamps
+             (setenv "KCONFIG_NOTIMESTAMP" "1")
+             (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
+
+             ;; Set ARCH and CROSS_COMPILE
+             (let ((arch ,(system->linux-architecture
+                           (or (%current-target-system)
+                               (%current-system)))))
+               (setenv "ARCH" arch)
+               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
+
+               (when target
+                 (setenv "CROSS_COMPILE" (string-append target "-"))
+                 (format #t "`CROSS_COMPILE' set to `~a'~%"
+                         (getenv "CROSS_COMPILE"))))
+
+             (setenv "EXTRA_VERSION" ,extra-version)
+
+             (let ((build  (assoc-ref %standard-phases 'build))
+                   (config (assoc-ref inputs "kconfig")))
+
+               ;; Use a custom kernel configuration file or a default
+               ;; configuration file.
+               (if config
+                   (begin
+                     (copy-file config ".config")
+                     (chmod ".config" #o666))
+                   (system* "make" ,defconfig))
+
+               ;; Appending works even when the option wasn't in the
+               ;; file.  The last one prevails if duplicated.
+               (let ((port (open-file ".config" "a"))
+                     (extra-configuration ,(config->string extra-options)))
+                 (display extra-configuration port)
+                 (close-port port))
+
+               (zero? (system* "make" "oldconfig")))))
+         (replace 'install
+           (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (moddir (string-append out "/lib/modules"))
+                    (dtbdir (string-append out "/lib/dtbs"))
+                    (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
+               ;; Install kernel image, kernel configuration and link map.
+               (for-each (lambda (file) (install-file file out))
+                         (find-files "." "^(\\.config|bzImage|zImage|vmlinuz|System\\.map)$"))
+               ;; Install device tree files
+               (for-each (lambda (file) (install-file file dtbdir))
+                         (find-files "." "\\.dtb$"))
+               ;; Install kernel modules
+               (mkdir-p moddir)
+               (zero? (system* "make"
+                               (string-append "DEPMOD=" kmod "/bin/depmod")
+                               (string-append "MODULE_DIR=" moddir)
+                               (string-append "INSTALL_PATH=" out)
+                               (string-append "INSTALL_MOD_PATH=" out)
+                               "INSTALL_MOD_STRIP=1"
+                               "modules_install"))))))
        #:tests? #f))
+    (home-page "http://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description
      "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.
 It has been modified to remove all non-free binary blobs.")
-    (license license:gpl2)
-    (home-page "http://www.gnu.org/software/linux-libre/"))))
+    (license license:gpl2)))
+
+(define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
+
+(define-public linux-libre
+  (make-linux-libre "4.7.5"
+                    "1v5xzagc7zmf0dszq623h83rzhn2qwcapg2fwlihrrb6h9317xqx"
+                    %intel-compatible-systems
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (package
-    (inherit linux-libre)
-    (version "4.4.19")
-    (source (origin
-              (method url-fetch)
-              (uri (linux-libre-urls version))
-              (sha256
-               (base32
-                "0nddjs7prmb0g7g3w2k4qfyq02a9szm5nvsgflxcaarbq1slibb5"))))
-    (native-inputs
-     (let ((conf (kernel-config (or (%current-target-system)
-                                    (%current-system))
-                                #:variant "4.4")))
-       `(,@(alist-delete "kconfig" (package-native-inputs linux-libre))
-         ("kconfig" ,conf))))))
+  (make-linux-libre "4.4.22"
+                    "0pwqp5hain26p3wmiqgq3qasyp4j7nl2ai49sq2n8xdi3g2vnmii"
+                    %intel-compatible-systems
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (package
-    (inherit linux-libre)
-    (version "4.1.31")
-    (source (origin
-              (method url-fetch)
-              (uri (linux-libre-urls version))
-              (sha256
-               (base32
-                "0grffah921k136w1qwcswxv6m810s8q54nr2rk7kyqka3a1b81yw"))))
-    (native-inputs
-     (let ((conf (kernel-config (or (%current-target-system)
-                                    (%current-system))
-                                #:variant "4.1")))
-       `(,@(alist-delete "kconfig" (package-native-inputs linux-libre))
-         ("kconfig" ,conf))))))
+  (make-linux-libre "4.1.33"
+                    "1s45vymx7zp7qwj4rx63dpj9xwm8hv5fd9nm27wqvmgnmd3q548h"
+                    %intel-compatible-systems
+                    #:configuration-file kernel-config))
+
+;; Avoid rebuilding kernel variants when there is a minor version bump.
+(define %linux-libre-version "4.7.5")
+(define %linux-libre-hash "1v5xzagc7zmf0dszq623h83rzhn2qwcapg2fwlihrrb6h9317xqx")
+
+(define-public linux-libre-arm-generic
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
 
 
 ;;;
@@ -481,10 +432,10 @@ at login.  Local and dynamic reconfiguration are its key features.")
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://psmisc.sourceforge.net/")
     (synopsis
-     "Small utilities that use the proc filesystem")
+     "Small utilities that use the proc file system")
     (description
      "This PSmisc package is a set of some small useful utilities that
-use the proc filesystem.  We're not about changing the world, but
+use the proc file system.  We're not about changing the world, but
 providing the system administrator with some help in common tasks.")
     (license license:gpl2+)))
 
@@ -562,7 +513,7 @@ providing the system administrator with some help in common tasks.")
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
-utilities.  It provides dmesg and includes tools for working with filesystems,
+utilities.  It provides dmesg and includes tools for working with file systems,
 block devices, UUIDs, TTYs, and many other tools.")
 
     ;; Note that util-linux doesn't use the same license for all the
@@ -711,7 +662,7 @@ slabtop, and skill.")
 
        ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
        ;; they fail because we get an extra line that says "Can't check if
-       ;; filesystem is mounted due to missing mtab file".
+       ;; file system is mounted due to missing mtab file".
        #:tests? #f))
     (home-page "http://e2fsprogs.sourceforge.net/")
     (synopsis "Creating and checking ext2/ext3/ext4 file systems")
@@ -1923,20 +1874,16 @@ country-specific regulations for the wireless spectrum.")
 (define-public lm-sensors
   (package
     (name "lm-sensors")
-    (version "3.3.5")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
-                           "ftp://ftp.netroedge.com/pub/lm-sensors/"
-                           "lm_sensors-" version ".tar.bz2")
-                         (string-append
-                           "http://pkgs.fedoraproject.org/repo/pkgs/"
-                           "lm_sensors/lm_sensors-3.3.5.tar.bz2/"
-                           "da506dedceb41822e64865f6ba34828a/"
-                           "lm_sensors-3.3.5.tar.bz2")))
+                           "https://github.com/groeck/lm-sensors/archive/V"
+                           (string-join (string-split version #\.) "-")
+                           ".tar.gz")))
               (sha256
                (base32
-                "1ksgrynxgrq590nb2fwxrl1gwzisjkqlyg3ljfd1al0ibrk6mbjx"))
+                "0knb09s9lvx0wzfsaizx3xq58q6kllqf7nkbwvir0wkgn31c2d73"))
               (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
@@ -2253,7 +2200,7 @@ specified in /etc/acpi/events and execute the rules that match the event.")
     (home-page "http://linux-diag.sourceforge.net/Sysfsutils.html")
     (synopsis "System utilities based on Linux sysfs")
     (description
-     "These are a set of utilities built upon sysfs, a virtual filesystem in
+     "These are a set of utilities built upon sysfs, a virtual file system in
 Linux kernel versions 2.5+ that exposes a system's device tree.  The package
 also contains the libsysfs library.")
     ;; The library is under lgpl2.1+ (all files say "or any later version").
@@ -2648,7 +2595,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.7.1")
+    (version "4.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2656,7 +2603,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "15jsa12ijc6z49v1csc62x9zidrgcf307lwy1rbffdwk3gsrczww"))))
+                "073pvx8vz6rkw2d8mm1m60b3i8743pc712pasvydbgm8wl66zkch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2691,7 +2638,7 @@ and copy/paste text in the console and in xterm.")
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
-    (description "Btrfs is a copy-on-write (CoW) filesystem for Linux aimed at
+    (description "Btrfs is a copy-on-write (CoW) file system for Linux aimed at
 implementing advanced features while focusing on fault tolerance, repair and
 easy administration.")
     ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
@@ -2946,3 +2893,102 @@ native Linux file system, and has been part of the Linux kernel since version
     ;; The files src/key_mod/ecryptfs_key_mod_{openssl,pkcs11_helper,tspi}.c
     ;; grant additional permission to link with OpenSSL.
     (license license:gpl2+)))
+
+(define-public libnfsidmap
+  (package
+    (name "libnfsidmap")
+    (version "0.25")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.citi.umich.edu/projects/nfsv4/linux/"
+                   name "/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list
+                          (string-append "--with-pluginpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/libnfsidmap"))))
+    (home-page
+     "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
+    (synopsis
+     "NFSv4 support library for name/ID mapping")
+    (description "Libnfsidmap is a library holding mulitiple methods of
+mapping names to ids and visa versa, mainly for NFSv4.  It provides an
+extensible array of mapping functions, currently consisting of two choices:
+the default @code{nsswitch} and the experimental @code{umich_ldap}.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
+
+(define-public module-init-tools
+  (package
+    (name "module-init-tools")
+    (version "3.16")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://kernel.org/linux/utils/kernel/module-init-tools/"
+                   "module-init-tools-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
+             (patches (search-patches "module-init-tools-moduledir.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; FIXME: The upstream tarball lacks man pages, and building them would
+     ;; require DocBook & co.  We used to use Gentoo's pre-built man pages,
+     ;; but they vanished.  In the meantime, fake it.
+     '(#:phases (alist-cons-before
+                 'configure 'fake-docbook
+                 (lambda _
+                   (substitute* "Makefile.in"
+                     (("^DOCBOOKTOMAN.*$")
+                      "DOCBOOKTOMAN = true\n")))
+                 %standard-phases)))
+    (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
+    (synopsis "Tools for loading and managing Linux kernel modules")
+    (description
+     "Tools for loading and managing Linux kernel modules, such as `modprobe',
+`insmod', `lsmod', and more.")
+    (license license:gpl2+)))
+
+(define-public mcelog
+  (package
+    (name "mcelog")
+    (version "141")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
+                                  "mcelog.git/snapshot/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ws8blq0prj7slcaljyaxxq20kgmlakzac0ri1pvh24xs1jn2xxg"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; The snapshots lack a .git directory, breaking ‘git describe’.
+               `(substitute* "Makefile"
+                  (("\"unknown\"") (string-append "\"v" ,version "\""))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))  ; no configure script
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "CC=gcc"
+                            (string-append "prefix=" out)
+                            (string-append "DOCDIR=" out "/share/doc/mcelog")
+                            "etcprefix=$(DOCDIR)/examples"))
+       ;; The tests will only run as root on certain supported CPU models.
+       #:tests? #f))
+    (supported-systems (list "i686-linux" "x86_64-linux"))
+    (home-page "http://mcelog.org/")
+    (synopsis "Machine check monitor for x86 Linux systems")
+    (description
+     "The mcelog daemon is required by the Linux kernel to log memory, I/O, CPU,
+and other hardware errors on x86 systems.  It can also perform user-defined
+tasks, such as bringing bad pages off-line, when configurable error thresholds
+are exceeded.")
+    (license license:gpl2)))

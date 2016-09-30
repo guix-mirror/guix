@@ -7,6 +7,7 @@
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
@@ -67,6 +69,33 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
+
+(define-public asn1c
+  (package
+    (name "asn1c")
+    (version "0.9.27")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://lionet.info/soft/asn1c-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "17nvn2kzvlryasr9dzqg6gs27b9lvqpval0k31pb64bjqbhn8pq2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://lionet.info/asn1c")
+    (synopsis "ASN.1 to C compiler")
+    (description "The ASN.1 to C compiler takes ASN.1 module
+files and generates C++ compatible C source code.  That code can be
+used to serialize the native C structures into compact and unambiguous
+BER/XER/PER-based data files, and deserialize the files back.
+
+Various ASN.1 based formats are widely used in the industry, such as to encode
+the X.509 certificates employed in the HTTPS handshake, to exchange control
+data between mobile phones and cellular networks, to car-to-car communication
+in intelligent transportation networks.")
+    (license license:bsd-2)))
 
 (define-public p11-kit
   (package
@@ -131,7 +160,7 @@ living in the same process.")
              ;; the location of the system-wide trust store.  Instead it has a
              ;; configure-time option.  Unless specified, its configure script
              ;; attempts to auto-detect the location by looking for common
-             ;; places in the filesystem, none of which are present in our
+             ;; places in the file system, none of which are present in our
              ;; chroot build environment.  If not found, then no default trust
              ;; store is used, so each program has to provide its own
              ;; fallback, and users have to configure each program
@@ -185,6 +214,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl-1.0.2j)
    (version "1.0.2h")
    (source (origin
              (method url-fetch)
@@ -324,10 +354,64 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
+(define openssl-1.0.2j
+  (package (inherit openssl)
+    (source
+      (let ((name "openssl")
+            (version "1.0.2j"))
+        (origin
+          (method url-fetch)
+          (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                    name "-" version ".tar.gz")
+                     (string-append "ftp://ftp.openssl.org/source/old/"
+                                    (string-trim-right version char-set:letter)
+                                    "/" name "-" version ".tar.gz")))
+          (sha256
+           (base32
+            "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
+          (patches (search-patches "openssl-runpath.patch"
+                                   "openssl-c-rehash-in.patch")))))))
+
+(define-public openssl-next
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (replacement #f)
+    (version "1.1.0b")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                       name "-" version ".tar.gz")
+                        (string-append "ftp://ftp.openssl.org/source/old/"
+                                       (string-trim-right version char-set:letter)
+                                       "/" name "-" version ".tar.gz")))
+              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
+              (sha256
+               (base32
+                "1xznrqvb1dbngv2k2nb6da6fdw00c01sy2i36yjdxr4vpxrf0pd4"))))
+    (outputs '("out"
+               "doc"        ;1.3MiB of man3 pages
+               "static"))   ; 5.5MiB of .a files
+    (arguments
+     (substitute-keyword-arguments (package-arguments openssl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'patch-tests)          ; These two phases are not needed by
+           (delete 'patch-Makefile.org)   ; OpenSSL 1.1.0.
+
+           (add-after 'configure 'patch-runpath
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+                 (substitute* "Makefile.shared"
+                   (("\\$\\$\\{SHAREDCMD\\} \\$\\$\\{SHAREDFLAGS\\}")
+                    (string-append "$${SHAREDCMD} $${SHAREDFLAGS}"
+                                   " -Wl,-rpath," lib)))
+                 #t)))))))))
+
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.4.2")
+    (version "2.5.0")
     (source
      (origin
       (method url-fetch)
@@ -336,7 +420,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "1qyrcyzrrn6r9cqvm66ib72qyr65q4hrdyiq1vb24a6nwmwdg1sz"))))
+        "1bkfvapi4z826slycmicvs7hwgk4l82gd8w6nqvznldbammvyll6"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
@@ -477,7 +561,7 @@ security, and applying best practice development processes.")
        ("python2-psutil" ,python2-psutil)
        ("python2-requests" ,python2-requests)
        ("python2-pytz" ,python2-pytz)))
-    (synopsis "Let's Encrypt client")
+    (synopsis "Let's Encrypt client by the Electronic Frontier Foundation")
     (description "Tool to automatically receive and install X.509 certificates
 to enable TLS on servers.  The client will interoperate with the Let’s Encrypt CA which
 will be issuing browser-trusted certificates for free.")
@@ -486,7 +570,8 @@ will be issuing browser-trusted certificates for free.")
 
 (define-public letsencrypt
   (package (inherit certbot)
-    (name "letsencrypt")))
+    (name "letsencrypt")
+    (properties `((superseded . ,certbot)))))
 
 (define-public perl-net-ssleay
   (package
@@ -620,3 +705,37 @@ arithmetic in Perl.")
   (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random
 number generator")
   (license (package-license perl))))
+
+(define-public acme-client
+  (package
+    (name "acme-client")
+    (version "0.1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://kristaps.bsd.lv/" name "/"
+                                  "snapshots/" name "-portable-"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "09pipyfk448gxqr7ci56gsq5la8wlydv7wwn9wk0zgjxmlh7h6fb"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no test suite
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no './configure' script
+    (inputs
+     `(("libbsd" ,libbsd)
+       ("libressl" ,libressl)))
+    (synopsis "Let's Encrypt client by the OpenBSD project")
+    (description "acme-client is a Let's Encrypt client implemented in C.  It
+uses a modular design, and attempts to secure itself by dropping privileges and
+operating in a chroot where possible.  acme-client is developed on OpenBSD and
+then ported to the GNU / Linux environment.")
+    (home-page "https://kristaps.bsd.lv/acme-client/")
+    ;; acme-client is distributed under the ISC license, but the files 'jsmn.h'
+    ;; and 'jsmn.c' are distributed under the Expat license.
+    (license (list license:isc license:expat))))

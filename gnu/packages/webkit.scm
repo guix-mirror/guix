@@ -53,14 +53,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.12.4")
+    (version "2.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xwsc2lpb4q55vdgmwljx43219l0sa6r5mqs3bmw3fwsb5vk2ka2"))))
+                "02paj0anbnqn1z3hn5c4csmq9nga995rzagiplj3sjk2dj1ss4q5"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests

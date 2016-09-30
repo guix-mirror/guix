@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -69,18 +69,23 @@ a flexible and convenient way.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-cons-after
-        'patch-source-shebangs 'patch-test-shebangs
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; Patch shebangs in test scripts.
-          (let ((out (assoc-ref outputs "out")))
-            (for-each (lambda (file)
-                        (substitute* file
-                          (("#! /bin/sh")
-                           (string-append "#!" (which "sh")))))
-                      (remove file-is-directory?
-                              (find-files "src/tests" ".*")))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-test-shebangs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Patch shebangs in test scripts.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("#! /bin/sh")
+                              (string-append "#!" (which "sh")))))
+                         (remove file-is-directory?
+                                 (find-files "src/tests" ".*"))))))
+         (add-after 'unpack 'patch-iconv-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/man.c"
+               (("\"iconv\"")
+                (string-append "\"" (which "iconv") "\"")))
+             #t)))
        #:configure-flags
        (let ((groff (assoc-ref %build-inputs "groff"))
              (less  (assoc-ref %build-inputs "less"))

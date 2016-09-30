@@ -158,7 +158,7 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.50.1")
+   (version "7.50.3")
    (source (origin
             (method url-fetch)
             (uri (let ((version-with-underscores
@@ -167,7 +167,7 @@ and support for SSL3 and TLS.")
                                   name "-" version-with-underscores ".tar.bz2")))
             (sha256
              (base32
-              "0irb8df3lqd9w1pb627q260hn448vbkh0sn4l6p6jh0q8lqscv84"))))
+              "07ij9mj60kpfrmi0436k14b1d1idsj79nk4w5h3bia69arzp2cnk"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
@@ -189,21 +189,16 @@ and support for SSL3 and TLS.")
                           "--disable-telnet" "--disable-tftp" "--disable-pop3"
                           "--disable-imap" "--disable-smtp" "--disable-gopher"
                           "--disable-file" "--disable-ftp" "--disable-smb")
-     #:test-target "test"
-     #:parallel-tests? #f
-     #:phases
-     ;; We have to patch runtests.pl in tests/ directory
-      (alist-cons-before
-       'check 'patch-runtests
-       (lambda _
-         (substitute* "tests/runtests.pl"
-           (("/bin/sh") (which "sh"))))
-       ;; To be discussed with upstream.
-       (alist-cons-before
-        'check 'delete-failing-test1139
-        (lambda _
-          (delete-file "tests/data/test1139"))
-       %standard-phases))))
+      #:test-target "test"
+      #:parallel-tests? #f
+      #:phases
+      ;; We have to patch runtests.pl in tests/ directory
+      (modify-phases %standard-phases
+        (add-before 'check 'patch-runtests
+          (lambda _
+            (substitute* "tests/runtests.pl"
+              (("/bin/sh") (which "sh")))
+            #t)))))
    (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
    (description
     "Gnurl is a microfork of cURL, a command line tool for transferring data
@@ -252,19 +247,17 @@ supports HTTP, HTTPS and GnuTLS.")
       ;; test_gnunet_service_arm fails; reported upstream
       #:tests? #f
       #:phases
+      (modify-phases %standard-phases
         ;; swap check and install phases and set paths to installed binaries
-        (alist-cons-before
-         'check 'set-path-for-check
-         (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-           (setenv "GNUNET_PREFIX" (string-append out "/lib"))
-           (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))))
-         (alist-cons-after
-          'install 'check
-          (assoc-ref %standard-phases 'check)
-          (alist-delete
-           'check
-           %standard-phases)))))
+        (add-before 'check 'set-path-for-check
+          (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (setenv "GNUNET_PREFIX" (string-append out "/lib"))
+             (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin")))
+           #t))
+        (add-after 'install 'check
+          (assoc-ref %standard-phases 'check))
+        (delete 'check))))
    (synopsis "Secure, decentralized, peer-to-peer networking framework")
    (description
      "GNUnet is a framework for secure peer-to-peer networking.  The

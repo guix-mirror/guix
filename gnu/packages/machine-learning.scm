@@ -28,7 +28,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
-  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -268,6 +267,9 @@ networks) based on simulation of (stochastic) flow in graphs.")
     (native-inputs
      `(("gfortran" ,gfortran)
        ("gfortran:lib" ,gfortran "lib")))
+    ;; Non-portable assembly instructions are used so building fails on
+    ;; platforms other than x86_64 or i686.
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (home-page "http://www.imbs-luebeck.de/imbs/de/node/227/")
     (synopsis "Implementation of the Random Forests machine learning method")
     (description
@@ -500,14 +502,36 @@ single hidden layer, and for multinomial log-linear models.")
              (substitute* "dlib/config.h"
                (("^//#define DLIB_DISABLE_ASSERTS") "#define DLIB_DISABLE_ASSERTS"))
              #t))
+         (add-after 'disable-asserts 'disable-failing-tests
+           (lambda _
+             ;; One test times out on MIPS, so we need to disable it.
+             ;; The rest is known to fail on non-x86_64 platforms in the current release.
+             ;; Some have been fixed in git; this list should be readjusted next update.
+             (let* ((system ,(or (%current-target-system)
+                                 (%current-system)))
+                    (disabled-tests (cond
+                                     ((string-prefix? "mips64" system)
+                                      '("object_detector" ; timeout
+                                        "data_io"))
+                                     ((string-prefix? "armhf" system)
+                                      '("learning_to_track" "max_cost_assignment"))
+                                     ((string-prefix? "i686" system)
+                                      '("optimization" "matrix2" "mpc"))
+                                     (else '()))))
+               ;; The following test fails due a bug in openblas < 0.2.18.
+               (append! disabled-tests '("empirical_map"))
+               (for-each
+                (lambda (test)
+                  (substitute* "dlib/test/makefile"
+                    (((string-append "SRC \\+= " test "\\.cpp")) "")) #t)
+                disabled-tests))))
          (replace 'check
            (lambda _
              ;; No test target, so we build and run the unit tests here.
-             (let ((test-dir (string-append "../dlib-" ,version "/dlib/test/build")))
-               (mkdir-p test-dir)
+             (let ((test-dir (string-append "../dlib-" ,version "/dlib/test")))
                (with-directory-excursion test-dir
-                 (and (zero? (system* "cmake" ".."))
-                      (zero? (system* "cmake" "--build" "." "--config" "Release"))
+                 (setenv "CXXFLAGS" "-std=gnu++11")
+                 (and (zero? (system* "make" "-j" (number->string (parallel-job-count))))
                       (zero? (system* "./dtest" "--runall")))))))
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
@@ -515,9 +539,8 @@ single hidden layer, and for multinomial log-linear models.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("fftw" ,fftw)
-       ("giflib" ,giflib)
-       ;("lapack" ,lapack) XXX lapack here causes test failures in some setups.
+     `(("giflib" ,giflib)
+       ("lapack" ,lapack)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libx11" ,libx11)

@@ -41,6 +41,13 @@ AC_ARG_WITH([bash-completion-dir],
   [bashcompletiondir='${sysconfdir}/bash_completion.d'])
 AC_SUBST([bashcompletiondir])
 
+AC_ARG_WITH([zsh-completion-dir],
+  AC_HELP_STRING([--with-zsh-completion-dir=DIR],
+    [name of the Zsh completion directory]),
+  [zshcompletiondir="$withval"],
+  [zshcompletiondir='${datadir}/zsh/site-functions'])
+AC_SUBST([zshcompletiondir])
+
 dnl Better be verbose.
 AC_MSG_CHECKING([for the store directory])
 AC_MSG_RESULT([$storedir])
@@ -67,12 +74,20 @@ dnl We require pkg.m4 (from pkg-config) and guile.m4 (from Guile.)
 dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
+m4_pattern_forbid([^GUILE_P$])
 
-PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7])
-AC_PATH_PROG([GUILE], [guile])
-AC_PATH_PROG([GUILD], [guild])
+dnl Search for 'guile' and 'guild'.  Prefer 2.0 until the 2.2 upgrade is
+dnl complete.
+GUILE_PKG([2.0 2.2])
+GUILE_PROGS
 if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
+fi
+
+if test "x$GUILE_EFFECTIVE_VERSION" = "x2.0"; then
+  PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7])
+else
+  AC_MSG_WARN([Guile $GUILE_EFFECTIVE_VERSION is not fully supported!])
 fi
 
 dnl guile-json is used for the PyPI package importer

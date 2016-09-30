@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -86,5 +86,5 @@ Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
          (format #t ";; converted from ~a:~a~%~%"
                  (location-file loc) (location-line loc))
          expr))
-      (_
+      (x
        (leave (_ "wrong number of arguments~%"))))))

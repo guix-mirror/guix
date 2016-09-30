@@ -88,7 +88,7 @@
          (system? #t)
          (comment "Avahi daemon user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define %avahi-activation
   ;; Activation gexp.

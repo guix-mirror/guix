@@ -460,9 +460,8 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 (define polkit-setuid-programs
   (match-lambda
     (($ <polkit-configuration> polkit)
-     (list #~(string-append #$polkit
-                            "/lib/polkit-1/polkit-agent-helper-1")
-           #~(string-append #$polkit "/bin/pkexec")))))
+     (list (file-append polkit "/lib/polkit-1/polkit-agent-helper-1")
+           (file-append polkit "/bin/pkexec")))))
 
 (define polkit-service-type
   (service-type (name 'polkit)
@@ -522,7 +521,7 @@ the capability to suspend the system if the user is logged in locally."
          (system? #t)
          (comment "colord daemon user")
          (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define colord-service-type
   (service-type (name 'colord)
@@ -738,8 +737,8 @@ seats.)"
   (define pam-elogind
     (pam-entry
      (control "required")
-     (module #~(string-append #$(elogind-package config)
-                              "/lib/security/pam_elogind.so"))))
+     (module (file-append (elogind-package config)
+                          "/lib/security/pam_elogind.so"))))
 
   (list (lambda (pam)
           (pam-service

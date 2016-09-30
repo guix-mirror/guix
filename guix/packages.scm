@@ -84,6 +84,8 @@
             package-location
             hidden-package
             hidden-package?
+            package-superseded
+            deprecated-package
             package-field-location
 
             package-direct-sources
@@ -306,6 +308,18 @@ user interfaces, ignores."
   "Return true if P is \"hidden\"--i.e., must not be visible to user
 interfaces."
   (assoc-ref (package-properties p) 'hidden?))
+
+(define (package-superseded p)
+  "Return the package the supersedes P, or #f if P is still current."
+  (assoc-ref (package-properties p) 'superseded))
+
+(define (deprecated-package old-name p)
+  "Return a package called OLD-NAME and marked as superseded by P, a package
+object."
+  (package
+    (inherit p)
+    (name old-name)
+    (properties `((superseded . ,p)))))
 
 (define (package-field-location package field)
   "Return the source code location of the definition of FIELD for PACKAGE, or
@@ -1168,7 +1182,7 @@ cross-compilation target triplet."
 (define package->cross-derivation
   (store-lift package-cross-derivation))
 
-(define-gexp-compiler (package-compiler (package package?) system target)
+(define-gexp-compiler (package-compiler (package <package>) system target)
   ;; Compile PACKAGE to a derivation for SYSTEM, optionally cross-compiled for
   ;; TARGET.  This is used when referring to a package from within a gexp.
   (if target
@@ -1199,7 +1213,7 @@ cross-compilation target triplet."
                          #:modules modules
                          #:guile-for-build guile)))))
 
-(define-gexp-compiler (origin-compiler (origin origin?) system target)
+(define-gexp-compiler (origin-compiler (origin <origin>) system target)
   ;; Compile ORIGIN to a derivation for SYSTEM.  This is used when referring
   ;; to an origin from within a gexp.
   (origin->derivation origin system))

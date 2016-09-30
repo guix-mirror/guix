@@ -42,6 +42,8 @@
   #:export (xorg-configuration-file
             %default-xorg-modules
             xorg-start-command
+            xinitrc
+
             %default-slim-theme
             %default-slim-theme-name
             slim-configuration
@@ -265,7 +267,7 @@ which should be passed to this script as the first argument.  If not, the
 
 (define %default-slim-theme
   ;; Theme based on work by Felipe López.
-  #~(string-append #$%artwork-repository "/slim"))
+  (file-append %artwork-repository "/slim"))
 
 (define %default-slim-theme-name
   ;; This must be the name of the sub-directory in %DEFAULT-SLIM-THEME that
@@ -372,8 +374,8 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                        (theme %default-slim-theme)
                        (theme-name %default-slim-theme-name)
                        (xauth xauth) (shepherd shepherd) (bash bash)
-                       (auto-login-session #~(string-append #$windowmaker
-                                                            "/bin/wmaker"))
+                       (auto-login-session (file-append windowmaker
+                                                        "/bin/wmaker"))
                        (startx (xorg-start-command)))
   "Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
@@ -448,14 +450,13 @@ command is @var{program}, to the set of setuid programs and add a PAM entry
 for it.  For example:
 
 @lisp
-(screen-locker-service xlockmore \"xlock\")
+ (screen-locker-service xlockmore \"xlock\")
 @end lisp
 
 makes the good ol' XlockMore usable."
   (service screen-locker-service-type
            (screen-locker program
-                          #~(string-append #$package
-                                           #$(string-append "/bin/" program))
+                          (file-append package "/bin/" program)
                           allow-empty-passwords?)))
 
 ;;; xorg.scm ends here

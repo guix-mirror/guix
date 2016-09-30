@@ -62,6 +62,17 @@
 ;;;
 ;;; Code:
 
+(define (strip-mount-point fs file)
+  "Strip the mount point of FS from FILE, which is a gexp or other lowerable
+object denoting a file name."
+  (let ((mount-point (file-system-mount-point fs)))
+    (if (string=? mount-point "/")
+	file
+	#~(let ((file #$file))
+            (if (string-prefix? #$mount-point file)
+                (substring #$file #$(string-length mount-point))
+                file)))))
+
 (define-record-type* <grub-image>
   grub-image make-grub-image
   grub-image?
@@ -183,7 +194,8 @@ the store is.  SYSTEM must be the target system string---e.g.,
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    #~(string-append #$grub "/share/grub/unicode.pf2"))
+    (strip-mount-point root-fs
+                       (file-append grub "/share/grub/unicode.pf2")))
 
   (mlet* %store-monad ((image (grub-background-image config)))
     (return (and image
@@ -209,7 +221,7 @@ fi~%"
                            #$(grub-root-search root-fs font-file)
                            #$font-file
 
-                           #$image
+                           #$(strip-mount-point root-fs image)
                            #$(theme-colors grub-theme-color-normal)
                            #$(theme-colors grub-theme-color-highlight))))))
 
@@ -222,18 +234,23 @@ fi~%"
   "Return the GRUB 'search' command to look for ROOT-FS, which contains FILE,
 a gexp.  The result is a gexp that can be inserted in the grub.cfg-generation
 code."
-  (case (file-system-title root-fs)
-    ;; Preferably refer to ROOT-FS by its UUID or label.  This is more
-    ;; efficient and less ambiguous, see <>.
-    ((uuid)
-     (format #f "search --fs-uuid --set ~a"
-             (uuid->string (file-system-device root-fs))))
-    ((label)
-     (format #f "search --label --set ~a"
-             (file-system-device root-fs)))
-    (else
-     ;; As a last resort, look for any device containing FILE.
-     #~(format #f "search --file --set ~a" #$file))))
+  ;; Usually FILE is a file name gexp like "/gnu/store/…-linux/vmlinuz", but
+  ;; it can also be something like "(hd0,msdos1)/vmlinuz" in the case of
+  ;; custom menu entries.  In the latter case, don't emit a 'search' command.
+  (if (and (string? file) (not (string-prefix? "/" file)))
+      ""
+      (case (file-system-title root-fs)
+        ;; Preferably refer to ROOT-FS by its UUID or label.  This is more
+        ;; efficient and less ambiguous, see <>.
+        ((uuid)
+         (format #f "search --fs-uuid --set ~a"
+                 (uuid->string (file-system-device root-fs))))
+        ((label)
+         (format #f "search --label --set ~a"
+                 (file-system-device root-fs)))
+        (else
+         ;; As a last resort, look for any device containing FILE.
+         #~(format #f "search --file --set ~a" #$file)))))
 
 (define* (grub-configuration-file config store-fs entries
                                   #:key
@@ -243,33 +260,34 @@ code."
 <grub-configuration> object, and where the store is available at STORE-FS, a
 <file-system> object.  OLD-ENTRIES is taken to be a list of menu entries
 corresponding to old generations of the system."
-  (define linux-image-name
-    (if (string-prefix? "mips" system)
-        "vmlinuz"
-        "bzImage"))
-
   (define all-entries
     (append entries (grub-configuration-menu-entries config)))
 
   (define entry->gexp
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
-      #~(format port "menuentry ~s {
+      ;; Use the right file names for LINUX and STORE-FS in case STORE-FS is
+      ;; not the "/" file system.
+      (let ((linux  (strip-mount-point store-fs linux))
+            (initrd (strip-mount-point store-fs initrd)))
+        #~(format port "menuentry ~s {
   ~a
-  linux ~a/~a ~a
+  linux ~a ~a
   initrd ~a
 }~%"
-                #$label
-                #$(grub-root-search store-fs
-                                    #~(string-append #$linux "/"
-                                                     #$linux-image-name))
-                #$linux #$linux-image-name (string-join (list #$@arguments))
-                #$initrd))))
+                  #$label
+                  #$(grub-root-search store-fs linux)
+                  #$linux (string-join (list #$@arguments))
+                  #$initrd)))))
 
   (mlet %store-monad ((sugar (eye-candy config store-fs system #~port)))
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)
+            (format port
+                    "# This file was generated from your GuixSD configuration.  Any changes
+# will be lost upon reconfiguration.
+")
             #$sugar
             (format port "
 set default=~a

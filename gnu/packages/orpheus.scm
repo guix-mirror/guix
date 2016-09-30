@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,41 +53,45 @@
        ("which" ,which)))
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; This old `configure' script does not support variables passed as
-          ;; arguments.
-          (let ((out (assoc-ref outputs "out")))
-            (setenv "CONFIG_SHELL" (which "bash"))
-            (setenv "SHELL" (which "bash"))
-            (setenv "LIBS" "-logg")     ;doesn't declare its use of libogg
-            (zero?
-             (system* "./configure" (string-append "--prefix=" out)))))
-        (alist-cons-after
-         'configure 'configure-players
-         (lambda* (#:key inputs #:allow-other-keys)
-           ;; To avoid propagating the mpg321 and vorbis-tools inputs, we can
-           ;; make the orpheus application execute the needed players from the
-           ;; store.
-           (let ((ogg123 (string-append (assoc-ref inputs "vorbis-tools")
-                                        "/bin/ogg123"))
-                 (mpg321 (string-append (assoc-ref inputs "mpg321")
-                                        "/bin/mpg321"))
-                 (which  (string-append (assoc-ref inputs "which")
-                                        "/bin/which")))
-             (substitute* "src/orpheusconf.cc"
-               (("ogg123") ogg123)
-               (("which")  which)
-               (("mpg321") mpg321))))
-         (alist-cons-before
-          'build 'patch-shells
-          (lambda _
-            (substitute* '("src/mp3track.cc"
-                           "src/streamtrack.cc"
-                           "src/oggtrack.cc")
-              (("/bin/sh") (which "bash"))))
-          %standard-phases)))))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This old `configure' script does not support variables passed as
+             ;; arguments.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (setenv "SHELL" (which "bash"))
+               (setenv "LIBS" "-logg")     ;doesn't declare its use of libogg
+               (zero?
+                (system* "./configure" (string-append "--prefix=" out)
+                                       ,@(if (string=? "mips64el-linux"
+                                                       (%current-system))
+                                             '("--host=mips64el-unknown-linux-gnu")
+                                             '())
+                         )))))
+         (add-after 'configure 'configure-players
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; To avoid propagating the mpg321 and vorbis-tools inputs, we can
+             ;; make the orpheus application execute the needed players from the
+             ;; store.
+             (let ((ogg123 (string-append (assoc-ref inputs "vorbis-tools")
+                                          "/bin/ogg123"))
+                   (mpg321 (string-append (assoc-ref inputs "mpg321")
+                                          "/bin/mpg321"))
+                   (which  (string-append (assoc-ref inputs "which")
+                                          "/bin/which")))
+               (substitute* "src/orpheusconf.cc"
+                 (("ogg123") ogg123)
+                 (("which")  which)
+                 (("mpg321") mpg321))
+               #t)))
+         (add-before 'build 'patch-shells
+           (lambda _
+             (substitute* '("src/mp3track.cc"
+                            "src/streamtrack.cc"
+                            "src/oggtrack.cc")
+               (("/bin/sh") (which "bash")))
+             #t)))))
     (home-page "http://thekonst.net/en/orpheus")
     (synopsis "Text-mode audio player")
     (description

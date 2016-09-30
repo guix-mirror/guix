@@ -9,6 +9,8 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -382,7 +384,7 @@ experience.")
 (define-public awesome
   (package
     (name "awesome")
-    (version "3.4.15")
+    (version "3.5.9")
     (source
      (origin (method url-fetch)
              (uri (string-append
@@ -390,7 +392,7 @@ experience.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "1m910lr7wkw2dgzmirfvz7dasfswhhccdf65l21iiciv24c3w1bb"))
+               "0kynair1ykr74b39a4gcm2y24viial64337cf26nhlc7azjbby67"))
              (modules '((guix build utils)
                         (srfi srfi-19)))
              (snippet
@@ -417,12 +419,14 @@ experience.")
               ("dbus" ,dbus)
               ("gdk-pixbuf" ,gdk-pixbuf)
               ("glib" ,glib)
+              ("gobject-introspection" ,gobject-introspection)
               ("imlib2" ,imlib2)
               ("libev" ,libev)
               ("libxcb" ,libxcb)
               ("libxcursor" ,libxcursor)
               ("libxdg-basedir" ,libxdg-basedir)
-              ("lua" ,lua-5.1)
+              ("lua" ,lua)
+              ("lua-lgi",lua-lgi)
               ("pango" ,pango)
               ("startup-notification" ,startup-notification)
               ("xcb-util" ,xcb-util)
@@ -436,32 +440,49 @@ experience.")
        ;; '--no-name' is used, which removes timestamps from gzip output.
        #:configure-flags '("-DCOMPRESS_MANPAGES=off")
 
-       #:phases (modify-phases %standard-phases
-                  (add-before 'build 'xmlto-skip-validation
-                    (lambda _
-                      ;; We can't download the necessary schema, so so skip
-                      ;; validation and assume they're valid.
-                      (substitute* "../build/CMakeFiles/man.dir/build.make"
-                        (("/xmlto")
-                         (string-append "/xmlto --skip-validation")))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      ;; There aren't any tests, so just make sure the binary
-                      ;; gets built and can be run successfully.
-                      (zero? (system* "../build/awesome" "-v")))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'xmlto-skip-validation
+           (lambda _
+             ;; We can't download the necessary schema, so so skip
+             ;; validation and assume they're valid.
+             (substitute* "../build/CMakeFiles/man.dir/build.make"
+               (("/xmlto")
+                (string-append "/xmlto --skip-validation")))
+             #t))
+         (add-before 'configure 'set-lua-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The build process needs to load cairo dynamically.
+             (let* ((cairo (string-append
+                             (assoc-ref inputs "cairo") "/lib" ))
+                    (lua-lgi (assoc-ref inputs "lua-lgi") ))
+               (setenv "LD_LIBRARY_PATH" cairo )
+               (setenv "LUA_PATH" (string-append lua-lgi
+                                                 "/share/lua/5.2/?.lua"))
+               (setenv "LUA_CPATH" (string-append lua-lgi
+                                                  "/lib/lua/5.2/?.so"))
+               #t)))
+         (replace 'check
+           (lambda _
+             ;; There aren't any tests, so just make sure the binary
+             ;; gets built and can be run successfully.
+             (zero? (system* "../build/awesome" "-v"))))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((awesome (assoc-ref outputs "out"))
+                    (cairo (string-append
+                             (assoc-ref inputs "cairo") "/lib" ))
+                    (lua-lgi (assoc-ref inputs "lua-lgi") ))
+               (wrap-program (string-append awesome "/bin/awesome")
+                 `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
+                 `("LD_LIBRARY_PATH" suffix (, cairo))
+                 `("LUA_PATH" suffix (,(string-append lua-lgi
+                                                      "/share/lua/5.2/?.lua")))
+                 `("LUA_CPATH" suffix (,(string-append
+                                          lua-lgi "/lib/lua/5.2/?.so"))))))))))
     (synopsis "Highly configurable window manager")
     (description
-     "awesome is a window manager for X.  It manages windows in different
-layouts, like floating or tiled.  Any layout can be applied dynamically,
-optimizing the environment for the application in use and the task currently
-being performed.
-
-In a tiled layout, windows are managed in a master and stacking area.  In a
-floating layout windows can be resized and moved freely.  Dialog windows are
-always managed as floating, regardless of the layout currently applied.
-
-Windows are grouped by tags in awesome.  Each window can be tagged with one or
-more tags.  Selecting certain tags displays all windows with these tags.")
+     "Awesome has been designed as a framework window manager.  It is fast, small,
+dynamic and extensible using the Lua programming language.")
     (license license:gpl2+)
     (home-page "https://awesome.naquadah.org/")))

@@ -9,6 +9,8 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,10 +35,12 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -46,6 +50,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (srfi srfi-1))
@@ -127,13 +132,13 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
 (define-public jpegoptim
   (package
    (name "jpegoptim")
-   (version "1.4.3")
+   (version "1.4.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.kokkonen.net/tjko/src/jpegoptim-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "0k53q7dc8w5ashz8v261x2b5vvz7gdvg8w962rz9gjvkjbh4lg93"))))
+                     "1cn1i0g1xjdwa12w0ifbnzgb1vqbpr8ji6h05vxksj79vyi3x849"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg" ,libjpeg)))
    (arguments
@@ -146,6 +151,37 @@ the Huffman tables) and \"lossy\" optimization based on setting
 maximum quality factor.")
    (license license:gpl2+)
    (home-page "http://www.kokkonen.net/tjko/projects.html#jpegoptim")))
+
+(define-public libicns
+  (package
+    (name "libicns")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/icns/"
+                    "libicns-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hjm8lwap7bjyyxsyi94fh5817xzqhk4kb5y0b7mb6675xw10prk"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("jasper" ,jasper)))
+    (arguments
+     `(#:tests? #t)) ; No tests.
+    (home-page "http://icns.sourceforge.net/")
+    (synopsis "Library for handling Mac OS icns resource files")
+    (description
+     "Libicns is a library for the manipulation of Mac OS IconFamily resource
+type files (ICNS).  @command{icns2png} and @command{png2icns} are provided to
+convert between PNG and ICNS. @command{icns2png} will extract image files from
+ICNS files under names like \"Foo_48x48x32.png\" useful for installing for use
+with .desktop files.  Additionally, @command{icontainer2png} is provided for
+extracting icontainer icon files.")
+    (license (list license:lgpl2.1+     ; libicns
+                   license:lgpl2.0+     ; src/apidocs.*
+                   license:gpl2+))))    ; icns2png, png2icns, icontainer2png
 
 (define-public libtiff
   (package
@@ -306,15 +342,14 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.11")
+    (version "0.13")
     (source
       (origin
         (method url-fetch)
-        (uri             ;; The link on the homepage is dead.
-          (string-append "http://distfiles.gentoo.org/distfiles/" name "-"
-                          version ".tar.gz"))
+        (uri (string-append "http://downloads.ghostscript.com/public/" name "/"
+                            name "-" version ".tar.gz"))
         (sha256
-          (base32 "1ffhgmf2fqzk0h4k736pp06z7q5y4x41fg844bd6a9vgncq86bby"))
+          (base32 "04akiwab8iy5iy34razcvh9mcja9wy737civ3sbjxk4j143s1b2s"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
 
     (build-system gnu-build-system)
@@ -329,23 +364,25 @@ This is a decoder only implementation, and currently is in the alpha
 stage, meaning it doesn't completely work yet.  However, it is
 maintaining parity with available encoders, so it is useful for real
 work.")
-    (home-page "http://jbig2dec.sourceforge.net/")
+    (home-page "http://www.ghostscript.com/jbig2dec.html")
     (license license:gpl2+)))
 
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
       (origin
         (method url-fetch)
         (uri
-         (string-append "mirror://sourceforge/openjpeg.mirror/" version "/"
-                        name "-" version ".tar.gz"))
+         (string-append "https://github.com/uclouvain/openjpeg/archive/v"
+                        version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "00zzm303zvv4ijzancrsb1cqbph3pgz0nky92k9qx3fq9y0vnchj"))
-        (patches (search-patches "openjpeg-use-after-free-fix.patch"
-                                 "openjpeg-CVE-2015-6581.patch"))))
+         (base32
+          "1anv0rjkbxw9kx91wvlfpb3dhppibda6kb1papny46bjzi3pzhl2"))
+        (patches (search-patches "openjpeg-CVE-2016-5157.patch"
+                                 "openjpeg-CVE-2016-7163.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -368,21 +405,6 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
-
-(define-public openjpeg-2.0
-  (package (inherit openjpeg)
-    (name "openjpeg")
-    (version "2.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "mirror://sourceforge/openjpeg.mirror/" version "/"
-                       name "-" version ".tar.gz"))
-       (sha256
-        (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))
-       (patches (search-patches "openjpeg-use-after-free-fix.patch"
-                                "openjpeg-CVE-2015-6581.patch"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
@@ -779,7 +801,7 @@ ISO/IEC 15444-1).")
 (define-public zimg
   (package
     (name "zimg")
-    (version "2.1")
+    (version "2.2.1")
     (source
       (origin
         (method url-fetch)
@@ -788,7 +810,7 @@ ISO/IEC 15444-1).")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1hqp1gcsa2zhypms5dnasb1srjgxdqm7cip3w5i571kk9nxkn289"))))
+          "0m2gjpkb0dlg4j77nr41z284zvyfq9qg3ahsv8p1xy8jfr7h1hqa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -840,3 +862,95 @@ whether they look alike.  It uses a computational model of the human visual
 system to detect similarities.  This allows it too see beyond irrelevant
 differences in file encoding, image quality, and other small variations.")
     (license license:gpl2+)))
+
+(define-public steghide
+  (package
+    (name "steghide")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/steghide/steghide/"
+                                  version "/steghide-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "18bxlhbdc3zsmxj84i417xjh0q28kv26q449k23n0a72ldwziix2"))
+              (patches (list (search-patch "steghide-fixes.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("perl" ,perl)))                 ;for tests
+    (inputs
+     `(("libmhash" ,libmhash)
+       ("libmcrypt" ,libmcrypt)
+       ("libjpeg" ,libjpeg)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags '("CXXFLAGS=-fpermissive"))) ;required for MHashPP.cc
+    (home-page "http://steghide.sourceforge.net")
+    (synopsis "Image and audio steganography")
+    (description
+     "Steghide is a steganography program that is able to hide data in various
+kinds of image- and audio-files.  The color- respectivly sample-frequencies
+are not changed thus making the embedding resistant against first-order
+statistical tests.")
+    (license license:gpl2+)))
+
+(define-public stb-image-for-extempore
+  (let ((revision "1")
+        (commit "152a250a702bf28951bb0220d63bc0c99830c498"))
+    (package
+      (name "stb-image-for-extempore")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source
+       (origin (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/extemporelang/stb.git")
+                     (commit commit)))
+               (sha256
+                (base32
+                 "0y0aa20pj9311x2ii06zg8xs34idg14hfgldqc5ymizc6cf1qiqv"))
+               (file-name (string-append name "-" version "-checkout"))))
+      (build-system cmake-build-system)
+      (arguments `(#:tests? #f))        ; no tests included
+      ;; Extempore refuses to build on architectures other than x86_64
+      (supported-systems '("x86_64-linux"))
+      (home-page "https://github.com/extemporelang/stb")
+      (synopsis "Image library for Extempore")
+      (description
+       "This package is a collection of assorted single-file libraries.  Of
+all included libraries only the image loading and decoding library is
+installed as @code{stb_image}.")
+      (license license:public-domain))))
+
+(define-public optipng
+  (package
+    (name "optipng")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://prdownloads.sourceforge.net/optipng/optipng-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "105yk5qykvhiahzag67gm36s2kplxf6qn5hay02md0nkrcgn6w28"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; configure script does not accept arguments CONFIG_SHELL and SHELL
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "sh" "configure"
+                             (string-append "--prefix=" (assoc-ref outputs "out")))))))))
+    (synopsis "Optimizer that recompresses PNG image files to a
+smaller size")
+    (description "OptiPNG is a PNG optimizer that recompresses image
+files to a smaller size, without losing any information.  This program
+also converts external formats (BMP, GIF, PNM and TIFF) to optimized
+PNG, and performs PNG integrity checks and corrections.")
+    (home-page "http://optipng.sourceforge.net/")
+    (license license:zlib)))

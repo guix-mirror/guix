@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -585,8 +586,8 @@ unavailable.")
     (native-inputs `(("texinfo" ,texinfo)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (alist-delete 'configure %standard-phases)
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
                             (string-append "LOCAL_ROOT="
@@ -1789,6 +1790,33 @@ by calling Encode::encode(locale => $bytes) and converted back again
 with Encode::decode(locale => $string).")
     (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
 
+(define-public perl-feed-find
+  (package
+    (name "perl-feed-find")
+    (version "0.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BT/BTROTT/"
+                                  "Feed-Find-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sa33cm8ww55cymnl8j7b5yspi2y5xkkkgqqa4h6fs3wdqylz600"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; Tests expect to query files at http://stupidfool.org/perl/feeds/
+     `(#:tests? #f))
+    (inputs
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/Feed-Find")
+    (synopsis "Syndication feed auto-discovery")
+    (description "@code{Feed::Find} implements feed auto-discovery for finding
+syndication feeds, given a URI.  It will discover the following feed formats:
+RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
+    (license (package-license perl))))
+
 (define-public perl-file-listing
   (package
     (name "perl-file-listing")
@@ -2385,14 +2413,14 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
 (define-public perl-io-socket-ssl
   (package
     (name "perl-io-socket-ssl")
-    (version "2.033")
+    (version "2.038")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SU/SULLR/"
                                   "IO-Socket-SSL-" version ".tar.gz"))
               (sha256
                (base32
-                "01qggwmc97kpzx49fp4fxysrjyq8mpnx54nrb087ridj0ch3cf46"))
+                "11fiifxyvn7njc9p52wgygyw24jz7rh7gnz2ikjphr4l4x9f03rx"))
               (patches (search-patches
                         "perl-io-socket-ssl-openssl-1.0.2f-fix.patch"))))
     (build-system perl-build-system)
@@ -2918,6 +2946,31 @@ represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 and updated by RFC 2732.")
     (home-page "http://search.cpan.org/dist/URI/")))
 
+(define-public perl-uri-fetch
+  (package
+    (name "perl-uri-fetch")
+    (version "0.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                                  "URI-Fetch-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rw6xiqm70s218aii9id3hf8j3pz6n22xnwd8v9m1ff2bnh63c0d"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require internet connection to succeed
+    (inputs
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/URI-Fetch")
+    (synopsis "Smart URI fetching/caching")
+    (description "@code{URI::Fetch} is a smart client for fetching HTTP pages,
+notably syndication feeds (RSS, Atom, and others), in an intelligent, bandwidth-
+and time-saving way.")
+    (license (package-license perl))))
+
 (define-public perl-uri-find
   (package
     (name "perl-uri-find")
@@ -2962,6 +3015,30 @@ URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
     (synopsis "WebSocket support for URI package")
     (description "With this module, the URI package provides the same set of
 methods for WebSocket URIs as it does for HTTP URIs.")
+    (license (package-license perl))))
+
+(define-public perl-uri-template
+  (package
+    (name "perl-uri-template")
+    (version "0.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/URI-Template-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "08kjjb4c0v9gqfrfnj1wkivylxl05finn11ra64dj136fhmnyrbg"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-uri" ,perl-uri)))
+    (native-inputs
+     `(("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-json" ,perl-json)))
+    (home-page "http://search.cpan.org/dist/URI-Template")
+    (synopsis "Object for handling URI templates")
+    (description "This perl module provides a wrapper around URI templates as described in
+RFC 6570.")
     (license (package-license perl))))
 
 (define-public perl-www-curl
@@ -3016,6 +3093,34 @@ library.")
 web browsing, used for automating interaction with websites.")
     (license (package-license perl))))
 
+(define-public perl-www-opensearch
+  (package
+    (name "perl-www-opensearch")
+    (version "0.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/"
+                                  "WWW-OpenSearch-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yxplx1q1qk2fvnzqrbk01lz26fy1lyhay51a3ky7q3jgh9p01rb"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require further modules to be packaged
+    (inputs
+     `(("perl-data-page" ,perl-data-page)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)
+       ("perl-uri-template" ,perl-uri-template)
+       ("perl-xml-feed" ,perl-xml-feed)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "http://search.cpan.org/dist/WWW-OpenSearch")
+    (synopsis "Search A9 OpenSearch compatible engines")
+    (description
+     "@code{WWW::OpenSearch} is a module to search @url{A9's OpenSearch,
+http://opensearch.a9.com} compatible search engines.")
+    (license (package-license perl))))
+
 (define-public perl-www-robotrules
   (package
     (name "perl-www-robotrules")
@@ -3068,13 +3173,13 @@ particularly easy to create complete web applications using httpuv alone.")
 (define-public r-jsonlite
   (package
     (name "r-jsonlite")
-    (version "0.9.20")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "jsonlite" version))
               (sha256
                (base32
-                "08b2gifd81yzj0h4k7pqp2cc2r5lwsg3sxnssi6c96rgqvl4702n"))))
+                "0bcnzzycvwwkm0lv0ka9xf55z5c1795b7c2vhmf53z73cxixsmnp"))))
     (build-system r-build-system)
     (home-page "http://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
@@ -3125,6 +3230,20 @@ directory.")
                (base32
                 "0j9bf80grd6gwh7116m575pycv87c0wcwkxsz3gzzfs4aw3pxyr9"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See https://github.com/rstudio/htmltools/pull/68
+         ;; The resource files are in the store and have mode 444.  After
+         ;; copying the files R fails to remove them again because it doesn't
+         ;; have write access to them.
+         (add-after 'unpack 'copy-files-without-mode
+           (lambda _
+             (substitute* "R/html_dependency.R"
+               (("file.copy\\(from, to, " prefix)
+                (string-append prefix
+                               "copy.mode = FALSE, ")))
+             #t)))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-rcpp" ,r-rcpp)))
@@ -3137,13 +3256,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "1sljs7zajzj1lsrrvqv7anpma4plzs79mqwmw7b2c5d7mn9py8lw"))))
+                "1xh8aiaci5hi3r67ym7r37hm89m9vzywk292avnmaj125kq7w1d0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -3160,14 +3279,28 @@ applications.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "0.9.7")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "1p24bcaf1wbfdi1r9ibyyp0l0zp4kzs4g3srv8vikz93hycm1qa6"))))
+                "04fwasg400v8dvkcn1fcha1jzdz8lbyxi0679q7flsyrp57b3jrf"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The environment variable CURL_CA_BUNDLE is only respected when
+         ;; running Windows, so we disable the platform checks.
+         ;; This can be removed once the libcurl has been patched.
+         (add-after 'unpack 'allow-CURL_CA_BUNDLE
+           (lambda _
+             (substitute* "R/onload.R"
+               (("if \\(!grepl\\(\"mingw\".*")
+                "if (FALSE)\n"))
+             (substitute* "src/handle.c"
+               (("#ifdef _WIN32") "#if 1"))
+             #t)))))
     (inputs
      `(("libcurl" ,curl)))
     (home-page "https://github.com/jeroenooms/curl")
@@ -3181,6 +3314,44 @@ the package implements a framework for performing fully customized requests
 where data can be processed either in memory, on disk, or streaming via the
 callback or connection interfaces.")
     (license l:expat)))
+
+(define-public r-hwriter
+  (package
+    (name "r-hwriter")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hwriter" version))
+       (sha256
+        (base32
+         "0arjsz854rfkfqhgvpqbm9lfni97dcjs66isdsfvwfd2wz932dbb"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/hwriter")
+    (synopsis "Output R objects in HTML format")
+    (description
+     "This package provides easy-to-use and versatile functions to output R
+objects in HTML format.")
+    (license l:lgpl2.1+)))
+
+(define-public r-rjson
+  (package
+    (name "r-rjson")
+    (version "0.2.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rjson" version))
+       (sha256
+        (base32
+         "1vzjyvf57k1fjizlk28rby65y5lsww5qnfvgnhln74qwda7hvl3p"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/rjson")
+    (synopsis "JSON library for R")
+    (description
+     "This package provides functions to convert R objects into JSON objects
+and vice-versa.")
+    (license l:gpl2+)))
 
 (define-public gumbo-parser
   (package
@@ -3505,3 +3676,64 @@ tools they trust (e.g. wget).")
 rendering engine entirely written from scratch.  It is small and capable of
 handling many of the web standards in use today.")
     (license l:gpl2+)))
+
+(define-public surfraw
+  (package
+    (name "surfraw")
+    (version "2.2.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://surfraw.alioth.debian.org/dist/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fy4ph5h9kp0jzj1m6pfylxnnmgdk0mmdppw76z9jhna4jndk5xa"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)
+       ("perl-www-opensearch" ,perl-www-opensearch)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-libwww" ,perl-libwww)))
+    (synopsis "Unix command line interface to the www")
+    (description "Surfraw (Shell Users' Revolutionary Front Rage Against the Web)
+provides a unix command line interface to a variety of popular www search engines
+and similar services.")
+    (home-page "https://surfraw.alioth.debian.org/")
+    (license l:public-domain)))
+
+(define-public darkhttpd
+  (package
+    (name "darkhttpd")
+    (version "1.12")
+    (source
+     (origin
+       ;; The darkhttpd release tarball URL fails to download with a
+       ;; 'TLS warning alert'. Download from the darkhttpd git repo
+       ;; until the problem has been fixed upstream.
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append "https://unix4lyfe.org/git/darkhttpd"))
+             (commit "41b68476c35270f47dcd2ddebe27cbcd87e43d41")))
+       (sha256
+        (base32
+         "0wi8dfgj4ic0fsy4dszl69xgxdxlwxz4c30vsw2i2dpnczgjm04k"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "darkhttpd"
+                           (string-append (assoc-ref outputs "out")
+                                          "/bin"))
+             #t)))))
+    (synopsis "Simple static web server")
+    (description "darkhttpd is a simple static web server.  It is
+standalone and does not need inetd or ucspi-tcp.  It does not need any
+config files---you only have to specify the www root.")
+    (home-page "https://unix4lyfe.org/darkhttpd/")
+    (license l:isc)))

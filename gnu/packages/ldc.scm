@@ -26,6 +26,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages textutils)
@@ -101,6 +102,14 @@ and freshness without requiring additional information from the user.")
                (and (unpack "phobos-src" "runtime/phobos")
                     (unpack "druntime-src" "runtime/druntime")
                     (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")))))
+         (add-after 'unpack-submodule-sources 'patch-dmd2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "dmd2/root/port.c"
+               ((" ::isnan") " isnan")
+               ((" ::isinf") " isinf")
+               (("#undef isnan") "")
+               (("#undef isinf") ""))
+             #t))
          (add-after 'unpack-submodule-sources 'patch-phobos
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "runtime/phobos/std/process.d"
@@ -115,10 +124,11 @@ and freshness without requiring additional information from the user.")
     (inputs
      `(("libconfig" ,libconfig)
        ("libedit" ,libedit)
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata)
+       ("zlib" ,zlib)))
     (native-inputs
-     `(("llvm" ,llvm)
-       ("clang" ,clang)
+     `(("llvm" ,llvm-3.7)
+       ("clang" ,clang-3.7)
        ("unzip" ,unzip)
        ("phobos-src"
         ,(origin

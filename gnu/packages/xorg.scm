@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
@@ -5169,6 +5171,23 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
+(define-public xorg-server-xwayland
+  (package
+    (inherit xorg-server)
+    (name "xorg-server-xwayland")
+    (inputs
+     `(("libepoxy" ,libepoxy)
+       ("wayland" ,wayland)
+       ,@(package-inputs xorg-server)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments xorg-server)
+       ((#:configure-flags flags)
+        `(cons* "--enable-xwayland" "--disable-xorg"
+                "--disable-docs"    "--disable-devel-docs"
+                "--disable-xvfb"    "--disable-xnest"
+                "--disable-xquartz" "--disable-xwin"
+                ,flags))))
+    (synopsis "Xorg server with wayland backend")))
 
 
 ;; packages of height 4 in the propagated-inputs tree

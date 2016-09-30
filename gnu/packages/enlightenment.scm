@@ -26,6 +26,8 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
@@ -40,6 +42,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
@@ -53,7 +56,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.18.0")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -61,7 +64,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "17mzbjmz8d2vs8p63r1sk3mppl3l2fhxy2jv24dp75lgqbsvp806"))))
+                "08njx6wd505as1vn0yp4mnmf6mb2v28jsipxxx4zhf78v18d2sqc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -79,6 +82,7 @@
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
@@ -122,23 +126,12 @@
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--enable-liblz4"
-                           "--enable-harfbuzz")
-       #:phases
-       (modify-phases %standard-phases
-         ;; ecore_audio cannot find pulseaudio or libsndfile when compiled.
-         ;; Starting in version 1.18.0, these two libraries are dlopened so
-         ;; we hardcode their locations as a temporary workaround.
-         (add-after 'configure 'hardlink-dlopen-files
-           (lambda _
-             (substitute* "src/lib/ecore_audio/ecore_audio.c"
-                          (("libpulse.so.0")
-                           (string-append (assoc-ref %build-inputs "pulseaudio")
-                                          "/lib/libpulse.so.0")))
-             (substitute* "src/lib/ecore_audio/ecore_audio.c"
-                          (("libsndfile.so.1")
-                           (string-append (assoc-ref %build-inputs "libsndfile")
-                                          "/lib/libsndfile.so.1")))
-             #t)))))
+                           "--enable-xinput22"
+                           "--enable-image-loader-webp"
+                           "--enable-multisense"
+                           "--with-opengl=es"
+                           "--enable-egl"
+                           "--enable-harfbuzz")))
     (home-page "https://www.enlightenment.org")
     (synopsis "Enlightenment Foundation Libraries")
     (description
@@ -148,90 +141,6 @@ graphics rendering, UI layout and themes, interaction with OS, access to
 removable devices or support for multimedia.")
     ;; Different parts are under different licenses.
     (license (list license:bsd-2 license:lgpl2.1 license:zlib))))
-
-(define-public elementary
-  (package
-    (name "elementary")
-    (version "1.17.1")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://download.enlightenment.org/rel/libs/"
-                              "elementary/elementary-" version ".tar.xz"))
-              (sha256
-               (base32
-                "149xjq4z71l44w1kd8zks9b2g0wjc9656w46hzd27b58afj1dqc5"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (propagated-inputs
-     `(("efl" ,efl))) ; elementary.pc, elementary-cxx.pc
-    (home-page "https://www.enlightenment.org")
-    (synopsis "Widget library of Enlightenment world")
-    (description
-     "Elementary is a widget library/toolkit, part of the Enlightenment
-Foundation  Libraries.  It is build upon Edje and Evas libraries and uses
-full capabilities of EFL.")
-    (license license:lgpl2.1)))
-
-(define-public evas-generic-loaders
-  (package
-    (name "evas-generic-loaders")
-    (version "1.17.0")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://download.enlightenment.org/rel/libs/"
-                "evas_generic_loaders/evas_generic_loaders-"
-                version ".tar.xz"))
-              (sha256
-               (base32
-                "0ynq1nx0bfgg19p4vki1fap36yyip53zaxpzncx2slr6jcx1kxf2"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("efl" ,efl)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("librsvg" ,librsvg)
-       ("libspectre" ,libspectre)
-       ("poppler" ,poppler)))
-    (home-page "https://www.enlightenment.org")
-    (synopsis "Plugins for integration of various file types into Evas")
-    (description
-     "Evas-generic-loaders is a collection of interfaces to outside libraries
-and applications allowing to natively open pictures, documents and media
-files in Evas (EFL canvas library).")
-    (license license:gpl2+)))
-
-(define-public emotion-generic-players
-  (package
-    (name "emotion-generic-players")
-    (version "1.17.0")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://download.enlightenment.org/rel/libs/"
-                              "emotion_generic_players/emotion_generic_players"
-                              "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "03kaql95mk0c5j50v3c5i5lmlr3gz7xlh8p8q87xz8zf9j5h1pp7"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("efl" ,efl)
-       ("vlc" ,vlc)))
-    (home-page "https://www.enlightenment.org")
-    (synopsis "Plugins for integrating media players in EFL based applications")
-    (description
-     "Emotion-generic-players is a collection of interfaces to outside libraries
-and applications allowing to natively play video files through Emotion.
-The only supported now is VLC.")
-    (license license:bsd-2)))
 
 (define-public terminology
   (package
@@ -262,7 +171,7 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -271,7 +180,7 @@ contents and more.")
                 version ".tar.xz"))
               (sha256
                (base32
-                "07mfh0k83nrm557x72qafxawxizilqgkr6sngbia3ikprc8556zy"))))
+                "06kbgcnbhl9clhdl7k983m4d0n6ggsl4qvizzi1nrp8c7np87fix"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -359,3 +268,33 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 
 (define-public python2-efl
   (package-with-python2 python-efl))
+
+(define-public edi
+  (package
+    (name "edi")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/ajwillia-ms/edi/releases/"
+                            "download/v" version "/edi-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "0qczz5psryxasphg5km95845h510237rf0k1dy8f0dad52ii90j1"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--with-tests=coverage")))
+    (native-inputs
+     `(("check" ,check)
+       ("lcov" ,lcov)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("clang" ,clang)
+       ("efl" ,efl)))
+    (home-page "https://www.enlightenment.org/about-edi")
+    (synopsis "Development environment for Enlightenment")
+    (description "EDI is a development environment designed for and built using
+the EFL.  It's aim is to create a new, native development environment for Linux
+that tries to lower the barrier to getting involved in Enlightenment development
+and in creating applications based on the Enlightenment Foundation Library suite.")
+    (license (list license:public-domain ; data/extra/skeleton
+                   license:gpl2))))      ; edi

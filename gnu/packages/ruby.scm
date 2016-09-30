@@ -61,8 +61,7 @@
        (patches (search-patches "ruby-symlinkfix.patch"))
        (snippet `(begin
                    ;; Remove bundled libffi
-                   (delete-file-recursively
-                    (string-append "ext/fiddle/libffi-3.2.1"))
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))
     (build-system gnu-build-system)
     (arguments

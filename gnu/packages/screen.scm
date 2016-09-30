@@ -169,4 +169,6 @@ window manager as well as the Tmux terminal multiplexer.")
 it to a new terminal.  Started a long-running process over @code{ssh}, but have
 to leave and don't want to interrupt it?  Just start a @code{screen}, use
 reptyr to grab it, and then kill the @code{ssh} session and head on home.")
+    ;; Reptyr currently does not support mips.
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     (license expat)))

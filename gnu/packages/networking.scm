@@ -135,6 +135,84 @@ establish a relatively secure environment (su and chroot) for running client
 or server shell scripts with network connections.")
     (license license:gpl2)))
 
+(define-public tcp-wrappers
+  (package
+    (name "tcp-wrappers")
+    (version "7.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.porcupine.org/pub/security/tcp_wrappers_"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0p9ilj4v96q32klavx0phw9va21fjp8vpk11nbh6v2ppxnnxfhwm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)  ; there is no configure script
+         (delete 'check)      ; there are no tests
+         (replace 'build
+           (lambda _
+             (chmod "." #o755)
+             ;; Upstream doesn't generate a shared library.  So we have to do it.
+             (setenv "CC" "gcc -fno-builtin -fPIC")
+             (substitute* "Makefile"
+               (("^(all[^\n]*)" line) (string-append line " libwrap.so\n
+libwrap.so: $(LIB_OBJ)\n
+\tgcc -shared $^ -o $@\n")))
+             ;; Deal with some gcc breakage.
+             (substitute* "percent_m.c"
+               (("extern char .sys_errlist.*;") ""))
+             (substitute* "scaffold.c"
+               (("extern char .malloc.*;") ""))
+             ;; This, believe it or not, is the recommended way to build!
+             (zero? (system* "make" "REAL_DAEMON_DIR=/etc" "linux"))))
+         ;; There is no make install stage, so we have to do it ourselves.
+         (replace 'install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out"))
+                   (man-pages `("hosts_access.3"
+                                "hosts_access.5"
+                                "hosts_options.5"
+                                "tcpd.8"
+                                "tcpdchk.8"
+                                "tcpdmatch.8"))
+                   (libs  `("libwrap.a"
+                            "libwrap.so"))
+                   (headers `("tcpd.h"))
+                   (bins `("safe_finger"
+                           "tcpd"
+                           "tcpdchk"
+                           "tcpdmatch"
+                           "try-from")))
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/include")))
+                headers)
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/share/man/man"
+                                                 (string-take-right x 1))))
+                man-pages)
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/lib/")))
+                libs)
+               (for-each
+                (lambda (x)
+                  (install-file x (string-append out "/bin/")))
+                bins)))))))
+    (home-page "http://www.porcupine.org")
+    (synopsis  "Monitor and filter incoming requests for network services")
+    (description "With this package you can monitor and filter incoming requests for
+network services.  It includes a library which may be used by daemons to
+transparently check connection attempts against an access control list.")
+    (license (license:non-copyleft "file://DISCLAIMER"
+                                   "See the file DISCLAIMER in the distribution."))))
+
+
 (define-public zeromq
   (package
     (name "zeromq")
@@ -313,8 +391,14 @@ and min/max network usage.")
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'fix-ifconfig-path
+           ;; This package works only with the net-tools version of ifconfig.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/tun.c"
+               (("PATH=[^ ]* ")
+                (string-append (assoc-ref inputs "net-tools") "/sbin/")))))
          (add-before 'check 'delete-failing-tests
-           ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105
+           ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105.
            (lambda _
              (substitute* "tests/common.c"
                (("tcase_add_test\\(tc, \
@@ -323,7 +407,8 @@ test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
-    (inputs `(("zlib" ,zlib)))
+    (inputs `(("net-tools" ,net-tools)
+              ("zlib" ,zlib)))
     (native-inputs `(("check" ,check)
                      ("pkg-config" ,pkg-config)))
     (home-page "http://code.kryo.se/iodine/")
@@ -338,7 +423,7 @@ and up to 1 Mbit/s downstream.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.0.5")
+    (version "2.2.0")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -347,7 +432,7 @@ and up to 1 Mbit/s downstream.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "02xi3fz8blcz9cf75rs11g7bijk06wm45vpgnksp72c2609j9q0c"))))
+         "010i7wpsv2231pwb1xdqs0xfwywi3514siidv6wnrfpw3rs7x156"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)
@@ -746,3 +831,29 @@ in dynamically linked programs and redirects them through one or more SOCKS or
 HTTP proxies.")
     (home-page "https://github.com/rofl0r/proxychains-ng")
     (license license:gpl2+)))
+
+(define-public enet
+  (package
+    (name "enet")
+    (version "1.3.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://enet.bespin.org/download/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0p53mnmjbm56wizwraznynx13fcibcxiqny110dp6a5a3w174q73"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis
+     "Network communication layer on top of UDP")
+    (description
+     "ENet's purpose is to provide a relatively thin, simple and robust network
+communication layer on top of UDP.  The primary feature it provides is optional
+reliable, in-order delivery of packets.  ENet omits certain higher level
+networking features such as authentication, server discovery, encryption, or
+other similar tasks that are particularly application specific so that the
+library remains flexible, portable, and easily embeddable.")
+    (home-page "http://enet.bespin.org")
+    (license license:expat)))

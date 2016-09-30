@@ -233,6 +233,9 @@ numeric gid or #f."
   ;; 'groupadd' aborts if the file doesn't already exist.
   (touch "/etc/group")
 
+  ;; Allow home directories to be created under /var/lib.
+  (mkdir-p "/var/lib")
+
   ;; Create the root account so we can use 'useradd' and 'groupadd'.
   (activate-user (find (match-lambda
                         ((name (? zero?) _ ...) #t)

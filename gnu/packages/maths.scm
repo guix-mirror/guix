@@ -418,6 +418,32 @@ plotting engine by third-party applications like Octave.")
       (license (license:fsf-free
                 "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright")))))
 
+(define-public gctp
+  (package
+    (name "gctp")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/OkoSanto/GCTP/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l9aqnqynh9laicn5dxf3rsb1n14xiks79wbyqccirzmjqd1c1x4"))))
+    (native-inputs
+     `(("fortran" ,gfortran)))
+    (build-system gnu-build-system)
+    (synopsis "General Cartographic Transformation Package (GCTP)")
+    (description
+     "The General Cartographic Transformation Package (GCTP) is a system of
+software routines designed to permit the transformation of coordinate pairs
+from one map projection to another.  The GCTP is the standard computer
+software used by the National Mapping Division for map projection
+computations.")
+    (home-page "https://github.com/OkoSanto/GCTP")
+    (license 'license:public-domain))) ; https://www2.usgs.gov/laws/info_policies.html
+
 (define-public hdf5
   (package
     (name "hdf5")
@@ -1191,16 +1217,39 @@ sparse system of linear equations A x = b using Guassian elimination.")
     (inputs
      (alist-delete "pt-scotch" (package-inputs mumps-openmpi)))))
 
+(define-public r-quadprog
+  (package
+    (name "r-quadprog")
+    (version "1.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "quadprog" version))
+       (sha256
+        (base32
+         "0jg3r6abmhp8r9vkbhpx9ldjfw6vyl1m4c5vwlyjhk1mi03656fr"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/quadprog")
+    (synopsis "Functions to solve quadratic programming problems")
+    (description
+     "This package contains routines and documentation for solving quadratic
+programming problems.")
+    (license license:gpl3+)))
+
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "1.8.8")
+    (version "1.9.5")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "0ans9l5rrb7a38gyi4qx4258sd5r5668vyrk02yzjpg9k3h8l165"))))
+        (base32 "19nr2jlkbcdgvw3gx5hry12av565lmvqd5q4h7zlch3q13avwwl2"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quadprog" ,r-quadprog)))
     (home-page "http://cran.r-project.org/web/packages/pracma")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
@@ -1793,14 +1842,14 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
 
 (define-public armadillo-for-rcpparmadillo
   (package (inherit armadillo)
-    (version "6.700.6")
+    (version "7.400.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "1cdpjxb0fz5f28y5qrqgpw53s7qi8s2v3al9lfdldqxngb21vpx8"))))))
+                "0xmpnqhm9mwr1lssjyarj0cl8b4svbqv6z1xa1dxlwd2ly1srkg4"))))))
 
 (define-public muparser
   ;; When switching download sites, muparser re-issued a 2.2.5 release with a
@@ -1921,6 +1970,8 @@ programming language implementations.  The project was born out of a need to
 have a good libm for the Julia programming language that worked consistently
 across compilers and operating systems, and in 32-bit and 64-bit
 environments.")
+    ;; Each architecture has its own make target, and there is none for mips.
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     ;; See LICENSE.md for details.
     (license (list license:expat
                    license:isc

@@ -225,7 +225,7 @@ guix pull}) from Emacs using:
 With @kbd{C-u}, make it verbose.
 @end table
 
-Once @command{guix pull} has succeeded, the Guix REPL is restared.  This
+Once @command{guix pull} has succeeded, the Guix REPL is restarted.  This
 allows you to keep using the Emacs interface with the updated Guix.
 
 
@@ -266,7 +266,7 @@ Describe current mode to see all available bindings.
 @end table
 
 @emph{Hint:} If you need several ``list'' or ``info'' buffers, you can
-simlpy @kbd{M-x clone-buffer} them, and each buffer will have its own
+simply @kbd{M-x clone-buffer} them, and each buffer will have its own
 history.
 
 @emph{Warning:} Name/version pairs cannot be used to identify packages
@@ -310,7 +310,7 @@ Mark the current package for upgrading.
 @item ^
 Mark all obsolete packages for upgrading.
 @item e
-Edit the definition of the curent package (go to its location).  This is
+Edit the definition of the current package (go to its location).  This is
 similar to @command{guix edit} command (@pxref{Invoking guix edit}), but
 for opening a package recipe in the current Emacs instance.
 @item x

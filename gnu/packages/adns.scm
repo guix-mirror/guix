@@ -59,19 +59,19 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://c-ares.haxx.se/download/" name "-" version
+                    "https://c-ares.haxx.se/download/" name "-" version
                     ".tar.gz"))
               (sha256
                (base32
-                "1z9y1f835dpi1ka2a2vzjygm3djdvr01036ml4l2js6r2xk2wqdk"))))
+                "1yv5ygkd813glz8hbagykgp1hlb6450chig061hr7pyw7i0gk4l6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://c-ares.haxx.se/")
+    (home-page "https://c-ares.haxx.se/")
     (synopsis "C library for asynchronous DNS requests")
     (description
       "C-ares is a C library that performs DNS requests and name resolution

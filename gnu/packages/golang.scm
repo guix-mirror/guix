@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is an addendum GNU Guix.
 ;;;
@@ -185,11 +186,11 @@ garbage collection, various safety features and in the style of communicating
 sequential processes (CSP) concurrent programming features added.")
     (license license:bsd-3)))
 
-(define-public go-1.6
+(define-public go-1.7
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.6.3")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
@@ -197,7 +198,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "002v6irgfd63zp9iza8nski5by0lar033j3ddpqiikw6bznsw9k3"))))
+         "1ls2shd8ha2dhigz8kf4j15p1l5rvfxn9jyh4rgrkdw17c9kz11b"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -216,11 +217,14 @@ sequential processes (CSP) concurrent programming features added.")
                  ;; Removing net/ tests, which fail when attempting to access
                  ;; network resources not present in the build container.
                  (for-each delete-file
-                           '("net/listen_test.go" "net/parse_test.go"))
+                           '("net/listen_test.go"
+                             "net/parse_test.go"
+                             "net/cgo_unix_test.go"))
 
                  (substitute* "os/os_test.go"
                    (("/usr/bin") (getcwd))
-                   (("/bin/pwd") (which "pwd")))
+                   (("/bin/pwd") (which "pwd"))
+                   (("/bin/sh") (which "sh")))
 
                  ;; Add libgcc to runpath
                  (substitute* "cmd/link/internal/ld/lib.go"
@@ -275,7 +279,7 @@ sequential processes (CSP) concurrent programming features added.")
 
                  ;; fix shebang for testar script
                  ;; note the target script is generated at build time.
-                 (substitute* "../misc/cgo/testcarchive/test.bash"
+                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
                    (("#!/usr/bin/env") (string-append "#!" (which "env"))))
 
                  (substitute* "net/lookup_unix.go"
@@ -336,4 +340,4 @@ sequential processes (CSP) concurrent programming features added.")
      `(("go" ,go-1.4)
        ,@(package-native-inputs go-1.4)))))
 
-(define-public go go-1.6)
+(define-public go go-1.7)

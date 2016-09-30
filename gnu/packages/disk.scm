@@ -191,10 +191,10 @@ to recover data more efficiently by only reading the necessary blocks.")
                           "CC=gcc")
        #:tests? #f))  ;no tests
     (home-page "https://github.com/dosfstools/dosfstools")
-    (synopsis "Utilities for making and checking MS-DOS FAT filesystems")
+    (synopsis "Utilities for making and checking MS-DOS FAT file systems")
     (description
      "The dosfstools package includes the mkfs.fat and fsck.fat utilities,
-which respectively make and check MS-DOS FAT filesystems.")
+which respectively make and check MS-DOS FAT file systems.")
     (license license:gpl3+)))
 
 (define-public sdparm

@@ -994,6 +994,33 @@ build process and its dependencies, whereas Make uses Makefile format.")
              (delete 'patch-paths)
              (delete 'set-additional-paths)
              (delete 'patch-patches)
+             (add-after 'unpack 'patch-jni-libs
+               ;; Hardcode dynamically loaded libraries.
+               (lambda _
+                 (let* ((library-path (search-path-as-string->list
+                                       (getenv "LIBRARY_PATH")))
+                        (find-library (lambda (name)
+                                        (search-path
+                                         library-path
+                                         (string-append "lib" name ".so")))))
+                   (for-each
+                    (lambda (file)
+                      (catch 'encoding-error
+                        (lambda ()
+                          (substitute* file
+                            (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                              _ name version)
+                             (format #f "\"~a\""  (find-library name)))
+                            (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                             (format #f "\"~a\"" (find-library name)))))
+                        (lambda _
+                          ;; Those are safe to skip.
+                          (format (current-error-port)
+                                  "warning: failed to substitute: ~a~%"
+                                  file))))
+                    (find-files "openjdk.src/jdk/src/solaris/native"
+                                "\\.c|\\.h"))
+                   #t)))
              ;; FIXME: This phase is needed but fails with this version of
              ;; IcedTea.
              (delete 'install-keystore)

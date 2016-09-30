@@ -128,13 +128,13 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
          (system? #t)
          (comment "D-Bus system bus user")
          (home-directory "/var/run/dbus")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define dbus-setuid-programs
   ;; Return the file name of the setuid program that we need.
   (match-lambda
     (($ <dbus-configuration> dbus services)
-     (list #~(string-append #$dbus "/libexec/dbus-daemon-launch-helper")))))
+     (list (file-append dbus "/libexec/dbus-daemon-launch-helper")))))
 
 (define (dbus-activation config)
   "Return an activation gexp for D-Bus using @var{config}."

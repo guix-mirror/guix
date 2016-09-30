@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,8 @@ Return the cryptographic hash of FILE.
 Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'
 and 'hexadecimal' can be used as well).\n"))
   (format #t (_ "
+  -x, --exclude-vcs      exclude version control directories"))
+  (format #t (_ "
   -f, --format=FMT       write the hash in the given format"))
   (format #t (_ "
   -r, --recursive        compute the hash on FILE recursively"))
@@ -62,7 +65,10 @@ and 'hexadecimal' can be used as well).\n"))
 
 (define %options
   ;; Specification of the command-line options.
-  (list (option '(#\f "format") #t #f
+  (list (option '(#\x "exclude-vcs") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'exclude-vcs? #t result)))
+        (option '(#\f "format") #t #f
                 (lambda (opt name arg result)
                   (define fmt-proc
                     (match arg
@@ -81,7 +87,6 @@ and 'hexadecimal' can be used as well).\n"))
         (option '(#\r "recursive") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'recursive? #t result)))
-
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -107,13 +112,23 @@ and 'hexadecimal' can be used as well).\n"))
                   (alist-cons 'argument arg result))
                 %default-options))
 
+  (define (vcs-file? file stat)
+    (case (stat:type stat)
+      ((directory)
+       (member (basename file) '(".bzr" ".git" ".hg" ".svn" "CVS")))
+      (else
+       #f)))
+
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)
                              value)
                             (_ #f))
                            (reverse opts)))
-         (fmt  (assq-ref opts 'format)))
+         (fmt  (assq-ref opts 'format))
+         (select? (if (assq-ref opts 'exclude-vcs?)
+                      (negate vcs-file?)
+                      (const #t))))
 
     (define (file-hash file)
       ;; Compute the hash of FILE.
@@ -121,7 +136,7 @@ and 'hexadecimal' can be used as well).\n"))
       (with-error-handling
         (if (assoc-ref opts 'recursive?)
             (let-values (((port get-hash) (open-sha256-port)))
-              (write-file file port)
+              (write-file file port #:select? select?)
               (flush-output-port port)
               (get-hash))
             (call-with-input-file file port-sha256))))
@@ -134,5 +149,5 @@ and 'hexadecimal' can be used as well).\n"))
          (lambda args
            (leave (_ "~a~%")
                   (strerror (system-error-errno args))))))
-      (_
+      (x
        (leave (_ "wrong number of arguments~%"))))))

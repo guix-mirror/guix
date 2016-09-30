@@ -383,7 +383,8 @@ it atomically, and then run OS's activation script."
                                   (uuid->string root)
                                   root))
             (kernel           (boot-parameters-kernel params))
-            (kernel-arguments (boot-parameters-kernel-arguments params)))
+            (kernel-arguments (boot-parameters-kernel-arguments params))
+            (initrd           (boot-parameters-initrd params)))
        (menu-entry
         (label (string-append label " (#"
                               (number->string number) ", "
@@ -391,10 +392,10 @@ it atomically, and then run OS's activation script."
         (linux kernel)
         (linux-arguments
          (cons* (string-append "--root=" root-device)
-                #~(string-append "--system=" #$system)
-                #~(string-append "--load=" #$system "/boot")
+                (string-append "--system=" system)
+                (string-append "--load=" system "/boot")
                 kernel-arguments))
-        (initrd #~(string-append #$system "/initrd"))))))
+        (initrd initrd)))))
 
   (let* ((numbers (generation-numbers profile))
          (systems (map (cut generation-file-name profile <>)

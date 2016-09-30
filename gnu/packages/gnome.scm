@@ -14,7 +14,6 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -110,6 +109,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages ncurses)
@@ -2444,7 +2444,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.4.3")
+    (version "2.4.4")
     (source
      (origin
        (method url-fetch)
@@ -2453,7 +2453,7 @@ output devices.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0pk07k65dlw37nz8z5spksivsv5nh96xmbi336rf2yfxf2ldpadd"))
+         "0p1ibjf5vzjsahw5xif2si3lj6a00sxhll008jk7w1hj1jfznhww"))
        (patches (search-patches "geoclue-config.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -3490,9 +3490,9 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("nettle" ,nettle) ; XXX: required by libarchive.pc
        ("udisks" ,udisks)))
     (home-page "https://wiki.gnome.org/gvfs/")
-    (synopsis "Userspace virtual filesystem for GIO")
+    (synopsis "Userspace virtual file system for GIO")
     (description
-     "GVFS is a userspace virtual filesystem designed to work with the I/O
+     "GVFS is a userspace virtual file system designed to work with the I/O
 abstraction of GIO.  It contains a GIO module that seamlessly adds GVFS support
 to all applications using the GIO API.  It also supports exposing the GVFS
 mounts to non-GIO applications using FUSE.
@@ -3549,7 +3549,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.21.90")
+    (version "3.22.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/simple-scan/"
@@ -3558,7 +3558,7 @@ USB transfers with your high-level application or system daemon.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0dmsvq3vviky6851rqiik898r84c7744i7md672ckic3mdv21ap3"))))
+                "0l1b3llkdlqq0bcjx1cadba67l2zb4zfykdaprpjbjbr6gkbc1f5"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk" ,gtk+)
@@ -3602,7 +3602,7 @@ work and the interface is well tested.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.20.3")
+    (version "3.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3610,7 +3610,7 @@ work and the interface is well tested.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "18i4nk4k4q2yaj4zw0gbyp7ja2g67pm05p56bbras52cnjyy37ad"))))
+                "09rscbmyjxzd8wlibn1fbmbwmlwnahzfl1kkcka6dhm121yd2id6"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
@@ -3635,9 +3635,7 @@ work and the interface is well tested.")
        ("iso-codes" ,iso-codes)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
-       ("libwnck" ,libwnck)
        ("libxslt" ,libxslt)
-       ("nss" ,nss)
        ("sqlite" ,sqlite)
        ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Web")
@@ -3732,7 +3730,7 @@ to format Docbook and Mallard documents.")
 (define-public yelp
   (package
     (name "yelp")
-    (version "3.21.3")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3740,7 +3738,7 @@ to format Docbook and Mallard documents.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1x8la7qn0l796p4nhprvkwb6sk6yc39xhq3gabvzrhdlb6mjgmrs"))))
+                "1hh8yqbv0scn9nksk9mq94cb4sdczlzxplclv2wqr41jmm8v186x"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
@@ -4563,6 +4561,20 @@ the available networks and allows users to easily switch between them.")
 libxml2.")
     (license license:lgpl2.1+)))
 
+(define-public libxml++-2
+  (package
+    (inherit libxml++)
+    (name "libxml++")
+    (version "2.40.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1sb3akryklvh2v6m6dihdnbpf1lkx441v972q9hlz1sq6bfspm2a"))))))
+
 (define-public gdm
   (package
     (name "gdm")
@@ -5204,6 +5216,36 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 desktop.  It supports multiple calendars, monthly view and yearly view.")
     (license license:gpl3+)))
 
+(define-public gnome-dictionary
+  (package
+    (name "gnome-dictionary")
+    (version "3.20.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08b1f5s5aqka3dwxnzmwr2fmyddjm9xw7zmqsf8r5zvfsivn7czg"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)))
+    (home-page "https://wiki.gnome.org/Apps/Dictionary")
+    (synopsis "Look up words in dictionary sources")
+    (description
+     "GNOME Dictionary can look for the definition or translation of a word in
+existing databases over the internet.")
+    (license license:gpl3+)))
+
 (define-public gnome-tweak-tool
   (package
     (name "gnome-tweak-tool")
@@ -5510,3 +5552,33 @@ write this kind of application, by providing a base class, taking care of all
 the IPC machinery needed to send messages to a running instance, and also
 handling the startup notification side.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-calculator
+  (package
+    (name "gnome-calculator")
+    (version "3.20.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1yx86kyd54y3k3b6rmdazvmpxzl0zn791zr1q87zjc5228mc3w9a"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtksourceview" ,gtksourceview)
+       ("libsoup" ,libsoup)
+       ("mpfr" ,mpfr)))
+    (home-page "https://wiki.gnome.org/Apps/Calculator")
+    (synopsis "Desktop calculator")
+    (description
+     "Calculator is an application that solves mathematical equations and
+is suitable as a default application in a Desktop environment.")
+    (license license:gpl3)))

@@ -37,6 +37,7 @@
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages apr)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
@@ -51,6 +52,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
@@ -71,11 +73,14 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux) ; for alsa-utils
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages mpd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -261,6 +266,150 @@ many input formats and provides a customisable Vi-style user interface.")
      "Hydrogen is an advanced drum machine for GNU/Linux.  Its main goal is to
 enable professional yet simple and intuitive pattern-based drum programming.")
     (license license:gpl2+)))
+
+(define-public extempore
+  (package
+    (name "extempore")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/digego/extempore/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1wap1mvsicrhlazikf7l8zxg37fir8bmnh9rin28m1rix730vcch"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(;; The default target also includes ahead-of-time compilation of the
+       ;; standard libraries.  However, during the "install" phase this would
+       ;; happen *again* for unknown reasons.  Hence we only build the
+       ;; extempore executable during the build phase.
+       #:make-flags '("extempore")
+       #:configure-flags '("-DJACK=ON"
+                           ;; We want to distribute.
+                           "-DIN_TREE=OFF"
+                           ;; Don't download any dependencies.
+                           "-DBUILD_DEPS=OFF")
+       #:modules ((ice-9 match)
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Rewrite default path to runtime directory
+             (substitute* "src/Extempore.cpp"
+               (("runtimedir \\+= \"runtime\"")
+                (string-append "runtimedir = \""
+                               (assoc-ref outputs "out")
+                               "/lib/extempore/runtime\"")))
+             (substitute* "extras/extempore.el"
+               (("\\(runtime-directory \\(concat default-directory \"runtime\"\\)\\)")
+                (string-append "(runtime-directory \""
+                               (assoc-ref outputs "out")
+                               "/lib/extempore/runtime"
+                               "\")")))
+             #t))
+         (add-after 'unpack 'link-with-additional-libs
+           (lambda _
+             ;; The executable must be linked with libffi and zlib.
+             (substitute* "CMakeLists.txt"
+               (("add_dependencies\\(aot_extended extended_deps\\)") "")
+               (("target_link_libraries\\(extempore PRIVATE dl" line)
+                (string-append line " ffi z")))
+             #t))
+         ;; FIXME: AOT compilation of the nanovg bindings fail with the error:
+         ;; "Compiler Error  could not bind _nvgLinearGradient"
+         (add-after 'unpack 'disable-nanovg
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("aotcompile_lib\\(libs/external/nanovg.xtm.*") ""))
+             #t))
+         ;; FIXME: All examples that are used as tests segfault for some
+         ;; unknown reason.
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("extempore_add_example_as_test\\(.*") ""))
+             #t))
+         (add-after 'unpack 'hardcode-external-lib-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (use-modules (ice-9 match))
+             (for-each
+              (match-lambda
+                ((file-name lib pkg-name)
+                 (substitute* (string-append "libs/external/" file-name ".xtm")
+                   ((lib) (string-append (assoc-ref inputs pkg-name)
+                                         "/lib/" lib)))))
+              '(("assimp"    "libassimp.so"    "assimp")
+                ("portmidi"  "libportmidi.so"  "portmidi")
+                ("sndfile"   "libsndfile.so"   "libsndfile")
+                ("fft"       "libkiss_fft.so"  "kiss-fft")
+                ("stb_image" "libstb_image.so" "stb-image")
+                ("nanovg"    "libnanovg.so"    "nanovg")
+                ("glext"     "libGL.so"        "mesa")
+                ("glfw3"     "libglfw.so"      "glfw")
+                ("gl/glcore-directbind"   "libGL.so" "mesa")
+                ("gl/glcompat-directbind" "libGL.so" "mesa")))
+             #t))
+         (add-after 'unpack 'use-own-llvm
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "EXT_LLVM_DIR" (assoc-ref inputs "llvm"))
+            ;; Our LLVM builds shared libraries, so Extempore should use
+            ;; those.
+            (substitute* "CMakeLists.txt"
+              (("CMAKE_STATIC_LIBRARY") "CMAKE_SHARED_LIBRARY"))
+            #t))
+         (add-after 'unpack 'fix-aot-compilation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               ;; EXT_SHARE_DIR does not exist before installation, so the
+               ;; working directory should be the source directory instead.
+               (("WORKING_DIRECTORY \\$\\{EXT_SHARE_DIR\\}")
+                "WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}")
+               ;; Extempore needs to be told where the runtime is to be found.
+               ;; While we're at it we disable automatic tuning for a specific
+               ;; CPU to make binary substitution possible.
+               (("COMMAND extempore" prefix)
+                (string-append prefix " --sharedir " (getcwd)
+                               " --mcpu=generic --attr=none")))
+             #t)))))
+    (inputs
+     `(("llvm" ,llvm-for-extempore)
+       ("libffi" ,libffi)
+       ("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
+       ("glfw" ,glfw)
+       ("apr" ,apr)
+       ("stb-image" ,stb-image-for-extempore)
+       ("kiss-fft" ,kiss-fft-for-extempore)
+       ("nanovg" ,nanovg-for-extempore)
+       ("portmidi" ,portmidi-for-extempore)
+       ("assimp" ,assimp)
+       ("alsa-lib" ,alsa-lib)
+       ("portaudio" ,portaudio)
+       ("mesa" ,mesa)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("emacs" ,emacs-no-x)))
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))
+    (home-page "http://benswift.me/extempore-docs/index.html")
+    (synopsis "Programming environment for live coding of multimedia")
+    (description
+     "Extempore is a programming language and runtime environment designed
+with live programming in mind.  It supports interactive programming in a REPL
+style, compiling and binding code just-in-time.  Although Extempore has its
+roots in 'live coding' of audiovisual media art, it is suitable for any task
+domain where dynamic run-time modifiability and good numerical performance are
+required.  Extempore also has strong timing and concurrency semantics, which
+are helpful when working in problem spaces where timing is important (such as
+audio and video).")
+    (license license:bsd-2)))
 
 (define-public klick
   (package
@@ -1081,6 +1230,25 @@ projects.")
 using a system-independent interface.")
     (license license:expat)))
 
+(define-public portmidi-for-extempore
+  (package (inherit portmidi)
+    (name "portmidi-for-extempore")
+    (version "217")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/extemporelang/portmidi/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjikwciyr8kk4y3qiv1pcq58xpgw38ql1m2gs6g0qc1s8sx4235"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; no tests
+    (native-inputs '())
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))
+    (home-page "https://github.com/extemporelang/portmidi/")))
+
 (define-public python-pyportmidi
   (package
     (name "python-pyportmidi")
@@ -1372,14 +1540,14 @@ computer's keyboard.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.7.7")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0q8kvy1ynlg64v1w7jxix1rpq0lp2ixgb2y8cbbwxd2b28r3r2vl"))))
+                "0pp459kfgrnngj373gnwwl43xjz32lmyf7v62p2nnjh6c7wr1ryq"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs
@@ -1637,6 +1805,52 @@ for improved Amiga ProTracker 2/3 compatibility.")
     (home-page "http://milkytracker.org/")
     ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
     (license (list license:bsd-3 license:gpl3+))))
+
+(define-public schismtracker
+  (package
+    (name "schismtracker")
+    (version "20160521")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/" name "/" name "/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c6r24wm3rldm4j8cskl9xnixj3rwi3lnrhckw5gv43wpy6h4jcz"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
+               `(substitute* "schism/version.c"
+                  (("Schism Tracker build %s %s.*$")
+                   (string-append "Schism Tracker version " ,version "\");"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+         (add-before 'configure 'link-libm
+           (lambda _ (setenv "LIBS" "-lm") #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("python" ,python)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib) ; for asound dependency
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("sdl" ,sdl)))
+    (home-page "http://schismtracker.org")
+    (synopsis "Oldschool sample-based music composition tool")
+    (description
+     "Schism Tracker is a reimplementation of Impulse Tracker, a program used to
+create high quality music without the requirements of specialized, expensive
+equipment, and with a unique \"finger feel\" that is difficult to replicate in
+part.  The player is based on a highly modified version of the ModPlug engine,
+with a number of bugfixes and changes to improve IT playback.")
+    (license license:gpl2+)))
 
 (define-public moc
   (package

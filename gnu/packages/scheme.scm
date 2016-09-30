@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -402,7 +403,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "6.5")
+    (version "6.6")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -412,7 +413,7 @@ implementation techniques and as an expository tool.")
                          version "/racket/racket-" version "-src-unix.tgz")))
              (sha256
               (base32
-               "0gvh7i5k87mg1gpqk8gaq50ja9ksbhnvdqn7qqh0n17byidd6999"))))
+               "1kzdi1n6h6hmz8zd9k8r5a5yp2ryi4w3c2fjm1k6cqicn18cwaxz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -571,14 +572,11 @@ mixed.")
        (file-name (string-append "chibi-scheme-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (alist-delete
-        'configure
-        (alist-cons-before
-         'build 'set-cc
-         (lambda _
-           (setenv "CC" "gcc"))
-         %standard-phases))
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'set-cc
+                    (lambda _
+                      (setenv "CC" "gcc"))))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))
@@ -736,8 +734,8 @@ threads.")
                                                    "/" name ".boot")))
                     (find-files lib "scheme.boot"))
                #t))))))
-    ;; According to the documentation MIPS is not supported.
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    ;; According to the documentation MIPS and ARM are not supported.
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (home-page "http://www.scheme.com")
     (synopsis "R6RS Scheme compiler and run-time")
     (description

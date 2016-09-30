@@ -202,7 +202,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.2.2-75")
+    (version "1.2.2-81")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -214,7 +214,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "0vs111fkd900wkm7yypaxmplc8i8j63d9shc3fbdhddn7cdj70b1"))))
+                "0jwlx8b97zkly9gcbdfbj4mzyn21dbg1kgpw7j7vqs380jryzgfs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -504,6 +504,32 @@ an interactive environment for evaluating mathematical statements.  Its
 syntax is similar to that of C, so basic usage is familiar.  It also includes
 \"dc\", a reverse-polish calculator.")
     (license license:gpl2+)))
+
+;; The original kiss-fft does not have a complete build system and does not
+;; build any shared libraries.  This is a fork used by Extempore.
+(define-public kiss-fft-for-extempore
+  (package
+    (name "kiss-fft-for-extempore")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/extemporelang/kiss_fft/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hkp9l6l4c92fb1l2sh6a6zv1hynpvb2s4d03vd8vxyvybc0l4pv"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; no tests included
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))
+    (home-page "https://github.com/extemporelang/kiss_fft")
+    (synopsis "Mixed-radix Fast Fourier Transform")
+    (description
+     "Kiss FFT attempts to be a reasonably efficient, moderately useful FFT
+that can use fixed or floating data types and can easily be incorporated into
+a C program.")
+    (license license:bsd-3)))
 
 (define-public fftw
   (package

@@ -93,14 +93,14 @@ is used in some video games and movies.")
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.10")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "055m7ywgl48ljwxf0kjhl76ldck890y5afdwjhk5s3p65xyaxh0k"))))
+                "166rawdal45kvanhvi0bkzy1d2pwf1p0lzslb287lcnm9vdw97yy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

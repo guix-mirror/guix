@@ -1,0 +1,118 @@
+This patch to LLVM is required by the developers of the Extempore language.
+The following explanation was posted to the extemporelang@googlegroups.com
+mailing list:
+
+"There is an assumption in the parser that all definitions occur within the
+same compilation unit - i.e. the parser has local state about what has been
+parsed in this unit of work.  Extempore obviously does lots of little units
+rather than one big unit and this causes problems for named types that were
+defined in another unit - which they always are.  The patch simply checks the
+current module to see if the type has been previously defined, and intervenes
+appropriately if it has."
+
+Message-ID: <CAOjrPOqoreXuZo4ZpDBvHE7M_tgAR_V8Txq5JFjh1HnGRn2EsA@mail.gmail.com>
+
+--- llvm-3.7.1.src/include/llvm/MC/MCSectionCOFF.h	2015-04-11 12:11:45.000000000 +1000
++++ llvm-3.7.1.src/include/llvm/MC/MCSectionCOFF.h	2015-09-14 09:22:56.000000000 +1000
+@@ -16,7 +16,6 @@
+ 
+ #include "llvm/ADT/StringRef.h"
+ #include "llvm/MC/MCSection.h"
+-#include "llvm/Support/COFF.h"
+ 
+ namespace llvm {
+ class MCSymbol;
+
+--- llvm-3.7.1.src/lib/AsmParser/LLParser.cpp	2015-07-11 20:30:36.000000000 +1000
++++ llvm-3.7.1.src/lib/AsmParser/LLParser.cpp	2015-09-14 09:20:57.000000000 +1000
+@@ -1754,8 +1754,14 @@
+     // If the type hasn't been defined yet, create a forward definition and
+     // remember where that forward def'n was seen (in case it never is defined).
+     if (!Entry.first) {
+-      Entry.first = StructType::create(Context, Lex.getStrVal());
+-      Entry.second = Lex.getLoc();
++      // this here for extempore
++      if (M->getTypeByName(Lex.getStrVal())) {
++        Entry.first = M->getTypeByName(Lex.getStrVal());
++        Entry.second = SMLoc();
++      } else {
++        Entry.first = StructType::create(Context, Lex.getStrVal());
++        Entry.second = Lex.getLoc();
++      }
+     }
+     Result = Entry.first;
+     Lex.Lex();
+
+--- llvm-3.7.1.src/lib/CodeGen/TargetLoweringObjectFileImpl.cpp	2015-07-01 05:10:31.000000000 +1000
++++ llvm-3.7.1.src/lib/CodeGen/TargetLoweringObjectFileImpl.cpp	2015-09-14 09:23:40.000000000 +1000
+@@ -32,6 +32,7 @@
+ #include "llvm/MC/MCStreamer.h"
+ #include "llvm/MC/MCSymbolELF.h"
+ #include "llvm/MC/MCValue.h"
++#include "llvm/Support/COFF.h"
+ #include "llvm/Support/Dwarf.h"
+ #include "llvm/Support/ELF.h"
+ #include "llvm/Support/ErrorHandling.h"
+
+--- llvm-3.7.1.src/lib/ExecutionEngine/MCJIT/MCJIT.cpp	2015-07-31 02:31:16.000000000 +1000
++++ llvm-3.7.1.src/lib/ExecutionEngine/MCJIT/MCJIT.cpp	2015-09-14 09:21:28.000000000 +1000
+@@ -524,6 +524,17 @@
+         rv.IntVal = APInt(32, PF(ArgValues[0].IntVal.getZExtValue()));
+         return rv;
+       }
++      if (FTy->getNumParams() == 1 &&
++          RetTy->isVoidTy() &&
++          FTy->getParamType(0)->isPointerTy()) {
++        GenericValue rv;
++        //void (*PF)(char *) = (void(*)(char *))(intptr_t)FPtr;
++        //printf("are symbols available: %d\n",isSymbolSearchingDisabled());
++        void (*PF)(char *) = (void(*)(char *))FPtr;
++        char* mzone = (char*) GVTOP(ArgValues[0]);
++        PF(mzone);
++        return rv;
++      }      
+       break;
+     }
+   }
+
+--- llvm-3.7.1.src/lib/MC/MCContext.cpp	2015-06-23 21:31:32.000000000 +1000
++++ llvm-3.7.1.src/lib/MC/MCContext.cpp	2015-09-14 09:24:01.000000000 +1000
+@@ -23,6 +23,7 @@
+ #include "llvm/MC/MCSymbolCOFF.h"
+ #include "llvm/MC/MCSymbolELF.h"
+ #include "llvm/MC/MCSymbolMachO.h"
++#include "llvm/Support/COFF.h"
+ #include "llvm/Support/ELF.h"
+ #include "llvm/Support/ErrorHandling.h"
+ #include "llvm/Support/FileSystem.h"
+
+--- llvm-3.7.1.src/lib/MC/MCObjectFileInfo.cpp	2015-06-25 10:28:42.000000000 +1000
++++ llvm-3.7.1.src/lib/MC/MCObjectFileInfo.cpp	2015-09-14 09:24:17.000000000 +1000
+@@ -16,6 +16,7 @@
+ #include "llvm/MC/MCSectionCOFF.h"
+ #include "llvm/MC/MCSectionELF.h"
+ #include "llvm/MC/MCSectionMachO.h"
++#include "llvm/Support/COFF.h"
+ using namespace llvm;
+ 
+ static bool useCompactUnwind(const Triple &T) {
+
+--- llvm-3.7.1.src/lib/MC/MCSectionCOFF.cpp	2015-06-09 10:31:39.000000000 +1000
++++ llvm-3.7.1.src/lib/MC/MCSectionCOFF.cpp	2015-09-14 09:24:25.000000000 +1000
+@@ -11,6 +11,7 @@
+ #include "llvm/MC/MCAsmInfo.h"
+ #include "llvm/MC/MCContext.h"
+ #include "llvm/MC/MCSymbol.h"
++#include "llvm/Support/COFF.h"
+ #include "llvm/Support/raw_ostream.h"
+ using namespace llvm;
+ 
+--- llvm-3.7.1.src/lib/Target/X86/X86TargetObjectFile.cpp	2015-06-27 04:55:48.000000000 +1000
++++ llvm-3.7.1.src/lib/Target/X86/X86TargetObjectFile.cpp	2015-09-14 09:25:03.000000000 +1000
+@@ -16,6 +16,7 @@
+ #include "llvm/MC/MCSectionCOFF.h"
+ #include "llvm/MC/MCSectionELF.h"
+ #include "llvm/MC/MCValue.h"
++#include "llvm/Support/COFF.h"
+ #include "llvm/Support/Dwarf.h"
+ #include "llvm/Target/TargetLowering.h"

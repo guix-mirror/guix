@@ -41,6 +41,7 @@ MODULES =					\
   guix/combinators.scm				\
   guix/utils.scm				\
   guix/sets.scm					\
+  guix/modules.scm				\
   guix/download.scm				\
   guix/git-download.scm				\
   guix/hg-download.scm				\
@@ -207,6 +208,12 @@ endif INSTALL_SRFI_37
 # Handy way to remove the .go files without removing all the rest.
 clean-go:
 	-$(RM) -f $(GOBJECTS)
+	@find . -name '*.go' -print | \
+	  if test -t 1; then \
+	    xargs -r echo -e "\033[31mwarning:\033[0m stray .go files:"; \
+	  else \
+	    xargs -r echo "warning: stray .go files:"; \
+	  fi
 
 
 # Test extensions; has to be unconditional.
@@ -222,6 +229,7 @@ SCM_TESTS =					\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
   tests/sets.scm				\
+  tests/modules.scm				\
   tests/gnu-maintenance.scm			\
   tests/substitute.scm				\
   tests/builders.scm				\
@@ -341,6 +349,9 @@ dist_pkgdata_DATA = hydra.gnu.org.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix
+
+# Zsh completion file.
+dist_zshcompletion_DATA = etc/completion/zsh/_guix
 
 EXTRA_DIST =						\
   HACKING						\

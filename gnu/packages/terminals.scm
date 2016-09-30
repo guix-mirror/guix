@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,19 +42,22 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages docbook)
+  #:use-module (srfi srfi-26))
 
 (define-public tilda
   (package
     (name "tilda")
-    (version "1.3.1")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/lanoxx/tilda/archive/"
                                   "tilda-" version ".tar.gz"))
               (sha256
                (base32
-                "1nh0kw8f6srriglj55gmir1hvakcwrak1wcydz3vpnmwipgy6jib"))))
+                "1cc4qbg1m3i04lj5p6i6xbd0zvy1320pxdgmjhz5p3j95ibsbfki"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -205,10 +209,29 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                     "kmscon-" version ".tar.xz"))
               (sha256
                (base32
-                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))))
+                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Use elogind instead of systemd.
+               '(begin
+                  (substitute* "configure"
+                    (("libsystemd-daemon libsystemd-login")
+                     "libelogind"))
+                  (substitute* "src/uterm_systemd.c"
+                    (("#include <systemd/sd-login.h>")
+                     "#include <elogind/sd-login.h>")
+                    ;; We don't have this header.
+                    (("#include <systemd/sd-daemon\\.h>")
+                     "")
+                    ;; Replace the call to 'sd_booted' by the truth value.
+                    (("sd_booted\\(\\)")
+                     "1"))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("libxslt" ,libxslt)                       ;to build the man page
+       ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
+       ("docbook-xsl" ,docbook-xsl)))
     (inputs
      `(("libdrm" ,libdrm)
        ("libtsm" ,libtsm)
@@ -217,10 +240,13 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
        ("mesa" ,mesa)
        ("pango" ,pango)
        ("udev" ,eudev)))
-    (synopsis "Simple terminal emulator")
-    (description "Kmscon is a simple terminal emulator based on linux kernel
-mode setting (KMS).  It is an attempt to replace the in-kernel VT implementation
-with a userspace console.  See kmscon(1) man-page for usage information.")
+    (synopsis "Linux KMS-based terminal emulator")
+    (description "Kmscon is a terminal emulator based on Linux's @dfn{kernel
+mode setting} (KMS).  It can replace the in-kernel virtual terminal (VT)
+implementation with a user-space console.  Compared to the Linux console,
+kmscon provides enhanced features including XKB-compatible internationalized
+keyboard support, UTF-8 input/font support, hardware-accelerated rendering,
+multi-seat support, a replacement for @command{mingetty}, and more.")
     (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
     ;; Hash table implementation is lgpl2.1+ licensed.
     ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
@@ -229,4 +255,42 @@ with a userspace console.  See kmscon(1) man-page for usage information.")
     ;; under the bsd 2 license.
     ;; Unifont-Font is from http://unifoundry.com/unifont.html and licensed
     ;; under the terms of the GNU GPL.
-    (license (list license:expat license:lgpl2.1+ license:bsd-2 license:gpl2+))))
+    (license (list license:expat license:lgpl2.1+ license:bsd-2
+                   license:gpl2+))
+    (supported-systems (filter (cut string-suffix? "-linux" <>)
+                               %supported-systems))))
+
+(define-public picocom
+  (package
+    (name "picocom")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/npat-efault/picocom"
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v891cx18vx3lnpfaq90f5y6njgigkn4qsikhrmyzshnz32jy5bb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "picocom" bin)
+               (install-file "picocom.1" man)))))))
+    (home-page "https://github.com/npat-efault/picocom")
+    (synopsis "Minimal dumb-terminal emulation program")
+    (description "It was designed to serve as a simple, manual, modem
+configuration, testing, and debugging tool.  It has also serves well
+as a low-tech serial communications program to allow access to all
+types of devices that provide serial consoles.")
+    (license license:gpl2+)))

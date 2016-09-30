@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,9 @@
 
             manifest-pattern
             manifest-pattern?
+            manifest-pattern-name
+            manifest-pattern-version
+            manifest-pattern-output
 
             manifest-remove
             manifest-add
@@ -78,6 +82,9 @@
             manifest-transaction?
             manifest-transaction-install
             manifest-transaction-remove
+            manifest-transaction-install-entry
+            manifest-transaction-remove-pattern
+            manifest-transaction-null?
             manifest-perform-transaction
             manifest-transaction-effects
 
@@ -383,6 +390,28 @@ no match.."
   (remove  manifest-transaction-remove  ; list of <manifest-pattern>
            (default '())))
 
+(define (manifest-transaction-install-entry entry transaction)
+  "Augment TRANSACTION's set of installed packages with ENTRY, a
+<manifest-entry>."
+  (manifest-transaction
+   (inherit transaction)
+   (install
+    (cons entry (manifest-transaction-install transaction)))))
+
+(define (manifest-transaction-remove-pattern pattern transaction)
+  "Add PATTERN to TRANSACTION's list of packages to remove."
+  (manifest-transaction
+   (inherit transaction)
+   (remove
+    (cons pattern (manifest-transaction-remove transaction)))))
+
+(define (manifest-transaction-null? transaction)
+  "Return true if TRANSACTION has no effect---i.e., it neither installs nor
+remove software."
+  (match transaction
+    (($ <manifest-transaction> () ()) #t)
+    (($ <manifest-transaction> _ _)   #f)))
+
 (define (manifest-transaction-effects manifest transaction)
   "Compute the effect of applying TRANSACTION to MANIFEST.  Return 4 values:
 the list of packages that would be removed, installed, upgraded, or downgraded
@@ -424,7 +453,7 @@ replace it."
                    downgrade)))))))
 
 (define (manifest-perform-transaction manifest transaction)
-  "Perform TRANSACTION on MANIFEST and return new manifest."
+  "Perform TRANSACTION on MANIFEST and return the new manifest."
   (let ((install (manifest-transaction-install transaction))
         (remove  (manifest-transaction-remove transaction)))
     (manifest-add (manifest-remove manifest remove)
@@ -444,21 +473,30 @@ replace it."
                 (cons (gexp-input thing output) deps)))
               (manifest-entries manifest)))
 
-(define (manifest-lookup-package manifest name)
+(define* (manifest-lookup-package manifest name #:optional version)
   "Return as a monadic value the first package or store path referenced by
-MANIFEST that named NAME, or #f if not found."
+MANIFEST that is named NAME and optionally has the given VERSION prefix, or #f
+if not found."
   ;; Return as a monadic value the package or store path referenced by the
   ;; manifest ENTRY, or #f if not referenced.
   (define (entry-lookup-package entry)
     (define (find-among-inputs inputs)
       (find (lambda (input)
               (and (package? input)
-                   (equal? name (package-name input))))
+                   (equal? name (package-name input))
+                   (if version
+                       (string-prefix? version (package-version input))
+                       #t)))
             inputs))
     (define (find-among-store-items items)
       (find (lambda (item)
-              (equal? name (package-name->name+version
-                            (store-path-package-name item))))
+              (let-values (((pkg-name pkg-version)
+                            (package-name->name+version
+                             (store-path-package-name item))))
+                (and (equal? name pkg-name)
+                     (if version
+                         (string-prefix? version pkg-version)
+                         #t))))
             items))
 
     ;; TODO: Factorize.
@@ -695,6 +733,66 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
                           #:substitutable? #f)
         (return #f))))
 
+(define (gtk-im-modules manifest)
+  "Return a derivation that builds the cache files for input method modules
+for both major versions of GTK+."
+
+  (mlet %store-monad ((gtk+   (manifest-lookup-package manifest "gtk+" "3"))
+                      (gtk+-2 (manifest-lookup-package manifest "gtk+" "2")))
+
+    (define (build gtk gtk-version)
+      (let ((major (string-take gtk-version 1)))
+        (with-imported-modules '((guix build utils)
+                                 (guix build union)
+                                 (guix build profiles)
+                                 (guix search-paths)
+                                 (guix records))
+          #~(begin
+              (use-modules (guix build utils)
+                           (guix build union)
+                           (guix build profiles)
+                           (ice-9 popen)
+                           (srfi srfi-1)
+                           (srfi srfi-26))
+
+              (let* ((prefix  (string-append "/lib/gtk-" #$major ".0/"
+                                             #$gtk-version))
+                     (query   (string-append #$gtk "/bin/gtk-query-immodules-"
+                                             #$major ".0"))
+                     (destdir (string-append #$output prefix))
+                     (moddirs (cons (string-append #$gtk prefix "/immodules")
+                                    (filter file-exists?
+                                            (map (cut string-append <> prefix "/immodules")
+                                                 '#$(manifest-inputs manifest)))))
+                     (modules (append-map (cut find-files <> "\\.so$")
+                                          moddirs)))
+
+                ;; Generate a new immodules cache file.
+                (mkdir-p (string-append #$output prefix))
+                (let ((pipe    (apply open-pipe* OPEN_READ query modules))
+                      (outfile (string-append #$output prefix
+                                              "/immodules-gtk" #$major ".cache")))
+                  (dynamic-wind
+                    (const #t)
+                    (lambda ()
+                      (call-with-output-file outfile
+                        (lambda (out)
+                          (while (not (eof-object? (peek-char pipe)))
+                            (write-char (read-char pipe) out))))
+                      #t)
+                    (lambda ()
+                      (close-pipe pipe)))))))))
+
+    ;; Don't run the hook when there's nothing to do.
+    (let ((gexp #~(begin
+                    #$(if gtk+   (build gtk+   "3.0.0")  #t)
+                    #$(if gtk+-2 (build gtk+-2 "2.10.0") #t))))
+      (if (or gtk+ gtk+-2)
+          (gexp->derivation "gtk-im-modules" gexp
+                            #:local-build? #t
+                            #:substitutable? #f)
+          (return #f)))))
+
 (define (xdg-desktop-database manifest)
   "Return a derivation that builds the @file{mimeinfo.cache} database from
 desktop files.  It's used to query what applications can handle a given
@@ -816,6 +914,7 @@ files for the truetype fonts of the @var{manifest} entries."
         ghc-package-cache-file
         ca-certificate-bundle
         gtk-icon-themes
+        gtk-im-modules
         xdg-desktop-database
         xdg-mime-database))
 

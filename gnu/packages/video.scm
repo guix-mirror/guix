@@ -6,10 +6,11 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
+;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,11 +48,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
@@ -566,14 +569,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.7")
+    (version "2.8.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0z0mcj2q3ysp9qdn1ks03g5sn2zxyr06vxs4al0m4b5b3in8mglp"))))
+               "1691bmq8j56rcys09xwvzjq16z25m8vczj5a50gdn7ydm9qjykpr"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -616,6 +619,7 @@ audio/video codec library.")
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gnutls" ,gnutls)
+       ("liba52" ,liba52)
        ("libcddb" ,libcddb)
        ("libgcrypt" ,libgcrypt)
        ("libkate" ,libkate)
@@ -646,9 +650,7 @@ audio/video codec library.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
-       `("--disable-a52" ; FIXME: reenable once available
-
-         ;; Gross workaround for <https://trac.videolan.org/vlc/ticket/16907>.
+       `(;; Gross workaround for <https://trac.videolan.org/vlc/ticket/16907>.
          ;; In our case, this led to a test failure:
          ;;   test_libvlc_equalizer: libvlc/equalizer.c:122: test_equalizer: Assertion `isnan(libvlc_audio_equalizer_get_amp_at_index (equalizer, u_bands))' failed.
          "ac_cv_c_fast_math=no"
@@ -790,7 +792,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.19.0")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -798,7 +800,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1qk7blpg64v47qfnvpgnbf413v5gzn900wmlivs727fd88cq3x9x"))
+                "0mibhjg5skcwcfpg6dx7yi2gj14xawnq2jzmcfwq9knmvv9cjvpy"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -834,7 +836,6 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("mpg123" ,mpg123)
        ("pulseaudio" ,pulseaudio)
        ("rsound" ,rsound)
-       ("vapoursynth" ,vapoursynth)
        ("waf" ,python-waf)
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
@@ -887,7 +888,7 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.5.0")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://storage.googleapis.com/"
@@ -895,7 +896,7 @@ access to mpv's powerful playback capabilities.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "15v7qw0ydyxn08ksb6lxn1l51pxgpwgshdwd3275yrr5hs86fv9h"))
+                "1basd6dda5di9p7jhc0f4f52wzm9c3hsravqspw6ibpcn5gbpbyh"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -925,7 +926,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.07.22")
+    (version "2016.09.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/"
@@ -933,7 +934,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02wcxpcbpvsbvyxcnhhf94ma0x5dcg4fygnxxca2h31dp47dkak9"))))
+                "0dfbb1lnpq3if7i5xvq8n6rvlgni3ryc8cw4bcrg1glmca3v1pkc"))))
     (build-system python-build-system)
     (home-page "https://youtube-dl.org")
     (arguments
@@ -976,11 +977,27 @@ YouTube.com and a few more sites.")
                (base32
                 "1q1whviqv5sr9nr372h31zwid1rvbfbx3z4lzr8lnj25xha6cdm6"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--disable-bdjava")))
+    (arguments
+     `(#:configure-flags '("--disable-bdjava")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dlopen-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libaacs (assoc-ref inputs "libaacs"))
+                   (libbdplus (assoc-ref inputs "libbdplus")))
+               (substitute* "src/libbluray/disc/aacs.c"
+                 (("\"libaacs\"")
+                  (string-append "\"" libaacs "/lib/libaacs\"")))
+               (substitute* "src/libbluray/disc/bdplus.c"
+                 (("\"libbdplus\"")
+                  (string-append "\"" libbdplus "/lib/libbdplus\"")))
+               #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("libaacs" ,libaacs)
+       ("libbdplus" ,libbdplus)
        ("libxml2" ,libxml2)))
     (home-page "https://www.videolan.org/developers/libbluray.html")
     (synopsis "Blu-Ray Disc playback library")
@@ -1235,7 +1252,7 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "32")
+    (version "33.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1244,7 +1261,7 @@ capabilities.")
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "1j08whj946v2kkpgxsfhpca8xf0ax9iqzn73wvwjx319p9j0ymp9"))))
+                "1504jaw4yqdlyls0bz9f90rvqq7cy1jvmrnhdvwnmdfbpikqwi4c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1272,6 +1289,8 @@ capabilities.")
 manipulation.  It aims to be a modern rewrite of Avisynth, supporting
 multithreading, generalized colorspaces, per frame properties, and videos with
 format changes.")
+    ;; src/core/cpufeatures only allows x86, ARM or PPC
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     ;; As seen from the source files.
     (license license:lgpl2.1+)))
 
@@ -1587,3 +1606,46 @@ and MPEG system streams.")
                    license:lgpl2.1
                    license:lgpl2.1+
                    license:gpl2))))
+
+(define-public libbdplus
+  (package
+    (name "libbdplus")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libbdplus/"
+                           version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "02n87lysqn4kg2qk7d1ffrp96c44zkdlxdj0n16hbgrlrpiwlcd6"))))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libbdplus.html")
+    (synopsis "Library for decrypting certain Blu-Ray discs")
+    (description "libbdplus is a library which implements the BD+ System
+specifications.")
+    (license license:lgpl2.1+)))
+
+(define-public libaacs
+  (package
+    (name "libaacs")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libaacs/"
+                           version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "1s5v075hnbs57995r6lljm79wgrip3gnyf55a0y7bja75jh49hwm"))))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libaacs.html")
+    (synopsis "Library for decrypting certain Blu-Ray discs")
+    (description "libaacs is a library which implements the Advanced Access
+Content System specification.")
+    (license license:lgpl2.1+)))

@@ -69,6 +69,7 @@
             operating-system-host-name
             operating-system-hosts-file
             operating-system-kernel
+            operating-system-kernel-file
             operating-system-kernel-arguments
             operating-system-initrd
             operating-system-users
@@ -100,6 +101,7 @@
             boot-parameters-root-device
             boot-parameters-kernel
             boot-parameters-kernel-arguments
+            boot-parameters-initrd
             read-boot-parameters
 
             local-host-aliases
@@ -245,6 +247,19 @@ from the initrd."
 (define (swap-services os)
   "Return the list of swap services for OS."
   (map swap-service (operating-system-swap-devices os)))
+
+(define* (system-linux-image-file-name #:optional (system (%current-system)))
+  "Return the basename of the kernel image file for SYSTEM."
+  ;; FIXME: Evaluate the conditional based on the actual current system.
+  (if (string-prefix? "mips" (%current-system))
+      "vmlinuz"
+      "bzImage"))
+
+(define (operating-system-kernel-file os)
+  "Return an object representing the absolute file name of the kernel image of
+OS."
+  (file-append (operating-system-kernel os)
+               "/" (system-linux-image-file-name os)))
 
 (define* (operating-system-directory-base-entries os #:key container?)
   "Return the basic entries of the 'system' directory of OS for use as the
@@ -458,9 +473,9 @@ then
   source /run/current-system/profile/etc/profile.d/bash_completion.sh
 fi\n")))
     (etc-service
-     `(("services" ,#~(string-append #$net-base "/etc/services"))
-       ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
-       ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
+     `(("services" ,(file-append net-base "/etc/services"))
+       ("protocols" ,(file-append net-base "/etc/protocols"))
+       ("rpc" ,(file-append net-base "/etc/rpc"))
        ("login.defs" ,#~#$login.defs)
        ("issue" ,#~#$issue)
        ("nsswitch.conf" ,#~#$nsswitch)
@@ -468,8 +483,8 @@ fi\n")))
        ("bashrc" ,#~#$bashrc)
        ("hosts" ,#~#$(or (operating-system-hosts-file os)
                          (default-/etc/hosts (operating-system-host-name os))))
-       ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
-                                      #$(operating-system-timezone os)))
+       ("localtime" ,(file-append tzdata "/share/zoneinfo/"
+                                  (operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))
 
 (define %root-account
@@ -533,7 +548,7 @@ use 'plain-file' instead~%")
 @var{session-environment-service-type}, to be used in @file{/etc/environment}."
   `(("LANG" . ,(operating-system-locale os))
     ("TZ" . ,(operating-system-timezone os))
-    ("TZDIR" . ,#~(string-append #$tzdata "/share/zoneinfo"))
+    ("TZDIR" . ,(file-append tzdata "/share/zoneinfo"))
     ;; Tell 'modprobe' & co. where to look for modules.
     ("LINUX_MODULE_DIRECTORY" . "/run/booted-system/kernel/lib/modules")
     ;; These variables are honored by OpenSSL (libssl) and Git.
@@ -552,12 +567,12 @@ use 'plain-file' instead~%")
 (define %setuid-programs
   ;; Default set of setuid-root programs.
   (let ((shadow (@ (gnu packages admin) shadow)))
-    (list #~(string-append #$shadow "/bin/passwd")
-          #~(string-append #$shadow "/bin/su")
-          #~(string-append #$inetutils "/bin/ping")
-          #~(string-append #$inetutils "/bin/ping6")
-          #~(string-append #$sudo "/bin/sudo")
-          #~(string-append #$fuse "/bin/fusermount"))))
+    (list (file-append shadow "/bin/passwd")
+          (file-append shadow "/bin/su")
+          (file-append inetutils "/bin/ping")
+          (file-append inetutils "/bin/ping6")
+          (file-append sudo "/bin/sudo")
+          (file-append fuse "/bin/fusermount"))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'
@@ -641,7 +656,7 @@ hardware-related operations as necessary when booting a Linux container."
   (mlet %store-monad ((initrd (make-initrd boot-file-systems
                                            #:linux (operating-system-kernel os)
                                            #:mapped-devices mapped-devices)))
-    (return #~(string-append #$initrd "/initrd"))))
+    (return (file-append initrd "/initrd"))))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."
@@ -705,12 +720,14 @@ listed in OS.  The C library expects to find it under
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (store-fs -> (operating-system-store-file-system os))
-       (kernel ->   (operating-system-kernel os))
+       (label ->    (kernel->grub-label (operating-system-kernel os)))
+       (kernel ->   (operating-system-kernel-file os))
+       (initrd      (operating-system-initrd-file os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
        (entries ->  (list (menu-entry
-                           (label (kernel->grub-label kernel))
+                           (label label)
                            (linux kernel)
                            (linux-arguments
                             (cons* (string-append "--root=" root-device)
@@ -718,7 +735,7 @@ listed in OS.  The C library expects to find it under
                                    #~(string-append "--load=" #$system
                                                     "/boot")
                                    (operating-system-kernel-arguments os)))
-                           (initrd #~(string-append #$system "/initrd"))))))
+                           (initrd initrd)))))
     (grub-configuration-file (operating-system-bootloader os)
                              store-fs entries
                              #:old-entries old-entries)))
@@ -734,7 +751,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                 #~(boot-parameters (version 0)
                                    (label #$label)
                                    (root-device #$(file-system-device root))
-                                   (kernel #$(operating-system-kernel os))
+                                   (kernel #$(operating-system-kernel-file os))
                                    (kernel-arguments
                                     #$(operating-system-kernel-arguments os))
                                    (initrd #$initrd))
@@ -750,7 +767,8 @@ this file is the reconstruction of GRUB menu entries for old configurations."
   (label            boot-parameters-label)
   (root-device      boot-parameters-root-device)
   (kernel           boot-parameters-kernel)
-  (kernel-arguments boot-parameters-kernel-arguments))
+  (kernel-arguments boot-parameters-kernel-arguments)
+  (initrd           boot-parameters-initrd))
 
 (define (read-boot-parameters port)
   "Read boot parameters from PORT and return the corresponding
@@ -763,11 +781,25 @@ this file is the reconstruction of GRUB menu entries for old configurations."
      (boot-parameters
       (label label)
       (root-device root)
-      (kernel linux)
+
+      ;; In the past, we would store the directory name of the kernel instead
+      ;; of the absolute file name of its image.  Detect that and correct it.
+      (kernel (if (string=? linux (direct-store-path linux))
+                  (string-append linux "/"
+                                 (system-linux-image-file-name))
+                  linux))
+
       (kernel-arguments
        (match (assq 'kernel-arguments rest)
          ((_ args) args)
-         (#f       '())))))                       ;the old format
+         (#f       '())))                         ;the old format
+
+      (initrd
+       (match (assq 'initrd rest)
+         (('initrd ('string-append directory file)) ;the old format
+          (string-append directory file))
+         (('initrd (? string? file))
+          file)))))
     (x                                            ;unsupported format
      (warning (_ "unrecognized boot parameters for '~a'~%")
               system)

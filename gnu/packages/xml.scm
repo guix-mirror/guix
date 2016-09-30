@@ -11,6 +11,9 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -184,6 +187,38 @@ which read a graph file and create an instance of the Graph class.
 the @code{Graph} class and write it out in a specific file format.")
     (license (package-license perl))))
 
+(define-public perl-xml-atom
+  (package
+    (name "perl-xml-atom")
+    (version "0.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                                  "XML-Atom-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17lnkb9ymrhk2z642bhj5i2bv3q1da3kpp2lvsl0yhqshk3wdjj8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ;; TODO package: perl-datetime-format-atom
+       ("perl-xml-xpath" ,perl-xml-xpath)))
+    (inputs
+     `(("perl-class-data-inheritable" ,perl-class-data-inheritable)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-digest-sha1" ,perl-digest-sha1)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)
+       ("perl-xml-libxml" ,perl-xml-libxml)
+       ("perl-xml-xpath" ,perl-xml-xpath)))
+    (home-page "http://search.cpan.org/dist/XML-Atom")
+    (synopsis "Atom feed and API implementation")
+    (description
+     "Atom is a syndication, API, and archiving format for weblogs and other data.
+@code{XML::Atom} implements the feed format as well as a client for the API.")
+    (license (package-license perl))))
+
 (define-public perl-xml-parser
   (package
     (name "perl-xml-parser")
@@ -304,6 +339,41 @@ XML parser and the high performance DOM implementation.")
 names (unames) from within any application that may need them.  It also helps
 maintain a prefix to namespace URI map, and provides a number of basic
 checks.")
+    (license (package-license perl))))
+
+(define-public perl-xml-rss
+  (package
+    (name "perl-xml-rss")
+    (version "1.59")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                                  "XML-RSS-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v6vfizn2psy6av057kp7fv3z3y73s6b3w56jm3zr6hlq48llsx2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-manifest" ,perl-test-manifest)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    ;; XXX: The test which uses this modules does not run, even when it is included
+    ;; it is ignored. ("perl-test-trailingspace" ,perl-test-trailingspace)
+    (inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "http://search.cpan.org/dist/XML-RSS")
+    (synopsis "Creates and updates RSS files")
+    (description
+     "This module provides a basic framework for creating and maintaining
+RDF Site Summary (RSS) files.  This distribution also contains many examples
+that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
+1.0 version, and more.")
     (license (package-license perl))))
 
 (define-public perl-xml-sax
@@ -562,6 +632,69 @@ encoding of the message to be send into XML, sending the message to the
 server, collect the answer, and finally decoding the XML to Perl.")
     (license (package-license perl))))
 
+(define-public perl-xml-feed
+  (package
+    (name "perl-xml-feed")
+    (version "0.53")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
+                                  "XML-Feed-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07b165g6wk8kqwpl49r3n0kag6p2nrkyp3ch0h8qyxb6nrnkkq7c"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require internet connection
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-uri" ,perl-uri)
+       ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
+    (inputs
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
+       ("perl-feed-find" ,perl-feed-find)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-libwww-perl" ,perl-libwww)
+       ("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-uri-fetch" ,perl-uri-fetch)
+       ("perl-xml-atom" ,perl-xml-atom)
+       ("perl-xml-libxml" ,perl-xml-libxml)
+       ("perl-xml-rss" ,perl-xml-rss)))
+    (home-page "http://search.cpan.org/dist/XML-Feed")
+    (synopsis "XML Syndication Feed Support")
+    (description "@code{XML::Feed} is a syndication feed parser for both RSS and
+Atom feeds.  It also implements feed auto-discovery for finding feeds, given a URI.
+@code{XML::Feed} supports the following syndication feed formats:
+RSS 0.91, RSS 1.0, RSS 2.0, Atom")
+    (license (package-license perl))))
+
+(define-public perl-xml-xpath
+  (package
+    (name "perl-xml-xpath")
+    (version "1.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
+                                  "XML-XPath-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0997l8vjgq8p7d1irvp6amqyrv24x7f8hybjm4l4ayag32b13bmq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-path-tiny" ,perl-path-tiny)))
+    (inputs
+     `(("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "http://search.cpan.org/dist/XML-XPath")
+    (synopsis "Parse and evaluate XPath statements")
+    (description
+     "This module aims to comply exactly to the @url{XPath specification,
+https://www.w3.org/TR/xpath} and yet allow extensions to be added in
+the form of functions.")
+    (license (package-license perl))))
+
 (define-public pugixml
   (package
     (name "pugixml")
@@ -595,6 +728,30 @@ also available, with Unicode interface variants and conversions between
 different Unicode encodings which happen automatically during
 parsing/saving.")
     (license license:expat)))
+
+(define-public python-pyxb
+  (package
+    (name "python-pyxb")
+    (version "1.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "PyXB" version))
+              (sha256
+               (base32
+                "0rzzwibfqa28gxgcxx4cybx1qcg0g6fand06ykj3gz7z5kp653sf"))))
+    (build-system python-build-system)
+    (home-page "http://pyxb.sourceforge.net/")
+    (synopsis "Python XML Schema Bindings")
+    (description
+     "PyXB (\"pixbee\") is a pure Python package that generates Python source
+code for classes that correspond to data structures defined by XMLSchema.")
+    (license (list license:asl2.0    ; Most files.
+                   license:expat     ; pyxb/utils/six.py
+                   license:gpl2      ; bundled jquery in doc is dual MIT/GPL2
+                   license:psfl))))  ; pyxb/utils/activestate.py
+
+(define-public python2-pyxb
+  (package-with-python2 python-pyxb))
 
 (define-public xmlto
   (package
@@ -747,8 +904,29 @@ Cflags: -I${includedir}
                #t))))))
     (synopsis "Small XML parser for C++")
     (description "TinyXML is a small and simple XML parsing library for the
-C++ programming langauge.")
+C++ programming language.")
     (home-page "http://www.grinninglizard.com/tinyxml/index.html")
+    (license license:zlib)))
+
+(define-public tinyxml2
+  (package
+    (name "tinyxml2")
+    (version "4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/leethomason/tinyxml2/archive/"
+                           version ".tar.gz"))
+       (sha256
+       (base32
+        "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))    ; no tests
+    (synopsis "Small XML parser for C++")
+    (description "TinyXML2 is a small and simple XML parsing library for the
+C++ programming language.")
+    (home-page "http://www.grinninglizard.com/tinyxml2/")
     (license license:zlib)))
 
 (define-public xmlstarlet

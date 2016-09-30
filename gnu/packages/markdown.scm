@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages web)
@@ -99,3 +100,33 @@ you to write using an easy-to-read, easy-to-write plain text format, then
 convert it to structurally valid XHTML (or HTML).")
     (license (non-copyleft "file://License.text"
                            "See License.text in the distribution."))))
+
+(define-public cmark
+  (package
+    (name "cmark")
+    (version "0.26.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/jgm/cmark/archive/"
+                                 version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1mpmcy4bbmc8m058zqs9dwx49lcfi7bdnfszsr9y66cwgylia1mm"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:test-target "test"))
+    (native-inputs `(("python" ,python)))
+    (synopsis "CommonMark Markdown reference implementation")
+    (description "CommonMark is a strongly defined, highly compatible
+specification of Markdown.  cmark is the C reference implementation of
+CommonMark.  It provides @code{libcmark} shared library for parsing
+CommonMark to an abstract syntax tree (AST) and rendering the document
+as HTML, groff man, LaTeX, CommonMark, or an XML representation of the
+AST.  The package also provides the command-line program @command{cmark}
+for parsing and rendering CommonMark.")
+    (home-page "http://commonmark.org")
+    ;; cmark is distributed with a BSD-2 license, but some components are Expat
+    ;; licensed. The CommonMark specification is Creative Commons CC-BY-SA 4.0
+    ;; licensed. See 'COPYING' in the source distribution for more information.
+    (license (list bsd-2 expat cc-by-sa4.0))))

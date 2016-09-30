@@ -71,7 +71,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       `("--with-systemdsystemunitdir=no")))
+       `("--with-systemdsystemunitdir=no" "--enable-warmstarts")))
     (inputs
      `(("libtirpc" ,libtirpc)))
     (native-inputs

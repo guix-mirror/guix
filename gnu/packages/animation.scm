@@ -91,6 +91,11 @@ C++ @dfn{Standard Template Library} (STL).")
             (substitute* "src/modules/mod_svg/svg_parser.cpp"
               (("xmlpp::Node::NodeList") "xmlpp::Node::const_NodeList"))
             #t))
+         (add-after 'unpack 'fix-isnan-error
+           (lambda _
+             (substitute* "src/synfig/time.cpp"
+               (("return !::isnan") "return !std::isnan"))
+             #t))
          (add-before 'configure 'set-flags
           (lambda _
             ;; Compile with C++11, required by libsigc++.

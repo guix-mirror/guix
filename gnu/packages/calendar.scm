@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
+;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages base)
@@ -34,7 +36,8 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (srfi srfi-26))
 
 (define-public libical
   (package
@@ -134,3 +137,53 @@ data units.")
 able to synchronize with CalDAV servers through vdirsyncer.")
     (home-page "http://lostpackets.de/khal/")
     (license expat)))
+
+(define-public remind
+  (package
+    (name "remind")
+    (version "3.1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.roaringpenguin.com/files/download/"
+                           "remind-"
+                           (string-join (map (cut string-pad <> 2 #\0)
+                                             (string-split version #\.))
+                                        ".")
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1hcfcxz5fjzl7606prlb7dgls5kr8z3wb51h48s6qm8ang0b9nla"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f))  ;no "check" target
+    (home-page "http://www.roaringpenguin.com/products/remind/")
+    (synopsis "Sophisticated calendar and alarm program")
+    (description
+     "Remind allows you to remind yourself of upcoming events and appointments.
+Each reminder or alarm can consist of a message sent to standard output, or a
+program to be executed.  It also features: sophisticated date calculation,
+moon phases, sunrise/sunset, Hebrew calendar, alarms, PostScript output and
+proper handling of holidays.")
+    (license gpl2)))
+
+(define-public libhdate
+  (package
+    (name "libhdate")
+    (version "1.6.02")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/libhdate/libhdate/libhdate-"
+                            version "/" name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "0qkpq412p78znw8gckwcx3l0wcss9s0dgw1pvjb1ih2pxf6hm4rw"))))
+    (build-system gnu-build-system)
+    (home-page "http://libhdate.sourceforge.net/")
+    (synopsis "Library to use Hebrew dates")
+    (description "LibHdate is a small library for the Hebrew calendar and times
+of day, written in C, and including bindings for C++, pascal, perl, php, python,
+and ruby.  It includes two illustrative command-line programs, @code{hcal} and
+@code{hdate}, and some snippets and scripts written in the binding languages.")
+    (license gpl3+)))

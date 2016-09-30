@@ -26,6 +26,9 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
+;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +54,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages django)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -69,6 +73,8 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openstack)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -87,7 +93,6 @@
   #:use-module (gnu packages zip)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages bdw-gc)
-  #:use-module (gnu packages pcre)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1512,6 +1517,37 @@ matching them against a list of media-ranges.")
 (define-public python2-nose
   (package-with-python2 python-nose))
 
+(define-public python-nose2
+  (package
+    (name "python-nose2")
+    (version "0.6.5")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "nose2" version))
+          (sha256
+           (base32
+            "1x4zjq1zlyrh8b9ba0cmafd3w94pxhid408kibyjd3s6h1lap6s7"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; 'module' object has no attribute 'collector'
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-cov-core" ,python-cov-core)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/nose-devs/nose2")
+    (synopsis "Next generation of nicer testing for Python")
+    (description
+     "Nose2 is the next generation of nicer testing for Python, based on the
+plugins branch of unittest2.  Nose2 aims to improve on nose by providing a
+better plugin api, being easier for users to configure, and simplifying internal
+interfaces and processes.")
+    (license license:bsd-2)))
+
+(define-public python2-nose2
+  (package-with-python2 python-nose2))
+
 (define-public python-unittest2
   (package
     (name "python-unittest2")
@@ -1689,6 +1725,45 @@ supports coverage of subprocesses.")
 
 (define-public python2-pytest-runner
   (package-with-python2 python-pytest-runner))
+
+(define-public python-pytest-mock
+  (package
+    (name "python-pytest-mock")
+    (version "1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest-mock" version ".zip"))
+        (sha256
+         (base32
+          "03zxar5drzm7ksqyrwypjaza3cri6wqvpr6iam92djvg6znp32gp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pytest-dev/pytest-mock/")
+    (synopsis "Thin-wrapper around the mock package for easier use with py.test")
+    (description
+     "This plugin installs a @code{mocker} fixture which is a thin-wrapper
+around the patching API provided by the @code{mock} package, but with the
+benefit of not having to worry about undoing patches at the end of a test.
+The mocker fixture has the same API as @code{mock.patch}, supporting the
+same arguments.")
+    (properties `((python2-variant . ,(delay python2-pytest-mock))))
+    (license license:expat)))
+
+(define-public python2-pytest-mock
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pytest-mock))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base)))
+      (inputs
+       `(("python2-mock" ,python2-mock)
+         ,@(package-inputs base))))))
 
 (define-public python-pytest-xdist
   (package
@@ -2070,6 +2145,35 @@ executed.")
 (define-public python2-coverage
   (package-with-python2 python-coverage))
 
+(define-public python-cov-core
+  (package
+    (name "python-cov-core")
+    (version "1.15.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "cov-core" version))
+        (sha256
+         (base32
+          "0k3np9ymh06yv1ib96sb6wfsxjkqhmik8qfsn119vnhga9ywc52a"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)))
+    (home-page "https://github.com/schlamar/cov-core")
+    (synopsis "plugin core for use by pytest-cov, nose-cov and nose2-cov")
+    (description
+     "This is a library package for use by pytest-cov, nose-cov and nose2-cov.
+It is useful for developing coverage plugins for these testing frameworks.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-cov-core))))))
+
+(define-public python2-cov-core
+  (let ((cov-core (package-with-python2 (strip-python2-variant python-cov-core))))
+    (package (inherit cov-core)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs cov-core))))))
+
 (define-public python-discover
   (package
     (name "python-discover")
@@ -2203,14 +2307,22 @@ is used by the Requests library to verify HTTPS requests.")
     (source
      (origin
        (method url-fetch)
-         (uri (string-append
-                "https://pypi.python.org/packages/"
-                "7a/00/c14926d8232b36b08218067bcd5853caefb4737cda3f0a47437151344792/"
-                "click-" version ".tar.gz"))
+       (uri (pypi-uri "click" version))
        (sha256
         (base32
          "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((glibc (assoc-ref inputs ,(if (%current-target-system)
+                                                 "cross-libc" "libc"))))
+               (substitute* "click/_unicodefun.py"
+                 (("'locale'")
+                  (string-append "'" glibc "/bin/locale'"))))
+             #t)))))
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
     (home-page "http://click.pocoo.org")
@@ -2508,20 +2620,25 @@ object.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "13.1.2")
+    (version "15.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "1p732accxwqfjbdna39k8w8lp9gyw91vr4kzkhm8mgfxikqqxg5a"))))
+         "07cbajzk8l05k5zhlw0b9wbf2is65bl9v6zrn2a0iyn57w6pd73d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-        (replace 'check
-         (lambda _ (zero? (system* "py.test")))))))
+         (replace 'check
+           (lambda _
+             ;; Disable failing test.  See upstream bug report
+             ;; https://github.com/pypa/virtualenv/issues/957
+             (substitute* "tests/test_virtualenv.py"
+               (("skipif.*") "skipif(True, reason=\"Guix\")\n"))
+             (zero? (system* "py.test")))))))
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-mock" ,python-mock)
@@ -3662,6 +3779,37 @@ simple and Pythonic domain language.")
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
 
+(define-public python-sqlalchemy-utils
+  (package
+    (name "python-sqlalchemy-utils")
+    (version "0.32.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "SQLAlchemy-Utils" version))
+        (sha256
+         (base32
+          "1zbmmh7n8m01ikizn2mj1mfwch26nsr1awv9mvskqry7av0mpy98"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (home-page "https://github.com/kvesteri/sqlalchemy-utils")
+    (synopsis "Various utility functions for SQLAlchemy")
+    (description
+     "SQLAlchemy-utils provides various utility functions and custom data types
+for SQLAlchemy.  SQLAlchemy is an SQL database abstraction library for Python.")
+    (properties `((python2-variant . ,(delay python2-sqlalchemy-utils))))
+    (license license:bsd-3)))
+
+(define-public python2-sqlalchemy-utils
+  (let ((base (package-with-python2
+                (strip-python2-variant python-sqlalchemy-utils))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-alembic
   (package
     (name "python-alembic")
@@ -3762,14 +3910,14 @@ services for your Python modules and applications.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "3.1.1")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "1zwzakr5v0skdh0azp5cd6fwzbll5305dsk33k5jk570vv6lqvs8"))))
+         "1w9x3dfrg8b5lqhpjl0fczfyf9842wbqwgxbjjq4vfpxv5jwm49l"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
@@ -4867,6 +5015,35 @@ as possible in order to be comprehensible and easily extensible.")
 
 (define-public python2-sympy
   (package-with-python2 python-sympy))
+
+(define-public python-q
+  (package
+    (name "python-q")
+    (version "2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "q" version))
+       (sha256
+        (base32
+         "1mgfazh8fkizh6walra2zv885f3lcgr3nb02v1frfm4p8ddcy3yy"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/zestyping/q")
+    (synopsis "Quick-and-dirty debugging output for tired programmers")
+    (description
+     "q is a Python module for \"print\" style of debugging Python code.  It
+provides convenient short API for print out of values, tracebacks, and
+falling into the Python interpreter.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-q))))))
+
+(define-public python2-q
+  (let ((base (package-with-python2 (strip-python2-variant python-q))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
 
 (define-public python-testlib
   (package
@@ -6155,6 +6332,30 @@ a hash value.")
     (name "python2-tlsh")
     (inputs `(("python" ,python-2)))))
 
+(define-public python-termcolor
+  (package
+    (name "python-termcolor")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-termcolor" version))
+       (sha256
+        (base32
+         "0fv1vq14rpqwgazxg4981904lfyp84mnammw7y046491cv76jv8x"))))
+    (build-system python-build-system)
+    (arguments
+     ;; There are no tests.
+     `(#:tests? #f))
+    (home-page "http://pypi.python.org/pypi/termcolor")
+    (synopsis "ANSII Color formatting for terminal output")
+    (description
+     "This package provides ANSII Color formatting for output in terminals.")
+    (license license:expat)))
+
+(define-public python2-termcolor
+  (package-with-python2 python-termcolor))
+
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
@@ -6950,7 +7151,7 @@ WebSocket usage in Python programs.")
     (build-system python-build-system)
     (synopsis "Atomic file writes in Python")
     (description "Library for atomic file writes using platform dependent tools
-for atomic filesystem operations.")
+for atomic file system operations.")
     (home-page "https://github.com/untitaker/python-atomicwrites")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-atomicwrites))))))
@@ -7447,6 +7648,40 @@ authenticated session objects providing things like keep-alive.")
 asynchronously executing callables.  This package backports the
 concurrent.futures package from Python 3.2")
     (license license:bsd-3)))
+
+(define-public python-promise
+  (package
+    (name "python-promise")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "promise" version))
+        (sha256
+         (base32
+          "1k19ms8l3d5jzjh557rgkxb5sg4mqgfc315rn4hx1z3n8qq6lr3h"))))
+    (build-system python-build-system)
+    ;; Tests wants python-futures, which is a python2 only program, and
+    ;; can't be found by python-promise at test time.
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/syrusakbary/promise")
+    (synopsis "Promises/A+ implementation for Python")
+    (description
+     "Promises/A+ implementation for Python")
+    (properties `((python2-variant . ,(delay python2-promise))))
+    (license license:expat)))
+
+(define-public python2-promise
+  (let ((promise (package-with-python2
+                   (strip-python2-variant python-promise))))
+    (package (inherit promise)
+      (arguments (substitute-keyword-arguments (package-arguments promise)
+                   ((#:tests? _) #t)))
+      (native-inputs
+       `(("python2-futures" ,python2-futures)
+         ("python2-pytest" ,python2-pytest)
+         ("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs promise))))))
 
 (define-public python-urllib3
   (package
@@ -8578,8 +8813,8 @@ library.")
          (replace 'check
            (lambda _ (zero? (system* "python" "./test_pathlib.py")))))))
     (home-page "https://pathlib.readthedocs.org/")
-    (synopsis "Object-oriented filesystem paths")
-    (description "Pathlib offers a set of classes to handle filesystem paths.
+    (synopsis "Object-oriented file system paths")
+    (description "Pathlib offers a set of classes to handle file system paths.
 It offers the following advantages over using string objects:
 
 @enumerate
@@ -9022,14 +9257,14 @@ to occurences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "2.9")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
         (base32
-         "09y7h8rjay5kzwk5akq7f5f9wqnvjkxhivck04hdc8ny1nw3vqzp"))))
+         "0i283z1pivmir61z8kbiycigc94l61v33ygzkhczf1ifq7cppyds"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -9205,6 +9440,31 @@ focus on event-based network programming and multiprotocol integration.")
 
 (define-public python2-twisted
   (package-with-python2 python-twisted))
+
+(define-public python-pika
+  (package
+    (name "python-pika")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pika" version))
+        (sha256
+         (base32
+          "0nb4h08di432lv7dy2v9kpwgk0w92f24sqc2hw2s9vwr5b8v8xvj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-twisted" ,python-twisted)))
+    (home-page "https://pika.readthedocs.org")
+    (synopsis "Pure Python AMQP Client Library")
+    (description
+     "Pika is a pure-Python implementation of the AMQP (Advanced Message Queuing
+Protocol) 0-9-1 protocol that tries to stay fairly independent of the underlying
+network support library.")
+    (license license:bsd-3)))
+
+(define-public python2-pika
+  (package-with-python2 python-pika))
 
 (define-public python-ply
   (package
@@ -9622,24 +9882,14 @@ parsing UK postcodes.")
 (define-public python-fake-factory
   (package
   (name "python-fake-factory")
-  (version "0.5.7")
+  (version "0.7.2")
   (source (origin
             (method url-fetch)
             (uri (pypi-uri "fake-factory" version))
             (sha256
              (base32
-              "1chmarnrdzn4r017n8qlic0m0bbnhw04s3hkwribjvm3mqpb6pa0"))))
+              "0vs0dkmg0dlaxf8w6q2i3k0i03gmp56ablldv7ci9x3nbadkn71g"))))
   (build-system python-build-system)
-  (arguments
-   '(#:phases
-     (modify-phases %standard-phases
-       (add-before 'check 'disable-failing-test
-         ;; XXX: faker/tests/ne_np/__init__.py, line 40, in test_names
-         ;;      first_name, last_name = name.split()
-         ;; ValueError: too many values to unpack (expected 2)
-         (lambda _
-           (delete-file "faker/tests/ne_np/__init__.py")
-           #t)))))
   (native-inputs
    `(("python-setuptools" ,python-setuptools)
      ;; For testing
@@ -9649,7 +9899,7 @@ parsing UK postcodes.")
   (propagated-inputs
    `(("python-dateutil" ,python-dateutil-2)
      ("python-six" ,python-six)))
-  (home-page "http://github.com/joke2k/faker")
+  (home-page "https://github.com/joke2k/faker")
   (synopsis "Python package that generates fake data")
   (description
    "Faker is a Python package that generates fake data such as names,
@@ -9757,17 +10007,14 @@ implementation for Python.")
 (define-public python-prompt-toolkit
  (package
   (name "python-prompt-toolkit")
-  (version "1.0.3")
+  (version "1.0.7")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/"
-             "8d/de/412f23919929c01e6b55183e124623f705e4b91796d3d2dce2cb53d595ad/"
-             "prompt_toolkit-" version ".tar.gz"))
+      (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
       (sha256
         (base32
-          "18lbmmkyjf509klc3217lq0x863pfzix779zx5kp9lms1iph4pl0"))))
+          "1vyjd0b7wciv55i19l44zy0adx8q7ss79lhy2r9d1rwz2y4822zg"))))
   (build-system python-build-system)
   (inputs `(("python-wcwidth" ,python-wcwidth)
             ("python-pygments" ,python-pygments)))
@@ -9851,6 +10098,49 @@ etc.")
     (package
       (inherit base)
       (name "ptpython2"))))
+
+(define-public python-requests-oauthlib
+  (package
+    (name "python-requests-oauthlib")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-oauthlib" version))
+       (sha256
+        (base32
+         "0ykff67sjcl227c23g0rxzfx34rr5bf21kwv0z3zmgk0lfmch7hn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; removes tests that require network access
+         (add-before 'check 'pre-check
+           (lambda _
+             (delete-file "tests/test_core.py")
+             #t)))))
+    (native-inputs
+     `(("python-requests-mock" ,python-requests-mock)
+       ("python-mock" ,python-mock)))
+    (inputs
+     `(("python-oauthlib" ,python-oauthlib)
+       ("python-requests" ,python-requests)))
+    (home-page
+     "https://github.com/requests/requests-oauthlib")
+    (synopsis
+     "OAuthlib authentication support for Requests")
+    (description
+     "Requests-OAuthlib uses the Python Requests and OAuthlib libraries to
+provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients.")
+    (license license:isc)
+    (properties `((python2-variant . ,(delay python2-requests-oauthlib))))))
+
+(define-public python2-requests-oauthlib
+  (let ((base (package-with-python2 (strip-python2-variant python-requests-oauthlib))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-stem
   (package
@@ -10092,6 +10382,36 @@ interface for programs.")
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
 
+(define-public python-consul
+  (package
+    (name "python-consul")
+    (version "0.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-consul" version))
+        (sha256
+         (base32
+          "0rfyxcy4cr3x848vhx876ifalxd5ghq6l5x813m49h4vq2d4jiq8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/cablehead/python-consul")
+    (synopsis "Python client for Consul")
+    (description
+     "Python client for @url{http://www.consul.io/,Consul}, a tool for service
+discovery, monitoring and configuration.")
+    (license license:expat)))
+
+(define-public python2-consul
+  (let ((consul (package-with-python2 python-consul)))
+    (package (inherit consul)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs consul))))))
+
 (define-public python-schematics
   (package
     (name "python-schematics")
@@ -10249,3 +10569,434 @@ time by mocking the datetime module.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-odfpy
+  (package
+    (name "python-odfpy")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "odfpy" version))
+              (sha256
+               (base32
+                "1a6ms0w9zfhhkqhvrnynwwbxrivw6hgjc0s5k7j06npc7rq0blxw"))))
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (guix build python-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; The test runner invokes python2 and python3 for test*.py.
+           ;; To avoid having both in inputs, we replicate it here.
+           (lambda _
+             (every (lambda (test-file)
+                      (zero? (system* "python" test-file)))
+                    (find-files "tests" "^test.*\\.py$")))))))
+    (build-system python-build-system)
+    (home-page "https://github.com/eea/odfpy")
+    (synopsis "Python API and tools to manipulate OpenDocument files")
+    (description "Collection of libraries and utility programs written in
+Python to manipulate OpenDocument 1.2 files.")
+    (license
+     ;; The software is mainly dual GPL2+ and ASL2.0, but includes a
+     ;; number of files with other licenses.
+     (list license:gpl2+ license:asl2.0 license:lgpl2.1+ license:cc-by-sa3.0))))
+
+(define-public python2-odfpy
+  (package-with-python2 python-odfpy))
+
+(define-public python-cachecontrol
+  (package
+    (name "python-cachecontrol")
+    (version "0.11.6")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Pypi does not have tests.
+       (uri (string-append
+             "https://github.com/ionrock/cachecontrol/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yj60d0f69a2l8p7y86k4zhzzm6rnxpq74sfl240pry9l0lfw2vw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Drop test that requires internet access.
+             (delete-file "tests/test_regressions.py")
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "py.test" "-vv")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-redis" ,python-redis)
+       ("python-webtest" ,python-webtest)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-lockfile" ,python-lockfile)))
+    (home-page "https://github.com/ionrock/cachecontrol")
+    (synopsis "The httplib2 caching algorithms for use with requests")
+    (description "CacheControl is a port of the caching algorithms in
+@code{httplib2} for use with @code{requests} session objects.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-cachecontrol))))))
+
+(define-public python2-cachecontrol
+  (let ((base (package-with-python2 (strip-python2-variant python-cachecontrol))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-native-inputs base))))))
+
+(define-public python-lit
+  (package
+    (name "python-lit")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "lit" version))
+        (sha256
+         (base32
+          "135m2b9cwih85g66rjggavck328z7lj37srgpq3jxszbg0g2b91y"))))
+    (build-system python-build-system)
+    (home-page "http://llvm.org/")
+    (synopsis "LLVM Software Testing Tool")
+    (description "@code{lit} is a portable tool for executing LLVM and Clang
+style test suites, summarizing their results, and providing indication of
+failures.")
+    (license license:ncsa)
+    (properties `((python2-variant . ,(delay python2-lit))))))
+
+(define-public python2-lit
+  (let ((base (package-with-python2 (strip-python2-variant python-lit))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-pytest-pep8
+  (package
+    (name "python-pytest-pep8")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-pep8" version))
+              (sha256
+               (base32
+                "06032agzhw1i9d9qlhfblnl3dw5hcyxhagn7b120zhrszbjzfbh3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Fails with recent pytest and pep8. See upstream issues #8 and #12.
+       ;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765 .
+       #:configure-flags '("--single-version-externally-managed" "--root=/")))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-pep8" ,python-pep8)))
+    (home-page "https://bitbucket.org/pytest-dev/pytest-pep8")
+    (synopsis "Py.test plugin to check PEP8 requirements")
+    (description "Pytest plugin for checking PEP8 compliance.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-pep8))))))
+
+(define-public python2-pytest-pep8
+  (let ((base (package-with-python2 (strip-python2-variant python-pytest-pep8))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-native-inputs base))))))
+
+(define-public python-pytest-flakes
+  (package
+    (name "python-pytest-flakes")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-flakes" version))
+              (sha256
+               (base32
+                "0flag3n33kbhyjrhzmq990rvg4yb8hhhl0i48q9hw0ll89jp28lw"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765 .
+       #:configure-flags '("--single-version-externally-managed" "--root=/")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda _ ; It's easier to run tests after install.
+             (zero? (system* "py.test" "-vv")))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-pep8" ,python-pytest-pep8)))
+    (propagated-inputs
+     `(("python-pyflakes" ,python-pyflakes)))
+    (home-page "https://github.com/fschulze/pytest-flakes")
+    (synopsis "Py.test plugin to check source code with pyflakes")
+    (description "Pytest plugin for checking Python source code with pyflakes.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-flakes))))))
+
+(define-public python2-pytest-flakes
+  (let ((base (package-with-python2 (strip-python2-variant python-pytest-flakes))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-native-inputs base))))))
+
+(define-public python-natsort
+  (package
+    (name "python-natsort")
+    (version "5.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "natsort" version))
+              (sha256
+               (base32
+                "1abld5p4a6n5zjnyw5mi2pv37gqalcybv2brjr2y6l9l2p8v9mja"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-cachedir
+           ;; Tests require write access to $HOME by default
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flakes" ,python-pytest-flakes)
+       ("python-pytest-pep8" ,python-pytest-pep8)))
+    (propagated-inputs ; TODO: Add python-fastnumbers.
+     `(("python-pyicu" ,python-pyicu)))
+    (home-page "https://github.com/SethMMorton/natsort")
+    (synopsis "Natural sorting for python and shell")
+    (description
+     "Natsort lets you apply natural sorting on lists instead of
+lexicographical.  If you use the built-in @code{sorted} method in python
+on a list such as @code{['a20', 'a9', 'a1', 'a4', 'a10']}, it would be
+returned as @code{['a1', 'a10', 'a20', 'a4', 'a9']}.  Natsort provides a
+function @code{natsorted} that identifies numbers and sorts them separately
+from strings.  It can also sort version numbers, real numbers, mixed types
+and more, and comes with a shell command @command{natsort} that exposes this
+functionality in the command line.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-natsort))))))
+
+(define-public python2-natsort
+  (let ((base (package-with-python2 (strip-python2-variant python-natsort))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ("python2-pathlib" ,python2-pathlib)
+                ("python2-mock" ,python2-mock)
+                ("python2-enum34" ,python2-enum34)
+                ,@(package-native-inputs base))))))
+
+(define-public python-glances
+  (package
+  (name "python-glances")
+  (version "2.7.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Glances" version))
+      (sha256
+        (base32
+          "11jbq40g8alsbirnd4kiagznqg270247i0m8qhi48ldf2i5xppxg"))))
+  (build-system python-build-system)
+  (inputs
+   `(("python-psutil" ,python-psutil)))
+  (home-page
+    "https://github.com/nicolargo/glances")
+  (synopsis
+    "A cross-platform curses-based monitoring tool")
+  (description
+    "Glances is a curses-based monitoring tool for a wide variety of platforms.
+Glances uses the PsUtil library to get information from your system. It monitors
+CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
+  (license license:lgpl3+)
+  (properties `((python2-variant . ,(delay python2-glances))))))
+
+(define-public python2-glances
+  (let ((base (package-with-python2 (strip-python2-variant python-glances))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-graphql-core
+  (package
+    (name "python-graphql-core")
+    (version "0.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "graphql-core" version))
+        (sha256
+         (base32
+          "0rsaarx2sj4xnw9966rhh4haiqaapm4lm2mfqm48ywd51j5vh1a0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-hardcoded-version
+           (lambda _ (substitute*
+                       "setup.py"
+                       (("'gevent==1.1rc1'") "'gevent'"))
+             #t)))))
+    (native-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-mock" ,python-mock)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (inputs
+     `(("python-promise" ,python-promise)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/graphql-python/graphql-core")
+    (synopsis "GraphQL implementation for Python")
+    (description
+     "GraphQL implementation for Python.  GraphQL is a data query language and
+runtime designed and used to request and deliver data to mobile and web apps.
+This library is a port of @url{https://github.com/graphql/graphql-js,graphql-js}
+to Python.")
+    (properties `((python2-variant . ,(delay python2-graphql-core))))
+    (license license:expat)))
+
+(define-public python2-graphql-core
+  (let ((base (package-with-python2
+                (strip-python2-variant python-graphql-core))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-graphql-relay
+  (package
+    (name "python-graphql-relay")
+    (version "0.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "graphql-relay" version))
+        (sha256
+         (base32
+          "04wr9ayshxjjdcg2v21c7ffbz36kif1wjl3604fqd3qignb3fbxi"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python-graphql-core" ,python-graphql-core)
+       ("python-promise" ,python-promise)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/graphql-python/graphql-relay-py")
+    (synopsis "Relay implementation for Python")
+    (description
+     "This is a library to allow the easy creation of Relay-compliant servers
+using the GraphQL Python reference implementation of a GraphQL server.  It
+should be noted that the code is a exact port of the original
+@url{https://github.com/graphql/graphql-relay-js,graphql-relay js implementation}
+from Facebook.")
+    (properties `((python2-variant . ,(delay python2-graphql-relay))))
+    (license license:expat)))
+
+(define-public python2-graphql-relay
+  (let ((base (package-with-python2
+                (strip-python2-variant python-graphql-relay))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-graphene
+  (package
+    (name "python-graphene")
+    (version "0.10.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "graphene" version))
+        (sha256
+         (base32
+          "09zhac7igh9ixdz0ay6csy35b40l1jwbf2wrbxmgxwfhy51iy06q"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-django-filter" ,python-django-filter)
+       ("python-mock" ,python-mock)
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-pytest-django" ,python-pytest-django)
+       ("python-sqlalchemy-utils" ,python-sqlalchemy-utils)))
+    (inputs
+     `(("python-graphql-core" ,python-graphql-core)
+       ("python-graphql-relay" ,python-graphql-relay)
+       ("python-iso8601" ,python-iso8601)
+       ("python-promise" ,python-promise)
+       ("python-six" ,python-six)))
+    (home-page "http://graphene-python.org/")
+    (synopsis "GraphQL Framework for Python")
+    (description
+     "Graphene is a Python library for building GraphQL schemas/types.
+A GraphQL schema describes your data model, and provides a GraphQL server
+with an associated set of resolve methods that know how to fetch data.")
+    (properties `((python2-variant . ,(delay python2-graphene))))
+    (license license:expat)))
+
+(define-public python2-graphene
+  (let ((base (package-with-python2
+                (strip-python2-variant python-graphene))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ("python2-sqlalchemy" ,python2-sqlalchemy)
+         ,@(package-native-inputs base))))))
+
+(define-public python-nautilus
+  (package
+    (name "python-nautilus")
+    (version "0.4.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nautilus" version))
+        (sha256
+         (base32
+          "01hwzjc1zshk4vvxrcghm398fpy4jls66dyz06g07mrwqif8878p"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; fails to import test modules
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-bcrypt" ,python-bcrypt)
+       ("python-click" ,python-click)
+       ("python-consul" ,python-consul)
+       ("python-graphql-core" ,python-graphql-core)
+       ("python-graphql-relay" ,python-graphql-relay)
+       ("python-graphene" ,python-graphene)
+       ("python-jinja2" ,python-jinja2)
+       ("python-nose2" ,python-nose2)
+       ("python-peewee" ,python-peewee)
+       ("python-pika" ,python-pika)
+       ("python-pycparser" ,python-pycparser)
+       ("python-requests" ,python-requests)
+       ("python-tornado" ,python-tornado)
+       ("python-wtforms" ,python-wtforms)))
+    (home-page "https://github.com/AlecAivazis/nautilus")
+    (synopsis "Library for creating microservice applications")
+    (description
+     "Nautilus is a framework for flux based microservices that looks to
+provide extendible implementations of common aspects of a cloud so that you can
+focus on building massively scalable web applications.")
+    (license license:expat)))

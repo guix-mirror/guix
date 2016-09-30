@@ -31,6 +31,9 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)
@@ -205,7 +208,7 @@ terminal using ncurses.")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions
 for library searches, extended song format, items filtering, the ability to
-sort playlists, and a local filesystem browser.")
+sort playlists, and a local file system browser.")
     (home-page "http://ncmpcpp.rybczak.net/")
     (license license:gpl2+)))
 
@@ -263,3 +266,52 @@ interface for the Music Player Daemon.")
     (package (inherit mpd2)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs mpd2))))))
+
+(define-public sonata
+  (package
+    (name "sonata")
+    (version "1.7b1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/multani/sonata/archive/v"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07gq2nxqwxs0qyxjbay7k5j25zd386bn7wdr2dl1gk53diwnn7s0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build python-build-system)
+                           (guix build glib-or-gtk-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
+         (add-after 'install 'wrap-sonata
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/sonata")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (inputs
+     `(("python-mpd2" ,python-mpd2)
+       ("gtk+" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gobject-introspection" ,gobject-introspection)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("python-pygobject" ,python-pygobject)))
+    (synopsis "Elegant client for the Music Player Daemon")
+    (description "Sonata is an elegant graphical client for the Music Player
+Daemon (MPD).  It supports playlists, multiple profiles (connecting to different
+MPD servers, search and multimedia key support.")
+    (home-page "http://www.nongnu.org/sonata/")
+    (license license:gpl3+)))

@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Coypright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages gtk))
 
 (define-public aide
@@ -239,7 +241,9 @@ re-executing them as necessary.")
               (base32
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
     (build-system gnu-build-system)
-    (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
+    (arguments `(#:configure-flags '("--localstatedir=/var")
+
+                 ;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
                  #:tests? #f))
     (inputs `(("ncurses" ,ncurses)
@@ -454,8 +458,8 @@ connection alive.")
   (let* ((bind-major-version "9")
          (bind-minor-version "9")
          (bind-patch-version "9")
-         (bind-release-type "")         ; for patch release, use "-P"
-         (bind-release-version "")      ; for patch release, e.g. "4"
+         (bind-release-type "-P")         ; for patch release, use "-P"
+         (bind-release-version "3")      ; for patch release, e.g. "4"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -571,7 +575,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "0w8qqm6p2y6x57j2l0a3278g173wd84dsr4py9z00191f3wra74q"))))
+                      "1qlii6syr491yjn6kpyqknlvbsrkwlsqa0grmmfbq1g3471fyfyn"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -731,15 +735,34 @@ over ssh connections.")
                    "true")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list (string-append "ROTT_ETCDIR="
-                                              (assoc-ref %outputs "out")
-                                              "/etc")
+     '(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
                                "--localstatedir=/var")
-       #:phases (alist-cons-after
-                 'install 'install-info
-                 (lambda _
-                   (zero? (system* "make" "install-info")))
-                 %standard-phases)))
+
+       ;; Install example config files in OUT/etc.
+       #:make-flags (list (string-append "ROTT_ETCDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/etc"))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'build 'set-packdir
+                    (lambda _
+                      ;; Set a default location for archived logs.
+                      (substitute* "rc/rc"
+                        (("packdir=\"\"")
+                         "packdir=\"/var/log\""))
+                      #t))
+                  (add-before 'install 'tweak-rc-weekly
+                    (lambda _
+                      (substitute* "rc/weekly"
+                        (("/bin/kill")
+                         (which "kill"))
+                        (("syslogd\\.pid")
+                         ;; The file is called 'syslog.pid' (no 'd').
+                         "syslog.pid"))
+                      #t))
+                  (add-after 'install 'install-info
+                    (lambda _
+                      (zero? (system* "make" "install-info")))))))
     (native-inputs `(("texinfo" ,texinfo)
                      ("util-linux" ,util-linux))) ; for 'cal'
     (home-page "http://www.gnu.org/software/rottlog/")
@@ -1440,9 +1463,9 @@ limits.")
                           `("PYTHONPATH" ":" prefix (,py)))
                         #t))))))
     (home-page "https://github.com/wting/autojump")
-    (synopsis "Shell extension for filesystem navigation")
+    (synopsis "Shell extension for file system navigation")
     (description
-     "Autojump provides a faster way to navigate your filesystem, with a \"cd
+     "Autojump provides a faster way to navigate your file system, with a \"cd
 command that learns\".  It works by maintaining a database of the directories
 you use the most from the command line and allows you to \"jump\" to
 frequently used directories by typing only a small pattern.")
@@ -1771,3 +1794,55 @@ the status of your battery in the system tray.")
 shortcut syntax and completion options.")
       (home-page "https://github.com/TrilbyWhite/interrobang")
       (license license:gpl3+))))
+
+
+
+(define-public pam-krb5
+  (package
+    (name "pam-krb5")
+    (version "4.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://archives.eyrie.org/software/kerberos/" name "-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0abf8cfpkprmhw5ca8iyqgrggh65lgqvmfllc1y6qz7zw1gas894"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-tests
+           (lambda _
+             ;; The build container seems to interfere with some tests.
+             (substitute* "tests/TESTS"
+               (("module/basic\n")  ""))
+             (substitute* "tests/TESTS"
+               (("pam-util/vector\n")  ""))
+             #t)))))
+    (inputs
+     `(("linux-pam" ,linux-pam)
+       ("mit-krb5" ,mit-krb5)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("perl-test-pod" ,perl-test-pod))) ; required for tests
+    (synopsis "Kerberos PAM module")
+    (description
+     "Pam-krb5 is a Kerberos PAM module for either MIT Kerberos or Heimdal.
+It supports ticket refreshing by screen savers, configurable
+authorization handling, authentication of non-local accounts for network
+services, password changing, and password expiration, as well as all the
+standard expected PAM features.  It works correctly with OpenSSH, even
+with ChallengeResponseAuthentication and PrivilegeSeparation enabled,
+and supports extensive configuration either by PAM options or in
+krb5.conf or both.  PKINIT is supported with recent versions of both MIT
+Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
+    (home-page "http://www.eyrie.org/~eagle/software/pam-krb5")
+    ;; Dual licenced under  a homebrew non-copyleft OR GPL (any version)
+    ;; However, the tarball does not contain a copy of the GPL,  so unless
+    ;; we put one in, we cannot distribute it under GPL without violating
+    ;; clause requiring us to give all recipients a copy.
+    (license license:gpl1+)))
+
+;;http://archives.eyrie.org/software/kerberos/pam-krb5-4.7.tar.xz

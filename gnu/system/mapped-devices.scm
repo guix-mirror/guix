@@ -20,6 +20,7 @@
 (define-module (gnu system mapped-devices)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
@@ -95,8 +96,8 @@
 (define (open-luks-device source target)
   "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
 'cryptsetup'."
-  (with-imported-modules '((gnu build file-systems)
-                           (guix build bournish))
+  (with-imported-modules (source-module-closure
+                          '((gnu build file-systems)))
     #~(let ((source #$source))
         ;; XXX: 'use-modules' should be at the top level.
         (use-modules (rnrs bytevectors)           ;bytevector?

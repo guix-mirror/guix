@@ -101,6 +101,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages pcre)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -324,7 +326,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.2")
+    (version "6.2.3")
     (source
      (origin
        (method url-fetch)
@@ -332,7 +334,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1a41ag03q66pwy3pjrmbxxjpzi9fcaiiaiywd7m9v25mxqac2xkp"))))
+         "10hvnfhj9bkpz80x20jgxyqvgvrcgfdp8sfcbcrf1dgjn9v936bq"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/chess")
     (synopsis "Full chess implementation")
@@ -862,7 +864,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.3.4")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
@@ -870,7 +872,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "077v1sj000y3csjw9vradba3k2aknvg5k8521z8aya6q987klwx5"))))
+        (base32 "1xar0wagcz50clwwkvjg4zq9m1sjqw47vw3xx44pisdj94g21m5y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -1778,7 +1780,7 @@ towards a working Mupen64Plus for casual users.")
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
-    (version "1.46.2")
+    (version "1.47")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1787,7 +1789,7 @@ towards a working Mupen64Plus for casual users.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07h49xwvg61dx20rk5p4r3ax2ar5y0ppvm60cqwqljyi9rdfbh7p"))
+                "1dzrrjmvyqks64q5l5pfly80jb6qcsbj5b3dm40fijd5xnpbapci"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1813,21 +1815,14 @@ towards a working Mupen64Plus for casual users.")
        (modify-phases %standard-phases
          ;; The Nestopia build system consists solely of a Makefile.
          (delete 'configure)
-         ;; XXX Should be unnecessary with the next release.
-         (add-before
-          'build 'patch-makefile
-          (lambda _
-            (substitute* "Makefile"
-              (("@mkdir \\$@") "@mkdir -p $@")
-              (("CC =") "CC ?=")
-              (("CXX =") "CXX ?=")
-              (("PREFIX =") "PREFIX ?=")
-              (("^install:\n$") "install:\n\tmkdir -p $(BINDIR)\n"))))
-         (add-before
-          'build 'remove-xdg-desktop-menu-call
-          (lambda _
-            (substitute* "Makefile"
-              (("xdg-desktop-menu install .*") "")))))
+         (add-before 'build 'remove-xdg-desktop-menu-call
+           (lambda _
+             (substitute* "Makefile"
+               (("xdg-desktop-menu install .*") ""))))
+         (add-before 'build 'remove-gdkwayland-include
+           (lambda _
+             (substitute* "source/unix/gtkui/gtkui.h"
+               (("#include <gdk/gdkwayland\\.h>") "")))))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "CC=gcc" "CXX=g++" (string-append "PREFIX=" out)))
        ;; There are no tests.
@@ -2261,7 +2256,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
 (define-public higan
   (package
     (name "higan")
-    (version "099")
+    (version "101")
     (source
      (origin
        (method url-fetch)
@@ -2270,7 +2265,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
              version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0xlzjqrd308hmg6yjzjkmxkkr9p3w387kf6yxyplb47jcbx2sq4n"))
+        (base32 "0qavwkmzc63p6qplmxii4gc541z5mcs8gjwh3m4y7i576r7rcbk9"))
        (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2736,6 +2731,42 @@ the GNU GPL.")
    (home-page "https://supertuxproject.org/")
    (license license:gpl3+)))
 
+(define-public tintin++
+  (package
+    (name "tintin++")
+    (version "2.01.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/tintin"
+                                  "/files/TinTin++ Source Code/" version
+                                  "/tintin" "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "195wrfcys8yy953gdrl1gxryhjnx9lg1vqgxm3dyzm8bi18aa2yc"))))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("pcre" ,pcre)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         ;; The source is in tt/src.
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "src")
+             #t)))))
+    (build-system gnu-build-system)
+    (home-page "http://tintin.sourceforge.net/")
+    (synopsis "MUD client")
+    (description
+     "TinTin++ is a MUD client which supports MCCP (Mud Client Compression Protocol),
+MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET options used by MUDs,
+as well as those required to login via telnet on Linux / Mac OS X servers, and an
+auto mapper with a VT100 map display.")
+    (license license:gpl2+)))
+
 (define-public laby
   (package
     (name "laby")
@@ -2818,3 +2849,50 @@ programmers may also add their own favorite language.")
 application that locks the keyboard and mouse and instead displays bright
 colors, pictures, and sounds.")
     (license license:gpl3+)))
+
+(define-public mrrescue
+  (package
+    (name "mrrescue")
+    (version "1.02e")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/SimonLarsen/mrrescue/releases/"
+                    "download/" version "/" name version ".love"))
+              (file-name (string-append name "-" version ".love"))
+              (sha256
+               (base32
+                "0jwzbwkgp1l5ia6c7s760gmdirbsncp6nfqp7vqdqsfb63la9gl2"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out     (assoc-ref %outputs "out"))
+                (bindir  (string-append out "/bin"))
+                (prog    (string-append bindir "/mrrescue"))
+                (source  (assoc-ref %build-inputs "source"))
+                (bash    (string-append (assoc-ref %build-inputs "bash")
+                                        "/bin/bash"))
+                (love    (string-append (assoc-ref %build-inputs "love")
+                                        "/bin/love")))
+           (mkdir-p bindir)
+           (with-output-to-file prog
+             (lambda ()
+               (format #t "#!~a~%" bash)
+               (format #t "exec -a mrrescue \"~a\" \"~a\"~%" love source)))
+           (chmod prog #o755)
+           #t))))
+    (inputs
+     `(("bash" ,bash)
+       ("love" ,love)))
+    (home-page "http://tangramgames.dk/games/mrrescue")
+    (synopsis "Arcade-style fire fighting game")
+    (description
+     "Mr. Rescue is an arcade styled 2d action game centered around evacuating
+civilians from burning buildings.  The game features fast paced fire
+extinguishing action, intense boss battles, a catchy soundtrack and lots of
+throwing people around in pseudo-randomly generated buildings.")
+    (license (list license:zlib             ; for source code
+                   license:cc-by-sa3.0))))  ; for graphics and music assets

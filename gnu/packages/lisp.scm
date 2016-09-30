@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,7 +44,8 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages version-control)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define-public gcl
   (package
@@ -453,7 +454,7 @@ interface.")
                 (uri (git-reference
                       (url "https://github.com/blakemcbride/LISPF4.git")
                       (commit commit)))
-                (file-name (string-append name "-" version))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "18k8kfn30za637y4bfbm9x3vv4psa3q8f7bi9h4h0qlb8rz8m92c"))))
@@ -463,14 +464,12 @@ interface.")
       (arguments
        `(#:make-flags
          '("-f" "Makefile.unx" "CC=gcc")
-         ;; no check phase
-         #:tests? #f
+         #:tests? #f ; No 'check phase
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
-           (replace
-            'install
-            (lambda* (#:key outputs inputs #:allow-other-keys)
+           (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (bin (string-append out "/bin"))
                      (doc (string-append (assoc-ref outputs "doc")
@@ -487,3 +486,53 @@ in the early 80's.  It was converted to C by Blake McBride and supports much of
 the InterLisp Standard.")
       (home-page "https://github.com/blakemcbride/LISPF4.git")
       (license license:expat))))
+
+(define-public femtolisp
+  (let ((commit "68c5b1225572ecf2c52baf62f928063e5a30511b")
+        (revision "1"))
+    (package
+      (name "femtolisp")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/JeffBezanson/femtolisp.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "04rnwllxnl86zw8c6pwxznn49bvkvh0f1lfliy085vjzvlq3rgja"))))
+      ;; See "utils.h" for supported systems. Upstream bug:
+      ;; https://github.com/JeffBezanson/femtolisp/issues/25
+      (supported-systems
+       (fold delete %supported-systems
+             '("armhf-linux" "mips64el-linux")))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags '("CC=gcc" "release")
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No configure script
+           (replace 'install ; Makefile has no 'install phase
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                (install-file "flisp" bin)
+                #t)))
+           ;; The flisp binary is now available, run bootstrap to
+           ;; generate flisp.boot and afterwards runs make test.
+           (add-after 'install 'bootstrap-gen-and-test
+             (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                (and
+                 (zero? (system* "./bootstrap.sh"))
+                 (install-file "flisp.boot" bin))))))))
+      (synopsis "Scheme-like lisp implementation")
+      (description
+       "@code{femtolisp} is a scheme-like lisp implementation with a
+simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
+The core is 12 builtin special forms and 33 builtin functions.")
+      (home-page "https://github.com/JeffBezanson/femtolisp")
+      (license license:bsd-3))))

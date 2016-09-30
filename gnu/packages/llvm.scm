@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,15 +53,27 @@
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
        ("perl"   ,perl)))
     (inputs
-     `(("libffi" ,libffi)
-       ("zlib" ,zlib)))
+     `(("libffi" ,libffi)))
+    (propagated-inputs
+     `(("zlib" ,zlib)))                 ;to use output from llvm-config
     (arguments
      `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
                            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
                            "-DLLVM_ENABLE_FFI:BOOL=TRUE")
 
        ;; Don't use '-g' during the build, to save space.
-       #:build-type "Release"))
+       #:build-type "Release"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'shared-lib-workaround
+                    ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
+                    ;; doesn't seem to get the correct rpath to be able to run
+                    ;; from the build directory.  Set LD_LIBRARY_PATH as a
+                    ;; workaround.
+                    (lambda _
+                      (setenv "LD_LIBRARY_PATH"
+                              (string-append (getcwd) "/lib"))
+                      #t)))))
     (home-page "http://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
@@ -255,3 +268,12 @@ code analysis tools.")
 (define-public clang-3.5
   (clang-from-llvm llvm-3.5 clang-runtime-3.5
                    "0846h8vn3zlc00jkmvrmy88gc6ql6014c02l4jv78fpvfigmgssg"))
+
+(define-public llvm-for-extempore
+  (package (inherit llvm-3.7)
+    (source
+     (origin
+       (inherit (package-source llvm-3.7))
+       (patches (list (search-patch "llvm-for-extempore.patch")))))
+    ;; Extempore refuses to build on architectures other than x86_64
+    (supported-systems '("x86_64-linux"))))

@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
@@ -205,7 +207,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.13")
+    (version "5.7.15")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -215,13 +217,12 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                         (string-append
                           "http://downloads.mysql.com/archives/get/file/"
                           name "-" version ".tar.gz")))
-             (patches (search-patches "mysql-fix-failing-test.patch"))
              (sha256
               (base32
-               "11qbib1xpy0zkki7j9ip17hks5kp5zgpcj7x8gy3a4m66lb1mgsh"))))
+               "0mlrxcvkn6bf869hjw9fb6m24ak26ndffnd91b4mknmz8cqkb1ch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        '("-DBUILD_CONFIG=mysql_release"
          "-DWITH_SSL=system"
          "-DWITH_ZLIB=system"
@@ -248,7 +249,9 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                    (lambda _
                      ;; Mysql wants boost-1.59.0 specifically
                      (substitute* "cmake/boost.cmake"
-                                  (("59") "60"))))
+                       (("59")
+                        ,(match (string-split (package-version boost) #\.)
+                           ((_ minor . _) minor))))))
                   (add-after
                    'install 'remove-extra-binaries
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -279,7 +282,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.16")
+    (version "10.1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -287,7 +290,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "14s3wq1c25n62n75hkixl8n7cni4m73w055nsx4czm655k33bjv7"))))
+                "1ddalhxxcn95qp5b50z213niylcd0s6bqphid0c7c624wg2mm92c"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -1096,3 +1099,58 @@ trees (LSM), for sustained throughput under random insert workloads.")
     (synopsis "Lightning memory-mapped database library")
     (description "Lightning memory-mapped database library.")
     (license license:openldap2.8)))
+
+(define-public libpqxx
+  (package
+    (name "libpqxx")
+    (version "4.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://pqxx.org/download/software/libpqxx/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0f6wxspp6rx12fkasanb0z2g2gc8dhcfwnxagx8wwqbpg6ifsz09"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python-2)))
+    (inputs `(("postgresql" ,postgresql)))
+    (arguments
+     `(#:tests? #f)) ; # FAIL:  1
+    (synopsis "C++ connector for PostgreSQL")
+    (description
+     "Libpqxx is a C++ library to enable user programs to communicate with the
+PostgreSQL database back-end.  The database back-end can be local or it may be
+on another machine, accessed via TCP/IP.")
+    (home-page "http://pqxx.org/")
+    (license license:bsd-3)))
+
+(define-public python-peewee
+  (package
+    (name "python-peewee")
+    (version "2.8.3")
+      (source
+        (origin
+        (method url-fetch)
+        (uri (pypi-uri "peewee" version))
+        (sha256
+         (base32
+          "1605bk11s7aap2q4qyba93rx7yfh8b11kk0cqi08z8klx2iar8yd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Fails to import test data
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://github.com/coleifer/peewee/")
+    (synopsis "Small object-relational mapping utility")
+    (description
+     "Peewee is a simple and small ORM (object-relation mapping) tool.  Peewee
+handles converting between pythonic values and those used by databases, so you
+can use Python types in your code without having to worry.  It has built-in
+support for sqlite, mysql and postgresql.  If you already have a database, you
+can autogenerate peewee models using @code{pwiz}, a model generator.")
+    (license license:expat)))
+
+(define-public python2-peewee
+  (package-with-python2 python-peewee))

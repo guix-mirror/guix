@@ -6,6 +6,8 @@
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,7 +179,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.0")
+    (version "5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -191,14 +193,15 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"5.0-10-g23d1d1f\" ; }"))))
+namespace ARDOUR { const char* revision = \"5.3\" ; }"))))
               (sha256
                (base32
-                "0ihd6zxha1vvp4jy5s49pqyw09qxxjgrdlslrkz6ll59zdh6x7am"))
+                "0xdyc3syxg4drg7rafadhlrn6nycg169ay6q5xhga19kcwy6qmqm"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:configure-flags '("--cxx11") ; required by gtkmm
+     `(#:configure-flags '("--cxx11"          ; required by gtkmm
+                           "--no-phone-home") ; don't contact ardour.org
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -264,12 +267,15 @@ engineers, musicians, soundtrack editors and composers.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "18mdw6nc0vgj6k9rsy0x8w64wvzld0frqshrxxbxfj9qi9843vlc"))))
+                "18mdw6nc0vgj6k9rsy0x8w64wvzld0frqshrxxbxfj9qi9843vlc"))
+              (patches (search-patches "azr3.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
        #:make-flags
        (list "LV2PEG=ttl2c"
+             "CXXFLAGS=-std=gnu++11"
+             "CFLAGS=-std=gnu++11"
              (string-append "prefix=" %output)
              (string-append "pkgdatadir=" %output "/share/azr3-jack"))))
     (inputs
@@ -1467,7 +1473,7 @@ lv2-c++-tools.")
 (define-public openal
   (package
     (name "openal")
-    (version "1.15.1")
+    (version "1.17.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1475,7 +1481,7 @@ lv2-c++-tools.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0mmhdqiyb3c9dzvxspm8h2v8jibhi8pfjxnf6m0wn744y1ia2a8f"))))
+                "051k5fy8pk4fd9ha3qaqcv08xwbks09xl5qs4ijqq2qz5xaghhd3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -1510,6 +1516,32 @@ through the EFX extension.  It also facilitates streaming audio, multi-channel
 buffers, and audio capture.")
     (home-page "http://kcat.strangesoft.net/openal.html")
     (license license:lgpl2.0+)))
+
+(define-public freealut
+  (package
+    (name "freealut")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              ;; Upstream url is unclear, many systems use Fedora, there is also
+              ;; https://github.com/vancegroup/freealut though the status of it
+              ;; (official? unofficial?) is not clear.
+              (uri (string-append
+                    "https://pkgs.fedoraproject.org/repo/pkgs/" name "/" name "-"
+                    version ".tar.gz" "/e089b28a0267faabdb6c079ee173664a/" name
+                    "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kzlil6112x2429nw6mycmif8y6bxr2cwjcvp18vh6s7g63ymlb0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))  ; no check target
+    (inputs
+     `(("openal" ,openal)))
+    (synopsis "Free implementation of OpenAL's ALUT standard")
+    (description "freealut is the OpenAL Utility Toolkit.")
+    (home-page "http://kcat.strangesoft.net/openal.html")
+    (license license:lgpl2.0)))
 
 (define-public patchage
   (package
@@ -2456,3 +2488,80 @@ with support for HD extensions.")
 flavors EBU R128, ATSC A/85, and ReplayGain 2.0.  It helps normalizing the
 loudness of audio and video files to the same level.")
     (license license:gpl2+)))
+
+(define-public filteraudio
+  (let ((revision "1")
+        (commit "2fc669581e2a0ff87fba8de85861b49133306094"))
+    (package
+      (name "filteraudio")
+      (version (string-append "0.0.0-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/irungentoo/filter_audio.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0hbb290n3wb23f2k692a6bhc23nnqmxqi9sc9j15pnya8wifw64g"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags (list (string-append "PREFIX=" %output)
+                            "CC=gcc")
+         #:tests? #f ; No tests
+         #:phases
+         (modify-phases %standard-phases
+           ;; No configure script
+           (delete 'configure))))
+      (synopsis "Lightweight audio filtering library")
+      (description "An easy to use audio filtering library made from webrtc
+code, used in @code{libtoxcore}.")
+      (home-page "https://github.com/irungentoo/filter_audio")
+      (license license:bsd-3))))
+
+(define-public gsm
+  (package
+    (name "gsm")
+    (version "1.0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://www.quut.com/" name "/" name
+                       "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b1mx69jq88wva3wk0hi6fcl5a52qhnq2f9p3f3jdh5k61ma252q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "tst"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'pre-install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (substitute* "Makefile"
+                 (("INSTALL_ROOT\t=")
+                  (string-append "INSTALL_ROOT\t=\t" out)))
+               (mkdir-p (string-append out "/inc"))
+               (mkdir-p (string-append out "/man"))
+               (mkdir-p (string-append out "/man/man1"))
+               (mkdir-p (string-append out "/man/man3"))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/lib")))))
+         (add-after 'install 'post-install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (rename-file (string-append out "/inc")
+                            (string-append out "/include"))
+               (mkdir-p (string-append out "/include/gsm"))
+               (copy-recursively "inc"
+                                 (string-append out "/include/gsm")))))
+         (delete 'configure))))
+    (synopsis "GSM 06.10 lossy speech compression library")
+    (description "This C library provides an encoder and a decoder for the GSM
+06.10 RPE-LTP lossy speech compression algorithm.")
+    (home-page "http://quut.com/gsm/")
+    (license (license:non-copyleft "file://COPYRIGHT"))))

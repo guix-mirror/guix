@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,14 +19,18 @@
 
 (define-module (gnu packages search)
   #:use-module ((guix licenses)
-                #:select (gpl2+ gpl3+ bsd-3 x11))
+                #:select (gpl2 gpl2+ gpl3+ bsd-3 x11))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml))
 
 (define-public xapian
   (package
@@ -147,5 +151,89 @@ words in close proximity to each other.  It handles context gracefully,
 accounting for new lines and paragraph changes.  It also has robust support
 for parsing HTML files.")
     (license gpl3+)))
+
+(define-public mlocate
+  (package
+    (name "mlocate")
+    (version "0.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://fedorahosted.org/releases/m/l/"
+                                  "mlocate/mlocate-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0gi6y52gkakhhlnzy0p6izc36nqhyfx5830qirhvk3qrzrwxyqrh"))))
+    (build-system gnu-build-system)
+    (home-page "https://fedorahosted.org/mlocate/")
+    (synopsis "Locate files on the file system")
+    (description
+     "mlocate is a locate/updatedb implementation.  The 'm' stands for
+\"merging\": @code{updatedb} reuses the existing database to avoid rereading
+most of the file system, which makes it faster and does not trash the system
+caches as much.  The locate(1) utility is intended to be completely compatible
+with slocate, and attempts to be compatible to GNU locate when it does not
+conflict with slocate compatibility.")
+    (license gpl2)))
+
+(define-public swish-e
+  (package
+    (name "swish-e")
+    (version "2.4.7")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "http://swish-e.org/distribution/"
+                                        "swish-e-" version ".tar.gz")
+                         ;; The upstream swish-e.org appears to be down... so
+                         ;; use debian's copy as a fallback.
+                         (string-append "http://http.debian.net/debian/pool/"
+                                        "main/s/swish-e/swish-e_" version
+                                        ".orig.tar.gz")))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qkrk7z25yp9hynj21vxkyn7yi8gcagcfxnass5cgczcz0gm9pax"))
+              (patches (search-patches "swish-e-search.patch"
+                                       "swish-e-format-security.patch"))))
+    (build-system gnu-build-system)
+    ;; Several other packages and perl modules may be installed alongside
+    ;; swish-e to extend its features at runtime, but are not required for
+    ;; building: xpdf, catdoc, MP3::Tag, Spreadsheet::ParseExcel,
+    ;; HTML::Entities.
+    (inputs
+     `(("libxml" ,libxml2)
+       ("zlib" ,zlib)
+       ("perl" ,perl)
+       ("perl-uri" ,perl-uri)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-mime-types" ,perl-mime-types)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-programs
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (for-each
+                         (lambda (program)
+                           (wrap-program program
+                             `("PERL5LIB" ":" prefix
+                               ,(map (lambda (i)
+                                       (string-append (assoc-ref inputs i)
+                                                      "/lib/perl5/site_perl"))
+                                     ;; These perl modules have no propagated
+                                     ;; inputs, so no further analysis needed.
+                                     '("perl-uri"
+                                       "perl-html-parser"
+                                       "perl-html-tagset"
+                                       "perl-mime-types")))))
+                         (list (string-append out "/lib/swish-e/swishspider")
+                               (string-append out "/bin/swish-filter-test")))
+                        #t))))))
+    (home-page "http://swish-e.org")
+    (synopsis "Web indexing system")
+    (description
+     "Swish-e is Simple Web Indexing System for Humans - Enhanced.  Swish-e
+can quickly and easily index directories of files or remote web sites and
+search the generated indexes.")
+    (license gpl2+)))                   ;with exception
 
 ;;; search.scm ends here

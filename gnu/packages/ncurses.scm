@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,10 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages perl))
 
 (define-public ncurses
   (let ((patch-makefile-phase
@@ -161,3 +165,45 @@ curses widgets, such as dialog boxes.")
     (home-page "http://invisible-island.net/dialog/dialog.html")
     ;; Includes the gpl3 file "config.sub" from Automake.
     (license (list lgpl2.1 gpl3))))
+
+(define-public perl-curses
+  (package
+    (name "perl-curses")
+    (version "1.36")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GI/GIRAFFED/"
+                           "Curses-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r6xd9wr0c25rr28zixhqipak575zqsfb7r7f2693i9il1dpj554"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:make-maker-flags (list "PANELS" "MENUS")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+           'configure 'set-curses-ldflags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((ncurses (assoc-ref inputs "ncurses"))
+                    (include (string-append ncurses "/include"))
+                    (lib (string-append ncurses "/lib")))
+               (setenv "CURSES_LIBTYPE" "ncurses")
+               (setenv "CURSES_CFLAGS" (string-append "-I" include))
+               (setenv "CURSES_PANEL_CFLAGS" (string-append "-I" include))
+               (setenv "CURSES_MENU_CFLAGS" (string-append "-I" include))
+               (setenv "CURSES_FORM_CFLAGS" (string-append "-I" include))
+               (setenv "CURSES_LDFLAGS" (string-append "-L" lib " -lncurses"))
+               (setenv "CURSES_PANEL_LDFLAGS" (string-append "-L" lib " -lpanel"))
+               (setenv "CURSES_MENU_LDFLAGS" (string-append "-L" lib " -lmenu"))
+               (setenv "CURSES_FORM_LDFLAGS" (string-append "-L" lib " -lform"))
+               #t))))))
+    (home-page "http://search.cpan.org/dist/Curses")
+    (synopsis "Terminal screen handling and optimization")
+    (description
+     "@code{Curses} is the interface between Perl and the curses library
+of your system.")
+    (license (package-license perl))))

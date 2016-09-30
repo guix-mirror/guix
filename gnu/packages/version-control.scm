@@ -59,6 +59,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
@@ -111,14 +112,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.9.3")
+   (version "2.10.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0qzs681a64k3shh5p0rg41l1z16fbk5sj0xga45k34hp1hsp654z"))))
+              "1rr9zyafb6q3wixyjar6cc7z7vdh1dqa4b5irz3gz1df02n68cy7"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -131,7 +132,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0kabsmjfbvq4y1vlwq0yl2y4033a90rnwsq01d7np3cvy55fiq0l"))))))
+            "1y92v1bxk67ilsizqnjba6hqvrsy2zvmipyd9nnz865s21yrj5ry"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -142,6 +143,7 @@ as well as the classic centralized workflow.")
 
       ;; For 'git-svn'.
       ("subversion" ,subversion)
+      ("perl-term-readkey" ,perl-term-readkey)
 
       ;; For 'git-send-email'
       ("perl-authen-sasl" ,perl-authen-sasl)
@@ -226,14 +228,15 @@ as well as the classic centralized workflow.")
                         (list gitk git-gui git-cit git-se git-svn)
                         (list gitk* git-gui* git-cit* git-se* git-svn*))
 
-              ;; Tell 'git-svn' where Subversion is.
+              ;; Tell 'git-svn' where Subversion and perl-term-readkey are.
               (wrap-program git-svn*
                 `("PATH" ":" prefix
                   (,(string-append (assoc-ref inputs "subversion")
                                    "/bin")))
                 `("PERL5LIB" ":" prefix
-                  (,(string-append (assoc-ref inputs "subversion")
-                                   "/lib/perl5/site_perl")))
+                  ,(map (lambda (i) (string-append (assoc-ref inputs i)
+                                                   "/lib/perl5/site_perl"))
+                        '("subversion" "perl-term-readkey")))
 
                 ;; XXX: The .so for SVN/Core.pm lacks a RUNPATH, so
                 ;; help it find 'libsvn_client-1.so'.
@@ -292,6 +295,20 @@ as well as the classic centralized workflow.")
 everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
    (home-page "http://git-scm.com/")))
+
+;; Some dependent packages directly access internal interfaces which
+;; have changed in 2.10
+(define-public git@2.9
+  (package
+    (inherit git)
+    (version "2.9.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://kernel.org/software/scm/git/git-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "0qzs681a64k3shh5p0rg41l1z16fbk5sj0xga45k34hp1hsp654z"))))))
 
 (define-public libgit2
   (package
@@ -387,7 +404,7 @@ write native speed custom Git applications in any language with bindings.")
        ("xmllint" ,libxml2)
        ("xsltprot" ,libxslt)))
     (inputs
-     `(("git:src" ,(package-source git))
+     `(("git:src" ,(package-source git@2.9))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
@@ -1035,7 +1052,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.1.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1043,12 +1060,21 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0bw5wivswwh7vx897q8xc2cqgkqhdzk8gh6fnav2kf34sngigiah"))))
+                "0k3m894vfkgkj7xbr0j6ph91351dl6id5f0hk2ksjp5lmg9i6llg"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("xmlto" ,xmlto)))
     (inputs
-     `(("ncurses" ,ncurses)))
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
     (arguments
-     `(#:tests? #f)) ; tests require access to /dev/tty
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda _
+             (zero? (system* "make" "install-doc")))))
+       #:tests? #f)) ; tests require access to /dev/tty
      ;;`(#:test-target "test"))
     (home-page "http://jonas.nitro.dk/tig/")
     (synopsis "Ncurses-based text user interface for Git")

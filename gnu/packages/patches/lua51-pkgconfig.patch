@@ -1,0 +1,101 @@
+Enables generating Lua's pkg-config file.
+
+http://lua-users.org/lists/lua-l/2015-03/msg00338.html
+
+--- a/Makefile	2016-08-16 19:44:27.363614964 +0200
++++ b/Makefile	2016-08-16 19:49:22.623070005 +0200
+@@ -13,6 +13,7 @@
+ INSTALL_BIN= $(INSTALL_TOP)/bin
+ INSTALL_INC= $(INSTALL_TOP)/include
+ INSTALL_LIB= $(INSTALL_TOP)/lib
++INSTALL_PC= $(INSTALL_LIB)/pkgconfig
+ INSTALL_MAN= $(INSTALL_TOP)/man/man1
+ #
+ # You probably want to make INSTALL_LMOD and INSTALL_CMOD consistent with
+@@ -41,9 +42,12 @@
+ PLATS= aix ansi bsd freebsd generic linux macosx mingw posix solaris
+ 
+ # What to install.
+-TO_BIN= lua luac
++INTERPRETER= lua
++COMPILER= luac
++TO_BIN= $(INTERPRETER) $(COMPILER)
+ TO_INC= lua.h luaconf.h lualib.h lauxlib.h ../etc/lua.hpp
+ TO_LIB= liblua.a liblua.so liblua.so.${V}
++TO_PC= lua-$(V).pc
+ TO_MAN= lua.1 luac.1
+ 
+ # Lua version and release.
+@@ -52,17 +56,22 @@
+ 
+ all:	$(PLAT)
+ 
+-$(PLATS) clean:
++$(PLATS):
+ 	cd src && $(MAKE) $@ V=$(V) R=$(R)
+ 
++clean:
++	cd src && $(MAKE) $@
++	$(RM) $(TO_PC)
++
+ test:	dummy
+ 	src/lua test/hello.lua
+ 
+-install: dummy
+-	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_MAN) $(INSTALL_LMOD) $(INSTALL_CMOD)
++install: dummy $(TO_PC)
++	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_PC) $(INSTALL_MAN) $(INSTALL_LMOD) $(INSTALL_CMOD)
+ 	cd src && $(INSTALL_EXEC) $(TO_BIN) $(INSTALL_BIN)
+ 	cd src && $(INSTALL_DATA) $(TO_INC) $(INSTALL_INC)
+ 	cd src && $(INSTALL_DATA) $(TO_LIB) $(INSTALL_LIB)
++	cd src && $(INSTALL_DATA) ../$(TO_PC) $(INSTALL_PC)
+ 	cd doc && $(INSTALL_DATA) $(TO_MAN) $(INSTALL_MAN)
+ 
+ ranlib:
+@@ -95,6 +104,7 @@
+ 	@echo "INSTALL_BIN = $(INSTALL_BIN)"
+ 	@echo "INSTALL_INC = $(INSTALL_INC)"
+ 	@echo "INSTALL_LIB = $(INSTALL_LIB)"
++	@echo "INSTALL_PC = $(INSTALL_PC)"
+ 	@echo "INSTALL_MAN = $(INSTALL_MAN)"
+ 	@echo "INSTALL_LMOD = $(INSTALL_LMOD)"
+ 	@echo "INSTALL_CMOD = $(INSTALL_CMOD)"
+@@ -111,6 +121,7 @@
+ 	@echo "TO_BIN = $(TO_BIN)"
+ 	@echo "TO_INC = $(TO_INC)"
+ 	@echo "TO_LIB = $(TO_LIB)"
++	@echo "TO_PC = $(TO_PC)"
+ 	@echo "TO_MAN = $(TO_MAN)"
+ 
+ # echo config parameters as Lua code
+@@ -122,7 +133,29 @@
+ 	@$(MAKE) echo | grep = | sed -e 's/= /= "/' -e 's/$$/"/' #-e 's/""/nil/'
+ 	@echo "-- EOF"
+ 
++pc:
++	@echo 'prefix=$(INSTALL_TOP)'
++	@echo 'libdir=$(INSTALL_LIB)'
++	@echo 'includedir=$(INSTALL_INC)'
++	@echo 'bindir=$(INSTALL_BIN)'
++	@echo
++	@echo 'INSTALL_LMOD=$(INSTALL_LMOD)'
++	@echo 'INSTALL_CMOD=$(INSTALL_CMOD)'
++	@echo 'INTERPRETER=$${bindir}/$(INTERPRETER)'
++	@echo 'COMPILER=$${bindir}/$(COMPILER)'
++	@echo
++	@echo 'Name: Lua'
++	@echo 'Description: A powerful, fast, lightweight, embeddable scripting language'
++	@echo 'Version: $(R)'
++	@echo
++	@echo 'Libs: -L$${libdir} -llua -lm'
++	@echo 'Cflags: -I$${includedir}'
++
++pkg-config: $(TO_PC)
++$(TO_PC):
++	@$(MAKE) -s pc > $@
++
+ # list targets that do not create files (but not all makes understand .PHONY)
+-.PHONY: all $(PLATS) clean test install local none dummy echo pecho lecho
++.PHONY: all $(PLATS) clean test install local none dummy echo pecho lecho pkg-config
+ 
+ # (end of Makefile)

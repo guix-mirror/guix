@@ -25,7 +25,7 @@
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.6.19")
+    (version "1.6.20")
     (source
      (origin
       (method url-fetch)
@@ -33,7 +33,7 @@
                           version "/" name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0amjv4lypvclmi4vim2qdyw5xa6v4x50zjgf682vahqjc0wjn55k"))))
+        "0qrsdsb1qm85hc4jy04qph895613d148f0x1mmk6z99y3q43fdgf"))))
     (build-system gnu-build-system)
     (arguments
      ;; The tests require a network device capable of multicasting which is

@@ -83,7 +83,7 @@ INPUTS."
   (string-join
    (apply append (map (match-lambda
                         ((_ . dir)
-                         (find-files dir "\\.*jar$")))
+                         (find-files dir "\\.jar$")))
                       inputs)) ":"))
 
 (define* (unpack #:key source #:allow-other-keys)

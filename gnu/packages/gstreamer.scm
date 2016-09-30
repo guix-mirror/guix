@@ -63,27 +63,27 @@
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.25")
+    (version "0.4.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "1lak3hyvvb0w9avzmf0a8vayb7vqhj4m709q1czlhvgjb15dbcf1"))))
+                "0jd69ynvr3k70mlxxgbsk047l1rd63m1wkj3qdcq7644xy0gllkx"))))
     (build-system gnu-build-system)
-    (arguments `(#:phases
-                 (alist-cons-before
-                  'check 'disable-faulty-test
-                  (lambda _
-                    ;; XXX Disable the 'test-limits' and 'exec_opcodes_sys'
-                    ;; tests, which fail on some machines.  See:
-                    ;; https://bugzilla.gnome.org/show_bug.cgi?id=735273
-                    (substitute* '("testsuite/test-limits.c"
-                                   "testsuite/exec_opcodes_sys.c")
-                      (("if \\(error\\) return 1;")
-                       "if (error) return 77;")))
-                  %standard-phases)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-faulty-test
+           (lambda _
+             ;; XXX Disable the 'test-limits' and 'exec_opcodes_sys'
+             ;; tests, which fail on some machines.  See:
+             ;; https://bugzilla.gnome.org/show_bug.cgi?id=735273
+             (substitute* '("testsuite/test-limits.c"
+                            "testsuite/exec_opcodes_sys.c")
+               (("if \\(error\\) return 1;")
+                "if (error) return 77;")))))))
     (home-page "http://code.entropywave.com/orc/")
     (synopsis "Oil runtime compiler")
     (description
@@ -160,6 +160,7 @@ This package provides the core library and elements.")
      `(("gstreamer" ,gstreamer))) ; required by gstreamer-plugins-base-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
+       ("opus" ,opus)
        ("orc" ,orc)
        ("pango" ,pango)
        ("libogg" ,libogg)
@@ -323,7 +324,9 @@ developers consider to have good quality code and correct functionality.")
        ("openssl" ,openssl)
        ("opus" ,opus)
        ("orc" ,orc)
-       ("qtbase" ,qtbase)
+       ;("qtbase" ,qtbase)
+       ;("qtdeclarative" ,qtdeclarative)
+       ;("qtx11extras" ,qtx11extras)
        ("soundtouch" ,soundtouch)
        ("wayland" ,wayland)))
     (home-page "http://gstreamer.freedesktop.org/")
@@ -356,6 +359,7 @@ par compared to the rest.")
        ("libmpeg2" ,libmpeg2)
        ("libdvdread" ,libdvdread)
        ("libx264" ,libx264)
+       ("mpg123" ,mpg123)
        ;; TODO:
        ;; * opencore-amr (for the AMR-NB decoder and encoder and the
        ;;   AMR-WB decoder) <http://sourceforge.net/projects/opencore-amr/>

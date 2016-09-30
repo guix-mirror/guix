@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,26 +32,35 @@
 (define-public vim
   (package
     (name "vim")
-    (version "7.4")
+    (version "8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.vim.org/pub/vim/unix/vim-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1pjaffap91l2rb9pjnlbrpvb3ay5yhhr3g91zabjvw1rqk9adxfh"))))
+               "1s34rf8089klsbdx5l0iw7vjymir0kzfrx8wb30s31wygnq29axc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-bit-reproducable
+           (lambda _
+             (substitute* "src/version.c"
+               ((" VIM_VERSION_LONG_DATE") " VIM_VERSION_LONG")
+               ((" __DATE__") "")
+               ((" __TIME__") ""))
+             #t))
          (add-after 'configure 'patch-config-files
            (lambda _
              (substitute* "runtime/tools/mve.awk"
                (("/usr/bin/nawk") (which "gawk")))
-             (substitute* "src/testdir/Makefile"
-               (("/bin/sh") (which "sh"))))))))
+             (substitute* '("src/testdir/Makefile"
+                            "src/testdir/test_normal.vim")
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (inputs
      `(("gawk" ,gawk)
        ("inetutils" ,inetutils)

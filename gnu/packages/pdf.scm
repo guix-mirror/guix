@@ -7,6 +7,7 @@
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,10 +32,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
@@ -53,6 +58,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
   #:use-module (srfi srfi-1))
 
@@ -466,29 +472,42 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.8")
+    (version "1.9a")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.gz"))
         (sha256
-          (base32 "01n26cy41lc2fjri63s4js23ixxb4nd37aafry3hz4i4id6wd8x2"))
-        (patches (search-patches "mupdf-CVE-2016-6265.patch"
+         (base32
+          "1k64pdapyj8a336jw3j61fhn0rp4q6az7d0dqp9r5n3d9rgwa5c0"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
+                                 "mupdf-CVE-2016-6265.patch"
                                  "mupdf-CVE-2016-6525.patch"))
         (modules '((guix build utils)))
         (snippet
-            ;; Don't build the bundled-in third party libraries.
-            '(delete-file-recursively "thirdparty"))))
+            ;; Delete all the bundled libraries except for mujs, which is
+            ;; developed by the same team as mupdf and has no releases.
+            ;; TODO Package mujs and don't use the bundled copy.
+            '(for-each delete-file-recursively
+                       '("thirdparty/curl"
+                         "thirdparty/freetype"
+                         "thirdparty/glfw"
+                         "thirdparty/harfbuzz"
+                         "thirdparty/jbig2dec"
+                         "thirdparty/jpeg"
+                         "thirdparty/openjpeg"
+                         "thirdparty/zlib")))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
         ("freetype" ,freetype)
+        ("harfbuzz" ,harfbuzz)
         ("jbig2dec" ,jbig2dec)
         ("libjpeg" ,libjpeg)
         ("libx11" ,libx11)
         ("libxext" ,libxext)
-        ("openjpeg" ,openjpeg-2.0)
+        ("openjpeg" ,openjpeg)
         ("openssl" ,openssl)
         ("zlib" ,zlib)))
     (native-inputs
@@ -624,3 +643,57 @@ vector formats.")
     (inherit (package-with-python2
               (strip-python2-variant python-reportlab)))
     (native-inputs `(("python2-pip" ,python2-pip)))))
+
+(define-public impressive
+  (package
+    (name "impressive")
+    (version "0.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/impressive/Impressive/"
+                    version "/Impressive-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b3rmy6acp2vmf5nill3aknxvr9a5aawk1vnphkah61anxp62gsr"))))
+    (build-system python-build-system)
+
+    ;; TODO: Add dependency on pdftk.
+    (inputs `(("python-pygame" ,python-pygame)
+              ("python2-pillow" ,python2-pillow)
+              ("sdl" ,sdl)
+              ("xpdf" ,xpdf)))
+
+    (arguments
+     `(#:python ,python-2
+       #:phases (modify-phases %standard-phases
+                  (delete 'build)
+                  (delete 'configure)
+                  (delete 'check)
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; There's no 'setup.py' so install things manually.
+                      (let* ((out  (assoc-ref outputs "out"))
+                             (bin  (string-append out "/bin"))
+                             (man1 (string-append out "/share/man/man1"))
+                             (sdl  (assoc-ref inputs "sdl"))
+                             (xpdf (assoc-ref inputs "xpdf")))
+                        (mkdir-p bin)
+                        (copy-file "impressive.py"
+                                   (string-append bin "/impressive"))
+                        (wrap-program (string-append bin "/impressive")
+                          `("LIBRARY_PATH" ":" prefix ;for ctypes
+                            (,(string-append sdl "/lib")))
+                          `("PATH" ":" prefix     ;for pdftoppm
+                            (,(string-append xpdf "/bin"))))
+                        (mkdir-p man1)
+                        (install-file "impressive.1" man1)
+                        #t))))))
+    (home-page "http://impressive.sourceforge.net")
+    (synopsis "PDF presentation tool with visual effects")
+    (description
+     "Impressive is a tool to display PDF files that provides visual effects
+such as smooth alpha-blended slide transitions.  It provides additional tools
+such as zooming, highlighting an area of the screen, and a tool to navigate
+the PDF pages.")
+    (license license:gpl2)))

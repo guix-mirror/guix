@@ -29,7 +29,7 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.2.5")
+    (version "3.3.1")
     (source
      (origin
       (method url-fetch)
@@ -37,24 +37,24 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "11db1g109g0g5si0s50yd99ja5f8j4asxb081clvx78r9d9i2w0i"))))
+        "1ij1p8arz72fw67gx65ngb7jmg30ynjxk7i8dmikjxkdri4pmn66"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for test.sh
                      ("which" ,(@ (gnu packages base) which))))
     (inputs `(("zlib" ,zlib)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'check 'setup-tests
-                 (lambda _
-                   (substitute* '("test/test_hashutil.c" "test.sh")
-                     (("#!/bin/sh") (string-append "#!" (which "sh")))
-                     (("which") (which "which")))
-                   #t)
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                 (add-before 'check 'setup-tests
+                   (lambda _
+                     (substitute* '("test/test_hashutil.c" "test.sh")
+                       (("#!/bin/sh") (string-append "#!" (which "sh")))
+                       (("which") (which "which")))
+                     #t)))))
     (home-page "https://ccache.samba.org/")
     (synopsis "Compiler cache")
     (description
      "Ccache is a compiler cache.  It speeds up recompilation by caching
 previous compilations and detecting when the same compilation is being done
-again.  Supported languages are C, C++, Objective-C and Objective-C++.")
+again.  Supported languages are C, C++, Objective-C, Objective-C++, and
+Fortran 77.")
     (license gpl3+)))

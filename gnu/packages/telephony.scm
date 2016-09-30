@@ -31,7 +31,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xiph)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -61,7 +61,7 @@ threaded applications, supporting concurrent synchronization, inter-process
 communications via sockets, and various methods for data handling, such as
 serialization and XML parsing.  It includes the uCommon C++ library, a smaller
 reimplementation.")
-   (license gpl2+) ; plus runtime exception
+   (license license:gpl2+) ; plus runtime exception
    (home-page "http://www.gnu.org/software/commoncpp")))
 
 (define-public ucommon
@@ -81,7 +81,7 @@ reimplementation.")
 to facilitate using C++ design patterns even for very deeply embedded
 applications, such as for systems using uclibc along with posix threading
 support.")
-   (license gpl3+)
+   (license license:gpl3+)
    (home-page "http://www.gnu.org/software/commoncpp")
    (properties '((ftp-directory . "/gnu/commoncpp")))))
 
@@ -105,7 +105,7 @@ protocol from the IETF.  It is suitable both for high capacity servers and
 personal client applications.  It is flexible in its design, allowing it to
 function as a framework for the framework, rather than just being a
 packet-manipulation library.")
-   (license gpl2+) ; plus runtime exception
+   (license license:gpl2+) ; plus runtime exception
    (home-page "http://www.gnu.org/software/ccrtp")))
 
 
@@ -124,7 +124,7 @@ packet-manipulation library.")
    (description "GNU oSIP is an implementation of the SIP protocol.  It is
 used to provide multimedia and telecom software developers with an interface
 to initiate and control SIP sessions.")
-   (license lgpl2.1+)
+   (license license:lgpl2.1+)
    (home-page "http://www.gnu.org/software/osip")))
 
 
@@ -147,7 +147,7 @@ SIP protocol for multimedia session establishment.  This protocol is mainly to
 be used by VoIP telephony applications (endpoints or conference server) but
 might be also useful for any application that wish to establish sessions like
 multiplayer games.")
-   (license gpl2+)
+   (license license:gpl2+)
    ;; (plus OpenSSL linking exception)
    ;; http://git.savannah.gnu.org/cgit/exosip.git/plain/LICENSE.OpenSSL
     (home-page "http://savannah.nongnu.org/projects/exosip")))
@@ -192,7 +192,7 @@ without the need for a service provider.  Its peer-to-peer design ensures that
 there is no central point for media intercept or capture and thus it can be
 used to construct a secure telephone system that operates over the public
 internet.")
-   (license gpl3+)
+   (license license:gpl3+)
    (home-page "http://www.gnu.org/software/sipwitch")))
 
 (define-public libsrtp
@@ -216,7 +216,7 @@ internet.")
 Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
 and a supporting cryptographic kernel.")
     (home-page "https://github.com/cisco/libsrtp")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public libiax2
   (let ((commit "0e5980f1d78ce462e2d1ed6bc39ff35c8341f201"))
@@ -255,7 +255,9 @@ Voice-over-IP (VoIP) communications.")
       ;; 'src/options.c', 'src/options.h', 'src/ring10.h', 'src/winiphone.c' are
       ;; covered under the 'GPL'.
       ;; The package as a whole is distributed under the LGPL 2.0.
-      (license (list lgpl2.0 public-domain gpl2+)))))
+      (license (list license:lgpl2.0
+                     license:public-domain
+                     license:gpl2+)))))
 
 (define-public seren
   (package
@@ -285,4 +287,4 @@ without having to register accounts, exchange emails, or add people to contact
 lists.  All you need to join an existing conference is the host name or IP
 address of one of the participants.")
     (home-page "http://holdenc.altervista.org/seren/")
-    (license gpl3+)))
+    (license license:gpl3+)))

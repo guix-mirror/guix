@@ -24,12 +24,12 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-11)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
-  #:export (errno
-            MS_RDONLY
+  #:export (MS_RDONLY
             MS_NOSUID
             MS_NODEV
             MS_NOEXEC
@@ -282,13 +282,14 @@ given TYPES.  READ uses WRAP-FIELDS to return its value."
 ;;;
 
 (define %libc-errno-pointer
-  ;; Glibc's 'errno' pointer.
-  (let ((errno-loc (dynamic-func "__errno_location" (dynamic-link))))
+  ;; Glibc's 'errno' pointer, for use with Guile < 2.0.12.
+  (let ((errno-loc (false-if-exception
+                    (dynamic-func "__errno_location" (dynamic-link)))))
     (and errno-loc
          (let ((proc (pointer->procedure '* errno-loc '())))
            (proc)))))
 
-(define errno
+(define errno                                     ;for Guile < 2.0.12
   (if %libc-errno-pointer
       (let ((bv (pointer->bytevector %libc-errno-pointer (sizeof int))))
         (lambda ()
@@ -327,13 +328,26 @@ given TYPES.  READ uses WRAP-FIELDS to return its value."
   (call-with-restart-on-EINTR (lambda () expr)))
 
 (define (syscall->procedure return-type name argument-types)
-  "Return a procedure that wraps the C function NAME using the dynamic FFI.
+  "Return a procedure that wraps the C function NAME using the dynamic FFI,
+and that returns two values: NAME's return value, and errno.
+
 If an error occurs while creating the binding, defer the error report until
 the returned procedure is called."
   (catch #t
     (lambda ()
       (let ((ptr (dynamic-func name (dynamic-link))))
-        (pointer->procedure return-type ptr argument-types)))
+        ;; The #:return-errno? facility was introduced in Guile 2.0.12.
+        ;; Support older versions of Guile by catching 'wrong-number-of-args'.
+        (catch 'wrong-number-of-args
+          (lambda ()
+            (pointer->procedure return-type ptr argument-types
+                                #:return-errno? #t))
+          (lambda (key . rest)
+            (let ((proc (pointer->procedure return-type ptr argument-types)))
+              (lambda args
+                (let ((result (apply proc args))
+                      (err    (errno)))
+                  (values result err))))))))
     (lambda args
       (lambda _
         (error (format #f "~a: syscall->procedure failed: ~s"
@@ -400,18 +414,18 @@ may be a bitwise-or of the MS_* <sys/mount.h> constants, and OPTIONS may be a
 string.  When FLAGS contains MS_REMOUNT, SOURCE and TYPE are ignored.  When
 UPDATE-MTAB? is true, update /etc/mtab.  Raise a 'system-error' exception on
 error."
-      (let ((ret (proc (if source
-                           (string->pointer source)
-                           %null-pointer)
-                       (string->pointer target)
-                       (if type
-                           (string->pointer type)
-                           %null-pointer)
-                       flags
-                       (if options
-                           (string->pointer options)
-                           %null-pointer)))
-            (err (errno)))
+      (let-values (((ret err)
+                    (proc (if source
+                              (string->pointer source)
+                              %null-pointer)
+                          (string->pointer target)
+                          (if type
+                              (string->pointer type)
+                              %null-pointer)
+                          flags
+                          (if options
+                              (string->pointer options)
+                              %null-pointer))))
         (unless (zero? ret)
           (throw 'system-error "mount" "mount ~S on ~S: ~A"
                  (list source target (strerror err))
@@ -425,8 +439,8 @@ error."
                      #:key (update-mtab? #f))
       "Unmount TARGET.  Optionally FLAGS may be one of the MNT_* or UMOUNT_*
 constants from <sys/mount.h>."
-      (let ((ret (proc (string->pointer target) flags))
-            (err (errno)))
+      (let-values (((ret err)
+                    (proc (string->pointer target) flags)))
         (unless (zero? ret)
           (throw 'system-error "umount" "~S: ~A"
                  (list target (strerror err))
@@ -450,8 +464,8 @@ constants from <sys/mount.h>."
   (let ((proc (syscall->procedure int "swapon" (list '* int))))
     (lambda* (device #:optional (flags 0))
       "Use the block special device at DEVICE for swapping."
-      (let ((ret (proc (string->pointer device) flags))
-            (err (errno)))
+      (let-values (((ret err)
+                    (proc (string->pointer device) flags)))
         (unless (zero? ret)
           (throw 'system-error "swapon" "~S: ~A"
                  (list device (strerror err))
@@ -461,8 +475,7 @@ constants from <sys/mount.h>."
   (let ((proc (syscall->procedure int "swapoff" '(*))))
     (lambda (device)
       "Stop using block special device DEVICE for swapping."
-      (let ((ret (proc (string->pointer device)))
-            (err (errno)))
+      (let-values (((ret err) (proc (string->pointer device))))
         (unless (zero? ret)
           (throw 'system-error "swapoff" "~S: ~A"
                  (list device (strerror err))
@@ -498,8 +511,7 @@ user-land process."
     (lambda (tmpl)
       "Create a new unique directory in the file system using the template
 string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
-      (let ((result (proc (string->pointer tmpl)))
-            (err    (errno)))
+      (let-values (((result err) (proc (string->pointer tmpl))))
         (when (null-pointer? result)
           (throw 'system-error "mkdtemp!" "~S: ~A"
                  (list tmpl (strerror err))
@@ -512,9 +524,8 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
       "Flush buffered output of PORT, an output file port, and then call
 fdatasync(2) on the underlying file descriptor."
       (force-output port)
-      (let* ((fd  (fileno port))
-             (ret (proc fd))
-             (err (errno)))
+      (let*-values (((fd)      (fileno port))
+                    ((ret err) (proc fd)))
         (unless (zero? ret)
           (throw 'system-error "fdatasync" "~S: ~A"
                  (list fd (strerror err))
@@ -565,9 +576,9 @@ fdatasync(2) on the underlying file descriptor."
     (lambda (file)
       "Return a <file-system> data structure describing the file system
 mounted at FILE."
-      (let* ((stat (make-bytevector sizeof-statfs))
-             (ret  (proc (string->pointer file) (bytevector->pointer stat)))
-             (err  (errno)))
+      (let*-values (((stat)    (make-bytevector sizeof-statfs))
+                    ((ret err) (proc (string->pointer file)
+                                     (bytevector->pointer stat))))
         (if (zero? ret)
             (read-statfs stat)
             (throw 'system-error "statfs" "~A: ~A"
@@ -610,11 +621,11 @@ mounted at FILE."
       "Create a new child process by duplicating the current parent process.
 Unlike the fork system call, clone accepts FLAGS that specify which resources
 are shared between the parent and child processes."
-      (let ((ret (proc syscall-id flags
-                       %null-pointer               ;child stack
-                       %null-pointer %null-pointer ;ptid & ctid
-                       %null-pointer))             ;unused
-            (err (errno)))
+      (let-values (((ret err)
+                    (proc syscall-id flags
+                          %null-pointer                     ;child stack
+                          %null-pointer %null-pointer       ;ptid & ctid
+                          %null-pointer)))                  ;unused
         (if (= ret -1)
             (throw 'system-error "clone" "~d: ~A"
                    (list flags (strerror err))
@@ -631,8 +642,7 @@ are shared between the parent and child processes."
 file descriptor obtained by opening a /proc/PID/ns/* file.  NSTYPE specifies
 which type of namespace the current process may be reassociated with, or 0 if
 there is no such limitation."
-       (let ((ret (proc fdes nstype))
-             (err (errno)))
+       (let-values (((ret err) (proc fdes nstype)))
          (unless (zero? ret)
            (throw 'system-error "setns" "~d ~d: ~A"
                   (list fdes nstype (strerror err))
@@ -643,9 +653,9 @@ there is no such limitation."
     (lambda (new-root put-old)
       "Change the root file system to NEW-ROOT and move the current root file
 system to PUT-OLD."
-      (let ((ret (proc (string->pointer new-root)
-                       (string->pointer put-old)))
-            (err (errno)))
+      (let-values (((ret err)
+                    (proc (string->pointer new-root)
+                          (string->pointer put-old))))
         (unless (zero? ret)
           (throw 'system-error "pivot_root" "~S ~S: ~A"
                  (list new-root put-old (strerror err))
@@ -716,12 +726,12 @@ exception if it's already taken."
 
       ;; XXX: 'fcntl' is a vararg function, but here we happily use the
       ;; standard ABI; crossing fingers.
-      (let ((ret (proc fd
-                       (if wait?
-                           F_SETLKW               ; lock & wait
-                           F_SETLK)               ; non-blocking attempt
-                       (bytevector->pointer bv)))
-            (err (errno)))
+      (let-values (((ret err)
+                    (proc fd
+                          (if wait?
+                              F_SETLKW            ;lock & wait
+                              F_SETLK)            ;non-blocking attempt
+                          (bytevector->pointer bv))))
         (unless (zero? ret)
           ;; Presumably we got EAGAIN or so.
           (throw 'flock-error err))))))
@@ -856,19 +866,19 @@ to interfaces that are currently up."
          (len    (* ifreq-struct-size 10))
          (reqs   (make-bytevector len))
          (conf   (make-c-struct ifconf-struct
-                                (list len (bytevector->pointer reqs))))
-         (ret    (%ioctl (fileno sock) SIOCGIFCONF conf))
-         (err    (errno)))
-    (when close?
-      (close-port sock))
-    (if (zero? ret)
-        (bytevector->string-list reqs ifreq-struct-size
-                                 (match (parse-c-struct conf ifconf-struct)
-                                   ((len . _) len)))
-        (throw 'system-error "network-interface-list"
-               "network-interface-list: ~A"
-               (list (strerror err))
-               (list err)))))
+                                (list len (bytevector->pointer reqs)))))
+    (let-values (((ret err)
+                  (%ioctl (fileno sock) SIOCGIFCONF conf)))
+      (when close?
+        (close-port sock))
+      (if (zero? ret)
+          (bytevector->string-list reqs ifreq-struct-size
+                                   (match (parse-c-struct conf ifconf-struct)
+                                     ((len . _) len)))
+          (throw 'system-error "network-interface-list"
+                 "network-interface-list: ~A"
+                 (list (strerror err))
+                 (list err))))))
 
 (define %interface-line
   ;; Regexp matching an interface line in Linux's /proc/net/dev.
@@ -896,9 +906,9 @@ interface NAME."
   (let ((req (make-bytevector ifreq-struct-size)))
     (bytevector-copy! (string->utf8 name) 0 req 0
                       (min (string-length name) (- IF_NAMESIZE 1)))
-    (let* ((ret (%ioctl (fileno socket) SIOCGIFFLAGS
-                        (bytevector->pointer req)))
-           (err (errno)))
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCGIFFLAGS
+                          (bytevector->pointer req))))
       (if (zero? ret)
 
           ;; The 'ifr_flags' field is IF_NAMESIZE bytes after the beginning of
@@ -926,9 +936,9 @@ interface NAME."
     ;; Set the 'ifr_flags' field.
     (bytevector-uint-set! req IF_NAMESIZE flags (native-endianness)
                           (sizeof short))
-    (let* ((ret (%ioctl (fileno socket) SIOCSIFFLAGS
-                        (bytevector->pointer req)))
-           (err (errno)))
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCSIFFLAGS
+                          (bytevector->pointer req))))
       (unless (zero? ret)
         (throw 'system-error "set-network-interface-flags"
                "set-network-interface-flags on ~A: ~A"
@@ -942,9 +952,9 @@ interface NAME."
                       (min (string-length name) (- IF_NAMESIZE 1)))
     ;; Set the 'ifr_addr' field.
     (write-socket-address! sockaddr req IF_NAMESIZE)
-    (let* ((ret (%ioctl (fileno socket) SIOCSIFADDR
-                        (bytevector->pointer req)))
-           (err (errno)))
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCSIFADDR
+                          (bytevector->pointer req))))
       (unless (zero? ret)
         (throw 'system-error "set-network-interface-address"
                "set-network-interface-address on ~A: ~A"
@@ -957,9 +967,9 @@ the same type as that returned by 'make-socket-address'."
   (let ((req (make-bytevector ifreq-struct-size)))
     (bytevector-copy! (string->utf8 name) 0 req 0
                       (min (string-length name) (- IF_NAMESIZE 1)))
-    (let* ((ret (%ioctl (fileno socket) SIOCGIFADDR
-                        (bytevector->pointer req)))
-           (err (errno)))
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCGIFADDR
+                          (bytevector->pointer req))))
       (if (zero? ret)
           (read-socket-address req IF_NAMESIZE)
           (throw 'system-error "network-interface-address"
@@ -1075,9 +1085,10 @@ return the list of resulting <interface> objects."
     (lambda ()
       "Return a list of <interface> objects, each denoting a configured
 network interface.  This is implemented using the 'getifaddrs' libc function."
-      (let* ((ptr (bytevector->pointer (make-bytevector (sizeof* '*))))
-             (ret (proc ptr))
-             (err (errno)))
+      (let*-values (((ptr)
+                     (bytevector->pointer (make-bytevector (sizeof* '*))))
+                    ((ret err)
+                     (proc ptr)))
         (if (zero? ret)
             (let* ((ptr    (dereference-pointer ptr))
                    (result (unfold-interface-list ptr)))
@@ -1180,9 +1191,8 @@ given an integer, returns the list of names of the constants that are or'd."
   (let ((proc (syscall->procedure int "tcgetattr" (list int '*))))
     (lambda (fd)
       "Return the <termios> structure for the tty at FD."
-      (let* ((bv  (make-bytevector sizeof-termios))
-             (ret (proc fd (bytevector->pointer bv)))
-             (err (errno)))
+      (let*-values (((bv)      (make-bytevector sizeof-termios))
+                    ((ret err) (proc fd (bytevector->pointer bv))))
         (if (zero? ret)
             (read-termios bv)
             (throw 'system-error "tcgetattr" "~A"
@@ -1205,8 +1215,7 @@ produced by 'tcsetattr-action'; see tcsetattr(3) for details."
         (match/write input-flags output-flags control-flags local-flags
                      line-discipline control-chars input-speed output-speed))
 
-      (let ((ret (proc fd actions (bytevector->pointer bv)))
-            (err (errno)))
+      (let-values (((ret err) (proc fd actions (bytevector->pointer bv))))
         (unless (zero? ret)
           (throw 'system-error "tcgetattr" "~A"
                  (list (strerror err))
@@ -1237,10 +1246,9 @@ produced by 'tcsetattr-action'; see tcsetattr(3) for details."
   "Return a <window-size> structure describing the terminal at PORT, or raise
 a 'system-error' if PORT is not backed by a terminal.  This procedure
 corresponds to the TIOCGWINSZ ioctl."
-  (let* ((size (make-bytevector sizeof-winsize))
-         (ret  (%ioctl (fileno port) TIOCGWINSZ
-                       (bytevector->pointer size)))
-         (err  (errno)))
+  (let*-values (((size)    (make-bytevector sizeof-winsize))
+                ((ret err) (%ioctl (fileno port) TIOCGWINSZ
+                                   (bytevector->pointer size))))
     (if (zero? ret)
         (read-winsize size)
         (throw 'system-error "terminal-window-size" "~A"

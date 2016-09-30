@@ -36,6 +36,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages polkit)
@@ -316,6 +318,79 @@ applications, X servers (rootless or fullscreen) or other display servers.")
     (synopsis "Wayland protocols")
     (description "This package contains XML definitions of the Wayland protocols.")
     (home-page "https://wayland.freedesktop.org")
+    (license license:expat)))
+
+(define-public weston
+  (package
+    (name "weston")
+    (version "1.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://wayland.freedesktop.org/releases/"
+                    "weston-" version ".tar.xz"))
+              (sha256
+               (base32
+                "09biddxw3ar797kxf9mywjkb2iwky6my39gpp51ni846y7lqdq05"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("cairo" ,cairo-xcb)
+       ("dbus" ,dbus)
+       ("elogind" ,elogind)
+       ("libinput" ,libinput-minimal)
+       ("libunwind" ,libunwind)
+       ("libxcursor" ,libxcursor)
+       ("libxkbcommon" ,libxkbcommon)
+       ("mesa" ,mesa)
+       ("mtdev" ,mtdev)
+       ("linux-pam" ,linux-pam)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (arguments
+     `(#:configure-flags
+       (list "--disable-setuid-install"
+             "--enable-systemd-login"
+             (string-append "--with-xserver-path="
+                            (assoc-ref %build-inputs "xorg-server-xwayland")
+                            "/bin/Xwayland"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'use-elogind
+           (lambda _
+             ;; Use elogind instead of systemd
+             (substitute* "configure"
+               (("libsystemd-login >= 198") "libelogind"))
+             (substitute* '("src/launcher-logind.c" "src/weston-launch.c")
+               (("#include <systemd/sd-login.h>")
+                "#include <elogind/sd-login.h>"))))
+         (add-after 'configure 'patch-confdefs.h
+           (lambda _
+             (system "echo \"#define HAVE_SYSTEMD_LOGIN_209 1\" >> confdefs.h")))
+         (add-before 'check 'setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             #t))
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://wayland.freedesktop.org")
+    (synopsis "Reference implementation of a Wayland compositor")
+    (description "Weston is the reference implementation of a Wayland
+compositor, and a useful compositor in its own right.
+
+A Wayland compositor allows applications to render to a shared offscreen
+buffer using OpenGL ES.  The compositor then culls the hidden parts and
+composes the final output.  A Wayland compositor is essentially a
+multiplexer to the KMS/DRM Linux kernel devices.")
     (license license:expat)))
 
 (define-public exempi
