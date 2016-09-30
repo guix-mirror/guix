@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
@@ -51,52 +51,10 @@
   (list (bash-patch seqno (base32 hash))
         ...))
 
-(define %patch-series-4.3
-  ;; This is the current patches series for 4.3, generated using
+(define %patch-series-4.4
+  ;; This is the current patches series for 4.4, generated using
   ;; 'download-patches' below.
-  (patch-series
-   (1 "0hip2n2s5hws8p4nfcz37379zn6cak83ljsm64z52rw6ckrdzczc")
-   (2 "0ashj5d1g3zbyr7zf0r72s5wnk96cz1xj919y3jajadbc9qcvrzf")
-   (3 "0z88q4daq7dmw93iqd9c5i5d1sndklih3nrh0v75746da2n6w3h0")
-   (4 "0f0kh9j5k4ym6knshscx31przm50x5cc7ifkwqk0swh6clna982y")
-   (5 "1ym3b8b7lgmdp3dklp8qaqhyq965wd5392namq8mz7rb0d231j0s")
-   (6 "04q20igq49py49ynb0f83f6f52cdkyqwd9bpic6akr0m5pkqwr50")
-   (7 "18zkz23d9myshrwfcwcdjk7qmkqp8az5n91ni9jaixlwqlhy64qi")
-   (8 "0pprcwvh7ngdli0x95pc1cpssg4qg7layi9xrv2jq6c7965ajhcr")
-   (9 "19a0pf0alp30d1bjj0zf3zq2f5n0s6y91w7brm9jyswl51kns8n0")
-   (10 "1dzhr5ammyijisz48cqi5vaw26hfr5vh9smnqxq4qc9p06f7j1ff")
-   (11 "0fvzdzzi142a8rf3v965r6gbpn0k7fv2gif1yq8a4160vcn40qvw")
-   (12 "04lcgfcyz7p3zagb4hkia3hkpd7lii9m8ycy9qqwzyrm1c1pj4ry")
-   (13 "0y9cqi378z6flapkd5k5lfl4lq3ivzg4njj3i3wmw7xb6r9wma5z")
-   (14 "04xcb0k9fxxq4vashgzb98567xzdnm4655nlm4jvfvjv6si6ykas")
-   (15 "13ay6lldy1p00xj41nfjpq8lai3vw2qwca79gx6s80z04j53wa8k")
-   (16 "0wq7bvx3pfw90pnfb86yg5nr9jgjsvm2nq5rrkqxf6zn977hpmlj")
-   (17 "103p7sibihv6cshqj12k546zsbz0dnd5cv5vlx1719avddfc4rqj")
-   (18 "0n1x3812y1brb9xbabaj3fvr4cpvm2225iwckmqk2fcpkq5b9a3s")
-   (19 "08rd1p7zpzgbpmmmnj2im8wj2pcwmbbx51psr9vdc5c049si9ad7")
-   (20 "163c6g05qpag2plx5q795pmw3f3m904jy7z93xj2i08pgzc8cpna")
-   (21 "1a90cl3h10dh8k9f2ddrsjmw5ywaw2d5x78xb4fd2sryi039yhs1")
-   (22 "120s0s4qcqd0q12j1iv0hkpf9fp3w5jnqw646kv66n66jnxlfkgx")
-   (23 "1m00sfi88p2akgiyrg4hw0gvz3s1586pkzjdr3dm73vs773m1hls")
-   (24 "0v0gjqzjsqjfgj5x17fq7g649k94jn8zq92qsxkhc2d6l215hl1v")
-   (25 "0lcj96i659q35f1jcmwwbnw3p7w7vvlxjxqi989vn6d6qksqcl8y") ;CVE-2014-6271
-   (26 "0k919ir0inwn4wai2vdzpbwqq5h54fnrlkmgccxjg91v3ch15k1f") ;CVE-2014-7169
-   (27 "1gnsfvq6bhb3srlbh0cannj2hackdsipcg7z0ds7zlk1hp96mdqy")
-   (28 "17a65c4fn4c5rgsiw9gqqnzhznh3gwnd2xzzv2dppyi48znxpc78") ;CVE-2014-7186
-   (29 "14k27p28r5l2fz3r03kd0x72vvsq8bja8c6hjz5kxikbzsbs7i2c") ;CVE-2014-6277
-   (30 "0nrqb0m7s89qsrbfaffpilc5gcf82bx9yvgzld4hr79p5y54yhw5") ;CVE-2014-6278
-   (31 "07d62bl3z7qa8v6kgk47vzzazw563mlk9zhrsr4xsbqgvmcrylnd")
-   (32 "0jjgapfq4qhmndfrw8c3q3lva8xjdhlbd9cc631v41b0kb95g4w8")
-   (33 "05ma5rlxiadnfh925p4y7s0vvk917kmsdb1mfdx05gizl63pfapv")
-   (34 "12gq9whkq3naa3iy7c7x5pfpvrg7d0kwqld8609zxphhy424ysgi")
-   (35 "1qy1jflmbazjykq766gwabkaiswnx7pwa66whqiny0w02zjqa39p")
-   (36 "0z6jbyy70lfdm6d3x0sbazbqdxb3xnpn9bmz7madpvrnbd284pxc")
-   (37 "04sqr8zkl6s5fccfvb775ppn3ldij5imria9swc39aq0fkfp1w9k")
-   (38 "0rv3g14mpgv8br267bf7rmgqlgwnc4v6g3g8y0sjba571i8amgmd")
-   (39 "1v3l3vkc3g2b6fjycqwlakr8xhiw6bmw6q0zd6bi0m0m4bnxr55b")
-   (40 "0sypv66vsldmc95gwvf7ylz1k7y37vnvdsjg8ajjr6b2j9mkkfw4")
-   (41 "06ic2gdpbi1afik3wqf9d4vh95if4bz8bmhcgr555621dsb35i2f")
-   (42 "06a90k0p6bqc4wk2dsmapna69124an76xvlnlj3xm497vci968dc")))
+  (patch-series))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -134,34 +92,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                " -Wl,-rpath -Wl,"
                (assoc-ref %build-inputs "ncurses")
                "/lib")))
-         (post-install-phase
-          '(lambda* (#:key outputs #:allow-other-keys)
-             ;; Add a `bash' -> `sh' link.
-             (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion (string-append out "/bin")
-                 (symlink "bash" "sh")))))
-         (install-headers-phase
-          '(lambda* (#:key outputs #:allow-other-keys)
-             ;; Install Bash headers so that packages that provide extensions
-             ;; can use them.  We install them in include/bash; that's what
-             ;; Debian does and what Bash extensions like recutils or
-             ;; guile-bash expect.
-             (let ((include (string-append (assoc-ref outputs "include")
-                                            "/include/bash"))
-                   (includes "^\\./include/[^/]+\\.h$")
-                   (headers "^\\./(builtins/|lib/glob/|lib/tilde/|)[^/]+\\.h$"))
-               (mkdir-p include)
-               (for-each (lambda (file)
-                           (when (string-match includes file)
-                             (install-file file include))
-                           (when (string-match headers file)
-                             (install-file file
-                                           (string-append include "/"
-                                                          (dirname file)))))
-                         (find-files "." "\\.h$"))
-               (delete-file (string-append include "/" "y.tab.h"))
-               #t)))
-         (version "4.3"))
+         (version "4.4"))
     (package
      (name "bash")
      (source (origin
@@ -170,22 +101,16 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                     "mirror://gnu/bash/bash-" version ".tar.gz"))
               (sha256
                (base32
-                "1m14s1f61mf6bijfibcjm9y6pkyvz6gibyl8p4hxq90fisi8gimg"))
+                "1jyz6snd63xjn6skk7za6psgidsd53k05cr3lksqybi0q6936syq"))
               (patch-flags '("-p0"))
-              (patches %patch-series-4.3)
-
-              ;; The patches above modify 'parse.y', so force a rebuild of the
-              ;; parser.
-              (snippet '(for-each delete-file
-                                  '("y.tab.c" "y.tab.h" "parser-built")))))
+              (patches %patch-series-4.4)))
      (version (string-append version "."
-                             (number->string (length %patch-series-4.3))))
+                             (number->string (length %patch-series-4.4))))
      (build-system gnu-build-system)
 
      (outputs '("out"
                 "doc"                         ;1.7 MiB of HTML and extra files
                 "include"))                   ;headers used by extensions
-     (native-inputs `(("bison" ,bison)))      ;to rebuild the parser
      (inputs `(("readline" ,readline)
                ("ncurses" ,ncurses)))             ;TODO: add texinfo
      (arguments
@@ -206,14 +131,41 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
         ;; for now.
         #:tests? #f
 
-        #:modules ((ice-9 regex)
+        #:modules ((srfi srfi-26)
                    (guix build utils)
                    (guix build gnu-build-system))
 
-        #:phases (modify-phases %standard-phases
-                   (add-after 'install 'post-install ,post-install-phase)
-                   (add-after 'install 'install-headers
-                     ,install-headers-phase))))
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'install 'install-sh-symlink
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Add a `sh' -> `bash' link.
+              (let ((out (assoc-ref outputs "out")))
+                (with-directory-excursion (string-append out "/bin")
+                  (symlink "bash" "sh")))))
+
+          (add-after 'install 'move-development-files
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Move 'Makefile.inc' and 'bash.pc' to "include" to avoid
+              ;; circular references among the outputs.
+              (let ((out     (assoc-ref outputs "out"))
+                    (include (assoc-ref outputs "include"))
+                    (lib     (cut string-append <> "/lib/bash")))
+                (mkdir-p (lib include))
+                (rename-file (string-append (lib out)
+                                            "/Makefile.inc")
+                             (string-append (lib include)
+                                            "/Makefile.inc"))
+                (rename-file (string-append out "/lib/pkgconfig")
+                             (string-append include
+                                            "/lib/pkgconfig"))
+                #t))))))
+
+     (native-search-paths
+      (list (search-path-specification            ;new in 4.4
+             (variable "BASH_LOADABLES_PATH")
+             (files '("lib/bash")))))
+
      (synopsis "The GNU Bourne-Again SHell")
      (description
       "Bash is the shell, or command-line interpreter, of the GNU system.  It
@@ -257,6 +209,10 @@ without modification.")
     (package
       (inherit bash)
       (name "bash-static")
+
+      ;; No "include" output because there's no support for loadable modules.
+      (outputs (delete "include" (package-outputs bash)))
+
       (arguments
        (substitute-keyword-arguments
            `(#:allowed-references ("out") ,@(package-arguments bash))
@@ -269,7 +225,10 @@ without modification.")
                    (remove-store-references (string-append bin "/bash"))
                    (delete-file (string-append bin "/bashbug"))
                    (delete-file-recursively (string-append out "/share"))
-                   #t))))))))))
+                   #t)))
+
+             ;; No loadable modules.
+             (delete 'move-development-files))))))))
 
 (define-public bash-completion
   (package

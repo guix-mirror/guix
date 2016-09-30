@@ -566,12 +566,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    ("libc" ,glibc-final-with-bootstrap-bash)
                    ,@(fold alist-delete %boot1-inputs
                            '("gcc" "libc")))))
-    (package
-      (inherit (package-with-bootstrap-guile
-                (package-with-explicit-inputs bash inputs
-                                              (current-source-location)
-                                              #:guile %bootstrap-guile)))
-      (native-inputs `(("bison" ,bison-boot0))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs bash inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
@@ -777,13 +775,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
-  (package
-    (inherit (package-with-bootstrap-guile
-              (package-with-explicit-inputs (static-libgcc-package bash)
-                                            %boot3-inputs
-                                            (current-source-location)
-                                            #:guile %bootstrap-guile)))
-    (native-inputs `(("bison" ,bison-boot0)))))
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs (static-libgcc-package bash)
+                                 %boot3-inputs
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
 
 (define %boot4-inputs
   ;; Now use the final Bash.
