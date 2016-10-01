@@ -83,9 +83,7 @@
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let* ((out (assoc-ref outputs "out"))
                            (bin (string-append out "/bin")))
-                      (mkdir-p bin)
-                      (copy-file "make"
-                                 (string-append bin "/make"))))))))))
+                      (install-file "make" bin)))))))))
      (native-inputs '())                          ; no need for 'pkg-config'
      (inputs %bootstrap-inputs))))
 
