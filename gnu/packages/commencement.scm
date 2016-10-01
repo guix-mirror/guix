@@ -75,17 +75,17 @@
         #:tests? #f                  ; cannot run "make check"
         ,@(substitute-keyword-arguments (package-arguments gnu-make)
             ((#:phases phases)
-             `(alist-replace
-               'build (lambda _
-                        (zero? (system* "./build.sh")))
-               (alist-replace
-                'install (lambda* (#:key outputs #:allow-other-keys)
-                           (let* ((out (assoc-ref outputs "out"))
-                                  (bin (string-append out "/bin")))
-                             (mkdir-p bin)
-                             (copy-file "make"
-                                        (string-append bin "/make"))))
-                ,phases))))))
+             `(modify-phases ,phases
+                (replace 'build
+                  (lambda _
+                    (zero? (system* "./build.sh"))))
+                (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (mkdir-p bin)
+                      (copy-file "make"
+                                 (string-append bin "/make"))))))))))
      (native-inputs '())                          ; no need for 'pkg-config'
      (inputs %bootstrap-inputs))))
 
