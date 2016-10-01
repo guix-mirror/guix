@@ -198,6 +198,10 @@ without modification.")
                  "--disable-net-redirections"
                  "--disable-nls"
 
+                 ;; Pretend 'dlopen' is missing so we don't build loadable
+                 ;; modules and related code.
+                 "ac_cv_func_dlopen=no"
+
                  ,@(if (%current-target-system)
                        '("bash_cv_job_control_missing=no")
                        '()))))))))
