@@ -342,7 +342,7 @@ reduce @code{UndecidableInstances}.")
        (sha256
         (base32 "0d1hm0l9kim3kszshr4msmgzizrzha48gz2kb7b61p7n3gs70m7c"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-data-default-class"
         ,ghc-data-default-class)
        ("ghc-data-default-instances-base"
@@ -394,7 +394,7 @@ packages.")
        (sha256
         (base32 "1832nq6by91f1iw73ycvkbgn8kpra83pvf2q61hy47xffh0zy4pb"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-data-default-class" ,ghc-data-default-class)))
     (home-page "https://hackage.haskell.org/package/data-default-instances-base")
     (synopsis "Default instances for types in base")
@@ -417,7 +417,7 @@ package.")
        (sha256
         (base32 "06h8xka031w752a7cjlzghvr8adqbl95xj9z5zc1b62w02phfpm5"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-data-default-class" ,ghc-data-default-class)))
     (home-page "https://hackage.haskell.org/package/data-default-instances-containers")
     (synopsis "Default instances for types in containers")
@@ -439,7 +439,7 @@ package.")
        (sha256
         (base32 "0narkdqiprhgayjiawrr4390h4rq4pl2pb6mvixbv2phrc8kfs3x"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-dlist" ,ghc-dlist)))
     (home-page "https://hackage.haskell.org/package/data-default-instances-dlist")
@@ -467,6 +467,8 @@ package.")
      `(("ghc-base-compat" ,ghc-base-compat)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)))
     (home-page "http://www.haskell.org/haddock/")
     (synopsis
      "Library exposing some functionality of Haddock")
@@ -493,7 +495,7 @@ the ‘haddock’ package.")
         (base32
          "1spd5axg1pdjv4dkdb5gcwjsc8gg37qi4mr2k2db6ayywdkis1p2"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-paths" ,ghc-paths)
        ("ghc-haddock-library" ,ghc-haddock-library)))
     (home-page "http://www.haskell.org/haddock/")
@@ -774,7 +776,7 @@ postfix notation.  For more information on stack based languages, see
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ;; cannot satisfy -package mtl.  Possible Cabal
                                ;; issue.
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)))
     (home-page "https://hackage.haskell.org/package/happy")
     (synopsis "Parser generator for Haskell")
@@ -798,7 +800,7 @@ Happy works in a similar way to the yacc tool for C.")
         (base32
          "1h8gjw5g92rvvzadqzpscg73x7ajvs1wlphrh27afim3scdd8frz"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("cpphs" ,cpphs)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-happy" ,ghc-happy)
@@ -861,14 +863,14 @@ unwanted suggestions, and to add your own custom suggestions.")
         (base32
          "0zhsaaa4n8ry76vjih519a8npm2hrzk10d5asrgllcwpzmifl41y"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-transformers-base" ,ghc-transformers-base)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-mmorph" ,ghc-mmorph)
        ("ghc-exceptions" ,ghc-exceptions)))
-    (inputs
+    (native-inputs
      `(("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-hspec" ,ghc-hspec)))
     (home-page "https://github.com/snoyberg/conduit")
@@ -892,12 +894,12 @@ code where you can safely allocate resources.")
         (base32
          "1j2qrn2dbfx01m7zyk9ilgnp9zjwq9mk62b0rdal4zkg4vh212h0"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-tagsoup" ,ghc-tagsoup)
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-css-text" ,ghc-css-text)
        ("ghc-network-uri" ,ghc-network-uri)))
-    (inputs
+    (native-inputs
      `(("ghc-text" ,ghc-text)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-hspec" ,ghc-hspec)
@@ -978,10 +980,9 @@ award winning Linux port of \"Civilization: Call To Power.\"")
        (let* ((sdl-mixer (assoc-ref %build-inputs "sdl-mixer"))
               (sdl-mixer-include (string-append sdl-mixer "/include/SDL")))
          (list (string-append "--extra-include-dirs=" sdl-mixer-include)))))
-    (propagated-inputs
-     `(("ghc-sdl" ,ghc-sdl)))
     (inputs
-     `(("sdl-mixer" ,sdl-mixer)))
+     `(("ghc-sdl" ,ghc-sdl)
+       ("sdl-mixer" ,sdl-mixer)))
     (home-page "https://hackage.haskell.org/package/SDL-mixer")
     (synopsis "Haskell bindings to libSDL_mixer")
     (description "SDL_mixer is a sample multi-channel audio mixer library.  It
@@ -1010,10 +1011,9 @@ MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
        (let* ((sdl-image (assoc-ref %build-inputs "sdl-image"))
               (sdl-image-include (string-append sdl-image "/include/SDL")))
          (list (string-append "--extra-include-dirs=" sdl-image-include)))))
-    (propagated-inputs
-     `(("ghc-sdl" ,ghc-sdl)))
     (inputs
-     `(("sdl-image" ,sdl-image)))
+     `(("ghc-sdl" ,ghc-sdl)
+       ("sdl-image" ,sdl-image)))
     (home-page "https://hackage.haskell.org/package/SDL-image")
     (synopsis "Haskell bindings to libSDL_image")
     (description "SDL_image is an image file loading library.  It loads images
@@ -1089,12 +1089,11 @@ found at runtime, a userError is thrown.")
         (base32
          "1qfilpc10jm47anan44c20y8mh76f2dv09m5d22gk0f7am7hg4k2"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-statevar" ,ghc-statevar)
+       ("ghc-opengl" ,ghc-opengl)
        ("ghc-openglraw" ,ghc-openglraw)
        ("freeglut" ,freeglut)))
-    (inputs
-     `(("ghc-opengl" ,ghc-opengl)))
     (home-page "http://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
     (description "This library provides Haskell bindings for the OpenGL
@@ -1117,7 +1116,7 @@ programs.")
         (base32
          "0gscd9lhp9mb10q8s716nx26m8qng9xbb4h6b3f48zzgkc1sy96x"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-openglraw" ,ghc-openglraw)))
     (home-page "http://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Raw Haskell bindings GLU")
@@ -1141,7 +1140,7 @@ basis for a nicer interface.")
         (base32
          "1mcfb167jl75qc2hgylh83vf2jqizvyvkvhhb72adi2crc3zqz4b"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)
        ("ghc-objectname" ,ghc-objectname)
        ("ghc-gluraw" ,ghc-gluraw)
@@ -1169,17 +1168,19 @@ version 1.3).")
         (base32
          "12nw9bwvy6zrabkgvbp371klca3ds6qjlfncg1b8pbwx1y7m8c8h"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-random" ,ghc-random)))
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-async" ,ghc-async)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-hspec" ,ghc-hspec)
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-directory" ,ghc-directory)
+       ("ghc-network" ,ghc-network)
+       ("ghc-random" ,ghc-random)
        ("ghc-stm" ,ghc-stm)
        ("ghc-text" ,ghc-text)
-       ("ghc-network" ,ghc-network)
+       ("ghc-transformers" ,ghc-transformers)
        ("ghc-zlib" ,ghc-zlib)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/streaming-commons")
     (synopsis "Conduit and pipes needed by some streaming data libraries")
     (description "Provides low-dependency functionality commonly needed by
@@ -1201,7 +1202,7 @@ various Haskell streaming data libraries, such as @code{conduit} and
         (base32
          "1njpmxgpah5pcqppcl1cxb5xicf6xlqrd162qm12khp9hainlm72"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-polyparse" ,ghc-polyparse)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-old-time" ,ghc-old-time)))
@@ -1276,7 +1277,7 @@ date and time formats.")
         (base32
          "1h9b26s3kfh2k0ih4383w90ibji6n0iwamxp6rfp2lbq1y5ibjqw"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-old-locale" ,ghc-old-locale)))
     (home-page "https://hackage.haskell.org/package/old-time")
     (synopsis "Time compatibility library for Haskell")
@@ -1299,7 +1300,7 @@ old @code{time} library.  For new projects, the newer
         (sha256
           (base32 "00h81i5phib741yj517p8mbnc48myvfj8axzsw44k34m48lv1lv0"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-old-locale" ,ghc-old-locale)))
     (home-page
@@ -1368,7 +1369,7 @@ versions of GHC (i.e., < 6.10).")
        (base32 "1d5h7h2wjwc2s3dvsvzjgmmfrfl2312ym2h6kyjgm9wnaqw9w8wx"))))
    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
    (build-system haskell-build-system)
-   (propagated-inputs
+   (inputs
     `(("ghc-http" ,ghc-http)
       ("ghc-mtl" ,ghc-mtl)
       ("ghc-network-uri" ,ghc-network-uri)
@@ -1492,9 +1493,8 @@ environment variables.")
      `(("libx11" ,libx11)
        ("libxrandr" ,libxrandr)
        ("libxinerama" ,libxinerama)
-       ("libxscrnsaver" ,libxscrnsaver)))
-    (propagated-inputs
-     `(("ghc-data-default" ,ghc-data-default)))
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("ghc-data-default" ,ghc-data-default)))
     (home-page "https://github.com/haskell-pkg-janitors/X11")
     (synopsis "Bindings to the X11 graphics library")
     (description
@@ -1513,11 +1513,10 @@ bindings are a direct translation of the C bindings.")
                            "X11-xft-" version ".tar.gz"))
        (sha256
         (base32 "1lgqb0s2qfwwgbvwxhjbi23rbwamzdi0l0slfr20c3jpcbp3zfjf"))))
-    (propagated-inputs
-     `(("ghc-x11" ,ghc-x11)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
     (inputs
-     `(("libx11" ,libx11)
+     `(("ghc-x11" ,ghc-x11)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("libx11" ,libx11)
        ("libxft" ,libxft)
        ("xproto" ,xproto)))
     (native-inputs
@@ -1674,8 +1673,7 @@ in terms of large data quantities and high speed.")
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
-    ;; these inputs are necessary to use this library
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)))
     (home-page "https://github.com/tibbe/hashable")
     (synopsis
@@ -1767,18 +1765,18 @@ library, including the ability to split random number generators.")
         (base32
          "0wxjgdvb1c4ykazw774zlx86550848wbsvgjgcrdzcgbb9m650vq"))))
     (build-system haskell-build-system)
-    (inputs
+    (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-libxml" ,ghc-libxml)
        ("ghc-quickcheck" ,ghc-quickcheck)))
-    (propagated-inputs
+    (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-hostname" ,ghc-hostname)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-random" ,ghc-random)
        ("ghc-regex-posix" ,ghc-regex-posix)
-       ("ghc-xml" ,ghc-xml)))
+       ("ghc-xml" ,ghc-xml)
+       ("ghc-libxml" ,ghc-libxml)))
     (home-page "https://batterseapower.github.io/test-framework/")
     (synopsis "Framework for running and organising tests")
     (description
@@ -1803,7 +1801,7 @@ reporting and test statistics output.")
         (base32
          "1h0h55kf6ff25nbfx1mhliwyknc0glwv3zi78wpzllbjbs7gvyfk"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)))
@@ -1834,7 +1832,7 @@ reporting and test statistics output.")
         '(substitute* "test-framework-quickcheck2.cabal"
            (("QuickCheck >= 2.4 && < 2.8") "QuickCheck >= 2.4 && < 2.9")))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-random" ,ghc-random)
@@ -1861,8 +1859,7 @@ package.")
        (sha256
         (base32 "0445r2nns6009fmq0xbfpyv7jpzwv0snccjdg7hwj4xk4z0cwc1f"))))
     (build-system haskell-build-system)
-    ;; these inputs are necessary to use this package
-    (propagated-inputs
+    (inputs
      `(("ghc-primitive" ,ghc-primitive)
        ("ghc-random" ,ghc-random)))
     (home-page "https://hackage.haskell.org/package/tf-random")
@@ -1889,10 +1886,9 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
         (base32
          "11r3slgpgpra6zi2kjg3g60gvv17b1fh6qxipcpk8n86qx7lk8va"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-stm" ,ghc-stm)))
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+     `(("ghc-stm" ,ghc-stm)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page
      "https://hackage.haskell.org/package/transformers-compat")
     (synopsis
@@ -1943,7 +1939,7 @@ but also need those types.")
     (arguments
      `(#:tests? #f)) ; FIXME: Test fails with "System.Time not found".  This
                      ; is weird, that should be provided by GHC 7.10.2.
-    (propagated-inputs
+    (inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-old-locale" ,ghc-old-locale)))
     (home-page "https://hackage.haskell.org/package/unix-time")
@@ -1994,11 +1990,10 @@ isn't available, portable implementations are used.")
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find
                                ; Blaze.Bytestring.Builder, which should be
                                ; provided by ghc-blaze-builder.
-    (propagated-inputs
-     `(("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)))
     (inputs
-     `(("ghc-text" ,ghc-text)))
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-text" ,ghc-text)))
     (home-page "https://github.com/aristidb/http-types")
     (synopsis "Generic HTTP types for Haskell")
     (description "This package provides generic HTTP types for Haskell (for
@@ -2047,11 +2042,10 @@ lines continued at an indented level below.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find System.ByteOrder,
                                ; exported by ghc-byteorder.  Doctest issue.
-    (propagated-inputs
-     `(("ghc-appar" ,ghc-appar)
-       ("ghc-byteorder" ,ghc-byteorder)))
     (inputs
-     `(("ghc-network" ,ghc-network)
+     `(("ghc-appar" ,ghc-appar)
+       ("ghc-byteorder" ,ghc-byteorder)
+       ("ghc-network" ,ghc-network)
        ("ghc-safe" ,ghc-safe)))
     (home-page "http://www.mew.org/~kazu/proj/iproute/")
     (synopsis "IP routing table")
@@ -2075,7 +2069,7 @@ removed.  Both IPv4 and IPv6 are supported.")
         (base32
          "0y1j4h2pg12c853nzmczs263di7xkkmlnsq5dlp5wgbgl49mgp10"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)))
     (home-page
      "http://sourceforge.net/projects/lazy-regex")
@@ -2099,7 +2093,7 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
         (base32
          "0gkhzhj8nvfn1ija31c7xnl6p0gadwii9ihyp219ck2arlhrj0an"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
     (home-page "http://sourceforge.net/projects/lazy-regex")
     (synopsis "POSIX regular expressions for Haskell")
@@ -2146,11 +2140,10 @@ Haskell library @code{regex-base}.")
         (base32
          "1vi11i23gkkjg6193ak90g55akj69bhahy542frkwb68haky4pp3"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-regex-base" ,ghc-regex-base)
-       ("ghc-parsec" ,ghc-parsec)))
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)))
+     `(("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-mtl" ,ghc-mtl)))
     (home-page
      "https://hackage.haskell.org/package/regex-tdfa")
     (synopsis "Tagged DFA regex engine for Haskell")
@@ -2175,14 +2168,13 @@ Haskell library @code{regex-base}.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
                                ; -package attoparsec-0.13.0.1"
-    (propagated-inputs
+    (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-parsec" ,ghc-parsec)
        ("ghc-scientific" ,ghc-scientific)
-       ("ghc-charset" ,ghc-charset)))
-    (inputs
-     `(("ghc-text" ,ghc-text)
+       ("ghc-charset" ,ghc-charset)
+       ("ghc-text" ,ghc-text)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
     (home-page "https://github.com/ekmett/parsers/")
     (synopsis "Parsing combinators")
@@ -2210,15 +2202,14 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
                                ; -package ansi-terminal-0.6.2.3"
-    (propagated-inputs
+    (inputs
      `(("ghc-charset" ,ghc-charset)
        ("ghc-comonad" ,ghc-comonad)
        ("ghc-lens" ,ghc-lens)
        ("ghc-profunctors" ,ghc-profunctors)
        ("ghc-reducers" ,ghc-reducers)
-       ("ghc-semigroups" ,ghc-semigroups)))
-    (inputs
-     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-blaze-html" ,ghc-blaze-html)
@@ -2250,14 +2241,14 @@ with slicing and Clang-style colored diagnostics.")
         (base32
          "0cprkr7bl4lrr80pz8mryb4rbfwdgpsrl7g0fbcaybhl8p5hm26f"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-scientific" ,ghc-scientific)))
     (inputs
+     `(("ghc-scientific" ,ghc-scientific)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-quickcheck-unicode" ,ghc-quickcheck-unicode)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-text" ,ghc-text)
        ("ghc-vector" ,ghc-vector)))
     (home-page "https://github.com/bos/attoparsec")
     (synopsis "Fast combinator parsing for bytestrings and text")
@@ -2307,15 +2298,15 @@ Haskell.")
         (base32
          "169nkxr5zlbymiz1ydlhlqr66vqiycmg85xh559phpkr64w3nqj1"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-old-time" ,ghc-old-time)
-       ("ghc-digest" ,ghc-digest)))
     (inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-mtl" ,ghc-mtl)
+     `(("ghc-old-time" ,ghc-old-time)
+       ("ghc-digest" ,ghc-digest)
        ("zip" ,zip)
+       ("ghc-mtl" ,ghc-mtl)
        ("ghc-text" ,ghc-text)
        ("ghc-zlib" ,ghc-zlib)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
     (home-page "https://hackage.haskell.org/package/zip-archive")
     (synopsis "Zip archive library for Haskell")
     (description "The zip-archive library provides functions for creating,
@@ -2339,7 +2330,7 @@ modifying, and extracting files from zip archives in Haskell.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: fails with "cannot satisfy -package
                                ; tagged-0.8.1".  Suspected Cabal issue.
-    (propagated-inputs
+    (inputs
      `(("ghc-tagged" ,ghc-tagged)
        ("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://github.com/ekmett/distributive/")
@@ -2385,14 +2376,13 @@ parser isolation, and labeled blocks for better error messages.")
         (base32
          "0arvbaxgkawzdp38hh53akkahjg2aa3kj2b4ns0ni8a5ylg2cqmp"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-distributive" ,ghc-distributive)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-contravariant" ,ghc-contravariant)))
     (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
                                ; -package contravariant-1.3.3"
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
+     `(("ghc-distributive" ,ghc-distributive)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-contravariant" ,ghc-contravariant)))
     (home-page "https://github.com/ekmett/comonad/")
@@ -2439,7 +2429,7 @@ and mIRC chat codes.")
         (base32
          "1z417f80b0jm4dgv25fk408p3d9mmcd1dlbya3ry0zdx4md09vrh"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)))
     (home-page
      "http://code.haskell.org/~malcolm/polyparse/")
@@ -2493,10 +2483,9 @@ this package makes them available back to GHC 7.2.")
         (base32
          "0lw2ipacpnp9yqmi8zsp01pzpn5hwj8af3y0f3079mddrmw48gw7"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-distributive" ,ghc-distributive)))
     (inputs
-     `(("ghc-comonad" ,ghc-comonad)
+     `(("ghc-distributive" ,ghc-distributive)
+       ("ghc-comonad" ,ghc-comonad)
        ("ghc-tagged" ,ghc-tagged)))
     (home-page "https://github.com/ekmett/profunctors/")
     (synopsis "Profunctors for Haskell")
@@ -2518,13 +2507,12 @@ this package makes them available back to GHC 7.2.")
         (base32
          "0pkddg0s3cn759miq0nfrq7lnp3imk5sx784ihsilsbjh9kvffz4"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-semigroupoids" ,ghc-semigroupoids)))
     (inputs
      `(("ghc-fingertree" ,ghc-fingertree)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-text" ,ghc-text)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
        ("ghc-semigroups" ,ghc-semigroups)))
     (home-page "https://github.com/ekmett/reducers/")
     (synopsis "Semigroups, specialized containers and a general map/reduce framework")
@@ -2662,7 +2650,7 @@ online}.")
         (base32
          "0g814lj7vaxvib2g3r734221k80k7ap9czv9hinifn8syals3l9j"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)))
     (home-page "http://code.galois.com")
     (synopsis "Simple XML library for Haskell")
@@ -2685,7 +2673,7 @@ online}.")
          "1x1bk1jf42k1gigiqqmkkh38z2ffhx8rsqiszdq3f94m2h6kw2h7"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Missing test-framework package.
-    (propagated-inputs
+    (inputs
      `(("ghc-stm" ,ghc-stm)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-transformers-compat" ,ghc-transformers-compat)))
@@ -2710,7 +2698,7 @@ for Haskell.")
         (base32
          "0is67bmsjmbbw6wymhis8wyq9gax3sszm573p5719fx2c9z9r24a"))))
     (build-system haskell-build-system)
-    (propagated-inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
     (home-page "http://www.github.com/batterseapower/temporary")
     (synopsis "Temporary file and directory support")
     (description "The functions for creating temporary files and directories
@@ -2735,7 +2723,7 @@ installed.")
         (base32
          "1nqih0qks439k3pr5kmbbc8rjdw730slrxlflqb27fbxbzb8skqs"))))
     (build-system haskell-build-system)
-    (propagated-inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
     (home-page
      "http://www.github.com/feuerbach/temporary")
     (synopsis
@@ -2764,10 +2752,9 @@ This is a better maintained fork of the \"temporary\" package.")
         (base32
          "1ygrabxh40bym3grnzqyfqn96lirnxspb8cmwkkr213239y605sd"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-logict" ,ghc-logict)))
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)))
+     `(("ghc-logict" ,ghc-logict)
+       ("ghc-mtl" ,ghc-mtl)))
     (home-page
      "https://github.com/feuerbach/smallcheck")
     (synopsis "Property-based testing library")
@@ -2791,11 +2778,10 @@ automatically by SmallCheck.")
         (base32
          "0pgz2lclg2hp72ykljcbxd88pjanfdfk8m5vb2qzcyjr85kwrhxv"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-generic-deriving" ,ghc-generic-deriving)
-       ("ghc-xml" ,ghc-xml)))
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)
+     `(("ghc-generic-deriving" ,ghc-generic-deriving)
+       ("ghc-xml" ,ghc-xml)
+       ("ghc-mtl" ,ghc-mtl)
        ("ghc-stm" ,ghc-stm)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-tasty" ,ghc-tasty)))
@@ -2874,11 +2860,10 @@ writing to stdout and other handles.")
         (base32
          "041s6963czs1pz0fc9cx17lgd6p83czqy2nxji7bhxqxwl2j15h2"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-old-time" ,ghc-old-time)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
+     `(("ghc-old-time" ,ghc-old-time)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-hashable" ,ghc-hashable)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-text" ,ghc-text)))
     (home-page
@@ -2955,8 +2940,7 @@ use HUnit assertions as QuickCheck properties.")
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
        #:configure-flags '("-f base4")))
-    ;; these inputs are necessary to use this package
-    (propagated-inputs
+    (inputs
      `(("ghc-tf-random" ,ghc-tf-random)))
     (home-page
      "https://github.com/nick8325/quickcheck")
@@ -2985,7 +2969,7 @@ use HUnit assertions as QuickCheck properties.")
     (inputs
      `(("ghc-hunit" ,ghc-hunit)))
     ;; these inputs are necessary to use this library
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)
        ("ghc-hashable" ,ghc-hashable)))
     (arguments
@@ -3079,7 +3063,7 @@ encourages inductive, recursive definitions of graph algorithms.")
         '(substitute* "ChasingBottoms.cabal"
            (("syb >= 0.1.0.2 && < 0.6") "syb >= 0.1.0.2 && < 0.7")))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-random" ,ghc-random)
@@ -3118,9 +3102,8 @@ Partial and Infinite Values\"}.")
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
-    ;; these inputs are necessary to use this library
-    (propagated-inputs `(("ghc-hashable" ,ghc-hashable)))
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-hashable" ,ghc-hashable)))
     (home-page
      "https://github.com/tibbe/unordered-containers")
     (synopsis
@@ -3146,7 +3129,7 @@ and high speed.")
         (base32
          "1dx8f9aw27fz8kw0ad1nm6355w5rdl7bjvb427v2bsgnng30pipw"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
@@ -3240,7 +3223,7 @@ instances of the @code{Pretty} class.")
         (base32
          "025pyphsjf0dnbrmj5nscbi6gzyigwgp3ifxb3psn7kji6mfr29p"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
     (home-page "https://github.com/ekmett/ansi-wl-pprint")
     (synopsis "Wadler/Leijen Pretty Printer for colored ANSI terminal output")
@@ -3296,10 +3279,9 @@ mainstream languages.")
        (sha256
         (base32 "1ja20cmj6v336jy87c6h3jzjp00sdbakwbdwp11iln499k913xvi"))))
     (build-system haskell-build-system)
-    (inputs
+    (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
-    ;; these inputs are necessary to use this library
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)
        ("ghc-mtl" ,ghc-mtl)))
     (arguments
@@ -3330,10 +3312,8 @@ is also parametric in the input stream type.")
          "1r1jlksy7b0kb0fy00g64isk6nyd9wzzdq31gx5v1wn38knj0lqa"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
-    ;; these inputs are necessary to use this library
-    (propagated-inputs
-     `(("ghc-primitive" ,ghc-primitive)))
+     `(("ghc-primitive" ,ghc-primitive)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (arguments
      `(#:tests? #f))      ; FIXME: currently missing libraries used for tests.
     (home-page "https://github.com/haskell/vector")
@@ -3358,10 +3338,9 @@ optimisation framework.")
         (base32
          "028rsf2w193rhs1gic5yvvrwidw9sblczcn10aw64npfc6502l4l"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-cereal" ,ghc-cereal)))
     (inputs
-     `(("ghc-vector" ,ghc-vector)))
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-vector" ,ghc-vector)))
     (home-page "https://github.com/bos/vector-binary-instances")
     (synopsis "Instances of Data.Binary and Data.Serialize for vector")
     (description "This library provides instances of @code{Binary} for the
@@ -3413,13 +3392,13 @@ boxed and storable vectors.")
         (base32
          "1pwbqb2rk4rnvllvdch42p5368xcvpkanp7bxckdhxya8zzwvhhg"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-network" ,ghc-network)))
     (arguments
      `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
-    (propagated-inputs
-     `(("ghc-parsec" ,ghc-parsec)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (inputs
+     `(("ghc-parsec" ,ghc-parsec)
+       ("ghc-network" ,ghc-network)))
     (home-page
      "https://github.com/haskell/network-uri")
     (synopsis "Library for URI manipulation")
@@ -3466,9 +3445,9 @@ cursor, and changing the title.")
         (base32
          "0nyqdxr5ls2dxkf4a1f3x15xzwdm46ppn99nkcbhswlr6s3cq1s4"))))
     (build-system haskell-build-system)
-    (inputs
+    (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
-    (propagated-inputs
+    (inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-parsec" ,ghc-parsec)
        ("ghc-mtl" ,ghc-mtl)
@@ -3499,14 +3478,13 @@ responses coming back.")
         (base32
          "0zqisxznlbszivsgy3irvf566zhcr6ipqqj3x9i7pj5hy913jwqf"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-hspec-core" ,ghc-hspec-core)
        ("hspec-discover" ,hspec-discover)
        ("ghc-hspec-expectations" ,ghc-hspec-expectations)
        ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)))
-    (inputs
-     `(("ghc-stringbuilder" ,ghc-stringbuilder)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-stringbuilder" ,ghc-stringbuilder)
        ("ghc-hspec-meta" ,ghc-hspec-meta)))
     (home-page "http://hspec.github.io/")
     (synopsis "Testing Framework for Haskell")
@@ -3527,11 +3505,13 @@ Haskell, inspired by the Ruby library RSpec.")
                (base32
                 "006syw8xagfhsx06ws9ywig1qx5lk4cgl7sq6pbid1s64c72mxn4"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-hspec-core" ,ghc-hspec-core)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)))
     (home-page "http://hspec.github.io/")
     (synopsis "Contributed functionality for Hspec")
     (description
@@ -3600,13 +3580,12 @@ runs Hspec tests.")
          "1wgd55k652jaf81nkvciyqi67ycj7zamr4nd9z1cqf8nr9fc3sa4"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
-    (propagated-inputs
+    (inputs
      `(("ghc-setenv" ,ghc-setenv)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-async" ,ghc-async)
-       ("ghc-quickcheck-io" ,ghc-quickcheck-io)))
-    (inputs
-     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck-io" ,ghc-quickcheck-io)
+       ("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec-expectations" ,ghc-hspec-expectations)
        ("ghc-silently" ,ghc-silently)))
@@ -3631,7 +3610,7 @@ be used to extend Hspec's functionality.")
         (base32
          "1fmqmgrzp135cxhmxxbaswkk4bqbpgfml00cmcz0d39n11vzpa5z"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
@@ -3661,7 +3640,7 @@ used to test the in-development version of Hspec.")
         (base32
          "0ah6qrg71krc87f4vjy4b4shdd0mgyil8fikb3j6fl4kfwlg67jn"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-hashable" ,ghc-hashable)))
     (home-page
@@ -3712,7 +3691,7 @@ manipulating monad transformer stacks.")
         (base32
          "07pn1p4m80wdd7gw62s4yny8rbvm60ka1q8qx5y1plznd8sbg179"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-stm" ,ghc-stm)
        ("ghc-transformers-base" ,ghc-transformers-base)
        ("ghc-transformers-compat" ,ghc-transformers-compat)))
@@ -3763,9 +3742,10 @@ system.")
         (base32
          "02m93hzgxg4bcnp7xcc2fdh2hrsc2h6fwl8hix5nx9k864kwf41q"))))
     (build-system haskell-build-system)
-    (inputs
+    (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)))
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/base-compat")
     (synopsis "Haskell compiler compatibility library")
     (description "This library provides functions available in later versions
@@ -3789,7 +3769,7 @@ pragmas in your code.")
          "1id3w33x9f7q5m3xpggmvzw03bkp94bpfyz81625bldqgf3yqdn1"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: Missing test libraries.
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)
        ("ghc-utf8-string" ,ghc-utf8-string)))
     (home-page "https://github.com/lpsmith/blaze-builder")
@@ -3817,7 +3797,7 @@ interoperate with code that uses the new implementation.")
          "080vlhd8dwjxrma4bb524lh8gxs5lm3xh122icy6lnnyipla0s9y"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
-    (propagated-inputs
+    (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)))
     (home-page "http://jaspervdj.be/blaze")
@@ -3842,7 +3822,7 @@ library for Haskell.")
          "1dnw50kh0s405cg9i2y4a8awanhj3bqzk21jwgfza65kcjby7lpq"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
-    (propagated-inputs
+    (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)
        ("ghc-blaze-markup" ,ghc-blaze-markup)))
@@ -3888,11 +3868,10 @@ library for Haskell.")
          "0azx4qk65a9a2gvqsfmz3w89m6shzr2iz0i5lly2zvly4n2d6m6v"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hunit" ,ghc-hunit)
+     `(("ghc-stm" ,ghc-stm)
+       ("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
-    (propagated-inputs
-     `(("ghc-stm" ,ghc-stm)))
     (home-page "https://github.com/simonmar/async")
     (synopsis "Library to run IO operations asynchronously")
     (description "Async provides a library to run IO operations
@@ -3940,7 +3919,7 @@ simple general-purpose data structure\".")
         (base32
          "0ni52ii9555jngljvzxn1ngicr6i2w647ww3rzhdrmng04y95iii"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
     (home-page "https://github.com/pcapriotti/optparse-applicative")
@@ -3964,9 +3943,10 @@ command line options in Haskell.")
         (base32
          "0hhgpwjvx7jhvlhsygmmf0q5hv2ymijzz4bjilicw99bmv13qcpl"))))
     (build-system haskell-build-system)
-    (inputs
+    (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)))
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/base-orphans")
     (synopsis "Orphan instances for backwards compatibility")
     (description "This package defines orphan instances that mimic instances
@@ -4101,10 +4081,9 @@ timer functions of different operating systems via a unified API.")
         (base32
          "1gn0m96qpjww8hpp2g1as5yy0wcwy4iq73h3kz6g0yxxhcl5sh9x"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-semigroups" ,ghc-semigroups)))
     (inputs
-     `(("ghc-unordered-containers" ,ghc-unordered-containers)))
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
     (home-page "https://github.com/ekmett/charset")
     (synopsis "Fast unicode character sets for Haskell")
     (description "This package provides fast unicode character sets for
@@ -4171,10 +4150,9 @@ Compatibility package for older packages.")
         (base32
          "1x15x2axz84ndw2bf60vjqljhrb0w95lddaljsxrl0hcd29zvw69"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-semigroups" ,ghc-semigroups)))
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)))
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-hashable" ,ghc-hashable)))
     (home-page "https://github.com/ekmett/void")
     (synopsis
      "Logically uninhabited data type")
@@ -4198,10 +4176,9 @@ given term should not exist.")
         (base32
          "0iywbadpy8s3isfzlx9dlz3apaywhqq4gdbxkwygksq8pzdhwkrk"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-adjunctions" ,ghc-adjunctions)))
     (inputs
-     `(("ghc-comonad" ,ghc-comonad)
+     `(("ghc-adjunctions" ,ghc-adjunctions)
+       ("ghc-comonad" ,ghc-comonad)
        ("ghc-contravariant" ,ghc-contravariant)
        ("ghc-distributive" ,ghc-distributive)
        ("ghc-free" ,ghc-free)
@@ -4229,7 +4206,7 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
         (base32
          "1ap51cvwq61xckx5hw44l82ihbxvsq3263xr5hqg42c5qp67kbhf"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-stm" ,ghc-stm)))
     (home-page "https://hackage.haskell.org/package/StateVar")
     (synopsis "State variables for Haskell")
@@ -4253,7 +4230,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
          "0g4g0xksrb2m8wgsmraaq8qnk1sssb42kr65fc7clgyid6zyfmim"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
-    (propagated-inputs
+    (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-bifunctors" ,ghc-bifunctors)
        ("ghc-distributive" ,ghc-distributive)
@@ -4263,9 +4240,8 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
        ("ghc-parallel" ,ghc-parallel)
        ("ghc-reflection" ,ghc-reflection)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-vector" ,ghc-vector)))
-    (inputs
-     `(("ghc-comonad" ,ghc-comonad)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-comonad" ,ghc-comonad)
        ("ghc-contravariant" ,ghc-contravariant)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-mtl" ,ghc-mtl)
@@ -4359,11 +4335,10 @@ are implemented as FFI bindings to efficient code from zlib.")
         (base32
          "0drx1hlqvdcrij4097q6bxhbfcqm73jsqv1wwhd3hsnjdmr46ch2"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-xss-sanitize" ,ghc-xss-sanitize)
-       ("ghc-data-default" ,ghc-data-default)))
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)
+     `(("ghc-xss-sanitize" ,ghc-xss-sanitize)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-mtl" ,ghc-mtl)
        ("ghc-text" ,ghc-text)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-syb" ,ghc-syb)
@@ -4419,16 +4394,15 @@ attacks.")
         (base32
          "1jf7jnfhdvl6p18wdr21yi2fim1xb8alcn6szhrdswj0dkilgq6d"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
+    (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-bifunctors" ,ghc-bifunctors)
        ("ghc-comonad" ,ghc-comonad)
        ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-distributive" ,ghc-distributive)))
-    (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
-    (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-tagged" ,ghc-tagged)))
     (home-page "https://github.com/ekmett/semigroupoids")
     (synopsis "Semigroupoids operations for Haskell")
@@ -4457,12 +4431,11 @@ just a @code{Semigroup} are added.")
         (base32
          "184hcmhsznqrkmqlc1kza9pb5p591anva574ry8wrh81vqmhwfb5"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-void" ,ghc-void)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-statevar" ,ghc-statevar)))
-    (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)))
+       ("ghc-statevar" ,ghc-statevar)
+       ("ghc-semigroups" ,ghc-semigroups)))
     (home-page
      "https://github.com/ekmett/contravariant/")
     (synopsis "Contravariant functors")
@@ -4484,12 +4457,11 @@ just a @code{Semigroup} are added.")
         (base32
          "0gvpfi7s6ys4qha3y9a1zl1a15gf9cgg33wjb94ghg82ivcxnc3r"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-nats" ,ghc-nats)
        ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
-    (inputs
-     `(("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-text" ,ghc-text)
        ("ghc-hashable" ,ghc-hashable)))
     (home-page "https://github.com/ekmett/semigroups/")
     (synopsis "Semigroup operations for Haskell")
@@ -4517,12 +4489,11 @@ semigroup.")
         (base32
          "0sr8phvrb4ny8j1wzq55rdn8q4br23q4pw2j276npr844825jr9p"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-prelude-extras" ,ghc-prelude-extras)
        ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-exceptions" ,ghc-exceptions)))
-    (inputs
-     `(("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-bifunctors" ,ghc-bifunctors)
        ("ghc-comonad" ,ghc-comonad)
        ("ghc-distributive" ,ghc-distributive)
        ("ghc-mtl" ,ghc-mtl)
@@ -4554,10 +4525,9 @@ definition of @code{Monad}.")
         (base32
          "00p030iypjzjib8pxz1x6mxfi59wvyrwjj11zv9bh766dgkdbwjq"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-profunctors" ,ghc-profunctors)))
     (inputs
-     `(("ghc-comonad" ,ghc-comonad)
+     `(("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-comonad" ,ghc-comonad)
        ("ghc-contravariant" ,ghc-contravariant)
        ("ghc-distributive" ,ghc-distributive)
        ("ghc-free" ,ghc-free)
@@ -4587,12 +4557,13 @@ for Haskell.")
         (base32
          "0kjk1861qcls8m8y7i55msfpprws5wk6c5mxzi35g2qbl2sih4p5"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-auto-update" ,ghc-auto-update)))
     (inputs
-     `(("ghc-hspec" ,ghc-hspec)
+     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-auto-update" ,ghc-auto-update)
        ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
+       ("ghc-hspec" ,ghc-hspec)))
     (home-page "https://hackage.haskell.org/package/fast-logger")
     (synopsis "Fast logging system")
     (description "This library provides a fast logging system for Haskell.")
@@ -4614,11 +4585,10 @@ for Haskell.")
          "1jbyhzbi2hfrfg7vbkpj6vriaap8cn99nnmzwcfscwaijz09jyrm"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: missing test framework
-    (propagated-inputs
-     `(("ghc-syb" ,ghc-syb)
-       ("ghc-paths" ,ghc-paths)))
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-paths" ,ghc-paths)
+       ("ghc-base-compat" ,ghc-base-compat)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)
@@ -4649,11 +4619,10 @@ It is modeled after doctest for Python, see
          "1yz14a1rsgknwyl08n4kxrlc26hfwmb95a3c2drbnsgmhdyq7iap"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Missing testing libraries.
-    (propagated-inputs
-     `(("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-monad-control" ,ghc-monad-control)))
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)
+     `(("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-hunit" ,ghc-hunit)))
     (home-page "https://github.com/basvandijk/lifted-base")
     (synopsis "Lifted IO operations from the base library")
@@ -4679,8 +4648,9 @@ Kaseorg.")
         (base32
          "1pbn8ra3qhwvw07p375cdmp7jzlg07hgdcr4cpscz3h7b9sy7fiw"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/word8")
     (synopsis "Word8 library for Haskell")
     (description "Word8 library to be used with @code{Data.ByteString}.")
@@ -4723,10 +4693,9 @@ occurrences of a substring (the first in case of overlaps) with another.")
         (base32
          "15rjxib5jmjq0hzj47x15kgp3awc73va4cy1pmpf7k3hvfv4qprn"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
     (inputs
-     `(("ghc-tagged" ,ghc-tagged)
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tagged" ,ghc-tagged)
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-random" ,ghc-random)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
@@ -4753,10 +4722,9 @@ Haskell test framework.")
         (base32
          "0n7nll1sx75n3lffwhgnjrxdn0jz1g0921z9mj193fxqw0wz8axh"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-temporary" ,ghc-temporary)))
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-tasty" ,ghc-tasty)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-tagged" ,ghc-tagged)
@@ -4788,7 +4756,7 @@ the correct result for the test.")
         (base32
          "1chapivmmwsb1ghwagvdm80bfj3hdk75m94z4p212ng2i4ghpjkx"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-stm" ,ghc-stm)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-tagged" ,ghc-tagged)
@@ -4843,10 +4811,9 @@ test framework.")
         (base32
          "0b6ym6fn29p5az4dwydy036lxj131kagrmgb93w4bbkqfkds8b9s"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-old-locale" ,ghc-old-locale)))
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)
        ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-hunit" ,ghc-hunit)
@@ -4874,11 +4841,10 @@ test framework.")
         (base32
          "0mimdkva0cgzaychr6whv9if29z0r5wwhkss9bmd4rz8kq1kgngn"))))
     (build-system haskell-build-system)
-    (propagated-inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-vector" ,ghc-vector)))
     (inputs
-     `(("ghc-text" ,ghc-text)
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-text" ,ghc-text)
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-ant-xml" ,ghc-tasty-ant-xml)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
@@ -4911,16 +4877,15 @@ notation}.")
          "19kp33rfivr4d3myyr8xn803wd7p8x5nc4wb3qvlgjwgyqjaxvrz"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
-    (propagated-inputs
+    (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-dlist" ,ghc-dlist)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-scientific" ,ghc-scientific)
        ("ghc-syb" ,ghc-syb)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
-    (inputs
-     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-hashable" ,ghc-hashable)
        ("ghc-text" ,ghc-text)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)))
@@ -4979,18 +4944,19 @@ essentially the opposite of pretty-printing.")
         (base32
          "1551n0g0n22vml33v0jz5xgjcy6j79algvsdqg11a1z5ljjrjlqf"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
        ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-vault" ,ghc-vault)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-network" ,ghc-network)))
-    (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-network" ,ghc-network)
        ("ghc-text" ,ghc-text)
        ("ghc-http-types" ,ghc-http-types)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)))
     (home-page "https://hackage.haskell.org/package/wai")
     (synopsis "Web application interface for Haskell")
     (description "This package provides a Web Application Interface (WAI)
@@ -5015,13 +4981,12 @@ communication between web applications and web servers.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find libraries exported
                                ; by propagated-inputs.
-    (propagated-inputs
+    (inputs
      `(("ghc-auto-update" ,ghc-auto-update)
        ("ghc-byteorder" ,ghc-byteorder)
        ("ghc-easy-file" ,ghc-easy-file)
-       ("ghc-unix-time" ,ghc-unix-time)))
-    (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-unix-time" ,ghc-unix-time)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-fast-logger" ,ghc-fast-logger)
        ("ghc-http-types" ,ghc-http-types)
@@ -5047,7 +5012,7 @@ communication between web applications and web servers.")
         (base32
          "1kr2s5qyx1dvnwr372h7pca4sgxjv0pdx96xkgsfi180h3mb0vq8"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
        ("ghc-cookie" ,ghc-cookie)
@@ -5062,16 +5027,17 @@ communication between web applications and web servers.")
        ("ghc-zlib" ,ghc-zlib)
        ("ghc-word8" ,ghc-word8)
        ("ghc-iproute" ,ghc-iproute)
-       ("ghc-void" ,ghc-void)))
-    (inputs
-     `(("ghc-wai" ,ghc-wai)
+       ("ghc-void" ,ghc-void)
+       ("ghc-wai" ,ghc-wai)
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-text" ,ghc-text)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-vault" ,ghc-vault)
-       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson" ,ghc-aeson)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-hunit" ,ghc-hunit)))
     (home-page "https://github.com/yesodweb/wai")
@@ -5126,7 +5092,7 @@ providing an 'rnf' implementation.")
                (base32
                 "094mzgdxva84kcpjf9m8b5n3chm1wm44bzflh5x6xhddz6pb7zpq"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-aeson" ,ghc-aeson)
        ("ghc-deepseq-generics" ,ghc-deepseq-generics)))
@@ -5150,7 +5116,7 @@ building up, manipulating and serialising @code{Pandoc} structures.")
                (base32
                 "143c8k7dyhwa9blpa8svy23ybx7i4xzb9jnfcimj8iigizbw7y1k"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-split" ,ghc-split)
@@ -5184,7 +5150,7 @@ it can parse and apply LaTeX macros.")
                (base32
                 "0y7as9wqlkykpipka2cfdhmcnin345q01pp0wsva8fwmvsavdl8b"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
     (home-page "https://hackage.haskell.org/package/regex-pcre")
     (synopsis "Enhancement of the builtin Text.Regex library")
@@ -5226,7 +5192,7 @@ and utilities for pretty printing.")
                (base32
                 "03c4flh4h1jd48bx0qmplax3q8w6wj1dhbh6j0xhaf5h95fbinki"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-diff" ,ghc-diff)
        ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)))
     (native-inputs
@@ -5257,7 +5223,7 @@ descriptions.")
                (base32
                 "09515h9b26az9c2mbl6l7azimaixa6yff8w359k0ml8jwykjvqaa"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
@@ -5305,7 +5271,7 @@ as invoked.\" This library tries to provide the missing path.")
                (base32
                 "16ax1kqdsk4apg642qxkm2hf9vb5hzmkd14zmkxra8ssp8rn28z5"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-async" ,ghc-async)
@@ -5362,7 +5328,7 @@ asynchronous exceptions.")
                (base32
                 "13xdkk1chdghf059sfx8d3d8r0mj1dbzdi5kf2zf0mjmz3qq7m7k"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-packedstring" ,ghc-packedstring)))
     (home-page "https://github.com/mboes/th-lift")
     (synopsis "Derive Template Haskell's Lift class for datatypes")
@@ -5384,7 +5350,7 @@ datatypes.")
                (base32
                 "03qv93pyqk8all39knsf0mzmbfdck5x61kqnyn8rbisw5c1ymx6j"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-syb" ,ghc-syb)))
     (home-page "https://hackage.haskell.org/package/th-expand-syns")
     (synopsis "Expands type synonyms in Template Haskell ASTs")
@@ -5406,7 +5372,7 @@ datatypes.")
                (base32
                 "00hryljcs434wcv1vaamfdbjk857f46djxv7mlwplkl3zsmfhlfx"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-safe" ,ghc-safe)
        ("ghc-th-expand-syns" ,ghc-th-expand-syns)))
@@ -5431,7 +5397,7 @@ function which generates instances.")
                (base32
                 "105y03bxh0a2r69l603i7md17gg1vxs1jj1n40pn5q486lmfxbmx"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-th-lift" ,ghc-th-lift)
        ("ghc-th-reify-many" ,ghc-th-reify-many)
        ("ghc-mtl" ,ghc-mtl)
@@ -5460,7 +5426,7 @@ package, and that's where the version number started.")
                (base32
                 "1mzbfrfvl6pj8068w3m6alzry1403ir1gmz3czg66n5z198l4dql"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
        ("ghc-syb" ,ghc-syb)
        ("ghc-th-orphans" ,ghc-th-orphans)))
@@ -5483,7 +5449,7 @@ template-haskell abstract syntax.")
                (base32
                 "1z8kh3qjc4khadz1ijdqm7fbk7dh17sisqhpwd3c9aibj2927k9d"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-base-compat" ,ghc-base-compat)
        ("ghc-text" ,ghc-text)
        ("ghc-attoparsec" ,ghc-attoparsec)
@@ -5493,7 +5459,8 @@ template-haskell abstract syntax.")
        ("ghc-parsec" ,ghc-parsec)
        ("ghc-haskell-src-meta" ,ghc-haskell-src-meta)))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/zalora/aeson-qq")
     (synopsis "JSON quasiquoter for Haskell")
     (description
@@ -5514,7 +5481,7 @@ of a JSON value into a @code{Data.Aeson.Value}.")
                (base32
                 "0aq6wswd5dkhdmy7sjhd99mldpq33dqpgbdcwpm94ahvckqxs7v5"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
        ("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-mmorph" ,ghc-mmorph)
@@ -5550,7 +5517,8 @@ enumerator/iteratee and pipes." )
                 "0zhdbjyj0j9by19rma9alxysrxnnl3s4kks4zk4bx0dg5xa0264y"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/logging-facade")
     (synopsis "Simple logging abstraction that allows multiple back-ends")
     (description
@@ -5570,11 +5538,12 @@ back-ends.")
                (base32
                 "0m0lp2z63sgkylz5318j53r5hnrkp705qh7nqbb149ir4gy7g1bg"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-temporary" ,ghc-temporary)
        ("ghc-logging-facade" ,ghc-logging-facade)))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/mockery")
     (synopsis "Support functions for automated testing")
     (description
@@ -5593,7 +5562,7 @@ back-ends.")
                (base32
                 "0v6c435xmgm99zxb30pqr7lhkb2a56wxqp70g4hjz8p7rj0vichx"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
        ("ghc-aeson" ,ghc-aeson)
@@ -5608,6 +5577,7 @@ back-ends.")
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-hunit" ,ghc-hunit)
+       ("hspec-discover" ,hspec-discover)
        ("ghc-mockery" ,ghc-mockery)))
     (home-page "https://github.com/snoyberg/yaml/")
     (synopsis "Parsing and rendering YAML documents")
@@ -5627,7 +5597,7 @@ back-ends.")
                (base32
                 "0ilqr8jv41zxcj5qyicg29m8s30b9v70x6f9h2h2rw5ap8bxldl8"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-unix-compat" ,ghc-unix-compat)))
     (home-page "https://github.com/bos/filemanip")
@@ -5672,7 +5642,7 @@ do on-demand loading.")
                (base32
                 "0hxa57cdknz86zywpjwfbdhac5lmk7j0wd5hy4mcnb8mw6r2m592"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-zlib" ,ghc-zlib)
        ("ghc-vector" ,ghc-vector)
@@ -5727,12 +5697,12 @@ libraries, like OpenSSL.")
     (arguments
      `(#:configure-flags '("-fsystem-lua")))
     (inputs
-     `(("lua" ,lua-5.1)))
-    (propagated-inputs
-     `(("ghc-text" ,ghc-text)))
+     `(("lua" ,lua-5.1)
+       ("ghc-text" ,ghc-text)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-hspec-contrib" ,ghc-hspec-contrib)
+       ("hspec-discover" ,hspec-discover)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
@@ -5756,7 +5726,7 @@ described in @url{http://www.lua.org/}.")
                (base32
                 "090z3dp928243amnc6s8g10rk2h2bprk9y138q6wj3cpflzr72pw"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Basic MIME type handling types and functions")
@@ -5779,7 +5749,7 @@ described in @url{http://www.lua.org/}.")
     (build-system haskell-build-system)
     ;; Tests require access to the web.
     (arguments `(#:tests? #f))
-    (propagated-inputs
+    (inputs
      `(("ghc-text" ,ghc-text)
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
@@ -5837,7 +5807,7 @@ wrapping a bytestring with stronger and more meaniful name.")
                (base32
                 "1xha17nwzxdjizbcp63d2142c6q051y77facs7xribgcl5iz2m4v"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-old-locale" ,ghc-old-locale)))
     (native-inputs
@@ -5866,7 +5836,7 @@ representations of current time.")
                (base32
                 "162sk5sg22w21wqz5qv8kx6ibxp99v5p20g3nknhm1kddk3hha1p"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)))
     (native-inputs
@@ -5895,7 +5865,7 @@ Mail} (PEM) format.")
                (base32
                 "1iif9yrh4mmj249gyvam0zb2vb3jnlz777gahh2z9sx00dsx9rja"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-memory" ,ghc-memory)
        ("ghc-hourglass" ,ghc-hourglass)))
     (home-page "https://github.com/vincenthz/hs-asn1-types")
@@ -5918,7 +5888,7 @@ format.")
                (base32
                 "01ki5msrpccgdbdiaaa5a9zw0icp1hki4hca8qx6hzlp0rcf1mwh"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-hourglass" ,ghc-hourglass)
        ("ghc-asn1-types" ,ghc-asn1-types)
        ("ghc-text" ,ghc-text)
@@ -5946,7 +5916,7 @@ supports for high level forms of ASN1 (BER, and DER).")
                (base32
                 "025prsihk5g6rdv9xlfmj0zpa0wa3qjzj5i4ilzvg7f6f3sji8y6"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-asn1-types" ,ghc-asn1-types)
        ("ghc-asn1-encoding" ,ghc-asn1-encoding)))
     (home-page "https://github.com/vincenthz/hs-asn1")
@@ -5968,7 +5938,7 @@ when ASN1 pattern matching is not convenient.")
                (base32
                 "14yvlpli6cv6bn3kh8mlfp4x1l6ns4fvmfv6hmj75cvxyzq029d7"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
@@ -5993,7 +5963,7 @@ tasty.")
                (base32
                 "1rw5k34vpn4134yrzdhf0rsshsrkixfbv9ap18di2n00z2cw1shw"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-memory" ,ghc-memory)
        ("ghc-byteable" ,ghc-byteable)))
     (native-inputs
@@ -6048,7 +6018,7 @@ set, memory copy, ..) and more")
                (base32
                 "1pmsby29abn485fvnymsgipvb3p1ch9c591xj5ncszkf0ivjiiin"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-memory" ,ghc-memory)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-hourglass" ,ghc-hourglass)
@@ -6079,7 +6049,7 @@ set, memory copy, ..) and more")
                (base32
                 "01abx528i9f7djq2772xyna8x2mykrnwqkcfrapcx7z3bhprvml3"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-pem" ,ghc-pem)
        ("ghc-asn1-types" ,ghc-asn1-types)
@@ -6106,7 +6076,7 @@ collections, certificates, revocation lists, and exception lists.")
                (base32
                 "1qr1v561hdlhjgqjv9pj9mbk0q1xf2mr1j67ghy93nlxxyzd7dw0"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-memory" ,ghc-memory)
        ("ghc-byteable" ,ghc-byteable)
        ("ghc-mtl" ,ghc-mtl)
@@ -6138,7 +6108,7 @@ list validation.")
                (base32
                 "10qf60d2f9jqwnbrhsb2cwpi86xg66m6dxndlxw967v1cdb3h6gf"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-pem" ,ghc-pem)
        ("ghc-x509" ,ghc-x509)
@@ -6162,7 +6132,7 @@ for X.509 certificates.")
                (base32
                 "1rdidf18i781c0vdvy9yn79yh08hmcacf6fp3sgghyiy3h0wyh5l"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-cereal" ,ghc-cereal)
        ("ghc-data-default-class" ,ghc-data-default-class)
@@ -6205,7 +6175,7 @@ extensions.")
                (base32
                 "1nmldlwxqasmg359i2aa3a903gi3lmnlspvf12xk49jrg3mf3dg9"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-cereal" ,ghc-cereal)
        ("ghc-network" ,ghc-network)))
     (home-page "https://github.com/vincenthz/hs-socks")
@@ -6227,7 +6197,7 @@ extensions.")
                (base32
                 "090il95jnm7ihwvcx3s9v6iwnp37nnsdx15q7722l845g51d95c8"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-byteable" ,ghc-byteable)
        ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-network" ,ghc-network)
@@ -6260,7 +6230,7 @@ the choice of SSL/TLS, and SOCKS.")
     (build-system haskell-build-system)
     ;; Tests require Internet access
     (arguments `(#:tests? #f))
-    (propagated-inputs
+    (inputs
      `(("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-http-client" ,ghc-http-client)
        ("ghc-connection" ,ghc-connection)
@@ -6290,7 +6260,7 @@ libraries, such as http-conduit.")
         (base32
          "1v78zq12p71gq0pc24h08inxcq5gxd0xb7m5ds0xw9pv9l2pswl1"))))
     (build-system haskell-build-system)
-    (propagated-inputs
+    (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-parsec" ,ghc-parsec)
@@ -6867,6 +6837,7 @@ Polymorphism', by Mark P Jones.  This package is almost a compatible replacement
 the @code{mtl-tf} package.")
     (license license:bsd-3)))
 
+;; Do not use this.  Bytestring is a standard library and always included.
 (define-public ghc-bytestring
   (package
     (name "ghc-bytestring")
