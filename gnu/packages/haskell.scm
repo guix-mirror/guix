@@ -6918,6 +6918,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
 files and directories in a portable way.")
     (license license:bsd-3)))
 
+;; Do not use this as an input.  It is part of GHC.
 (define-public ghc-process
   (package
     (name "ghc-process")
@@ -6932,6 +6933,14 @@ files and directories in a portable way.")
         (base32
          "1v1bav5isqxq9fc4lw714x94qbfsjbm2nn12kjp69r1ql8jaaaqw"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-reference-to-/bin/sh
+           (lambda _
+             (substitute* "System/Process/Posix.hs"
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (home-page "http://hackage.haskell.org/package/process")
     (synopsis "System process libraries")
     (description
