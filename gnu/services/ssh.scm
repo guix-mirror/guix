@@ -50,7 +50,6 @@
 ;;;
 ;;; Code:
 
-;; TODO: Export.
 (define-record-type* <lsh-configuration>
   lsh-configuration make-lsh-configuration
   lsh-configuration?
@@ -261,15 +260,24 @@ The other options should be self-descriptive."
 (define-record-type* <openssh-configuration>
   openssh-configuration make-openssh-configuration
   openssh-configuration?
-  (pid-file              openssh-configuration-pid-file) ;string
-  (port-number           openssh-configuration-port-number) ;integer
-  (permit-root-login     openssh-configuration-permit-root-login) ;Boolean | 'without-password
-  (allow-empty-passwords? openssh-configuration-allow-empty-passwords?) ;Boolean
-  (password-authentication? openssh-configuration-password-authentication?) ;Boolean
-  (pubkey-authentication? openssh-configuration-pubkey-authentication?) ;Boolean
-  (rsa-authentication?   openssh-configuration-rsa-authentication?) ;Boolean
-  (x11-forwarding?       openssh-configuration-x11-forwarding?) ;Boolean
-  (protocol-number       openssh-configuration-protocol-number)) ;integer
+  (pid-file              openssh-configuration-pid-file
+                         (default "/var/run/sshd.pid"))
+  (port-number           openssh-configuration-port-number ;integer
+                         (default 22))
+  (permit-root-login     openssh-configuration-permit-root-login ;Boolean | 'without-password
+                         (default #f))
+  (allow-empty-passwords? openssh-configuration-allow-empty-passwords? ;Boolean
+                          (default #f))
+  (password-authentication? openssh-configuration-password-authentication? ;Boolean
+                            (default #t))
+  (public-key-authentication? openssh-configuration-public-key-authentication?
+                              (default #t))                         ;Boolean
+  (rsa-authentication?   openssh-configuration-rsa-authentication?  ;Boolean
+                         (default #t))
+  (x11-forwarding?       openssh-configuration-x11-forwarding? ;Boolean
+                         (default #f))
+  (protocol-number       openssh-configuration-protocol-number ;integer
+                         (default 2)))
 
 (define %openssh-accounts
   (list (user-group (name "sshd") (system? #t))
@@ -314,7 +322,7 @@ The other options should be self-descriptive."
                  #$(if (openssh-configuration-password-authentication? config)
                        "yes" "no"))
          (format port "PubkeyAuthentication ~a\n"
-                 #$(if (openssh-configuration-pubkey-authentication? config)
+                 #$(if (openssh-configuration-public-key-authentication? config)
                        "yes" "no"))
          (format port "RSAAuthentication ~a\n"
                  #$(if (openssh-configuration-rsa-authentication? config)
@@ -353,27 +361,6 @@ The other options should be self-descriptive."
                                           openssh-activation)
                        (service-extension account-service-type
                                           (const %openssh-accounts))))))
-
-(define* (openssh-service #:key
-                          (pid-file "/var/run/sshd.pid")
-                          (port-number 22)
-                          (permit-root-login 'without-password)
-                          (allow-empty-passwords? #f)
-                          (password-authentication? #t)
-                          (pubkey-authentication? #t)
-                          (rsa-authentication? #t)
-                          (x11-forwarding? #f)
-                          (protocol-number 2))
-  (service openssh-service-type (openssh-configuration
-                                 (pid-file pid-file)
-                                 (port-number port-number)
-                                 (permit-root-login permit-root-login)
-                                 (allow-empty-passwords? allow-empty-passwords?)
-                                 (password-authentication? password-authentication?)
-                                 (pubkey-authentication? pubkey-authentication?)
-                                 (rsa-authentication? rsa-authentication?)
-                                 (x11-forwarding? x11-forwarding?)
-                                 (protocol-number protocol-number))))
 
 
 ;;;
