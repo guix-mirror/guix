@@ -255,7 +255,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.12")
+    (version "0.12.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -263,7 +263,7 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0gwzic3ifg2d0w32ya3agpxh8i083cgvf7kmc51cnbgqnfr02300"))
+               "08qibrq29a5v7g23wi5icy6l4fbfw90h9ccps6vq0bcklx8n84ra"))
              (modules '((guix build utils)))
              (snippet
               '(begin
