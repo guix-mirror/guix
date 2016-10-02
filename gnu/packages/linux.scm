@@ -595,7 +595,11 @@ slabtop, and skill.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))     ;for the libext2fs Info manual
     (arguments
-     '(;; util-linux is the preferred source for some of the libraries and
+     '(;; Parallel building reliably yields a failure like this:
+       ;; "make[2]: *** No rule to make target '../lib/libss.so', needed by
+       ;; 'debufs'.  Stop."
+       #:parallel-build? #f
+       ;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
        ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b33633>.)
        #:configure-flags '("--disable-libblkid"
