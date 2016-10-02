@@ -204,7 +204,11 @@ without modification.")
 
                  ,@(if (%current-target-system)
                        '("bash_cv_job_control_missing=no")
-                       '()))))))))
+                       '())))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; No loadable modules.
+             (delete 'move-development-files))))))))
 
 (define-public static-bash
   ;; Statically-linked Bash that contains nothing but the 'bash' binary and
@@ -229,10 +233,7 @@ without modification.")
                    (remove-store-references (string-append bin "/bash"))
                    (delete-file (string-append bin "/bashbug"))
                    (delete-file-recursively (string-append out "/share"))
-                   #t)))
-
-             ;; No loadable modules.
-             (delete 'move-development-files))))))))
+                   #t))))))))))
 
 (define-public bash-completion
   (package
