@@ -26,9 +26,9 @@ guix build --version
 if guix build -e +;
 then false; else true; fi
 
-# Should fail because this is a source-less package.
-if guix build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S
-then false; else true; fi
+# Source-less packages are accepted; they just return nothing.
+guix build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S
+test "`guix build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S`" = ""
 
 # Should pass.
 guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)' |	\
