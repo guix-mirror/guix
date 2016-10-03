@@ -1635,14 +1635,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.109")
+    (version "2.02.166")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "1rv5ivg0l1w3nwzwdkqixm96h5bzg7ib4rr196ysb2lw42jmpjbv"))
+                "150v0mawd2swdvypcmkjd3h3s4n5i1220h6sxx94a8jvp1kb0871"))
               (modules '((guix build utils)))
               (snippet
                '(begin
