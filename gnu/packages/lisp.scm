@@ -672,3 +672,31 @@ streams which are similar to string streams.")
 
 (define-public ecl-flexi-streams
   (sbcl-package->ecl-package sbcl-flexi-streams))
+
+(define-public sbcl-cl-ppcre
+  (package
+    (name "sbcl-cl-ppcre")
+    (version "2.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/edicl/cl-ppcre/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1i7daxf0wnydb0pgwiym7qh2wy70n14lxd6dyv28sy0naa8p31gd"))
+       (file-name (string-append "cl-ppcre-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs `(("tests:cl-flexi-streams" ,sbcl-flexi-streams)))
+    (synopsis "Portable regular expression library for Common Lisp")
+    (description "CL-PPCRE is a portable regular expression library for Common
+Lisp, which is compatible with perl.  It is pretty fast, thread-safe, and
+compatible with ANSI-compliant Common Lisp implementations.")
+    (home-page "http://weitz.de/cl-ppcre/")
+    (license license:bsd-2)))
+
+(define-public cl-ppcre
+  (sbcl-package->cl-source-package sbcl-cl-ppcre))
+
+(define-public ecl-cl-ppcre
+  (sbcl-package->ecl-package sbcl-cl-ppcre))
