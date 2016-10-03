@@ -322,8 +322,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.7.6"
-                    "0716lpzq3w2pdc0nrrx06gqzdfzhkrjq7g37v4ws9wjlzak8hkvy"
+  (make-linux-libre "4.8"
+                    "0fnax2qb597zg2gchab9n9fn7551vccmqfcvq5k3ckz24y50yknm"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
