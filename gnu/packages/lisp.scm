@@ -553,3 +553,31 @@ portable between implementations.")
 
 (define-public ecl-alexandria
   (sbcl-package->ecl-package sbcl-alexandria))
+
+(define-public sbcl-fiveam
+  (package
+    (name "sbcl-fiveam")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/sionescu/fiveam/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0f48pcbhqs3wwwzjl5nk57d4hcbib4l9xblxc66b8c2fhvhmhxnv"))
+       (file-name (string-append "fiveam-" version ".tar.gz"))))
+    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp testing framework")
+    (description "FiveAM is a simple (as far as writing and running tests
+goes) regression testing framework.  It has been designed with Common Lisp's
+interactive development model in mind.")
+    (home-page "https://common-lisp.net/project/fiveam/")
+    (license license:bsd-3)))
+
+(define-public cl-fiveam
+  (sbcl-package->cl-source-package sbcl-fiveam))
+
+(define-public ecl-fiveam
+  (sbcl-package->ecl-package sbcl-fiveam))
