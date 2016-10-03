@@ -442,7 +442,7 @@ from one map projection to another.  The GCTP is the standard computer
 software used by the National Mapping Division for map projection
 computations.")
     (home-page "https://github.com/OkoSanto/GCTP")
-    (license 'license:public-domain))) ; https://www2.usgs.gov/laws/info_policies.html
+    (license license:public-domain))) ;https://www2.usgs.gov/laws/info_policies.html
 
 (define-public hdf5
   (package
