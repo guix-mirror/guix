@@ -475,6 +475,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
+  %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/cmake-fix-tests.patch			\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\

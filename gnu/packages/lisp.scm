@@ -700,3 +700,48 @@ compatible with ANSI-compliant Common Lisp implementations.")
 
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
+
+(define-public sbcl-clx
+  (let ((revision "1")
+        (commit "1c62774b03c1cf3fe6e5cb532df8b14b44c96b95"))
+    (package
+      (name "sbcl-clx")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/sharplispers/clx.git")
+           (commit commit)))
+         (sha256
+          (base32 "0qffag03ns52kwq9xjns2qg1yr0bf3ba507iwq5cmx5xz0b0rmjm"))
+         (file-name (string-append "clx-" version "-checkout"))
+         (patches
+          (list
+           (search-patch "clx-remove-demo.patch")))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; These removed files cause the compiled system to crash when
+             ;; loading.
+             (delete-file-recursively "demo")
+             (delete-file "test/trapezoid.lisp")
+             (substitute* "clx.asd"
+               (("\\(:file \"trapezoid\"\\)") ""))))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:special-dependencies '("sb-bsd-sockets")))
+      (home-page "http://www.cliki.net/portable-clx")
+      (synopsis "X11 client library for Common Lisp")
+      (description "CLX is an X11 client library for Common Lisp.  The code was
+originally taken from a CMUCL distribution, was modified somewhat in order to
+make it compile and run under SBCL, then a selection of patches were added
+from other CLXes around the net.")
+      (license license:x11))))
+
+(define-public cl-clx
+  (sbcl-package->cl-source-package sbcl-clx))
+
+(define-public ecl-clx
+  (sbcl-package->ecl-package sbcl-clx))
