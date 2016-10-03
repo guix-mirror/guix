@@ -214,8 +214,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl-1.0.2j)
-   (version "1.0.2h")
+   (version "1.0.2j")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -225,11 +224,9 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
+               "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
              (patches (search-patches "openssl-runpath.patch"
-                                      "openssl-c-rehash-in.patch"
-                                      "openssl-CVE-2016-2177.patch"
-                                      "openssl-CVE-2016-2178.patch"))))
+                                      "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"                               ;1.5MiB of man3 pages
@@ -354,29 +351,10 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
-(define openssl-1.0.2j
-  (package
-    (inherit openssl)
-    (name "openssl")
-    (version "1.0.2j")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "ftp://ftp.openssl.org/source/"
-                                        name "-" version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/" name "-" version ".tar.gz")))
-              (sha256
-               (base32
-                "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
-              (patches (search-patches "openssl-runpath.patch"
-                                       "openssl-c-rehash-in.patch"))))))
-
 (define-public openssl-next
   (package
     (inherit openssl)
     (name "openssl")
-    (replacement #f)
     (version "1.1.0b")
     (source (origin
              (method url-fetch)
