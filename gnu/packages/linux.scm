@@ -1661,16 +1661,17 @@ time.")
     (inputs
      `(("udev" ,eudev)))
     (arguments
-     '(#:phases (alist-cons-after
-                 'configure 'set-makefile-shell
-                 (lambda _
-                   ;; Use 'sh', not 'bash', so that '. lib/utils.sh' works as
-                   ;; expected.
-                   (setenv "SHELL" (which "sh"))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'set-makefile-shell
+           (lambda _
+             ;; Use 'sh', not 'bash', so that '. lib/utils.sh' works as
+             ;; expected.
+             (setenv "SHELL" (which "sh"))
 
-                   ;; Replace /bin/sh with the right file name.
-                   (patch-makefile-SHELL "make.tmpl"))
-                 %standard-phases)
+             ;; Replace /bin/sh with the right file name.
+             (patch-makefile-SHELL "make.tmpl")
+             #t)))
 
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
