@@ -123,7 +123,12 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "16ab8qs3awvdxy8xs8jy82v8r04x4wr70l9l2j45vgag18d2nj1d"))))
+        (base32 "16ab8qs3awvdxy8xs8jy82v8r04x4wr70l9l2j45vgag18d2nj1d"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Add ecl-bundle-systems to 'default-system-source-registry'.
+        `(substitute* "contrib/asdf/asdf.lisp"
+           ,@(asdf-substitutions name)))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
     (native-inputs `(("which" ,which)))
@@ -164,6 +169,10 @@ interface to the Tk widget system.")
                  `("LIBRARY_PATH" suffix ,library-directories)
                  `("LD_LIBRARY_PATH" suffix ,library-directories)))))
          (add-after 'wrap 'check (assoc-ref %standard-phases 'check)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))))
     (home-page "http://ecls.sourceforge.net/")
     (synopsis "Embeddable Common Lisp")
     (description "ECL is an implementation of the Common Lisp language as
