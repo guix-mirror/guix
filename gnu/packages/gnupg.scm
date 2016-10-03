@@ -112,15 +112,14 @@ generation.")
 (define libgcrypt-1.7.3
   (package
     (inherit libgcrypt)
-    (source
-     (let ((version "1.7.3"))
-       (origin
-         (method url-fetch)
-         (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                             version ".tar.bz2"))
-         (sha256
-          (base32
-           "0wbh6fq5zi9wg2xcfvfpwh7dv52jihivx1vm4h91c2kx0w8n3b6x")))))))
+    (version "1.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0wbh6fq5zi9wg2xcfvfpwh7dv52jihivx1vm4h91c2kx0w8n3b6x"))))))
 
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
