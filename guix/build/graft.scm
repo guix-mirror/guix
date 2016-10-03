@@ -20,7 +20,6 @@
 (define-module (guix build graft)
   #:use-module (guix build utils)
   #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (ice-9 threads)
@@ -58,7 +57,9 @@
                                    #:optional (store (%store-directory)))
   "Read data from INPUT, replacing store references according to
 REPLACEMENT-TABLE, and writing the result to OUTPUT.  REPLACEMENT-TABLE is a
-vhash that maps strings (original hashes) to bytevectors (replacement hashes).
+vhash that maps strings (original hashes) to bytevectors (replacement strings
+comprising the replacement hash, a dash, and a string).
+
 Note: We use string keys to work around the fact that guile-2.0 hashes all
 bytevectors to the same value."
 
@@ -130,16 +131,18 @@ bytevectors to the same value."
                              ;; that have not yet been written.
                              (put-bytevector output buffer written
                                              (- i hash-length written))
-                             ;; Now write the replacement hash.
+                             ;; Now write the replacement string.
                              (put-bytevector output replacement)
                              ;; Since the byte at position 'i' is a dash,
                              ;; which is not a nix-base32 char, the earliest
                              ;; position where the next hash might start is
                              ;; i+1, and the earliest position where the
                              ;; following dash might start is (+ i 1
-                             ;; hash-length).  Also, we have now written up to
-                             ;; position 'i' in the buffer.
-                             (scan-from (+ i 1 hash-length) i)))
+                             ;; hash-length).  Also, increase the write
+                             ;; position to account for REPLACEMENT.
+                             (let ((len (bytevector-length replacement)))
+                               (scan-from (+ i 1 len)
+                                          (+ i (- len hash-length))))))
                        ;; If the byte at position 'i' is a nix-base32 char,
                        ;; then the dash we're looking for might be as early as
                        ;; the following byte, so we can only advance by 1.
@@ -213,26 +216,32 @@ an exception is caught."
 file name pairs."
 
   (define hash-mapping
+    ;; List of hash/replacement pairs, where the hash is a nix-base32 string
+    ;; and the replacement is a string that includes the replacement's name,
+    ;; like "r837zajjc1q8z9hph4b6860a9c05blyy-openssl-1.0.2j".
     (let* ((prefix (string-append store "/"))
            (start  (string-length prefix))
            (end    (+ start hash-length)))
       (define (valid-hash? h)
         (every nix-base32-char? (string->list h)))
-      (define (valid-suffix? s)
-        (string-prefix? "-" s))
-      (define (hash+suffix s)
+      (define (hash+rest s)
         (and (< end (string-length s))
-             (let ((hash   (substring s start end))
-                   (suffix (substring s end)))
+             (let ((hash (substring s start end))
+                   (all  (substring s start)))
                (and (string-prefix? prefix s)
-                    (valid-hash?    hash)
-                    (valid-suffix?  suffix)
-                    (list hash suffix)))))
+                    (valid-hash? hash)
+                    (eqv? #\- (string-ref s end))
+                    (list hash all)))))
+
       (map (match-lambda
-             (((= hash+suffix (origin-hash      suffix))
+             (((= hash+rest (origin-hash origin-string))
                .
-               (= hash+suffix (replacement-hash suffix)))
-              (cons origin-hash (string->utf8 replacement-hash)))
+               (= hash+rest (replacement-hash replacement-string)))
+              (unless (= (string-length origin-string)
+                         (string-length replacement-string))
+                (error "replacement length differs from the original length"
+                       origin-string replacement-string))
+              (cons origin-hash (string->utf8 replacement-string)))
              ((origin . replacement)
               (error "invalid replacement" origin replacement)))
            mapping)))

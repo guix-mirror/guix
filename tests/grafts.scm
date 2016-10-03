@@ -80,6 +80,25 @@
                 (string=? (readlink (string-append grafted "/self"))
                           grafted))))))
 
+(test-assert "graft-derivation, grafted item uses a different name"
+  (let* ((build   `(begin
+                     (mkdir %output)
+                     (chdir %output)
+                     (symlink %output "self")
+                     (symlink ,%bash "sh")))
+         (orig    (build-expression->derivation %store "grafted" build
+                                                #:inputs `(("a" ,%bash))))
+         (repl    (add-text-to-store %store "BaSH" "fake bash"))
+         (grafted (graft-derivation %store orig
+                                    (list (graft
+                                            (origin %bash)
+                                            (replacement repl))))))
+    (and (build-derivations %store (list grafted))
+         (let ((grafted (derivation->output-path grafted)))
+           (and (string=? (readlink (string-append grafted "/sh")) repl)
+                (string=? (readlink (string-append grafted "/self"))
+                          grafted))))))
+
 ;; Make sure 'derivation-file-name' always gets to see an absolute file name.
 (fluid-set! %file-port-name-canonicalization 'absolute)
 
