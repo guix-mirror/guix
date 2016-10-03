@@ -33,7 +33,7 @@
   #:use-module (guix monads)
   #:export (%test-openssh))
 
-(define %openssh-os
+(define %base-os
   (operating-system
     (host-name "komputilo")
     (timezone "Europe/Berlin")
@@ -43,18 +43,22 @@
     (file-systems %base-file-systems)
     (firmware '())
     (users %base-user-accounts)
+    (services (cons (dhcp-client-service)
+                    %base-services))))
 
-    ;; Allow root logins with an empty password to simplify testing.
-    (services (cons* (service openssh-service-type
-                              (openssh-configuration
-                               (permit-root-login #t)
-                               (allow-empty-passwords? #t)))
-                     (dhcp-client-service)
-                     %base-services))))
+(define (os-with-service service)
+  "Return a test operating system that runs SERVICE."
+  (operating-system
+    (inherit %base-os)
+    (services (cons service
+                    (operating-system-user-services %base-os)))))
 
-(define (run-openssh-test name)
+(define (run-ssh-test name ssh-service pid-file)
+  "Run a test of an OS running SSH-SERVICE, which writes its PID to PID-FILE.
+SSH-SERVICE must be configured to listen on port 22 and to allow for root and
+empty-password logins."
   (mlet* %store-monad ((os ->   (marionette-operating-system
-                                 %openssh-os
+                                 (os-with-service ssh-service)
                                  #:imported-modules '((gnu services herd)
                                                       (guix combinators))))
                        (command (system-qemu-image/shared-store-script
@@ -98,7 +102,7 @@
             (mkdir #$output)
             (chdir #$output)
 
-            (test-begin "openssh")
+            (test-begin "ssh-daemon")
 
             ;; Wait for sshd to be up and running.
             (test-eq "service running"
@@ -112,7 +116,7 @@
 
             ;; Check sshd's PID file.
             (test-equal "sshd PID"
-              (wait-for-file "/var/run/sshd.pid")
+              (wait-for-file #$pid-file)
               (marionette-eval
                '(begin
                   (use-modules (gnu services herd)
@@ -155,4 +159,11 @@
   (system-test
    (name "openssh")
    (description "Connect to a running OpenSSH daemon.")
-   (value (run-openssh-test name))))
+   (value (run-ssh-test name
+                        ;; Allow root logins with an empty password to
+                        ;; simplify testing.
+                        (service openssh-service-type
+                                 (openssh-configuration
+                                  (permit-root-login #t)
+                                  (allow-empty-passwords? #t)))
+                        "/var/run/sshd.pid"))))
