@@ -47,6 +47,17 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define (asdf-substitutions lisp)
+  ;; Prepend XDG_DATA_DIRS/LISP-bundle-systems to ASDF's
+  ;; 'default-system-source-registry'.
+  `((("\\(,dir \"systems/\"\\)\\)")
+     (format #f
+             "(,dir \"~a-bundle-systems\")))
+
+      ,@(loop :for dir :in (xdg-data-dirs \"common-lisp/\")
+              :collect `(:directory (,dir \"systems\"))"
+             ,lisp))))
+
 (define-public gcl
   (package
     (name "gcl")
@@ -226,7 +237,12 @@ an interpreter, a compiler, a debugger, and much more.")
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "0fjdqnb2rsm2vi9794ywp27jr239ddvzc4xfr0dk49jd4v7p2kc5"))))
+        (base32 "0fjdqnb2rsm2vi9794ywp27jr239ddvzc4xfr0dk49jd4v7p2kc5"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
+        `(substitute* "contrib/asdf/asdf.lisp"
+           ,@(asdf-substitutions name)))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     ;; Bootstrap with CLISP.
@@ -315,6 +331,10 @@ an interpreter, a compiler, a debugger, and much more.")
                #t))))
          ;; No 'check' target, though "make.sh" (build phase) runs tests.
          #:tests? #f))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))))
     (home-page "http://www.sbcl.org/")
     (synopsis "Common Lisp implementation")
     (description "Steel Bank Common Lisp (SBCL) is a high performance Common
