@@ -683,25 +683,25 @@ from ~s: ~a (~s)~%")
 
 (define (check-vulnerabilities package)
   "Check for known vulnerabilities for PACKAGE."
-  (match (package-vulnerabilities package)
-    (()
-     #t)
-    ((vulnerabilities ...)
-     (let* ((package   (or (package-replacement package) package))
-            (patches   (filter-map patch-file-name
-                                   (or (and=> (package-source package)
-                                              origin-patches)
-                                       '())))
-            (unpatched (remove (lambda (vuln)
-                                 (find (cute string-contains
-                                         <> (vulnerability-id vuln))
-                                       patches))
-                               vulnerabilities)))
-       (unless (null? unpatched)
-         (emit-warning package
-                       (format #f (_ "probably vulnerable to ~a")
-                               (string-join (map vulnerability-id unpatched)
-                                            ", "))))))))
+  (let ((package (or (package-replacement package) package)))
+    (match (package-vulnerabilities package)
+      (()
+       #t)
+      ((vulnerabilities ...)
+       (let* ((patches   (filter-map patch-file-name
+                                     (or (and=> (package-source package)
+                                                origin-patches)
+                                         '())))
+              (unpatched (remove (lambda (vuln)
+                                   (find (cute string-contains
+                                           <> (vulnerability-id vuln))
+                                         patches))
+                                 vulnerabilities)))
+         (unless (null? unpatched)
+           (emit-warning package
+                         (format #f (_ "probably vulnerable to ~a")
+                                 (string-join (map vulnerability-id unpatched)
+                                              ", ")))))))))
 
 
 ;;;

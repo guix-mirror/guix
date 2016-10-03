@@ -36,6 +36,7 @@
   #:use-module (web server)
   #:use-module (web server http)
   #:use-module (web response)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 threads)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-64))
@@ -612,6 +613,28 @@ string) on HTTP requests."
                             (dummy-origin
                              (patches
                               (list "/a/b/pi-CVE-2015-1234.patch"))))))))))
+
+(test-assert "cve: vulnerability fixed in replacement version"
+  (mock ((guix scripts lint) package-vulnerabilities
+         (lambda (package)
+           (match (package-version package)
+             ("0"
+              (list (make-struct (@@ (guix cve) <vulnerability>) 0
+                                 "CVE-2015-1234"
+                                 (list (cons (package-name package)
+                                             (package-version package))))))
+             ("1"
+              '()))))
+        (and (not (string-null?
+                   (with-warnings
+                     (check-vulnerabilities
+                      (dummy-package "foo" (version "0"))))))
+             (string-null?
+              (with-warnings
+                (check-vulnerabilities
+                 (dummy-package
+                  "foo" (version "0")
+                  (replacement (dummy-package "foo" (version "1"))))))))))
 
 (test-assert "cve: patched vulnerability in replacement"
   (mock ((guix scripts lint) package-vulnerabilities
