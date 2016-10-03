@@ -581,3 +581,32 @@ interactive development model in mind.")
 
 (define-public ecl-fiveam
   (sbcl-package->ecl-package sbcl-fiveam))
+
+(define-public sbcl-bordeaux-threads
+  (package
+    (name "sbcl-bordeaux-threads")
+    (version "0.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/sionescu/bordeaux-threads/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32 "10ryrcx832fwqdawb6jmknymi7wpdzhi30qzx7cbrk0cpnka71w2"))
+              (file-name
+               (string-append "bordeaux-threads-" version ".tar.gz"))))
+    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
+    (native-inputs `(("tests:cl-fiveam" ,sbcl-fiveam)))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Portable shared-state concurrency library for Common Lisp")
+    (description "BORDEAUX-THREADS is a proposed standard for a minimal
+MP/Threading interface.  It is similar to the CLIM-SYS threading and lock
+support.")
+    (home-page "https://common-lisp.net/project/bordeaux-threads/")
+    (license license:x11)))
+
+(define-public cl-bordeaux-threads
+  (sbcl-package->cl-source-package sbcl-bordeaux-threads))
+
+(define-public ecl-bordeaux-threads
+  (sbcl-package->ecl-package sbcl-bordeaux-threads))
