@@ -1671,7 +1671,17 @@ time.")
 
              ;; Replace /bin/sh with the right file name.
              (patch-makefile-SHELL "make.tmpl")
-             #t)))
+             #t))
+         (add-before 'strip 'make-objects-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make compiled objects writable so they can be stripped.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file)
+                           (chmod file #o755))
+                         (append
+                           (find-files (string-append out "/lib"))
+                           (find-files (string-append out "/sbin"))))
+               #t))))
 
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
