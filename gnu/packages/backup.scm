@@ -172,13 +172,17 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (replacement libarchive/fixed)
     (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://libarchive.org/downloads/libarchive-"
                            version ".tar.gz"))
+       (patches (search-patches
+                  "libarchive-7zip-heap-overflow.patch"
+                  "libarchive-fix-symlink-check.patch"
+                  "libarchive-fix-filesystem-attacks.patch"
+                  "libarchive-safe_fprintf-buffer-overflow.patch"))
        (sha256
         (base32
          "1lngng84k1kkljl74q0cdqc3s82vn2kimfm02dgm4d6m7x71mvkj"))))
@@ -227,17 +231,6 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
-
-(define libarchive/fixed
-  (package
-    (inherit libarchive)
-    (source (origin
-              (inherit (package-source libarchive))
-              (patches (search-patches
-                         "libarchive-7zip-heap-overflow.patch"
-                         "libarchive-fix-symlink-check.patch"
-                         "libarchive-fix-filesystem-attacks.patch"
-                         "libarchive-safe_fprintf-buffer-overflow.patch"))))))
 
 (define-public rdup
   (package
