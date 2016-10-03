@@ -8799,11 +8799,9 @@ library.")
                (base32
                 "17zajiw4mjbkkv6ahp3xf025qglkj0805m9s41c45zryzj6p2h39"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _ (zero? (system* "python" "./test_pathlib.py")))))))
+    ;; The tests depend on the internal "test" module, which does not provide
+    ;; a stable interface.
+    (arguments `(#:tests? #f))
     (home-page "https://pathlib.readthedocs.org/")
     (synopsis "Object-oriented file system paths")
     (description "Pathlib offers a set of classes to handle file system paths.
