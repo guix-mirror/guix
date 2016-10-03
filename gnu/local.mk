@@ -386,6 +386,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/zip.scm				\
 						\
   %D%/services.scm				\
+  %D%/services/admin.scm			\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/databases.scm			\
@@ -430,7 +431,8 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/tests.scm					\
   %D%/tests/base.scm				\
-  %D%/tests/install.scm
+  %D%/tests/install.scm				\
+  %D%/tests/ssh.scm
 
 
 patchdir = $(guilemoduledir)/%D%/packages/patches
@@ -528,6 +530,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
+  %D%/packages/patches/gd-CVE-2016-7568.patch			\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
@@ -620,6 +623,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
+  %D%/packages/patches/libarchive-7zip-heap-overflow.patch	\
+  %D%/packages/patches/libarchive-fix-symlink-check.patch	\
+  %D%/packages/patches/libarchive-fix-filesystem-attacks.patch	\
+  %D%/packages/patches/libarchive-safe_fprintf-buffer-overflow.patch	\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libcmis-fix-test-onedrive.patch		\
@@ -781,6 +788,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/qt4-ldflags.patch			\
+  %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/ratpoison-shell.patch			\
   %D%/packages/patches/readline-link-ncurses.patch		\

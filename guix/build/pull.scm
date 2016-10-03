@@ -125,6 +125,9 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
       (newline)
       (let ((mutex (make-mutex))
             (completed 0))
+        ;; Make sure compilation related modules are loaded before starting to
+        ;; compile files in parallel.
+        (compile #f)
         (par-for-each
          (lambda (file)
            (with-mutex mutex

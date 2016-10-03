@@ -779,7 +779,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.035")
+    (version "4.037")
     (source
      (origin
        (method url-fetch)
@@ -787,7 +787,7 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "0dqrnrk8yjl06xl8hld5wyalk77z0h9j5h1gdk4z9g0nx9js7v5p"))))
+         "1z1wxnzhxfr9awjqb1d8pz9hf50shbk9ip2jmsmgdlwfyb78lmyz"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))

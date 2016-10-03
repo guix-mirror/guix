@@ -26,7 +26,8 @@ Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
-Copyright @copyright{} 2016 ng0
+Copyright @copyright{} 2016 ng0@*
+Copyright @copyright{} 2016 Jan Nieuwenhuizen
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -213,6 +214,7 @@ Services
 
 * Base Services::               Essential system services.
 * Scheduled Job Execution::     The mcron service.
+* Log Rotation::                The rottlog service.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
@@ -7581,6 +7583,7 @@ declaration.
 @menu
 * Base Services::               Essential system services.
 * Scheduled Job Execution::     The mcron service.
+* Log Rotation::                The rottlog service.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
@@ -8055,6 +8058,85 @@ specifications,, mcron, GNU@tie{}mcron}).
 @end deftp
 
 
+@node Log Rotation
+@subsubsection Log Rotation
+
+@cindex rottlog
+@cindex log rotation
+Log files such as those found in @file{/var/log} tend to grow endlessly,
+so it's a good idea to @dfn{rotate} them once in a while---i.e., archive
+their contents in separate files, possibly compressed.  The @code{(gnu
+services admin)} module provides an interface to GNU@tie{}Rot[t]log, a
+log rotation tool (@pxref{Top,,, rottlog, GNU Rot[t]log Manual}).
+
+The example below defines an operating system that provides log rotation
+with the default settings.
+
+@lisp
+(use-modules (guix) (gnu))
+(use-service-modules admin mcron)
+(use-package-modules base idutils)
+
+(operating-system
+  ;; @dots{}
+  (services (cons* (mcron-service)
+                   (service rottlog-service-type (rottlog-configuration)) 
+                   %base-services)))
+@end lisp
+
+@defvr {Scheme Variable} rottlog-service-type
+This is the type of the Rottlog service, whose value is a
+@code{rottlog-configuration} object.
+
+This service type can define mcron jobs (@pxref{Scheduled Job
+Execution}) to run the rottlog service.
+@end defvr
+
+@deftp {Data Type} rottlog-configuration
+Data type representing the configuration of rottlog.
+
+@table @asis
+@item @code{rottlog} (default: @code{rottlog})
+The Rottlog package to use.
+
+@item @code{rc-file} (default: @code{(file-append rottlog "/etc/rc")})
+The Rottlog configuration file to use (@pxref{Mandatory RC Variables,,,
+rottlog, GNU Rot[t]log Manual}).
+
+@item @code{periodic-rotations} (default: @code{`(("weekly" %default-rotatations))})
+A list of Rottlog period-name/period-config tuples.
+
+For example, taking an example from the Rottlog manual (@pxref{Period
+Related File Examples,,, rottlog, GNU Rot[t]log Manual}), a valid tuple
+might be:
+
+@example
+("daily" ,(plain-file "daily"
+                      "\
+     /var/log/apache/* @{
+        storedir apache-archives
+        rotate 6
+        notifempty
+        nocompress
+     @}"))
+@end example
+
+@item @code{jobs}
+This is a list of gexps where each gexp corresponds to an mcron job
+specification (@pxref{Scheduled Job Execution}).
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %default-rotations
+Specifies weekly rotation of @var{%rotated-files} and
+@code{"/var/log/shepherd.log"}.
+@end defvr
+
+@defvr {Scheme Variable} %rotated-files
+The list of syslog-controlled files to be rotated.  By default it is:
+@code{'("/var/log/messages" "/var/log/secure")}.
+@end defvr
+
 @node Networking Services
 @subsubsection Networking Services
 
@@ -8199,39 +8281,66 @@ root.
 The other options should be self-descriptive.
 @end deffn
 
-@deffn {Scheme Procedure} openssh-service [#:pid-file "/var/run/sshd.pid"] @
-       [#:port-number 22] [#:permit-root-login 'without-password] @
-       [#:allow-empty-passwords #f] [#:password-authentication? #t] @
-       [#:pubkey-authentication? #t] [#:rsa-authentication? #t] @
-       [#:x11-forwarding? #f] [#:protocol-number "2"]
-Run the @command{sshd} program from @var{openssh} on port
-@var{port-number}.  @command{sshd} runs an SSH daemon and writes its PID
-to @var{pid-file}.  It understands SSH protocol
-@var{protocol-number}. The @var{protocol-number} can be either 1 or 2.
+@deffn {Scheme Variable} openssh-service-type
+This is the type for the @uref{http://www.openssh.org, OpenSSH} secure
+shell daemon, @command{sshd}.  Its value must be an
+@code{openssh-configuration} record as in this example:
 
-@var{permit-root-login} takes one of @code{#t}, @code{'without-password}
-and @code{#f}.  It is used to allow root login through SSH.
-@code{'without-password} means that root login is allowed, but not with
-password-based authentication.
+@example
+(service openssh-service-type
+         (openssh-configuration
+           (x11-forwarding? #t)
+           (permit-root-login 'without-password)))
+@end example
 
-When @var{allow-empty-passwords?} is true, users with empty passwords
-may log in.  When false, they may not.
-
-When @var{password-authentication?} is true, users may log in with their
-password.  When false, they have to use other means of authentication.
-
-When @var{pubkey-authentication?} is true, users may log in using public
-key authentication.  When false, users have to use other means of
-authentication.  Authorized public keys are stored in
-@file{~/.ssh/authorized_keys}.  This is used only by protocol version 2.
-
-When @var{rsa-authentication?} is true, users may log in using pure RSA
-authentication.  When false, users have to use other means of
-authentication.  This is used only by protocol 1.
-
-When @var{x11-forwarding?} is true, @command{ssh} options @option{-X}
-and @option{-Y} will work.
+See below for details about @code{openssh-configuration}.
 @end deffn
+
+@deftp {Data Type} openssh-configuration
+This is the configuration record for OpenSSH's @command{sshd}.
+
+@table @asis
+@item @code{pid-file} (default: @code{"/var/run/sshd.pid"})
+Name of the file where @command{sshd} writes its PID.
+
+@item @code{port-number} (default: @code{22})
+TCP port on which @command{sshd} listens for incoming connections.
+
+@item @code{permit-root-login} (default: @code{#f})
+This field determines whether and when to allow logins as root.  If
+@code{#f}, root logins are disallowed; if @code{#t}, they are allowed.
+If it's the symbol @code{'without-password}, then root logins are
+permitted but not with password-based authentication.
+
+@item @code{allow-empty-passwords?} (default: @code{#f})
+When true, users with empty passwords may log in.  When false, they may
+not.
+
+@item @code{password-authentication?} (default: @code{#t})
+When true, users may log in with their password.  When false, they have
+other authentication methods.
+
+@item @code{public-key-authentication?} (default: @code{#t})
+When true, users may log in using public key authentication.  When
+false, users have to use other authentication method.
+
+Authorized public keys are stored in @file{~/.ssh/authorized_keys}.
+This is used only by protocol version 2.
+
+@item @code{rsa-authentication?} (default: @code{#t})
+When true, users may log in using pure RSA authentication.  When false,
+users have to use other means of authentication.  This is used only by
+protocol 1.
+
+@item @code{x11-forwarding?} (default: @code{#f})
+When true, forwarding of X11 graphical client connections is
+enabled---in other words, @command{ssh} options @option{-X} and
+@option{-Y} will work.
+
+@item @code{protocol-number} (default: @code{2})
+The SSH protocol number to use.
+@end table
+@end deftp
 
 @deffn {Scheme Procedure} dropbear-service [@var{config}]
 Run the @uref{https://matt.ucc.asn.au/dropbear/dropbear.html,Dropbear SSH

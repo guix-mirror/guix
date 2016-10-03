@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
@@ -2229,6 +2229,30 @@ Switching to a perspective activates its window configuration, and when in a
 perspective only its buffers are available by default.")
     ;; This package is released under the same license as Emacs (GPLv3+) or
     ;; the Expat license.
+    (license license:gpl3+)))
+
+(define-public emacs-rudel
+  (package
+    (name "emacs-rudel")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/rudel-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0glqa68g509p0s2vcc0i8kzlddnc9brd9jqhnm5rzxz4i050cvnz"))))
+    (build-system emacs-build-system)
+    (home-page "http://rudel.sourceforge.net/")
+    (synopsis "Collaborative editing framework")
+    (description
+     "Rudel is a collaborative editing environment for GNU Emacs.  Its purpose
+is to share buffers with other users in order to edit the contents of those
+buffers collaboratively.  Rudel supports multiple backends to enable
+communication with other collaborative editors using different protocols,
+though currently Obby (for use with the Gobby editor) is the only
+fully-functional one.")
     (license license:gpl3+)))
 
 (define-public emacs-hydra

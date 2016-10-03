@@ -1,0 +1,60 @@
+Make sure to check for symlinks even if the pathname is very long:
+
+https://github.com/libarchive/libarchive/issues/744
+
+Patch copied from upstream repository:
+
+https://github.com/libarchive/libarchive/commit/1fa9c7bf90f0862036a99896b0501c381584451a
+
+From 1fa9c7bf90f0862036a99896b0501c381584451a Mon Sep 17 00:00:00 2001
+From: Tim Kientzle <kientzle@acm.org>
+Date: Sun, 21 Aug 2016 17:11:45 -0700
+Subject: [PATCH] Issue #744 (part of Issue #743): Enforce sandbox with very
+ long pathnames
+
+Because check_symlinks is handled separately from the deep-directory
+support, very long pathnames cause problems.  Previously, the code
+ignored most failures to lstat() a path component.  In particular,
+this led to check_symlinks always passing for very long paths, which
+in turn provides a way to evade the symlink checks in the sandboxing
+code.
+
+We now fail on unrecognized lstat() failures, which plugs this
+hole at the cost of disabling deep directory support when the
+user requests sandboxing.
+
+TODO:  This probably cannot be completely fixed without
+entirely reimplementing the deep directory support to
+integrate the symlink checks.  I want to reimplement the
+deep directory hanlding someday anyway; openat() and
+related system calls now provide a much cleaner way to
+handle deep directories than the chdir approach used by this
+code.
+---
+ libarchive/archive_write_disk_posix.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/libarchive/archive_write_disk_posix.c b/libarchive/archive_write_disk_posix.c
+index 39ee3b6..8f0421e 100644
+--- a/libarchive/archive_write_disk_posix.c
++++ b/libarchive/archive_write_disk_posix.c
+@@ -2401,8 +2401,18 @@ check_symlinks(struct archive_write_disk *a)
+ 		r = lstat(a->name, &st);
+ 		if (r != 0) {
+ 			/* We've hit a dir that doesn't exist; stop now. */
+-			if (errno == ENOENT)
++			if (errno == ENOENT) {
+ 				break;
++			} else {
++				/* Note: This effectively disables deep directory
++				 * support when security checks are enabled.
++				 * Otherwise, very long pathnames that trigger
++				 * an error here could evade the sandbox.
++				 * TODO: We could do better, but it would probably
++				 * require merging the symlink checks with the
++				 * deep-directory editing. */
++				return (ARCHIVE_FAILED);
++			}
+ 		} else if (S_ISLNK(st.st_mode)) {
+ 			if (c == '\0') {
+ 				/*

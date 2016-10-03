@@ -109,6 +109,17 @@ algorithms AES or Twofish.")
                (base32
                 "1y43yhgy2zbrk5bqj3qyx9rkcz2bma9sinlrg7dip3jqms9gq4lr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-shroud
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (ccachedir (string-append out "/lib/guile/2.0/ccache"))
+                    (prog      (string-append out "/bin/shroud")))
+               (wrap-program prog
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,ccachedir)))
+               #t))))))
     (inputs
      `(("guile" ,guile-2.0)
        ("gnupg" ,gnupg)

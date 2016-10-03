@@ -38,11 +38,11 @@
   (shepherd-service-type
    'rpcbind
    (lambda (config)
-     (define pkg
+     (define nfs-utils
        (rpcbind-configuration-rpcbind config))
 
      (define rpcbind-command
-       #~(list (string-append #$pkg "/bin/rpcbind") "-f"
+       #~(list (string-append #$nfs-utils "/bin/rpcbind") "-f"
                #$@(if (rpcbind-configuration-warm-start? config) '("-w") '())))
 
      (shepherd-service

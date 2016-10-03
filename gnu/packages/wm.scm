@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
+;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
@@ -59,6 +61,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages suckless)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -202,6 +205,92 @@ commands would.")
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
     (license license:bsd-3)))
+
+(define-public python-i3-py
+  (package
+    (name "python-i3-py")
+    (version "0.6.5")
+    (source
+     (origin
+       ;; The latest release is not tagged in Git nor has an entry in PyPi,
+       ;; but there is still a clear commit for it, and it's been the last one
+       ;; for years.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ziberna/i3-py.git")
+             (commit "27f88a616e9ecc340e7d041d3d00782f8a1964c1")))
+       (sha256
+        (base32
+         "1nm719dc2xqlll7vj4c4m7mpjb27lpn3bg3c66gajvnrz2x1nmxs"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests yet
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-doc
+                    ;; Copy readme file to documentation directory.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((doc (string-append (assoc-ref outputs "out")
+                                                "/share/doc/" ,name)))
+                        (install-file "README.md" doc)
+                        ;; Avoid unspecified return value.
+                        #t))))))
+    (propagated-inputs
+     `(("i3-wm" ,i3-wm)))
+    (home-page "https://github.com/ziberna/i3-py")
+    (synopsis "Python interface to the i3 window manager")
+    (description "This package allows you to interact from a Python program
+with the i3 window manager via its IPC socket.  It can send commands and other
+kinds of messages to i3, select the affected containers, filter results and
+subscribe to events.")
+    (license license:gpl3+)))
+
+(define-public python2-i3-py
+  (package-with-python2 python-i3-py))
+
+(define-public quickswitch-i3
+  (let ((commit "ed692b1e8f43b95bd907ced26238ce8ccb2ed28f")
+        (revision "1")) ; Guix package revision
+    (package
+      (name "quickswitch-i3")
+      (version (string-append "2.2-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         ;; The latest commit is a few years old and just a couple commits
+         ;; after the last tagged release, so we use that latest commit
+         ;; instead of the release.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/proxypoke/quickswitch-for-i3.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0447077sama80jcdg5p64zjsvafmz5rbdrirhm1adcdjhkh6iqc5"))
+         (patches (search-patches "quickswitch-fix-dmenu-check.patch"))
+         (file-name (string-append name "-" version "-checkout"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f ; no tests yet
+         #:phases (modify-phases %standard-phases
+                    (add-after 'install 'install-doc
+                      ;; Copy readme file to documentation directory.
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let ((doc (string-append (assoc-ref outputs "out")
+                                                  "/share/doc/" ,name)))
+                          (install-file "README.rst" doc)
+                          ;; Avoid unspecified return value.
+                          #t))))))
+      (inputs
+       `(("python-i3-py" ,python-i3-py)
+         ("dmenu" ,dmenu)))
+      (home-page "https://github.com/proxypoke/quickswitch-for-i3")
+      (synopsis "Quickly change to and locate windows in the i3 window manager")
+      (description
+       "This utility for the i3 window manager allows you to quickly switch to
+and locate windows on all your workspaces, using an interactive dmenu
+prompt.")
+      (license (license:non-copyleft "http://www.wtfpl.net/txt/copying/")))))
 
 (define-public xmonad
   (package

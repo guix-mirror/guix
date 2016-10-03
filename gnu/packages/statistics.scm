@@ -3042,6 +3042,31 @@ black-and-white.  They are also designed to be perceived by readers with the
 most common form of color blindness.")
     (license license:x11)))
 
+(define-public r-viridislite
+  (package
+    (name "r-viridislite")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "viridisLite" version))
+       (sha256
+        (base32
+         "1b0fhj8i1m9jsz91gzag60k7vy7kk5xkdg31rc3h3spq96l66psp"))))
+    (properties `((upstream-name . "viridisLite")))
+    (build-system r-build-system)
+    (home-page "https://github.com/sjmgarnier/viridisLite")
+    (synopsis "Default color maps from matplotlib")
+    (description
+     "This package is a port of the new @code{matplotlib} color maps ('viridis',
+'magma', 'plasma' and 'inferno') to R.  matplotlib is a popular plotting
+library for Python.  These color maps are designed in such a way that they
+will analytically be perfectly perceptually-uniform, both in regular form and
+also when converted to black-and-white.  They are also designed to be
+perceived by readers with the most common form of color blindness.  This is
+the 'lite' version of the more complete @code{viridis} package.")
+    (license license:expat)))
+
 (define-public r-tidyr
   (package
     (name "r-tidyr")
@@ -3094,30 +3119,58 @@ and tidyr provides no margins or aggregation.")
 It uses and relies on grid graphics and formal (S4) classes and methods.")
     (license license:gpl2+)))
 
+(define-public r-purrr
+  (package
+    (name "r-purrr")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "purrr" version))
+       (sha256
+        (base32
+         "0lss8q733nv7s154wargm6vnxq55qygnxakib8xdj4jv0y86sxc3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-dplyr" ,r-dplyr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/hadley/purrr")
+    (synopsis "Functional programming tools")
+    (description
+     "This package completes R's functional programming tools with missing
+features present in other programming languages.")
+    (license license:gpl3+)))
+
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "3.6.0")
+    (version "4.5.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "15hvqa0sf4z6l6vvr614zjszfphwpv66zpc665iyiynq0pd1jv2c"))))
+                "08shs0qhy9js0fpj3d4rzfbwmw11ki3z5vg8jszfm6m69mfkgzw1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
        ("r-digest" ,r-digest)
+       ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
        ("r-hexbin" ,r-hexbin)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
+       ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
-       ("r-plyr" ,r-plyr)
+       ("r-purrr" ,r-purrr)
        ("r-scales" ,r-scales)
+       ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
-       ("r-viridis" ,r-viridis)))
+       ("r-viridislite" ,r-viridislite)))
     (home-page "https://plot.ly/r")
     (synopsis "Create interactive web graphics")
     (description

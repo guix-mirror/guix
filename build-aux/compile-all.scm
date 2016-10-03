@@ -81,6 +81,9 @@
    (let ((files (filter file-needs-compilation? files)))
      (for-each load-module-file files)
      (let ((mutex (make-mutex)))
+       ;; Make sure compilation related modules are loaded before starting to
+       ;; compile files in parallel.
+       (compile #f)
        (par-for-each (lambda (file)
                        (compile-file* file mutex))
                      files)))))

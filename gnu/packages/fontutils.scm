@@ -426,9 +426,8 @@ resolution.")
     (version "0.9.13")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://savannah/releases/m17n/libotf-"
-                    version ".tar.gz"))
+              (uri (string-append "mirror://savannah/m17n/libotf-"
+                                  version ".tar.gz"))
               (sha256
                (base32 "0239zvfan56w7vrppriwy77fzb10ag9llaz15nsraps2a2x6di3v"))))
     (build-system gnu-build-system)

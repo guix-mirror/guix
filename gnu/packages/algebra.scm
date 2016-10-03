@@ -593,14 +593,14 @@ cosine/ sine transforms or DCT/DST).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.2.8")
+    (version "3.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0mby6my1djsg8681fcvlaq0i4kd17fja9qn5f713j3xpfbb66akj"))
+                "1zs5b210mq7nyanky07li6456rrd0xv2nxf6sl2lhkzdq5p067jd"))
               (file-name (string-append name "-" version ".tar.bz2"))
               (modules '((guix build utils)))
               (snippet
