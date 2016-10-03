@@ -33,6 +33,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system asdf)
   #:use-module (gnu packages base)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages bdw-gc)
@@ -521,3 +522,34 @@ simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
 The core is 12 builtin special forms and 33 builtin functions.")
       (home-page "https://github.com/JeffBezanson/femtolisp")
       (license license:bsd-3))))
+
+(define-public sbcl-alexandria
+  (let ((revision "1")
+        (commit "926a066611b7b11cb71e26c827a271e500888c30"))
+    (package
+      (name "sbcl-alexandria")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/alexandria/alexandria.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "18yncicdkh294j05rhgm23gzi36y9qy6vrfba8vg69jrxjp1hx8l"))
+         (file-name (string-append "alexandria-" version "-checkout"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Collection of portable utilities for Common Lisp")
+      (description
+       "Alexandria is a collection of portable utilities.  It does not contain
+conceptual extensions to Common Lisp.  It is conservative in scope, and
+portable between implementations.")
+      (home-page "https://common-lisp.net/project/alexandria/")
+      (license license:public-domain))))
+
+(define-public cl-alexandria
+  (sbcl-package->cl-source-package sbcl-alexandria))
+
+(define-public ecl-alexandria
+  (sbcl-package->ecl-package sbcl-alexandria))
