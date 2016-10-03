@@ -642,3 +642,33 @@ thin compatibility layer for gray streams.")
 
 (define-public ecl-trivial-gray-streams
   (sbcl-package->ecl-package sbcl-trivial-gray-streams))
+
+(define-public sbcl-flexi-streams
+  (package
+    (name "sbcl-flexi-streams")
+    (version "1.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/edicl/flexi-streams/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "16grnxvs7vqm5s6myf8a5s7vwblzq1kgwj8i7ahz8vwvihm9gzfi"))
+       (file-name (string-append "flexi-streams-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs `(("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (synopsis "Implementation of virtual bivalent streams for Common Lisp")
+    (description "Flexi-streams is an implementation of \"virtual\" bivalent
+streams that can be layered atop real binary or bivalent streams and that can
+be used to read and write character data in various single- or multi-octet
+encodings which can be changed on the fly.  It also supplies in-memory binary
+streams which are similar to string streams.")
+    (home-page "http://weitz.de/flexi-streams/")
+    (license license:bsd-3)))
+
+(define-public cl-flexi-streams
+  (sbcl-package->cl-source-package sbcl-flexi-streams))
+
+(define-public ecl-flexi-streams
+  (sbcl-package->ecl-package sbcl-flexi-streams))
