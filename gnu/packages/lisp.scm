@@ -610,3 +610,35 @@ support.")
 
 (define-public ecl-bordeaux-threads
   (sbcl-package->ecl-package sbcl-bordeaux-threads))
+
+(define-public sbcl-trivial-gray-streams
+  (let ((revision "1")
+        (commit "0483ade330508b4b2edeabdb47d16ec9437ee1cb"))
+    (package
+      (name "sbcl-trivial-gray-streams")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/trivial-gray-streams/trivial-gray-streams.git")
+           (commit commit)))
+         (sha256
+          (base32 "0m3rpf2x0zmdk3nf1qfa01j6a55vj7gkwhyw78qslcgbjlgh8p4d"))
+         (file-name
+          (string-append "trivial-gray-streams-" version "-checkout"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Compatibility layer for Gray streams implementations")
+      (description "Gray streams is an interface proposed for inclusion with
+ANSI CL by David N. Gray.  The proposal did not make it into ANSI CL, but most
+popular CL implementations implement it.  This package provides an extremely
+thin compatibility layer for gray streams.")
+      (home-page "http://www.cliki.net/trivial-gray-streams")
+      (license license:x11))))
+
+(define-public cl-trivial-gray-streams
+  (sbcl-package->cl-source-package sbcl-trivial-gray-streams))
+
+(define-public ecl-trivial-gray-streams
+  (sbcl-package->ecl-package sbcl-trivial-gray-streams))
