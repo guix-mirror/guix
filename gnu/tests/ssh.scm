@@ -31,7 +31,8 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
-  #:export (%test-openssh))
+  #:export (%test-openssh
+            %test-dropbear))
 
 (define %base-os
   (operating-system
@@ -74,6 +75,7 @@ empty-password logins."
                       %load-path)))
 
             (use-modules (gnu build marionette)
+                         (srfi srfi-26)
                          (srfi srfi-64)
                          (ice-9 match)
                          (ssh session)
@@ -139,16 +141,27 @@ empty-password logins."
                                             #:log-verbosity 'protocol)))
                 (match (connect! session)
                   ('ok
-                   (match (pk 'auth (userauth-password! session ""))
-                     ('success
-                      ;; FIXME: 'get-server-public-key' segfaults.
-                      ;; (get-server-public-key session)
-                      (let ((channel (make-channel session)))
-                        (channel-open-session channel)
-                        (channel-request-exec channel
-                                              "echo hello > /root/witness")
-                        (and (zero? (channel-get-exit-status channel))
-                             (wait-for-file "/root/witness")))))))))
+                   ;; Try the simple authentication methods.  Dropbear
+                   ;; requires 'none' when there are no passwords, whereas
+                   ;; OpenSSH accepts 'password' with an empty password.
+                   (let loop ((methods (list (cut userauth-password! <> "")
+                                             (cut userauth-none! <>))))
+                     (match methods
+                       (()
+                        (error "all the authentication methods failed"))
+                       ((auth rest ...)
+                        (match (pk 'auth (auth session))
+                          ('success
+                           ;; FIXME: 'get-server-public-key' segfaults.
+                           ;; (get-server-public-key session)
+                           (let ((channel (make-channel session)))
+                             (channel-open-session channel)
+                             (channel-request-exec channel
+                                                   "echo hello > /root/witness")
+                             (and (zero? (channel-get-exit-status channel))
+                                  (wait-for-file "/root/witness"))))
+                          ('denied
+                           (loop rest))))))))))
 
             (test-end)
             (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
@@ -167,3 +180,14 @@ empty-password logins."
                                   (permit-root-login #t)
                                   (allow-empty-passwords? #t)))
                         "/var/run/sshd.pid"))))
+
+(define %test-dropbear
+  (system-test
+   (name "dropbear")
+   (description "Connect to a running Dropbear SSH daemon.")
+   (value (run-ssh-test name
+                        (service dropbear-service-type
+                                 (dropbear-configuration
+                                  (root-login? #t)
+                                  (allow-empty-passwords? #t)))
+                        "/var/run/dropbear.pid"))))
