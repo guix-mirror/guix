@@ -109,6 +109,11 @@
    (name 'rottlog)
    (extensions (list (service-extension etc-service-type rottlog-etc)
                      (service-extension mcron-service-type
-                                        rottlog-jobs-or-default)))))
+                                        rottlog-jobs-or-default)
+
+                     ;; Add Rottlog to the global profile so users can access
+                     ;; the documentation.
+                     (service-extension profile-service-type
+                                        (compose list rottlog-rottlog))))))
 
 ;;; admin.scm ends here
