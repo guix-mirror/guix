@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,10 +45,12 @@
 ;;; Code:
 
 (define %rotated-files
-  '("/var/log/messages" "/var/log/secure"))
+  ;; Syslog files subject to rotation.
+  '("/var/log/messages" "/var/log/secure" "/var/log/maillog"))
 
-(define (syslog-rotation-config file)
-  #~(#$file " {
+(define (syslog-rotation-config files)
+  #~(string-append #$(string-join files ",")
+                 " {
         sharedscripts
         postrotate
         " #$coreutils "/bin/kill -HUP $(cat /var/run/syslog.pid) 2> /dev/null
@@ -58,8 +61,6 @@
 (define (simple-rotation-config file)
   (string-append file " {
         sharedscripts
-        postrotate
-        endscript
 }
 "))
 
@@ -68,12 +69,8 @@
      ,(computed-file "rottlog.weekly"
                      #~(call-with-output-file #$output
                          (lambda (port)
-                           (display
-                            (string-join
-                             (apply append '#$(map syslog-rotation-config
-                                                   %rotated-files))
-                             "")
-                            port)
+                           (display #$(syslog-rotation-config %rotated-files)
+                                    port)
                            (display #$(simple-rotation-config
                                        "/var/log/shepherd.log")
                                     port)))))))
