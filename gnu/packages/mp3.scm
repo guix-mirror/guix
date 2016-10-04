@@ -145,14 +145,14 @@ a highly stable and efficient implementation.")
 (define-public taglib
   (package
     (name "taglib")
-    (version "1.9.1")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://taglib.github.io/releases/taglib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06n7gnbcqa3r6c9gv00y0y1r48dyyazm6yj403i7ma0r2k6p3lvj"))))
+                "1alv6vp72p0x9i9yscmz2a71anjwqy53y9pbcbqxvc1c0i82vhr4"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))                    ;no 'test' target
     (inputs `(("zlib" ,zlib)))
