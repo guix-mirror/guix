@@ -775,14 +775,14 @@ effective code.")
 (define-public gnu-c-manual
   (package
     (name "gnu-c-manual")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gnu-c-manual/gnu-c-manual-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cf4503shr7hxkbrjfi9dky6q2lqk95bgbgbjmvj2s2x312kakd9"))))
+                "1sfsj9256w18qzylgag2h5h377aq8in8929svblfnj9svfriqcys"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)))
     (arguments
