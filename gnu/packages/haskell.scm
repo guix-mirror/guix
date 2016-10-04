@@ -1170,12 +1170,10 @@ version 1.3).")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-directory" ,ghc-directory)
        ("ghc-network" ,ghc-network)
        ("ghc-random" ,ghc-random)
        ("ghc-stm" ,ghc-stm)
        ("ghc-text" ,ghc-text)
-       ("ghc-transformers" ,ghc-transformers)
        ("ghc-zlib" ,ghc-zlib)))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
