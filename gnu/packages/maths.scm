@@ -185,7 +185,7 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.1")
+    (version "2.2.1")
     (source
      (origin
       (method url-fetch)
@@ -193,7 +193,7 @@ semiconductors.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0rhcia9jhr3p1f1wybwyllwqfs9bggz99i3mi5lpyqcpff1hdbar"))))
+        "095hp01d8lkqdvv0p1k25kvbisgfdmvx1rzpyc2i8kl2n33kvlhk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))
