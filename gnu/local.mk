@@ -300,6 +300,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pumpio.scm			\
   %D%/packages/pretty-print.scm			\
   %D%/packages/protobuf.scm			\
+  %D%/packages/psyc.scm                         \
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/qemu.scm				\
