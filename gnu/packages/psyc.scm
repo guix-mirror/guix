@@ -21,7 +21,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages web))
@@ -104,3 +107,39 @@ for @uref{https://torproject.org,tor} router) and many more.")
                    license:public-domain
                    ;; bin/psycplay states AGPL with no version:
                    license:agpl3+))))
+
+(define-public libpsyc
+  (package
+    (name "libpsyc")
+    (version "20160913")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.psyced.org/files/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14q89fxap05ajkfn20rnhc6b1h4i3i2adyr7y6hs5zqwb2lcmc1p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("netcat" ,netcat)
+       ("procps" ,procps)))
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The rust bindings are the only ones in use, the lpc bindings
+         ;; are in psyclpc.  The other bindings are not used by anything,
+         ;; the chances are high that the bindings do not even work,
+         ;; therefore we do not include them.
+         ;; TODO: Get a cargo build system in Guix.
+         (delete 'configure)))) ; no configure script
+    (home-page "http://about.psyc.eu/libpsyc")
+    (description
+     "@code{libpsyc} is a PSYC library in C which implements
+core aspects of PSYC, useful for all kinds of clients and servers
+including psyced.")
+    (synopsis "PSYC library in C")
+    (license license:agpl3+)))
