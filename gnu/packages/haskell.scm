@@ -6364,6 +6364,49 @@ dependency that depends on a large C library, and @code{rfc5051} might be
 better for some purposes.")
     (license license:bsd-3)))
 
+(define-public ghc-conduit-extra
+  (package
+    (name "ghc-conduit-extra")
+    (version "1.1.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "conduit-extra/conduit-extra-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "108vsn9dpsfwvar7nssw6wkqy26rxlf3p4ran6swa5xh8l6d5k4z"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-text" ,ghc-text)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-async" ,ghc-async)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-network" ,ghc-network)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)))
+    (home-page "http://github.com/snoyberg/conduit")
+    (synopsis "Conduit adapters for common libraries")
+    (description
+     "The @code{conduit} package itself maintains relative small dependencies.
+The purpose of this package is to collect commonly used utility functions
+wrapping other library dependencies, without depending on heavier-weight
+dependencies.  The basic idea is that this package should only depend on
+@code{haskell-platform} packages and @code{conduit}.")
+    (license license:expat)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
