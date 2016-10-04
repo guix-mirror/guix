@@ -210,16 +210,27 @@ application (for console or X terminals) and requires ncurses.")
 (define-public pies
   (package
     (name "pies")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/pies/pies-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "18w0dbg77i56cx1bwa789w0qi3l4xkkbascxcv2b6gbm0zmjg1g6"))))
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/pies/pies-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "12r7rjjyibjdj08dvwbp0iflfpzl4s0zhn6cr6zj3hwf9gbzgl1g"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'patch-/bin/sh
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Use the right shell when executing user-provided
+                      ;; shell commands.
+                      (let ((bash (assoc-ref inputs "bash")))
+                        (substitute* "src/progman.c"
+                          (("\"/bin/sh\"")
+                           (string-append "\"" bash "/bin/sh\"")))
+                        #t))))))
     (home-page "http://www.gnu.org/software/pies/")
     (synopsis "Program invocation and execution supervisor")
     (description
