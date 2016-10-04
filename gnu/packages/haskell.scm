@@ -6318,6 +6318,29 @@ definition lists, tables, and other features.  A compatibility mode is
 provided for those who need a drop-in replacement for Markdown.pl.")
     (license license:gpl2+)))
 
+(define-public ghc-hs-bibutils
+  (package
+    (name "ghc-hs-bibutils")
+    (version "5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hs-bibutils/hs-bibutils-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0pf5lh179rw9jkmw16ss3kiwydlj6zgfk868mjl5s57kx55z7ycm"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-syb" ,ghc-syb)))
+    (home-page "https://hackage.haskell.org/package/hs-bibutils")
+    (synopsis "Haskell bindings to bibutils")
+    (description
+     "This package provides Haskell bindings to @code{bibutils}, a library
+that interconverts between various bibliography formats using a common
+MODS-format XML intermediate.")
+    (license license:gpl2+)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
