@@ -65,6 +65,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -3737,3 +3738,35 @@ standalone and does not need inetd or ucspi-tcp.  It does not need any
 config files---you only have to specify the www root.")
     (home-page "https://unix4lyfe.org/darkhttpd/")
     (license l:isc)))
+
+(define-public goaccess
+  (package
+    (name "goaccess")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://tar.goaccess.io/goaccess-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1w84y61f3ldg2f28q6qlyr1scn3mcx0bsbq3i5xi5w193wh3xa2q"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "src/error.h"
+                  (("__DATE__") "\"1970-01-01\"")
+                  (("__TIME__") "\"00:00:00\"")))))
+    (build-system gnu-build-system)
+    (inputs
+     ;; TODO: Add dependency on geoip-tools.
+     `(("glib" ,glib)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://goaccess.io")
+    (synopsis "Analyze Web server logs in real time")
+    (description
+     "GoAccess is a real-time web log analyzer and interactive viewer that
+runs in a terminal or through your browser.  It provides fast and valuable
+HTTP statistics for system administrators that require a visual server report
+on the fly.")
+    (license l:x11)))
