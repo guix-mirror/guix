@@ -26,18 +26,14 @@
 (define-public rush
   (package
     (name "rush")
-    (version "1.7")
+    (version "1.8")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "mirror://gnu/rush/rush-"
-                   version
-                   ".tar.gz"))
+             (uri (string-append "mirror://gnu/rush/rush-"
+                                 version ".tar.gz"))
              (sha256
               (base32
-               "0fh0gbbp0iiq3wbkf503xb40r8ljk42vyj9bnlflbz82d6ipy1rm"))
-             (patches (search-patches "cpio-gets-undeclared.patch"
-                                      "rush-CVE-2013-6889.patch"))))
+               "1vxdb81ify4xcyygh86250pi50krb16dkj42i5ii4ns3araiwckz"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/rush/")
     (synopsis "Restricted user (login) shell")
