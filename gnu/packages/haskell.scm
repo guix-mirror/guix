@@ -6461,6 +6461,61 @@ documents.")
 the @code{conduit} package.")
     (license license:expat)))
 
+(define-public ghc-pandoc-citeproc
+  (package
+    (name "ghc-pandoc-citeproc")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "pandoc-citeproc/pandoc-citeproc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "00mprphppk51ylsrkg817mbk23f9fsfvkwzbys9qqbcjbrxi2r94"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests need to be run after installation.
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           (assoc-ref %standard-phases 'check)))))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-pandoc-types" ,ghc-pandoc-types)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-setenv" ,ghc-setenv)
+       ("ghc-split" ,ghc-split)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-hs-bibutils" ,ghc-hs-bibutils)
+       ("ghc-rfc5051" ,ghc-rfc5051)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-temporary" ,ghc-temporary)))
+    (home-page "https://github.com/jgm/pandoc-citeproc")
+    (synopsis "Library for using pandoc with citeproc")
+    (description
+     "The @code{pandoc-citeproc} library exports functions for using the
+citeproc system with pandoc.  It relies on @code{citeproc-hs}, a library for
+rendering bibliographic reference citations into a variety of styles using a
+macro language called @dfn{Citation Style Language} (CSL).  This package also
+contains an executable @code{pandoc-citeproc}, which works as a pandoc filter,
+and also has a mode for converting bibliographic databases a YAML format
+suitable for inclusion in pandoc YAML metadata.")
+    (license license:bsd-3)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
