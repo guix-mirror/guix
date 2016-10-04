@@ -6427,6 +6427,40 @@ dependencies.  The basic idea is that this package should only depend on
 documents.")
     (license license:expat)))
 
+(define-public ghc-xml-conduit
+  (package
+    (name "ghc-xml-conduit")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/xml-conduit/"
+                           "xml-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10yw8jiksw21jgwqjjd1ixflavcblisgkp9qq3ba05vadc35lqr5"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-text" ,ghc-text)
+       ("ghc-xml-types" ,ghc-xml-types)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://github.com/snoyberg/xml")
+    (synopsis "Utilities for dealing with XML with the conduit package")
+    (description
+     "This package provides pure-Haskell utilities for dealing with XML with
+the @code{conduit} package.")
+    (license license:expat)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
