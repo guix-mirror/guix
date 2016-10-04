@@ -150,8 +150,8 @@ TARGET (e.g., \"/dev/md0\"), using 'mdadm'."
           (sleep 1)
           (loop (+ 1 attempts))))
 
-      (zero? (system* (string-append #$mdadm "/sbin/mdadm")
-                      "--assemble" #$target sources))))
+      (zero? (apply system* (string-append #$mdadm "/sbin/mdadm")
+                    "--assemble" #$target sources))))
 
 (define (close-raid-device sources target)
   "Return a gexp that stops the RAID device TARGET."
