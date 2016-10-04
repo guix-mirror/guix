@@ -1,0 +1,16 @@
+Remove the reference to the compilation date so that the build is
+reproducible.
+
+diff --git a/src/metabat.cpp b/src/metabat.cpp
+index 88e06de..c95cb1a 100644
+--- a/src/metabat.cpp
++++ b/src/metabat.cpp
+@@ -49,7 +49,7 @@ int main(int ac, char* av[]) {
+ 	po::notify(vm);
+ 
+ 	if (vm.count("help") || inFile.length() == 0 || outFile.length() == 0) {
+-		cerr << "\nMetaBAT: Metagenome Binning based on Abundance and Tetranucleotide frequency (version " << version << "; " << __DATE__ << " " << __TIME__ << ")" << endl;
++		cerr << "\nMetaBAT: Metagenome Binning based on Abundance and Tetranucleotide frequency (version " << version << "; unknown compilation date)" << endl;
+ 		cerr << "by Don Kang (ddkang@lbl.gov), Jeff Froula, Rob Egan, and Zhong Wang (zhongwang@lbl.gov) \n" << endl;
+ 		cerr << desc << endl << endl;
+ 

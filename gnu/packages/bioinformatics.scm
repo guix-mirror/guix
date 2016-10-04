@@ -3221,18 +3221,23 @@ form of assemblies or reads.")
                    license:cpl1.0))))     ; Open Bloom Filter
 
 (define-public metabat
-  (package
-    (name "metabat")
-    (version "0.26.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://bitbucket.org/berkeleylab/metabat/get/"
-                    version ".tar.bz2"))
-              (file-name (string-append name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1vpfvgsn8wdsv1g7z73zxcncskx7dy7bw5msg1hhibk25ay11pyg"))))
+  ;; We package from a git commit because compilation of the released version
+  ;; fails.
+  (let ((commit "cbdca756993e66ae57e50a27970595dda9cbde1b"))
+    (package
+      (name "metabat")
+      (version (string-append "0.32.4-1." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://bitbucket.org/berkeleylab/metabat.git")
+               (commit commit)))
+         (file-name (string-append name "-" version))
+         (sha256
+          (base32
+           "0byia8nsip6zvc4ha0qkxkxxyjf4x7jcvy48q2dvb0pzr989syzr"))
+         (patches (search-patches "metabat-remove-compilation-date.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3299,7 +3304,7 @@ enables the study of individual organisms and their interactions.  MetaBAT is
 an automated metagenome binning software, which integrates empirical
 probabilistic distances of genome abundance and tetranucleotide frequency.")
    (license (license:non-copyleft "file://license.txt"
-                                  "See license.txt in the distribution."))))
+                                  "See license.txt in the distribution.")))))
 
 (define-public minced
   (package
