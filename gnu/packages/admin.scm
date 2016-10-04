@@ -1180,14 +1180,14 @@ environment variable is set and output is to tty.")
 (define-public direvent
   (package
     (name "direvent")
-    (version "5.0")
+    (version "5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/direvent/direvent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1i14131y6m8wvirz6piw4zxz2q1kbpl0lniv5kl55rx4k372dg8z"))
+                "1nwvjmx7kb14ni34c0b8x9a3791pc20gvhj7xaj66d8q4h6n0qf4"))
               (modules '((guix build utils)))
               (snippet '(substitute* "tests/testsuite"
                           (("#![[:blank:]]?/bin/sh")
@@ -1197,11 +1197,19 @@ environment variable is set and output is to tty.")
      '(#:phases (alist-cons-before
                  'build 'patch-/bin/sh
                  (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Use the right shell when executing the watcher.
+                   ;; Use the right shell when executing the watcher and
+                   ;; user-provided shell commands.
                    (let ((bash (assoc-ref inputs "bash")))
-                     (substitute* "src/direvent.c"
+                     (substitute* '("src/direvent.c" "src/progman.c")
                        (("\"/bin/sh\"")
-                        (string-append "\"" bash "/bin/sh\"")))))
+                        (string-append "\"" bash "/bin/sh\"")))
+
+                     ;; Adjust the 'shell.at' test accordingly.
+                     (substitute* "tests/testsuite"
+                       (("SHELL=/bin/sh")
+                        (string-append "SHELL=" bash "/bin/sh")))
+
+                     #t))
                  %standard-phases)))
     (home-page "http://www.gnu.org/software/direvent/")
     (synopsis "Daemon to monitor directories for events such as file removal")
