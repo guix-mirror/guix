@@ -98,6 +98,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
     (inputs
      `(("bc" ,bc)
        ("ncurses" ,ncurses)
+       ("pcre2" ,pcre2)               ;don't use the bundled PCRE2
        ("python" ,python-wrapper)))   ;for fish_config and manpage completions
     (arguments
      '(#:tests? #f ; no check target
