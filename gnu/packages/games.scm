@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -2700,17 +2700,19 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.4.0")
+   (version "0.5.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "https://github.com/SuperTux/supertux/releases/"
-                                "download/v" version
-                                "/supertux-" version ".tar.bz2"))
+            (uri (string-append "https://github.com/SuperTux/supertux/"
+                                "releases/download/v" version "/SuperTux-v"
+                                version "-Source.tar.gz"))
             (sha256
              (base32
-              "10ppmy6w77lxj8bdzjahc9bidgl4qgzr9rimn15rnqay84ydx3fi"))))
-   (arguments '(#:tests? #f
-                #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin")))
+              "0fx7c7m6mfanqy7kln7yf6abb5l3r68picf32js2yls11jj0vbng"))))
+   (arguments
+    '(#:tests? #f
+      #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
+                          "-DENABLE_BOOST_STATIC_LIBS=OFF")))
    (build-system cmake-build-system)
    (inputs `(("sdl2" ,sdl2)
              ("sdl2-image" ,sdl2-image)
