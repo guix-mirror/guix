@@ -6407,6 +6407,26 @@ dependencies.  The basic idea is that this package should only depend on
 @code{haskell-platform} packages and @code{conduit}.")
     (license license:expat)))
 
+(define-public ghc-xml-types
+  (package
+    (name "ghc-xml-types")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/xml-types/"
+                           "xml-types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jgqxsa9p2q3h6nymbfmvhldqrqlwrhrzmwadlyc0li50x0d8dwr"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-text" ,ghc-text)))
+    (home-page "https://john-millikin.com/software/haskell-xml/")
+    (synopsis "Basic types for representing XML")
+    (description "This package provides basic types for representing XML
+documents.")
+    (license license:expat)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
