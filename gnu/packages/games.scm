@@ -2409,7 +2409,7 @@ capture it and get out alive?")
 (define-public warzone2100
   (package
     (name "warzone2100")
-    (version "3.1.5")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name
@@ -2417,16 +2417,22 @@ capture it and get out alive?")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0hm49i2knvvg3wlnryv7h4m84s3qa7jfyym5yy6365sx8wzcrai1"))))
+                "1nd609s0g4sya3r4amhkz3f4dpdmm94vsd2ii76ap665a1nbfrhg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'set-paths 'set-sdl-paths
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (setenv "CPATH"
-                              (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL"))
-                      #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-tests-with-qt
+           (lambda _
+             (substitute* "tests/Makefile.in"
+               (("(framework_linktest_LDADD|maptest_LDADD) = " prefix)
+                (string-append prefix "$(QT5_LIBS) ")))
+             #t))
+         (add-after 'unpack 'remove-reference-to-missing-file
+           (lambda _
+             (substitute* "icons/Makefile.in"
+               (("\\$\\(INSTALL_DATA\\) \\$\\(srcdir\\)/warzone2100.appdata.xml.*") ""))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("unzip" ,unzip)
                      ("zip" ,zip)))
@@ -2439,9 +2445,10 @@ capture it and get out alive?")
               ("libxrandr" ,libxrandr)
               ("openal" ,openal)
               ("physfs" ,physfs)
-              ("qt", qt-4)
+              ("qt" ,qt)
+              ("openssl" ,openssl)
               ("quesoglc" ,quesoglc)
-              ("sdl-union" ,(sdl-union))))
+              ("sdl2" ,sdl2)))
     (home-page "http://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
     (description
