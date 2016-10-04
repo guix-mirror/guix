@@ -6341,6 +6341,29 @@ that interconverts between various bibliography formats using a common
 MODS-format XML intermediate.")
     (license license:gpl2+)))
 
+(define-public ghc-rfc5051
+  (package
+    (name "ghc-rfc5051")
+    (version "0.1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/rfc5051/"
+                           "rfc5051-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0av4c3qvwbkbzrjrrg601ay9pds7wscqqp2lc2z78mv2lllap3g3"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/rfc5051")
+    (synopsis "Simple unicode collation as per RFC5051")
+    (description
+     "This library implements @code{unicode-casemap}, the simple, non
+locale-sensitive unicode collation algorithm described in RFC 5051.  Proper
+unicode collation can be done using @code{text-icu}, but that is a big
+dependency that depends on a large C library, and @code{rfc5051} might be
+better for some purposes.")
+    (license license:bsd-3)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
