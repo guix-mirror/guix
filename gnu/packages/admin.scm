@@ -1865,3 +1865,60 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
     (license license:gpl1+)))
 
 ;;http://archives.eyrie.org/software/kerberos/pam-krb5-4.7.tar.xz
+
+(define-public sunxi-tools
+  (package
+    (name "sunxi-tools")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/linux-sunxi/"
+                           "sunxi-tools/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "1iazm28gws1i8sls3gxwc5p108n56ags287zmh1rpvkn2k1az81a"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove binaries contained in the tarball which are only for the
+        ;; target and can be regenerated anyway.
+        '(delete-file-recursively "bin"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests exist
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          "TARGET_TOOLS=sunxi-pio sunxi-meminfo"
+                          "CROSS_COMPILE=")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; Upstream adds Makefile and config.h as dependencies
+               ;; of all their tools which means $^ would pass them to gcc.
+               ;; gcc won't know what to do with a Makefile.
+               (("-o [$][@] [$]\\^") "-o $@ meminfo.c"))
+             #t))
+         (delete 'configure))))
+    (home-page "https://github.com/linux-sunxi/sunxi-tools")
+    (synopsis "Hardware management tools for Allwinner computers")
+    (description "This package contains tools for Allwinner devices:
+@enumerate
+@item @command{sunxi-fexc}, @command{bin2fex}, @command{fex2bin}: Compile
+a textual description of a board (.fex) to a binary representation (.bin).
+@item @command{sunxi-fel}: Puts an Allwinner device into FEL mode which
+makes it register as a special USB device (rather than USB host).
+You can then connect it to another computer and flash it from there.
+@item @command{sunxi-nand-part}: Partitions NAND flash.
+@item @command{sunxi-bootinfo}: Reads out boot0 and boot1 (Allwinner
+bootloader) parameters.
+@item @command{sunxi-pio}: Sets GPIO parameters and oscillates a GPIO
+in order to be able to find it.
+@item @command{sunxi-meminfo}: Prints memory bus settings.
+@end enumerate")
+    (license license:gpl2+)))
