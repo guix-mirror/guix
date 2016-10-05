@@ -896,15 +896,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5310.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5314.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5315.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5316.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4476.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt1.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt2.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt3.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt4.patch	\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\

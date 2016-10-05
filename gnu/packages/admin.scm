@@ -862,7 +862,7 @@ commands and their arguments.")
 (define-public wpa-supplicant-minimal
   (package
     (name "wpa-supplicant-minimal")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -871,17 +871,7 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "05mkp5bx1c3z7h5biddsv0p49gkrq9ksany3anp4wdiv92p5prfc"))
-              (patches
-               (search-patches "wpa-supplicant-CVE-2015-5310.patch"
-                               "wpa-supplicant-CVE-2015-5314.patch"
-                               "wpa-supplicant-CVE-2015-5315.patch"
-                               "wpa-supplicant-CVE-2015-5316.patch"
-                               "wpa-supplicant-CVE-2016-4476.patch"
-                               "wpa-supplicant-CVE-2016-4477-pt1.patch"
-                               "wpa-supplicant-CVE-2016-4477-pt2.patch"
-                               "wpa-supplicant-CVE-2016-4477-pt3.patch"
-                               "wpa-supplicant-CVE-2016-4477-pt4.patch"))))
+                "0l0l5gz3d5j9bqjsbjlfcv4w4jwndllp9fmyai4x9kg6qhs6v4xl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
