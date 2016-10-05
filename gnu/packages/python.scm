@@ -763,7 +763,7 @@ concepts.")
     (arguments '(#:test-target "check"))
     (native-inputs
      `(("python-pbr" ,python-pbr)))
-    (home-page "http://code.google.com/p/pylockfile/")
+    (home-page "https://launchpad.net/pylockfile")
     (synopsis "Platform-independent file locking module")
     (description
      "The lockfile package exports a LockFile class which provides a simple
