@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -51,7 +51,7 @@
 
                                ;; Provide the `result' field in `Tcl_Interp'.
                                ;; See <https://bugs.gentoo.org/show_bug.cgi?id=452034>.
-                               "CFLAGS=-DUSE_INTERP_RESULT")
+                               "CFLAGS=-DUSE_INTERP_RESULT -O2")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'post-install
