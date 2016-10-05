@@ -5181,6 +5181,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
+    (replacement libx11/fixed)
     (version "1.6.3")
     (source
       (origin
@@ -5213,6 +5214,14 @@ draggable titlebars and borders.")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
 
+(define libx11/fixed
+  (package
+    (inherit libx11)
+    (source (origin
+              (inherit (package-source libx11))
+              (patches (search-patches
+                         "libx11-CVE-2016-7942.patch"
+                         "libx11-CVE-2016-7943.patch"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
