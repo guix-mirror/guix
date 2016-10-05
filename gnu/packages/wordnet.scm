@@ -51,7 +51,22 @@
 
                                ;; Provide the `result' field in `Tcl_Interp'.
                                ;; See <https://bugs.gentoo.org/show_bug.cgi?id=452034>.
-                               "CFLAGS=-DUSE_INTERP_RESULT -O2")
+                               ;;
+                               ;; The 'DEFAULTPATH' string literal, which
+                               ;; contains the output path, only appears as
+                               ;; the operand of one 'strcpy' call.  As a
+                               ;; consequence, GCC does not store the string
+                               ;; literal as is but instead introduces "gaps"
+                               ;; for alignment reasons presumably---like
+                               ;; "/gnu/sto?????re/8jp8b??????ky105…".  This
+                               ;; makes this string invisible to the GC, which
+                               ;; in turns causes problems when running a
+                               ;; grafted WordNet because that grafted WordNet
+                               ;; keeps referring to the ungrafted variant,
+                               ;; which is not protected from GC.  Thus,
+                               ;; disable use of '__builtin_strcpy' to avoid
+                               ;; that.
+                               "CFLAGS=-DUSE_INTERP_RESULT -O2 -fno-builtin-strcpy")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'post-install
