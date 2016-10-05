@@ -676,6 +676,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libxrandr-CVE-2016-7947-CVE-2016-7948.patch	\
   %D%/packages/patches/libxrender-CVE-2016-7949.patch		\
   %D%/packages/patches/libxrender-CVE-2016-7950.patch		\
+  %D%/packages/patches/libxtst-CVE-2016-7951-CVE-2016-7952.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-for-extempore.patch			\

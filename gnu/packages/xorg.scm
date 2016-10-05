@@ -4639,6 +4639,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxtst
   (package
     (name "libxtst")
+    (replacement libxtst/fixed)
     (version "1.2.2")
     (source
       (origin
@@ -4674,6 +4675,13 @@ The RECORD extension supports the recording and reporting of all core X
 protocol and arbitrary X extension protocol.")
     (license license:x11)))
 
+(define libxtst/fixed
+  (package
+    (inherit libxtst)
+    (source (origin
+              (inherit (package-source libxtst))
+              (patches (search-patches
+                         "libxtst-CVE-2016-7951-CVE-2016-7952.patch"))))))
 
 (define-public libxv
   (package
