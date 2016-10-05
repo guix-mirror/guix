@@ -837,22 +837,15 @@ glyph designs, not just an added slant.")
                                                              "unzip")
                                                   "/bin"))
                          (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
+                                                  "/share/fonts/truetype")))
                      (setenv "PATH" PATH)
                      (system* "unzip" (assoc-ref %build-inputs "source"))
 
                      (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
                      (for-each (lambda (ttf)
                                  (copy-file ttf
                                             (string-append font-dir "/" ttf)))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/" doc)))
-                               (find-files "." "\\.txt$"))))))
+                               (find-files "." "\\.ttf$"))))))
     (native-inputs
      `(("source" ,source)
        ("unzip" ,unzip)))
