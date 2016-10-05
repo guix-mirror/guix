@@ -4998,6 +4998,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
+    (replacement libxvmc/fixed)
     (version "1.0.9")
     (source
       (origin
@@ -5023,6 +5024,13 @@ new API's in libXft, or the legacy API's in libX11.")
     (description "Xorg XvMC library.")
     (license license:x11)))
 
+(define libxvmc/fixed
+  (package
+    (inherit libxvmc)
+    (source (origin
+              (inherit (package-source libxvmc))
+              (patches (search-patches
+                         "libxvmc-CVE-2016-7953.patch"))))))
 
 (define-public libxxf86vm
   (package
