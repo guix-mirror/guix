@@ -4848,8 +4848,7 @@ an X Window System display.")
 (define-public libxfixes
   (package
     (name "libxfixes")
-    (replacement libxfixes/fixed)
-    (version "5.0.2")
+    (version "5.0.3")
     (source
       (origin
         (method url-fetch)
@@ -4859,7 +4858,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1slsk898386xii0r3l7szwwq3s6y2m4dsj0x93ninjh8xkghxllv"))))
+            "1miana3y4hwdqdparsccmygqr3ic3hs5jrqfzp70hvi2zwxd676y"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fixesproto" ,fixesproto)))
@@ -4872,14 +4871,6 @@ an X Window System display.")
     (synopsis "Xorg Fixes Extension library")
     (description "Library for the XFixes Extension to the X11 protocol.")
     (license license:x11)))
-
-(define libxfixes/fixed
-  (package
-    (inherit libxfixes)
-    (source (origin
-              (inherit (package-source libxfixes))
-              (patches (search-patches
-                         "libxfixes-CVE-2016-7944.patch"))))))
 
 (define-public libxfont
   (package
