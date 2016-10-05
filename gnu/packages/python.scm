@@ -900,7 +900,7 @@ etc.).  The package is structured to make adding new modules easy.")
      `(("python-pycrypto" ,python-pycrypto)))
     (arguments
      `(#:tests? #f))                      ;TODO: tests require pytest
-    (home-page "http://bitbucket.org/kang/python-keyring-lib")
+    (home-page "https://github.com/jaraco/keyring")
     (synopsis "Store and access your passwords safely")
     (description
      "The Python keyring lib provides a easy way to access the system keyring
