@@ -4943,8 +4943,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (replacement libxvmc/fixed)
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
@@ -4954,7 +4953,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0mjp1b21dvkaz7r0iq085r92nh5vkpmx99awfgqq9hgzyvgxf0q7"))))
+            "0bpffxr5dal90a8miv2w0rif61byqxq2f5angj4z1bnznmws00g5"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
@@ -4968,14 +4967,6 @@ new API's in libXft, or the legacy API's in libX11.")
     (synopsis "Xorg XvMC library")
     (description "Xorg XvMC library.")
     (license license:x11)))
-
-(define libxvmc/fixed
-  (package
-    (inherit libxvmc)
-    (source (origin
-              (inherit (package-source libxvmc))
-              (patches (search-patches
-                         "libxvmc-CVE-2016-7953.patch"))))))
 
 (define-public libxxf86vm
   (package
