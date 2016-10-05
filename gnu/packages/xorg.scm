@@ -4602,6 +4602,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
+    (replacement libxrender/fixed)
     (version "0.9.9")
     (source
       (origin
@@ -4626,6 +4627,14 @@ cannot be adequately worked around on the client side of the wire.")
     (description "Library for the Render Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxrender/fixed
+  (package
+    (inherit libxrender)
+    (source (origin
+              (inherit (package-source libxrender))
+              (patches (search-patches
+                         "libxrender-CVE-2016-7949.patch"
+                         "libxrender-CVE-2016-7950.patch"))))))
 
 (define-public libxtst
   (package
