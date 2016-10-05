@@ -8849,7 +8849,12 @@ be done easily through operators, attribute accesses, and method calls.
 comparing Windows paths ignores casing.
 @item Well-defined semantics, eliminating any inconsistencies or
 ambiguities (forward vs. backward slashes, etc.).
-@end enumerate\n")
+@end enumerate
+
+Note: In Python 3.4, pathlib is now part of the standard library.  For other
+Python versions please consider python-pathlib2 instead, which tracks the
+standard library module.  This module (python-pathlib) isn't maintained
+anymore.")
     (license license:expat)))
 
 (define-public python2-pathlib
