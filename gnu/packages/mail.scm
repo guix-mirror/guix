@@ -499,18 +499,18 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.22.1")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jwpda3q023dn3sp41n8648951i7iagfv8zzpriv7hpkjivlafg7"))))
+                "1f51l34rdhjf8lvafrwybkxdsdwx8k9397m7qxd8rdg2irjmpry5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; FIXME: 694 tests; 170 fail and 100 are skipped
-                   ; with perl input: 50 fail and 100 are skipped
+     '(#:tests? #f ; FIXME: 723 tests; 187 fail and 100 are skipped
+                   ; with perl input: 67 fail and 100 are skipped
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -533,7 +533,7 @@ invoking @command{notifymuch} from the post-new hook.")
        ("talloc" ,talloc)
        ("xapian" ,xapian)
        ("zlib" ,zlib)))
-    (home-page "http://notmuchmail.org/")
+    (home-page "https://notmuchmail.org/")
     (synopsis "Thread-based email index, search, and tagging")
     (description
      "Notmuch is a command-line based program for indexing, searching, read-
@@ -584,7 +584,7 @@ useful for email address completion.")
 (define-public python-notmuch
   (package
     (name "python-notmuch")
-    (version "0.22.1")
+    (version (package-version notmuch))
     ;; Notmuch python bindings are now unavailable on pypi.  The
     ;; bindings are distributed via the notmuch release tarball.
     (source (package-source notmuch))
@@ -606,7 +606,7 @@ useful for email address completion.")
                  (("libnotmuch\\.so\\.")
                   (string-append notmuch "/lib/libnotmuch.so.")))
                #t))))))
-    (home-page "http://notmuchmail.org/")
+    (home-page (package-home-page notmuch))
     (synopsis "Python bindings of the Notmuch mail indexing library")
     (description
      "This package provides Python bindings to use the Notmuch mail indexing
