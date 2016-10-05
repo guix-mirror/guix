@@ -186,14 +186,14 @@ semiconductors.")
   (package
     (name "gsl")
     (version "2.2.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/gsl/gsl-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "095hp01d8lkqdvv0p1k25kvbisgfdmvx1rzpyc2i8kl2n33kvlhk"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gsl/gsl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "095hp01d8lkqdvv0p1k25kvbisgfdmvx1rzpyc2i8kl2n33kvlhk"))
+              (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))
