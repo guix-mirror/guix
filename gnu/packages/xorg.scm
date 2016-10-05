@@ -4823,6 +4823,7 @@ an X Window System display.")
 (define-public libxfixes
   (package
     (name "libxfixes")
+    (replacement libxfixes/fixed)
     (version "5.0.1")
     (source
       (origin
@@ -4847,6 +4848,13 @@ an X Window System display.")
     (description "Library for the XFixes Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxfixes/fixed
+  (package
+    (inherit libxfixes)
+    (source (origin
+              (inherit (package-source libxfixes))
+              (patches (search-patches
+                         "libxfixes-CVE-2016-7944.patch"))))))
 
 (define-public libxfont
   (package
