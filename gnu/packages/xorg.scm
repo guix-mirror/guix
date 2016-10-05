@@ -4686,6 +4686,7 @@ protocol and arbitrary X extension protocol.")
 (define-public libxv
   (package
     (name "libxv")
+    (replacement libxv/fixed)
     (version "1.0.10")
     (source
       (origin
@@ -4711,6 +4712,13 @@ protocol and arbitrary X extension protocol.")
     (description "Library for the X Video Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxv/fixed
+  (package
+    (inherit libxv)
+    (source (origin
+              (inherit (package-source libxv))
+              (patches (search-patches
+                         "libxv-CVE-2016-5407.patch"))))))
 
 (define-public mkfontdir
   (package
