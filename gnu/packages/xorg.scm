@@ -4602,8 +4602,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
-    (replacement libxrender/fixed)
-    (version "0.9.9")
+    (version "0.9.10")
     (source
       (origin
         (method url-fetch)
@@ -4613,7 +4612,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06myx7044qqdswxndsmd82fpp670klnizkgzdm194h51h1wyabzw"))))
+            "0j89cnb06g8x79wmmnwzykgkkfdhin9j7hjpvsxwlr3fz1wmjvf0"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("renderproto" ,renderproto)))
@@ -4626,15 +4625,6 @@ cannot be adequately worked around on the client side of the wire.")
     (synopsis "Xorg Render Extension library")
     (description "Library for the Render Extension to the X11 protocol.")
     (license license:x11)))
-
-(define libxrender/fixed
-  (package
-    (inherit libxrender)
-    (source (origin
-              (inherit (package-source libxrender))
-              (patches (search-patches
-                         "libxrender-CVE-2016-7949.patch"
-                         "libxrender-CVE-2016-7950.patch"))))))
 
 (define-public libxtst
   (package
