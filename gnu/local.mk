@@ -668,7 +668,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
-  %D%/packages/patches/libxrandr-CVE-2016-7947-CVE-2016-7948.patch	\
   %D%/packages/patches/libxrender-CVE-2016-7949.patch		\
   %D%/packages/patches/libxrender-CVE-2016-7950.patch		\
   %D%/packages/patches/libxtst-CVE-2016-7951-CVE-2016-7952.patch	\

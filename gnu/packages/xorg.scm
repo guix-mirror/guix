@@ -4941,8 +4941,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (replacement libxrandr/fixed)
-    (version "1.5.0")
+    (version "1.5.1")
     (source
       (origin
         (method url-fetch)
@@ -4952,7 +4951,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0n6ycs1arf4wb1cal9il6v7vbxbf21qhs9sbfl8xndgwnxclk1kg"))))
+            "06pmphx8lp3iywqnh88fvbfb0d8xgkx0qpvan49akpja1vxfgy8z"))))
     (build-system gnu-build-system)
     (propagated-inputs
       ;; In accordance with xrandr.pc.
@@ -4968,14 +4967,6 @@ new API's in libXft, or the legacy API's in libX11.")
     (description
      "Library for the Resize and Rotate Extension to the X11 protocol.")
     (license license:x11)))
-
-(define libxrandr/fixed
-  (package
-    (inherit libxrandr)
-    (source (origin
-              (inherit (package-source libxrandr))
-              (patches (search-patches
-                         "libxrandr-CVE-2016-7947-CVE-2016-7948.patch"))))))
 
 (define-public libxvmc
   (package
