@@ -4934,6 +4934,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxrandr
   (package
     (name "libxrandr")
+    (replacement libxrandr/fixed)
     (version "1.5.0")
     (source
       (origin
@@ -4961,6 +4962,13 @@ new API's in libXft, or the legacy API's in libX11.")
      "Library for the Resize and Rotate Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxrandr/fixed
+  (package
+    (inherit libxrandr)
+    (source (origin
+              (inherit (package-source libxrandr))
+              (patches (search-patches
+                         "libxrandr-CVE-2016-7947-CVE-2016-7948.patch"))))))
 
 (define-public libxvmc
   (package
