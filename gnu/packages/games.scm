@@ -2906,3 +2906,89 @@ extinguishing action, intense boss battles, a catchy soundtrack and lots of
 throwing people around in pseudo-randomly generated buildings.")
     (license (list license:zlib             ; for source code
                    license:cc-by-sa3.0))))  ; for graphics and music assets
+
+(define-public hyperrogue
+  (package
+    (name "hyperrogue")
+    (version "8.3j")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.roguetemple.com/z/hyper/"
+                    name "-83j.zip"))
+              (sha256
+               (base32
+                "1ag95d84m4j0rqyn9hj7655znixw2j57bpf93nk14nfy02xz1g6p"))
+              (modules '((guix build utils)))
+              ;; Remove .exe and .dll files.
+              (snippet
+               '(for-each delete-file (find-files "." "\\.(exe|dll)$")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:make-flags '("-Csrc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL"))))
+         ;; Fix font and music paths.
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (dejavu-dir (string-append
+                                (assoc-ref inputs "font-dejavu")
+                                "/share/fonts/truetype"))
+                   (dejavu-font "DejaVuSans-Bold.ttf")
+                   (music-file "hyperrogue-music.txt"))
+               (with-directory-excursion "src"
+                 (substitute* "graph.cpp"
+                   ((dejavu-font)
+                    (string-append dejavu-dir "/" dejavu-font))
+                   (((string-append "\\./" music-file))
+                    (string-append out "/share/hyperrogue/" music-file)))
+                 (substitute* music-file
+                   (("\\*/")
+                    (string-append out "/share/hyperrogue/")))))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share-dir (string-append out "/share/hyperrogue")))
+               (mkdir-p bin)
+               (copy-file "src/hyper" (string-append bin "/hyperrogue"))
+               (mkdir-p share-dir)
+               (copy-file "src/hyperrogue-music.txt"
+                          (string-append share-dir "/hyperrogue-music.txt"))
+               (for-each (lambda (file)
+                           (copy-file file (string-append share-dir "/" file)))
+                         (find-files "." "\\.ogg$")))
+             #t)))))
+    (inputs
+     `(("font-dejavu" ,font-dejavu)
+       ("glew" ,glew)
+       ("libpng" ,libpng)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-gfx
+                                      sdl-mixer
+                                      sdl-ttf)))))
+    (home-page "http://www.roguetemple.com/z/hyper/")
+    (synopsis "Non-euclidean graphical rogue-like game")
+    (description
+     "HyperRogue is a game in which the player collects treasures and fights
+monsters -- rogue-like but for the fact that it is played on the hyperbolic
+plane and not in euclidean space.
+
+In HyperRogue, the player can move through different parts of the world, which
+are home to particular creatures and may be subject to own rules of \"physics\".
+
+While it can use ASCII characters to display the world the classical rogue
+symbols, the game needs graphics to render the non-euclidean world.")
+    (license (list license:bsd-3         ; src/glew.c, src/mtrand.*
+                   license:cc-by-sa3.0   ; *.ogg
+                   license:public-domain ; src/direntx.*
+                   license:zlib          ; src/savepng.*
+                   license:gpl2+))))     ; remaining files
