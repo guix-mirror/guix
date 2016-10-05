@@ -4667,8 +4667,7 @@ protocol and arbitrary X extension protocol.")
 (define-public libxv
   (package
     (name "libxv")
-    (replacement libxv/fixed)
-    (version "1.0.10")
+    (version "1.0.11")
     (source
       (origin
         (method url-fetch)
@@ -4678,7 +4677,7 @@ protocol and arbitrary X extension protocol.")
                ".tar.bz2"))
         (sha256
           (base32
-            "09a5j6bisysiipd0nw6s352565bp0n6gbyhv5hp63s3cd3w95zjm"))))
+            "125hn06bd3d8y97hm2pbf5j55gg4r2hpd3ifad651i4sr7m16v6j"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("videoproto" ,videoproto)))
@@ -4692,14 +4691,6 @@ protocol and arbitrary X extension protocol.")
     (synopsis "Xorg XVideo Extension library")
     (description "Library for the X Video Extension to the X11 protocol.")
     (license license:x11)))
-
-(define libxv/fixed
-  (package
-    (inherit libxv)
-    (source (origin
-              (inherit (package-source libxv))
-              (patches (search-patches
-                         "libxv-CVE-2016-5407.patch"))))))
 
 (define-public mkfontdir
   (package
