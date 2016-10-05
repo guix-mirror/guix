@@ -76,7 +76,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gdb)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages screen)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
@@ -506,12 +508,20 @@ invoking @command{notifymuch} from the post-new hook.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1f51l34rdhjf8lvafrwybkxdsdwx8k9397m7qxd8rdg2irjmpry5"))))
+                "1f51l34rdhjf8lvafrwybkxdsdwx8k9397m7qxd8rdg2irjmpry5"))
+              (patches
+               ;; Remove this for the next release. See this thread for context:
+               ;; https://notmuchmail.org/pipermail/notmuch/2016/023227.html
+               (search-patches "notmuch-emacs-25-compatibility-fix.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; FIXME: 723 tests; 187 fail and 100 are skipped
-                   ; with perl input: 67 fail and 100 are skipped
+     '(#:make-flags (list "V=1") ; Verbose test output.
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-notmuch-lib.el
+                    (lambda _
+                      (substitute* "emacs/notmuch-lib.el"
+                        (("/bin/sh") (which "sh")))
+                      #t))
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
                       (setenv "CC" "gcc")
@@ -519,14 +529,28 @@ invoking @command{notifymuch} from the post-new hook.")
 
                       (let ((out (assoc-ref outputs "out")))
                         (zero? (system* "./configure"
-                                        (string-append "--prefix=" out)))))))))
+                                        (string-append "--prefix=" out))))))
+                  (add-before 'check 'prepare-test-environment
+                    (lambda _
+                      (setenv "TEST_CC" "gcc")
+                      ;; Patch various inline shell invocations.
+                      (substitute* (find-files "test" "\\.sh$")
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
-       ("emacs" ,emacs-minimal)
+       ("emacs" ,emacs-no-x) ; Minimal lacks libxml, needed for some tests.
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("python-docutils" ,python2-docutils)
-       ("python-sphinx" ,python2-sphinx)))
+       ("python-sphinx" ,python2-sphinx)
+
+       ;; The following are required for tests only.
+       ("which" ,which)
+       ("dtach" ,dtach)
+       ("gnupg" ,gnupg)
+       ("man" ,man-db)
+       ("perl" ,perl)))
     (inputs
      `(("glib" ,glib)
        ("gmime" ,gmime)
