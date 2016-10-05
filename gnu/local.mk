@@ -672,6 +672,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libx11-CVE-2016-7942.patch		\
   %D%/packages/patches/libx11-CVE-2016-7943.patch		\
   %D%/packages/patches/libxfixes-CVE-2016-7944.patch		\
+  %D%/packages/patches/libxi-CVE-2016-7945-CVE-2016-7946.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-for-extempore.patch			\

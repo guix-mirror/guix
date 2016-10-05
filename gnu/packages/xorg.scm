@@ -4896,6 +4896,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
+    (replacement libxi/fixed)
     (version "1.7.6")
     (source
       (origin
@@ -4922,6 +4923,13 @@ new API's in libXft, or the legacy API's in libX11.")
     (description "Library for the XInput Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxi/fixed
+  (package
+    (inherit libxi)
+    (source (origin
+              (inherit (package-source libxi))
+              (patches (search-patches
+                         "libxi-CVE-2016-7945-CVE-2016-7946.patch"))))))
 
 (define-public libxrandr
   (package
