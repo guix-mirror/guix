@@ -22,6 +22,7 @@
 
 (define-module (gnu packages shells)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages documentation)
@@ -95,11 +96,23 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
     (native-inputs
      `(("doxygen" ,doxygen)))
     (inputs
-     `(("ncurses" ,ncurses)
+     `(("bc" ,bc)
+       ("ncurses" ,ncurses)
+       ("pcre2" ,pcre2)               ;don't use the bundled PCRE2
        ("python" ,python-wrapper)))   ;for fish_config and manpage completions
     (arguments
      '(#:tests? #f ; no check target
-       #:configure-flags '("--sysconfdir=/etc")))
+       #:configure-flags '("--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Replace 'bc' by its absolute file name in the store.
+         (add-after 'unpack 'patch-bc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* '("share/functions/math.fish"
+                            "share/functions/seq.fish")
+               (("\\| bc")
+                (string-append "| " (assoc-ref %build-inputs "bc")
+                               "/bin/bc"))))))))
     (synopsis "The friendly interactive shell")
     (description
      "Fish (friendly interactive shell) is a shell focused on interactive use,

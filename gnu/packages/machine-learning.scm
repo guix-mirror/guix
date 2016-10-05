@@ -134,20 +134,25 @@ classification.")
                   "0qbq1rqp94l530f043qzp8aw5lj7dng9wq0miffd7spd1ff638wq"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases
+       `(#:imported-modules (,@%gnu-build-system-modules
+                             (guix build python-build-system))
+         #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'enter-dir
              (lambda _ (chdir "ghmm") #t))
-           (add-after 'enter-dir 'fix-PYTHONPATH
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; The Python tests fail as the library is assumed to be stored
-               ;; in ./build/lib.linux-i686-*.  To fix this we detect the CPU
-               ;; and use it in the path.
-               (substitute* "configure.in"
-                 (("AM_INIT_AUTOMAKE" line)
-                  (string-append line "\nAC_CANONICAL_HOST\n")))
-               (substitute* "ghmmwrapper/Makefile.am"
-                 (("i686") "@host_cpu@"))
+           (delete 'check)
+           (add-after 'install 'check
+             (assoc-ref %standard-phases 'check))
+           (add-before 'check 'fix-PYTHONPATH
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((python-version ((@@ (guix build python-build-system)
+                                           get-python-version)
+                                      (assoc-ref inputs "python"))))
+                 (setenv "PYTHONPATH"
+                         (string-append (getenv "PYTHONPATH")
+                                        ":" (assoc-ref outputs "out")
+                                        "/lib/python" python-version
+                                        "/site-packages")))
                #t))
            (add-after 'enter-dir 'fix-runpath
              (lambda* (#:key outputs #:allow-other-keys)

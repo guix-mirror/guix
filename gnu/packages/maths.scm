@@ -185,15 +185,15 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/gsl/gsl-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "0rhcia9jhr3p1f1wybwyllwqfs9bggz99i3mi5lpyqcpff1hdbar"))))
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gsl/gsl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "095hp01d8lkqdvv0p1k25kvbisgfdmvx1rzpyc2i8kl2n33kvlhk"))
+              (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))
@@ -442,7 +442,7 @@ from one map projection to another.  The GCTP is the standard computer
 software used by the National Mapping Division for map projection
 computations.")
     (home-page "https://github.com/OkoSanto/GCTP")
-    (license 'license:public-domain))) ; https://www2.usgs.gov/laws/info_policies.html
+    (license license:public-domain))) ;https://www2.usgs.gov/laws/info_policies.html
 
 (define-public hdf5
   (package
@@ -2629,3 +2629,37 @@ the same amount of space as the original point representation.  This is useful
 when using the Gilbert curve as a space filling curve through a
 high-dimensional space where not all demensions have the same cardinality.")
     (license license:lgpl2.1+)))
+
+(define-public vc
+  (package
+    (name "vc")
+    (version "1.2.0")
+    (source
+      (origin (method url-fetch)
+              (uri (string-append "https://github.com/VcDevel/Vc/releases/"
+                                  "download/" version "/Vc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rh6dhqar3y07n4xqyml0sa0v48qv3ch9dc3yc2in855hlh4vnqi"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_TESTING=ON")))
+    (synopsis "SIMD vector classes for C++")
+    (description "Vc provides portable, zero-overhead C++ types for explicitly
+data-parallel programming.  It is a library designed to ease explicit
+vectorization of C++ code.  Its types enable explicitly stating data-parallel
+operations on multiple values.  The parallelism is therefore added via the type
+system.  Vc has an intuitive API and provides portability between different
+compilers and compiler versions as well as portability between different vector
+instruction sets.  Thus, an application written with Vc can be compiled for:
+@enumerate
+@item AVX and AVX2
+@item SSE2 upto SSE4.2 or SSE4a
+@item Scalar
+@item MIC
+@item NEON (in development)
+@item NVIDIA GPUs / CUDA (in development)
+@end enumerate\n")
+    (home-page "https://github.com/VcDevel/Vc")
+    (license license:bsd-3)))

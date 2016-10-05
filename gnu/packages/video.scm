@@ -253,7 +253,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public libass
   (package
     (name "libass")
-    (version "0.13.2")
+    (version "0.13.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -261,7 +261,7 @@ H.264 (MPEG-4 AVC) video streams.")
                     version "/libass-" version ".tar.xz"))
               (sha256
                (base32
-                "1kpsw4zw95v4cjvild9wpk73dzavn1khsm3bm32kcz6amnkd166n"))))
+                "1dlzkjybnpl2fkvyjq0qblb7qw12cs893bs7zj3rvf8ij342yjnq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

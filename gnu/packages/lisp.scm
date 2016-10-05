@@ -443,50 +443,6 @@ interface.")
     (license (list license:lgpl2.1
                    license:clarified-artistic)))) ;TRIVIAL-LDAP package
 
-(define-public lispf4
-  (let ((commit "174d8764d2f9764e8f4794c2e3feada9f9c1f1ba"))
-    (package
-      (name "lispf4")
-      (version (string-append "0.0.0-1" "-"
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/blakemcbride/LISPF4.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "18k8kfn30za637y4bfbm9x3vv4psa3q8f7bi9h4h0qlb8rz8m92c"))))
-      (build-system gnu-build-system)
-      ;; 80 MB appended Documentation -> output:doc
-      (outputs '("out" "doc"))
-      (arguments
-       `(#:make-flags
-         '("-f" "Makefile.unx" "CC=gcc")
-         #:tests? #f ; No 'check phase
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (replace 'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin"))
-                     (doc (string-append (assoc-ref outputs "doc")
-                                         "/share/doc/lispf4")))
-                (install-file "lispf4" bin)
-                (install-file "SYSATOMS" bin)
-                (install-file "BASIC.IMG" bin)
-                (copy-recursively "Documentation" doc))
-                #t)))))
-      (synopsis "InterLisp interpreter")
-      (description
-       "LISPF4 is an InterLisp interpreter written in FORTRAN by Mats Nordstrom
-in the early 80's.  It was converted to C by Blake McBride and supports much of
-the InterLisp Standard.")
-      (home-page "https://github.com/blakemcbride/LISPF4.git")
-      (license license:expat))))
-
 (define-public femtolisp
   (let ((commit "68c5b1225572ecf2c52baf62f928063e5a30511b")
         (revision "1"))

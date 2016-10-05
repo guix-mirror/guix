@@ -478,7 +478,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/cmake-fix-tests.patch			\
-  %D%/packages/patches/cpio-gets-undeclared.patch		\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
@@ -556,6 +555,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-CVE-2015-8370.patch			\
   %D%/packages/patches/grub-gets-undeclared.patch		\
   %D%/packages/patches/grub-freetype.patch			\
+  %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
@@ -668,6 +668,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
+  %D%/packages/patches/libx11-CVE-2016-7942.patch		\
+  %D%/packages/patches/libx11-CVE-2016-7943.patch		\
+  %D%/packages/patches/libxfixes-CVE-2016-7944.patch		\
+  %D%/packages/patches/libxi-CVE-2016-7945-CVE-2016-7946.patch	\
+  %D%/packages/patches/libxrandr-CVE-2016-7947-CVE-2016-7948.patch	\
+  %D%/packages/patches/libxrender-CVE-2016-7949.patch		\
+  %D%/packages/patches/libxrender-CVE-2016-7950.patch		\
+  %D%/packages/patches/libxtst-CVE-2016-7951-CVE-2016-7952.patch	\
+  %D%/packages/patches/libxv-CVE-2016-5407.patch		\
+  %D%/packages/patches/libxvmc-CVE-2016-7953.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
@@ -691,6 +701,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
+  %D%/packages/patches/metabat-remove-compilation-date.patch	\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
@@ -800,7 +811,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-symlinkfix.patch                    \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
-  %D%/packages/patches/rush-CVE-2013-6889.patch			\
   %D%/packages/patches/sed-hurd-path-max.patch			\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\

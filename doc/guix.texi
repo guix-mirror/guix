@@ -11782,10 +11782,10 @@ minute for an ``average'' package on a recent machine.  Grafting is
 recursive: when an indirect dependency requires grafting, then grafting
 ``propagates'' up to the package that the user is installing.
 
-Currently, the graft and the package it replaces (@var{bash-fixed} and
-@var{bash} in the example above) must have the exact same @code{name}
-and @code{version} fields.  This restriction mostly comes from the fact
-that grafting works by patching files, including binary files, directly.
+Currently, the length of the name and version of the graft and that of
+the package it replaces (@var{bash-fixed} and @var{bash} in the example
+above) must be equal.  This restriction mostly comes from the fact that
+grafting works by patching files, including binary files, directly.
 Other restrictions may apply: for instance, when adding a graft to a
 package providing a shared library, the original shared library and its
 replacement must have the same @code{SONAME} and be binary-compatible.

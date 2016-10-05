@@ -4602,6 +4602,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
+    (replacement libxrender/fixed)
     (version "0.9.9")
     (source
       (origin
@@ -4626,10 +4627,19 @@ cannot be adequately worked around on the client side of the wire.")
     (description "Library for the Render Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxrender/fixed
+  (package
+    (inherit libxrender)
+    (source (origin
+              (inherit (package-source libxrender))
+              (patches (search-patches
+                         "libxrender-CVE-2016-7949.patch"
+                         "libxrender-CVE-2016-7950.patch"))))))
 
 (define-public libxtst
   (package
     (name "libxtst")
+    (replacement libxtst/fixed)
     (version "1.2.2")
     (source
       (origin
@@ -4665,10 +4675,18 @@ The RECORD extension supports the recording and reporting of all core X
 protocol and arbitrary X extension protocol.")
     (license license:x11)))
 
+(define libxtst/fixed
+  (package
+    (inherit libxtst)
+    (source (origin
+              (inherit (package-source libxtst))
+              (patches (search-patches
+                         "libxtst-CVE-2016-7951-CVE-2016-7952.patch"))))))
 
 (define-public libxv
   (package
     (name "libxv")
+    (replacement libxv/fixed)
     (version "1.0.10")
     (source
       (origin
@@ -4694,6 +4712,13 @@ protocol and arbitrary X extension protocol.")
     (description "Library for the X Video Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxv/fixed
+  (package
+    (inherit libxv)
+    (source (origin
+              (inherit (package-source libxv))
+              (patches (search-patches
+                         "libxv-CVE-2016-5407.patch"))))))
 
 (define-public mkfontdir
   (package
@@ -4823,6 +4848,7 @@ an X Window System display.")
 (define-public libxfixes
   (package
     (name "libxfixes")
+    (replacement libxfixes/fixed)
     (version "5.0.2")
     (source
       (origin
@@ -4847,6 +4873,13 @@ an X Window System display.")
     (description "Library for the XFixes Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxfixes/fixed
+  (package
+    (inherit libxfixes)
+    (source (origin
+              (inherit (package-source libxfixes))
+              (patches (search-patches
+                         "libxfixes-CVE-2016-7944.patch"))))))
 
 (define-public libxfont
   (package
@@ -4888,6 +4921,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
+    (replacement libxi/fixed)
     (version "1.7.6")
     (source
       (origin
@@ -4914,10 +4948,18 @@ new API's in libXft, or the legacy API's in libX11.")
     (description "Library for the XInput Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxi/fixed
+  (package
+    (inherit libxi)
+    (source (origin
+              (inherit (package-source libxi))
+              (patches (search-patches
+                         "libxi-CVE-2016-7945-CVE-2016-7946.patch"))))))
 
 (define-public libxrandr
   (package
     (name "libxrandr")
+    (replacement libxrandr/fixed)
     (version "1.5.0")
     (source
       (origin
@@ -4945,10 +4987,18 @@ new API's in libXft, or the legacy API's in libX11.")
      "Library for the Resize and Rotate Extension to the X11 protocol.")
     (license license:x11)))
 
+(define libxrandr/fixed
+  (package
+    (inherit libxrandr)
+    (source (origin
+              (inherit (package-source libxrandr))
+              (patches (search-patches
+                         "libxrandr-CVE-2016-7947-CVE-2016-7948.patch"))))))
 
 (define-public libxvmc
   (package
     (name "libxvmc")
+    (replacement libxvmc/fixed)
     (version "1.0.9")
     (source
       (origin
@@ -4974,6 +5024,13 @@ new API's in libXft, or the legacy API's in libX11.")
     (description "Xorg XvMC library.")
     (license license:x11)))
 
+(define libxvmc/fixed
+  (package
+    (inherit libxvmc)
+    (source (origin
+              (inherit (package-source libxvmc))
+              (patches (search-patches
+                         "libxvmc-CVE-2016-7953.patch"))))))
 
 (define-public libxxf86vm
   (package
@@ -5195,6 +5252,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
+    (replacement libx11/fixed)
     (version "1.6.3")
     (source
       (origin
@@ -5227,6 +5285,14 @@ draggable titlebars and borders.")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
 
+(define libx11/fixed
+  (package
+    (inherit libx11)
+    (source (origin
+              (inherit (package-source libx11))
+              (patches (search-patches
+                         "libx11-CVE-2016-7942.patch"
+                         "libx11-CVE-2016-7943.patch"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 

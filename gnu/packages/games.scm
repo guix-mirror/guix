@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -1185,6 +1185,7 @@ on the screen and keyboard to display letters.")
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-random" ,ghc-random)
        ("ghc-glut" ,ghc-glut)
+       ("freeglut" ,freeglut)
        ("ghc-opengl" ,ghc-opengl)
        ("ghc-sdl" ,ghc-sdl)
        ("ghc-sdl-image" ,ghc-sdl-image)
@@ -2408,7 +2409,7 @@ capture it and get out alive?")
 (define-public warzone2100
   (package
     (name "warzone2100")
-    (version "3.1.5")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name
@@ -2416,16 +2417,22 @@ capture it and get out alive?")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0hm49i2knvvg3wlnryv7h4m84s3qa7jfyym5yy6365sx8wzcrai1"))))
+                "1nd609s0g4sya3r4amhkz3f4dpdmm94vsd2ii76ap665a1nbfrhg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'set-paths 'set-sdl-paths
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (setenv "CPATH"
-                              (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL"))
-                      #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-tests-with-qt
+           (lambda _
+             (substitute* "tests/Makefile.in"
+               (("(framework_linktest_LDADD|maptest_LDADD) = " prefix)
+                (string-append prefix "$(QT5_LIBS) ")))
+             #t))
+         (add-after 'unpack 'remove-reference-to-missing-file
+           (lambda _
+             (substitute* "icons/Makefile.in"
+               (("\\$\\(INSTALL_DATA\\) \\$\\(srcdir\\)/warzone2100.appdata.xml.*") ""))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("unzip" ,unzip)
                      ("zip" ,zip)))
@@ -2438,9 +2445,10 @@ capture it and get out alive?")
               ("libxrandr" ,libxrandr)
               ("openal" ,openal)
               ("physfs" ,physfs)
-              ("qt", qt-4)
+              ("qt" ,qt)
+              ("openssl" ,openssl)
               ("quesoglc" ,quesoglc)
-              ("sdl-union" ,(sdl-union))))
+              ("sdl2" ,sdl2)))
     (home-page "http://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
     (description
@@ -2700,17 +2708,19 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.4.0")
+   (version "0.5.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "https://github.com/SuperTux/supertux/releases/"
-                                "download/v" version
-                                "/supertux-" version ".tar.bz2"))
+            (uri (string-append "https://github.com/SuperTux/supertux/"
+                                "releases/download/v" version "/SuperTux-v"
+                                version "-Source.tar.gz"))
             (sha256
              (base32
-              "10ppmy6w77lxj8bdzjahc9bidgl4qgzr9rimn15rnqay84ydx3fi"))))
-   (arguments '(#:tests? #f
-                #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin")))
+              "0fx7c7m6mfanqy7kln7yf6abb5l3r68picf32js2yls11jj0vbng"))))
+   (arguments
+    '(#:tests? #f
+      #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
+                          "-DENABLE_BOOST_STATIC_LIBS=OFF")))
    (build-system cmake-build-system)
    (inputs `(("sdl2" ,sdl2)
              ("sdl2-image" ,sdl2-image)
@@ -2896,3 +2906,89 @@ extinguishing action, intense boss battles, a catchy soundtrack and lots of
 throwing people around in pseudo-randomly generated buildings.")
     (license (list license:zlib             ; for source code
                    license:cc-by-sa3.0))))  ; for graphics and music assets
+
+(define-public hyperrogue
+  (package
+    (name "hyperrogue")
+    (version "8.3j")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.roguetemple.com/z/hyper/"
+                    name "-83j.zip"))
+              (sha256
+               (base32
+                "1ag95d84m4j0rqyn9hj7655znixw2j57bpf93nk14nfy02xz1g6p"))
+              (modules '((guix build utils)))
+              ;; Remove .exe and .dll files.
+              (snippet
+               '(for-each delete-file (find-files "." "\\.(exe|dll)$")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:make-flags '("-Csrc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL"))))
+         ;; Fix font and music paths.
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (dejavu-dir (string-append
+                                (assoc-ref inputs "font-dejavu")
+                                "/share/fonts/truetype"))
+                   (dejavu-font "DejaVuSans-Bold.ttf")
+                   (music-file "hyperrogue-music.txt"))
+               (with-directory-excursion "src"
+                 (substitute* "graph.cpp"
+                   ((dejavu-font)
+                    (string-append dejavu-dir "/" dejavu-font))
+                   (((string-append "\\./" music-file))
+                    (string-append out "/share/hyperrogue/" music-file)))
+                 (substitute* music-file
+                   (("\\*/")
+                    (string-append out "/share/hyperrogue/")))))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share-dir (string-append out "/share/hyperrogue")))
+               (mkdir-p bin)
+               (copy-file "src/hyper" (string-append bin "/hyperrogue"))
+               (mkdir-p share-dir)
+               (copy-file "src/hyperrogue-music.txt"
+                          (string-append share-dir "/hyperrogue-music.txt"))
+               (for-each (lambda (file)
+                           (copy-file file (string-append share-dir "/" file)))
+                         (find-files "." "\\.ogg$")))
+             #t)))))
+    (inputs
+     `(("font-dejavu" ,font-dejavu)
+       ("glew" ,glew)
+       ("libpng" ,libpng)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-gfx
+                                      sdl-mixer
+                                      sdl-ttf)))))
+    (home-page "http://www.roguetemple.com/z/hyper/")
+    (synopsis "Non-euclidean graphical rogue-like game")
+    (description
+     "HyperRogue is a game in which the player collects treasures and fights
+monsters -- rogue-like but for the fact that it is played on the hyperbolic
+plane and not in euclidean space.
+
+In HyperRogue, the player can move through different parts of the world, which
+are home to particular creatures and may be subject to own rules of \"physics\".
+
+While it can use ASCII characters to display the world the classical rogue
+symbols, the game needs graphics to render the non-euclidean world.")
+    (license (list license:bsd-3         ; src/glew.c, src/mtrand.*
+                   license:cc-by-sa3.0   ; *.ogg
+                   license:public-domain ; src/direntx.*
+                   license:zlib          ; src/savepng.*
+                   license:gpl2+))))     ; remaining files

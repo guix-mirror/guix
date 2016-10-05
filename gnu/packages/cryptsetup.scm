@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages popt)
@@ -30,14 +31,15 @@
 (define-public cryptsetup
   (package
    (name "cryptsetup")
-   (version "1.6.1")
+   (version "1.7.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://cryptsetup.googlecode.com/files/cryptsetup-"
-                                version ".tar.bz2"))
+            (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
+                                (version-major+minor version)
+                                "/" name "-" version ".tar.xz"))
             (sha256
              (base32
-              "170lalkhh2fa316d12i6r7jprm0yss3c949d91069sq37ik6xwxs"))))
+              "0hikwkkj692c955k29c4zixj8wp8k3z17jc6ihb4j5qcbyzmvcyv"))))
    (build-system gnu-build-system)
    (inputs
     `(("libgcrypt" ,libgcrypt)
@@ -55,4 +57,4 @@ passwords.  In contrast to existing solutions, LUKS stores all setup necessary
 setup information in the partition header, enabling the users to transport
 or migrate their data seamlessly.")
    (license license:gpl2)
-   (home-page "http://code.google.com/p/cryptsetup/")))
+   (home-page "https://gitlab.com/cryptsetup/cryptsetup")))

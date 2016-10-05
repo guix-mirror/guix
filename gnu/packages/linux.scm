@@ -321,8 +321,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.7.6"
-                    "0716lpzq3w2pdc0nrrx06gqzdfzhkrjq7g37v4ws9wjlzak8hkvy"
+  (make-linux-libre "4.8"
+                    "0fnax2qb597zg2gchab9n9fn7551vccmqfcvq5k3ckz24y50yknm"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -617,7 +617,11 @@ slabtop, and skill.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))     ;for the libext2fs Info manual
     (arguments
-     '(;; util-linux is the preferred source for some of the libraries and
+     '(;; Parallel building reliably yields a failure like this:
+       ;; "make[2]: *** No rule to make target '../lib/libss.so', needed by
+       ;; 'debugfs'.  Stop."
+       #:parallel-build? #f
+       ;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
        ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b33633>.)
        #:configure-flags '("--disable-libblkid"
@@ -2595,7 +2599,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.7.3")
+    (version "4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2603,7 +2607,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "073pvx8vz6rkw2d8mm1m60b3i8743pc712pasvydbgm8wl66zkch"))))
+                "06v6fqr0rl1bqg87ndi5fjh3l59v7yvimlg3abr4jc3wxw8hmdg6"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)

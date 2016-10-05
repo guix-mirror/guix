@@ -2608,7 +2608,7 @@ multibyte strings, internationalization, time zones, and testing.")
                     (ice-9 rdelim))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'build 'build-gemspec
+           (add-after 'unpack 'build-gemspec
             (lambda _
               (substitute* "Rakefile"
                 ;; Build Makefile even without a copy of gumbo-parser sources

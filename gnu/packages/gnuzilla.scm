@@ -275,10 +275,9 @@ in the Mozilla clients.")
     (propagated-inputs `(("nspr" ,nspr))) ; required by nss.pc.
     (native-inputs `(("perl" ,perl)))
 
-    ;; The NSS test suite takes over 28 hours on Loongson 3A (MIPS), and
-    ;; possibly longer when another build is happening concurrently on the
-    ;; same machine.
-    (properties '((timeout . 144000)))  ; 40 hours
+    ;; The NSS test suite takes around 48 hours on Loongson 3A (MIPS) when
+    ;; another build is happening concurrently on the same machine.
+    (properties '((timeout . 216000)))  ; 60 hours
 
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")

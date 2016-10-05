@@ -98,12 +98,22 @@
     (arguments
      '(;; Two warnings: suggest braces, signed/unsigned comparison.
        #:configure-flags '("--disable-werror")
+
        #:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'patch-stuff
+                  (add-after 'unpack 'patch-stuff
                    (lambda* (#:key inputs #:allow-other-keys)
                      (substitute* "grub-core/Makefile.in"
                        (("/bin/sh") (which "sh")))
+
+                     ;; Give the absolute file name of 'mdadm', used to
+                     ;; determine the root file system when it's a RAID
+                     ;; device.  Failing to do that, 'grub-probe' silently
+                     ;; fails if 'mdadm' is not in $PATH.
+                     (substitute* "grub-core/osdep/linux/getroot.c"
+                       (("argv\\[0\\] = \"mdadm\"")
+                        (string-append "argv[0] = \""
+                                       (assoc-ref inputs "mdadm")
+                                       "/sbin/mdadm\"")))
 
                      ;; Make the font visible.
                      (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
@@ -119,6 +129,7 @@
     (inputs
      `(;; ("lvm2" ,lvm2)
        ("gettext" ,gettext-minimal)
+       ("mdadm" ,mdadm)
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
        ;; ("fuse" ,fuse)

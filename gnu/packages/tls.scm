@@ -355,22 +355,22 @@ required structures.")
    (home-page "http://www.openssl.org/")))
 
 (define openssl-1.0.2j
-  (package (inherit openssl)
-    (source
-      (let ((name "openssl")
-            (version "1.0.2j"))
-        (origin
-          (method url-fetch)
-          (uri (list (string-append "ftp://ftp.openssl.org/source/"
-                                    name "-" version ".tar.gz")
-                     (string-append "ftp://ftp.openssl.org/source/old/"
-                                    (string-trim-right version char-set:letter)
-                                    "/" name "-" version ".tar.gz")))
-          (sha256
-           (base32
-            "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
-          (patches (search-patches "openssl-runpath.patch"
-                                   "openssl-c-rehash-in.patch")))))))
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (version "1.0.2j")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                        name "-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/" name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
+              (patches (search-patches "openssl-runpath.patch"
+                                       "openssl-c-rehash-in.patch"))))))
 
 (define-public openssl-next
   (package
