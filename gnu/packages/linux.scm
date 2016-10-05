@@ -597,7 +597,7 @@ slabtop, and skill.")
     (arguments
      '(;; Parallel building reliably yields a failure like this:
        ;; "make[2]: *** No rule to make target '../lib/libss.so', needed by
-       ;; 'debufs'.  Stop."
+       ;; 'debugfs'.  Stop."
        #:parallel-build? #f
        ;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
