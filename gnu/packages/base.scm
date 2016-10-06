@@ -950,23 +950,24 @@ command.")
                   (guix build gnu-build-system)
                   (srfi srfi-1))
        #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key source inputs #:allow-other-keys)
-          (and (zero? (system* "tar" "xvf" source))
-               (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode")))))
-        (alist-cons-after
-         'install 'post-install
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Move data in the right place.
-           (let ((out (assoc-ref outputs "out")))
-             (symlink (string-append out "/share/zoneinfo")
-                      (string-append out "/share/zoneinfo/posix"))
-             (delete-file-recursively (string-append out "/share/zoneinfo-posix"))
-             (copy-recursively (string-append out "/share/zoneinfo-leaps")
-                               (string-append out "/share/zoneinfo/right"))
-             (delete-file-recursively (string-append out "/share/zoneinfo-leaps"))))
-         (alist-delete 'configure %standard-phases)))))
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source inputs #:allow-other-keys)
+             (and (zero? (system* "tar" "xvf" source))
+                  (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode"))))))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move data in the right place.
+             (let ((out (assoc-ref outputs "out")))
+               (symlink (string-append out "/share/zoneinfo")
+                        (string-append out "/share/zoneinfo/posix"))
+               (delete-file-recursively
+                (string-append out "/share/zoneinfo-posix"))
+               (copy-recursively (string-append out "/share/zoneinfo-leaps")
+                                 (string-append out "/share/zoneinfo/right"))
+               (delete-file-recursively
+                (string-append out "/share/zoneinfo-leaps")))))
+         (delete 'configure))))
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
                           (uri (string-append
