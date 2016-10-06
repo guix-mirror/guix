@@ -121,14 +121,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.10.1")
+    (version "1.11.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://nginx.org/download/nginx-"
+              (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00d8hxj8453c7989qd7z4f1mjp0k3ib8k29i1qyf11b4ar35ilqz"))))
+                "0fvb09ycxz3xnyynav6ybj6miwh9kv8jcb2vzrmvqhzn8cgiq8h6"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -140,7 +140,8 @@ and its related documentation.")
          (add-before 'configure 'patch-/bin/sh
            (lambda _
              (substitute* "auto/feature"
-               (("/bin/sh") (which "bash")))))
+               (("/bin/sh") (which "bash")))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((flags
@@ -186,7 +187,7 @@ and its related documentation.")
                             (string-append share "/conf"))
                (rename-file (string-append out "/html")
                             (string-append share "/html"))))))))
-    (home-page "http://nginx.org")
+    (home-page "https://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
      "Nginx (\"engine X\") is a high-performance web and reverse proxy server
