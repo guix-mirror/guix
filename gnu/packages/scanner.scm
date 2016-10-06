@@ -29,15 +29,15 @@
 (define-public sane-backends
   (package
     (name "sane-backends")
-    (version "1.0.24")
+    (version "1.0.25")
     (source (origin
              (method url-fetch)
-             (uri (string-append 
-                   "https://alioth.debian.org/frs/download.php/file/3958/"
+             (uri (string-append
+                   "https://alioth.debian.org/frs/download.php/file/4146/"
                    name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0ba68m6bzni54axjk15i51rya7hfsdliwvqyan5msl7iaid0iir7"))))
+               "0b3fvhrxl4l82bf3v0j47ypjv6a0k5lqbgknrq1agpmjca6vmmx4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -73,4 +73,3 @@ proving access to any raster image scanner hardware (flatbed scanner,
 hand-held scanner, video- and still-cameras, frame-grabbers, etc.).  The
 package contains the library and drivers.")
     (license licence:gpl2+))) ; plus linking exception
-
