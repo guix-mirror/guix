@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libupnp)
+  #:use-module (gnu packages)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -31,6 +32,7 @@
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/pupnp/pupnp/libUPnP%20"
                           version "/" name "-" version ".tar.bz2"))
+      (patches (search-patches "libupnp-CVE-2016-6255.patch"))
       (sha256
        (base32
         "0qrsdsb1qm85hc4jy04qph895613d148f0x1mmk6z99y3q43fdgf"))))
