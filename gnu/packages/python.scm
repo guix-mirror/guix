@@ -6250,15 +6250,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "16.0.0")
+    (version "16.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pyOpenSSL/pyOpenSSL-" version ".tar.gz"))
+       (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0zfijaxlq4vgi6jz0d4i5xq9ygqnyps6br7lmigjhqnh8gp10g9n"))))
+         "0prm06zz7hl6bk5s2lqzw25lq6smayfv2fgiliw2rbqxlyiavxw8"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
