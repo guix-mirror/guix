@@ -6644,7 +6644,13 @@ that have uses outside of the Zope framework.")
                            "/zope.testing/zope.testing-" version ".tar.gz"))
        (sha256
         (base32
-         "1yvglxhzvhl45mndvn9gskx2ph30zz1bz7rrlyfs62fv2pvih90s"))))
+         "1yvglxhzvhl45mndvn9gskx2ph30zz1bz7rrlyfs62fv2pvih90s"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-compiled .pyc files backup files from source.
+           (for-each delete-file (find-files "." "(\\.pyc|~)$"))
+           #t))))
     (build-system python-build-system)
     (native-inputs
      `(("python-zope-exceptions" ,python-zope-exceptions)))
