@@ -2159,7 +2159,7 @@ well as completely new features.")
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
-    (version "1.7.0")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2168,7 +2168,7 @@ well as completely new features.")
               (file-name (string-append "hl-todo-" version ".el"))
               (sha256
                (base32
-                "18zydm43zajlglhgr0bhdkd4pln27amd063k2ql6p1mvyam3j8ia"))))
+                "0flhz9vy8w1vvwwji92pi5k4659hl368bakj2qf2zfd26z8x583h"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/hl-todo")
     (synopsis "Emacs mode to highlight TODO and similar keywords")
