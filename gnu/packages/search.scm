@@ -46,12 +46,12 @@
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'patch-remotetcp-harness
-                 (lambda _
-                   (substitute* "tests/harness/backendmanager_remotetcp.cc"
-                     (("/bin/sh") (which "bash"))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-remotetcp-harness
+           (lambda _
+             (substitute* "tests/harness/backendmanager_remotetcp.cc"
+               (("/bin/sh") (which "sh"))))))))
     (synopsis "Search Engine Library")
     (description
      "Xapian is a highly adaptable toolkit which allows developers to easily
