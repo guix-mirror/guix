@@ -1318,14 +1318,14 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "1.0.2")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "0l47gy9yywrc860db5g3wdqg8yc8qdb2lqq6wvw1dfim5j0vbail"))))
+                "13pkfqrav30bbcddgf1imd7jk6lpqbxkz1qv31718pdl446jq7df"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no test target
