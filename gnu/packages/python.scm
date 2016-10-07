@@ -6013,15 +6013,14 @@ designed to efficently cope with extremely large amounts of data.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pyasn1/pyasn1-" version ".tar.gz"))
+       (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "0iw31d9l0zwx35szkzq72hiw002wnqrlrsi9dpbrfngcl1ybwcsx"))))
+         "0zraxni14bqi20kr4bi6nwsh32aibz0fq0xaczfisw0zdpcsqg45"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
