@@ -6974,14 +6974,14 @@ timestamps.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "0.11.5")
+    (version "0.11.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Werkzeug" version))
        (sha256
         (base32
-         "0r41xqp4cypzcgsf6zbspbqd272wnzf20igb4w4b5wzfhgqh9nxg"))))
+         "1rgpq8a2qv26d75v9j3b074inirlyy6y4b5x4rxblp202jy4cb77"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
