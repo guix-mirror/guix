@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
@@ -3118,3 +3120,35 @@ activity of the GPU as a whole, which is also accurate during OpenCL
 computations, as well as separate component statistics that are only meaningful
 under OpenGL graphics workloads.")
     (license license:gpl3)))
+
+(define-public efivar
+  (package
+    (name "efivar")
+    (version "30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rhinstaller/" name
+                                  "/releases/download/" version "/" name
+                                  "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "12qjnm44yi55ffqxjpgrxy82s89yjziy84w2rfjjknsd8flj0mqz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Tests require a UEFI system and is not detected in the chroot.
+       #:tests? #f
+       #:make-flags (list (string-append "prefix=" %output)
+                          (string-append "libdir=" %output "/lib")
+                          (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("popt" ,popt)))
+    (home-page "https://github.com/rhinstaller/efivar")
+    (synopsis "Tool and library to manipulate EFI variables")
+    (description "This package provides a library and a command line
+interface to the variable facility of UEFI boot firmware.")
+    (license license:lgpl2.1+)))
