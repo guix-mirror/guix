@@ -3152,3 +3152,48 @@ under OpenGL graphics workloads.")
     (description "This package provides a library and a command line
 interface to the variable facility of UEFI boot firmware.")
     (license license:lgpl2.1+)))
+
+(define-public efibootmgr
+  (package
+    (name "efibootmgr")
+    (version "14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rhinstaller/" name
+                                  "/releases/download/" version "/" name
+                                  "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1n3sydvpr6yl040hhf460k7mrxby7laqd9dqs6pq0js1hijc2zip"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:make-flags (list (string-append "prefix=" %output)
+                          (string-append "libdir=" %output "/lib")
+                          ;; Override CFLAGS to add efivar include directory.
+                          (string-append "CFLAGS=-O2 -g -flto -I"
+                                         (assoc-ref %build-inputs "efivar")
+                                         "/include/efivar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'branding
+           ;; Replace default loader path with something more familiar.
+           (lambda _
+             (substitute* "src/efibootmgr.c"
+               (("EFI\\\\\\\\redhat") ; Matches 'EFI\\redhat'.
+                "EFI\\\\gnu"))
+             #t))
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efivar" ,efivar)
+       ("popt" ,popt)))
+    (home-page "https://github.com/rhinstaller/efibootmgr")
+    (synopsis "Modify the Extensible Firmware Interface (EFI) boot manager")
+    (description
+     "@code{efibootmgr} is a user-space application to modify the Intel
+Extensible Firmware Interface (EFI) Boot Manager.  This application can
+create and destroy boot entries, change the boot order, change the next
+running boot option, and more.")
+    (license license:gpl2+)))
