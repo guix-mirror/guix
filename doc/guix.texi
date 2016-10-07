@@ -2697,7 +2697,7 @@ one @i{via} its @code{Requires} field.
 
 Another example where @code{propagated-inputs} is useful is for languages
 that lack a facility to record the run-time search path akin to the
-@code{RUNPATH} of ELF files; this includes Guile, Python, Perl, GHC, and
+@code{RUNPATH} of ELF files; this includes Guile, Python, Perl, and
 more.  To ensure that libraries written in those languages can find
 library code they depend on at run time, run-time dependencies must be
 listed in @code{propagated-inputs} rather than @code{inputs}.
