@@ -40,6 +40,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 regex))
 
 (define %gcc-infrastructure
@@ -328,10 +329,15 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
-              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))))
+              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
+
+    ;; Texinfo 6.3 fails to build the manual:
+    ;;   ../../gcc-4.8.5/gcc/doc/gcc.texi:208: no matching `@end tex'
+    ;; Use an older one.
+    (native-inputs `(("texinfo" ,texinfo-5)))))
 
 (define-public gcc-4.9
-  (package (inherit gcc-4.8)
+  (package (inherit gcc-4.7)
     (version "4.9.4")
     (source (origin
               (method url-fetch)
