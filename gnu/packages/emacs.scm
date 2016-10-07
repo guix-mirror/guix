@@ -266,14 +266,14 @@ editor (without an X toolkit)" )
 (define-public geiser
   (package
     (name "geiser")
-    (version "0.8.1")
+    (version "0.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/geiser/" version
                                  "/geiser-" version ".tar.gz"))
              (sha256
               (base32
-               "163zh8qf1q8l485d94a51a9xixirj8r2xvrbgxyw06vkaqrz5qvc"))))
+               "1n772ysl1dmn0vy3gk230ymyjm14h93zw99y6h2rqp1ixy7v43dm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
