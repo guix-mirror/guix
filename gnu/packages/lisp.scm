@@ -34,6 +34,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system asdf)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages bdw-gc)
@@ -811,3 +812,232 @@ productive, customizable lisp based systems.")
       (inherit base)
       (outputs '("out"))
       (arguments '()))))
+
+(define sbcl-slynk-boot0
+  (let ((revision "1")
+        (commit "5706cd45d484a4f25795abe8e643509d31968aa2"))
+    (package
+      (name "sbcl-slynk")
+      (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/joaotavora/sly.git")
+           (commit commit)))
+         (sha256
+          (base32 "0h4gg3sndl2bf6jdnx9nrf14p9hhi43hagrl0f4v4l11hczl8w81"))
+         (file-name (string-append "slynk-" version "-checkout"))
+         (modules '((guix build utils)
+                    (ice-9 ftw)))
+         (snippet
+          '(begin
+             ;; Move the contribs into the main source directory for easier
+             ;; access
+             (substitute* "slynk/slynk.asd"
+               (("\\.\\./contrib")
+                "contrib")
+               (("\\(defsystem :slynk-util")
+                "(defsystem :slynk-util :depends-on (:slynk)"))
+             (substitute* "contrib/slynk-trace-dialog.lisp"
+               (("\\(slynk::reset-inspector\\)") ; Causes problems on load
+                "nil"))
+             (substitute* "contrib/slynk-profiler.lisp"
+               (("slynk:to-line")
+                "slynk-pprint-to-line"))
+             (rename-file "contrib" "slynk/contrib")
+             ;; Move slynk's contents into the base directory for easier
+             ;; access
+             (for-each
+              (lambda (file)
+                (unless (string-prefix? "." file)
+                  (rename-file (string-append "slynk/" file)
+                               (string-append "./" (basename file)))))
+              (scandir "slynk"))))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:tests? #f)) ; No test suite
+      (synopsis "Common Lisp IDE for Emacs")
+      (description "SLY is a fork of SLIME.  It also features a completely
+redesigned REPL based on Emacs's own full-featured comint.el, live code
+annotations, and a consistent interactive button interface.  Everything can be
+copied to the REPL.  One can create multiple inspectors with independent
+history.")
+      (home-page "https://github.com/joaotavora/sly")
+      (license license:public-domain)
+      (properties `((cl-source-variant . ,(delay cl-slynk)))))))
+
+(define-public cl-slynk
+  (sbcl-package->cl-source-package sbcl-slynk-boot0))
+
+(define ecl-slynk-boot0
+  (sbcl-package->ecl-package sbcl-slynk-boot0))
+
+(define sbcl-slynk-arglists
+  (package
+    (inherit sbcl-slynk-boot0)
+    (name "sbcl-slynk-arglists")
+    (inputs `(("sbcl-slynk" ,sbcl-slynk-boot0)))
+    (arguments
+     `(#:asd-file "slynk.asd"
+       ,@(package-arguments sbcl-slynk-boot0)))))
+
+(define ecl-slynk-arglists
+  (sbcl-package->ecl-package sbcl-slynk-arglists))
+
+(define sbcl-slynk-util
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-util")))
+
+(define ecl-slynk-util
+  (sbcl-package->ecl-package sbcl-slynk-util))
+
+(define sbcl-slynk-fancy-inspector
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-fancy-inspector")
+    (inputs `(("sbcl-slynk-util" ,sbcl-slynk-util)
+              ,@(package-inputs sbcl-slynk-arglists)))))
+
+(define ecl-slynk-fancy-inspector
+  (sbcl-package->ecl-package sbcl-slynk-fancy-inspector))
+
+(define sbcl-slynk-package-fu
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-package-fu")))
+
+(define ecl-slynk-package-fu
+  (sbcl-package->ecl-package sbcl-slynk-package-fu))
+
+(define sbcl-slynk-mrepl
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-mrepl")))
+
+(define ecl-slynk-mrepl
+  (sbcl-package->ecl-package sbcl-slynk-mrepl))
+
+(define sbcl-slynk-trace-dialog
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-trace-dialog")))
+
+(define ecl-slynk-trace-dialog
+  (sbcl-package->ecl-package sbcl-slynk-trace-dialog))
+
+(define sbcl-slynk-profiler
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-profiler")))
+
+(define ecl-slynk-profiler
+  (sbcl-package->ecl-package sbcl-slynk-profiler))
+
+(define sbcl-slynk-stickers
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-stickers")))
+
+(define ecl-slynk-stickers
+  (sbcl-package->ecl-package sbcl-slynk-stickers))
+
+(define sbcl-slynk-indentation
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-indentation")))
+
+(define ecl-slynk-indentation
+  (sbcl-package->ecl-package sbcl-slynk-indentation))
+
+(define sbcl-slynk-retro
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-retro")))
+
+(define ecl-slynk-retro
+  (sbcl-package->ecl-package sbcl-slynk-retro))
+
+(define slynk-systems
+  '("slynk"
+    "slynk-util"
+    "slynk-arglists"
+    "slynk-fancy-inspector"
+    "slynk-package-fu"
+    "slynk-mrepl"
+    "slynk-profiler"
+    "slynk-trace-dialog"
+    "slynk-stickers"
+    "slynk-indentation"
+    "slynk-retro"))
+
+(define-public sbcl-slynk
+  (package
+    (inherit sbcl-slynk-boot0)
+    (inputs
+     `(("slynk" ,sbcl-slynk-boot0)
+       ("slynk-util" ,sbcl-slynk-util)
+       ("slynk-arglists" ,sbcl-slynk-arglists)
+       ("slynk-fancy-inspector" ,sbcl-slynk-fancy-inspector)
+       ("slynk-package-fu" ,sbcl-slynk-package-fu)
+       ("slynk-mrepl" ,sbcl-slynk-mrepl)
+       ("slynk-profiler" ,sbcl-slynk-profiler)
+       ("slynk-trace-dialog" ,sbcl-slynk-trace-dialog)
+       ("slynk-stickers" ,sbcl-slynk-stickers)
+       ("slynk-indentation" ,sbcl-slynk-indentation)
+       ("slynk-retro" ,sbcl-slynk-retro)))
+    (native-inputs `(("sbcl" ,sbcl)))
+    (build-system trivial-build-system)
+    (source #f)
+    (outputs '("out" "image"))
+    (arguments
+     `(#:modules ((guix build union)
+                  (guix build utils)
+                  (guix build lisp-utils))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (srfi srfi-1)
+                      (guix build union)
+                      (guix build lisp-utils))
+
+         (union-build
+          (assoc-ref %outputs "out")
+          (filter-map
+           (match-lambda
+             ((name . path)
+              (if (string-prefix? "slynk" name) path #f)))
+           %build-inputs))
+
+         (prepend-to-source-registry
+          (string-append (assoc-ref %outputs "out") "//"))
+         (build-image "sbcl"
+                      (string-append
+                       (assoc-ref %outputs "image")
+                       "/bin/slynk")
+                      #:inputs %build-inputs
+                      #:dependencies ',slynk-systems))))))
+
+(define-public ecl-slynk
+  (package
+    (inherit sbcl-slynk)
+    (name "ecl-slynk")
+    (inputs
+     (map (match-lambda
+            ((name pkg . _)
+             (list name (sbcl-package->ecl-package pkg))))
+          (package-inputs sbcl-slynk)))
+    (native-inputs '())
+    (outputs '("out"))
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (guix build union))
+         (match %build-inputs
+           (((names . paths) ...)
+            (union-build (assoc-ref %outputs "out")
+                         paths))))))))
