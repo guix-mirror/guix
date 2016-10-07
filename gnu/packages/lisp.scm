@@ -745,3 +745,69 @@ from other CLXes around the net.")
 
 (define-public ecl-clx
   (sbcl-package->ecl-package sbcl-clx))
+
+(define-public sbcl-stumpwm
+  (package
+    (name "sbcl-stumpwm")
+    (version "0.9.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/stumpwm/stumpwm/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32 "1fqabij4zcsqg1ywgdv2irp1ys23dwc8ms9ai55lb2i47hgv7z3x"))
+              (file-name (string-append "stumpwm-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+              ("sbcl-clx" ,sbcl-clx)))
+    (outputs '("out" "bin"))
+    (arguments
+     '(#:special-dependencies '("sb-posix")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'create-symlinks 'build-program
+           (lambda* (#:key lisp outputs inputs #:allow-other-keys)
+             (build-program
+              lisp
+              (string-append (assoc-ref outputs "bin") "/bin/stumpwm")
+              #:inputs inputs
+              #:entry-program '((stumpwm:stumpwm) 0))))
+         (add-after 'build-program 'create-desktop-file
+           (lambda* (#:key outputs lisp binary? #:allow-other-keys)
+             (let ((output (or (assoc-ref outputs "bin")
+                               (assoc-ref outputs "out")))
+                   (xsessions "/share/xsessions"))
+               (mkdir-p (string-append output xsessions))
+               (with-output-to-file
+                   (string-append output xsessions
+                                  "/stumpwm.desktop")
+                 (lambda _
+                   (format #t
+                    "[Desktop Entry]~@
+                     Name=stumpwm~@
+                     Comment=The Stump Window Manager~@
+                     Exec=~a/bin/stumpwm~@
+                     TryExec=~@*~a/bin/stumpwm~@
+                     Icon=~@
+                     Type=Application~%"
+                    output)))
+               #t))))))
+    (synopsis "Window manager written in Common Lisp")
+    (description "Stumpwm is a window manager written entirely in Common Lisp.
+It attempts to be highly customizable while relying entirely on the keyboard
+for input.  These design decisions reflect the growing popularity of
+productive, customizable lisp based systems.")
+    (home-page "http://github.com/stumpwm/stumpwm")
+    (license license:gpl2+)
+    (properties `((ecl-variant . ,(delay ecl-stumpwm))))))
+
+(define-public cl-stumpwm
+  (sbcl-package->cl-source-package sbcl-stumpwm))
+
+(define-public ecl-stumpwm
+  (let ((base (sbcl-package->ecl-package sbcl-stumpwm)))
+    (package
+      (inherit base)
+      (outputs '("out"))
+      (arguments '()))))
