@@ -1041,3 +1041,34 @@ history.")
            (((names . paths) ...)
             (union-build (assoc-ref %outputs "out")
                          paths))))))))
+
+(define-public sbcl-stumpwm+slynk
+  (package
+    (inherit sbcl-stumpwm)
+    (name "sbcl-stumpwm-with-slynk")
+    (outputs '("out"))
+    (native-inputs
+     `(("stumpwm" ,sbcl-stumpwm)
+       ("slynk" ,sbcl-slynk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-stumpwm)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'build-program
+             (lambda* (#:key lisp inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (program (string-append out "/bin/stumpwm")))
+                 (build-program lisp program
+                                #:inputs inputs
+                                #:entry-program '((stumpwm:stumpwm) 0)
+                                #:dependencies '("stumpwm"
+                                                 ,@slynk-systems))
+                 ;; Remove unneeded file.
+                 (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
+                 #t)))
+           (delete 'copy-source)
+           (delete 'build)
+           (delete 'check)
+           (delete 'link-dependencies)
+           (delete 'cleanup)
+           (delete 'create-symlinks)))))))
