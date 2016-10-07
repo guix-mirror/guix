@@ -32,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages xml))
 
 (define-public cmake
@@ -104,6 +105,7 @@
        ("zlib"       ,zlib)
        ("expat"      ,expat)
        ("bzip2"      ,bzip2)
+       ("ncurses"    ,ncurses) ; required for ccmake
        ("libarchive" ,libarchive)))
     (native-search-paths
      (list (search-path-specification
