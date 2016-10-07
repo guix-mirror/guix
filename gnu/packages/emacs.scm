@@ -398,7 +398,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.2")
+    (version "2.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -407,7 +407,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k57f2wqng7510nzyzgjgbapplia23l3zrphl816nfm4s58sy1ka"))))
+                "14vypqj3wqym5yd0nggfm1xdgq5hv1kwxkg6i8ymlpxcdfxj45w7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
