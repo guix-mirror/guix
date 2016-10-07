@@ -298,34 +298,8 @@ metadata.")
     (license license:bsd-3)))
 
 (define-public geiser-next
-  ;; Geiser's upcoming version supports guile-next, and 0.8.1 does not.
-  ;; When the next Geiser release comes out, we can remove this.
-  (let ((commit "2e335695fc1a4a0b520b50deb761b958194cbec4"))
-    (package
-      (inherit geiser)
-      (name "geiser-next")
-      (version (string-append "0.8.1-1"
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "git://git.sv.gnu.org/geiser.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "00rmpn8zncq1fiah5m12l26z0s28bh7ql63kxdvksqdgfrisnmgf"))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ,@(package-native-inputs geiser)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments geiser)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'autogen
-               (lambda _
-                 (zero? (system* "sh" "autogen.sh")))))))))))
+  ;; This has become "geiser".
+  (deprecated-package "geiser-next" geiser))
 
 (define-public paredit
   (package
