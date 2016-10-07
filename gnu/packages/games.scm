@@ -179,8 +179,10 @@ scriptable with Guile.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://abbaye-for-linux.googlecode.com/files/"
-                           "abbaye-for-linux-src-" version ".tar.gz"))
+       (uri (string-append "https://storage.googleapis.com/"
+                           "google-code-archive-downloads/v2/code.google.com/"
+                           "abbaye-for-linux/abbaye-for-linux-src-"
+                           version ".tar.gz"))
        (sha256
         (base32
          "1wgvckgqa2084rbskxif58wbb83xbas8s1i8s7d57xbj08ryq8rk"))))
