@@ -2967,6 +2967,63 @@ that should be run during the @code{build} phase.  By default the
 
 @end defvr
 
+@defvr {Scheme Variable} asdf-build-system/source
+@defvrx {Scheme Variable} asdf-build-system/sbcl
+@defvrx {Scheme Variable} asdf-build-system/ecl
+
+These variables, exported by @code{(guix build-system asdf)}, implement
+build procedures for Common Lisp packages using
+@url{https://common-lisp.net/project/asdf/, ``ASDF''}. ASDF is a system
+definition facility for Common Lisp programs and libraries.
+
+The @code{asdf-build-system/source} system installs the packages in
+source form, and can be loaded using any common lisp implementation, via
+ASDF.  The others, such as @code{asdf-build-system/sbcl}, install binary
+systems in the format which a particular implementation understands.
+These build systems can also be used to produce executable programs, or
+lisp images which contain a set of packages pre-loaded.
+
+The build system uses naming conventions.  For binary packages, the
+package itself as well as its run-time dependencies should begin their
+name with the lisp implementation, such as @code{sbcl-} for
+@code{asdf-build-system/sbcl}.  Beginning the input name with this
+prefix will allow the build system to encode its location into the
+resulting library, so that the input can be found at run-time.
+
+If dependencies are used only for tests, it is convenient to use a
+different prefix in order to avoid having a run-time dependency on such
+systems.  For example,
+
+@example
+(define-public sbcl-bordeaux-threads
+  (package
+    ...
+    (native-inputs `(("tests:cl-fiveam" ,sbcl-fiveam)))
+    ...))
+@end example
+
+Additionally, the corresponding source package should be labeled using
+the same convention as python packages (see @ref{Python Modules}), using
+the @code{cl-} prefix.
+
+For binary packages, each system should be defined as a Guix package.
+If one package @code{origin} contains several systems, package variants
+can be created in order to build all the systems.  Source packages,
+which use @code{asdf-build-system/source}, may contain several systems.
+
+In order to create executable programs and images, the build-side
+procedures @code{build-program} and @code{build-image} can be used.
+They should be called in a build phase after the @code{create-symlinks}
+phase, so that the system which was just built can be used within the
+resulting image.  @code{build-program} requires a list of Common Lisp
+expressions to be passed as the @code{#:entry-program} argument.
+
+If the system is not defined within its own @code{.asd} file of the same
+name, then the @code{#:asd-file} parameter should be used to specify
+which file the system is defined in.
+
+@end defvr
+
 @defvr {Scheme Variable} cmake-build-system
 This variable is exported by @code{(guix build-system cmake)}.  It
 implements the build procedure for packages using the

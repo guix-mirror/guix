@@ -63,6 +63,7 @@ MODULES =					\
   guix/build-system/ant.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/emacs.scm			\
+  guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
   guix/build-system/haskell.scm			\
@@ -84,6 +85,7 @@ MODULES =					\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
   guix/build/emacs-build-system.scm		\
+  guix/build/asdf-build-system.scm		\
   guix/build/git.scm				\
   guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\
@@ -106,6 +108,7 @@ MODULES =					\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
+  guix/build/lisp-utils.scm			\
   guix/build/graft.scm				\
   guix/build/bournish.scm			\
   guix/build/qt-utils.scm			\
