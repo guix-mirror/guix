@@ -228,21 +228,21 @@ Additionally, various channel-specific options can be negotiated.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (chmod "doc/version.texi" #o777) ;make it writable
                       (zero? (system* "autoreconf" "-vfi"))))
-                  (add-after 'install 'fix-libguile-ssh-file-name
+                  (add-before 'build 'fix-libguile-ssh-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out      (assoc-ref outputs "out"))
-                             (libdir   (string-append out "/lib"))
-                             (guiledir (string-append out
-                                                      "/share/guile/site/2.0")))
-                        (substitute* (find-files guiledir ".scm")
-                          (("\"libguile-ssh\"")
-                           (string-append "\"" libdir "/libguile-ssh\"")))
-
-                        ;; Make sure it works.
-                        (setenv "GUILE_LOAD_PATH" guiledir)
-                        (setenv "GUILE_LOAD_COMPILED_PATH" guiledir)
-                        (zero?
-                         (system* "guile" "-c" "(use-modules (ssh session))"))))))
+                      ;; Build and install libguile-ssh.so so that we can use
+                      ;; its absolute file name in .scm files, before we build
+                      ;; the .go files.
+                      (and (zero? (system* "make" "install"
+                                           "-C" "libguile-ssh"
+                                           "-j" (number->string
+                                                 (parallel-job-count))))
+                           (let* ((out      (assoc-ref outputs "out"))
+                                  (libdir   (string-append out "/lib")))
+                             (substitute* (find-files "." "\\.scm$")
+                               (("\"libguile-ssh\"")
+                                (string-append "\"" libdir "/libguile-ssh\"")))
+                             #t)))))
        #:configure-flags (list (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
