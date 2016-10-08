@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -5003,7 +5003,7 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.11")
+    (version "1.11.1")
     (source
       (origin
         (method url-fetch)
@@ -5011,7 +5011,7 @@ protocol.")
                             name "-" version ".tar.bz2"))
         (sha256
           (base32
-            "1xqgc81krx14f2c8yl5chzg5g2l26mhm2rwffy8dx7jv0iq5sqq3"))))
+           "0c4xyvdyx5adh8dzyhnrmvwwz24gri4z1czxmxqm63i0gmngs85p"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)
