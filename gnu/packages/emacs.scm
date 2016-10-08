@@ -2165,6 +2165,7 @@ well as completely new features.")
               (uri (string-append
                     "https://raw.githubusercontent.com/tarsius/hl-todo/"
                     version "/hl-todo.el"))
+              (file-name (string-append "hl-todo-" version ".el"))
               (sha256
                (base32
                 "18zydm43zajlglhgr0bhdkd4pln27amd063k2ql6p1mvyam3j8ia"))))
