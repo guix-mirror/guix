@@ -220,6 +220,7 @@ without requiring the source code to be rewritten.")
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
     (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
+    (properties '((timeout . 72000)))  ; 20 hours
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
