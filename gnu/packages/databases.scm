@@ -549,15 +549,15 @@ is in the public domain.")
                 "0i1l38h0vyck6zkcj4fn2l03spadlmyr1qa1xpdp9dy2ccbm3s1r"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     ;; The 'configure' script is a wrapper for Waf and
-                     ;; doesn't recognize things like '--enable-fast-install'.
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; The 'configure' script is a wrapper for Waf and
+               ;; doesn't recognize things like '--enable-fast-install'.
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
     (native-inputs
      `(;; TODO: Build the documentation.
        ;; ("docbook-xsl" ,docbook-xsl)
