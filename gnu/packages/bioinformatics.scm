@@ -1972,7 +1972,25 @@ trees (phylogenies) and characters.")
   (let ((base (package-with-python2 (strip-python2-variant python-dendropy))))
     (package
       (inherit base)
+      ;; Do not use same source as 'python-dendropy' because the patched
+      ;; failing tests do not occur on Python 2.
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "DendroPy" (package-version base)))
+         (sha256
+          (base32
+           "1jfz7gp18wph311w1yygbvjanb3n5mdqal439bb6myw41dwb5m63"))))
+      (arguments
+       `(#:python ,python-2
+         #:phases
+           (modify-phases %standard-phases
+             (replace 'check
+               ;; There is currently a test failure that only happens on some
+               ;; systems, and only using "setup.py test"
+               (lambda _ (zero? (system* "nosetests")))))))
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
 
 
