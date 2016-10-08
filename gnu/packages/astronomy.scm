@@ -87,7 +87,7 @@ systems in a FITS image header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.1")
+    (version "0.2")
     (source
      (origin
        (method url-fetch)
@@ -95,14 +95,14 @@ systems in a FITS image header.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "105s007kw8l3jwwhvh8k9lgbpfbf7sqh2wpxmvpv3qdr6nh9lnjg"))))
+         "0099g7zqg1gr9y94ybhyjgx9pkn9zv4rj1xb00fkybfw8w6ij9iv"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
        ("libjpeg" ,libjpeg-8)
        ("wcslib" ,wcslib)))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/gnuastro")
+    (home-page "https://www.gnu.org/software/gnuastro")
     (synopsis "Astronomical data manipulation programs")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
 programs for the manipulation and analysis of astronomical data.")
