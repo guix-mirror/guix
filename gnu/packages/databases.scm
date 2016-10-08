@@ -539,14 +539,14 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.9")
+    (version "1.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ll4q17scax1arg12faj8p25jq1f7q9irc3pwla0ziymwqkgf0bi"))))
+                "0i1l38h0vyck6zkcj4fn2l03spadlmyr1qa1xpdp9dy2ccbm3s1r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -564,7 +564,7 @@ is in the public domain.")
        ;; ("libxml2" ,libxml2)
        ;; ("libxslt" ,libxslt)
        ("python" ,python-2)))                     ;for the Waf build system
-    (home-page "http://tdb.samba.org/")
+    (home-page "https://tdb.samba.org/")
     (synopsis "Trivial database")
     (description
      "TDB is a Trivial Database.  In concept, it is very much like GDBM,
