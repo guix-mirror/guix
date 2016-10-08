@@ -1457,7 +1457,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.3.8.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1465,7 +1465,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wl4ln6v1nkkx56kfah23chyrhga2vi93i82g0s200c4s4184xr8"))))
+                "133sx42wb66g803pcrgdwph40wh94knvab3yfqkgm0001jv4v14y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1485,7 +1485,17 @@ capabilities, custom envelopes, effects, etc.")
               (("-msse -msse2 -mfpmath=sse") "")
               (("-march=(athlon64|core2)" flag)
                (string-append flag " -msse -msse2 -mfpmath=sse")))
-            #t)))))
+            #t))
+         ;; Yoshimi tries to find ncurses with pkg-config, but our ncurses
+         ;; package does not install .pc files.
+         (add-after 'unpack 'find-ncurses
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("LIBNCURSES REQUIRED") "LIBNCURSES")
+               (("NCURSES REQUIRED") "NCURSES")
+               (("FATAL_ERROR \"libncurses") "STATUS \"libncurses")
+               (("\\$\\{NCURSES_LIBRARIES\\}") "ncurses"))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("fftwf" ,fftwf)
