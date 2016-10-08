@@ -5871,8 +5871,7 @@ object to help create WSGI responses.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/x/"
-                                  "xlrd/xlrd-" version ".tar.gz"))
+              (uri (pypi-uri "xlrd" version))
               (sha256
                (base32
                 "0s8hjiz01vbhy85xalrz0qlsmd9ypf36zjqrf97hh984spapvy0g"))))
