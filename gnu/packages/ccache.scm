@@ -29,7 +29,7 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +37,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1ij1p8arz72fw67gx65ngb7jmg30ynjxk7i8dmikjxkdri4pmn66"))))
+        "0c25l78hi36682l9cyxca78i8sdkmgmv9afip1s21y6q4g5qaxlh"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for test.sh
                      ("which" ,(@ (gnu packages base) which))))
