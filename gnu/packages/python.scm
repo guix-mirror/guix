@@ -12896,3 +12896,25 @@ interpreter. bpython's main features are
                  (("^(\\s+'bpython)(-\\S+)?(\\s+=.*',?)\\s*?$" _ name sub rest)
                   (string-append name "2" (or sub "") rest "\n")))
                #t))))))))
+
+(define-public python-pyinotify
+  (package
+    (name "python-pyinotify")
+    (version "0.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyinotify" version))
+              (sha256
+               (base32
+                "1x3i9wmzw33fpkis203alygfnrkcmq9w1aydcm887jh6frfqm6cw"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))          ;no tests
+    (home-page "https://github.com/seb-m/pyinotify")
+    (synopsis "Python library for monitoring inotify events")
+    (description
+     "@code{pyinotify} provides a Python interface for monitoring
+filesystem events on Linux.")
+    (license license:expat)))
+
+(define-public python2-pyinotify
+  (package-with-python2 python-pyinotify))
