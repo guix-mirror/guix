@@ -168,14 +168,14 @@ identi.ca and status.net).")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.12.1")
+    (version "2.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0svwz9ldrry1sn35jywgpacjj1cf3xl3k74ynwn8rjvxs73b00aj"))))
+                "1xnclfbrgbkqndxygi5f27q00jd7yy54jbd1061jmhxa6wzpibbd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
