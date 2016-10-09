@@ -40,6 +40,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
@@ -179,7 +180,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.3")
+    (version "5.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -193,10 +194,10 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"5.3\" ; }"))))
+namespace ARDOUR { const char* revision = \"5.4\" ; }"))))
               (sha256
                (base32
-                "0xdyc3syxg4drg7rafadhlrn6nycg169ay6q5xhga19kcwy6qmqm"))
+                "1yrg0d86k9fqw7lmzjglilbadb4cjqxqkf6ii4bjs6rihj6b0qrf"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
@@ -242,6 +243,7 @@ namespace ARDOUR { const char* revision = \"5.3\" ; }"))))
        ("readline" ,readline)
        ("redland" ,redland)
        ("rubberband" ,rubberband)
+       ("libarchive" ,libarchive)
        ("taglib" ,taglib)
        ("python-rdflib" ,python-rdflib)))
     (native-inputs
