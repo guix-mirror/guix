@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages fonts)
+  #:use-module (ice-9 regex)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -851,3 +853,47 @@ powerline support.")
     (license (license:x11-style
               "https://github.com/chrissimpkins/Hack/blob/master/LICENSE.md"
               "Hack Open Font License v2.0"))))
+
+(define-public font-adobe-source-code-pro
+  (package
+    (name "font-adobe-source-code-pro")
+    (version "2.030R-ro-1.050R-it")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/adobe-fonts/source-code-pro/archive/"
+                    (regexp-substitute/global
+                     ;; The upstream tag uses "/" between the roman and italic
+                     ;; versions, so substitute our "-" separator here.
+                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0arhhsf3i7ss39ykn73d1j8k4n8vx7115xph6jwkd970p1cxvr54"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((tar  (string-append (assoc-ref %build-inputs "tar")
+                                    "/bin/tar"))
+               (PATH (string-append (assoc-ref %build-inputs "gzip")
+                                    "/bin"))
+               (font-dir (string-append %output "/share/fonts/opentype")))
+           (setenv "PATH" PATH)
+           (mkdir-p font-dir)
+           (zero? (system* tar "-C" font-dir "--strip-components=2"
+                           "-xvf" (assoc-ref %build-inputs "source")
+                           (string-append "source-code-pro-"
+                                          ,version "/OTF")))))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (home-page "https://github.com/adobe-fonts/source-code-pro")
+    (synopsis
+     "Monospaced font family for user interface and coding environments")
+    (description
+     "Source Code Pro is a set of monospaced OpenType fonts that have been
+designed to work well in user interface environments.")
+    (license license:silofl1.1)))
