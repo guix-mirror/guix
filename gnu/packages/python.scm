@@ -4664,6 +4664,8 @@ tools for mocking system commands and recording calls to those.")
                    (info (string-append data "/info"))
                    (examples (string-append doc "/examples")))
               (setenv "LANG" "en_US.utf8")
+              ;; Make installed package available for running the tests
+              (add-installed-pythonpath inputs outputs)
               (with-directory-excursion "docs"
                 ;; FIXME: pdf fails to build
                 ;;(system* "make" "pdf" "PAPER=a4")
@@ -4683,9 +4685,11 @@ tools for mocking system commands and recording calls to those.")
          (delete 'check)
          (add-after
           'install 'check
-          (lambda* (#:key outputs tests? #:allow-other-keys)
+          (lambda* (#:key inputs outputs tests? #:allow-other-keys)
             (if tests?
                 (with-directory-excursion "/tmp"
+                  ;; Make installed package available for running the tests
+                  (add-installed-pythonpath inputs outputs)
                   (setenv "HOME" "/tmp/") ;; required by a test
                   (zero? (system* (string-append (assoc-ref outputs "out")
                                                  "/bin/iptest"))))
