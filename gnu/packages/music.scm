@@ -1585,6 +1585,42 @@ JACK for audio and ALSA sequencer for MIDI as multimedia infrastructures and
 follows a traditional multi-track tape recorder control paradigm.")
     (license license:gpl2+)))
 
+(define-public gxtuner
+  (package
+    (name "gxtuner")
+    (version "2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/gxtuner/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1abpxiydn4c9wssz6895hnad9ipkcy3rkgzbnanvwb46nm44x6if"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "INCLUDE_L_DIR="
+                            (assoc-ref %build-inputs "zita-resampler")
+                            "/include/"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("jack" ,jack-1)
+       ("fftwf" ,fftwf)
+       ("cairo" ,cairo)
+       ("zita-resampler" ,zita-resampler)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/brummer10/gxtuner")
+    (synopsis "Guitar tuner")
+    (description "GXtuner is a simple guitar tuner for JACK with an
+analogue-like user interface.")
+    (license license:gpl2+)))
+
 (define-public pianobar
   (package
     (name "pianobar")
