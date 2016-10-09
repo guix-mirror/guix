@@ -185,7 +185,8 @@ has a small feature set similar to a traditional Bourne shell.")
               (sha256
                (base32
                 "1a4z9kwgx1iqqzvv64si34m60gj34p7lp6rrcrb59s7ka5wa476q"))
-              (patches (search-patches "tcsh-fix-autotest.patch"))
+              (patches (search-patches "tcsh-fix-autotest.patch"
+                                       "tcsh-do-not-define-BSDWAIT.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (inputs
