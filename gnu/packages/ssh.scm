@@ -80,20 +80,6 @@ remote applications.")
     (home-page "http://www.libssh.org")
     (license license:lgpl2.1+)))
 
-(define libssh-0.6 ; kept private for use in guile-ssh
-  (package (inherit libssh)
-    (version "0.6.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://red.libssh.org/attachments/"
-                                  "download/121/libssh-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0b6wyx6bwbb8jpn8x4rhlrdiqwqrwrs0mxjmrnqykm9kw1ijgm8g"))
-              (patches (search-patches
-                        "libssh-0.6.5-CVE-2016-0739.patch"))))))
-
 (define-public libssh2
   (package
    (name "libssh2")
@@ -209,7 +195,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.9.0")
+    (version "0.10.1")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
               ;; exists, but the server appears to be too slow and unreliable.
@@ -220,7 +206,7 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "04zs1cykwdyj51ag62ymrkgsja9dbhbaaglkvbfbac0bkxl2ir6d"))))
+                "0ky77kr7rnkhbq938bir61mlr8b86lfjcjjb1bxx1y1fhimsiz72"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -243,9 +229,6 @@ Additionally, various channel-specific options can be negotiated.")
                                (("\"libguile-ssh\"")
                                 (string-append "\"" libdir "/libguile-ssh\"")))
                              #t)))))
-       #:configure-flags (list (string-append "--with-guilesitedir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.0"))
 
        ;; Tests are not parallel-safe.
        #:parallel-tests? #f))
@@ -256,7 +239,7 @@ Additionally, various channel-specific options can be negotiated.")
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)))
     (inputs `(("guile" ,guile-2.0)
-              ("libssh" ,libssh-0.6)
+              ("libssh" ,libssh)
               ("libgcrypt" ,libgcrypt)))
     (synopsis "Guile bindings to libssh")
     (description
