@@ -26,7 +26,7 @@
 (define-public dejagnu
   (package
     (name "dejagnu")
-    (version "1.5.3")
+    (version "1.6")
     (source
      (origin
       (method url-fetch)
@@ -34,7 +34,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "069z3qrdv35cm2sbnfr5yjzplrqj9f61cchxis7j9mm19hv8x6q9"))))
+        "0qypaakd2065jgpcv84zcsibl8gph3p334gb2qdmhsrbirhlmdh0"))))
     (build-system gnu-build-system)
     (inputs `(("expect" ,expect)))
     (arguments
@@ -74,10 +74,10 @@
                                         expect "/bin:$PATH\n")))))
                   %standard-phases))))
     (home-page
-     "http://www.gnu.org/software/dejagnu/")
+     "https://www.gnu.org/software/dejagnu/")
     (synopsis "GNU software testing framework")
     (description
      "DejaGnu is a framework for testing software.  In effect, it serves as
 a front-end for all tests written for a program.  Thus, each program can have
 multiple test suites, which are then all managed by a single harness.")
-    (license gpl2+)))
+    (license gpl3+)))
