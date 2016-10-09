@@ -429,7 +429,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
 (define-public xboard
   (package
     (name "xboard")
-    (version "4.9.0")
+    (version "4.9.1")
     (source
      (origin
        (method url-fetch)
@@ -437,14 +437,15 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                            ".tar.gz"))
        (sha256
         (base32
-         "1av6r3s5vyclwf3c9i1pkr2442ryrf4ixhhf2i44a4j1xyhlp5jb"))))
+         "1mkh36xnnacnz9r00b5f9ld9309k32jv6mcavklbdnca8bl56bib"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)
        ("librsvg" ,librsvg)))
-    (native-inputs `(("texinfo" ,texinfo)
-                     ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/xboard")
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.gnu.org/software/xboard")
     (synopsis "Graphical user interface for chess programs")
     (description "GNU XBoard is a graphical board for all varieties of chess,
 including international chess, xiangqi (Chinese chess), shogi (Japanese chess)
