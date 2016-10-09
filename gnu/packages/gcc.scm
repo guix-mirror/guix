@@ -559,6 +559,13 @@ as the 'native-search-paths' field."
                 (("libgcj(_bc)?_la_LDFLAGS =" ldflags _)
                  (string-append ldflags " -Wl,-rpath=$(libdir)")))))
            (add-after
+            'unpack 'patch-testsuite
+            ;; dejagnu-1.6 removes the 'absolute' command
+            (lambda _
+              (substitute* "libjava/testsuite/lib/libjava.exp"
+                (("absolute") "file normalize"))
+              #t))
+           (add-after
             'install 'install-javac-and-javap-wrappers
             (lambda _
               (let* ((javac  (assoc-ref %build-inputs "javac.in"))
