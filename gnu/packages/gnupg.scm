@@ -622,7 +622,7 @@ including tools for signing keys, keyring analysis, and party preparation.
     (synopsis "GnuPG's interface to passphrase input")
     (description
      "Pinentry provides a console that allows users to enter a passphrase when
-@code{gpg} or @code{gpg2} is run and needs it.")
+@code{gpg} is run and needs it.")
     (license license:gpl2+)))
 
 (define-public pinentry-gtk2
@@ -635,7 +635,7 @@ including tools for signing keys, keyring analysis, and party preparation.
        ,@(package-inputs pinentry-tty)))
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to enter a
-passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
+passphrase when @code{gpg} is run and needs it.")))
 
 (define-public pinentry-qt
   (package
@@ -648,7 +648,7 @@ passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
      `(#:configure-flags '("CXXFLAGS=-std=gnu++11")))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
-passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
+passphrase when @code{gpg} is run and needs it.")))
 
 (define-public pinentry
   (package (inherit pinentry-gtk2)
