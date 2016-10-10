@@ -1715,9 +1715,6 @@ supports coverage of subprocesses.")
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs base))))))
 
-(define-public python2-pytest-runner
-  (package-with-python2 python-pytest-runner))
-
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
@@ -5753,9 +5750,6 @@ reading and writing MessagePack data.")
                      (strip-python2-variant python-msgpack)))
     (native-inputs
      `(("python2-setuptools" ,python2-setuptools)))))
-
-(define-public python2-msgpack
-  (package-with-python2 python-msgpack))
 
 (define-public python-netaddr
   (package
