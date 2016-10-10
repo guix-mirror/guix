@@ -12345,6 +12345,54 @@ starts with @code{py} (e.g. @code{pytz}), we keep it and prefix it as
 described above.
 
 
+@subsubsection Specifying Dependencies
+@cindex inputs, for Python packages
+
+Dependency information for Python packages is usually available in the
+package source tree, with varying degrees of accuracy: in the
+@file{setup.py} file, in @file{requirements.txt}, or in @file{tox.ini}.
+
+Your mission, when writing a recipe for a Python package, is to map
+these dependencies to the appropriate type of ``input'' (@pxref{package
+Reference, inputs}).  Although the @code{pypi} importer normally does a
+good job (@pxref{Invoking guix import}), you may want to check the
+following check list to determine which dependency goes where.
+
+@itemize
+
+@item
+Python dependencies required at run time go into
+@code{propagated-inputs}.  They are typically defined with the
+@code{install_requires} keyword in @file{setup.py}, or in the
+@file{requirements.txt} file.
+
+@item
+Python packages required only at build time---e.g., those listed with
+the @code{setup_requires} keyword in @file{setup.py}---or only for
+testing---e.g., those in @code{tests_require}---go into
+@code{native-inputs}.  The rationale is that (1) they do not need to be
+propagated because they are not needed at run time, and (2) in a
+cross-compilation context, it's the ``native'' input that we'd want.
+
+Examples are @code{setuptools}, which is usually needed only at build
+time, or the @code{pytest}, @code{mock}, and @code{nose} test
+frameworks.  Of course if any of these packages is also required at
+run-time, it needs to go to @code{propagated-inputs}.
+
+@item
+Anything that does not fall in the previous categories goes to
+@code{inputs}, for example programs or C libraries required for building
+Python packages containing C extensions.
+
+@item
+If a Python package has optional dependencies (@code{extras_require}),
+it is up to you to decide whether to add them or not, based on their
+usefulness/overhead ratio (@pxref{Submitting Patches, @command{guix
+size}}).
+
+@end itemize
+
+
 @node Perl Modules
 @subsection Perl Modules
 
