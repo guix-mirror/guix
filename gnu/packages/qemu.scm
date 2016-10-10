@@ -76,7 +76,10 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0lqyz01z90nvxpc3nx4djbci7hx62cwvs5zwd6phssds0sap6vij"))))
+               "0lqyz01z90nvxpc3nx4djbci7hx62cwvs5zwd6phssds0sap6vij"))
+             (patches (search-patches "qemu-CVE-2016-8576.patch"
+                                      "qemu-CVE-2016-8577.patch"
+                                      "qemu-CVE-2016-8578.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
