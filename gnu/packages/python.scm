@@ -1764,7 +1764,15 @@ same arguments.")
        (uri (pypi-uri "pytest-xdist" version ".zip"))
        (sha256
         (base32
-         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))))
+         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-compiled .pyc files from source.
+           (for-each delete-file-recursively
+                     (find-files "." "__pycache__" #:directories? #t))
+           (for-each delete-file (find-files "." "\\.pyc$"))
+           #t))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)
