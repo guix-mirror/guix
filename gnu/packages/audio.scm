@@ -338,6 +338,37 @@ tools (analyzer, mono/stereo tools, crossovers).")
     ;; The plugins are released under LGPLv2.1+
     (license (list license:lgpl2.1+ license:gpl2+))))
 
+(define-public infamous-plugins
+  (package
+    (name "infamous-plugins")
+    (version "0.2.02")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ssj71/infamousPlugins/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qm3ak07vc1l3f5c3c2lq9gkfknlxwn8ks03cysw1pk8hj7dwnv6"))))
+    (build-system cmake-build-system)
+    ;; There are no tests
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fftwf" ,fftwf)
+       ("lv2" ,lv2)
+       ("ntk" ,ntk)
+       ("zita-resampler" ,zita-resampler)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://ssj71.github.io/infamousPlugins")
+    (synopsis "LV2 plugins for live use")
+    (description
+     "The infamous plugins are a collection of LV2 audio plugins for live
+performances.  The plugins include a cellular automaton synthesizer, an
+envelope follower, distortion effects, tape effects and more.")
+    (license license:gpl2+)))
+
 (define-public csound
   (package
     (name "csound")
