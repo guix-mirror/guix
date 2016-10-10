@@ -473,7 +473,7 @@ smooth contours with constant curvature at the spline joins.")
 (define-public libuninameslist
   (package
     (name "libuninameslist")
-    (version "0.5.20150701")
+    (version "20160701")
     (source
      (origin
        (method url-fetch)
@@ -482,7 +482,7 @@ smooth contours with constant curvature at the spline joins.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1j6147l100rppw7axlrkdx0p35fax6bz2zh1xgpg7a3b4pmqaj3v"))))
+         "12xxb301a66dh282pywpy00wxiaq5z8z20qm3pr2vql04r2g8d0x"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
