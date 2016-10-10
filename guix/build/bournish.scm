@@ -162,6 +162,17 @@ characters."
         (else
          `((@@ (guix build bournish) wc-command-implementation) ,@args))))
 
+(define (reboot-command . args)
+  "Emit code for 'reboot'."
+  ;; Normally Bournish is used in the initrd, where 'reboot' is provided
+  ;; directly by (guile-user).  In other cases, just bail out.
+  `(if (defined? 'reboot)
+       (reboot)
+       (begin
+         (format (current-error-port)
+                 "I don't know how to reboot, sorry about that!~%")
+         #f)))
+
 (define (help-command . _)
   (display "\
 Hello, this is Bournish, a minimal Bourne-like shell in Guile!
@@ -189,7 +200,8 @@ commands such as 'ls' and 'cd'; it lacks globbing, pipes---everything.\n"))
     ("ls"     ,ls-command)
     ("which"  ,which-command)
     ("cat"    ,cat-command)
-    ("wc"     ,wc-command)))
+    ("wc"     ,wc-command)
+    ("reboot" ,reboot-command)))
 
 (define (read-bournish port env)
   "Read a Bournish expression from PORT, and return the corresponding Scheme
