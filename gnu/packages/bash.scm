@@ -275,7 +275,7 @@ without modification.")
 (define-public bash-completion
   (package
     (name "bash-completion")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -283,7 +283,7 @@ without modification.")
                     version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1sg82nmsr00ig37skln2qvmi8mgbxgdvycm3ygzs8gbz66pq3q5j"))
+                "1xlhd09sb2w3bw8qaypxgkr0782w082mcbx8zf7yzjgy0996pxy0"))
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
@@ -316,7 +316,7 @@ without modification.")
     (description
      "This package provides extensions that allow Bash to provide adapted
 completion for many common commands.")
-    (home-page "http://bash-completion.alioth.debian.org/")
+    (home-page "https://github.com/scop/bash-completion")
     (license gpl2+)))
 
 (define-public bash-tap
