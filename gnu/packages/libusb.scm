@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
@@ -27,12 +27,15 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
@@ -90,6 +93,41 @@ devices on various operating systems.")
      "Libusb-compat provides a shim allowing applications based on older
 version of libusb to run with newer libusb.")
     (license lgpl2.1+)))
+
+(define-public libusb4java
+  ;; There is no public release so we take the latest version from git.
+  (let ((commit "396d642a57678a0d9663b062c980fe100cc0ea1e")
+        (revision "1"))
+    (package
+      (name "libusb4java")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/usb4java/libusb4java.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0wqgapalhfh9v38ycbl6i2f5lh1wpr6fzwn5dwd0rdacypkd1gml"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'set-JAVA_HOME
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+               #t)))))
+      (inputs
+       `(("libusb" ,libusb)))
+      (native-inputs
+       `(("jdk" ,icedtea "jdk")))
+      (home-page "https://github.com/usb4java/libusb4java/")
+      (synopsis "JNI bindings to libusb")
+      (description
+       "This package provides Java JNI bindings to the libusb library for use
+with usb4java.")
+      (license expat))))
 
 (define-public python-pyusb
   (package
