@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages python)
+  #:use-module (guix utils)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -155,14 +156,15 @@ multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public cmocka
   (package
     (name "cmocka")
-    (version "1.0.1")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://cmocka.org/files/1.0/cmocka-"
+              (uri (string-append "https://cmocka.org/files/"
+                                  (version-major+minor version) "/cmocka-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0fvm6rdalqcxckbddch8ycdw6n2ckldblv117n09chi2l7bm0q5k"))))
+                "0c0k8ax16fgh39nsva09q4jsh83g9nxihkwj9d5666763fzx6q79"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No test target
