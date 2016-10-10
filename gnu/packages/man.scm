@@ -134,7 +134,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "4.06")
+    (version "4.08")
     (source (origin
               (method url-fetch)
               (uri
@@ -147,7 +147,7 @@ the traditional flat-text whatis databases.")
                     "man-pages-" version ".tar.xz")))
               (sha256
                (base32
-                "0vv056k9yyf05dqal9m2pq3pv9c8lnp7i5rjxvcnic6aq7vyrafb"))))
+                "1d32ki8nkwd2xiln619jihqn7s15ydrg7386n4hxq530sys7svic"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)
