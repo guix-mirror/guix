@@ -64,17 +64,23 @@
               (snippet
                ;; install backends, banners and filters to cups-filters output
                ;; directory, not the cups server directory
-               '(substitute* "Makefile.in"
-                  (("CUPS_DATADIR = @CUPS_DATADIR@")
-                   "CUPS_DATADIR = $(PREFIX)/share/cups")
-                  (("pkgcupsserverrootdir = \\$\\(CUPS_SERVERROOT\\)")
-                   "pkgcupsserverrootdir = $(PREFIX)")
-                  ;; Choose standard directories notably so that binaries are
-                  ;; stripped.
-                  (("pkgbackenddir = \\$\\(CUPS_SERVERBIN\\)/backend")
-                   "pkgbackenddir = $(PREFIX)/lib/cups/backend")
-                  (("pkgfilterdir = \\$\\(CUPS_SERVERBIN\\)/filter")
-                   "pkgfilterdir = $(PREFIX)/lib/cups/filter")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("CUPS_DATADIR = @CUPS_DATADIR@")
+                     "CUPS_DATADIR = $(PREFIX)/share/cups")
+                    (("pkgcupsserverrootdir = \\$\\(CUPS_SERVERROOT\\)")
+                     "pkgcupsserverrootdir = $(PREFIX)")
+                    ;; Choose standard directories notably so that binaries are
+                    ;; stripped.
+                    (("pkgbackenddir = \\$\\(CUPS_SERVERBIN\\)/backend")
+                     "pkgbackenddir = $(PREFIX)/lib/cups/backend")
+                    (("pkgfilterdir = \\$\\(CUPS_SERVERBIN\\)/filter")
+                     "pkgfilterdir = $(PREFIX)/lib/cups/filter"))
+                  ;; Find bannertopdf data such as the print test page in our
+                  ;; output directory, not CUPS's prefix.
+                  (substitute* "configure"
+                    (("\\{CUPS_DATADIR\\}/data")
+                     "{prefix}/share/cups/data"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
