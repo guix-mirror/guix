@@ -2787,12 +2787,11 @@ auto mapper with a VT100 map display.")
     (source
      (origin (method url-fetch)
              (uri (string-append
-                   "https://github.com/sgimenez/laby/tarball/"
-                   name "-" version))
-             (file-name (string-append name "-" version ".tar.gz"))
+                   "https://github.com/sgimenez/laby/archive/"
+                   name "-" version ".tar.gz"))
              (sha256
               (base32
-               "113ip48308ps3lsw427xswgx3wdanils43nyal9n4jr6bcx1bj2j"))
+               "0gyrfa95l1qka7gbjf7l6mk7mbfvph00l0c995ia272qdw7rjhyf"))
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs
