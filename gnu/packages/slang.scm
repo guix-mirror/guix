@@ -82,7 +82,7 @@ slsh, which is part of the S-Lang distribution.")
     (version "0.52.18")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://fedorahosted.org/releases/n/e/"
+              (uri (string-append "https://pagure.io/releases/"
                                   name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -122,7 +122,7 @@ slsh, which is part of the S-Lang distribution.")
               (rename-file (string-append out "/lib/python" ver)
                            (string-append py  "/lib/python" ver))
               #t))))))
-    (home-page "https://fedorahosted.org/newt/")
+    (home-page "https://pagure.io/newt")
     (synopsis "Not Erik's Windowing Toolkit - text mode windowing with slang")
     (description
      "Newt is a windowing toolkit for text mode built from the slang library.
