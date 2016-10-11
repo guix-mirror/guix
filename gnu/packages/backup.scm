@@ -428,7 +428,27 @@ detection, and lossless compression.")
                (setenv "BORG_OPENSSL_PREFIX" openssl)
                (setenv "BORG_LZ4_PREFIX" lz4)
                (setenv "PYTHON_EGG_CACHE" "/tmp")
+               ;; The test 'test_return_codes[python]' fails when
+               ;; HOME=/homeless-shelter.
+               (setenv "HOME" "/tmp")
                #t)))
+         ;; The tests need to be run after Borg is installed.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda _
+             (zero?
+               (system* "py.test" "-v" "--pyargs" "borg.testsuite" "-k"
+                        (string-append
+                          ;; These tests need to write to '/var'.
+                          "not test_get_cache_dir "
+                          "and not test_get_keys_dir "
+                          ;; These tests assume there is a root user in
+                          ;; '/etc/passwd'.
+                          "and not test_access_acl "
+                          "and not test_default_acl "
+                          "and not test_non_ascii_acl "
+                          ;; This test needs the unpackaged pytest-benchmark.
+                          "and not benchmark")))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -442,6 +462,7 @@ detection, and lossless compression.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
