@@ -475,7 +475,10 @@ to not fully trusted targets.  Borg is a fork of Attic.")
                 "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(;; The tests assume they are run as root:
+       ;; https://github.com/jborg/attic/issues/7
+       #:tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-before
           'build 'set-openssl-prefix
