@@ -952,14 +952,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "05az2g3gna5lkhh6x1a5m6yardbiig1l4ysggldlk5if8ww9qkk7"))))
+                "1wb9jd692a0y52bkkxr6815kk4g039mirjdrvqx24265lv2l5l1a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail
@@ -967,6 +967,7 @@ similar to BerkeleyDB, LevelDB, etc.")
                   (delete 'configure))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
+                      "LDFLAGS=-ldl"
                       ,(string-append "PREFIX="
                                       (assoc-ref %outputs "out")))))
     (synopsis "Key-value cache and store")
