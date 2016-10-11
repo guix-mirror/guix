@@ -584,21 +584,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
-  %D%/packages/patches/icecat-avoid-bundled-includes.patch	\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt1.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt2.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt3.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt4.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt5.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt6.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt7.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt8.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt9.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2819.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2821.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2824.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2828.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2831.patch		\
+  %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
