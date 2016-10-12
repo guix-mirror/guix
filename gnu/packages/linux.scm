@@ -2611,7 +2611,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.8")
+    (version "4.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2619,7 +2619,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "06v6fqr0rl1bqg87ndi5fjh3l59v7yvimlg3abr4jc3wxw8hmdg6"))))
+                "10yv823g92jbd6iq8d70y0bvs716jv956bq7khqmbhdzg9q6svl3"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2974,14 +2974,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "141")
+    (version "142")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "0ws8blq0prj7slcaljyaxxq20kgmlakzac0ri1pvh24xs1jn2xxg"))
+                "15a9hllwj32l1zh7x4swx8985x6nqrplvxjyfdsqysxw2pk6pixr"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
