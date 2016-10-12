@@ -2127,3 +2127,23 @@ pedal."))))
       (synopsis "Saturation effect")
       (description "This package provides the LV2 plugin \"GxSaturator\", a
 saturation effect."))))
+
+(define-public gx-hyperion-lv2
+  (let ((commit "7d993bc77f9946b3df0e481632c61b2dcbb6549f")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-hyperion-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxHyperion.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "12klcyc6l9v93ii3478mqz44jzvh5np1sk8zzdmz42jp0w8qd429"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxHyperion.lv2")
+      (synopsis "Simulation of the Hyperion Fuzz pedal")
+      (description "This package provides the LV2 plugin \"GxHyperion\", a
+simulation of the Hyperion Fuzz pedal."))))
