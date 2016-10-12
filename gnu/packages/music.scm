@@ -2169,3 +2169,25 @@ simulation of the Hyperion Fuzz pedal."))))
 simulation modelled after the Voodoo Lab SuperFuzz pedal.  It's basically a
 Bosstone circuit, followed by the tone control of the FoxToneMachine in
 parallel with a DarkBooster, followed by a volume control."))))
+
+(define-public gx-super-fuzz-lv2
+  (let ((commit "9800354caeb4082a64ca55b2daa9a9a1f79b8c21")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-super-fuzz-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSuperFuzz.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1jclp53p01h94cpx17wm4765r7klbr41g7bvq87l53qwlrgkc7a9"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
+      (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
+      (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
+analog simulation of the UniVox SuperFuzz pedal.  In this simulation the trim
+pot, which is usualy in the housing, is exposed as a control parameter.  It
+adjusts the amount of harmonics."))))
