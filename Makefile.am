@@ -495,7 +495,10 @@ gen-AUTHORS:
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
 assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
-	     "$(storedir)/[a-z0-9]{32}-" $(distdir) ;				\
+	     --exclude=*.info-[0-9] --exclude=*.dot				\
+	     --exclude=*.eps --exclude-dir=bootstrap				\
+	     --exclude=guix-prettify.el						\
+	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\
 	  exit 1 ;								\
