@@ -2147,3 +2147,25 @@ saturation effect."))))
       (synopsis "Simulation of the Hyperion Fuzz pedal")
       (description "This package provides the LV2 plugin \"GxHyperion\", a
 simulation of the Hyperion Fuzz pedal."))))
+
+(define-public gx-voodoo-fuzz-lv2
+  (let ((commit "d2d6b27bc279f98c2fd11bbd58ffe2fb2c321ec4")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-voodoo-fuzz-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxVoodoFuzz.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ji915bly588a8xwvwspvsqv0nh8ljgi6rky2mk1d9d6nz96jrbk"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxVoodoFuzz.lv2")
+      (synopsis "Fuzz effect modelled after the Voodoo Lab SuperFuzz")
+      (description "This package provides the LV2 plugin \"GxVoodooFuzz\", a
+simulation modelled after the Voodoo Lab SuperFuzz pedal.  It's basically a
+Bosstone circuit, followed by the tone control of the FoxToneMachine in
+parallel with a DarkBooster, followed by a volume control."))))
