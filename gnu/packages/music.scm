@@ -2066,3 +2066,23 @@ overdrive effect."))))
       (synopsis "Clean boost with a 3-knob tonestack")
       (description "This package provides the LV2 plugin \"GxToneMender\", a
 clean boost effect with a 3-knob tonestack."))))
+
+(define-public gx-push-pull-lv2
+  (let ((commit "7f76ae2068498643ac8671ee0930b13ee3fd8eb5")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-push-pull-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxPushPull.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "12f5hwck2irph0gjbj8xy8jqcqdwb8l1hlwf29k0clz52h1jhb5q"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxPushPull.lv2")
+      (synopsis "Octave up push pull transistor fuzz simulation")
+      (description "This package provides the LV2 plugin \"GxPushPull\", a
+simulation of a push pull transistor fuzz effect with added high octave."))))
