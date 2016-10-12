@@ -2981,6 +2981,31 @@ Lua programing language}.")
 news items, openrc and runscripts.")
     (license license:gpl2+)))
 
+(define-public emacs-evil
+  (package
+    (name "emacs-evil")
+    (version "1.2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/lyro/evil/get/"
+                           version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "17cda9fnbq3gmjcxs3lyq64gxswrf37y864bm53rldwsk3khq2yi"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-undo-tree" ,emacs-undo-tree)
+       ("emacs-goto-chg" ,emacs-goto-chg)))
+    (home-page "https://bitbucket.com/lyro/evil")
+    (synopsis "Extensible Vi layer for Emacs")
+    (description
+     "Evil is an extensible vi layer for Emacs.  It emulates the
+main features of Vim, and provides facilities for writing custom
+extensions.")
+    (license license:gpl3+)))
+
 (define-public emacs-goto-chg
   (package
     (name "emacs-goto-chg")
