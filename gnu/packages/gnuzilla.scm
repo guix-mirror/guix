@@ -431,21 +431,7 @@ standards.")
        ("mit-krb5" ,mit-krb5)
        ("nspr" ,nspr)
        ("nss" ,nss)
-
-       ;; XXX Work around the fact that our 'sqlite' package was not built
-       ;;     with -DSQLITE_ENABLE_DBSTAT_VTAB.
-       ("sqlite" ,(package
-                    (inherit sqlite)
-                    (arguments
-                     `(#:configure-flags
-                       ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
-                       ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
-                       ;; to use the system SQLite unless these options are enabled.
-                       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                                            "-DSQLITE_ENABLE_DBSTAT_VTAB"))))))
-       ;;("sqlite" ,sqlite)
-
+       ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
