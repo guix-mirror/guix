@@ -2005,3 +2005,24 @@ simulation of an overdrive or distortion pedal for guitars.")
       ;; The LICENSE file says GPLv3 but the license headers in the files say
       ;; GPLv2 or later.
       (license license:gpl2+))))
+
+(define-public gx-vbass-preamp-lv2
+  (let ((commit "0e599abab10c7669dd444e5d06f671c2fc1b9c6c")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-vbass-preamp-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxVBassPreAmp.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1dzksdfrva666gpi62fd2ni9rhf18sl917f1894qr0b17pbdh9k1"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxVBassPreAmp.lv2")
+      (synopsis "Simulation of the Vox Venue Bass 100 Pre Amp Section")
+      (description "This package provides the LV2 plugin \"GxVBassPreAmp\", a
+pre-amplifier simulation modelled after the 1984 Vox Venue Bass 100 Pre Amp
+Section."))))
