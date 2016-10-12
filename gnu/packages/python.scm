@@ -8463,14 +8463,14 @@ RabbitMQ messaging server is the most popular implementation.")
 (define-public python-billiard
   (package
     (name "python-billiard")
-    (version "3.3.0.22")
+    (version "3.3.0.23")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "billiard" version))
        (sha256
         (base32
-         "0zp7h6a58alrb3mwdw61jds07395j4j0mj6iqsb8czrihw9ih5nj"))))
+         "02wxsc6bhqvzh8j6w758kvgqbnj14l796mvmrcms8fgfamd2lak9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
