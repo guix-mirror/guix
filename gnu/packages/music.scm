@@ -2026,3 +2026,23 @@ simulation of an overdrive or distortion pedal for guitars.")
       (description "This package provides the LV2 plugin \"GxVBassPreAmp\", a
 pre-amplifier simulation modelled after the 1984 Vox Venue Bass 100 Pre Amp
 Section."))))
+
+(define-public gx-overdriver-lv2
+  (let ((commit "ed71801987449414bf3adaa0dbfac68e8775f1ce")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-overdriver-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxOverDriver.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "13j614jh525fbkby79nnzwj0z1ac0c9wclyn5pfqvkmx6a7j24r8"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxOverDriver.lv2")
+      (synopsis "Overdrive effect with level and tone control")
+      (description "This package provides the LV2 plugin \"GxOverDriver\", an
+overdrive effect."))))
