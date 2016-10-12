@@ -1965,3 +1965,43 @@ CSV file in the format created by midicsv may be converted back into a
 standard MIDI file with the csvmidi program.")
     (home-page "http://www.fourmilab.ch/webtools/midicsv/")
     (license license:public-domain)))
+
+(define-public gx-guvnor-lv2
+  (let ((commit "9f528a7623a201383e119bb6a2df32b18396a9d5")
+        (revision "1"))
+    (package
+      (name "gx-guvnor-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxGuvnor.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "10zx84p2vd7i1yqc5ma9p17927265j4g0zfwv9rxladw0nm8y45k"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(;; The check target is used only to output a warning.
+         #:tests? #f
+         #:make-flags
+         (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda _
+               (substitute* "Makefile"
+                 (("INSTALL_DIR = .*") "INSTALL_DIR=/lib/lv2\n")
+                 ;; Avoid rebuilding everything
+                 (("install : all") "install:"))
+               #t)))))
+      (inputs
+       `(("lv2" ,lv2)))
+      (home-page "https://github.com/brummer10/GxGuvnor.lv2")
+      (synopsis "Overdrive/distortion pedal simulation")
+      (description "This package provides the LV2 plugin \"GxGuvnor\", a
+simulation of an overdrive or distortion pedal for guitars.")
+      ;; The LICENSE file says GPLv3 but the license headers in the files say
+      ;; GPLv2 or later.
+      (license license:gpl2+))))
