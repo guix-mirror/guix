@@ -8424,21 +8424,22 @@ alternative when librabbitmq is not available.")
 (define-public python-kombu
   (package
     (name "python-kombu")
-    (version "3.0.33")
+    (version "3.0.37")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kombu" version))
        (sha256
         (base32
-         "16brjx2lgwbj2a37d0pjbfb84nvld6irghmqrs3qfncajp51hgc5"))))
+         "0l16chb314gpq2v7fh94a22c30lcv6w3ylmhsa60bldlcq6a0r70"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-anyjson" ,python-anyjson)
-       ("python-amqp" ,python-amqp)))
+       ("python-amqp" ,python-amqp)
+       ("python-redis" ,python-redis)))
     (home-page "http://kombu.readthedocs.org")
     (synopsis "Message passing library for Python")
     (description "The aim of Kombu is to make messaging in Python as easy as
