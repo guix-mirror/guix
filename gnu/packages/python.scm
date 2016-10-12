@@ -8498,15 +8498,24 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python-celery
   (package
     (name "python-celery")
-    (version "3.1.20")
+    (version "3.1.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "celery" version))
        (sha256
         (base32
-         "1md6ywg1s0946qyp8ndnsd677wm0yax933h2sb4m3a4j7lf1jbyh"))))
+         "0yh2prhdnx2dgkb67a5drj12hh2zvzx5f611p7mqqg01ydghif4r"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; These tests break with Python 3.5:
+         ;; https://github.com/celery/celery/issues/2897#issuecomment-253066295
+         (replace 'check
+           (lambda _
+             (zero?
+               (system* "nosetests" "--exclude=^test_safe_to_remove.*")))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (inputs
