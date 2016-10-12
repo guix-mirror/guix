@@ -45,6 +45,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages documentation)
@@ -121,14 +122,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.10.1")
+    (version "1.11.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://nginx.org/download/nginx-"
+              (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00d8hxj8453c7989qd7z4f1mjp0k3ib8k29i1qyf11b4ar35ilqz"))))
+                "0fvb09ycxz3xnyynav6ybj6miwh9kv8jcb2vzrmvqhzn8cgiq8h6"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -140,7 +141,8 @@ and its related documentation.")
          (add-before 'configure 'patch-/bin/sh
            (lambda _
              (substitute* "auto/feature"
-               (("/bin/sh") (which "bash")))))
+               (("/bin/sh") (which "bash")))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((flags
@@ -186,7 +188,7 @@ and its related documentation.")
                             (string-append share "/conf"))
                (rename-file (string-append out "/html")
                             (string-append share "/html"))))))))
-    (home-page "http://nginx.org")
+    (home-page "https://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
      "Nginx (\"engine X\") is a high-performance web and reverse proxy server
@@ -3146,6 +3148,34 @@ http://opensearch.a9.com} compatible search engines.")
 /robots.txt file to forbid conforming robots from accessing parts of
 their web site.")
     (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))
+
+(define-public python-feedparser
+  (package
+    (name "python-feedparser")
+    (version "5.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "feedparser" version ".tar.bz2"))
+       (sha256
+        (base32
+         "00hb4qg2am06g81mygfi1jsbx8830024jm45g6qp9g8fr6am91yf"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/kurtmckee/feedparser")
+    (synopsis "Parse feeds in Python")
+    (description
+     "Universal feed parser which handles RSS 0.9x, RSS 1.0, RSS 2.0,
+CDF, Atom 0.3, and Atom 1.0 feeds.")
+    (license (list l:bsd-2 ; source code
+                   l:freebsd-doc)))) ; documentation
+
+(define-public python2-feedparser
+  (let ((base (package-with-python2
+               (strip-python2-variant python-feedparser))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools))))))
 
 (define-public r-httpuv
   (package

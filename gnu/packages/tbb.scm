@@ -28,16 +28,16 @@
 (define-public tbb
   (package
     (name "tbb")
-    (version "2017")
+    (version "2017_20160916")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://www.threadingbuildingblocks.org/sites/default"
                     "/files/software_releases/source/"
-                    "tbb" version "_20160722oss_src.tgz"))
+                    "tbb" version "oss_src.tgz"))
               (sha256
                (base32
-                "038rmv3s8si51bjrzwyv8ldqw742fjjdfayi8pmjaq5zw32b8pzx"))
+                "1i3zy87gyzw22fvajm039w6g822qzqn7jbmznc8y8c57qpqnf330"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "build/common.inc"

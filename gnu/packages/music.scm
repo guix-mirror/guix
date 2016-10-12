@@ -1318,14 +1318,14 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "1.0.2")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "0l47gy9yywrc860db5g3wdqg8yc8qdb2lqq6wvw1dfim5j0vbail"))))
+                "13pkfqrav30bbcddgf1imd7jk6lpqbxkz1qv31718pdl446jq7df"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no test target
@@ -1457,7 +1457,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.3.8.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1465,7 +1465,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wl4ln6v1nkkx56kfah23chyrhga2vi93i82g0s200c4s4184xr8"))))
+                "133sx42wb66g803pcrgdwph40wh94knvab3yfqkgm0001jv4v14y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1485,7 +1485,17 @@ capabilities, custom envelopes, effects, etc.")
               (("-msse -msse2 -mfpmath=sse") "")
               (("-march=(athlon64|core2)" flag)
                (string-append flag " -msse -msse2 -mfpmath=sse")))
-            #t)))))
+            #t))
+         ;; Yoshimi tries to find ncurses with pkg-config, but our ncurses
+         ;; package does not install .pc files.
+         (add-after 'unpack 'find-ncurses
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("LIBNCURSES REQUIRED") "LIBNCURSES")
+               (("NCURSES REQUIRED") "NCURSES")
+               (("FATAL_ERROR \"libncurses") "STATUS \"libncurses")
+               (("\\$\\{NCURSES_LIBRARIES\\}") "ncurses"))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("fftwf" ,fftwf)
@@ -1573,6 +1583,42 @@ computer's keyboard.")
      "Qtractor is an Audio/MIDI multi-track sequencer application.  It uses
 JACK for audio and ALSA sequencer for MIDI as multimedia infrastructures and
 follows a traditional multi-track tape recorder control paradigm.")
+    (license license:gpl2+)))
+
+(define-public gxtuner
+  (package
+    (name "gxtuner")
+    (version "2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/gxtuner/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1abpxiydn4c9wssz6895hnad9ipkcy3rkgzbnanvwb46nm44x6if"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "INCLUDE_L_DIR="
+                            (assoc-ref %build-inputs "zita-resampler")
+                            "/include/"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("jack" ,jack-1)
+       ("fftwf" ,fftwf)
+       ("cairo" ,cairo)
+       ("zita-resampler" ,zita-resampler)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/brummer10/gxtuner")
+    (synopsis "Guitar tuner")
+    (description "GXtuner is a simple guitar tuner for JACK with an
+analogue-like user interface.")
     (license license:gpl2+)))
 
 (define-public pianobar

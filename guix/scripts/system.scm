@@ -227,25 +227,20 @@ BODY..., and restore them."
         (set! %load-path path)
         (set! %load-compiled-path cpath)))))
 
-(define-syntax-rule (warn-on-system-error body ...)
-  (catch 'system-error
-    (lambda ()
-      body ...)
-    (lambda (key proc format-string format-args errno . rest)
-      (warning (_ "while talking to shepherd: ~a~%")
-               (apply format #f format-string format-args))
-      (with-monad %store-monad
-        (return #f)))))
-
 (define-syntax-rule (with-shepherd-error-handling mbody ...)
   "Catch and report Shepherd errors that arise when binding MBODY, a monadic
 expression in %STORE-MONAD."
   (lambda (store)
-    (warn-on-system-error
-     (guard (c ((shepherd-error? c)
-                (values (report-shepherd-error c) store)))
-       (values (run-with-store store (begin mbody ...))
-               store)))))
+    (catch 'system-error
+      (lambda ()
+        (guard (c ((shepherd-error? c)
+                   (values (report-shepherd-error c) store)))
+          (values (run-with-store store (begin mbody ...))
+                  store)))
+      (lambda (key proc format-string format-args errno . rest)
+        (warning (_ "while talking to shepherd: ~a~%")
+                 (apply format #f format-string format-args))
+        (values #f store)))))
 
 (define (report-shepherd-error error)
   "Report ERROR, a '&shepherd-error' error condition object."

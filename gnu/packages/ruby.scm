@@ -423,13 +423,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.12.5")
+    (version "1.13.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "1q84xiwm9j771lpmiply0ls9l2bpvl5axn3jblxjvrldh8di2pkc"))))
+                "05gwyhfn103vrmrw13r3n78bcl75mrj82ipsbazcl08wg1bql7x6"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -2115,7 +2115,7 @@ aware transformations between times in different time zones.")
 (define-public ruby-tzinfo-data
   (package
     (name "ruby-tzinfo-data")
-    (version "1.2016.4")
+    (version "1.2016.7")
     (source
      (origin
        (method url-fetch)
@@ -2128,7 +2128,7 @@ aware transformations between times in different time zones.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0jnm8i379hn48cq5n39j7wzm08i0mw73kqzx3cqbxpiwlb1hnz80"))
+         "0vh75hkfmqk4hdjv6nm7acw64izwpnv7slkmh2kj7qlfz133yh9l"))
        ;; Remove the known test failure.
        ;; https://github.com/tzinfo/tzinfo-data/issues/10
        ;; https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1587128
@@ -3223,14 +3223,14 @@ that TURN is no longer being maintained.")
 (define-public ruby-mime-types-data
   (package
     (name "ruby-mime-types-data")
-    (version "3.2016.0221")
+    (version "3.2016.0521")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mime-types-data" version))
        (sha256
         (base32
-         "05ygjn0nnfh6yp1wsi574jckk95wqg9a6g598wk4svvrkmkrzkpn"))))
+         "04my3746hwa4yvbx1ranhfaqkgf6vavi1kyijjnw8w3dy37vqhkm"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -3467,14 +3467,14 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.20160310")
+    (version "0.5.20160826")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
         (base32
-         "0g1175zspkqhlvl9s11g7p2nbmqpvpxxv02q8csd0ryc81laapys"))))
+         "0rg7gvp45xmb5qz8ydp7ivw05hhplh6k7mbawrpvkysl2c77w5xx"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4041,14 +4041,14 @@ generation.")
 (define-public ruby-sequel
   (package
     (name "ruby-sequel")
-    (version "4.34.0")
+    (version "4.39.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sequel" version))
        (sha256
         (base32
-         "0qscddpfwcajggxvbm4a4jv8kkpn6q056bgdg03km34bz8bis1x1"))))
+         "01zqd6mi9wvhbg76b91k35jppha0c944ar9f816gi400cf9817bg"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; Avoid dependency loop with ruby-minitest-hooks.

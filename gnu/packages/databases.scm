@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,11 +35,13 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
@@ -541,32 +544,32 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.9")
+    (version "1.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ll4q17scax1arg12faj8p25jq1f7q9irc3pwla0ziymwqkgf0bi"))))
+                "0i1l38h0vyck6zkcj4fn2l03spadlmyr1qa1xpdp9dy2ccbm3s1r"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     ;; The 'configure' script is a wrapper for Waf and
-                     ;; doesn't recognize things like '--enable-fast-install'.
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; The 'configure' script is a wrapper for Waf and
+               ;; doesn't recognize things like '--enable-fast-install'.
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
     (native-inputs
      `(;; TODO: Build the documentation.
        ;; ("docbook-xsl" ,docbook-xsl)
        ;; ("libxml2" ,libxml2)
        ;; ("libxslt" ,libxslt)
        ("python" ,python-2)))                     ;for the Waf build system
-    (home-page "http://tdb.samba.org/")
+    (home-page "https://tdb.samba.org/")
     (synopsis "Trivial database")
     (description
      "TDB is a Trivial Database.  In concept, it is very much like GDBM,
@@ -951,14 +954,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "05az2g3gna5lkhh6x1a5m6yardbiig1l4ysggldlk5if8ww9qkk7"))))
+                "1wb9jd692a0y52bkkxr6815kk4g039mirjdrvqx24265lv2l5l1a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail
@@ -966,6 +969,7 @@ similar to BerkeleyDB, LevelDB, etc.")
                   (delete 'configure))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
+                      "LDFLAGS=-ldl"
                       ,(string-append "PREFIX="
                                       (assoc-ref %outputs "out")))))
     (synopsis "Key-value cache and store")
@@ -1154,3 +1158,53 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 
 (define-public python2-peewee
   (package-with-python2 python-peewee))
+
+(define-public sqlcipher
+  (package
+    (name "sqlcipher")
+    (version "3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sqlcipher/" name
+                           "/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "1gv58dlbpzrmznly52yqbxgvii0ib88zr3aszla1bsypwjr6flff"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libcrypto" ,openssl)
+       ("libtcl8.6" ,tcl))) ; required for running the tests
+    (native-inputs
+     `(("tcl" ,tcl)))
+    (arguments
+     '(#:configure-flags
+       '("--enable-tempstore=yes"
+         "CFLAGS=-DSQLITE_HAS_CODEC -DSQLITE_ENABLE_FTS3"
+         "LDFLAGS=-lcrypto -ltcl8.6"
+         "--disable-tcl")
+       ;; tests cannot be run from the Makefile
+       ;; see: <https://github.com/sqlcipher/sqlcipher/issues/172>
+       #:test-target "testfixture"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'build-test-runner
+           (assoc-ref %standard-phases 'check))
+         (replace 'check
+           (lambda _
+             (zero?
+              (system* "./testfixture" "test/crypto.test")))))))
+    (home-page "https://www.zetetic.net/sqlcipher/")
+    (synopsis
+     "Library providing transparent encryption of SQLite database files")
+    (description "SQLCipher is an implementation of SQLite, extended to
+provide transparent 256-bit AES encryption of database files.  Pages are
+encrypted before being written to disk and are decrypted when read back.  It’s
+well suited for protecting embedded application databases and for mobile
+development.")
+    ;; The source files
+    ;; src/{crypto.c,crypto_impl.c,crypto.h,crypto_cc.c,crypto_libtomcrypt.c},
+    ;; src/{crypto_openssl.c,sqlcipher.h}, tool/crypto-speedtest.tcl,
+    ;; test/crypto.test are licensed under a 3-clause BSD license. All other
+    ;; source files are in the public domain.
+    (license (list license:public-domain license:bsd-3))))

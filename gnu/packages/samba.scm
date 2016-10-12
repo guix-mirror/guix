@@ -98,14 +98,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.3.11")
+    (version "4.5.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://www.samba.org/samba/ftp/stable/samba-"
+             (uri (string-append "https://download.samba.org/pub/samba/stable/samba-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1v2grwivm6rasz1ganbybs0ikz1lydaniy65kxf1v8rl1qqngach"))))
+               "11mmyqag2i4yy6dikcggw776n0laxxr0rxhry72x5pa6nwws9afk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -164,14 +164,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.7")
+    (version "2.1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01m0kzndciyj43z1zd2nc61xqgh9knjv0w7lk1rrrlj8irr4w58r"))))
+                "0c3ihyb0jd8mhvi7gg2mr5w1zl2habx6jlkbyxzyckad2q8lkl92"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -201,14 +201,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.9.28")
+    (version "0.9.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0a9ml52jjnzz7qg9z750mavlvs1yibjwrzy4yl55dc95j0vm7n84"))))
+                "1z1bij9gccps34q8zakr1k7k3gpqs25jas20x1hch16qd8jz44sa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -236,14 +236,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.1.26")
+    (version "1.1.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rmjv12pf57vga8s5z9p9d90rlfckc1lqjbcp89r83cq5fkwfhw8"))))
+                "1b1mkl5p8swb67s9aswavhzswlib34hpgsv66zgns009paf2df6d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

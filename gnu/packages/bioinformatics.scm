@@ -1972,7 +1972,25 @@ trees (phylogenies) and characters.")
   (let ((base (package-with-python2 (strip-python2-variant python-dendropy))))
     (package
       (inherit base)
+      ;; Do not use same source as 'python-dendropy' because the patched
+      ;; failing tests do not occur on Python 2.
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "DendroPy" (package-version base)))
+         (sha256
+          (base32
+           "1jfz7gp18wph311w1yygbvjanb3n5mdqal439bb6myw41dwb5m63"))))
+      (arguments
+       `(#:python ,python-2
+         #:phases
+           (modify-phases %standard-phases
+             (replace 'check
+               ;; There is currently a test failure that only happens on some
+               ;; systems, and only using "setup.py test"
+               (lambda _ (zero? (system* "nosetests")))))))
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
 
 
@@ -2019,7 +2037,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.22")
+    (version "0.8.23")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2028,7 +2046,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lbqa07c5z8pr4dvdrc14rqc4311kq69j1ldry9glfc8hg3x1kd1"))))
+                "0xpcq3fbk4c52xbpgyk5brl58rljvl83bg8nkxy8vs00pxanm7i2"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -5576,7 +5594,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.1.2")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -5586,7 +5604,7 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1zzfj6ydsfzljyswlwqknpp8s2cf31vimi1aqf9ljsbagjyizc58"))
+         "1r8fk3whkil348y5hfsd4r56qjmchhq4nxm6s7ra5rlisw0mf9fy"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -6926,6 +6944,38 @@ in Biostrings objects.")
     (description
      "This package provides full genome sequences for Caenorhabditis
 elegans (Worm) as provided by UCSC (ce6, May 2008) and stored in Biostrings
+objects.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-celegans-ucsc-ce10
+  (package
+    (name "r-bsgenome-celegans-ucsc-ce10")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Celegans.UCSC.ce10_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1zaym97jk4npxk14ifvwz2rvhm4zx9xgs33r9vvx9rlynp0gydrk"))))
+    (properties
+     `((upstream-name . "BSgenome.Celegans.UCSC.ce10")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "http://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce10/")
+    (synopsis "Full genome sequences for Worm")
+    (description
+     "This package provides full genome sequences for Caenorhabditis
+elegans (Worm) as provided by UCSC (ce10, Oct 2010) and stored in Biostrings
 objects.")
     (license license:artistic2.0)))
 

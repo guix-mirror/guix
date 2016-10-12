@@ -111,6 +111,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/education.scm			\
   %D%/packages/elf.scm				\
   %D%/packages/elixir.scm			\
+  %D%/packages/embedded.scm			\
   %D%/packages/emacs.scm			\
   %D%/packages/enchant.scm			\
   %D%/packages/engineering.scm			\
@@ -128,6 +129,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/fltk.scm				\
   %D%/packages/fonts.scm			\
   %D%/packages/fontutils.scm			\
+  %D%/packages/fpga.scm				\
   %D%/packages/freedesktop.scm			\
   %D%/packages/freeipmi.scm			\
   %D%/packages/ftp.scm				\
@@ -477,6 +479,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
+  %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/cmake-fix-tests.patch			\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
@@ -570,27 +573,17 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
   %D%/packages/patches/hdf5-config-date.patch			\
+  %D%/packages/patches/hdf-eos5-build-shared.patch 		\
+  %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
+  %D%/packages/patches/hdf-eos5-fix-szip.patch			\
+  %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-bigloo-4.0b.patch			\
   %D%/packages/patches/hop-linker-flags.patch			\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
-  %D%/packages/patches/icecat-avoid-bundled-includes.patch	\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt1.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt2.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt3.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt4.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt5.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt6.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt7.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt8.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2818-pt9.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2819.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2821.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2824.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2828.patch		\
-  %D%/packages/patches/icecat-CVE-2016-2831.patch		\
+  %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
@@ -656,6 +649,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
+  %D%/packages/patches/libupnp-CVE-2016-6255.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
   %D%/packages/patches/libwmf-CVE-2006-3376.patch		\
@@ -787,6 +781,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
+  %D%/packages/patches/qemu-CVE-2016-8576.patch			\
+  %D%/packages/patches/qemu-CVE-2016-8577.patch			\
+  %D%/packages/patches/qemu-CVE-2016-8578.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
@@ -875,15 +872,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5310.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5314.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5315.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2015-5316.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4476.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt1.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt2.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt3.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2016-4477-pt4.patch	\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\

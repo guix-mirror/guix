@@ -266,14 +266,14 @@ editor (without an X toolkit)" )
 (define-public geiser
   (package
     (name "geiser")
-    (version "0.8.1")
+    (version "0.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/geiser/" version
                                  "/geiser-" version ".tar.gz"))
              (sha256
               (base32
-               "163zh8qf1q8l485d94a51a9xixirj8r2xvrbgxyw06vkaqrz5qvc"))))
+               "1n772ysl1dmn0vy3gk230ymyjm14h93zw99y6h2rqp1ixy7v43dm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -298,34 +298,8 @@ metadata.")
     (license license:bsd-3)))
 
 (define-public geiser-next
-  ;; Geiser's upcoming version supports guile-next, and 0.8.1 does not.
-  ;; When the next Geiser release comes out, we can remove this.
-  (let ((commit "2e335695fc1a4a0b520b50deb761b958194cbec4"))
-    (package
-      (inherit geiser)
-      (name "geiser-next")
-      (version (string-append "0.8.1-1"
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "git://git.sv.gnu.org/geiser.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "00rmpn8zncq1fiah5m12l26z0s28bh7ql63kxdvksqdgfrisnmgf"))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ,@(package-native-inputs geiser)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments geiser)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'autogen
-               (lambda _
-                 (zero? (system* "sh" "autogen.sh")))))))))))
+  ;; This has become "geiser".
+  (deprecated-package "geiser-next" geiser))
 
 (define-public paredit
   (package
@@ -424,7 +398,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.2")
+    (version "2.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -433,7 +407,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k57f2wqng7510nzyzgjgbapplia23l3zrphl816nfm4s58sy1ka"))))
+                "14vypqj3wqym5yd0nggfm1xdgq5hv1kwxkg6i8ymlpxcdfxj45w7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -2156,7 +2130,7 @@ dark background.")
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
-    (version "1.7.1")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2165,7 +2139,7 @@ dark background.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b47ppkzsj8j8a2p0bmvq05rhm2d2lsm3wlc0sg542r4zr6nji8s"))))
+                "0xsqiklg0q4w6gj0js1hvsz4lkypvcx6c9kzb1mz232gwlqx1azw"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Fuco1/smartparens")
@@ -2185,15 +2159,16 @@ well as completely new features.")
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
-    (version "1.7.0")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://raw.githubusercontent.com/tarsius/hl-todo/"
                     version "/hl-todo.el"))
+              (file-name (string-append "hl-todo-" version ".el"))
               (sha256
                (base32
-                "18zydm43zajlglhgr0bhdkd4pln27amd063k2ql6p1mvyam3j8ia"))))
+                "0flhz9vy8w1vvwwji92pi5k4659hl368bakj2qf2zfd26z8x583h"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/hl-todo")
     (synopsis "Emacs mode to highlight TODO and similar keywords")
@@ -2258,7 +2233,7 @@ fully-functional one.")
 (define-public emacs-hydra
   (package
     (name "emacs-hydra")
-    (version "0.13.0")
+    (version "0.13.6")
     (source
      (origin
        (method url-fetch)
@@ -2267,7 +2242,7 @@ fully-functional one.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "19ynkjlg3jj7x90xxbz885324h6nkxmzlb2c2c95xkr20zckn0lk"))))
+         "0575vh858gm35p57s49dy6pc2ij46dmj9zaa4z0cp98sqra3j3l0"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/hydra")
     (synopsis "Make Emacs bindings that stick around")

@@ -34,6 +34,7 @@
 
 (define-module (gnu packages linux)
   #:use-module (gnu packages)
+  #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages attr)
@@ -321,14 +322,14 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8"
-                    "0fnax2qb597zg2gchab9n9fn7551vccmqfcvq5k3ckz24y50yknm"
+  (make-linux-libre "4.8.1"
+                    "0l57ab8v52nvx4d898qfvkl7c6zlrm7qd080z6jg0bg0adn4w5lf"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.23"
-                    "07akixpxlcrpfsadnppyk2hbggqf7j2hzlkg56k0yh3dhyglxv86"
+  (make-linux-libre "4.4.24"
+                    "1wg1d9rq29612psr5v4krabx7nv1y1gzfshq7wpx6i1lpqf3lill"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -339,8 +340,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.7.6")
-(define %linux-libre-hash "0716lpzq3w2pdc0nrrx06gqzdfzhkrjq7g37v4ws9wjlzak8hkvy")
+(define %linux-libre-version "4.8.1")
+(define %linux-libre-hash "0l57ab8v52nvx4d898qfvkl7c6zlrm7qd080z6jg0bg0adn4w5lf")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -1657,14 +1658,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.109")
+    (version "2.02.166")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "1rv5ivg0l1w3nwzwdkqixm96h5bzg7ib4rr196ysb2lw42jmpjbv"))
+                "150v0mawd2swdvypcmkjd3h3s4n5i1220h6sxx94a8jvp1kb0871"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1683,16 +1684,27 @@ time.")
     (inputs
      `(("udev" ,eudev)))
     (arguments
-     '(#:phases (alist-cons-after
-                 'configure 'set-makefile-shell
-                 (lambda _
-                   ;; Use 'sh', not 'bash', so that '. lib/utils.sh' works as
-                   ;; expected.
-                   (setenv "SHELL" (which "sh"))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'set-makefile-shell
+           (lambda _
+             ;; Use 'sh', not 'bash', so that '. lib/utils.sh' works as
+             ;; expected.
+             (setenv "SHELL" (which "sh"))
 
-                   ;; Replace /bin/sh with the right file name.
-                   (patch-makefile-SHELL "make.tmpl"))
-                 %standard-phases)
+             ;; Replace /bin/sh with the right file name.
+             (patch-makefile-SHELL "make.tmpl")
+             #t))
+         (add-before 'strip 'make-objects-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make compiled objects writable so they can be stripped.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file)
+                           (chmod file #o755))
+                         (append
+                           (find-files (string-append out "/lib"))
+                           (find-files (string-append out "/sbin"))))
+               #t))))
 
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
@@ -2996,3 +3008,35 @@ and other hardware errors on x86 systems.  It can also perform user-defined
 tasks, such as bringing bad pages off-line, when configurable error thresholds
 are exceeded.")
     (license license:gpl2)))
+
+(define-public mtd-utils
+  (package
+    (name "mtd-utils")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.infradead.org/pub/mtd-utils/"
+                    "mtd-utils-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "007lhsd8yb34l899r4m37whhzdw815cz4fnjbpnblfha524p7dax"))))
+    (inputs
+     `(("acl" ,acl)
+       ("libuuid" ,util-linux)
+       ("lzo", lzo)
+       ("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "tests"
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "MTD Flash Storage Utilities")
+    (description "This package provides utilities for testing, partitioning, etc
+of flash storage.")
+    (home-page "http://www.linux-mtd.infradead.org/")
+    (license
+      (list license:gpl2 ; Almost everything is gpl2 or gpl2+
+            license:mpl1.1 ; All ftl* files
+            license:expat)))) ; libiniparser

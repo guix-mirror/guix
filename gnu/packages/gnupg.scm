@@ -7,7 +7,8 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Nils Gillmann <ng0@libertad.pw>
+;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -606,7 +607,7 @@ including tools for signing keys, keyring analysis, and party preparation.
     (synopsis "GnuPG's interface to passphrase input")
     (description
      "Pinentry provides a console that allows users to enter a passphrase when
-@code{gpg} or @code{gpg2} is run and needs it.")
+@code{gpg} is run and needs it.")
     (license license:gpl2+)))
 
 (define-public pinentry-gtk2
@@ -619,7 +620,23 @@ including tools for signing keys, keyring analysis, and party preparation.
        ,@(package-inputs pinentry-tty)))
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to enter a
-passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
+passphrase when @code{gpg} is run and needs it.")))
+
+(define-public pinentry-gnome3
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-gnome3")
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("gcr" ,gcr)
+       ("glib" ,glib)
+       ,@(package-inputs pinentry-tty)))
+    (arguments
+     `(#:configure-flags '("--enable-pinentry-gnome3")))
+    (description
+     "Pinentry provides a console and a GUI designed for use with GNOME@tie{}3
+that allows users to enter a passphrase when required by @code{gpg} or other
+software.")))
 
 (define-public pinentry-qt
   (package
@@ -632,7 +649,7 @@ passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
      `(#:configure-flags '("CXXFLAGS=-std=gnu++11")))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
-passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
+passphrase when @code{gpg} is run and needs it.")))
 
 (define-public pinentry
   (package (inherit pinentry-gtk2)

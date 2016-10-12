@@ -636,12 +636,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
                              "/lib/python2.7/site-packages")
               ;; OpenEXR is not enabled by default.
               "-DWITH_OPENEXR=1"
+              ;; Fix rounding error on 32-bit machines
+              "-DCMAKE_C_FLAGS=-ffloat-store"
               ;; The header files of ilmbase are not found when included
               ;; by the header files of openexr, and an explicit flag
               ;; needs to be set.
               (string-append "-DCMAKE_CXX_FLAGS=-I"
                              (assoc-ref %build-inputs "ilmbase")
-                             "/include/OpenEXR"))))
+                             "/include/OpenEXR"
+                             " -ffloat-store"))))
    (synopsis "Computer vision library")
    (description
     "VIGRA stands for Vision with Generic Algorithms.  It is an image

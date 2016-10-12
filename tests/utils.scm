@@ -111,6 +111,38 @@
         (ensure-keyword-arguments '(#:foo 2) '(#:bar 3))
         (ensure-keyword-arguments '(#:foo 2) '(#:bar 3 #:foo 42))))
 
+(test-equal "default-keyword-arguments"
+  '((#:foo 2)
+    (#:foo 2)
+    (#:foo 2 #:bar 3)
+    (#:foo 2 #:bar 3)
+    (#:foo 2 #:bar 3))
+  (list (default-keyword-arguments '() '(#:foo 2))
+        (default-keyword-arguments '(#:foo 2) '(#:foo 4))
+        (default-keyword-arguments '() '(#:bar 3 #:foo 2))
+        (default-keyword-arguments '(#:bar 3) '(#:foo 2))
+        (default-keyword-arguments '(#:foo 2 #:bar 3) '(#:bar 6))))
+
+(test-equal "substitute-keyword-arguments"
+  '((#:foo 3)
+    (#:foo 3)
+    (#:foo 3 #:bar (1 2))
+    (#:bar (1 2) #:foo 3)
+    (#:foo 3))
+  (list (substitute-keyword-arguments '(#:foo 2)
+          ((#:foo f) (1+ f)))
+        (substitute-keyword-arguments '()
+          ((#:foo f 2) (1+ f)))
+        (substitute-keyword-arguments '(#:foo 2 #:bar (2))
+          ((#:foo f) (1+ f))
+          ((#:bar b) (cons 1 b)))
+        (substitute-keyword-arguments '(#:foo 2)
+          ((#:foo _) 3)
+          ((#:bar b '(2)) (cons 1 b)))
+        (substitute-keyword-arguments '(#:foo 2)
+          ((#:foo f 1) (1+ f))
+          ((#:bar b) (cons 42 b)))))
+
 (test-assert "filtered-port, file"
   (let* ((file  (search-path %load-path "guix.scm"))
          (input (open-file file "r0b")))

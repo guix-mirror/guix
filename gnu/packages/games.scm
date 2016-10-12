@@ -179,8 +179,10 @@ scriptable with Guile.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://abbaye-for-linux.googlecode.com/files/"
-                           "abbaye-for-linux-src-" version ".tar.gz"))
+       (uri (string-append "https://storage.googleapis.com/"
+                           "google-code-archive-downloads/v2/code.google.com/"
+                           "abbaye-for-linux/abbaye-for-linux-src-"
+                           version ".tar.gz"))
        (sha256
         (base32
          "1wgvckgqa2084rbskxif58wbb83xbas8s1i8s7d57xbj08ryq8rk"))))
@@ -427,7 +429,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
 (define-public xboard
   (package
     (name "xboard")
-    (version "4.9.0")
+    (version "4.9.1")
     (source
      (origin
        (method url-fetch)
@@ -435,14 +437,15 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                            ".tar.gz"))
        (sha256
         (base32
-         "1av6r3s5vyclwf3c9i1pkr2442ryrf4ixhhf2i44a4j1xyhlp5jb"))))
+         "1mkh36xnnacnz9r00b5f9ld9309k32jv6mcavklbdnca8bl56bib"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)
        ("librsvg" ,librsvg)))
-    (native-inputs `(("texinfo" ,texinfo)
-                     ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/xboard")
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.gnu.org/software/xboard")
     (synopsis "Graphical user interface for chess programs")
     (description "GNU XBoard is a graphical board for all varieties of chess,
 including international chess, xiangqi (Chinese chess), shogi (Japanese chess)
@@ -2784,12 +2787,11 @@ auto mapper with a VT100 map display.")
     (source
      (origin (method url-fetch)
              (uri (string-append
-                   "https://github.com/sgimenez/laby/tarball/"
-                   name "-" version))
-             (file-name (string-append name "-" version ".tar.gz"))
+                   "https://github.com/sgimenez/laby/archive/"
+                   name "-" version ".tar.gz"))
              (sha256
               (base32
-               "113ip48308ps3lsw427xswgx3wdanils43nyal9n4jr6bcx1bj2j"))
+               "0gyrfa95l1qka7gbjf7l6mk7mbfvph00l0c995ia272qdw7rjhyf"))
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs

@@ -6,6 +6,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
+;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
@@ -166,14 +168,14 @@ identi.ca and status.net).")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.12.1")
+    (version "2.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0svwz9ldrry1sn35jywgpacjj1cf3xl3k74ynwn8rjvxs73b00aj"))))
+                "1xnclfbrgbkqndxygi5f27q00jd7yy54jbd1061jmhxa6wzpibbd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
@@ -661,6 +663,58 @@ protocols.")
 instant messenger with audio and video chat capabilities.")
    (home-page "http://utox.org/")
    (license license:gpl3)))
+ 
+(define-public qtox
+  (package
+    (name "qtox")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/qTox/qTox/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0y15mc39x54k1kz36cw9412kl1p1p6nzlx97gagv4gg3vybfhbjv"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("libsodium" ,libsodium)
+       ("libtoxcore" ,libtoxcore)
+       ("libvpx" ,libvpx)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libx11" ,libx11)
+       ("openal" ,openal)
+       ("qrencode" ,qrencode)
+       ("qt" ,qt)
+       ("sqlcipher" ,sqlcipher)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qmake" ,qt)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-reproducibility-issues
+           (lambda _
+             (substitute* "src/main.cpp"
+               (("__DATE__") "\"\"")
+               (("__TIME__") "\"\"")
+               (("TIMESTAMP") "\"\""))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero?
+              (system* "qmake"
+                       (string-append "PREFIX="
+                                      (assoc-ref outputs "out")))))))))
+    (home-page "https://qtox.github.io/")
+    (synopsis "Tox chat client using Qt")
+    (description "qTox is a Tox client that follows the Tox design
+guidelines.  It provides an easy to use application that allows you to
+connect with friends and family without anyone else listening in.")
+    (license license:gpl3+)))
 
 (define-public pybitmessage
   (package

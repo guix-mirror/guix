@@ -31,7 +31,7 @@
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.10")
+    (version "5.18.12")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           "/autogen-" version ".tar.xz"))
       (sha256
        (base32
-        "0j61mf3qab5ya7w5xsp7xalrby00cv92g462bxffl104ql18w92f"))))
+        "1n5zq4872sakvz9c7ncsdcfp0z8rsybsxvbmhkpbd19ii0pacfxy"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for doc generator mdoc
                      ("pkg-config" ,pkg-config)))
@@ -55,8 +55,9 @@
                  (append (find-files "agen5/test" "\\.test$")
                          (find-files "autoopts/test" "\\.(test|in)$"))
                  (("/bin/sh") sh)
-                 (("/usr/bin/tr") "tr"))))))))
-    (home-page "http://www.gnu.org/software/autogen/")
+                 (("/usr/bin/tr") "tr"))
+               #t))))))
+    (home-page "https://www.gnu.org/software/autogen/")
     (synopsis "Automated program generator")
     (description
      "AutoGen is a program to ease the maintenance of programs that contain

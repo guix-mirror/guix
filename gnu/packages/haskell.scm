@@ -1170,12 +1170,10 @@ version 1.3).")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-directory" ,ghc-directory)
        ("ghc-network" ,ghc-network)
        ("ghc-random" ,ghc-random)
        ("ghc-stm" ,ghc-stm)
        ("ghc-text" ,ghc-text)
-       ("ghc-transformers" ,ghc-transformers)
        ("ghc-zlib" ,ghc-zlib)))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
@@ -6319,6 +6317,204 @@ Pandoc extends standard Markdown syntax with footnotes, embedded LaTeX,
 definition lists, tables, and other features.  A compatibility mode is
 provided for those who need a drop-in replacement for Markdown.pl.")
     (license license:gpl2+)))
+
+(define-public ghc-hs-bibutils
+  (package
+    (name "ghc-hs-bibutils")
+    (version "5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hs-bibutils/hs-bibutils-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0pf5lh179rw9jkmw16ss3kiwydlj6zgfk868mjl5s57kx55z7ycm"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-syb" ,ghc-syb)))
+    (home-page "https://hackage.haskell.org/package/hs-bibutils")
+    (synopsis "Haskell bindings to bibutils")
+    (description
+     "This package provides Haskell bindings to @code{bibutils}, a library
+that interconverts between various bibliography formats using a common
+MODS-format XML intermediate.")
+    (license license:gpl2+)))
+
+(define-public ghc-rfc5051
+  (package
+    (name "ghc-rfc5051")
+    (version "0.1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/rfc5051/"
+                           "rfc5051-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0av4c3qvwbkbzrjrrg601ay9pds7wscqqp2lc2z78mv2lllap3g3"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/rfc5051")
+    (synopsis "Simple unicode collation as per RFC5051")
+    (description
+     "This library implements @code{unicode-casemap}, the simple, non
+locale-sensitive unicode collation algorithm described in RFC 5051.  Proper
+unicode collation can be done using @code{text-icu}, but that is a big
+dependency that depends on a large C library, and @code{rfc5051} might be
+better for some purposes.")
+    (license license:bsd-3)))
+
+(define-public ghc-conduit-extra
+  (package
+    (name "ghc-conduit-extra")
+    (version "1.1.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "conduit-extra/conduit-extra-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "108vsn9dpsfwvar7nssw6wkqy26rxlf3p4ran6swa5xh8l6d5k4z"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-text" ,ghc-text)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-async" ,ghc-async)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-network" ,ghc-network)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)))
+    (home-page "http://github.com/snoyberg/conduit")
+    (synopsis "Conduit adapters for common libraries")
+    (description
+     "The @code{conduit} package itself maintains relative small dependencies.
+The purpose of this package is to collect commonly used utility functions
+wrapping other library dependencies, without depending on heavier-weight
+dependencies.  The basic idea is that this package should only depend on
+@code{haskell-platform} packages and @code{conduit}.")
+    (license license:expat)))
+
+(define-public ghc-xml-types
+  (package
+    (name "ghc-xml-types")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/xml-types/"
+                           "xml-types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jgqxsa9p2q3h6nymbfmvhldqrqlwrhrzmwadlyc0li50x0d8dwr"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-text" ,ghc-text)))
+    (home-page "https://john-millikin.com/software/haskell-xml/")
+    (synopsis "Basic types for representing XML")
+    (description "This package provides basic types for representing XML
+documents.")
+    (license license:expat)))
+
+(define-public ghc-xml-conduit
+  (package
+    (name "ghc-xml-conduit")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/xml-conduit/"
+                           "xml-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10yw8jiksw21jgwqjjd1ixflavcblisgkp9qq3ba05vadc35lqr5"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-text" ,ghc-text)
+       ("ghc-xml-types" ,ghc-xml-types)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://github.com/snoyberg/xml")
+    (synopsis "Utilities for dealing with XML with the conduit package")
+    (description
+     "This package provides pure-Haskell utilities for dealing with XML with
+the @code{conduit} package.")
+    (license license:expat)))
+
+(define-public ghc-pandoc-citeproc
+  (package
+    (name "ghc-pandoc-citeproc")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "pandoc-citeproc/pandoc-citeproc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "00mprphppk51ylsrkg817mbk23f9fsfvkwzbys9qqbcjbrxi2r94"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests need to be run after installation.
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           (assoc-ref %standard-phases 'check)))))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-pandoc-types" ,ghc-pandoc-types)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-setenv" ,ghc-setenv)
+       ("ghc-split" ,ghc-split)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-hs-bibutils" ,ghc-hs-bibutils)
+       ("ghc-rfc5051" ,ghc-rfc5051)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-temporary" ,ghc-temporary)))
+    (home-page "https://github.com/jgm/pandoc-citeproc")
+    (synopsis "Library for using pandoc with citeproc")
+    (description
+     "The @code{pandoc-citeproc} library exports functions for using the
+citeproc system with pandoc.  It relies on @code{citeproc-hs}, a library for
+rendering bibliographic reference citations into a variety of styles using a
+macro language called @dfn{Citation Style Language} (CSL).  This package also
+contains an executable @code{pandoc-citeproc}, which works as a pandoc filter,
+and also has a mode for converting bibliographic databases a YAML format
+suitable for inclusion in pandoc YAML metadata.")
+    (license license:bsd-3)))
 
 (define-public ghc-union-find
   (package

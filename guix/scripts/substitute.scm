@@ -391,7 +391,7 @@ No authentication and authorization checks are performed here!"
 
 (define* (assert-valid-narinfo narinfo
                                #:optional (acl (current-acl))
-                               #:key (verbose? #t))
+                               #:key verbose?)
   "Raise an exception if NARINFO lacks a signature, has an invalid signature,
 or is signed by an unauthorized key."
   (let ((hash (narinfo-sha256 narinfo)))
@@ -404,9 +404,8 @@ or is signed by an unauthorized key."
           (unless %allow-unauthenticated-substitutes?
             (assert-valid-signature narinfo signature hash acl)
             (when verbose?
-              ;; Visually separate substitutions with a newline.
               (format (current-error-port)
-                      (_ "~%Found valid signature for ~a~%")
+                      (_ "Found valid signature for ~a~%")
                       (narinfo-path narinfo))
               (format (current-error-port)
                       (_ "From ~a~%")
@@ -893,7 +892,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
             ;; "(4.1MiB installed)"; it shows the size of the package once
             ;; installed.
             (_ "Downloading ~a~:[~*~; (~a installed)~]...~%")
-            (store-path-abbreviation store-item)
+            (uri->string uri)
             ;; Use the Nar size as an estimate of the installed size.
             (narinfo-size narinfo)
             (and=> (narinfo-size narinfo)
@@ -921,8 +920,9 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
       ;; Unpack the Nar at INPUT into DESTINATION.
       (restore-file input destination)
 
-      ;; Skip a line after what 'progress-proc' printed.
-      (newline (current-error-port))
+      ;; Skip a line after what 'progress-proc' printed, and another one to
+      ;; visually separate substitutions.
+      (display "\n\n" (current-error-port))
 
       (every (compose zero? cdr waitpid) pids))))
 

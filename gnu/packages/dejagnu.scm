@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flasher.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,7 @@
 (define-public dejagnu
   (package
     (name "dejagnu")
-    (version "1.5.3")
+    (version "1.6")
     (source
      (origin
       (method url-fetch)
@@ -34,50 +35,48 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "069z3qrdv35cm2sbnfr5yjzplrqj9f61cchxis7j9mm19hv8x6q9"))))
+        "0qypaakd2065jgpcv84zcsibl8gph3p334gb2qdmhsrbirhlmdh0"))))
     (build-system gnu-build-system)
     (inputs `(("expect" ,expect)))
     (arguments
-     '(#:phases (alist-replace
-                 'check
-                 (lambda _
-                   ;; Note: The test-suite *requires* /dev/pts among the
-                   ;; `build-chroot-dirs' of the build daemon when
-                   ;; building in a chroot.  See
-                   ;; <http://thread.gmane.org/gmane.linux.distributions.nixos/1036>
-                   ;; for details.
-                   (if (and (directory-exists? "/dev/pts")
-                            (directory-exists? "/proc"))
-                       (begin
-                        ;; Provide `runtest' with a log name, otherwise
-                        ;; it tries to run `whoami', which fails when in
-                        ;; a chroot.
-                        (setenv "LOGNAME" "guix-builder")
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Note: The test-suite *requires* /dev/pts among the
+             ;; `build-chroot-dirs' of the build daemon when
+             ;; building in a chroot.  See
+             ;; <http://thread.gmane.org/gmane.linux.distributions.nixos/1036>
+             ;; for details.
+             (if (and (directory-exists? "/dev/pts")
+                      (directory-exists? "/proc"))
+                 (begin
+                  ;; Provide `runtest' with a log name, otherwise it
+                  ;; tries to run `whoami', which fails when in a chroot.
+                  (setenv "LOGNAME" "guix-builder")
 
-                        ;; The test-suite needs to have a non-empty stdin:
-                        ;; <http://lists.gnu.org/archive/html/bug-dejagnu/2003-06/msg00002.html>.
-                        (zero?
-                         (system "make check < /dev/zero")))
-                       (begin
-                         (display "test suite cannot be run, skipping\n")
-                         #t)))
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    ;; Use the right `expect' binary.
-                    (let ((out    (assoc-ref outputs "out"))
-                          (expect (assoc-ref inputs "expect")))
-                      (substitute* (string-append out "/bin/runtest")
-                        (("^mypath.*$" all)
-                         (string-append all
-                                        "export PATH="
-                                        expect "/bin:$PATH\n")))))
-                  %standard-phases))))
+                  ;; The test-suite needs to have a non-empty stdin:
+                  ;; <http://lists.gnu.org/archive/html/bug-dejagnu/2003-06/msg00002.html>.
+                  (zero?
+                   (system "make check < /dev/zero")))
+                 (begin
+                   (display "test suite cannot be run, skipping\n")
+                   #t))))
+         (add-after 'install 'post-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Use the right `expect' binary.
+             (let ((out    (assoc-ref outputs "out"))
+                   (expect (assoc-ref inputs "expect")))
+               (substitute* (string-append out "/bin/runtest")
+                 (("^mypath.*$" all)
+                  (string-append all
+                                 "export PATH="
+                                 expect "/bin:$PATH\n")))))))))
     (home-page
-     "http://www.gnu.org/software/dejagnu/")
+     "https://www.gnu.org/software/dejagnu/")
     (synopsis "GNU software testing framework")
     (description
      "DejaGnu is a framework for testing software.  In effect, it serves as
 a front-end for all tests written for a program.  Thus, each program can have
 multiple test suites, which are then all managed by a single harness.")
-    (license gpl2+)))
+    (license gpl3+)))

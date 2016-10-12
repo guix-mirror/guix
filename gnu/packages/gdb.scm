@@ -37,14 +37,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.11.1")
+    (version "7.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0w7wi1llznlqdqk2lmzygz2xylb2c9mh580s9i0rypkmwfj6s8g9"))))
+               "152g2qa8337cxif3lkvabjcxfd9jphfb2mza8f1p2c4bjk2z6kw3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
@@ -95,7 +95,7 @@
     (native-inputs
       `(("texinfo" ,texinfo)
         ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/gdb/")
+    (home-page "https://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description
      "GDB is the GNU debugger.  With it, you can monitor what a program is

@@ -704,18 +704,11 @@ symbols unable to be displayed properly.")
   (package
     (name "font-un")
     (version "1.0.2-080608")
-    ;; The upstream server at kldp.net is serving us broken MIME.
-    ;; See <http://bugs.gnu.org/22908>.
     (source (origin
               (method url-fetch)
-              (uri (list
-                    (string-append
-                     "http://krosos.sdf.org/static/unix/"
-                     "un-fonts-core-" version ".tar.gz")
-                    ;; XXX: The upstream server at kldp.net
-                    (string-append
-                     "https://kldp.net/projects/unfonts/download/4695?filename="
-                     "un-fonts-core-" version ".tar.gz")))
+              (uri (string-append
+                    "https://kldp.net/unfonts/release/2607-"
+                    "un-fonts-core-" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -838,22 +831,15 @@ glyph designs, not just an added slant.")
                                                              "unzip")
                                                   "/bin"))
                          (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
+                                                  "/share/fonts/truetype")))
                      (setenv "PATH" PATH)
                      (system* "unzip" (assoc-ref %build-inputs "source"))
 
                      (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
                      (for-each (lambda (ttf)
                                  (copy-file ttf
                                             (string-append font-dir "/" ttf)))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/" doc)))
-                               (find-files "." "\\.txt$"))))))
+                               (find-files "." "\\.ttf$"))))))
     (native-inputs
      `(("source" ,source)
        ("unzip" ,unzip)))

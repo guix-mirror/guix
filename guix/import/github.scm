@@ -44,7 +44,7 @@ failure."
   "Return the extension of the archive e.g. '.tar.gz' given a URL, or
 false if none is recognized"
   (find (lambda (x) (string-suffix? x url))
-        (list ".tar.gz" ".tar.bz2" ".tar.xz" ".zip" ".tar" ".tgz")))
+        (list ".tar.gz" ".tar.bz2" ".tar.xz" ".zip" ".tar" ".tgz" ".love")))
 
 (define (updated-github-url old-package new-version)
   ;; Return a url for the OLD-PACKAGE with NEW-VERSION.  If no source url in

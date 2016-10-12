@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,14 +34,15 @@
 (define-public lynx
   (package
     (name "lynx")
-    (version "2.8.8rel.2")
+    (version "2.8.9dev.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://invisible-mirror.net/archives/lynx/tarballs"
                     "/lynx" version ".tar.bz2"))
               (sha256
-               (base32 "1rxysl08acqll5b87368f04kckl8sggy1qhnq59gsxyny1ffg039"))))
+               (base32
+                "1m72ga89hywm097kazcm8w6sqrfjnl83gh31pkbhk4zhzhfpzxgh"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
@@ -53,19 +55,21 @@
               ("gzip" ,gzip)
               ("bzip2" ,bzip2)))
     (arguments
-     `(#:configure-flags '("--with-pkg-config"
-                           "--with-screen=ncurses"
-                           "--with-zlib"
-                           "--with-bzlib"
-                           "--with-gnutls"
-                           ;; "--with-socks5"    ; XXX TODO
-                           "--enable-widec"
-                           "--enable-ascii-ctypes"
-                           "--enable-local-docs"
-                           "--enable-htmlized-cfg"
-                           "--enable-gzip-help"
-                           "--enable-nls"
-                           "--enable-ipv6")
+     `(#:configure-flags
+       (let ((gnutls (assoc-ref %build-inputs "gnutls")))
+         `("--with-pkg-config"
+           "--with-screen=ncurses"
+           "--with-zlib"
+           "--with-bzlib"
+           ,(string-append "--with-gnutls=" gnutls)
+           ;; "--with-socks5"    ; XXX TODO
+           "--enable-widec"
+           "--enable-ascii-ctypes"
+           "--enable-local-docs"
+           "--enable-htmlized-cfg"
+           "--enable-gzip-help"
+           "--enable-nls"
+           "--enable-ipv6"))
        #:tests? #f  ; no check target
        #:phases (alist-replace
                  'install

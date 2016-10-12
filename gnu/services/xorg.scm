@@ -108,6 +108,7 @@ Section \"Files\"
   FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-fbdev "/lib/xorg/modules/drivers\"
+  ModulePath \"" xf86-video-ati "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-modesetting "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-cirrus "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-intel "/lib/xorg/modules/drivers\"
@@ -145,6 +146,7 @@ EndSection
 (define %default-xorg-modules
   (list xf86-video-vesa
         xf86-video-fbdev
+        xf86-video-ati
         xf86-video-modesetting
         xf86-video-cirrus
         xf86-video-intel

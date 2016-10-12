@@ -210,6 +210,32 @@ an exception is caught."
           (print-exception port #f key args)
           (primitive-exit 1))))))
 
+(define* (mkdir-p* dir #:optional (mode #o755))
+  "This is a variant of 'mkdir-p' that works around
+<http://bugs.gnu.org/24659> by passing MODE explicitly in each 'mkdir' call."
+  (define absolute?
+    (string-prefix? "/" dir))
+
+  (define not-slash
+    (char-set-complement (char-set #\/)))
+
+  (let loop ((components (string-tokenize dir not-slash))
+             (root       (if absolute?
+                             ""
+                             ".")))
+    (match components
+      ((head tail ...)
+       (let ((path (string-append root "/" head)))
+         (catch 'system-error
+           (lambda ()
+             (mkdir path mode)
+             (loop tail path))
+           (lambda args
+             (if (= EEXIST (system-error-errno args))
+                 (loop tail path)
+                 (apply throw args))))))
+      (() #t))))
+
 (define* (rewrite-directory directory output mapping
                             #:optional (store (%store-directory)))
   "Copy DIRECTORY to OUTPUT, replacing strings according to MAPPING, a list of
@@ -258,7 +284,7 @@ file name pairs."
   (define (rewrite-leaf file)
     (let ((stat (lstat file))
           (dest (destination file)))
-      (mkdir-p (dirname dest))
+      (mkdir-p* (dirname dest))
       (case (stat:type stat)
         ((symlink)
          (let ((target (readlink file)))
@@ -277,7 +303,7 @@ file name pairs."
                                            store)
                  (chmod output (stat:perms stat)))))))
         ((directory)
-         (mkdir-p dest))
+         (mkdir-p* dest))
         (else
          (error "unsupported file type" stat)))))
 

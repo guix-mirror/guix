@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -482,6 +483,42 @@ computations.")
 extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+
+(define-public hdf-eos5
+  (package
+    (name "hdf-eos5")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://edhs1.gsfc.nasa.gov\
+/edhs/hdfeos5/latest_release/HDF-EOS5." version ".tar.Z"))
+              (sha256
+               (base32
+                "1p83333nzzy8rn5chxlm0hrkjjnhh2w1ji8ac0f9q4xzg838i58i"))
+              (patches (search-patches "hdf-eos5-build-shared.patch"
+                                       "hdf-eos5-remove-gctp.patch"
+                                       "hdf-eos5-fix-szip.patch"
+                                       "hdf-eos5-fortrantests.patch"))))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (build-system gnu-build-system)
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("zlib" ,zlib)
+       ("gctp" ,gctp)))
+    (arguments
+     `(#:configure-flags '("--enable-install-include" "--enable-shared"
+                           "CC=h5cc -Df2cFortran" "LIBS=-lgctp")
+       #:parallel-tests? #f))
+    (synopsis "HDF5-based data format for NASA's Earth Observing System")
+    (description
+     "HDF-EOS5 is a software library built on HDF5 to support the construction
+of data structures used in NASA's Earth Observing System (Grid, Point and
+Swath).")
+    (home-page "http://www.hdfeos.org/software/library.php#HDF-EOS5")
+
+    ;; Source files carry a permissive license header.
+    (license (license:non-copyleft home-page))))
 
 (define-public hdf5-parallel-openmpi
   (package (inherit hdf5)

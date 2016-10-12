@@ -33,6 +33,8 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system asdf)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages bdw-gc)
@@ -46,6 +48,17 @@
   #:use-module (gnu packages version-control)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define (asdf-substitutions lisp)
+  ;; Prepend XDG_DATA_DIRS/LISP-bundle-systems to ASDF's
+  ;; 'default-system-source-registry'.
+  `((("\\(,dir \"systems/\"\\)\\)")
+     (format #f
+             "(,dir \"~a-bundle-systems\")))
+
+      ,@(loop :for dir :in (xdg-data-dirs \"common-lisp/\")
+              :collect `(:directory (,dir \"systems\"))"
+             ,lisp))))
 
 (define-public gcl
   (package
@@ -112,7 +125,12 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "16ab8qs3awvdxy8xs8jy82v8r04x4wr70l9l2j45vgag18d2nj1d"))))
+        (base32 "16ab8qs3awvdxy8xs8jy82v8r04x4wr70l9l2j45vgag18d2nj1d"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Add ecl-bundle-systems to 'default-system-source-registry'.
+        `(substitute* "contrib/asdf/asdf.lisp"
+           ,@(asdf-substitutions name)))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
     (native-inputs `(("which" ,which)))
@@ -153,6 +171,10 @@ interface to the Tk widget system.")
                  `("LIBRARY_PATH" suffix ,library-directories)
                  `("LD_LIBRARY_PATH" suffix ,library-directories)))))
          (add-after 'wrap 'check (assoc-ref %standard-phases 'check)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))))
     (home-page "http://ecls.sourceforge.net/")
     (synopsis "Embeddable Common Lisp")
     (description "ECL is an implementation of the Common Lisp language as
@@ -226,7 +248,12 @@ an interpreter, a compiler, a debugger, and much more.")
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "0fjdqnb2rsm2vi9794ywp27jr239ddvzc4xfr0dk49jd4v7p2kc5"))))
+        (base32 "0fjdqnb2rsm2vi9794ywp27jr239ddvzc4xfr0dk49jd4v7p2kc5"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
+        `(substitute* "contrib/asdf/asdf.lisp"
+           ,@(asdf-substitutions name)))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     ;; Bootstrap with CLISP.
@@ -315,6 +342,10 @@ an interpreter, a compiler, a debugger, and much more.")
                #t))))
          ;; No 'check' target, though "make.sh" (build phase) runs tests.
          #:tests? #f))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))))
     (home-page "http://www.sbcl.org/")
     (synopsis "Common Lisp implementation")
     (description "Steel Bank Common Lisp (SBCL) is a high performance Common
@@ -492,3 +523,552 @@ simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
 The core is 12 builtin special forms and 33 builtin functions.")
       (home-page "https://github.com/JeffBezanson/femtolisp")
       (license license:bsd-3))))
+
+(define-public sbcl-alexandria
+  (let ((revision "1")
+        (commit "926a066611b7b11cb71e26c827a271e500888c30"))
+    (package
+      (name "sbcl-alexandria")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/alexandria/alexandria.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "18yncicdkh294j05rhgm23gzi36y9qy6vrfba8vg69jrxjp1hx8l"))
+         (file-name (string-append "alexandria-" version "-checkout"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Collection of portable utilities for Common Lisp")
+      (description
+       "Alexandria is a collection of portable utilities.  It does not contain
+conceptual extensions to Common Lisp.  It is conservative in scope, and
+portable between implementations.")
+      (home-page "https://common-lisp.net/project/alexandria/")
+      (license license:public-domain))))
+
+(define-public cl-alexandria
+  (sbcl-package->cl-source-package sbcl-alexandria))
+
+(define-public ecl-alexandria
+  (sbcl-package->ecl-package sbcl-alexandria))
+
+(define-public sbcl-fiveam
+  (package
+    (name "sbcl-fiveam")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/sionescu/fiveam/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0f48pcbhqs3wwwzjl5nk57d4hcbib4l9xblxc66b8c2fhvhmhxnv"))
+       (file-name (string-append "fiveam-" version ".tar.gz"))))
+    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp testing framework")
+    (description "FiveAM is a simple (as far as writing and running tests
+goes) regression testing framework.  It has been designed with Common Lisp's
+interactive development model in mind.")
+    (home-page "https://common-lisp.net/project/fiveam/")
+    (license license:bsd-3)))
+
+(define-public cl-fiveam
+  (sbcl-package->cl-source-package sbcl-fiveam))
+
+(define-public ecl-fiveam
+  (sbcl-package->ecl-package sbcl-fiveam))
+
+(define-public sbcl-bordeaux-threads
+  (package
+    (name "sbcl-bordeaux-threads")
+    (version "0.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/sionescu/bordeaux-threads/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32 "10ryrcx832fwqdawb6jmknymi7wpdzhi30qzx7cbrk0cpnka71w2"))
+              (file-name
+               (string-append "bordeaux-threads-" version ".tar.gz"))))
+    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
+    (native-inputs `(("tests:cl-fiveam" ,sbcl-fiveam)))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Portable shared-state concurrency library for Common Lisp")
+    (description "BORDEAUX-THREADS is a proposed standard for a minimal
+MP/Threading interface.  It is similar to the CLIM-SYS threading and lock
+support.")
+    (home-page "https://common-lisp.net/project/bordeaux-threads/")
+    (license license:x11)))
+
+(define-public cl-bordeaux-threads
+  (sbcl-package->cl-source-package sbcl-bordeaux-threads))
+
+(define-public ecl-bordeaux-threads
+  (sbcl-package->ecl-package sbcl-bordeaux-threads))
+
+(define-public sbcl-trivial-gray-streams
+  (let ((revision "1")
+        (commit "0483ade330508b4b2edeabdb47d16ec9437ee1cb"))
+    (package
+      (name "sbcl-trivial-gray-streams")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/trivial-gray-streams/trivial-gray-streams.git")
+           (commit commit)))
+         (sha256
+          (base32 "0m3rpf2x0zmdk3nf1qfa01j6a55vj7gkwhyw78qslcgbjlgh8p4d"))
+         (file-name
+          (string-append "trivial-gray-streams-" version "-checkout"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Compatibility layer for Gray streams implementations")
+      (description "Gray streams is an interface proposed for inclusion with
+ANSI CL by David N. Gray.  The proposal did not make it into ANSI CL, but most
+popular CL implementations implement it.  This package provides an extremely
+thin compatibility layer for gray streams.")
+      (home-page "http://www.cliki.net/trivial-gray-streams")
+      (license license:x11))))
+
+(define-public cl-trivial-gray-streams
+  (sbcl-package->cl-source-package sbcl-trivial-gray-streams))
+
+(define-public ecl-trivial-gray-streams
+  (sbcl-package->ecl-package sbcl-trivial-gray-streams))
+
+(define-public sbcl-flexi-streams
+  (package
+    (name "sbcl-flexi-streams")
+    (version "1.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/edicl/flexi-streams/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "16grnxvs7vqm5s6myf8a5s7vwblzq1kgwj8i7ahz8vwvihm9gzfi"))
+       (file-name (string-append "flexi-streams-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs `(("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (synopsis "Implementation of virtual bivalent streams for Common Lisp")
+    (description "Flexi-streams is an implementation of \"virtual\" bivalent
+streams that can be layered atop real binary or bivalent streams and that can
+be used to read and write character data in various single- or multi-octet
+encodings which can be changed on the fly.  It also supplies in-memory binary
+streams which are similar to string streams.")
+    (home-page "http://weitz.de/flexi-streams/")
+    (license license:bsd-3)))
+
+(define-public cl-flexi-streams
+  (sbcl-package->cl-source-package sbcl-flexi-streams))
+
+(define-public ecl-flexi-streams
+  (sbcl-package->ecl-package sbcl-flexi-streams))
+
+(define-public sbcl-cl-ppcre
+  (package
+    (name "sbcl-cl-ppcre")
+    (version "2.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/edicl/cl-ppcre/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1i7daxf0wnydb0pgwiym7qh2wy70n14lxd6dyv28sy0naa8p31gd"))
+       (file-name (string-append "cl-ppcre-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs `(("tests:cl-flexi-streams" ,sbcl-flexi-streams)))
+    (synopsis "Portable regular expression library for Common Lisp")
+    (description "CL-PPCRE is a portable regular expression library for Common
+Lisp, which is compatible with perl.  It is pretty fast, thread-safe, and
+compatible with ANSI-compliant Common Lisp implementations.")
+    (home-page "http://weitz.de/cl-ppcre/")
+    (license license:bsd-2)))
+
+(define-public cl-ppcre
+  (sbcl-package->cl-source-package sbcl-cl-ppcre))
+
+(define-public ecl-cl-ppcre
+  (sbcl-package->ecl-package sbcl-cl-ppcre))
+
+(define-public sbcl-clx
+  (let ((revision "1")
+        (commit "1c62774b03c1cf3fe6e5cb532df8b14b44c96b95"))
+    (package
+      (name "sbcl-clx")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/sharplispers/clx.git")
+           (commit commit)))
+         (sha256
+          (base32 "0qffag03ns52kwq9xjns2qg1yr0bf3ba507iwq5cmx5xz0b0rmjm"))
+         (file-name (string-append "clx-" version "-checkout"))
+         (patches
+          (list
+           (search-patch "clx-remove-demo.patch")))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; These removed files cause the compiled system to crash when
+             ;; loading.
+             (delete-file-recursively "demo")
+             (delete-file "test/trapezoid.lisp")
+             (substitute* "clx.asd"
+               (("\\(:file \"trapezoid\"\\)") ""))))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:special-dependencies '("sb-bsd-sockets")))
+      (home-page "http://www.cliki.net/portable-clx")
+      (synopsis "X11 client library for Common Lisp")
+      (description "CLX is an X11 client library for Common Lisp.  The code was
+originally taken from a CMUCL distribution, was modified somewhat in order to
+make it compile and run under SBCL, then a selection of patches were added
+from other CLXes around the net.")
+      (license license:x11))))
+
+(define-public cl-clx
+  (sbcl-package->cl-source-package sbcl-clx))
+
+(define-public ecl-clx
+  (sbcl-package->ecl-package sbcl-clx))
+
+(define-public sbcl-stumpwm
+  (package
+    (name "sbcl-stumpwm")
+    (version "0.9.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/stumpwm/stumpwm/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32 "1fqabij4zcsqg1ywgdv2irp1ys23dwc8ms9ai55lb2i47hgv7z3x"))
+              (file-name (string-append "stumpwm-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+              ("sbcl-clx" ,sbcl-clx)))
+    (outputs '("out" "bin"))
+    (arguments
+     '(#:special-dependencies '("sb-posix")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'create-symlinks 'build-program
+           (lambda* (#:key lisp outputs inputs #:allow-other-keys)
+             (build-program
+              lisp
+              (string-append (assoc-ref outputs "bin") "/bin/stumpwm")
+              #:inputs inputs
+              #:entry-program '((stumpwm:stumpwm) 0))))
+         (add-after 'build-program 'create-desktop-file
+           (lambda* (#:key outputs lisp binary? #:allow-other-keys)
+             (let ((output (or (assoc-ref outputs "bin")
+                               (assoc-ref outputs "out")))
+                   (xsessions "/share/xsessions"))
+               (mkdir-p (string-append output xsessions))
+               (with-output-to-file
+                   (string-append output xsessions
+                                  "/stumpwm.desktop")
+                 (lambda _
+                   (format #t
+                    "[Desktop Entry]~@
+                     Name=stumpwm~@
+                     Comment=The Stump Window Manager~@
+                     Exec=~a/bin/stumpwm~@
+                     TryExec=~@*~a/bin/stumpwm~@
+                     Icon=~@
+                     Type=Application~%"
+                    output)))
+               #t))))))
+    (synopsis "Window manager written in Common Lisp")
+    (description "Stumpwm is a window manager written entirely in Common Lisp.
+It attempts to be highly customizable while relying entirely on the keyboard
+for input.  These design decisions reflect the growing popularity of
+productive, customizable lisp based systems.")
+    (home-page "http://github.com/stumpwm/stumpwm")
+    (license license:gpl2+)
+    (properties `((ecl-variant . ,(delay ecl-stumpwm))))))
+
+(define-public cl-stumpwm
+  (sbcl-package->cl-source-package sbcl-stumpwm))
+
+(define-public ecl-stumpwm
+  (let ((base (sbcl-package->ecl-package sbcl-stumpwm)))
+    (package
+      (inherit base)
+      (outputs '("out"))
+      (arguments '()))))
+
+(define sbcl-slynk-boot0
+  (let ((revision "1")
+        (commit "5706cd45d484a4f25795abe8e643509d31968aa2"))
+    (package
+      (name "sbcl-slynk")
+      (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/joaotavora/sly.git")
+           (commit commit)))
+         (sha256
+          (base32 "0h4gg3sndl2bf6jdnx9nrf14p9hhi43hagrl0f4v4l11hczl8w81"))
+         (file-name (string-append "slynk-" version "-checkout"))
+         (modules '((guix build utils)
+                    (ice-9 ftw)))
+         (snippet
+          '(begin
+             ;; Move the contribs into the main source directory for easier
+             ;; access
+             (substitute* "slynk/slynk.asd"
+               (("\\.\\./contrib")
+                "contrib")
+               (("\\(defsystem :slynk-util")
+                "(defsystem :slynk-util :depends-on (:slynk)"))
+             (substitute* "contrib/slynk-trace-dialog.lisp"
+               (("\\(slynk::reset-inspector\\)") ; Causes problems on load
+                "nil"))
+             (substitute* "contrib/slynk-profiler.lisp"
+               (("slynk:to-line")
+                "slynk-pprint-to-line"))
+             (rename-file "contrib" "slynk/contrib")
+             ;; Move slynk's contents into the base directory for easier
+             ;; access
+             (for-each
+              (lambda (file)
+                (unless (string-prefix? "." file)
+                  (rename-file (string-append "slynk/" file)
+                               (string-append "./" (basename file)))))
+              (scandir "slynk"))))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:tests? #f)) ; No test suite
+      (synopsis "Common Lisp IDE for Emacs")
+      (description "SLY is a fork of SLIME.  It also features a completely
+redesigned REPL based on Emacs's own full-featured comint.el, live code
+annotations, and a consistent interactive button interface.  Everything can be
+copied to the REPL.  One can create multiple inspectors with independent
+history.")
+      (home-page "https://github.com/joaotavora/sly")
+      (license license:public-domain)
+      (properties `((cl-source-variant . ,(delay cl-slynk)))))))
+
+(define-public cl-slynk
+  (sbcl-package->cl-source-package sbcl-slynk-boot0))
+
+(define ecl-slynk-boot0
+  (sbcl-package->ecl-package sbcl-slynk-boot0))
+
+(define sbcl-slynk-arglists
+  (package
+    (inherit sbcl-slynk-boot0)
+    (name "sbcl-slynk-arglists")
+    (inputs `(("sbcl-slynk" ,sbcl-slynk-boot0)))
+    (arguments
+     `(#:asd-file "slynk.asd"
+       ,@(package-arguments sbcl-slynk-boot0)))))
+
+(define ecl-slynk-arglists
+  (sbcl-package->ecl-package sbcl-slynk-arglists))
+
+(define sbcl-slynk-util
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-util")))
+
+(define ecl-slynk-util
+  (sbcl-package->ecl-package sbcl-slynk-util))
+
+(define sbcl-slynk-fancy-inspector
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-fancy-inspector")
+    (inputs `(("sbcl-slynk-util" ,sbcl-slynk-util)
+              ,@(package-inputs sbcl-slynk-arglists)))))
+
+(define ecl-slynk-fancy-inspector
+  (sbcl-package->ecl-package sbcl-slynk-fancy-inspector))
+
+(define sbcl-slynk-package-fu
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-package-fu")))
+
+(define ecl-slynk-package-fu
+  (sbcl-package->ecl-package sbcl-slynk-package-fu))
+
+(define sbcl-slynk-mrepl
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-mrepl")))
+
+(define ecl-slynk-mrepl
+  (sbcl-package->ecl-package sbcl-slynk-mrepl))
+
+(define sbcl-slynk-trace-dialog
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-trace-dialog")))
+
+(define ecl-slynk-trace-dialog
+  (sbcl-package->ecl-package sbcl-slynk-trace-dialog))
+
+(define sbcl-slynk-profiler
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-profiler")))
+
+(define ecl-slynk-profiler
+  (sbcl-package->ecl-package sbcl-slynk-profiler))
+
+(define sbcl-slynk-stickers
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-stickers")))
+
+(define ecl-slynk-stickers
+  (sbcl-package->ecl-package sbcl-slynk-stickers))
+
+(define sbcl-slynk-indentation
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-indentation")))
+
+(define ecl-slynk-indentation
+  (sbcl-package->ecl-package sbcl-slynk-indentation))
+
+(define sbcl-slynk-retro
+  (package
+    (inherit sbcl-slynk-arglists)
+    (name "sbcl-slynk-retro")))
+
+(define ecl-slynk-retro
+  (sbcl-package->ecl-package sbcl-slynk-retro))
+
+(define slynk-systems
+  '("slynk"
+    "slynk-util"
+    "slynk-arglists"
+    "slynk-fancy-inspector"
+    "slynk-package-fu"
+    "slynk-mrepl"
+    "slynk-profiler"
+    "slynk-trace-dialog"
+    "slynk-stickers"
+    "slynk-indentation"
+    "slynk-retro"))
+
+(define-public sbcl-slynk
+  (package
+    (inherit sbcl-slynk-boot0)
+    (inputs
+     `(("slynk" ,sbcl-slynk-boot0)
+       ("slynk-util" ,sbcl-slynk-util)
+       ("slynk-arglists" ,sbcl-slynk-arglists)
+       ("slynk-fancy-inspector" ,sbcl-slynk-fancy-inspector)
+       ("slynk-package-fu" ,sbcl-slynk-package-fu)
+       ("slynk-mrepl" ,sbcl-slynk-mrepl)
+       ("slynk-profiler" ,sbcl-slynk-profiler)
+       ("slynk-trace-dialog" ,sbcl-slynk-trace-dialog)
+       ("slynk-stickers" ,sbcl-slynk-stickers)
+       ("slynk-indentation" ,sbcl-slynk-indentation)
+       ("slynk-retro" ,sbcl-slynk-retro)))
+    (native-inputs `(("sbcl" ,sbcl)))
+    (build-system trivial-build-system)
+    (source #f)
+    (outputs '("out" "image"))
+    (arguments
+     `(#:modules ((guix build union)
+                  (guix build utils)
+                  (guix build lisp-utils))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (srfi srfi-1)
+                      (guix build union)
+                      (guix build lisp-utils))
+
+         (union-build
+          (assoc-ref %outputs "out")
+          (filter-map
+           (match-lambda
+             ((name . path)
+              (if (string-prefix? "slynk" name) path #f)))
+           %build-inputs))
+
+         (prepend-to-source-registry
+          (string-append (assoc-ref %outputs "out") "//"))
+         (build-image "sbcl"
+                      (string-append
+                       (assoc-ref %outputs "image")
+                       "/bin/slynk")
+                      #:inputs %build-inputs
+                      #:dependencies ',slynk-systems))))))
+
+(define-public ecl-slynk
+  (package
+    (inherit sbcl-slynk)
+    (name "ecl-slynk")
+    (inputs
+     (map (match-lambda
+            ((name pkg . _)
+             (list name (sbcl-package->ecl-package pkg))))
+          (package-inputs sbcl-slynk)))
+    (native-inputs '())
+    (outputs '("out"))
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (guix build union))
+         (match %build-inputs
+           (((names . paths) ...)
+            (union-build (assoc-ref %outputs "out")
+                         paths))))))))
+
+(define-public sbcl-stumpwm+slynk
+  (package
+    (inherit sbcl-stumpwm)
+    (name "sbcl-stumpwm-with-slynk")
+    (outputs '("out"))
+    (native-inputs
+     `(("stumpwm" ,sbcl-stumpwm)
+       ("slynk" ,sbcl-slynk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-stumpwm)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'build-program
+             (lambda* (#:key lisp inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (program (string-append out "/bin/stumpwm")))
+                 (build-program lisp program
+                                #:inputs inputs
+                                #:entry-program '((stumpwm:stumpwm) 0)
+                                #:dependencies '("stumpwm"
+                                                 ,@slynk-systems))
+                 ;; Remove unneeded file.
+                 (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
+                 #t)))
+           (delete 'copy-source)
+           (delete 'build)
+           (delete 'check)
+           (delete 'link-dependencies)
+           (delete 'cleanup)
+           (delete 'create-symlinks)))))))

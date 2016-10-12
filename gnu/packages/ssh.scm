@@ -80,20 +80,6 @@ remote applications.")
     (home-page "http://www.libssh.org")
     (license license:lgpl2.1+)))
 
-(define libssh-0.6 ; kept private for use in guile-ssh
-  (package (inherit libssh)
-    (version "0.6.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://red.libssh.org/attachments/"
-                                  "download/121/libssh-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0b6wyx6bwbb8jpn8x4rhlrdiqwqrwrs0mxjmrnqykm9kw1ijgm8g"))
-              (patches (search-patches
-                        "libssh-0.6.5-CVE-2016-0739.patch"))))))
-
 (define-public libssh2
   (package
    (name "libssh2")
@@ -209,7 +195,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.9.0")
+    (version "0.10.1")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
               ;; exists, but the server appears to be too slow and unreliable.
@@ -220,34 +206,29 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "04zs1cykwdyj51ag62ymrkgsja9dbhbaaglkvbfbac0bkxl2ir6d"))))
+                "0ky77kr7rnkhbq938bir61mlr8b86lfjcjjb1bxx1y1fhimsiz72"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'autoreconf
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (chmod "doc/version.texi" #o777) ;make it writable
-                   (zero? (system* "autoreconf" "-vfi")))
-                 (alist-cons-after
-                  'install 'fix-libguile-ssh-file-name
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out      (assoc-ref outputs "out"))
-                           (libdir   (string-append out "/lib"))
-                           (guiledir (string-append out
-                                                    "/share/guile/site/2.0")))
-                      (substitute* (find-files guiledir ".scm")
-                        (("\"libguile-ssh\"")
-                         (string-append "\"" libdir "/libguile-ssh\"")))
-
-                      ;; Make sure it works.
-                      (setenv "GUILE_LOAD_PATH" guiledir)
-                      (setenv "GUILE_LOAD_COMPILED_PATH" guiledir)
-                      (zero?
-                       (system* "guile" "-c" "(use-modules (ssh session))"))))
-                  %standard-phases))
-       #:configure-flags (list (string-append "--with-guilesitedir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.0"))
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autoreconf
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (chmod "doc/version.texi" #o777) ;make it writable
+                      (zero? (system* "autoreconf" "-vfi"))))
+                  (add-before 'build 'fix-libguile-ssh-file-name
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Build and install libguile-ssh.so so that we can use
+                      ;; its absolute file name in .scm files, before we build
+                      ;; the .go files.
+                      (and (zero? (system* "make" "install"
+                                           "-C" "libguile-ssh"
+                                           "-j" (number->string
+                                                 (parallel-job-count))))
+                           (let* ((out      (assoc-ref outputs "out"))
+                                  (libdir   (string-append out "/lib")))
+                             (substitute* (find-files "." "\\.scm$")
+                               (("\"libguile-ssh\"")
+                                (string-append "\"" libdir "/libguile-ssh\"")))
+                             #t)))))
 
        ;; Tests are not parallel-safe.
        #:parallel-tests? #f))
@@ -258,7 +239,7 @@ Additionally, various channel-specific options can be negotiated.")
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)))
     (inputs `(("guile" ,guile-2.0)
-              ("libssh" ,libssh-0.6)
+              ("libssh" ,libssh)
               ("libgcrypt" ,libgcrypt)))
     (synopsis "Guile bindings to libssh")
     (description

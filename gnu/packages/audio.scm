@@ -40,6 +40,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
@@ -179,7 +180,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.3")
+    (version "5.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -193,10 +194,10 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"5.3\" ; }"))))
+namespace ARDOUR { const char* revision = \"5.4\" ; }"))))
               (sha256
                (base32
-                "0xdyc3syxg4drg7rafadhlrn6nycg169ay6q5xhga19kcwy6qmqm"))
+                "1yrg0d86k9fqw7lmzjglilbadb4cjqxqkf6ii4bjs6rihj6b0qrf"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
@@ -242,6 +243,7 @@ namespace ARDOUR { const char* revision = \"5.3\" ; }"))))
        ("readline" ,readline)
        ("redland" ,redland)
        ("rubberband" ,rubberband)
+       ("libarchive" ,libarchive)
        ("taglib" ,taglib)
        ("python-rdflib" ,python-rdflib)))
     (native-inputs
@@ -335,6 +337,37 @@ tools (analyzer, mono/stereo tools, crossovers).")
     ;; calfjackhost is released under GPLv2+
     ;; The plugins are released under LGPLv2.1+
     (license (list license:lgpl2.1+ license:gpl2+))))
+
+(define-public infamous-plugins
+  (package
+    (name "infamous-plugins")
+    (version "0.2.02")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ssj71/infamousPlugins/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qm3ak07vc1l3f5c3c2lq9gkfknlxwn8ks03cysw1pk8hj7dwnv6"))))
+    (build-system cmake-build-system)
+    ;; There are no tests
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fftwf" ,fftwf)
+       ("lv2" ,lv2)
+       ("ntk" ,ntk)
+       ("zita-resampler" ,zita-resampler)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://ssj71.github.io/infamousPlugins")
+    (synopsis "LV2 plugins for live use")
+    (description
+     "The infamous plugins are a collection of LV2 audio plugins for live
+performances.  The plugins include a cellular automaton synthesizer, an
+envelope follower, distortion effects, tape effects and more.")
+    (license license:gpl2+)))
 
 (define-public csound
   (package

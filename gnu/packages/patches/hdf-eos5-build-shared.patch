@@ -1,0 +1,31 @@
+Make shared library linking work.
+---
+ src/Makefile.in | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 86880e5..24efffe 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -72,7 +72,7 @@ LTCOMPILE = $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) \
+ 	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+ 	$(AM_CFLAGS) $(CFLAGS) -DH5_USE_16_API
+ CCLD = $(CC)
+-LINK = $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++LINK = HDF5_USE_SHLIB=yes $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+ SOURCES = $(libhe5_hdfeos_la_SOURCES)
+ DIST_SOURCES = $(libhe5_hdfeos_la_SOURCES)
+@@ -124,9 +124,6 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
+ INSTALL_SCRIPT = @INSTALL_SCRIPT@
+ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+ 
+-# Set LDFLAGS to allow the HDF-EOS library to use extern variables from
+-# HDF5
+-LDFLAGS = -Wl,-single_module
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
+ LIBTOOL = @LIBTOOL@
+-- 
+2.10.0
+

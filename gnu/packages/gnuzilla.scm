@@ -28,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
@@ -185,7 +186,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.26")
+    (version "3.27.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -196,7 +197,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0r65s5q8kk0vr48s0zr8xi610k7h072lgkkpp4z6jlxr19bkly4i"))
+                "0sraxk26swlgl7rl742rkfp5k251v5z3lqw9k8ikin0cjfhkfdpx"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"))))
     (build-system gnu-build-system)
@@ -290,38 +291,71 @@ PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other security
 standards.")
     (license license:mpl2.0)))
 
+(define (mozilla-patch file-name changeset hash)
+  "Return an origin for CHANGESET from the mozilla-esr45 repository."
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://hg.mozilla.org/releases/mozilla-esr45/raw-rev/"
+                        changeset))
+    (sha256 (base32 hash))
+    (file-name file-name)))
+
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.8.0-gnu2")
+    (version "45.3.0-gnu1-beta")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/gnuzilla/"
-                          version "/"
-                          name "-" version ".tar.bz2"))
+      (uri (list (string-append "mirror://gnu/gnuzilla/" version "/"
+                                name "-" version ".tar.bz2")
+                 ;; XXX Temporary URI for 45.3 beta release.
+                 ;;     Remove when no longer needed.
+                 (string-append "http://jenkins.trisquel.info/icecat/binaries/"
+                                "icecat-45.3.0-gnu1.tar.bz2")))
       (sha256
        (base32
-        "1yb7a1zsqpra9cgq8hrzrbm5v31drb9367cwvwiksz0ngqy342hb"))
-      (patches (search-patches
-                "icecat-avoid-bundled-includes.patch"
-                "icecat-CVE-2016-2818-pt1.patch"
-                "icecat-CVE-2016-2818-pt2.patch"
-                "icecat-CVE-2016-2818-pt3.patch"
-                "icecat-CVE-2016-2818-pt4.patch"
-                "icecat-CVE-2016-2818-pt5.patch"
-                "icecat-CVE-2016-2818-pt6.patch"
-                "icecat-CVE-2016-2818-pt7.patch"
-                "icecat-CVE-2016-2818-pt8.patch"
-                "icecat-CVE-2016-2818-pt9.patch"
-                "icecat-CVE-2016-2819.patch"
-                "icecat-CVE-2016-2821.patch"
-                "icecat-CVE-2016-2824.patch"
-                "icecat-CVE-2016-2828.patch"
-                "icecat-CVE-2016-2831.patch"))
+        "1hk5lwaqm8nkfm43sq521mzyrx0x3iiwvlcy62m7cq7grz9wixp6"))
+      (patches
+       `(,(search-patch "icecat-avoid-bundled-libraries.patch")
+         ,(mozilla-patch "icecat-CVE-2016-5250.patch"     "6711ccb0184e" "1p0s91rw1j7ib6hy9gh5p0l33rja32rfgygh29jw4wq1hxfql8rk")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt1.patch" "b08f28db372e" "0fmifimavawbff700rzjibsnr16am6902gp965scvi1iy78754ia")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt2.patch" "a49fd7eb57ba" "1dyh0pjdmf64sjbj1x0mdjwfispacx9yny1kx9nzpf85myryr640")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt3.patch" "9707c3423a1e" "12nn8av0akza4ml1is9mfy8f7368mrkxsl32ly97r4irzh0iryh1")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt4.patch" "9d632865560a" "1msp1wqv0c317wqkm82hd9ajbg4a5mcr8pld5j8cx37ccv7f21g3")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt5.patch" "90697781ec9f" "1h6gcrw5ykf7r59phxqkhpfs7jsgzqn509qm43sj7mbpcvqvk5mg")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt6.patch" "dd9eb81853b9" "1lyqnn40sayziych8gqd5aj7il3zajf318y8ddj8dzz3c8id5dzc")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt7.patch" "d91fc76079e0" "022lhixa8dxa6ny9a4bh2di282i0lhyq0glqr9n4q3r8msfmf0ba")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt8.patch" "3e37ba5e0867" "1w8lncxaayq4xndhyp1hwlv00zggbayljq6rlypb8kdwgzfpi77w")
+         ,(mozilla-patch "icecat-CVE-2016-5257-pt9.patch" "3c4958a98908" "16bc6ai5qddnpm3yw24lry5s7i05xs0ycixzxiir4wmcgwcaayiy")
+         ,(mozilla-patch "icecat-CVE-2016-5261.patch"     "bc2f5467b33d" "0i4b8ydmqg4blx541f56g9qrlm7gp6ih4cs7ixbds724cwk83b9f")
+         ,(mozilla-patch "icecat-CVE-2016-5270.patch"     "7cd50d56bb61" "15nbp5axr59mczxgf37nli37jbw0jdknmxz7z71772pzjd2z07r9")
+         ,(mozilla-patch "icecat-CVE-2016-5272.patch"     "6e43a01fee3c" "025xp1wdnz1gc5l2rsgbrwsh1pbysjiyfgz0g6rvr390r7ag1n74")
+         ,(mozilla-patch "icecat-CVE-2016-5274.patch"     "10c9453407de" "1wqh6hj0dpa7r3hhlyrflcv3r3cg0xq4rb0zvhysi6l7lwb8q51r")
+         ,(mozilla-patch "icecat-CVE-2016-5276.patch"     "fc818ab03f15" "1q64ipl172dcmyy9p8p3l3ljpdh1q1jg48lai0qn2xgknl7sdpks")
+         ,(mozilla-patch "icecat-CVE-2016-5277.patch"     "7b668c5cec92" "1qmchn6qifgjakzac6i4hgnivy062pzgz9p1l11c1m3an1rh0isg")
+         ,(mozilla-patch "icecat-CVE-2016-5278.patch"     "fd5052e343df" "1nzmzlnsz61w9aw4mjvgmlkz88aqv1w858rr0mbv07hwyrljfi84")
+         ,(mozilla-patch "icecat-CVE-2016-5280.patch"     "30673bc9730b" "1qz1684v1rp86ngadcaqd68iqf472flnrnk971ryg4fbsyy8g1za")
+         ,(mozilla-patch "icecat-CVE-2016-5281-pt1.patch" "61405f1fd1df" "1fgmq67arwsl1nrl133fcb5cz6jbbcfjvbv8cd8cadhapin971a7")
+         ,(mozilla-patch "icecat-CVE-2016-5281-pt2.patch" "7776b6ec7b92" "1f7k8f4lk7nyghwajsxf6nb7yvzsaw3jwpa3316znsva12m548mn")
+         ,(mozilla-patch "icecat-CVE-2016-5284-pt1.patch" "55e768767416" "1gg7m12njbkn1jqf2gp2y7zd9ik3xhqkjb7znczna4l438h7ki83")
+         ,(mozilla-patch "icecat-CVE-2016-5284-pt2.patch" "3c42249975a5" "0gnanndkmhsp49rldv4kh0smkdcs7616v46hn567kfw8yfwqvnli")
+         ,(mozilla-patch "icecat-CVE-2016-5284-pt3.patch" "126e5d574811" "13gr08bzqy23adz0ciihb7cy9wdnkcn71i77a3y5b5apm6k54mwi")
+         ,(mozilla-patch "icecat-CVE-2016-5284-pt4.patch" "7b8bd7aae1a8" "0mq5gpq6ni8czfcs1rif4is0igh0054aw41ga0jqkq58g7lavkrf")
+         ,(mozilla-patch "icecat-CVE-2016-5284-pt5.patch" "0799490f4e6f" "1ypv6i48nabbhcqbach8fbgz9bmnhm7q5z9dnfid44z8g54l3f33")
+         ,(mozilla-patch "icecat-CVE-2016-5284-pt6.patch" "fc990e4ae8bc" "1s2cj505ajwwiy4xvn5zlmyzqpgahxmqqvis0a6xm6mjbjh02gm4")
+         ,(mozilla-patch "icecat-bug-1251088.patch"       "5ffa912ed83e" "0v5lpv3c89c2d4y5acn0kyijv096axdnrvaj5ya5yypzfcaqxv24")
+         ,(mozilla-patch "icecat-bug-1292590.patch"       "d4b5b8f3e373" "0w8cxn6ryhgxryy8k8i06yw4mknv509ns9ff1avd0hmgxa83mcdp")
+         ,(mozilla-patch "icecat-bug-1298169.patch"       "adce603ae36d" "0mgs85cwx61bk17r7npl311l4m8yn4667wyhgjmm2ajiys6nn0yl")
+         ,(mozilla-patch "icecat-bug-1301496.patch"       "97268426bb6f" "1z7hg796cgag025gm9pp2szz7w870s7naagdri1dlsilj797v8hr")
+         ,(mozilla-patch "icecat-bug-1299519.patch"       "fc055950b6b8" "05iml5k3rzc653jk4imd111sh18625jxfxkcj12kjdihl0gdr4x4")
+         ,(mozilla-patch "icecat-bug-1303710.patch"       "6f845c23565b" "01dlbnmpsnwr448fajs276y62gl03r74k1hxnwsg6ihwhnfdvn5a")
+         ,(mozilla-patch "icecat-bug-1301343.patch"       "e5d51ca7a3c0" "0hshcz24hc6pkz5pcqxhajm17ibwrlfn1s00frfnpjjy56vacfz0")
+         ,(mozilla-patch "icecat-bug-1299686.patch"       "576f1725a57e" "1lic9d3r8r1vcniw1g3ca71390lw3dmwjsw55dp6z96hyjbcq3fd")))
       (modules '((guix build utils)))
       (snippet
        '(begin
+          (use-modules (ice-9 ftw))
           ;; Remove bundled libraries that we don't use, since they may
           ;; contain unpatched security flaws, they waste disk space and
           ;; network bandwidth, and may cause confusion.
@@ -358,6 +392,12 @@ standards.")
                       "gfx/cairo"
                       "js/src/ctypes/libffi"
                       "db/sqlite3"))
+          ;; Delete .pyc files, typically present in icecat source tarballs
+          (for-each delete-file (find-files "." "\\.pyc$"))
+          ;; Delete obj-* directories, found in icecat-45.3.0-gnu1-beta
+          (for-each delete-file-recursively
+                    (scandir "." (lambda (name)
+                                   (string-prefix? "obj-" name))))
           #t))))
     (build-system gnu-build-system)
     (inputs
@@ -391,7 +431,21 @@ standards.")
        ("mit-krb5" ,mit-krb5)
        ("nspr" ,nspr)
        ("nss" ,nss)
-       ("sqlite" ,sqlite)
+
+       ;; XXX Work around the fact that our 'sqlite' package was not built
+       ;;     with -DSQLITE_ENABLE_DBSTAT_VTAB.
+       ("sqlite" ,(package
+                    (inherit sqlite)
+                    (arguments
+                     `(#:configure-flags
+                       ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
+                       ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
+                       ;; to use the system SQLite unless these options are enabled.
+                       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+                                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
+                                            "-DSQLITE_ENABLE_DBSTAT_VTAB"))))))
+       ;;("sqlite" ,sqlite)
+
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
@@ -401,7 +455,8 @@ standards.")
      `(("perl" ,perl)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
     (arguments
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
@@ -431,6 +486,11 @@ standards.")
                            ;; disable it.
                            "--disable-debug"
                            "--disable-debug-symbols"
+
+                           ;; Temporary hack to work around missing
+                           ;; "unofficial" branding in
+                           ;; icecat-45.3.0-gnu1-beta.
+                           "--enable-official-branding"
 
                            ;; Avoid bundled libraries.
                            "--with-system-zlib"
@@ -597,5 +657,4 @@ features built-in privacy-protecting features.")
     (properties
      `((ftp-directory . "/gnu/gnuzilla")
        (cpe-name . "firefox_esr")
-       (cpe-version . ,(string-drop-right version
-                                          (string-length "-gnu1")))))))
+       (cpe-version . ,(first (string-split version #\-)))))))
