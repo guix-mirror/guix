@@ -2046,3 +2046,23 @@ Section."))))
       (synopsis "Overdrive effect with level and tone control")
       (description "This package provides the LV2 plugin \"GxOverDriver\", an
 overdrive effect."))))
+
+(define-public gx-tone-mender-lv2
+  (let ((commit "b6780b4a3e4782b3ed0e5882d6788f178aed138f")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-tone-mender-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxToneMender.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "07qdcfsvv2vdnfnjh91pfgvjdcs5y91nvwfm8c0z8fp6b4bk7a9q"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxToneMender.lv2")
+      (synopsis "Clean boost with a 3-knob tonestack")
+      (description "This package provides the LV2 plugin \"GxToneMender\", a
+clean boost effect with a 3-knob tonestack."))))
