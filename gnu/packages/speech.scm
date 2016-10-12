@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,12 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gcc))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages textutils))
 
 (define-public mitlm
   (package
@@ -49,3 +55,40 @@ models involving iterative parameter estimation.  It achieves much of its
 efficiency through the use of a compact vector representation of n-grams.")
     (home-page "https://github.com/mitlm/mitlm")
     (license license:expat)))
+
+(define-public speech-dispatcher
+  (package
+    (name "speech-dispatcher")
+    (version "0.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://devel.freebsoft.org/pub/"
+                                  "projects/speechd/speech-dispatcher-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "18jlxnhlahyi6njc6l6576hfvmzivjjgfjyd2n7vvrvx9inphjrb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dotconf" ,dotconf)
+       ("glib" ,glib)
+       ("libltdl" ,libltdl)
+       ("libsndfile" ,libsndfile)))
+    (synopsis "Common interface to speech synthesizers")
+    (description "The Speech Dispatcher project provides a high-level
+device independent layer for access to speech synthesis through a simple,
+stable and well documented interface.")
+    (home-page "https://devel.freebsoft.org/speechd")
+    ;; The software is distributed under GPL2+, but includes a number
+    ;; of files covered by other licenses.
+    (license (list license:gpl2+
+                   license:fdl1.2+ ; Most files in doc/ are dual gpl2+/fdl1.2+.
+                   license:lgpl2.1+
+                   license:gpl2
+                   (license:non-copyleft
+                    ;; festival_client.{c,h} carries an expat-style license.
+                    "See src/modules/festival_client.c in the distribution.")
+                   license:gpl3+)))) ; doc/texinfo.tex -- with TeX exception.
