@@ -2191,3 +2191,23 @@ parallel with a DarkBooster, followed by a volume control."))))
 analog simulation of the UniVox SuperFuzz pedal.  In this simulation the trim
 pot, which is usualy in the housing, is exposed as a control parameter.  It
 adjusts the amount of harmonics."))))
+
+(define-public gx-vintage-fuzz-master-lv2
+  (let ((commit "c3ab9a3019a8381a398718b98615940b4a225b9e")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-vintage-fuzz-master-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0s1ghysggx6psalyhcpgjnmf38vama6jcqgbldqmxii5c2w2ybsc"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
+      (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
+      (description "This package provides the LV2 plugin
+\"GxVintageFuzzMaster\", a simulation of the vintage Fuzz Master pedal."))))
