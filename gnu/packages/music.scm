@@ -2107,3 +2107,23 @@ simulation of a push pull transistor fuzz effect with added high octave."))))
       (description "This package provides the LV2 plugin
 \"GxSuppaToneBender\", a simulation modelled after the Vox Suppa Tone Bender
 pedal."))))
+
+(define-public gx-saturator-lv2
+  (let ((commit "361399245d234b4d02f11f066d25ac15d90c6bf8")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-saturator-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSaturator.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "13cf5gxr2wzp5954hdhbl79v98a665ll5434mb3668p4j33sv217"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxSaturator.lv2")
+      (synopsis "Saturation effect")
+      (description "This package provides the LV2 plugin \"GxSaturator\", a
+saturation effect."))))
