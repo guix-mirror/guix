@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
@@ -2979,6 +2979,29 @@ Lua programing language}.")
     (description
      "This Emacs package provides modes for ebuild, eclass, eblit, GLEP42
 news items, openrc and runscripts.")
+    (license license:gpl2+)))
+
+(define-public emacs-goto-chg
+  (package
+    (name "emacs-goto-chg")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       ;; There is no versioned source.
+       (uri "https://www.emacswiki.org/emacs/download/goto-chg.el")
+       (sha256
+        (base32
+         "078d6p4br5vips7b9x4v6cy0wxf6m5ij9gpqd4g33bryn22gnpij"))))
+    (build-system emacs-build-system)
+    ;; There is no other home page.
+    (home-page "https://www.emacswiki.org/emacs/goto-chg.el")
+    (synopsis "Go to the last change in the Emacs buffer")
+    (description
+     "This package provides @code{M-x goto-last-change} command that goes to
+the point of the most recent edit in the current Emacs buffer.  When repeated,
+go to the second most recent edit, etc.  Negative argument, @kbd{C-u -}, is
+used for reverse direction.")
     (license license:gpl2+)))
 
 (define-public emacs-writegood-mode
