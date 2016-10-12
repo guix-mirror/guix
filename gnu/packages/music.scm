@@ -2231,3 +2231,23 @@ adjusts the amount of harmonics."))))
       (synopsis "Slow gear audio effect")
       (description "This package provides the LV2 plugin \"GxSlowGear\", a
 slow gear audio effect to produce volume swells."))))
+
+(define-public gx-switchless-wah-lv2
+  (let ((commit "1d466240c482b7ce9136aee39044068ab96f1c92")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-switchless-wah-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSwitchlessWah.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0g6njgsm8s76n6yys09a8w77z93pjjgqq9hzhhsrl73hhvyr9qmy"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxSwitchlessWah.lv2")
+      (synopsis "Wah emulation with switchless activation")
+      (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
+a simulation of an analog Wah pedal with switchless activation."))))
