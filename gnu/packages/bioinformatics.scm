@@ -56,6 +56,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -7183,6 +7184,50 @@ intuitive reports and publication-ready graphics.  This package provides the R
 library implementing most of the pipeline's features.")
     (home-page "https://github.com/BIMSBbioinfo/RCAS")
     (license license:expat)))
+
+(define-public rcas-web
+  (package
+    (name "rcas-web")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/BIMSBbioinfo/rcas-web/"
+                           "releases/download/v" version
+                           "/rcas-web-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0d3my0g8i7js59n184zzzjdki7hgmhpi4rhfvk7i6jsw01ba04qq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (json   (assoc-ref inputs "guile-json"))
+                    (redis  (assoc-ref inputs "guile-redis"))
+                    (path   (string-append
+                             json  "/share/guile/site/2.2:"
+                             redis "/share/guile/site/2.2")))
+               (wrap-program (string-append out "/bin/rcas-web")
+                 `("GUILE_LOAD_PATH" ":" = (,path))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" = (,path))
+                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))))
+             #t)))))
+    (inputs
+     `(("r" ,r)
+       ("r-rcas" ,r-rcas)
+       ("guile-next" ,guile-next)
+       ("guile-json" ,guile2.2-json)
+       ("guile-redis" ,guile2.2-redis)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/BIMSBbioinfo/rcas-web")
+    (synopsis "Web interface for RNA-centric annotation system (RCAS)")
+    (description "This package provides a simple web interface for the
+@dfn{RNA-centric annotation system} (RCAS).")
+    (license license:agpl3+)))
 
 (define-public emboss
   (package
