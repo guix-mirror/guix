@@ -182,6 +182,10 @@ without modification.")
   (package (inherit bash)
     (name "bash-minimal")
     (inputs '())                                ; no readline, no curses
+
+    ;; No "include" output because there's no support for loadable modules.
+    (outputs (delete "include" (package-outputs bash)))
+
     (arguments
      (let ((args `(#:modules ((guix build gnu-build-system)
                               (guix build utils)
@@ -217,10 +221,6 @@ without modification.")
     (package
       (inherit bash)
       (name "bash-static")
-
-      ;; No "include" output because there's no support for loadable modules.
-      (outputs (delete "include" (package-outputs bash)))
-
       (arguments
        (substitute-keyword-arguments
            `(#:allowed-references ("out") ,@(package-arguments bash))
