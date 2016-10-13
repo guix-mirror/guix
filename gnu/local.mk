@@ -556,7 +556,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
-  %D%/packages/patches/gnupg-fix-expired-test.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
