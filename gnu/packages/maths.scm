@@ -445,6 +445,65 @@ computations.")
     (home-page "https://github.com/OkoSanto/GCTP")
     (license license:public-domain))) ;https://www2.usgs.gov/laws/info_policies.html
 
+(define-public hdf4
+  (package
+    (name "hdf4")
+    (version "4.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
+                           version "/src/hdf-" version ".tar.bz2"))
+       (sha256
+        (base32 "16yr50j845zlfx20skmw3y75ww77akk9gg0affjqkg66ih5r03mv"))
+       (patches (search-patches "hdf4-reproducibility.patch"
+                                "hdf4-shared-fortran.patch"))))
+
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("libjpeg" ,libjpeg)))
+    (arguments
+     `(#:parallel-tests? #f
+       #:configure-flags '("--enable-shared")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patchbuild
+           (lambda _
+             (substitute*
+                 '("mfhdf/hdfimport/testutil.sh.in" "hdf/util/testutil.sh.in")
+               (("/bin/rm") "rm")
+               (("/bin/mkdir") "mkdir"))
+             (substitute* (find-files "." "^Makefile\\.in$")
+               (("@HDF_BUILD_XDR_TRUE@XDR_ADD = \
+-R\\$\\(abs_top_builddir\\)/mfhdf/xdr/\\.libs") "")
+               (("@HDF_BUILD_SHARED_TRUE@AM_LDFLAGS = \
+-R\\$\\(abs_top_builddir\\)/mfhdf/libsrc/\\.libs \
+-R\\$\\(abs_top_builddir\\)/hdf/src/\\.libs \\$\\(XDR_ADD\\)") "")))))))
+    (home-page "https://www.hdfgroup.org/products/hdf4/")
+    (synopsis
+     "Library and multi-object file format for storing and managing data")
+    (description "HDF4 is a library and multi-object file format for storing
+and managing data between machines.  HDF4 is an older hierarchical data format,
+incompatible with HDF5.")
+    (license
+     (license:non-copyleft
+      "https://www.hdfgroup.org/ftp/HDF/HDF_Current/src/unpacked/COPYING"))))
+
+(define-public hdf4-alt
+  (package
+    (inherit hdf4)
+    (name "hdf4-alt")
+    (arguments
+     (substitute-keyword-arguments (package-arguments hdf4)
+       ((#:configure-flags flags) `(cons* "--disable-netcdf" ,flags))))
+    (synopsis
+     "HDF4 without netCDF API, can be combined with the regular netCDF library")))
+
 (define-public hdf5
   (package
     (name "hdf5")

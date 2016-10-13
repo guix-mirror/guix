@@ -1,0 +1,35 @@
+Remove/patch unreproducible config data.
+
+diff --git a/configure b/configure
+index eb9f346..ebab94d 100755
+--- a/configure
++++ b/configure
+@@ -23163,7 +23163,7 @@ H4_VERSION="`cut -d' ' -f3 $srcdir/README.txt | head -1`"
+ 
+ 
+ ## Configuration date
+- CONFIG_DATE="`date`"
++CONFIG_DATE=`date -u -d "@$SOURCE_DATE_EPOCH"`
+ 
+ ## User doing the configuration
+  CONFIG_USER="`whoami`@`hostname`"
+diff --git a/libhdf4.settings.in b/libhdf4.settings.in
+index 1d9bbb9..4180d72 100644
+--- a/libhdf4.settings.in
++++ b/libhdf4.settings.in
+@@ -5,10 +5,10 @@ General Information:
+ -------------------
+ 		   HDF4 Version: @H4_VERSION@
+ 		  Configured on: @CONFIG_DATE@
+-		  Configured by: @CONFIG_USER@
++		  Configured by: guix
+ 		 Configure mode: @CONFIG_MODE@
+-		    Host system: @host_cpu@-@host_vendor@-@host_os@
+-              Uname information: @UNAME_INFO@
++		    Host system: guix
++              Uname information: guix
+ 		      Libraries: @STATIC_SHARED@
+ 	     Installation point: @prefix@
+ 
+-- 
+2.10.0

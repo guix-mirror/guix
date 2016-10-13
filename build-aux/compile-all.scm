@@ -76,6 +76,12 @@
                         #:output-file go
                         #:opts `(#:warnings ,warnings)))))))
 
+;; Install a SIGINT handler to give unwind handlers in 'compile-file' an
+;; opportunity to run upon SIGINT and to remove temporary output files.
+(sigaction SIGINT
+  (lambda args
+    (exit 1)))
+
 (match (command-line)
   ((_ . files)
    (let ((files (filter file-needs-compilation? files)))
