@@ -538,7 +538,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
+  %D%/packages/patches/ghostscript-CVE-2013-5653.patch		\
   %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
+  %D%/packages/patches/ghostscript-CVE-2016-7976.patch		\
+  %D%/packages/patches/ghostscript-CVE-2016-7978.patch		\
+  %D%/packages/patches/ghostscript-CVE-2016-7979.patch		\
+  %D%/packages/patches/ghostscript-CVE-2016-8602.patch		\
   %D%/packages/patches/ghostscript-runpath.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
