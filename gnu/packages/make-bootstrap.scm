@@ -114,9 +114,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 (current-source-location)
                                 #:native-inputs native-inputs))
 
-(define %bash-static
-  (static-package bash-minimal))
-
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
   (let ((coreutils (package (inherit coreutils)
@@ -184,7 +181,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                               (("-Wl,-export-dynamic") "")))
                           ,phases)))))
                 (inputs (if (%current-target-system)
-                            `(("bash" ,%bash-static))
+                            `(("bash" ,static-bash))
                             '()))))
         (finalize (compose static-package
                            package-with-relocatable-glibc)))
@@ -200,7 +197,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("sed" ,sed)
                ("grep" ,grep)
                ("gawk" ,gawk)))
-      ("bash" ,%bash-static))))
+      ("bash" ,static-bash))))
 
 (define %static-binaries
   (package
