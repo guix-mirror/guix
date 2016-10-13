@@ -1601,6 +1601,55 @@ follows a traditional multi-track tape recorder control paradigm.")
 analogue-like user interface.")
     (license license:gpl2+)))
 
+(define-public mod-host
+  ;; The last release was in 2014 but since then more than 140 commits have
+  ;; been made.
+  (let ((commit "72aca771e3a4e3889641b9bab84985586c9bb926")
+        (revision "1"))
+    (package
+      (name "mod-host")
+      (version (string-append "0.10.6-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/moddevices/mod-host")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "19szi8cy65jlchbrmbjbma03g6gxj9zyyp4dgw1k06r0cxbx82gq"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests included
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'fix-jack-installation-directory
+             (lambda _
+               ;; Do not attempt to install files to output of "jack" package.
+               (substitute* "Makefile"
+                 (("\\$\\(shell pkg-config --variable=libdir jack\\)")
+                  "lib"))
+               #t)))))
+      (inputs
+       `(("lilv" ,lilv)
+         ("fftw" ,fftw)
+         ("fftwf" ,fftwf)
+         ("lv2" ,lv2)
+         ("jack" ,jack-1)
+         ("readline" ,readline)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("python" ,python-2)))
+      (home-page "https://github.com/moddevices/mod-host")
+      (synopsis "LV2 host for Jack controllable via socket or command line")
+      (description "mod-host is an LV2 plugin host for JACK, controllable via
+socket or command line.")
+      (license license:gpl3+))))
+
 (define-public pianobar
   (package
     (name "pianobar")
