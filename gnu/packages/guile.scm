@@ -131,6 +131,7 @@ without requiring the source code to be rewritten.")
   (package
    (name "guile")
    (version "2.0.12")
+   (replacement guile-2.0.13)                 ;CVE-2016-8606 and CVE-2016-8605
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/guile/guile-" version
@@ -198,12 +199,28 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  guile-2.0)
+  (package
+    (inherit guile-2.0)
+    (properties '((hidden? . #t)))          ;people should install 'guile-2.0'
+    (replacement #f)))
+
+(define guile-2.0.13
+  (package
+    (inherit guile-2.0)
+    (version "2.0.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/guile/guile-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p"))))))
 
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
     (version "2.1.4")
+    (replacement #f)
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
