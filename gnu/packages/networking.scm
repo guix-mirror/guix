@@ -474,7 +474,7 @@ network frames.")
 (define-public httping
   (package
     (name "httping")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
@@ -482,7 +482,7 @@ network frames.")
                            version ".tgz"))
        (sha256
         (base32
-         "1110r3gpsj9xmybdw7w4zkhj3zmn5mnv2nq0ijbvrywbn019zdfs"))))
+         "1y7sbgkhgadmd93x1zafqc4yp26ssiv16ni5bbi9vmvvdl55m29y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)))
