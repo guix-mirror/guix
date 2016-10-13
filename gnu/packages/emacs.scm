@@ -3231,3 +3231,24 @@ display and edit the text.
 
 This package contains the library runtime.")
     (license license:lgpl2.1+)))
+
+(define-public emacs-nginx-mode
+  (package
+    (name "emacs-nginx-mode")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/ajc/nginx-mode/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lvkj07kq0jkskr2f61vqb5rlrbnaz9a76ikq40w6925i2r970rr"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ajc/nginx-mode")
+    (synopsis "Emacs major mode for editing nginx config files")
+    (description "This package provides an Emacs major mode for
+editing nginx config files.")
+    (license license:gpl2+)))
