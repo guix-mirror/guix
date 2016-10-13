@@ -127,7 +127,6 @@ printing, and psresize, for adjusting page sizes.")
   (package
    (name "ghostscript")
    (version "9.14.0")
-   (replacement ghostscript/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
@@ -135,7 +134,12 @@ printing, and psresize, for adjusting page sizes.")
             (sha256
              (base32
               "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))
-            (patches (search-patches "ghostscript-CVE-2015-3228.patch"
+            (patches (search-patches "ghostscript-CVE-2013-5653.patch"
+                                     "ghostscript-CVE-2015-3228.patch"
+                                     "ghostscript-CVE-2016-7976.patch"
+                                     "ghostscript-CVE-2016-7978.patch"
+                                     "ghostscript-CVE-2016-7979.patch"
+                                     "ghostscript-CVE-2016-8602.patch"
                                      "ghostscript-runpath.patch"))
             (modules '((guix build utils)))
             (snippet
@@ -198,22 +202,8 @@ output file formats and printers.")
    (license license:agpl3+)
    (home-page "http://www.gnu.org/software/ghostscript/")))
 
-(define ghostscript/fixed
-  (package
-    (inherit ghostscript)
-    (replacement #f)  ; Prevent ghostscript/x from inheriting the replacement
-    (source (origin
-              (inherit (package-source ghostscript))
-              (patches (search-patches "ghostscript-CVE-2013-5653.patch"
-                                       "ghostscript-CVE-2015-3228.patch"
-                                       "ghostscript-CVE-2016-7976.patch"
-                                       "ghostscript-CVE-2016-7978.patch"
-                                       "ghostscript-CVE-2016-7979.patch"
-                                       "ghostscript-CVE-2016-8602.patch"
-                                       "ghostscript-runpath.patch"))))))
-
 (define-public ghostscript/x
-  (package (inherit ghostscript/fixed)
+  (package (inherit ghostscript)
     (name (string-append (package-name ghostscript) "-with-x"))
     (inputs `(("libxext" ,libxext)
               ("libxt" ,libxt)
