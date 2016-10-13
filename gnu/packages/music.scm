@@ -2397,3 +2397,37 @@ slow gear audio effect to produce volume swells."))))
       (synopsis "Wah emulation with switchless activation")
       (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
 a simulation of an analog Wah pedal with switchless activation."))))
+
+(define-public mod-utilities
+  (let ((commit "7cdeeac26ae682730740105ece121d4dddb8ba3f")
+        (revision "1"))
+    (package
+      (name "mod-utilities")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/moddevices/mod-utilities.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ilnkbrmwrszxvc21qlb86h29yz7cnc6rcp0jmna1y693ny2qhf4"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; there are no tests
+         #:make-flags
+         (list (string-append "INSTALL_PATH="
+                              (assoc-ref %outputs "out")
+                              "/lib/lv2"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (inputs
+       `(("lv2" ,lv2)))
+      (home-page "https://github.com/moddevices/mod-utilities")
+      (synopsis "LV2 utility plugins")
+      (description "This package provides LV2 audio utility plugins, such as
+filters, crossovers, simple gain plugins without zipper noise, switch box
+plugins, a switch trigger, a toggle switch, and a peakmeter.")
+      (license license:gpl2+))))
