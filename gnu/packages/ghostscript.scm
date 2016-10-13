@@ -196,6 +196,7 @@ output file formats and printers.")
 (define ghostscript/fixed
   (package
     (inherit ghostscript)
+    (replacement #f)  ; Prevent ghostscript/x from inheriting the replacement
     (source (origin
               (inherit (package-source ghostscript))
               (patches (search-patches "ghostscript-CVE-2013-5653.patch"
