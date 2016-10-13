@@ -8823,6 +8823,36 @@ library.")
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs responses))))))
 
+(define-public python-whoosh
+  (package
+    (name "python-whoosh")
+    (version "2.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Whoosh" version))
+       (sha256
+        (base32
+         "10qsqdjpbc85fykc1vgcs8xwbgn4l2l52c8d83xf1q59pwyn79bw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "http://bitbucket.org/mchaput/whoosh")
+    (synopsis "Full text indexing, search, and spell checking library")
+    (description
+     "Whoosh is a fast, pure-Python full text indexing, search, and spell
+checking library.")
+    (license license:bsd-2)))
+
+(define-public python2-whoosh
+  (let ((whoosh (package-with-python2 (strip-python2-variant python-whoosh))))
+    (package (inherit whoosh)
+      (propagated-inputs
+       `(("python2-backport-ssl-match-hostname"
+          ,python2-backport-ssl-match-hostname)
+          ,@(package-propagated-inputs whoosh))))))
+
 (define-public python-pathlib
   (package
     (name "python-pathlib")
