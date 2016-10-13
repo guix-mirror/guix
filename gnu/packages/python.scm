@@ -464,7 +464,7 @@ pidof, tty, taskset, pmap.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (inputs
+    (propagated-inputs
      `(("python-py-bcrypt" ,python-py-bcrypt)))
     (arguments
      `(#:phases
@@ -536,9 +536,8 @@ John the Ripper).")
          "14k8z7ndc3zk5xivnm4d8lncchx475ll5izpf8vmfbq7rp9yp5rj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pycrypto" ,python-pycrypto)))
-    (inputs
-     `(("python-ecdsa" ,python-ecdsa)))
+     `(("python-pycrypto" ,python-pycrypto)
+       ("python-ecdsa" ,python-ecdsa)))
     (home-page "http://www.paramiko.org/")
     (synopsis "SSHv2 protocol library")
     (description "Paramiko is a python implementation of the SSHv2 protocol,
@@ -617,7 +616,7 @@ making them easy to handle and incorporate into other protocols.")
         (base32
          "177dfxsmk3k4cih6fh6v8d91bh4nqx7ns6pc07w7m7i3cvdx3c8n"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)
        ("python-six" ,python-six)))
     (home-page "https://github.com/pcmanus/ccm")
@@ -665,7 +664,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
        (base32
         "0k43pi0p1dwpds2w0km3fw92wixzxv2vw7p09capxmjz5cfh23lw"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-pytz" ,python-pytz)))
     (arguments `(#:tests? #f)) ; no test target
     (home-page "http://babel.pocoo.org/")
@@ -901,7 +900,7 @@ etc.).  The package is structured to make adding new modules easy.")
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (inputs
+    (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))
     (arguments
      `(#:tests? #f))                      ;TODO: tests require pytest
@@ -954,7 +953,7 @@ Python file, so it can be easily copied into your project.")
        (base32
         "0jrfpcgvgya6hs45dhrd9yiqgdgz9qp9aa07zsw8gqgn8zphff86"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "https://dateutil.readthedocs.io/en/stable/")
     (synopsis "Extensions to the standard datetime module")
@@ -1029,9 +1028,8 @@ datetime module, available in Python 2.3+.")
         (base32 "1ckpxrvvjj6zxmn68icd9hib8qcpx9b35f6izxnr25br5ilq7r6j"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
-    (inputs
-     `(("python-pytz" ,python-pytz)
+     `(("python-numpy" ,python-numpy)
+       ("python-pytz" ,python-pytz)
        ("python-dateutil" ,python-dateutil-2)))
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -1060,7 +1058,8 @@ doing practical, real world data analysis in Python.")
        (base32
         "0paj7vlsb0np8b5sp4bv64wxv7qk2piyp7xg29pkhdjwsbls9fnb"))))
     (build-system python-build-system)
-    (inputs `(("python-pytz" ,python-pytz)))
+    (propagated-inputs
+     `(("python-pytz" ,python-pytz)))
     (home-page "https://github.com/regebro/tzlocal")
     (synopsis
      "Local timezone information for Python")
@@ -1289,7 +1288,8 @@ commands.")
     (arguments
      `(#:python ,python-2                         ; SyntaxError with Python 3
        #:tests? #f))                              ; no 'test' sub-command
-    (inputs `(("element-tree" ,python2-element-tree)))
+    (propagated-inputs
+     `(("element-tree" ,python2-element-tree)))
     (synopsis "Python and command-line interface to Bugzilla")
     (description
      "PyBugz is a Python library and command-line tool to query the Bugzilla
@@ -1339,7 +1339,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
        (base32
         "0iv1c34npr4iynwpgv1vkjx9rjd18a85ir8c01gc5f7wp8iv7l1x"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)))
     (arguments '(#:tests? #f))            ;TODO: tests require pytest
@@ -1490,7 +1490,7 @@ matching them against a list of media-ranges.")
             "1x4zjq1zlyrh8b9ba0cmafd3w94pxhid408kibyjd3s6h1lap6s7"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; 'module' object has no attribute 'collector'
-    (inputs
+    (propagated-inputs
      `(("python-cov-core" ,python-cov-core)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-six" ,python-six)))
@@ -1660,7 +1660,7 @@ and many external plugins.")
          (base32
           "1yl4nbhzfgsxqlsyk4clafgp9x11zvgrkprm9i2p3fgkwx9jxcm8"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pytest-dev/pytest-cov")
@@ -1724,7 +1724,7 @@ supports coverage of subprocesses.")
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
-    (inputs
+    (propagated-inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pytest-dev/pytest-mock/")
@@ -1742,9 +1742,9 @@ same arguments.")
   (let ((base (package-with-python2
                 (strip-python2-variant python-pytest-mock))))
     (package (inherit base)
-      (inputs
+      (propagated-inputs
        `(("python2-mock" ,python2-mock)
-         ,@(package-inputs base))))))
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-pytest-xdist
   (package
@@ -1769,7 +1769,7 @@ same arguments.")
     (native-inputs
      `(("unzip" ,unzip)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (inputs
+    (propagated-inputs
      `(("python-apipkg" ,python-apipkg)
        ("python-execnet" ,python-execnet)
        ("python-pytest" ,python-pytest)
@@ -1804,7 +1804,7 @@ result back.")
         (base32
          "0f4w84k8ck82syys7yg9maz93mqzc8p5ymis941x034v44jzq74m"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "http://pythonpaste.org/scripttest/")
     (synopsis "Python library to test command-line scripts")
@@ -1831,9 +1831,8 @@ subprocess and see the output as well as any file modifications.")
          "1dyml28ykpl5jb9khdmcdvhy1cxqingys6qvj2k04fzlaj6z3bbx"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-mimeparse" ,python-mimeparse)))
-    (inputs
-     `(("python-extras" ,python-extras)))
+     `(("python-mimeparse" ,python-mimeparse)
+       ("python-extras" ,python-extras)))
     (home-page "https://github.com/testing-cabal/testtools")
     (synopsis
      "Extensions to the Python standard library unit testing framework")
@@ -1860,7 +1859,7 @@ compatibility.")
         (base32
          "1671jvrvqlmbnc42j7pc5y6vc37q44aiwrq0zic652pxyy2fxvjg"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-testtools" ,python-testtools)
        ("python-mimeparse" ,python-mimeparse)))
     (home-page "https://launchpad.net/testscenarios")
@@ -1912,7 +1911,7 @@ use of resources by test cases.")
         (base32
          "1nkw9wfbvizmpajbj3in8ns07g7lwkiv8hip14jjlwk3cacls6jv"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-testtools" ,python-testtools)
        ("python-mimeparse" ,python-mimeparse)
        ("python-testscenarios" ,python-testscenarios)))
@@ -1975,7 +1974,7 @@ Python tests.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;; Most tests seem to use the Internet.
-    (inputs
+    (propagated-inputs
       `(("python-fixtures-0.3.16" ,python-fixtures-0.3.16)))
     (home-page "https://launchpad.net/pbr")
     (synopsis "Change the default behavior of Python’s setuptools")
@@ -2172,7 +2171,7 @@ backported from Python 2.7 for Python 2.4+.")
               (base32
                "1iypp6z46r19n4xmgx6m1lwmlpfjh8vapq8izigrqlaarvp2y64c"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)
        ("python-parse-type" ,python-parse-type)))
@@ -2486,7 +2485,7 @@ somewhat intelligeble.")
      `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
-    (inputs
+    (propagated-inputs
      `(("python-blinker" ,python-blinker)
        ("python-cryptography" ,python-cryptography)
        ("python-pyjwt" ,python-pyjwt)))
@@ -2628,7 +2627,7 @@ for Python.")
         (base32
          "1x0v41lp5m1pjix3l46zx02b7lqp2hflgpnxwkywxynvi3zz47xw"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
     (synopsis "Python template engine")
@@ -2772,7 +2771,7 @@ reStructuredText.")
         (base32
          "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-docutils" ,python-docutils)
        ("python-pygments" ,python-pygments)))
@@ -2874,7 +2873,7 @@ interested parties to subscribe to events, or \"signals\".")
         (base32
          "1hn94rb4q3zmcq16in055xikal4dba5hfx3zznq7warllcgc9f8k"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-feedgenerator" ,python-feedgenerator)
        ("python-jinja2" ,python-jinja2)
        ("python-pygments" ,python-pygments)
@@ -4293,7 +4292,7 @@ Python language binding specification.")
        (sha256
         (base32 "1gzjg2k6f14i1msm2b0ax8d9ds1hvk6qd5nlaivg8m4cxqp4cp1x"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-psutil" ,python-psutil)
        ("python-drmaa" ,python-drmaa)
        ("python-pyzmq" ,python-pyzmq)))
@@ -4858,7 +4857,7 @@ features useful for text console applications.")
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
-    (inputs `(("python-urwid" ,python-urwid)))
+    (propagated-inputs `(("python-urwid" ,python-urwid)))
     (home-page "https://github.com/pazz/urwidtrees")
     (synopsis "Tree widgets for urwid")
     (description "Urwidtrees is a Widget Container API for the @code{urwid}
@@ -5322,7 +5321,7 @@ It is written entirely in Python.")
     (build-system python-build-system)
     (native-inputs
      `(("python-certifi" ,python-certifi)))
-    (inputs
+    (propagated-inputs
      `(("python-backports-abc" ,python-backports-abc)))
     (home-page "http://www.tornadoweb.org/")
     (synopsis "Python web framework and asynchronous networking library")
@@ -5338,11 +5337,11 @@ connection to each user.")
 (define-public python2-tornado
   (let ((tornado (package-with-python2 (strip-python2-variant python-tornado))))
     (package (inherit tornado)
-      (inputs
+      (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
          ("python2-singledispatch" ,python2-singledispatch)
-          ,@(package-inputs tornado))))))
+          ,@(package-propagated-inputs tornado))))))
 
 ;; the python- version can be removed with python-3.5
 (define-public python-backports-abc
@@ -6560,7 +6559,7 @@ serve the same purpose: provide Python bindings for libmagic.")))
         (base32
          "193faznwnjc3n5991wyzim6h9gyq1zxifmfrnpm3avgkh7ahyynh"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "http://packages.debian.org/sid/python-debian")
     (synopsis "Debian package related modules")
@@ -7668,7 +7667,7 @@ pure Python module that works on virtually all Python versions.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (inputs
+    (propagated-inputs
      `(("python-apipkg" ,python-apipkg)))
     (synopsis "Rapid multi-Python deployment")
     (description "Execnet provides a share-nothing model with
@@ -7698,7 +7697,7 @@ minimal and fast API targetting the following uses:
               (base32
                "1a873fihw4rhshc722j4h6j7g3nj7xpgsna9hhg3zn6ksknnhx5y"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-apipkg" ,python-apipkg)
        ("python-execnet" ,python-execnet)
        ("python-py" ,python-py)
@@ -7733,7 +7732,7 @@ the last py.test invocation.")
      `(("python-pytest" ,python-pytest)
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)))
-    (inputs
+    (propagated-inputs
      `(("python-werkzeug" ,python-werkzeug)))
     (synopsis "Py.test plugin to test server connections locally")
     (description "Pytest-localserver is a plugin for the pytest testing
@@ -7865,7 +7864,7 @@ Blog, News or Announcements section to a Sphinx website.")
                (base32
                 "1an5lkkqk1zha47198p42ji3m94xmzx1a03dn7866m87n4r4q8h5"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-args" ,python-args)))
     (home-page "https://github.com/kennethreitz/clint")
     (synopsis "Command-line interface tools")
@@ -7910,7 +7909,7 @@ Abstract Syntax Tree.")
                (base32
                 "12rp1d9ba7nvd5rhaxi6xzx1rm67r1k1ylsrkzhpwnphqpb06cvj"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
     (home-page "https://github.com/alex/rply")
     (synopsis "Parser generator for Python")
@@ -7934,7 +7933,7 @@ with a new public API, and RPython support.")
                (base32
                 "1msqv747iz12r73mz4qvsmlwkddwjvrahlrk7ysrcz07h7dsscxs"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-astor" ,python-astor)
        ("python-clint" ,python-clint)
        ("python-rply" ,python-rply)))
@@ -7963,7 +7962,7 @@ Python at your fingertips, in Lisp form.")
     (build-system python-build-system)
     (arguments
      `(#:test-target "check"))
-    (inputs
+    (propagated-inputs
      `(("python-requests" ,python-requests)))
     (home-page "https://github.com/litl/rauth")
     (synopsis "Python library for OAuth 1.0/a, 2.0, and Ofly")
@@ -8127,7 +8126,7 @@ text.")
       (base32
        "1dcxvszbikgzh99ybdc7jq0zb9wspy2ds8z9mjsqiyv3q884xpr5"))))
    (build-system python-build-system)
-   (inputs
+   (propagated-inputs
     `(("python-pyasn1" ,python-pyasn1)))
    (synopsis "Pure-Python RSA implementation")
    (description "Python-RSA is a pure-Python RSA implementation.  It supports
@@ -8828,7 +8827,7 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
                (system* "nosetests" "--exclude=^test_safe_to_remove.*")))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (inputs
+    (propagated-inputs
      `(("python-pytz" ,python-pytz)
        ("python-amqp" ,python-amqp)
        ("python-anyjson" ,python-anyjson)
@@ -8994,7 +8993,7 @@ introspection of @code{zope.interface} instances in code.")
     (arguments
      '(;; The test suite relies on some non-portable Windows interfaces.
        #:tests? #f))
-    (inputs
+    (propagated-inputs
      `(("python-dateutil-2" ,python-dateutil-2)
        ("python-pyicu" ,python-pyicu)))
     (synopsis "Parse and generate vCard and vCalendar files")
@@ -9384,7 +9383,7 @@ the same purpose: to provide Python bindings for libmagic.")
      ;; s3cmd is written for python2 only and contains no tests.
      `(#:python ,python-2
        #:tests? #f))
-    (inputs
+    (propagated-inputs
      `(("python2-dateutil" ,python2-dateutil)
        ;; The python-file package also provides a magic.py module.
        ;; This is an unfortunate state of affairs; however, s3cmd
@@ -10339,8 +10338,9 @@ implementation for Python.")
   (build-system python-build-system)
   (arguments
    '(#:tests? #f)) ; The test suite uses some Windows-specific data types.
-  (inputs `(("python-wcwidth" ,python-wcwidth)
-            ("python-pygments" ,python-pygments)))
+  (propagated-inputs
+   `(("python-wcwidth" ,python-wcwidth)
+     ("python-pygments" ,python-pygments)))
   (native-inputs `(("python-six" ,python-six)))
   (home-page "https://github.com/jonathanslenders/python-prompt-toolkit")
   (synopsis "Library for building command line interfaces in Python")
@@ -10388,7 +10388,7 @@ characters, mouse support, and auto suggestions.")
                (base32
                 "1mmbiyzf0n8hm7z2a562x7w5cbl6jc0zsk6vp40q1z4cyblv1k13"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-docopt" ,python-docopt)
        ("python-jedi" ,python-jedi)
        ("python-prompt-toolkit" ,python-prompt-toolkit)
@@ -10432,7 +10432,7 @@ etc.")
     (native-inputs
      `(("python-requests-mock" ,python-requests-mock)
        ("python-mock" ,python-mock)))
-    (inputs
+    (propagated-inputs
      `(("python-oauthlib" ,python-oauthlib)
        ("python-requests" ,python-requests)))
     (home-page
@@ -10469,7 +10469,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
      `(("python-mock" ,python-mock)
        ("python-pep8" ,python-pep8)
        ("python-pyflakes" ,python-pyflakes)))
-    (inputs
+    (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))
     (home-page "https://stem.torproject.org/")
     (synopsis
@@ -10581,7 +10581,7 @@ hardware-accelerated multitouch applications.")
                (base32
                 "1j4f51dxic39mdwf6alj7gd769wy6mhk916v031wjali51xkh3xb"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-chardet" ,python-chardet)
        ("python-hypothesis" ,python-hypothesis)))
     (home-page "https://github.com/audreyr/binaryornot")
@@ -10594,9 +10594,9 @@ binary or text.")
 (define-public python2-binaryornot
   (let ((base (package-with-python2 (strip-python2-variant python-binaryornot))))
     (package (inherit base)
-      (inputs
+      (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
-         ,@(package-inputs base))))))
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-nltk
   (package
@@ -10635,7 +10635,7 @@ reasoning, wrappers for natural language processing libraries.")
                (base32
                 "07mra6w86wjqy4lx5fvimidjhhfzd562gfjn8grsnbv2q8pk0i9x"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-certifi" ,python-certifi)))
     (home-page "http://github.com/mongodb/mongo-python-driver")
     (synopsis "Python driver for MongoDB")
@@ -10707,7 +10707,7 @@ discovery, monitoring and configuration.")
          (base32
           "19v1i69bf3bzarfxmbv0v6ivpcn758x3shvbiy9l2hy0lvqwnp6l"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)))
     (arguments
      `(#:tests? #f)) ; requires a bunch of not very nice packages with fixed
@@ -10776,7 +10776,7 @@ List.  Forked from and using the same API as the publicsuffix package.")
                (base32
                 "0v879yadcz9qxfl41ak6wkga1kimp9cflla9ddz03hjjvgkqy5ki"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-publicsuffix" ,python-publicsuffix)))
     (native-inputs
      `(("python-coverage" ,python-coverage)
@@ -10792,7 +10792,7 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python2-url
   (let ((base (package-with-python2 (strip-python2-variant python-url))))
     (package (inherit base)
-      (inputs
+      (propagated-inputs
        `(("python2-publicsuffix" ,python2-publicsuffix))))))
 
 (define-public python-freezegun
@@ -10812,7 +10812,7 @@ List.  Forked from and using the same API as the publicsuffix package.")
        ("python-nose" ,python-nose)
        ("python-coverage" ,python-coverage)
        ("python-dateutil-2" ,python-dateutil-2)))
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)))
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -11052,7 +11052,7 @@ functionality in the command line.")
         (base32
           "11jbq40g8alsbirnd4kiagznqg270247i0m8qhi48ldf2i5xppxg"))))
   (build-system python-build-system)
-  (inputs
+  (propagated-inputs
    `(("python-psutil" ,python-psutil)))
   (home-page
     "https://github.com/nicolargo/glances")
@@ -11092,7 +11092,7 @@ CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
      `(("python-gevent" ,python-gevent)
        ("python-mock" ,python-mock)
        ("python-pytest-mock" ,python-pytest-mock)))
-    (inputs
+    (propagated-inputs
      `(("python-promise" ,python-promise)
        ("python-six" ,python-six)))
     (home-page "https://github.com/graphql-python/graphql-core")
@@ -11121,7 +11121,7 @@ to Python.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (inputs
+    (propagated-inputs
      `(("python-graphql-core" ,python-graphql-core)
        ("python-promise" ,python-promise)
        ("python-six" ,python-six)))
@@ -11156,7 +11156,7 @@ from Facebook.")
        ("python-psycopg2" ,python-psycopg2)
        ("python-pytest-django" ,python-pytest-django)
        ("python-sqlalchemy-utils" ,python-sqlalchemy-utils)))
-    (inputs
+    (propagated-inputs
      `(("python-graphql-core" ,python-graphql-core)
        ("python-graphql-relay" ,python-graphql-relay)
        ("python-iso8601" ,python-iso8601)
@@ -11192,7 +11192,7 @@ with an associated set of resolve methods that know how to fetch data.")
           "01hwzjc1zshk4vvxrcghm398fpy4jls66dyz06g07mrwqif8878p"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; fails to import test modules
-    (inputs
+    (propagated-inputs
      `(("python-bcrypt" ,python-bcrypt)
        ("python-click" ,python-click)
        ("python-consul" ,python-consul)
@@ -11264,7 +11264,7 @@ replay them during future tests.  It is designed to work with python-requests.")
      `(("python-docutils" ,python-docutils)
        ("python-mock" ,python-mock)
        ("python-nose" ,python-nose)))
-    (inputs
+    (propagated-inputs
      `(("python-botocore" ,python-botocore)))
     (synopsis "Amazon S3 Transfer Manager")
     (description "S3transfer is a Python library for managing Amazon S3
