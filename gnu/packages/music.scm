@@ -1521,6 +1521,31 @@ synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
     (license license:gpl2)))
 
+(define-public jack-keyboard
+  (package
+    (name "jack-keyboard")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/jack-keyboard/jack-keyboard/"
+                           version "/jack-keyboard-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mzmg8aavybcfdlq2yd9d0vscqd6is5p6jzrgfpfm5j3xdcvh2s3"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("jack" ,jack-1)
+       ("lash" ,lash)
+       ("gtk+" ,gtk+-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://jack-keyboard.sourceforge.net/")
+    (synopsis "Virtual MIDI keyboard")
+    (description "Jack-keyboard is a virtual MIDI keyboard, a program that
+allows you to send JACK MIDI events (i.e. play) using your PC keyboard.")
+    (license license:bsd-2)))
+
 (define-public cursynth
   (package
     (name "cursynth")
