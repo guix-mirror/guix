@@ -725,6 +725,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
   %D%/packages/patches/ninja-tests.patch			\
   %D%/packages/patches/ninja-zero-mtime.patch			\
+  %D%/packages/patches/node-9077.patch				\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
