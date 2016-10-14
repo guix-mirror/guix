@@ -585,15 +585,15 @@ supplies a generic doubly-linked list and some string functions.")
                                      "freeimage-CVE-2016-5684.patch"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:phases (alist-delete
-                'configure
-                (alist-cons-before
-                 'build 'patch-makefile
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (substitute* "Makefile.gnu"
-                     (("/usr") (assoc-ref outputs "out"))
-                     (("-o root -g root") "")))
-                 %standard-phases))
+    '(#:phases
+      (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'build 'patch-makefile
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "Makefile.gnu"
+              (("/usr") (assoc-ref outputs "out"))
+              (("-o root -g root") ""))
+            #t)))
       #:make-flags '("CC=gcc")
       #:tests? #f)) ; no check target
    (native-inputs
