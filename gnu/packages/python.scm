@@ -6215,6 +6215,20 @@ responses, rather than doing any computation.")
         (base32
          "1a85l548w5vvq3yhz0az7ajg2ijixzp6gagapw6wgrqvq28ghgs2"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-failing-test
+           (lambda _
+             ;; This test is known to fail with OpenSSL >= 1.0.2i and older
+             ;; versions of python-cryptography:
+             ;; https://github.com/pyca/cryptography/issues/3196
+             ;; TODO: Try re-enabling the test when upgrading
+             ;; python-cryptography.
+             (substitute* "tests/hazmat/backends/test_openssl.py"
+               (("def test_numeric_string_x509_name_entry")
+                 "@pytest.mark.xfail\n    def test_numeric_string_x509_name_entry"))
+             #t)))))
     (inputs
      `(("openssl" ,openssl)))
     (propagated-inputs
