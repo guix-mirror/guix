@@ -2276,6 +2276,17 @@ adjusts the amount of harmonics."))))
                  (base32
                   "0s1ghysggx6psalyhcpgjnmf38vama6jcqgbldqmxii5c2w2ybsc"))
                 (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
       (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
       (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
       (description "This package provides the LV2 plugin
