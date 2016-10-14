@@ -227,13 +227,29 @@ resulting list of grafts.
 
 This is a monadic procedure in %STATE-MONAD where the state is a vhash mapping
 derivations to the corresponding set of grafts."
+  (define (graft-origin? drv graft)
+    ;; Return true if DRV corresponds to the origin of GRAFT.
+    (match graft
+      (($ <graft> (? derivation? origin) output)
+       (match (assoc-ref (derivation->output-paths drv) output)
+         ((? string? result)
+          (string=? result
+                    (derivation->output-path origin output)))
+         (_
+          #f)))
+      (_
+       #f)))
+
   (define (dependency-grafts item)
     (let-values (((drv output) (item->deriver store item)))
       (if drv
-          (cumulative-grafts store drv grafts references
-                             #:outputs (list output)
-                             #:guile guile
-                             #:system system)
+          ;; If GRAFTS already contains a graft from DRV, do not override it.
+          (if (find (cut graft-origin? drv <>) grafts)
+              (state-return grafts)
+              (cumulative-grafts store drv grafts references
+                                 #:outputs (list output)
+                                 #:guile guile
+                                 #:system system))
           (state-return grafts))))
 
   (define (return/cache cache value)
