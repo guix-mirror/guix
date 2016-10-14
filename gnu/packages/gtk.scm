@@ -685,7 +685,16 @@ application suites.")
             (substitute* "testsuite/Makefile.in"
               (("SUBDIRS = gdk gtk a11y css reftests")
                "SUBDIRS = gdk"))
-            #t)))))
+            #t))
+        (add-after 'install 'move-desktop-files
+          ;; Move desktop files into 'bin' to avoid cycle references.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (bin (assoc-ref outputs "bin")))
+              (mkdir-p (string-append bin "/share"))
+              (rename-file (string-append out "/share/applications")
+                           (string-append bin "/share/applications"))
+              #t))))))
    (native-search-paths
     (list (search-path-specification
            (variable "GUIX_GTK3_PATH")
