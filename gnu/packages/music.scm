@@ -2338,6 +2338,17 @@ slow gear audio effect to produce volume swells."))))
                  (base32
                   "0g6njgsm8s76n6yys09a8w77z93pjjgqq9hzhhsrl73hhvyr9qmy"))
                 (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
       (home-page "https://github.com/brummer10/GxSwitchlessWah.lv2")
       (synopsis "Wah emulation with switchless activation")
       (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
