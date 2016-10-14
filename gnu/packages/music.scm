@@ -2179,6 +2179,17 @@ saturation effect."))))
                  (base32
                   "12klcyc6l9v93ii3478mqz44jzvh5np1sk8zzdmz42jp0w8qd429"))
                 (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
       (home-page "https://github.com/brummer10/GxHyperion.lv2")
       (synopsis "Simulation of the Hyperion Fuzz pedal")
       (description "This package provides the LV2 plugin \"GxHyperion\", a
