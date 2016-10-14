@@ -2243,6 +2243,17 @@ parallel with a DarkBooster, followed by a volume control."))))
                  (base32
                   "1jclp53p01h94cpx17wm4765r7klbr41g7bvq87l53qwlrgkc7a9"))
                 (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
       (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
       (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
       (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
