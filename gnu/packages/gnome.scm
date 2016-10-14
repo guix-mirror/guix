@@ -4509,7 +4509,7 @@ services.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.2.4")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4517,9 +4517,12 @@ services.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ym31m55hj65mmbq2yihy49z5x5z1qpx7jalk64kwx1rr5b2kxyz"))))
+                "16a43sl9aijmvxbb08hbjqyjnlshj8dckycbgi9nm333fr47n6s3"))))
     (build-system glib-or-gtk-build-system)
-    (arguments '(#:configure-flags '("--disable-migration")))
+    ;; TODO: WWAN support supposedly requires an update of glibmm which in turn
+    ;; requires an update of the its dependencies (glib and others).
+    (arguments '(#:configure-flags '("--disable-migration"
+                                     "--without-wwan")))
     (native-inputs
      `(("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)
@@ -4533,7 +4536,8 @@ services.")
      `(("iso-codes" ,iso-codes)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
-       ("libsecret" ,libsecret)))
+       ("libsecret" ,libsecret)
+       ("jansson" ,jansson)))                     ;for team support
     (synopsis "Applet for managing network connections")
     (home-page "http://www.gnome.org/projects/NetworkManager/")
     (description
