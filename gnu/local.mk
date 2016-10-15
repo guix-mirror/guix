@@ -400,6 +400,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/dbus.scm				\
   %D%/services/desktop.scm			\
   %D%/services/dict.scm				\
+  %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
   %D%/services/mcron.scm			\

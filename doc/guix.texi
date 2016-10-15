@@ -221,6 +221,7 @@ Services
 * Desktop Services::            D-Bus and desktop services.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
+* Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * Network File System::         NFS related services.
 * Miscellaneous Services::      Other services.
@@ -7701,6 +7702,7 @@ declaration.
 * Desktop Services::            D-Bus and desktop services.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
+* Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * Network File System::         NFS related services.
 * Miscellaneous Services::      Other services.
@@ -10405,6 +10407,40 @@ could instantiate a dovecot service like this:
                   (string "")))
 @end example
 
+
+@node Kerberos Services
+@subsubsection Kerberos Services
+@cindex Kerberos
+
+The @code{(gnu services Kerberos)} module provides services relating to
+the authentication protocol @dfn{Kerberos}.
+
+@subsubheading PAM krb5 Service
+@cindex pam-krb5
+
+The pam-krb5 service allows for login authentication and password
+management via Kerberos.
+You will need this service if you want PAM enabled applications to authenticate
+users using Kerberos.
+
+@defvr {Scheme Variable} pam-krb5-service-type
+A service type for the Kerberos 5 PAM module.
+@end defvr
+
+@deftp {Data Type} pam-krb5-configuration
+Data type representing the configuration of the Kerberos 5 PAM module
+This type has the following parameters:
+@table @asis
+@item @code{pam-krb5} (default: @code{pam-krb5})
+The pam-krb5 package to use.
+
+@item @code{minimum-uid} (default: @code{1000})
+The smallest user ID for which Kerberos authentications should be attempted.
+Local accounts with lower values will silently fail to authenticate.
+@end table
+@end deftp
+
+
 @node Web Services
 @subsubsection Web Services
 
@@ -10538,7 +10574,7 @@ The @dfn{global security system} (GSS) daemon provides strong security for RPC
 based protocols.
 Before exchanging RPC requests an RPC client must establish a security
 context.  Typically this is done using the Kerberos command @command{kinit}
-or automatically at login time using PAM services.
+or automatically at login time using PAM services (@pxref{Kerberos Services}).
 
 @defvr {Scheme Variable} gss-service-type
 A service type for the Global Security System (GSS) daemon.
