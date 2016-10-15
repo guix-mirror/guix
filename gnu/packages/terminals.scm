@@ -88,7 +88,7 @@ configureable through a graphical wizard.")
 (define-public termite
   (package
     (name "termite")
-    (version "11")
+    (version "12")
     (source
       (origin
         (method git-fetch)
@@ -99,8 +99,8 @@ configureable through a graphical wizard.")
               (recursive? #t)))
         (file-name (string-append name "-" version "-checkout"))
         (sha256
-          (base32
-            "1cw4yw7n9m2si8b7zcfyz9pyihncabxm5g39v1mxslfajxgwzmd8"))))
+         (base32
+          "0s6dyg3vcqk5qcx90bs24wdnd3p56rdjdcanx4pcxvp6ksjl61jz"))))
     (build-system gnu-build-system)
     (arguments
       `(#:phases (alist-delete 'configure %standard-phases)
