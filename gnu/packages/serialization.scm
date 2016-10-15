@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
 (define-public cereal
   (package
     (name "cereal")
-    (version "1.1.2")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/USCiLab/cereal/archive/v"
@@ -45,7 +46,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13bvsfzvm7yyp97k20iznq2j14dj3qiczvpq7g8897njw46psq25"))))
+                "0kj32h3j2128anig0g9gzw82kfyd5xqfkwq6vdyv900jx8i1qckx"))))
     (build-system cmake-build-system)
     (arguments
      `(;; The only included tests are portability tests requiring
