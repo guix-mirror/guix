@@ -313,7 +313,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.24.1")
+    (version "0.24.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -321,7 +321,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ppyfwxc276d2p2pwbzlmvs2bkgng425rl8k2rf9nsq66jxqq6b0"))))
+                "1rkmfjiv5h80ycra42w9idbcrgj9rz581k5c06badys3650agw00"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -344,7 +344,7 @@ everything from small to very large projects with speed and efficiency.")
        ("openssl" ,openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://libgit2.github.com/")
+    (home-page "https://libgit2.github.com/")
     (synopsis "Library providing Git core methods")
     (description
      "Libgit2 is a portable, pure C implementation of the Git core methods
