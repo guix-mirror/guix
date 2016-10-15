@@ -253,7 +253,7 @@ derivations to the corresponding set of grafts."
           (state-return grafts))))
 
   (define (return/cache cache value)
-    (mbegin %store-monad
+    (mbegin %state-monad
       (set-current-state (vhash-consq drv value cache))
       (return value)))
 
@@ -266,10 +266,8 @@ derivations to the corresponding set of grafts."
          (()                                      ;no dependencies
           (return/cache cache grafts))
          (deps                                    ;one or more dependencies
-          (mlet %state-monad ((grafts (mapm %state-monad dependency-grafts deps))
-                              (cache  (current-state)))
-            (let* ((grafts     (delete-duplicates (concatenate grafts) equal?))
-                   (origins    (map graft-origin-file-name grafts)))
+          (mlet %state-monad ((grafts (mapm %state-monad dependency-grafts deps)))
+            (let ((grafts (delete-duplicates (concatenate grafts) equal?)))
               (match (filter (lambda (graft)
                                (member (graft-origin-file-name graft) deps))
                              grafts)
