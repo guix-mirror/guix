@@ -288,7 +288,7 @@ from an audio CD.")
 (define-public abcde
   (package
     (name "abcde")
-    (version "2.7.1")
+    (version "2.7.2")
     (home-page "https://abcde.einval.com/")
     (source (origin
               (method url-fetch)
@@ -296,7 +296,7 @@ from an audio CD.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0l7j0nk8p30s97285i418rv9ym9bgns7bn6l8gldw3mjhnby609l"))
+                "1pakpi41k8yd780mfp0snhia6mmwjwxk9lcrq6gynimch8b8hfda"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -314,7 +314,12 @@ from an audio CD.")
                (("^prefix = .*$")
                 (string-append "prefix = "
                                (assoc-ref outputs "out")
-                               "\n")))))
+                               "\n"))
+               (("^sysconfdir = .*$")
+                (string-append "sysconfdir = "
+                               (assoc-ref outputs "out")
+                               "/etc/\n")))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((wget   (assoc-ref inputs "wget"))
@@ -336,7 +341,7 @@ from an audio CD.")
                (for-each wrap
                          (find-files (string-append out "/bin")
                                      ".*"))))))
-       #:tests? #f))
+       #:tests? #f)) ; no test target
 
     (inputs `(("wget" ,wget)
               ("which" ,which)
