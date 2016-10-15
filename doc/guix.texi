@@ -5546,6 +5546,20 @@ example, the command below produces the reference graph of your profile
 @example
 guix graph -t references `readlink -f ~/.guix-profile`
 @end example
+
+@item referrers
+This is the graph of the @dfn{referrers} of a store item, as returned by
+@command{guix gc --referrers} (@pxref{Invoking guix gc}).
+
+This relies exclusively on local information from your store.  For
+instance, let us suppose that the current Inkscape is available in 10
+profiles on your machine; @command{guix graph -t referrers inkscape}
+will show a graph rooted at Inkscape and with those 10 profiles linked
+to it.
+
+It can help determine what is preventing a store item from being garbage
+collected.
+
 @end table
 
 The available options are the following:
