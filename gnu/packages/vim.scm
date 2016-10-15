@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,11 +24,26 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages acl)
+  #:use-module (gnu packages admin) ; For GNU hostname
+  #:use-module (gnu packages attr)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages admin) ; For GNU hostname
-  #:use-module (gnu packages shells))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages ruby)
+  #:use-module (gnu packages shells)
+  #:use-module (gnu packages tcl)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg))
 
 (define-public vim
   (package
@@ -79,3 +95,54 @@ that many consider it an entire IDE.  It's not just for programmers, though.
 Vim is perfect for all kinds of text editing, from composing email to editing
 configuration files.")
     (license license:vim)))
+
+(define-public vim-full
+  (package
+    (inherit vim)
+    (name "vim-full")
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-lua-prefix="
+                            (assoc-ref %build-inputs "lua"))
+             "--with-features=huge"
+             "--enable-python3interp=yes"
+             "--enable-perlinterp=yes"
+             "--enable-rubyinterp=yes"
+             "--enable-tclinterp=yes"
+             "--enable-luainterp=yes"
+             "--enable-cscope"
+             "--enable-sniff"
+             "--enable-multibyte"
+             "--enable-xim"
+             "--disable-selinux"
+             "--enable-gui")
+       ,@(package-arguments vim)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("acl" ,acl)
+       ("atk" ,atk)
+       ("attr" ,attr)
+       ("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gettext" ,gnu-gettext)
+       ("glib" ,glib)
+       ("gpm" ,gpm)
+       ("gtk" ,gtk+-2)
+       ("harfbuzz" ,harfbuzz)
+       ("libice" ,libice)
+       ("libpng" ,libpng)
+       ("libsm" ,libsm)
+       ("libx11" ,libx11)
+       ("libxdmcp" ,libxdmcp)
+       ("libxt" ,libxt)
+       ("libxpm" ,libxpm)
+       ("lua" ,lua)
+       ("pango" ,pango)
+       ("pixman" ,pixman)
+       ("python-3" ,python)
+       ("ruby" ,ruby)
+       ("tcl" ,tcl)
+       ,@(package-inputs vim)))))
