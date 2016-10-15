@@ -981,6 +981,16 @@ from a simple noise gate to modulation effects like flanger, phaser or
 auto-wah.")
     (license license:gpl2+)))
 
+(define-public guitarix-lv2
+  (package (inherit guitarix)
+    (name "guitarix-lv2")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guitarix)
+       ((#:configure-flags flags)
+        `(cons "--lv2-only" ,flags))))
+    (inputs
+     (alist-delete "webkitgtk/gtk+-2" (package-inputs guitarix)))))
+
 (define-public rakarrack
   (package
     (name "rakarrack")
