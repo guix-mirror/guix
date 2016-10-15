@@ -7,6 +7,7 @@
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,11 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages lesstif)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
@@ -696,3 +702,51 @@ such as smooth alpha-blended slide transitions.  It provides additional tools
 such as zooming, highlighting an area of the screen, and a tool to navigate
 the PDF pages.")
     (license license:gpl2)))
+
+(define-public fbida
+  (package
+    (name "fbida")
+    (version "2.12")
+    (home-page "https://www.kraxel.org/blog/linux/fbida/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.kraxel.org/releases/fbida/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bw224vb7jh0lrqaf4jgxk48xglvxs674qcpj5y0axyfbh896cfk"))))
+    (build-system gnu-build-system)
+    (arguments
+      '(#:phases (alist-cons-after
+                  'unpack 'patch-ldconfig
+                  (lambda _
+                   (substitute* "mk/Autoconf.mk"
+                    (("/sbin/ldconfig -p") "echo lib")) #t)
+                  (alist-delete 'configure %standard-phases))
+        #:tests? #f
+        #:make-flags (list "CC=gcc"
+                           (string-append "prefix=" (assoc-ref %outputs "out")))))
+    (inputs `(("libjpeg" ,libjpeg)
+              ("curl" ,curl)
+              ("libtiff" ,libtiff)
+              ("libudev" ,eudev)
+              ("libwebp" ,libwebp)
+              ("libdrm" ,libdrm)
+              ("imagemagick" ,imagemagick)
+              ("giflib" ,giflib)
+              ("glib" ,glib)
+              ("cairo-xcb" ,cairo-xcb)
+              ("freetype" ,freetype)
+              ("fontconfig" ,fontconfig)
+              ("libexif" ,libexif)
+              ("mesa" ,mesa)
+              ("libepoxy" ,libepoxy)
+              ("libpng" ,libpng)
+              ("poppler" ,poppler)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Framebuffer and drm-based image viewer")
+    (description
+      "fbida contains a few applications for viewing and editing images on
+the framebuffer.")
+
+    (license license:gpl2+)))
