@@ -61,7 +61,7 @@
 (define-public qt
   (package
     (name "qt")
-    (version "5.6.1-1")
+    (version "5.6.2")
     (source (origin
              (method url-fetch)
              (uri
@@ -73,7 +73,7 @@
                  version ".tar.xz"))
              (sha256
                (base32
-                 "1nrn2wivjwdxc9q03gpsi336gcl9l2axi0xjbzsha5v6akmsf26f"))
+                 "1cw93mrlkqbwndfqyjpsvjzkpzi39px2is040xvk18mvg3y1prl3"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -203,7 +203,7 @@
                        "-no-avx2"
                        "-no-mips_dsp"
                        "-no-mips_dspr2"))))))))
-    (home-page "http://qt-project.org/")
+    (home-page "https://www.qt.io/")
     (synopsis "Cross-platform GUI library")
     (description "Qt is a cross-platform application and UI framework for
 developers using C++ or QML, a CSS & JavaScript like language.")
