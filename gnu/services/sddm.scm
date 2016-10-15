@@ -29,7 +29,7 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:export (sddm-configuration
-            sddm-confiugration?
+            sddm-configuration?
             sddm-service-type
             sddm-service))
 
