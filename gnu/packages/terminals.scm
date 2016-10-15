@@ -103,7 +103,9 @@ configureable through a graphical wizard.")
           "0s6dyg3vcqk5qcx90bs24wdnd3p56rdjdcanx4pcxvp6ksjl61jz"))))
     (build-system gnu-build-system)
     (arguments
-      `(#:phases (alist-delete 'configure %standard-phases)
+      `(#:phases
+        (modify-phases %standard-phases
+          (delete 'configure))
         #:tests? #f
         ;; This sets the destination when installing the necessary terminal
         ;; capability data, which are not provided by 'ncurses'.  See
