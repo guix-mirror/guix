@@ -946,7 +946,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.6.0")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -954,35 +954,13 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "0fl9pwkywqnsmgr6plfj9zb05xrdnl5xb2hcmbjk7ap9l4cjfca4"))))
+                "1lg3z7jhzmsjym53qss8mbydny8hafwjnfsc7x91hrr9zrkwblly"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("freetype" ,freetype)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("libice" ,libice)
-       ("libpng" ,libpng)
-       ("sdl" ,sdl)
-       ("sdl-mixer" ,sdl-mixer)
-       ("sdl-image" ,sdl-image)
-       ("libsm" ,libsm)
-       ("libunwind" ,libunwind)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxi" ,libxi)
-       ("libxmu" ,libxmu)
-       ("libxt" ,libxt)
-       ("tcl" ,tcl)
-       ("zlib" ,zlib)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'patch-makefile
-           (lambda _
-             (substitute* "Makefile"
-               (("CXXFLAGS =") "CXXFLAGS = ${CFLAGS}")))))))
+     `(("glu" ,glu)
+       ("sfml" ,sfml)))
     (synopsis "High speed arctic racing game based on Tux Racer")
     ;; Snarfed straight from Debian
     (description "Extreme Tux Racer, or etracer as it is called for short, is
