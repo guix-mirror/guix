@@ -23,6 +23,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2966,3 +2967,35 @@ symbols, the game needs graphics to render the non-euclidean world.")
                    license:public-domain ; src/direntx.*
                    license:zlib          ; src/savepng.*
                    license:gpl2+))))     ; remaining files
+
+(define-public kobodeluxe
+  (package
+    (name "kobodeluxe")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://olofson.net/kobodl/download/KoboDeluxe-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0b2wvdpnmaibsy419c16dfwj5kvd3pccby2aaqvm964x74592yqg"))
+              (patches (search-patches
+                        "kobodeluxe-const-charp-conversion.patch"
+                        "kobodeluxe-enemies-pipe-decl.patch"
+                        "kobodeluxe-graphics-window-signed-char.patch"
+                        "kobodeluxe-manpage-minus-not-hyphen.patch"
+                        "kobodeluxe-midicon-segmentation-fault.patch"
+                        "kobodeluxe-paths.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "CPPFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL"))))
+    (inputs `(("sdl-union" ,(sdl-union (list sdl sdl-image)))))
+    (synopsis "Shooter with space station destruction")
+    (description
+     "Kobo Deluxe is an enhanced version of Akira Higuchi's XKobo graphical game
+for Un*x systems with X11.")
+    (home-page "http://olofson.net/kobodl/")
+    (license license:gpl2+)))

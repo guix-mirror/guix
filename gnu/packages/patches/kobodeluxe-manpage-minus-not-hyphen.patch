@@ -1,0 +1,15 @@
+# Author: Damyan Ivanov <dmn@debian.org>
+# Description: convert a hyphen in kobodl manpage to a minus, which is what is
+#              inttented here
+# Upstream-Report: http://www.freelists.org/post/olofsonprojects/patch-manpage-uses-hyphen-instead-of-a-minus-sign
+--- a/kobodl.6
++++ b/kobodl.6
+@@ -176,7 +176,7 @@ Video Mode. Default: 17200.
+ Enable Vertical Sync. Default: On.
+ .TP
+ .B \-videopages
+-Number of Video Pages. Default: -1.
++Number of Video Pages. Default: \-1.
+ .TP
+ .B \-scalemode
+ Scaling Filter Mode. Default: 1.
