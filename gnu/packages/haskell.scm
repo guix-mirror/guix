@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
@@ -44,6 +44,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
@@ -7617,6 +7618,36 @@ which can't be decoded in the current locale encoding.")
     (description "This package provides a Haskell library including a
 Storable instance for Complex which is binary compatible with C99, C++
 and Fortran complex data types.")
+    (license license:bsd-3)))
+
+(define-public ghc-hmatrix
+  (package
+    (name "ghc-hmatrix")
+    (version "0.17.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hmatrix/hmatrix-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1fgsrh2y9y971pzrd3767rg97bjr1ghpdvwmn1nn65s90rc9bv98"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-random" ,ghc-random)
+       ("ghc-split" ,ghc-split)
+       ("ghc-storable-complex" ,ghc-storable-complex)
+       ("ghc-vector" ,ghc-vector)
+       ;;("openblas" ,openblas)
+       ("lapack" ,lapack)))
+    ;; Guix's OpenBLAS is built with the flag "NO_LAPACK=1" which
+    ;; disables inclusion of the LAPACK functions.
+    ;; (arguments `(#:configure-flags '("--flags=openblas")))
+    (home-page "https://github.com/albertoruiz/hmatrix")
+    (synopsis "Haskell numeric linear algebra library")
+    (description "The HMatrix package provices a Haskell library for
+dealing with linear systems, matrix decompositions, and other
+numerical computations based on BLAS and LAPACK.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here
