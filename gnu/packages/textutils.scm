@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,12 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages slang)
   #:use-module (gnu packages zip))
 
 (define-public recode
@@ -373,3 +379,83 @@ runs Word\".")
     (description "UTF8-CPP is a C++ library for handling UTF-8 encoded text
 in a portable way.")
     (license license:boost1.0)))
+
+(define-public dbacl
+  (package
+    (name "dbacl")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.lbreyer.com/gpl/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0224g6x71hyvy7jikfxmgcwww1r5lvk0jx36cva319cb9nmrbrq7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list
+        (string-append "-I" (assoc-ref %build-inputs "slang")
+                       "/include/slang")
+        (string-append "-I" (assoc-ref %build-inputs "ncurses")
+                       "/include/ncurses"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-sample6-and-japanese
+           (lambda _
+             (substitute* "doc/Makefile.am"
+               (("sample6.txt") "")
+               (("japanese.txt") ""))
+             (delete-file "doc/sample6.txt")
+             (delete-file "doc/japanese.txt")
+             (substitute* (list "src/tests/Makefile.am"
+                                "src/tests/Makefile.in")
+               (("dbacl-jap.shin") "")
+               (("dbacl-jap.sh") ""))
+             #t))
+         (add-after 'unpack 'delete-test
+           ;; See comments about the license.
+           (lambda _
+             (delete-file "src/tests/dbacl-jap.shin")))
+         (add-after 'delete-sample6-and-japanese 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif"))))
+         (add-after 'unpack 'fix-test-files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* (find-files "src/tests/" "\\.shin$")
+                 (("PATH=/bin:/usr/bin")
+                  "#PATH=/bin:/usr/bin")
+                 (("diff") (string-append (which "diff")))
+                 (("tr") (string-append (which "tr"))))
+               #t))))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("readline" ,readline)
+       ("slang" ,slang)))
+    (native-inputs
+     `(("libtool" ,libtool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.lbreyer.com/dbacl.html")
+    (synopsis "Bayesian text and email classifier")
+    (description
+     "dbacl is a fast Bayesian text and email classifier.  It builds a variety
+of language models using maximum entropy (minimum divergence) principles, and
+these can then be used to categorize input data automatically among multiple
+categories.")
+    ;; The software is licensed as GPLv3 or later, but
+    ;; includes various sample texts in the doc dir:
+    ;; - sample1.txt, sample3 and sampe5.txt are in the public domain,
+    ;;   by Mark Twain.
+    ;; - sample2.txt, sample4.txt are in the public domain, by Aristotle.
+    ;; - sample6.txt is a forwarded email, copyright unknown.
+    ;;   Guix does exclude sample6.txt.
+    ;; - japanese.txt is a Japanese unoffical translation of the
+    ;;   GNU General Public License, (c) by the Free Software Foundation.
+    ;;   Guix excludes this file.
+    (license (list license:gpl3+ license:public-domain))))
