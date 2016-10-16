@@ -261,6 +261,134 @@
 interactive environment for the functional language Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-8
+  (package
+    (name "ghc")
+    (version "8.0.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://www.haskell.org/ghc/dist/"
+                          version "/" name "-" version "-src.tar.xz"))
+      (sha256
+       (base32 "1lniqy29djhjkddnailpaqhlqh4ld2mqvb1fxgxw1qqjhz6j1ywh"))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (outputs '("out" "doc"))
+    (inputs
+     `(("gmp" ,gmp)
+       ("ncurses" ,ncurses)
+       ("libffi" ,libffi)
+       ("libedit" ,libedit)
+       ("ghc-testsuite"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://www.haskell.org/ghc/dist/"
+                 version "/" name "-" version "-testsuite.tar.xz"))
+           (sha256
+            (base32 "0lc1vjivkxn01aw3jg2gd7fmqb5pj7a5j987c7pn5r7caqv1cmxw"))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("python" ,python-2)                ; for tests
+       ("ghostscript" ,ghostscript)        ; for tests
+       ;; GHC is built with GHC.
+       ("ghc-bootstrap" ,ghc)))
+    (arguments
+     `(#:test-target "test"
+       ;; We get a smaller number of test failures by disabling parallel test
+       ;; execution.
+       #:parallel-tests? #f
+
+       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
+       ;; gremlin) doesn't support it yet, so skip this phase.
+       #:validate-runpath? #f
+
+       ;; Don't pass --build=<triplet>, because the configure script
+       ;; auto-detects slightly different triplets for --host and --target and
+       ;; then complains that they don't match.
+       #:build #f
+
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build rpath)
+                  (srfi srfi-26)
+                  (srfi srfi-1))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build rpath))
+       #:configure-flags
+       (list
+        (string-append "--with-gmp-libraries="
+                       (assoc-ref %build-inputs "gmp") "/lib")
+        (string-append "--with-gmp-includes="
+                       (assoc-ref %build-inputs "gmp") "/include")
+        "--with-system-libffi"
+        (string-append "--with-ffi-libraries="
+                       (assoc-ref %build-inputs "libffi") "/lib")
+        (string-append "--with-ffi-includes="
+                       (assoc-ref %build-inputs "libffi") "/include")
+        (string-append "--with-curses-libraries="
+                       (assoc-ref %build-inputs "ncurses") "/lib")
+        (string-append "--with-curses-includes="
+                       (assoc-ref %build-inputs "ncurses") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-testsuite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion ".."
+               (copy-file (assoc-ref inputs "ghc-testsuite")
+                          "ghc-testsuite.tar.xz")
+               (zero? (system* "tar" "xvf" "ghc-testsuite.tar.xz")))))
+         (add-before 'build 'fix-lib-paths
+           (lambda _
+             (substitute*
+                 (list "libraries/process/System/Process/Posix.hs"
+                       "libraries/process/tests/process001.hs"
+                       "libraries/process/tests/process002.hs"
+                       "libraries/unix/cbits/execvpe.c")
+               (("/bin/sh") (which "sh"))
+               (("/bin/ls") (which "ls")))
+             #t))
+         (add-before 'build 'fix-environment
+           (lambda _
+             (unsetenv "GHC_PACKAGE_PATH")
+             (setenv "CONFIG_SHELL" (which "bash"))
+             #t))
+         (add-before 'check 'fix-testsuite
+           (lambda _
+             (substitute*
+                 (list "testsuite/timeout/Makefile"
+                       "testsuite/timeout/timeout.py"
+                       "testsuite/timeout/timeout.hs"
+                       "testsuite/tests/programs/life_space_leak/life.test")
+               (("/bin/sh") (which "sh"))
+               (("/bin/rm") "rm"))
+             #t))
+         ;; the testsuite can't find shared libraries.
+         (add-before 'check 'configure-testsuite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((gmp (assoc-ref inputs "gmp"))
+                    (gmp-lib (string-append gmp "/lib"))
+                    (ffi (assoc-ref inputs "libffi"))
+                    (ffi-lib (string-append ffi "/lib"))
+                    (ncurses (assoc-ref inputs "ncurses"))
+                    (ncurses-lib (string-append ncurses "/lib")))
+               (setenv "LD_LIBRARY_PATH"
+                       (string-append gmp-lib ":" ffi-lib ":" ncurses-lib))
+               #t))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "GHC_PACKAGE_PATH")
+                                (files (list
+                                        (string-append "lib/ghc-" version)))
+                                (file-pattern ".*\\.conf\\.d$")
+                                (file-type 'directory))))
+    (home-page "https://www.haskell.org/ghc")
+    (synopsis "The Glasgow Haskell Compiler")
+    (description
+     "The Glasgow Haskell Compiler (GHC) is a state-of-the-art compiler and
+interactive environment for the functional language Haskell.")
+    (license license:bsd-3)))
+
 (define-public ghc-hostname
   (package
     (name "ghc-hostname")
