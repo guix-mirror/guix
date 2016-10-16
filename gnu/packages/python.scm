@@ -11058,3 +11058,34 @@ with an associated set of resolve methods that know how to fetch data.")
 provide extendible implementations of common aspects of a cloud so that you can
 focus on building massively scalable web applications.")
     (license license:expat)))
+
+(define-public python-s3transfer
+  (package
+    (name "python-s3transfer")
+    (version "0.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "s3transfer" version))
+              (sha256
+               (base32
+                "1jivjkp3xqif9gzr5fiq28jsskmh50vzzd7ldsb4rbyiw1iyv3hy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-docutils" ,python-docutils)))
+    (inputs
+     `(("python-botocore" ,python-botocore)))
+    (synopsis "Amazon S3 Transfer Manager")
+    (description "S3transfer is a Python library for managing Amazon S3
+transfers.")
+    (home-page "https://github.com/boto/s3transfer")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-s3transfer))))))
+
+(define-public python2-s3transfer
+  (let ((base (package-with-python2 (strip-python2-variant python-s3transfer))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-futures" ,python2-futures)
+         ("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
