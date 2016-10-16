@@ -7439,7 +7439,8 @@ framework which enables you to test server connections locally.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3)))
     (propagated-inputs
      `(("python-httplib2" ,python-httplib2)
        ("python-requests" ,python-requests)))
