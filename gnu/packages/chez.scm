@@ -432,3 +432,41 @@ R[4567]RS implementation of regular expressions, supporting both POSIX
 syntax with various (irregular) PCRE extensions, as well as SCSH's SRE
 syntax, with various aliases for commonly used patterns.")
     (license bsd-3)))
+
+(define-public chez-fmt
+  (package
+    (name "chez-fmt")
+    (version "0.8.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://synthcode.com/scheme/fmt/fmt-" version ".tar.gz"))
+       (sha256
+        (base32 "1zxqlw1jyg85yzclylh8bp2b3fwcy3l3xal68jw837n5illvsjcl"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("chez-srfi" ,chez-srfi))) ; for irregex-utils
+    (native-inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (arguments
+     `(#:make-flags ,(chez-make-flags name version)
+       #:test-target "chez-check"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure ,chez-configure)
+         (replace 'build
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "chez-build" make-flags))))
+         (replace 'install
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "chez-install" make-flags)))))))
+    (home-page "http://synthcode.com/scheme/fmt")
+    (synopsis "Combinator formatting library for Chez Scheme")
+    (description "This package provides a library of procedures for
+formatting Scheme objects to text in various ways, and for easily
+concatenating, composing and extending these formatters efficiently
+without resorting to capturing and manipulating intermediate
+strings.")
+    (license bsd-3)))
