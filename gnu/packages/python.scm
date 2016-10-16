@@ -7088,6 +7088,9 @@ be set via config files and/or environment variables.")
                 (base32
                   "0x32ibixm3vv5m9xfk83xsqm8xcqw4dd0khbh6qbri6rxgymbhg8"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The tests appear to require networking.
+       #:tests? #f))
     (propagated-inputs
      `(("python-pyopenssl" ,python-pyopenssl)))
     (synopsis "HTTPS support for Python's httplib and urllib2")
