@@ -7676,4 +7676,27 @@ interface to selected numerical computations, internally implemented
 using GSL.")
     (license license:gpl3+)))
 
+(define-public ghc-hmatrix-special
+  (package
+    (name "ghc-hmatrix-special")
+    (version "0.4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://hackage.haskell.org/package/hmatrix-special/hmatrix-special-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "0cr9y3swzj7slrd84g1nhdkp1kpq4q5ihwapmiaidpr2bv3hrfhz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hmatrix" ,ghc-hmatrix)
+       ("ghc-hmatrix-gsl" ,ghc-hmatrix-gsl)))
+    (home-page "https://github.com/albertoruiz/hmatrix")
+    (synopsis "Haskell interface to GSL special functions")
+    (description "This library provides an interface to GSL special
+functions for Haskell.")
+    (license license:gpl3+)))
+
 ;;; haskell.scm ends here
