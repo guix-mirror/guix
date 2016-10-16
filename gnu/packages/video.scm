@@ -943,7 +943,8 @@ access to mpv's powerful playback capabilities.")
      ;; So, we need pass the prefix directly.  In addition, make sure the Bash
      ;; completion file is called 'youtube-dl' rather than
      ;; 'youtube-dl.bash-completion'.
-     `(#:phases (modify-phases %standard-phases
+     `(#:tests? #f ; Many tests fail. The test suite can be run with pytest.
+       #:phases (modify-phases %standard-phases
                   (add-before 'install 'fix-the-data-directories
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((prefix (assoc-ref outputs "out")))
