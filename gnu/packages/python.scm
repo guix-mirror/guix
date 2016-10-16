@@ -7907,16 +7907,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.9.17")
+   (version "1.11.5")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append
-           "https://pypi.python.org/packages/source/a/awscli/awscli-"
-           version ".tar.gz"))
+     (uri (pypi-uri name version))
      (sha256
       (base32
-       "1nj7jqvlpq57hfhby1njsbf8303gapa3njc4dramr6p3ffzvfi2i"))))
+       "0lclasm0wnayd3b8zl9l91i32nbgrhh0ncf9lksss4cv0myfwmfg"))))
    (build-system python-build-system)
    (inputs
     `(("python-colorama" ,python-colorama)
@@ -7928,7 +7926,8 @@ interface to the Amazon Web Services (AWS) API.")
       ("python-sphinx" ,python-sphinx)
       ("python-tox" ,python-tox)
       ("python-wheel" ,python-wheel)
-      ("python-botocore" ,python-botocore)))
+      ("python-botocore" ,python-botocore)
+      ("python-s3transfer" ,python-s3transfer)))
    (home-page "http://aws.amazon.com/cli/")
    (synopsis "Command line client for AWS")
    (description "AWS CLI provides a unified command line interface to the
