@@ -11082,3 +11082,35 @@ with an associated set of resolve methods that know how to fetch data.")
 provide extendible implementations of common aspects of a cloud so that you can
 focus on building massively scalable web applications.")
     (license license:expat)))
+
+(define-public python-betamax
+  (package
+    (name "python-betamax")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "betamax" version))
+        (sha256
+         (base32
+          "18f8v5gng3j773jlbbzx4rg1i4y2zw3m2l1zpmbvp8bh5a2q1i42"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; Many tests fail because they require networking.
+       #:tests? #f))
+    (inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/sigmavirus24/betamax")
+    (synopsis "Record HTTP interactions with python-requests")
+    (description "Betamax will record your test suite's HTTP interactions and
+replay them during future tests.  It is designed to work with python-requests.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-betamax))))))
+
+(define-public python2-betamax
+  (let ((base (package-with-python2 (strip-python2-variant python-betamax))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
