@@ -2678,6 +2678,7 @@ logic-free templating system Mustache.")
                (("def test_parallel_with_interactively_defined_functions" line)
                 (string-append "@SkipTest\n" line)))
              #t)))))
+    ;; Provide nose to enable tests command
     (native-inputs
      `(("python-nose"       ,python-nose)
        ("python-sphinx"     ,python-sphinx)
