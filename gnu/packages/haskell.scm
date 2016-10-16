@@ -7749,4 +7749,29 @@ interface for statistics based on hmatrix and GSL.")
 Haskell, using gnuplot for rendering.")
     (license license:expat)))
 
+(define-public ghc-hashtables
+  (package
+    (name "ghc-hashtables")
+    (version "1.2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hashtables/hashtables-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1b6w9xznk42732vpd8ili60k12yq190xnajgga0iwbdpyg424lgg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "http://github.com/gregorycollins/hashtables")
+    (synopsis "Haskell Mutable hash tables in the ST monad")
+    (description "This package provides a Haskell library including a
+couple of different implementations of mutable hash tables in the ST
+monad, as well as a typeclass abstracting their common operations, and
+a set of wrappers to use the hash tables in the IO monad.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
