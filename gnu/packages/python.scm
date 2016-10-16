@@ -4036,7 +4036,6 @@ services for your Python modules and applications.")
        ("openjpeg" ,openjpeg)
        ("libtiff"  ,libtiff)
        ("libwebp"  ,libwebp)))
-    ;; Note: setuptools used at runtime for pkg_resources
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
@@ -8563,7 +8562,6 @@ and to spawn subprocesses to handle requests.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    ;; Note: setuptools used at runtime for pkg_resources
     (home-page "http://pythonpaste.org/deploy/")
     (synopsis
      "Load, configure, and compose WSGI applications and servers")
@@ -8593,7 +8591,6 @@ file.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    ;; Note: setuptools used at runtime for pkg_resources
     (propagated-inputs
      `(("python-six" ,python-six)))
     (arguments
@@ -8636,7 +8633,6 @@ follows ideas flowing from WSGI (Web Standard Gateway Interface).")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    ;; Note: setuptools used at runtime for pkg_resources
     (propagated-inputs
      `(("python-paste" ,python-paste)
        ("python-pastedeploy" ,python-pastedeploy)))
