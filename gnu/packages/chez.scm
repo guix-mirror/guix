@@ -399,3 +399,36 @@ Chez Scheme.")
 @code{match} package by Andrew Wright, written in fully portable
 @code{syntax-rules} and thus preserving hygiene.")
     (license public-domain)))
+
+(define-public chez-irregex
+  (package
+    (name "chez-irregex")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/fedeinthemix/chez-irregex/archive"
+             "/v" version ".tar.gz"))
+       (sha256
+        (base32 "0ywy5syaw549a58viz68dmgnv756ic705rcnlqxgjq27lnaim53b"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("chez-matchable" ,chez-matchable))) ; for tests
+    (propagated-inputs
+     `(("chez-srfi" ,chez-srfi))) ; for irregex-utils
+    (native-inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (arguments
+     `(#:make-flags ,(chez-make-flags name version)
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure ,chez-configure))))
+    (home-page "https://github.com/fedeinthemix/chez-irregex")
+    (synopsis "Portable regular expression library for Scheme")
+    (description "This package provides a portable and efficient
+R[4567]RS implementation of regular expressions, supporting both POSIX
+syntax with various (irregular) PCRE extensions, as well as SCSH's SRE
+syntax, with various aliases for commonly used patterns.")
+    (license bsd-3)))
