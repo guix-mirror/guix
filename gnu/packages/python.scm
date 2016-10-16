@@ -8742,6 +8742,9 @@ introspection of @code{zope.interface} instances in code.")
                (base32
                 "1qfnwlx8qwkgr6nf5wvl6ff1r3kll53dh3z6nyp173nmlhhhqccb"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The test suite relies on some non-portable Windows interfaces.
+       #:tests? #f))
     (inputs
      `(("python-dateutil-2" ,python-dateutil-2)
        ("python-pyicu" ,python-pyicu)))
