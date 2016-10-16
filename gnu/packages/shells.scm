@@ -305,6 +305,11 @@ ksh, and tcsh.")
               (("'xonsh\\.ply',") ""))
             #t))))
     (build-system python-build-system)
+    (arguments
+     '(;; TODO Try running run the test suite.
+       ;; See 'requirements-tests.txt' in the source distribution for more
+       ;; information.
+       #:tests? #f))
     (inputs
      `(("python-ply" ,python-ply)))
     (home-page "http://xon.sh/")
