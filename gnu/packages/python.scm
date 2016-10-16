@@ -2649,7 +2649,15 @@ logic-free templating system Mustache.")
               (uri (pypi-uri "joblib" version))
               (sha256
                (base32
-                "0787k919zlfmgymprz5bzv0v1df5bbirlf3awrghmjgvkrd9dci9"))))
+                "0787k919zlfmgymprz5bzv0v1df5bbirlf3awrghmjgvkrd9dci9"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-compiled .pyc files from source.
+           (for-each delete-file-recursively
+                     (find-files "." "__pycache__" #:directories? #t))
+           (for-each delete-file (find-files "." "\\.pyc$"))
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
