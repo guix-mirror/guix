@@ -194,3 +194,31 @@ Revised^6 Report on Scheme (R6RS), with numerous extensions.  The compiler
 generates native code for each target processor, with support for x86, x86_64,
 and 32-bit PowerPC architectures.")
     (license asl2.0)))
+
+(define-public chez-srfi
+  (package
+    (name "chez-srfi")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/fedeinthemix/chez-srfi/archive"
+             "/v" version ".tar.gz"))
+       (sha256
+        (base32 "17i4wly7bcr5kb5hf04ljpbvv4r5hsr9xsmw650fj43z9jr303gs"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (arguments
+     `(#:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (home-page "https://github.com/fedeinthemix/chez-srfi")
+    (synopsis "SRFI libraries for Chez Scheme")
+    (description
+     "This package provides a collection of SRFI libraries for Chez Scheme.")
+    (license expat)))
