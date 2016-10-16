@@ -7877,14 +7877,14 @@ document.")
 (define-public python-botocore
   (package
    (name "python-botocore")
-   (version "1.3.17")
+   (version "1.4.62")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "botocore" version))
      (sha256
       (base32
-       "08vpvdixx1c1lfv6vzjig68bpiir7wfyhzf49ysxgvhbprg5ra0w"))))
+       "1zxczlwqy9bl27d9bc5x99mb5mcsxm350240lp5nx7014xb311lj"))))
    (build-system python-build-system)
    (inputs
     `(("python-dateutil" ,python-dateutil-2)
