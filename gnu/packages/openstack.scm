@@ -256,6 +256,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
      `(("python-pbr" ,python-pbr)))
     (native-inputs
      `(("python-discover" ,python-discover)
+       ("python-docutils" ,python-docutils)
        ("python-fixtures" ,python-fixtures)
        ("python-mock" ,python-mock)
        ("python-sphinx" ,python-sphinx)
