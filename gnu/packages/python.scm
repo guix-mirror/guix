@@ -7240,6 +7240,10 @@ for atomic file system operations.")
               (base32
                "15q9nrgp85nqlr4kdz1zvj8z2npafi2sr12y7fqgxbkq28j1aci6"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-betamax" ,python-betamax)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-requests" ,python-requests)))
     (synopsis "Extensions to python-requests")
