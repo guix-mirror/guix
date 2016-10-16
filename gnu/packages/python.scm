@@ -7311,8 +7311,14 @@ pure Python module that works on virtually all Python versions.")
               (base32
                "1rpk1vyclhg911p3hql0m0nrpq7q7mysxnaaw6vs29cpa6kx8vgn"))))
     (build-system python-build-system)
+    (arguments
+     `(;; 2 failed, 275 passed, 670 skipped, 4 xfailed
+       ;; The two test failures are caused by the lack of an `ssh` executable.
+       ;; The test suite can be run with pytest after the 'install' phase.
+       #:tests? #f))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
      `(("python-apipkg" ,python-apipkg)))
     (synopsis "Rapid multi-Python deployment")
