@@ -7650,4 +7650,30 @@ dealing with linear systems, matrix decompositions, and other
 numerical computations based on BLAS and LAPACK.")
     (license license:bsd-3)))
 
+(define-public ghc-hmatrix-gsl
+  (package
+    (name "ghc-hmatrix-gsl")
+    (version "0.17.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hmatrix-gsl/hmatrix-gsl-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1jbqwn9d2nldc4klhy0n8gcxr889h0daw2mjfhwgksfy1bwfjl7w"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hmatrix" ,ghc-hmatrix)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-random" ,ghc-random)
+       ("gsl" ,gsl)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/albertoruiz/hmatrix")
+    (synopsis "Haskell GSL binding")
+    (description "This Haskell library provides a purely functional
+interface to selected numerical computations, internally implemented
+using GSL.")
+    (license license:gpl3+)))
+
 ;;; haskell.scm ends here
