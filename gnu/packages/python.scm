@@ -7770,14 +7770,14 @@ text.")
 (define-public python-rsa
   (package
    (name "python-rsa")
-   (version "3.2")
+   (version "3.4.2")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "rsa" version))
      (sha256
       (base32
-       "0xwp929g7lvb1sghxfpqlxvgg96qcwqdbhh27sjplx30n3xp3wrh"))))
+       "1dcxvszbikgzh99ybdc7jq0zb9wspy2ds8z9mjsqiyv3q884xpr5"))))
    (build-system python-build-system)
    (inputs
     `(("python-pyasn1" ,python-pyasn1)
