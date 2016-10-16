@@ -7598,4 +7598,25 @@ versions of these packages distributed with different versions of GHC.
 In particular, this library supports working with POSIX files that have paths
 which can't be decoded in the current locale encoding.")
     (license license:expat)))
+
+(define-public ghc-storable-complex
+  (package
+    (name "ghc-storable-complex")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/storable-complex/storable-complex-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "01kwwkpbfjrv26vj83cd92px5qbq1bpgxj0r45534aksqhany1xb"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/cartazio/storable-complex")
+    (synopsis "Haskell Storable instance for Complex")
+    (description "This package provides a Haskell library including a
+Storable instance for Complex which is binary compatible with C99, C++
+and Fortran complex data types.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
