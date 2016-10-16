@@ -7725,4 +7725,28 @@ functions for Haskell.")
 interface for statistics based on hmatrix and GSL.")
     (license license:bsd-3)))
 
+(define-public ghc-easyplot
+  (package
+    (name "ghc-easyplot")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/easyplot/easyplot-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "18kndgvdj2apjpfga6fp7m16y1gx8zrwp3c5vfj03sx4v6jvciqk"))))
+    (build-system haskell-build-system)
+    (propagated-inputs `(("gnuplot" ,gnuplot)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-setup-suffix
+                    (lambda _ (rename-file "Setup.lhs" "Setup.hs") #t)))))
+    (home-page "http://hub.darcs.net/scravy/easyplot")
+    (synopsis "Haskell plotting library based on gnuplot")
+    (description "This package provides a plotting library for
+Haskell, using gnuplot for rendering.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
