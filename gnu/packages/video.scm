@@ -926,7 +926,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.09.11.1")
+    (version "2016.10.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/"
@@ -934,9 +934,8 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dfbb1lnpq3if7i5xvq8n6rvlgni3ryc8cw4bcrg1glmca3v1pkc"))))
+                "0q6cxbp1xx8xmwn3xbxh6gcbgqjxy3slzfca4dbkk9xl2yy9rwqg"))))
     (build-system python-build-system)
-    (home-page "https://youtube-dl.org")
     (arguments
      ;; The problem here is that the directory for the man page and completion
      ;; files is relative, and for some reason, setup.py uses the
@@ -962,6 +961,7 @@ access to mpv's powerful playback capabilities.")
     (description
      "Youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
+    (home-page "https://youtube-dl.org")
     (license license:public-domain)))
 
 (define-public libbluray
