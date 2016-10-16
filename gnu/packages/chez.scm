@@ -19,9 +19,11 @@
 (define-module (gnu packages chez)
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3 expat))
+                #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3 expat
+                          public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
@@ -222,3 +224,52 @@ and 32-bit PowerPC architectures.")
     (description
      "This package provides a collection of SRFI libraries for Chez Scheme.")
     (license expat)))
+
+(define-public chez-web
+  (let ((commit "5fd177fe53f31f466bf88720d03c95a3711a8bea")
+        (revision "1"))
+    (package
+      (name "chez-web")
+      ;; release 2.0 is different and doesn't work.
+      (version (string-append "2.0-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/arcfide/ChezWEB.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "1dq25qygyncbfq4kwwqqgyyakfqjwhp5q23vrf3bff1p66nyfl3b"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("chez-scheme" ,chez-scheme)
+         ("texlive" ,texlive)))
+      (arguments
+       `(#:make-flags (list (string-append "PREFIX=" %output)
+                            (string-append "DOCDIR=" %output "/share/doc/"
+                                           ,name "-" ,version)
+                            (string-append "LIBDIR=" %output "/lib/chezweb")
+                            (string-append "TEXDIR=" %output "/share/texmf-local"))
+                      #:tests? #f        ; no tests
+                      #:phases
+                      (modify-phases %standard-phases
+                        (replace 'configure
+                          (lambda* _
+                            (copy-file "config.mk.template" "config.mk")
+                            (substitute* "tangleit"
+                              (("\\./cheztangle\\.ss" all)
+                               (string-append "chez-scheme --program " all)))
+                            (substitute* "weaveit"
+                              (("mpost chezweb\\.mp")
+                               "mpost --tex=tex chezweb.mp")
+                              (("\\./chezweave" all)
+                               (string-append "chez-scheme --program " all)))
+                            (substitute* "installit"
+                              (("-g \\$GROUP -o \\$OWNER") "")))))))
+      (home-page "https://github.com/arcfide/ChezWEB")
+      (synopsis "Hygienic Literate Programming for Chez Scheme")
+      (description "ChezWEB is a system for doing Knuthian style WEB
+programming in Scheme.")
+      (license expat))))
