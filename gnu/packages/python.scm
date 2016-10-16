@@ -52,6 +52,7 @@
   #:use-module (gnu packages adns)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
@@ -379,6 +380,7 @@ data types.")
     (source #f)
     (build-system trivial-build-system)
     (outputs '("out"))
+    (inputs `(("bash" ,bash)))
     (propagated-inputs `(("python" ,python)))
     (arguments
      `(#:modules ((guix build utils))
@@ -392,8 +394,20 @@ data types.")
                   (lambda (old new)
                     (symlink (string-append python old)
                              (string-append bin "/" new)))
-                  `("python3" ,"pydoc3" ,"idle3" ,"pip3" ,"python3-config")
-                  `("python"  ,"pydoc"  ,"idle"  ,"pip"  ,"python-config"))))))
+                  `("python3" ,"pydoc3" ,"idle3" ,"pip3")
+                  `("python"  ,"pydoc"  ,"idle"  ,"pip"))
+                ;; python-config outputs search paths based upon its location,
+                ;; use a bash wrapper to avoid changing its outputs.
+                (let ((bash (string-append (assoc-ref %build-inputs "bash")
+                                           "/bin/bash"))
+                      (old  (string-append python "python3-config"))
+                      (new  (string-append bin "/python-config")))
+                  (with-output-to-file new
+                    (lambda ()
+                      (format #t "#!~a~%" bash)
+                      (format #t "exec \"~a\" \"$@\"~%" old)
+                      (chmod new #o755)
+                      #t)))))))
     (synopsis "Wrapper for the Python 3 commands")
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
