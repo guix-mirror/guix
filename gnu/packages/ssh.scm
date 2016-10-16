@@ -37,6 +37,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:autoload   (gnu packages protobuf) (protobuf)
@@ -126,14 +127,20 @@ a server that supports the SSH-2 protocol.")
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
              ("pam" ,linux-pam)
+             ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
              ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
-      #:configure-flags '("--sysconfdir=/etc/ssh"
+      #:configure-flags  `("--sysconfdir=/etc/ssh"
 
-                          ;; Default value of 'PATH' used by sshd.
+                           ;; Default value of 'PATH' used by sshd.
                           "--with-default-path=/run/current-system/profile/bin"
+
+                          ;; configure needs to find krb5-config
+                          ,(string-append "--with-kerberos5="
+                                          (assoc-ref %build-inputs "mit-krb5")
+                                          "/bin")
 
                           ;; Enable PAM support in sshd.
                           "--with-pam")
