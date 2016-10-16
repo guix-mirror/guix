@@ -7699,4 +7699,30 @@ using GSL.")
 functions for Haskell.")
     (license license:gpl3+)))
 
+(define-public ghc-hmatrix-gsl-stats
+  (package
+    (name "ghc-hmatrix-gsl-stats")
+    (version "0.4.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://hackage.haskell.org/package/hmatrix-gsl-stats/hmatrix-gsl-stats-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "0f3pzi494n4js0xiq5b38n07cnby0h9da6gmwywf8plvxm9271fl"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)
+       ("ghc-storable-complex" ,ghc-storable-complex)
+       ("ghc-hmatrix" ,ghc-hmatrix)
+       ("gsl" ,gsl)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://code.haskell.org/hmatrix-gsl-stats")
+    (synopsis "GSL Statistics interface for Haskell")
+    (description "This Haskell library provides a purely functional
+interface for statistics based on hmatrix and GSL.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
