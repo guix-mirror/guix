@@ -635,6 +635,10 @@ threads.")
      `(("texlive" ,texlive)
        ("ghostscript" ,ghostscript-gs)
        ("netpbm" ,netpbm)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CHEZSCHEMELIBDIRS")
+            (files (list (string-append "lib/csv" version "-site"))))))
     (outputs '("out" "doc"))
     (arguments
      `(#:modules ((guix build gnu-build-system)
