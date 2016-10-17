@@ -201,6 +201,54 @@
            (and (string=? (readlink one) repl)
                 (string=? (readlink two) one))))))
 
+(test-assert "graft-derivation, replaced derivation has multiple outputs"
+  ;; Here we have a replacement just for output "one" of P1 and not for the
+  ;; other output.  Make sure the graft for P1:one correctly applies to the
+  ;; dependents of P1.  See <http://bugs.gnu.org/24712>.
+  (let* ((p1  (build-expression->derivation
+               %store "p1"
+               `(let ((one (assoc-ref %outputs "one"))
+                      (two (assoc-ref %outputs "two")))
+                  (mkdir one)
+                  (mkdir two))
+               #:outputs '("one" "two")))
+         (p1r (build-expression->derivation
+               %store "P1"
+               `(let ((other (assoc-ref %outputs "ONE")))
+                  (mkdir other)
+                  (call-with-output-file (string-append other "/replacement")
+                    (const #t)))
+               #:outputs '("ONE")))
+         (p2  (build-expression->derivation
+               %store "p2"
+               `(let ((out (assoc-ref %outputs "aaa")))
+                  (mkdir (assoc-ref %outputs "zzz"))
+                  (mkdir out) (chdir out)
+                  (symlink (assoc-ref %build-inputs "p1:one") "one")
+                  (symlink (assoc-ref %build-inputs "p1:two") "two"))
+               #:outputs '("aaa" "zzz")
+               #:inputs `(("p1:one" ,p1 "one")
+                          ("p1:two" ,p1 "two"))))
+         (p3  (build-expression->derivation
+               %store "p3"
+               `(symlink (assoc-ref %build-inputs "p2:aaa")
+                         (assoc-ref %outputs "out"))
+               #:inputs `(("p2:aaa" ,p2 "aaa")
+                          ("p2:zzz" ,p2 "zzz"))))
+         (p1g (graft
+                (origin p1)
+                (origin-output "one")
+                (replacement p1r)
+                (replacement-output "ONE")))
+         (p3d (graft-derivation %store p3 (list p1g))))
+    (and (build-derivations %store (list p3d))
+         (let ((out (derivation->output-path (pk 'p2d p3d))))
+           (and (not (string=? (readlink out)
+                               (derivation->output-path p2 "aaa")))
+                (string=? (derivation->output-path p1 "two")
+                          (readlink (string-append out "/two")))
+                (file-exists? (string-append out "/one/replacement")))))))
+
 (test-assert "graft-derivation, renaming"         ;<http://bugs.gnu.org/23132>
   (let* ((build `(begin
                    (use-modules (guix build utils))
