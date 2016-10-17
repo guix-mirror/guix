@@ -545,7 +545,7 @@ are primarily in English, however some in other languages are provided.")
 (define-public irrlicht
   (package
     (name "irrlicht")
-    (version "1.8.1")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -554,10 +554,10 @@ are primarily in English, however some in other languages are provided.")
                     "/" version "/irrlicht-" version ".zip"))
               (sha256
                (base32
-                "0yz9lvsc8aqk8wj4rnpanxrw90gqpwn9w5hxp94r8hnm2q0vjjw1"))))
+                "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
+     `(#:phases (alist-cons-after
                  'unpack 'fix-build-env
                  (lambda* (#:key outputs #:allow-other-keys)
                    (let ((out (assoc-ref outputs "out")))
@@ -572,19 +572,13 @@ are primarily in English, however some in other languages are provided.")
                   (lambda* (#:key source #:allow-other-keys)
                     (and (zero? (system* "unzip" source))
                          ;; The actual source is buried a few directories deep.
-                         (chdir "irrlicht-1.8.1/source/Irrlicht/")))
-                  (alist-cons-after
-                   'unpack 'apply-patch/mesa-10-fix
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (zero? (system* "patch" "--force" "-p3" "-i"
-                                     (assoc-ref inputs "patch/mesa-10-fix"))))
-                   ;; No configure script
-                   (alist-delete 'configure %standard-phases))))
+                         (chdir (string-append "irrlicht-" ,version "/source/Irrlicht/"))))
+                  ;; No configure script
+                  (alist-delete 'configure %standard-phases)))
        #:tests? #f ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
     (native-inputs
-     `(("patch/mesa-10-fix" ,(search-patch "irrlicht-mesa-10.patch"))
-       ("unzip" ,unzip)))
+     `(("unzip" ,unzip)))
     (inputs
      `(("mesa" ,mesa)
        ("glu" ,glu)))
