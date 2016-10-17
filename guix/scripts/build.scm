@@ -179,27 +179,31 @@ matching URIs given in SOURCES."
         (_
          obj)))))
 
-(define (transform-package-inputs replacement-specs)
-  "Return a procedure that, when passed a package, replaces its direct
-dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
-strings like \"guile=guile@2.1\" meaning that, any direct dependency on a
-package called \"guile\" must be replaced with a dependency on a version 2.1
-of \"guile\"."
+(define (evaluate-replacement-specs specs proc)
+  "Parse SPECS, a list of strings like \"guile=guile@2.1\", and invoke PROC on
+each package pair specified by SPECS.  Return the resulting list.  Raise an
+error if an element of SPECS uses invalid syntax, or if a package it refers to
+could not be found."
   (define not-equal
     (char-set-complement (char-set #\=)))
 
-  (define replacements
-    ;; List of name/package pairs.
-    (map (lambda (spec)
-           (match (string-tokenize spec not-equal)
-             ((old new)
-              (cons (specification->package old)
-                    (specification->package new)))
-             (x
-              (leave (_ "invalid replacement specification: ~s~%") spec))))
-         replacement-specs))
+  (map (lambda (spec)
+         (match (string-tokenize spec not-equal)
+           ((old new)
+            (proc (specification->package old)
+                  (specification->package new)))
+           (x
+            (leave (_ "invalid replacement specification: ~s~%") spec))))
+       specs))
 
-  (let ((rewrite (package-input-rewriting replacements)))
+(define (transform-package-inputs replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"guile=guile@2.1\" meaning that, any dependency on a package
+called \"guile\" must be replaced with a dependency on a version 2.1 of
+\"guile\"."
+  (let* ((replacements (evaluate-replacement-specs replacement-specs cons))
+         (rewrite      (package-input-rewriting replacements)))
     (lambda (store obj)
       (if (package? obj)
           (rewrite obj)
