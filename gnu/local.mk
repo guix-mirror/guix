@@ -69,6 +69,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cdrom.scm			\
   %D%/packages/certs.scm			\
   %D%/packages/check.scm			\
+  %D%/packages/chez.scm				\
   %D%/packages/ci.scm				\
   %D%/packages/cmake.scm			\
   %D%/packages/code.scm				\
