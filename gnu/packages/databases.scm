@@ -405,7 +405,24 @@ pictures, sounds, or video.")
                  #:configure-flags
                  (list (string-append "--with-bash-headers="
                                       (assoc-ref %build-inputs "bash:include")
-                                      "/include/bash"))))
+                                      "/include/bash"))
+
+                 #:phases (modify-phases %standard-phases
+                            (add-before 'build 'set-bash4.4-header-location
+                              (lambda _
+                                (substitute* "bash/Makefile.in"
+                                  ;; Adjust the header search path for Bash
+                                  ;; 4.4 in accordance with 'bash.pc'.
+                                  (("AM_CPPFLAGS = (.*)$" _ rest)
+                                   (string-append "AM_CPPFLAGS = "
+                                                  "-I$(BASH_HEADERS)/include "
+                                                  rest))
+
+                                  ;; Install to PREFIX/lib/bash to match Bash
+                                  ;; 4.4's search path.
+                                  (("^libdir = .*$")
+                                   "libdir = @libdir@/bash\n"))
+                                #t)))))
 
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("bc" ,bc)
