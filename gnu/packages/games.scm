@@ -970,6 +970,81 @@ This game is based on the GPL version of the famous game TuxRacer.")
     (home-page "http://sourceforge.net/projects/extremetuxracer/")
     (license license:gpl2+)))
 
+(define-public supertuxkart
+  (package
+    (name "supertuxkart")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/supertuxkart/SuperTuxKart/"
+                           version "/supertuxkart-" version "-src.tar.xz"))
+       (sha256
+        (base32
+         "10l2ljmd7mv8f9ylarqmxxryicdnph2qkm3g5maxnsm2k2q0n20b"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete bundled library sources
+        '(begin
+           ;; FIXME: try to unbundle enet, and angelscript
+           (for-each delete-file-recursively
+                     '("lib/zlib"
+                       "lib/libpng"
+                       "lib/jpeglib"
+                       "lib/glew"
+                       "lib/wiiuse"))
+           (substitute* "CMakeLists.txt"
+             ;; Supertuxkart uses modified versions of the Irrlicht engine
+             ;; and the bullet library.  The developers gave an explanation here:
+             ;; http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
+             (("add_subdirectory\\(.*/(glew|zlib)\"\\)") ""))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:configure-flags
+       (list "-DUSE_WIIUSE=0"
+             ;; Do not use the bundled zlib
+             "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
+             ;; Irrlicht returns an integer instead of a boolean
+             "-DCMAKE_C_FLAGS=-fpermissive")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("glew")
+                (string-append (assoc-ref inputs "glew")
+                               "/lib/libGLEW.a"))
+               (("include_directories\\(\"\\$\\{PROJECT_SOURCE_DIR\\}/lib/glew/include\"\\)")
+                (string-append "include_directories(\""
+                               (assoc-ref inputs "glew")
+                               "/include\")")))
+             #t)))))
+    (inputs
+     `(("glew" ,glew)
+       ("zlib" ,zlib)
+       ("openal" ,openal)
+       ("libvorbis" ,libvorbis)
+       ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("mesa" ,mesa)
+       ("libx11" ,libx11)
+       ("libxrandr" ,libxrandr)
+       ("curl" ,curl)
+       ;; The following input is needed to build the bundled and modified
+       ;; version of irrlicht.
+       ("libjpeg" ,libjpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://supertuxkart.net")
+    (synopsis "3D kart racing game")
+    (description "SuperTuxKart is a 3D kart racing game, with a focus on
+having fun over realism.  You can play with up to 4 friends on one PC, racing
+against each other or just trying to beat the computer; single-player mode is
+also available.")
+    (license license:gpl3+)))
+
 (define-public gnujump
   (package
     (name "gnujump")
