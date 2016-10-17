@@ -1252,7 +1252,7 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "33.1")
+    (version "34")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1261,7 +1261,7 @@ capabilities.")
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "1504jaw4yqdlyls0bz9f90rvqq7cy1jvmrnhdvwnmdfbpikqwi4c"))))
+                "0rfldphg4gy3sdfffi5yzklqz93vsj2j6nny8snjbavnf161blyi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
