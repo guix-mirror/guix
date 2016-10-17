@@ -645,6 +645,14 @@ threads.")
                   (guix build utils)
                   (ice-9 match))
        #:test-target "test"
+       #:configure-flags
+       (list ,(match (or (%current-target-system) (%current-system))
+                ("x86_64-linux" '(list "--machine=ta6le"))
+                ("i686-linux" '(list "--machine=ti3le"))
+                ;; FIXME: Some people succeeded in cross-compiling to
+                ;; ARM. https://github.com/cisco/ChezScheme/issues/13
+                (_
+                 '())))
        #:phases
        (modify-phases %standard-phases
          ;; Adapt the custom 'configure' script.
@@ -673,12 +681,9 @@ threads.")
                (substitute* (find-files "./c" "Mf-[a-zA-Z0-9.]+")
                  (("\\$\\{Kernel\\}: \\$\\{kernelobj\\} \\.\\./zlib/libz\\.a")
                   "${Kernel}: ${kernelobj}")
-                 (("ld -melf_x86_64 -r -X -o \\$\\{Kernel\\} \\$\\{kernelobj\\} \\.\\./zlib/libz\\.a")
-                  (string-append "ld -melf_x86_64 -r -X -o ${Kernel} ${kernelobj} "
-                                 zlib "/lib/libz.a"))
-                 (("\\(cd \\.\\./zlib; CFLAGS=-m64 \\./configure --64)")
-                  (which "true"))
-                 (("(cd \\.\\./zlib; make)")
+                 (("ld ([-a-zA-Z0-9_${} ]+) \\.\\./zlib/libz\\.a" all args)
+                  (string-append "ld " args " " zlib "/lib/libz.a"))
+                 (("\\(cd \\.\\./zlib; ([-a-zA-Z0-9=./ ]+))")
                   (which "true")))
                (substitute* (find-files "mats" "Mf-.*")
                  (("^[[:space:]]+(cc ) *") "\tgcc "))
@@ -715,9 +720,7 @@ threads.")
                (system* "make" "docs")
                (with-directory-excursion "csug"
                  (substitute* "Makefile"
-                   (("/tmp/csug9") doc)
-                   (("^m = a6le")
-                    "m := $(shell echo '(machine-type)' | scheme -q)"))
+                   (("/tmp/csug9") doc))
                  (system* "make" "install")
                  (install-file "csug.pdf" doc))
                (with-directory-excursion "release_notes"
