@@ -1,0 +1,70 @@
+Applies until an Artanis release comes with the following patches
+applied:
+* <https://savannah.gnu.org/patch/?func=detailitem&item_id=9130>
+* <https://savannah.gnu.org/patch/?func=detailitem&item_id=9131>
+diff -ru artanis-0.1.2/Makefile.in artanis-0.1.2.1/Makefile.in
+--- artanis-0.1.2/Makefile.in	2016-02-10 12:35:18.800490571 -0200
++++ artanis-0.1.2.1/Makefile.in	2016-10-15 19:44:35.140907367 -0300
+@@ -19,9 +19,18 @@
+ MOD_OBJ := $(OBJ)/artanis
+ BIN := bin
+ TEMP_LIB_PATH := $(OBJ)
+-MOD_PATH := $(shell guile -c "(display (%site-dir))")
+ MOD_COMPILED_PATH := $(shell guile -c "(display (%site-ccache-dir))")
++
++ifdef DESTDIR
++INFO_DIR := $(DESTDIR)/share/info/
++MOD_PATH := $(DESTDIR)/$(shell guile -c "(display (%site-dir))")
+ MOD_TARGET_PATH := $(DESTDIR)/$(MOD_COMPILED_PATH)
++else
++INFO_DIR := $(PREFIX)/share/info/
++MOD_PATH := $(shell guile -c "(display (%site-dir))")
++MOD_TARGET_PATH := $(MOD_COMPILED_PATH)
++endif
++
+ GUILE_CFLAGS := -Wunsupported-warning -Wunbound-variable -Warity-mismatch -Wduplicate-case-datum -Wbad-case-datum -Wformat
+ GUILEC := GUILE_LOAD_COMPILED_PATH=$(TEMP_LIB_PATH) guild compile $(GUILE_CFLAGS)
+ ARTANIS_ETC := $(SRC)/etc/artanis
+@@ -36,7 +45,6 @@
+ GENDOCS :=$(BUILD_AUX)/gendocs.sh
+ CHK_TEXINFO := $(BUILD_AUX)/check_texinfo.scm
+ CP := cp -frd -P
+-INFO_DIR := $(PREFIX)/share/info/
+ TARBALL_NAME := artanis-$(VERSION)
+ TMP_DIR := $(shell mktemp -d)
+ ANN_GEN := $(BUILD_AUX)/announce-gen
+@@ -124,18 +132,29 @@
+ 	-rm -f config.{h,log}
+ 
+ install: $(ALL_TARGETS)
+-	mkdir -p $(DESTDIR)/$(MOD_PATH)
+-	$(CP) $(MOD) $(DESTDIR)/$(MOD_PATH)/
++	mkdir -p $(MOD_PATH)
++	$(CP) $(MOD) $(MOD_PATH)/
+ 	mkdir -p $(MOD_TARGET_PATH)/
+ 	$(CP) $(MOD_OBJ) $(MOD_TARGET_PATH)/
++
++ifdef DESTDIR
+ 	$(CP) $(ARTANIS_ETC) $(DESTDIR)/etc/
+ 	$(CP) $(ARTANIS_PAGES) $(DESTDIR)/etc/artanis/
+-	mkdir -p $(DESTDIR)/$(PREFIX)/bin/
+-	$(CP) $(BIN)/art $(DESTDIR)/$(PREFIX)/bin/
++	mkdir -p $(DESTDIR)/bin/
++	$(CP) $(BIN)/art $(DESTDIR)/bin/
+ 	mkdir -p $(DESTDIR)/etc/bash_completion.d/
+ 	$(CP) $(CMDCOMP) $(DESTDIR)/etc/bash_completion.d/
++else
++	$(CP) $(ARTANIS_ETC) $(PREFIX)/etc/
++	$(CP) $(ARTANIS_PAGES) $(PREFIX)/etc/artanis/
++	mkdir -p $(PREFIX)/bin/
++	$(CP) $(BIN)/art $(PREFIX)/bin/
++	mkdir -p $(PREFIX)/etc/bash_completion.d/
++	$(CP) $(CMDCOMP) $(PREFIX)/etc/bash_completion.d/
++endif
++
+ 	if [ -e /etc/bash.bashrc ]; then source /etc/bash.bashrc; fi
+-	if [ -e artanis.info ]; then mkdir -p $(DESTDIR)/$(INFO_DIR); $(CP) artanis.info $(DESTDIR)/$(INFO_DIR)/; fi
++	if [ -e artanis.info ]; then mkdir -p $(INFO_DIR); $(CP) artanis.info $(INFO_DIR)/; fi
+ 
+ distclean: distclean-mk clean clean-config clean-tarball
+ 	-rm -f $(BIN)/art
