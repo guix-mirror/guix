@@ -6462,6 +6462,7 @@ Python's @code{ctypes} foreign function interface (FFI).")
     (build-system python-build-system)
     (arguments
      '(#:tests? #f                                ;no tests
+       #:configure-flags '("--single-version-externally-managed" "--root=/")
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'change-directory
                     (lambda _
