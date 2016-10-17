@@ -36,7 +36,7 @@
 ;; Code:
 
 (define* (default-build.xml jar-name prefix #:optional
-                            (source-dir "."))
+                            (source-dir ".") (test-dir "./test"))
   "Create a simple build.xml with standard targets for Ant."
   (call-with-output-file "build.xml"
     (lambda (port)
@@ -48,6 +48,10 @@
                               (value "${basedir}/build/jar")))
                  (property (@ (name "dist.dir")
                               (value ,prefix)))
+                 (property (@ (name "test.home")
+                              (value ,test-dir)))
+                 (property (@ (name "test.classes.dir")
+                              (value "${basedir}/build/test-classes")))
 
                  ;; respect the CLASSPATH environment variable
                  (property (@ (name "build.sysclasspath")
@@ -62,6 +66,35 @@
                                    (srcdir ,source-dir)
                                    (destdir "${classes.dir}")
                                    (classpath (@ (refid "classpath"))))))
+
+                 (target (@ (name "compile-tests"))
+                         (mkdir (@ (dir "${test.classes.dir}")))
+                         (javac (@ (includeantruntime "false")
+                                   (srcdir ,test-dir)
+                                   (destdir "${test.classes.dir}"))
+                                (classpath
+                                 (pathelement (@ (path "${env.CLASSPATH}")))
+                                 (pathelement (@ (location "${classes.dir}")))
+                                 (pathelement (@ (location "${test.classes.dir}"))))))
+
+                 (target (@ (name "check")
+                            (depends "compile-tests"))
+                         (mkdir (@ (dir "${test.home}/test-reports")))
+                         (junit (@ (printsummary "true")
+                                   (showoutput "true")
+                                   (fork "yes")
+                                   (haltonfailure "yes"))
+                                (classpath
+                                 (pathelement (@ (path "${env.CLASSPATH}")))
+                                 (pathelement (@ (location "${test.home}/resources")))
+                                 (pathelement (@ (location "${classes.dir}")))
+                                 (pathelement (@ (location "${test.classes.dir}"))))
+                                (formatter (@ (type "plain")
+                                              (usefile "true")))
+                                (batchtest (@ (fork "yes")
+                                              (todir "${test.home}/test-reports"))
+                                           (fileset (@ (dir "${test.home}/java"))
+                                                    (include (@ (name "**/*Test.java" )))))))
 
                  (target (@ (name "jar")
                             (depends "compile"))
@@ -99,12 +132,13 @@ to the default GNU unpack strategy."
       ((assq-ref gnu:%standard-phases 'unpack) #:source source)))
 
 (define* (configure #:key inputs outputs (jar-name #f)
-                    (source-dir "src") #:allow-other-keys)
+                    (source-dir "src")
+                    (test-dir "src/test") #:allow-other-keys)
   (when jar-name
     (default-build.xml jar-name
                        (string-append (assoc-ref outputs "out")
                                       "/share/java")
-                       source-dir))
+                       source-dir test-dir))
   (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
   (setenv "CLASSPATH" (generate-classpath inputs)))
 

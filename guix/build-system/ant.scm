@@ -93,12 +93,13 @@
 (define* (ant-build store name inputs
                     #:key
                     (tests? #t)
-                    (test-target "tests")
+                    (test-target "check")
                     (configure-flags ''())
                     (make-flags ''())
                     (build-target "jar")
                     (jar-name #f)
                     (source-dir "src")
+                    (test-dir "src/test")
                     (phases '(@ (guix build ant-build-system)
                                 %standard-phases))
                     (outputs '("out"))
@@ -128,6 +129,7 @@
                   #:build-target ,build-target
                   #:jar-name ,jar-name
                   #:source-dir ,source-dir
+                  #:test-dir ,test-dir
                   #:phases ,phases
                   #:outputs %outputs
                   #:search-paths ',(map search-path-specification->sexp
