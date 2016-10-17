@@ -605,19 +605,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
   %D%/packages/patches/jansson-CVE-2016-4425.patch		\
-  %D%/packages/patches/jasper-CVE-2007-2721.patch		\
-  %D%/packages/patches/jasper-CVE-2008-3520.patch		\
-  %D%/packages/patches/jasper-CVE-2008-3522.patch		\
-  %D%/packages/patches/jasper-CVE-2011-4516-and-CVE-2011-4517.patch \
-  %D%/packages/patches/jasper-CVE-2014-8137.patch		\
-  %D%/packages/patches/jasper-CVE-2014-8138.patch		\
-  %D%/packages/patches/jasper-CVE-2014-8157.patch		\
-  %D%/packages/patches/jasper-CVE-2014-8158.patch		\
-  %D%/packages/patches/jasper-CVE-2014-9029.patch		\
-  %D%/packages/patches/jasper-CVE-2016-1577.patch		\
-  %D%/packages/patches/jasper-CVE-2016-1867.patch		\
-  %D%/packages/patches/jasper-CVE-2016-2089.patch		\
-  %D%/packages/patches/jasper-CVE-2016-2116.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/khmer-use-libraries.patch                \
