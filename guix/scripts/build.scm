@@ -219,16 +219,15 @@ called \"guile\" must be replaced with a dependency on a version 2.1 of
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
-  (list (option '("with-source") #t #f
-                (lambda (opt name arg result . rest)
-                  (apply values
-                         (cons (alist-cons 'with-source arg result)
-                               rest))))
-        (option '("with-input") #t #f
-                (lambda (opt name arg result . rest)
-                  (apply values
-                         (cons (alist-cons 'with-input arg result)
-                               rest))))))
+  (let ((parser (lambda (symbol)
+                  (lambda (opt name arg result . rest)
+                    (apply values
+                           (alist-cons symbol arg result)
+                           rest)))))
+    (list (option '("with-source") #t #f
+                  (parser 'with-source))
+          (option '("with-input") #t #f
+                  (parser 'with-input)))))
 
 (define (show-transformation-options-help)
   (display (_ "
