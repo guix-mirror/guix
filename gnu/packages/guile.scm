@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -321,7 +322,8 @@ applicable."
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19m3ak12cqk8js9d2mdg11kh4fjsq8frfpd10qw75h0zpr5cywpp"))))
+                "19m3ak12cqk8js9d2mdg11kh4fjsq8frfpd10qw75h0zpr5cywpp"))
+              (patches (search-patches "artanis-fix-Makefile.in.patch"))))
     (build-system gnu-build-system)
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
     (inputs `(("guile" ,guile-2.0)))
@@ -335,8 +337,7 @@ applicable."
               (dir (string-append out "/share/guile/site/2.0")))
          ;; Don't use (%site-dir) for site paths.
          (list (string-append "MOD_PATH=" dir)
-               (string-append "MOD_COMPILED_PATH=" dir)
-               (string-append "DESTDIR=" out)))
+               (string-append "MOD_COMPILED_PATH=" dir)))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases

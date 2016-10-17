@@ -6,6 +6,7 @@
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 # Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+# Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 #
 # This file is part of GNU Guix.
 #
@@ -456,6 +457,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/arb-ldconfig.patch			\
+  %D%/packages/patches/artanis-fix-Makefile.in.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
@@ -527,13 +529,17 @@ dist_patch_DATA =						\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
   %D%/packages/patches/fontforge-svg-modtime.patch		\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
+  %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
+  %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
+  %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gd-CVE-2016-7568.patch			\
+  %D%/packages/patches/gd-CVE-2016-8670.patch			\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
@@ -597,7 +603,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
-  %D%/packages/patches/irrlicht-mesa-10.patch			\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jansson-CVE-2016-4425.patch		\
   %D%/packages/patches/jasper-CVE-2007-2721.patch		\
@@ -712,6 +717,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
   %D%/packages/patches/ninja-tests.patch			\
   %D%/packages/patches/ninja-zero-mtime.patch			\
+  %D%/packages/patches/node-9077.patch				\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\

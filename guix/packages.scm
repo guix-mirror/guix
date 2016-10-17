@@ -919,7 +919,8 @@ and return it."
             (cached (=> %graft-cache) package system
                     (let ((orig (package-derivation store package system
                                                     #:graft? #f))
-                          (new  (package-derivation store replacement system)))
+                          (new  (package-derivation store replacement system
+                                                    #:graft? #t)))
                       (graft
                         (origin orig)
                         (replacement new)))))))
@@ -935,7 +936,8 @@ and return it."
            (let ((orig (package-cross-derivation store package target system
                                                  #:graft? #f))
                  (new  (package-cross-derivation store replacement
-                                                 target system)))
+                                                 target system
+                                                 #:graft? #t)))
              (graft
                (origin orig)
                (replacement new))))))

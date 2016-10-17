@@ -785,7 +785,7 @@ concepts.")
     (arguments '(#:test-target "check"))
     (native-inputs
      `(("python-pbr" ,python-pbr)))
-    (home-page "http://code.google.com/p/pylockfile/")
+    (home-page "https://launchpad.net/pylockfile")
     (synopsis "Platform-independent file locking module")
     (description
      "The lockfile package exports a LockFile class which provides a simple
@@ -922,7 +922,7 @@ etc.).  The package is structured to make adding new modules easy.")
      `(("python-pycrypto" ,python-pycrypto)))
     (arguments
      `(#:tests? #f))                      ;TODO: tests require pytest
-    (home-page "http://bitbucket.org/kang/python-keyring-lib")
+    (home-page "https://github.com/jaraco/keyring")
     (synopsis "Store and access your passwords safely")
     (description
      "The Python keyring lib provides a easy way to access the system keyring
@@ -1737,9 +1737,6 @@ supports coverage of subprocesses.")
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs base))))))
 
-(define-public python2-pytest-runner
-  (package-with-python2 python-pytest-runner))
-
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
@@ -1789,7 +1786,15 @@ same arguments.")
        (uri (pypi-uri "pytest-xdist" version ".zip"))
        (sha256
         (base32
-         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))))
+         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-compiled .pyc files from source.
+           (for-each delete-file-recursively
+                     (find-files "." "__pycache__" #:directories? #t))
+           (for-each delete-file (find-files "." "\\.pyc$"))
+           #t))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)
@@ -5776,9 +5781,6 @@ reading and writing MessagePack data.")
     (native-inputs
      `(("python2-setuptools" ,python2-setuptools)))))
 
-(define-public python2-msgpack
-  (package-with-python2 python-msgpack))
-
 (define-public python-netaddr
   (package
     (name "python-netaddr")
@@ -6033,15 +6035,14 @@ designed to efficently cope with extremely large amounts of data.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pyasn1/pyasn1-" version ".tar.gz"))
+       (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "0iw31d9l0zwx35szkzq72hiw002wnqrlrsi9dpbrfngcl1ybwcsx"))))
+         "0zraxni14bqi20kr4bi6nwsh32aibz0fq0xaczfisw0zdpcsqg45"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
@@ -6285,15 +6286,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "16.0.0")
+    (version "16.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pyOpenSSL/pyOpenSSL-" version ".tar.gz"))
+       (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0zfijaxlq4vgi6jz0d4i5xq9ygqnyps6br7lmigjhqnh8gp10g9n"))))
+         "0prm06zz7hl6bk5s2lqzw25lq6smayfv2fgiliw2rbqxlyiavxw8"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
@@ -6684,7 +6684,13 @@ that have uses outside of the Zope framework.")
                            "/zope.testing/zope.testing-" version ".tar.gz"))
        (sha256
         (base32
-         "1yvglxhzvhl45mndvn9gskx2ph30zz1bz7rrlyfs62fv2pvih90s"))))
+         "1yvglxhzvhl45mndvn9gskx2ph30zz1bz7rrlyfs62fv2pvih90s"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-compiled .pyc files backup files from source.
+           (for-each delete-file (find-files "." "(\\.pyc|~)$"))
+           #t))))
     (build-system python-build-system)
     (native-inputs
      `(("python-zope-exceptions" ,python-zope-exceptions)))
@@ -7010,14 +7016,14 @@ timestamps.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "0.11.5")
+    (version "0.11.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Werkzeug" version))
        (sha256
         (base32
-         "0r41xqp4cypzcgsf6zbspbqd272wnzf20igb4w4b5wzfhgqh9nxg"))))
+         "1rgpq8a2qv26d75v9j3b074inirlyy6y4b5x4rxblp202jy4cb77"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -8884,6 +8890,36 @@ library.")
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs responses))))))
 
+(define-public python-whoosh
+  (package
+    (name "python-whoosh")
+    (version "2.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Whoosh" version))
+       (sha256
+        (base32
+         "10qsqdjpbc85fykc1vgcs8xwbgn4l2l52c8d83xf1q59pwyn79bw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "http://bitbucket.org/mchaput/whoosh")
+    (synopsis "Full text indexing, search, and spell checking library")
+    (description
+     "Whoosh is a fast, pure-Python full text indexing, search, and spell
+checking library.")
+    (license license:bsd-2)))
+
+(define-public python2-whoosh
+  (let ((whoosh (package-with-python2 (strip-python2-variant python-whoosh))))
+    (package (inherit whoosh)
+      (propagated-inputs
+       `(("python2-backport-ssl-match-hostname"
+          ,python2-backport-ssl-match-hostname)
+          ,@(package-propagated-inputs whoosh))))))
+
 (define-public python-pathlib
   (package
     (name "python-pathlib")
@@ -8910,7 +8946,12 @@ be done easily through operators, attribute accesses, and method calls.
 comparing Windows paths ignores casing.
 @item Well-defined semantics, eliminating any inconsistencies or
 ambiguities (forward vs. backward slashes, etc.).
-@end enumerate\n")
+@end enumerate
+
+Note: In Python 3.4, pathlib is now part of the standard library.  For other
+Python versions please consider python-pathlib2 instead, which tracks the
+standard library module.  This module (python-pathlib) isn't maintained
+anymore.")
     (license license:expat)))
 
 (define-public python2-pathlib
@@ -9886,14 +9927,14 @@ until the object is actually required, and caches the result of said call.")
 (define-public python-dnspython
   (package
   (name "python-dnspython")
-  (version "1.14.0")
+  (version "1.15.0")
   (source (origin
             (method url-fetch)
             (uri (string-append "http://www.dnspython.org/kits/"
                                 version "/dnspython-" version ".tar.gz"))
             (sha256
              (base32
-              "1z472r63gdqsxhsxj3plr5vs478yf4303vrqxxpsccc940g441hl"))))
+              "0jr4v2pd90i6l1xxbss2m05psbjaxvyvvvpq44wycijpfgjqln8i"))))
   (build-system python-build-system)
   (arguments '(#:tests? #f)) ; XXX: requires internet access
   (native-inputs

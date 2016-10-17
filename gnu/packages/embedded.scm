@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,9 +25,12 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix build utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo))
 
@@ -97,6 +101,17 @@
               (variable "CROSS_LIBRARY_PATH")
               (files '("arm-none-eabi/lib"))))))))
 
+(define-public gcc-arm-none-eabi-6
+  (package
+    (inherit gcc-arm-none-eabi-4.9)
+    (version (package-version gcc-6))
+    (source (origin (inherit (package-source gcc-6))
+                    (patches
+                     (append
+                      (origin-patches (package-source gcc-6))
+                      (search-patches "gcc-6-cross-environment-variables.patch"
+                                      "gcc-6-arm-none-eabi-multilib.patch")))))))
+
 (define-public newlib-arm-none-eabi
   (package
     (name "newlib")
@@ -163,3 +178,48 @@ usable on embedded products.")
            "--enable-newlib-nano-formatted-io"
            "--disable-nls"))))
     (synopsis "Newlib variant for small systems with limited memory")))
+
+(define (arm-none-eabi-toolchain xgcc newlib)
+  "Produce a cross-compiler toolchain package with the compiler XGCC and the C
+library variant NEWLIB."
+  (let ((newlib-with-xgcc (package (inherit newlib)
+                            (native-inputs
+                             (alist-replace "xgcc" (list xgcc)
+                                            (package-native-inputs newlib))))))
+    (package
+      (name (string-append "arm-none-eabi"
+                           (if (string=? (package-name newlib-with-xgcc)
+                                         "newlib-nano")
+                               "-nano" "")
+                           "-toolchain"))
+      (version (package-version xgcc))
+      (source #f)
+      (build-system trivial-build-system)
+      (arguments '(#:builder (mkdir %output)))
+      (propagated-inputs
+       `(("binutils" ,(cross-binutils "arm-none-eabi"))
+         ("gcc" ,xgcc)
+         ("newlib" ,newlib-with-xgcc)))
+      (synopsis "Complete GCC tool chain for ARM bare metal development")
+      (description "This package provides a complete GCC tool chain for ARM
+bare metal development.  This includes the GCC arm-none-eabi cross compiler
+and newlib (or newlib-nano) as the C library.  The supported programming
+languages are C and C++.")
+      (home-page (package-home-page xgcc))
+      (license (package-license xgcc)))))
+
+(define-public arm-none-eabi-toolchain-4.9
+  (arm-none-eabi-toolchain gcc-arm-none-eabi-4.9
+                           newlib-arm-none-eabi))
+
+(define-public arm-none-eabi-nano-toolchain-4.9
+  (arm-none-eabi-toolchain gcc-arm-none-eabi-4.9
+                           newlib-nano-arm-none-eabi))
+
+(define-public arm-none-eabi-toolchain-6
+  (arm-none-eabi-toolchain gcc-arm-none-eabi-6
+                           newlib-arm-none-eabi))
+
+(define-public arm-none-eabi-nano-toolchain-6
+  (arm-none-eabi-toolchain gcc-arm-none-eabi-6
+                           newlib-nano-arm-none-eabi))

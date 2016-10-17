@@ -51,6 +51,7 @@
               (base32
                "0g3xz8jpz1pl2zzmssglrpa9nxiaa7rmcmvgpbrjz8k9cyynqsvl"))
              (patches (search-patches "gd-CVE-2016-7568.patch"
+                                      "gd-CVE-2016-8670.patch"
                                       "gd-fix-gd2-read-test.patch"
                                       "gd-fix-tests-on-i686.patch"))))
     (build-system gnu-build-system)

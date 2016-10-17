@@ -662,22 +662,25 @@
                     (origin (package-derivation %store dep))
                     (replacement (package-derivation %store new)))))))
 
-(test-assert "package-grafts, indirect grafts, cross"
-  (let* ((new    (dummy-package "dep"
-                   (arguments '(#:implicit-inputs? #f))))
-         (dep    (package (inherit new) (version "0.0")))
-         (dep*   (package (inherit dep) (replacement new)))
-         (dummy  (dummy-package "dummy"
-                   (arguments '(#:implicit-inputs? #f))
-                   (inputs `(("dep" ,dep*)))))
-         (target "mips64el-linux-gnu"))
-    ;; XXX: There might be additional grafts, for instance if the distro
-    ;; defines replacements for core packages like Perl.
-    (member (graft
-              (origin (package-cross-derivation %store dep target))
-              (replacement
-               (package-cross-derivation %store new target)))
-            (package-grafts %store dummy #:target target))))
+;; XXX: This test would require building the cross toolchain just to see if it
+;; needs grafting, which is obviously too expensive, and thus disabled.
+;;
+;; (test-assert "package-grafts, indirect grafts, cross"
+;;   (let* ((new    (dummy-package "dep"
+;;                    (arguments '(#:implicit-inputs? #f))))
+;;          (dep    (package (inherit new) (version "0.0")))
+;;          (dep*   (package (inherit dep) (replacement new)))
+;;          (dummy  (dummy-package "dummy"
+;;                    (arguments '(#:implicit-inputs? #f))
+;;                    (inputs `(("dep" ,dep*)))))
+;;          (target "mips64el-linux-gnu"))
+;;     ;; XXX: There might be additional grafts, for instance if the distro
+;;     ;; defines replacements for core packages like Perl.
+;;     (member (graft
+;;               (origin (package-cross-derivation %store dep target))
+;;               (replacement
+;;                (package-cross-derivation %store new target)))
+;;             (package-grafts %store dummy #:target target))))
 
 (test-assert "package-grafts, indirect grafts, propagated inputs"
   (let* ((new   (dummy-package "dep"
@@ -718,6 +721,77 @@
                                                 (package (inherit dep)
                                                          (replacement #f))))
                     (replacement (package-derivation %store new)))))))
+
+(test-assert "replacement also grafted"
+  ;; We build a DAG as below, where dotted arrows represent replacements and
+  ;; solid arrows represent dependencies:
+  ;;
+  ;;  P1  ·············>  P1R
+  ;;  |\__________________.
+  ;;  v                   v
+  ;;  P2  ·············>  P2R
+  ;;  |
+  ;;  v
+  ;;  P3
+  ;;
+  ;; We want to make sure that:
+  ;;   grafts(P3) = (P1,P1R) + (P2, grafted(P2R, (P1,P1R)))
+  ;; where:
+  ;;   (A,B) is a graft to replace A by B
+  ;;   grafted(DRV,G) denoted DRV with graft G applied
+  (let* ((p1r (dummy-package "P1"
+                (build-system trivial-build-system)
+                (arguments
+                 `(#:guile ,%bootstrap-guile
+                   #:builder (let ((out (assoc-ref %outputs "out")))
+                               (mkdir out)
+                               (call-with-output-file
+                                   (string-append out "/replacement")
+                                 (const #t)))))))
+         (p1  (package
+                (inherit p1r) (name "p1") (replacement p1r)
+                (arguments
+                 `(#:guile ,%bootstrap-guile
+                   #:builder (mkdir (assoc-ref %outputs "out"))))))
+         (p2r (dummy-package "P2"
+                (build-system trivial-build-system)
+                (inputs `(("p1" ,p1)))
+                (arguments
+                 `(#:guile ,%bootstrap-guile
+                   #:builder (let ((out (assoc-ref %outputs "out")))
+                               (mkdir out)
+                               (chdir out)
+                               (symlink (assoc-ref %build-inputs "p1") "p1")
+                               (call-with-output-file (string-append out "/replacement")
+                                 (const #t)))))))
+         (p2  (package
+                (inherit p2r) (name "p2") (replacement p2r)
+                (arguments
+                 `(#:guile ,%bootstrap-guile
+                   #:builder (let ((out (assoc-ref %outputs "out")))
+                               (mkdir out)
+                               (chdir out)
+                               (symlink (assoc-ref %build-inputs "p1")
+                                        "p1"))))))
+         (p3  (dummy-package "p3"
+                (build-system trivial-build-system)
+                (inputs `(("p2" ,p2)))
+                (arguments
+                 `(#:guile ,%bootstrap-guile
+                   #:builder (let ((out (assoc-ref %outputs "out")))
+                               (mkdir out)
+                               (chdir out)
+                               (symlink (assoc-ref %build-inputs "p2")
+                                        "p2")))))))
+    (lset= equal?
+           (package-grafts %store p3)
+           (list (graft
+                   (origin (package-derivation %store p1 #:graft? #f))
+                   (replacement (package-derivation %store p1r)))
+                 (graft
+                   (origin (package-derivation %store p2 #:graft? #f))
+                   (replacement
+                    (package-derivation %store p2r #:graft? #t)))))))
 
 ;;; XXX: Nowadays 'graft-derivation' needs to build derivations beforehand to
 ;;; find out about their run-time dependencies, so this test is no longer

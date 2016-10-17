@@ -1521,6 +1521,31 @@ synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
     (license license:gpl2)))
 
+(define-public jack-keyboard
+  (package
+    (name "jack-keyboard")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/jack-keyboard/jack-keyboard/"
+                           version "/jack-keyboard-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mzmg8aavybcfdlq2yd9d0vscqd6is5p6jzrgfpfm5j3xdcvh2s3"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("jack" ,jack-1)
+       ("lash" ,lash)
+       ("gtk+" ,gtk+-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://jack-keyboard.sourceforge.net/")
+    (synopsis "Virtual MIDI keyboard")
+    (description "Jack-keyboard is a virtual MIDI keyboard, a program that
+allows you to send JACK MIDI events (i.e. play) using your PC keyboard.")
+    (license license:bsd-2)))
+
 (define-public cursynth
   (package
     (name "cursynth")
@@ -1965,3 +1990,366 @@ CSV file in the format created by midicsv may be converted back into a
 standard MIDI file with the csvmidi program.")
     (home-page "http://www.fourmilab.ch/webtools/midicsv/")
     (license license:public-domain)))
+
+(define-public gx-guvnor-lv2
+  (let ((commit "9f528a7623a201383e119bb6a2df32b18396a9d5")
+        (revision "1"))
+    (package
+      (name "gx-guvnor-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxGuvnor.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "10zx84p2vd7i1yqc5ma9p17927265j4g0zfwv9rxladw0nm8y45k"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(;; The check target is used only to output a warning.
+         #:tests? #f
+         #:make-flags
+         (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda _
+               (substitute* "Makefile"
+                 (("INSTALL_DIR = .*") "INSTALL_DIR=/lib/lv2\n")
+                 ;; Avoid rebuilding everything
+                 (("install : all") "install:"))
+               #t)))))
+      (inputs
+       `(("lv2" ,lv2)))
+      (home-page "https://github.com/brummer10/GxGuvnor.lv2")
+      (synopsis "Overdrive/distortion pedal simulation")
+      (description "This package provides the LV2 plugin \"GxGuvnor\", a
+simulation of an overdrive or distortion pedal for guitars.")
+      ;; The LICENSE file says GPLv3 but the license headers in the files say
+      ;; GPLv2 or later.
+      (license license:gpl2+))))
+
+(define-public gx-vbass-preamp-lv2
+  (let ((commit "0e599abab10c7669dd444e5d06f671c2fc1b9c6c")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-vbass-preamp-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxVBassPreAmp.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1dzksdfrva666gpi62fd2ni9rhf18sl917f1894qr0b17pbdh9k1"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxVBassPreAmp.lv2")
+      (synopsis "Simulation of the Vox Venue Bass 100 Pre Amp Section")
+      (description "This package provides the LV2 plugin \"GxVBassPreAmp\", a
+pre-amplifier simulation modelled after the 1984 Vox Venue Bass 100 Pre Amp
+Section."))))
+
+(define-public gx-overdriver-lv2
+  (let ((commit "ed71801987449414bf3adaa0dbfac68e8775f1ce")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-overdriver-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxOverDriver.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "13j614jh525fbkby79nnzwj0z1ac0c9wclyn5pfqvkmx6a7j24r8"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxOverDriver.lv2")
+      (synopsis "Overdrive effect with level and tone control")
+      (description "This package provides the LV2 plugin \"GxOverDriver\", an
+overdrive effect."))))
+
+(define-public gx-tone-mender-lv2
+  (let ((commit "b6780b4a3e4782b3ed0e5882d6788f178aed138f")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-tone-mender-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxToneMender.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "07qdcfsvv2vdnfnjh91pfgvjdcs5y91nvwfm8c0z8fp6b4bk7a9q"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxToneMender.lv2")
+      (synopsis "Clean boost with a 3-knob tonestack")
+      (description "This package provides the LV2 plugin \"GxToneMender\", a
+clean boost effect with a 3-knob tonestack."))))
+
+(define-public gx-push-pull-lv2
+  (let ((commit "7f76ae2068498643ac8671ee0930b13ee3fd8eb5")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-push-pull-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxPushPull.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "12f5hwck2irph0gjbj8xy8jqcqdwb8l1hlwf29k0clz52h1jhb5q"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxPushPull.lv2")
+      (synopsis "Octave up push pull transistor fuzz simulation")
+      (description "This package provides the LV2 plugin \"GxPushPull\", a
+simulation of a push pull transistor fuzz effect with added high octave."))))
+
+(define-public gx-suppa-tone-bender-lv2
+  (let ((commit "4e6dc713ec24e7fcf5ea23b7e685af627c01b9c9")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-suppa-tone-bender-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSuppaToneBender.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1i22xr252nkbazkwidll2zb3i96610gx65qn5djdkijlz7j77138"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (home-page "https://github.com/brummer10/GxSuppaToneBender.lv2")
+      (synopsis "Simulation of the Vox Suppa Tone Bender pedal")
+      (description "This package provides the LV2 plugin
+\"GxSuppaToneBender\", a simulation modelled after the Vox Suppa Tone Bender
+pedal."))))
+
+(define-public gx-saturator-lv2
+  (let ((commit "361399245d234b4d02f11f066d25ac15d90c6bf8")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-saturator-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSaturator.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "13cf5gxr2wzp5954hdhbl79v98a665ll5434mb3668p4j33sv217"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
+      (home-page "https://github.com/brummer10/GxSaturator.lv2")
+      (synopsis "Saturation effect")
+      (description "This package provides the LV2 plugin \"GxSaturator\", a
+saturation effect."))))
+
+(define-public gx-hyperion-lv2
+  (let ((commit "7d993bc77f9946b3df0e481632c61b2dcbb6549f")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-hyperion-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxHyperion.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "12klcyc6l9v93ii3478mqz44jzvh5np1sk8zzdmz42jp0w8qd429"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
+      (home-page "https://github.com/brummer10/GxHyperion.lv2")
+      (synopsis "Simulation of the Hyperion Fuzz pedal")
+      (description "This package provides the LV2 plugin \"GxHyperion\", a
+simulation of the Hyperion Fuzz pedal."))))
+
+(define-public gx-voodoo-fuzz-lv2
+  (let ((commit "d2d6b27bc279f98c2fd11bbd58ffe2fb2c321ec4")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-voodoo-fuzz-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxVoodoFuzz.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ji915bly588a8xwvwspvsqv0nh8ljgi6rky2mk1d9d6nz96jrbk"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
+      (home-page "https://github.com/brummer10/GxVoodoFuzz.lv2")
+      (synopsis "Fuzz effect modelled after the Voodoo Lab SuperFuzz")
+      (description "This package provides the LV2 plugin \"GxVoodooFuzz\", a
+simulation modelled after the Voodoo Lab SuperFuzz pedal.  It's basically a
+Bosstone circuit, followed by the tone control of the FoxToneMachine in
+parallel with a DarkBooster, followed by a volume control."))))
+
+(define-public gx-super-fuzz-lv2
+  (let ((commit "9800354caeb4082a64ca55b2daa9a9a1f79b8c21")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-super-fuzz-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSuperFuzz.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1jclp53p01h94cpx17wm4765r7klbr41g7bvq87l53qwlrgkc7a9"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
+      (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
+      (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
+      (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
+analog simulation of the UniVox SuperFuzz pedal.  In this simulation the trim
+pot, which is usualy in the housing, is exposed as a control parameter.  It
+adjusts the amount of harmonics."))))
+
+(define-public gx-vintage-fuzz-master-lv2
+  (let ((commit "c3ab9a3019a8381a398718b98615940b4a225b9e")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-vintage-fuzz-master-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0s1ghysggx6psalyhcpgjnmf38vama6jcqgbldqmxii5c2w2ybsc"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
+      (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
+      (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
+      (description "This package provides the LV2 plugin
+\"GxVintageFuzzMaster\", a simulation of the vintage Fuzz Master pedal."))))
+
+(define-public gx-slow-gear-lv2
+  (let ((commit "1071c2b2936ebad859242cb578af2f3415f8900f")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-slow-gear-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSlowGear.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0c6099h5qkv7ilsvxxcrzwy1h6lkld1srh3fvbjxyw9q34kbqsyl"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
+      (home-page "https://github.com/brummer10/GxSlowGear.lv2")
+      (synopsis "Slow gear audio effect")
+      (description "This package provides the LV2 plugin \"GxSlowGear\", a
+slow gear audio effect to produce volume swells."))))
+
+(define-public gx-switchless-wah-lv2
+  (let ((commit "1d466240c482b7ce9136aee39044068ab96f1c92")
+        (revision "1"))
+    (package (inherit gx-guvnor-lv2)
+      (name "gx-switchless-wah-lv2")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brummer10/GxSwitchlessWah.lv2")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0g6njgsm8s76n6yys09a8w77z93pjjgqq9hzhhsrl73hhvyr9qmy"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'escape-shell-commands
+               (lambda _
+                 (substitute* "Makefile"
+                   (("cat ") "$(shell cat ")
+                   (("/dev/null") "/dev/null)")
+                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
+                 #t))))))
+      (home-page "https://github.com/brummer10/GxSwitchlessWah.lv2")
+      (synopsis "Wah emulation with switchless activation")
+      (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
+a simulation of an analog Wah pedal with switchless activation."))))

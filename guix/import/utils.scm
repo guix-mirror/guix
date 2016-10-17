@@ -26,7 +26,6 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
-  #:use-module (json)
   #:use-module (srfi srfi-1)
   #:export (factorize-uri
 

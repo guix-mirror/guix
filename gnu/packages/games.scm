@@ -545,7 +545,7 @@ are primarily in English, however some in other languages are provided.")
 (define-public irrlicht
   (package
     (name "irrlicht")
-    (version "1.8.1")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -554,10 +554,10 @@ are primarily in English, however some in other languages are provided.")
                     "/" version "/irrlicht-" version ".zip"))
               (sha256
                (base32
-                "0yz9lvsc8aqk8wj4rnpanxrw90gqpwn9w5hxp94r8hnm2q0vjjw1"))))
+                "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
+     `(#:phases (alist-cons-after
                  'unpack 'fix-build-env
                  (lambda* (#:key outputs #:allow-other-keys)
                    (let ((out (assoc-ref outputs "out")))
@@ -572,19 +572,13 @@ are primarily in English, however some in other languages are provided.")
                   (lambda* (#:key source #:allow-other-keys)
                     (and (zero? (system* "unzip" source))
                          ;; The actual source is buried a few directories deep.
-                         (chdir "irrlicht-1.8.1/source/Irrlicht/")))
-                  (alist-cons-after
-                   'unpack 'apply-patch/mesa-10-fix
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (zero? (system* "patch" "--force" "-p3" "-i"
-                                     (assoc-ref inputs "patch/mesa-10-fix"))))
-                   ;; No configure script
-                   (alist-delete 'configure %standard-phases))))
+                         (chdir (string-append "irrlicht-" ,version "/source/Irrlicht/"))))
+                  ;; No configure script
+                  (alist-delete 'configure %standard-phases)))
        #:tests? #f ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
     (native-inputs
-     `(("patch/mesa-10-fix" ,(search-patch "irrlicht-mesa-10.patch"))
-       ("unzip" ,unzip)))
+     `(("unzip" ,unzip)))
     (inputs
      `(("mesa" ,mesa)
        ("glu" ,glu)))
@@ -946,7 +940,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.6.0")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -954,35 +948,13 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "0fl9pwkywqnsmgr6plfj9zb05xrdnl5xb2hcmbjk7ap9l4cjfca4"))))
+                "1lg3z7jhzmsjym53qss8mbydny8hafwjnfsc7x91hrr9zrkwblly"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("freetype" ,freetype)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("libice" ,libice)
-       ("libpng" ,libpng)
-       ("sdl" ,sdl)
-       ("sdl-mixer" ,sdl-mixer)
-       ("sdl-image" ,sdl-image)
-       ("libsm" ,libsm)
-       ("libunwind" ,libunwind)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxi" ,libxi)
-       ("libxmu" ,libxmu)
-       ("libxt" ,libxt)
-       ("tcl" ,tcl)
-       ("zlib" ,zlib)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'patch-makefile
-           (lambda _
-             (substitute* "Makefile"
-               (("CXXFLAGS =") "CXXFLAGS = ${CFLAGS}")))))))
+     `(("glu" ,glu)
+       ("sfml" ,sfml)))
     (synopsis "High speed arctic racing game based on Tux Racer")
     ;; Snarfed straight from Debian
     (description "Extreme Tux Racer, or etracer as it is called for short, is

@@ -56,6 +56,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
@@ -7136,6 +7138,96 @@ files.  It counts the number of nucleotide sequence reads in given genomic
 ranges and it computes reads profiles and coverage profiles.  It also handles
 paired-end data.")
     (license license:gpl2+)))
+
+(define-public r-rcas
+  (package
+    (name "r-rcas")
+    (version "0.99.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/RCAS/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ljgl2b4r6w2n0i9i04d9xaphajsvhfkjdj2i2z830nha4m3w8f0"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-testthat" ,r-testthat)
+       ;; During vignette building knitr checks that "pandoc-citeproc"
+       ;; is in the PATH.
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-biomart" ,r-biomart)
+       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
+       ("r-org-ce-eg-db" ,r-org-ce-eg-db)
+       ("r-org-dm-eg-db" ,r-org-dm-eg-db)
+       ("r-org-mm-eg-db" ,r-org-mm-eg-db)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-bsgenome-mmusculus-ucsc-mm9" ,r-bsgenome-mmusculus-ucsc-mm9)
+       ("r-bsgenome-celegans-ucsc-ce10" ,r-bsgenome-celegans-ucsc-ce10)
+       ("r-bsgenome-dmelanogaster-ucsc-dm3" ,r-bsgenome-dmelanogaster-ucsc-dm3)
+       ("r-topgo" ,r-topgo)
+       ("r-dt" ,r-dt)
+       ("r-plotly" ,r-plotly)
+       ("r-motifrg" ,r-motifrg)
+       ("r-genomation" ,r-genomation)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (synopsis "RNA-centric annotation system")
+    (description
+     "RCAS aims to be a standalone RNA-centric annotation system that provides
+intuitive reports and publication-ready graphics.  This package provides the R
+library implementing most of the pipeline's features.")
+    (home-page "https://github.com/BIMSBbioinfo/RCAS")
+    (license license:expat)))
+
+(define-public rcas-web
+  (package
+    (name "rcas-web")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/BIMSBbioinfo/rcas-web/"
+                           "releases/download/v" version
+                           "/rcas-web-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0d3my0g8i7js59n184zzzjdki7hgmhpi4rhfvk7i6jsw01ba04qq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (json   (assoc-ref inputs "guile-json"))
+                    (redis  (assoc-ref inputs "guile-redis"))
+                    (path   (string-append
+                             json  "/share/guile/site/2.2:"
+                             redis "/share/guile/site/2.2")))
+               (wrap-program (string-append out "/bin/rcas-web")
+                 `("GUILE_LOAD_PATH" ":" = (,path))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" = (,path))
+                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))))
+             #t)))))
+    (inputs
+     `(("r" ,r)
+       ("r-rcas" ,r-rcas)
+       ("guile-next" ,guile-next)
+       ("guile-json" ,guile2.2-json)
+       ("guile-redis" ,guile2.2-redis)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/BIMSBbioinfo/rcas-web")
+    (synopsis "Web interface for RNA-centric annotation system (RCAS)")
+    (description "This package provides a simple web interface for the
+@dfn{RNA-centric annotation system} (RCAS).")
+    (license license:agpl3+)))
 
 (define-public emboss
   (package

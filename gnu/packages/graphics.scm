@@ -142,20 +142,18 @@ application can be customized via its API for Python scripting.")
 (define-public assimp
   (package
     (name "assimp")
-    (version "3.2")
+    (version "3.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/assimp/assimp/archive/v"
-                                  version ".zip"))
-              (file-name (string-append name "-" version ".zip"))
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "11sfahmbwnjjpd8vpzdsng1bx5mb0cmaqb20dz6sdwapqanqwmar"))))
+                "1gy7zlgkf4nmyv8n674p3f30asis0gjz8icyy11i693n13ww71fk"))))
     (build-system cmake-build-system)
     (inputs
      `(("zlib" ,zlib)))
-    (native-inputs
-     `(("unzip" ,unzip)))
     (home-page "http://assimp.org/")
     (synopsis "Asset import library")
     (description

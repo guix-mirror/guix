@@ -5583,3 +5583,31 @@ handling the startup notification side.")
      "Calculator is an application that solves mathematical equations and
 is suitable as a default application in a Desktop environment.")
     (license license:gpl3)))
+
+(define-public xpad
+  (package
+    (name "xpad")
+    (version "4.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/xpad/trunk/4.8.0/+download/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "17f915yyvfa2fsavq6wh0q0dfhib28b4k1gc0292b9xdlrvy7f22"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libsm" ,libsm)))
+    (home-page "https://wiki.gnome.org/Apps/Xpad")
+    (synopsis "Virtual sticky note")
+    (description
+     "Xpad is a sticky note that strives to be simple, fault tolerant,
+and customizable.  Xpad consists of independent pad windows, each is
+basically a text box in which notes can be written.")
+    (license license:gpl3+)))

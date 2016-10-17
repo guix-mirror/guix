@@ -42,6 +42,7 @@
             %bag-emerged-node-type
             %derivation-node-type
             %reference-node-type
+            %referrer-node-type
             %node-types
 
             guix-graph))
@@ -257,6 +258,24 @@ derivation graph")))))))
 ;;; DAG of residual references (aka. run-time dependencies).
 ;;;
 
+(define ensure-store-items
+  ;; Return a list of store items as a monadic value based on the given
+  ;; argument, which may be a store item or a package.
+  (match-lambda
+    ((? package? package)
+     ;; Return the output file names of PACKAGE.
+     (mlet %store-monad ((drv (package->derivation package)))
+       (return (match (derivation->output-paths drv)
+                 (((_ . file-names) ...)
+                  file-names)))))
+    ((? store-path? item)
+     (with-monad %store-monad
+       (return (list item))))
+    (x
+     (raise
+      (condition (&message (message "unsupported argument for \
+this type of graph")))))))
+
 (define (references* item)
   "Return as a monadic value the references of ITEM, based either on the
 information available in the local store or using information about
@@ -275,23 +294,26 @@ substitutes."
   (node-type
    (name "references")
    (description "the DAG of run-time dependencies (store references)")
-   (convert (match-lambda
-              ((? package? package)
-               ;; Return the output file names of PACKAGE.
-               (mlet %store-monad ((drv (package->derivation package)))
-                 (return (match (derivation->output-paths drv)
-                           (((_ . file-names) ...)
-                            file-names)))))
-              ((? store-path? item)
-               (with-monad %store-monad
-                 (return (list item))))
-              (x
-               (raise
-                (condition (&message (message "unsupported argument for \
-reference graph")))))))
+   (convert ensure-store-items)
    (identifier (lift1 identity %store-monad))
    (label store-path-package-name)
    (edges references*)))
+
+(define non-derivation-referrers
+  (let ((referrers (store-lift referrers)))
+    (lambda (item)
+      "Return the referrers of ITEM, except '.drv' files."
+      (mlet %store-monad ((items (referrers item)))
+        (return (remove derivation-path? items))))))
+
+(define %referrer-node-type
+  (node-type
+   (name "referrers")
+   (description "the DAG of referrers in the store")
+   (convert ensure-store-items)
+   (identifier (lift1 identity %store-monad))
+   (label store-path-package-name)
+   (edges non-derivation-referrers)))
 
 
 ;;;
@@ -305,7 +327,8 @@ reference graph")))))))
         %bag-with-origins-node-type
         %bag-emerged-node-type
         %derivation-node-type
-        %reference-node-type))
+        %reference-node-type
+        %referrer-node-type))
 
 (define (lookup-node-type name)
   "Return the node type called NAME.  Raise an error if it is not found."

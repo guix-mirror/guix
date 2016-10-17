@@ -443,6 +443,54 @@ attachments, create new maildirs, and so on.")
 @code{notmuch} mail.  It is written in Python using the @code{urwid} toolkit.")
     (license gpl3+)))
 
+(define-public notifymuch
+  (let
+      ((commit "9d4aaf54599282ce80643b38195ff501120807f0")
+       (revision "1"))
+    (package
+      (name "notifymuch")
+      (version (string-append "0.1-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kspi/notifymuch.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1lssr7iv43mp5v6nzrfbqlfzx8jcc7m636wlfyhhnd8ydd39n6k4"))
+         (file-name (string-append name "-" version "-checkout"))))
+      (build-system python-build-system)
+      (inputs
+       `(("python-notmuch" ,python-notmuch)
+         ("python-pygobject" ,python-pygobject)
+         ("gobject-introspection" ,gobject-introspection)
+         ("libnotify" ,libnotify)
+         ("gtk+" ,gtk+)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-binary
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin/notifymuch")))
+                 (wrap-program bin
+                   `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                   `("GI_TYPELIB_PATH" ":" prefix
+                     (,(getenv "GI_TYPELIB_PATH")
+                      ,(string-append out "/lib/girepository-1.0")))))
+               #t)))))
+      (home-page "https://github.com/kspi/notifymuch")
+      (synopsis "Displays notifications for changes in the notmuch email database")
+      (description "notifymuch displays desktop notifications for messages in
+the notmuch database.  The notifications are sent using libnotify to a
+notification daemon.  The query to find messages to send a notification about
+is configurable, and a notification for the same message will not be send
+within a configurable period (defaults to 48 hours).  To use notifymuch, run
+@command{notifymuch} after new mail is indexed, this can be automated by
+invoking @command{notifymuch} from the post-new hook.")
+      (license gpl3))))
+
 (define-public notmuch
   (package
     (name "notmuch")

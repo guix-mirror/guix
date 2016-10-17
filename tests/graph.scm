@@ -232,6 +232,28 @@ edges."
                           (list out txt))
                   (equal? edges `((,out ,txt)))))))))))
 
+(test-assert "referrer DAG"
+  (let-values (((backend nodes+edges) (make-recording-backend)))
+    (run-with-store %store
+      (mlet* %store-monad ((txt   (text-file "referrer-node" (random-text)))
+                           (drv   (gexp->derivation "referrer"
+                                                    #~(symlink #$txt #$output)))
+                           (out -> (derivation->output-path drv)))
+        ;; We should see only TXT and OUT, with an edge from the former to the
+        ;; latter.
+        (mbegin %store-monad
+          (built-derivations (list drv))
+          (export-graph (list txt) 'port
+                        #:node-type %referrer-node-type
+                        #:backend backend)
+          (let-values (((nodes edges) (nodes+edges)))
+            (return
+             (and (equal? (match nodes
+                            (((ids labels) ...)
+                             ids))
+                          (list txt out))
+                  (equal? edges `((,txt ,out)))))))))))
+
 (test-assert "node-edges"
   (run-with-store %store
     (let ((packages (fold-packages cons '())))

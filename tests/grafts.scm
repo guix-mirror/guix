@@ -218,4 +218,66 @@
          (let ((out (derivation->output-path grafted)))
            (file-is-directory? (string-append out "/" repl))))))
 
+(test-assert "graft-derivation, grafts are not shadowed"
+  ;; We build a DAG as below, where dotted arrows represent replacements and
+  ;; solid arrows represent dependencies:
+  ;;
+  ;;  P1  ·············>  P1R
+  ;;  |\__________________.
+  ;;  v                   v
+  ;;  P2  ·············>  P2R
+  ;;  |
+  ;;  v
+  ;;  P3
+  ;;
+  ;; We want to make sure that the two grafts we want to apply to P3 are
+  ;; honored and not shadowed by other computed grafts.
+  (let* ((p1     (build-expression->derivation
+                  %store "p1"
+                  '(mkdir (assoc-ref %outputs "out"))))
+         (p1r    (build-expression->derivation
+                  %store "P1"
+                  '(let ((out (assoc-ref %outputs "out")))
+                     (mkdir out)
+                     (call-with-output-file (string-append out "/replacement")
+                       (const #t)))))
+         (p2     (build-expression->derivation
+                  %store "p2"
+                  `(let ((out (assoc-ref %outputs "out")))
+                     (mkdir out)
+                     (chdir out)
+                     (symlink (assoc-ref %build-inputs "p1") "p1"))
+                  #:inputs `(("p1" ,p1))))
+         (p2r    (build-expression->derivation
+                  %store "P2"
+                  `(let ((out (assoc-ref %outputs "out")))
+                     (mkdir out)
+                     (chdir out)
+                     (symlink (assoc-ref %build-inputs "p1") "p1")
+                     (call-with-output-file (string-append out "/replacement")
+                       (const #t)))
+                  #:inputs `(("p1" ,p1))))
+         (p3     (build-expression->derivation
+                  %store "p3"
+                  `(let ((out (assoc-ref %outputs "out")))
+                     (mkdir out)
+                     (chdir out)
+                     (symlink (assoc-ref %build-inputs "p2") "p2"))
+                  #:inputs `(("p2" ,p2))))
+         (p1g    (graft
+                   (origin p1)
+                   (replacement p1r)))
+         (p2g    (graft
+                   (origin p2)
+                   (replacement (graft-derivation %store p2r (list p1g)))))
+         (p3d    (graft-derivation %store p3 (list p1g p2g))))
+    (and (build-derivations %store (list p3d))
+         (let ((out (derivation->output-path (pk p3d))))
+           ;; Make sure OUT refers to the replacement of P2, which in turn
+           ;; refers to the replacement of P1, as specified by P1G and P2G.
+           ;; It used to be the case that P2G would be shadowed by a simple
+           ;; P2->P2R graft, which is not what we want.
+           (and (file-exists? (string-append out "/p2/replacement"))
+                (file-exists? (string-append out "/p2/p1/replacement")))))))
+
 (test-end)

@@ -88,7 +88,7 @@ configureable through a graphical wizard.")
 (define-public termite
   (package
     (name "termite")
-    (version "11")
+    (version "12")
     (source
       (origin
         (method git-fetch)
@@ -99,11 +99,13 @@ configureable through a graphical wizard.")
               (recursive? #t)))
         (file-name (string-append name "-" version "-checkout"))
         (sha256
-          (base32
-            "1cw4yw7n9m2si8b7zcfyz9pyihncabxm5g39v1mxslfajxgwzmd8"))))
+         (base32
+          "0s6dyg3vcqk5qcx90bs24wdnd3p56rdjdcanx4pcxvp6ksjl61jz"))))
     (build-system gnu-build-system)
     (arguments
-      `(#:phases (alist-delete 'configure %standard-phases)
+      `(#:phases
+        (modify-phases %standard-phases
+          (delete 'configure))
         #:tests? #f
         ;; This sets the destination when installing the necessary terminal
         ;; capability data, which are not provided by 'ncurses'.  See
@@ -263,7 +265,7 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
 (define-public picocom
   (package
     (name "picocom")
-    (version "2.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -272,7 +274,7 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1v891cx18vx3lnpfaq90f5y6njgigkn4qsikhrmyzshnz32jy5bb"))))
+                "1knl6dglnrynx1fhy21nylw56i1q3dkizkgxzkq42mb7ilah8f9y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc")

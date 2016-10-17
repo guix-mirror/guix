@@ -183,7 +183,9 @@ clone.")
                 "0k2fl5xk3ni2q8bsxl0551inx26ww3w6cp6hssvww0wfjdjcirsm"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no tests
+     '(#:configure-flags
+       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE")
+       #:tests? #f)) ; no tests
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)
