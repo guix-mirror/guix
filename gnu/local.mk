@@ -830,6 +830,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\
   %D%/packages/patches/slim-reset.patch				\
+  %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slock-CVE-2016-6866.patch		\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   %D%/packages/patches/soprano-find-clucene.patch		\
