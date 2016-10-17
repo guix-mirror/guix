@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,8 @@
  #:use-module (gnu packages texinfo)
  #:use-module (gnu packages textutils)
  #:use-module (gnu packages tls)
- #:use-module (gnu packages upnp))
+ #:use-module (gnu packages upnp)
+ #:use-module (gnu packages gnuzilla))
 
 (define-public bitcoin-core
   (package
@@ -188,3 +190,53 @@ in ability, and easy to use.")
                     "file://src/wcwidth.cc"
                     "See src/wcwidth.cc in the distribution.")
                    license:gpl2+))))  ; lisp/*
+
+(define-public geierlein
+  (package
+    (name "geierlein")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/stesie/geierlein"
+                           "/archive/V" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b11fq8v5w8nxjb20jl4dsfhv76xky6n3sq3k3fbb0m2sq9ikikw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; would require npm, python and a lot more
+       #:phases
+        (modify-phases %standard-phases
+          (delete 'configure)
+          (add-after 'unpack 'override-target-directory-and-tool-paths
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (substitute* "Makefile"
+                (("prefix := .*")
+                 (string-append "prefix := " (assoc-ref outputs "out") "\n"))
+                ;; Required for tests, unused for now:
+                ;;(("PYTHON := .*")
+                ;; (string-append (which "python") "\n")))
+                (("INSTALL := .*")
+                 (string-append "INSTALL := " (which "install") "\n")))
+              (substitute* "bin/xgeierlein.in"
+                ;; Use icecat as XULRUNNER
+                (("^for search ")
+                 (string-append "XULRUNNER=" (which "icecat") "\n"
+                                "for search ")))
+              #t)))))
+    (inputs
+     `(("icecat" ,icecat)))
+    (home-page "http://stesie.github.io/geierlein/")
+    (synopsis "Free Elster client, for sending Germany VAT declarations")
+    (description
+     "Geierlein is a free Elster client, i.e. an application that
+allows to send VAT declarations to Germany's fiscal authorities.
+
+Currently it is *not* possible to send returns that are due annually
+(especially the income tax return) since the fiscal authority doesn't
+allow to do that off the ERiC library (which is proprietary however).
+It's not clear at the moment whether one day it will be possible to
+do so.")
+    (license license:agpl3+)))
