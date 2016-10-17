@@ -2648,6 +2648,35 @@ somewhat intelligeble.")
 (define-public python2-pyjwt
   (package-with-python2 python-pyjwt))
 
+(define-public python-pykka
+  (package
+    (name "python-pykka")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pykka" version))
+       (sha256
+        (base32
+         "049w3r0mdnnw7xv19jiq7rvls9k7xs73x05b4qs5d6z4vvmgyiz8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-gevent" ,python-gevent)
+       ("python-eventlet" ,python-eventlet)))
+    (home-page "https://www.pykka.org/")
+    (synopsis "Pykka is a Python implementation of the actor model")
+    (description
+     "Pykka is a Python implementation of the actor model.
+The actor model introduces some simple rules to control the sharing
+of state and cooperation between execution units, which makes it
+easier to build concurrent applications.")
+    (license license:asl2.0)))
+
+(define-public python2-pykka
+  (package-with-python2 python-pykka))
+
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
