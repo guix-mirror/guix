@@ -111,7 +111,7 @@ package definition."
     (()
      '())
     ((package-inputs ...)
-     `((inputs (,'quasiquote ,package-inputs))))))
+     `((propagated-inputs (,'quasiquote ,package-inputs))))))
 
 (define (guess-requirements source-url wheel-url tarball)
   "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list of
