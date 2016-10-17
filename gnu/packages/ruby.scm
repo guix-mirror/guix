@@ -2477,6 +2477,8 @@ a native C extension.")
                (substitute* "Rakefile"
                  (("FileList\\[`git ls-files`\\.split\\(/\\\\n/\\)\\]")
                   (string-append "FileList" files))))
+             (substitute* "Gemfile"
+               ((".*json-java.*") "\n"))
              #t)))))
     (native-inputs
      `(("ruby-permutation" ,ruby-permutation)
