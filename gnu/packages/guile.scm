@@ -520,13 +520,12 @@ format is also supported.")
                "1f9n2b5b5r75lzjinyk6zp6g20g60msa0jpfrk5hhg4j8cy0ih4b"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'patch-module-dir
-                 (lambda _
-                   (substitute* "src/Makefile.in"
-                     (("^moddir[[:blank:]]*=[[:blank:]]*([[:graph:]]+)" _ rhs)
-                      (string-append "moddir = " rhs "/2.0\n"))))
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-module-dir
+                    (lambda _
+                      (substitute* "src/Makefile.in"
+                        (("^moddir[[:blank:]]*=[[:blank:]]*([[:graph:]]+)" _ rhs)
+                         (string-append "moddir = " rhs "/2.0\n"))))))))
     (inputs `(("guile" ,guile-2.0)))
     (home-page "http://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
