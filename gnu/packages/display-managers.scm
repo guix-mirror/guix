@@ -199,6 +199,7 @@ create smooth, animated user interfaces.")
 	     (sha256
 	      (base32 "1pqhk22jb4aja4hkrm7rjgbgzjyh7i4zswdgf5nw862l2znzxpi1"))
              (patches (search-patches "slim-config.patch"
+                                      "slim-reset.patch"
                                       "slim-session.patch"
                                       "slim-sigusr1.patch"))))
     (build-system cmake-build-system)
