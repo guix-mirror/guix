@@ -209,13 +209,31 @@ called \"guile\" must be replaced with a dependency on a version 2.1 of
           (rewrite obj)
           obj))))
 
+(define (transform-package-inputs/graft replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"gnutls=gnutls@3.5.4\" meaning that packages are built using the
+current 'gnutls' package, after which version 3.5.4 is grafted onto them."
+  (define (replacement-pair old new)
+    (cons old
+          (package (inherit old) (replacement new))))
+
+  (let* ((replacements (evaluate-replacement-specs replacement-specs
+                                                   replacement-pair))
+         (rewrite      (package-input-rewriting replacements)))
+    (lambda (store obj)
+      (if (package? obj)
+          (rewrite obj)
+          obj))))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
   ;; procedure; it is called with two arguments: the store, and a list of
   ;; things to build.
   `((with-source . ,transform-package-source)
-    (with-input  . ,transform-package-inputs)))
+    (with-input  . ,transform-package-inputs)
+    (with-graft  . ,transform-package-inputs/graft)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -227,7 +245,9 @@ called \"guile\" must be replaced with a dependency on a version 2.1 of
     (list (option '("with-source") #t #f
                   (parser 'with-source))
           (option '("with-input") #t #f
-                  (parser 'with-input)))))
+                  (parser 'with-input))
+          (option '("with-graft") #t #f
+                  (parser 'with-graft)))))
 
 (define (show-transformation-options-help)
   (display (_ "
@@ -235,7 +255,10 @@ called \"guile\" must be replaced with a dependency on a version 2.1 of
                          use SOURCE when building the corresponding package"))
   (display (_ "
       --with-input=PACKAGE=REPLACEMENT
-                         replace dependency PACKAGE by REPLACEMENT")))
+                         replace dependency PACKAGE by REPLACEMENT"))
+  (display (_ "
+      --with-graft=PACKAGE=REPLACEMENT
+                         graft REPLACEMENT on packages that refer to PACKAGE")))
 
 
 (define (options->transformation opts)
