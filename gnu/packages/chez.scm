@@ -273,3 +273,82 @@ and 32-bit PowerPC architectures.")
       (description "ChezWEB is a system for doing Knuthian style WEB
 programming in Scheme.")
       (license expat))))
+
+(define-public chez-sockets
+  (let ((commit "bce96881c06bd69a6757a6bff139744153924140")
+        (revision "1"))
+    (package
+      (name "chez-sockets")
+      (version (string-append "0.0-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/arcfide/chez-sockets.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "1n5fbwwz51fdzvjackgmnsgh363g9inyxv7kmzi0469cwavwcx5m"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("chez-scheme" ,chez-scheme)
+         ("chez-web" ,chez-web)
+         ("texlive" ,texlive)))
+      (arguments
+       `(#:tests? #f              ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (chez-web (assoc-ref inputs "chez-web"))
+                      (chez (assoc-ref inputs "chez-scheme"))
+                      (chez-h (dirname (car (find-files chez "scheme\\.h")))))
+                 (substitute* "Makefile"
+                   (("(SCHEMEH=).*$" all var)
+                    (string-append var chez-h)))
+                 #t)))
+           (add-before 'build 'tangle
+             (lambda _
+               ;; just using "make" tries to build the .c files before
+               ;; they are created.
+               (and (zero? (system* "make" "sockets"))
+                    (zero? (system* "make")))))
+           (replace 'build
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (chez-site (string-append out "/lib/csv"
+                                                ,(package-version chez-scheme)
+                                                "-site/arcfide")))
+                 ;; make sure Chez Scheme can find the shared libraries.
+                 (substitute* "sockets.ss"
+                   (("(load-shared-object) \"(socket-ffi-values\\.[sd][oy].*)\""
+                     all cmd so)
+                    (string-append cmd " \"" chez-site "/" so "\""))
+                   (("sockets-stub\\.[sd][oy].*" all)
+                    (string-append chez-site "/" all)))
+                 ;; to compile chez-sockets, the .so files must be
+                 ;; installed (because of the absolute path we
+                 ;; inserted above).
+                 (for-each (lambda (f d) (install-file f d))
+                           '("socket-ffi-values.so" "sockets-stub.so")
+                           (list chez-site chez-site))
+                 (zero? (system "echo '(compile-file \"sockets.sls\")' | scheme -q")))))
+           (replace 'install
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/chez-sockets"))
+                      (doc (string-append out "/share/doc/" ,name "-" ,version))
+                      (chez-site (string-append out "/lib/csv"
+                                                ,(package-version chez-scheme)
+                                                "-site/arcfide")))
+                 (for-each (lambda (f d) (install-file f d))
+                           '("sockets.pdf" "sockets.so")
+                           (list doc chez-site))
+                 #t))))))
+      (home-page "https://github.com/arcfide/chez-sockets")
+      (synopsis "Extensible sockets library for Chez Scheme")
+      (description "Chez-sockets is an extensible sockets library for
+Chez Scheme.")
+      (license expat))))
