@@ -584,8 +584,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
-  %D%/packages/patches/hdf4-shared-fortran.patch 		\
+  %D%/packages/patches/hdf4-architectures.patch 		\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
+  %D%/packages/patches/hdf4-shared-fortran.patch 		\
   %D%/packages/patches/hdf5-config-date.patch			\
   %D%/packages/patches/hdf-eos5-build-shared.patch 		\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
