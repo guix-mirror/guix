@@ -226,7 +226,8 @@ without modification.")
                  "ac_cv_func_dlopen=no"
 
                  ,@(if (%current-target-system)
-                       '("bash_cv_job_control_missing=no")
+                       '("bash_cv_job_control_missing=no"
+                         "bash_cv_getcwd_malloc=yes")
                        '())))
          ((#:phases phases)
           `(modify-phases ,phases
