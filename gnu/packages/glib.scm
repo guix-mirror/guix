@@ -139,7 +139,6 @@ shared NFS home directories.")
     (source
       (let ((version "1.10.12"))
         (origin
-          (method url-fetch)
           (inherit (package-source dbus))
           (uri (string-append
                 "https://dbus.freedesktop.org/releases/dbus/dbus-"
