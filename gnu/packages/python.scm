@@ -6459,6 +6459,10 @@ Python's @code{ctypes} foreign function interface (FFI).")
   (package
     (inherit file)
     (name "python-file")
+    (source (origin
+              (inherit (package-source file))
+              ;; This patch should not be applied to python2-file.
+              (patches (search-patches "python-file-double-encoding-bug.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f                                ;no tests
@@ -6487,6 +6491,7 @@ serve the same purpose: provide Python bindings for libmagic.")
   (let ((base (package-with-python2 (strip-python2-variant python-file))))
     (package
       (inherit base)
+      (source (package-source file))
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))

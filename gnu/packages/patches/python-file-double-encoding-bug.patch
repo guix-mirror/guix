@@ -1,0 +1,50 @@
+Fix bug that breaks file's Python bindings when using Python 3. This patch
+should not be applied when using Python 2.
+
+Copied from upstream source repository:
+
+https://github.com/file/file/commit/73e043d2a986234b187a00ed0c8d1f7bf83df372
+
+From 73e043d2a986234b187a00ed0c8d1f7bf83df372 Mon Sep 17 00:00:00 2001
+From: Christos Zoulas <christos@zoulas.com>
+Date: Tue, 28 Jun 2016 17:10:22 +0000
+Subject: [PATCH] PR/562: Reiner Herrmann: Avoid double encoding with python3
+
+---
+ python/magic.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/python/magic.py b/python/magic.py
+index c48f7d5..b0f7a17 100644
+--- a/python/magic.py
++++ b/python/magic.py
+@@ -134,7 +134,7 @@ class Magic(object):
+         if isinstance(r, str):
+             return r
+         else:
+-            return str(r).encode('utf-8')
++            return str(r, 'utf-8')
+ 
+     def descriptor(self, fd):
+         """
+@@ -152,7 +152,7 @@ class Magic(object):
+         if isinstance(r, str):
+             return r
+         else:
+-            return str(r).encode('utf-8')
++            return str(r, 'utf-8')
+ 
+     def error(self):
+         """
+@@ -163,7 +163,7 @@ class Magic(object):
+         if isinstance(e, str):
+             return e
+         else:
+-            return str(e).encode('utf-8')
++            return str(e, 'utf-8')
+ 
+     def setflags(self, flags):
+         """
+-- 
+2.10.1
+
