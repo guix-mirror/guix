@@ -426,7 +426,10 @@ detection, and lossless compression.")
                   delete-file (find-files "borg" "^(c|h|p).*\\.c$")))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((srfi srfi-26) ; for cut
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
            (lambda* (#:key inputs #:allow-other-keys)
@@ -439,7 +442,12 @@ detection, and lossless compression.")
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (man (string-append out "/share/man/man1")))
+                    (man (string-append out "/share/man/man1"))
+                    (misc (string-append out "/share/borg/misc")))
+               (for-each (cut install-file <> misc)
+                         '("docs/misc/create_chunker-params.txt"
+                           "docs/misc/internals-picture.txt"
+                           "docs/misc/prune-example.txt"))
                (and
                  (zero? (system* "python3" "setup.py" "build_ext" "--inplace"))
                  (zero? (system* "make" "-C" "docs" "man"))
