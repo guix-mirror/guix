@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,6 +33,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages video)
@@ -230,14 +231,15 @@ also known as DXTn or DXTC) for Mesa.")
         ("makedepend" ,makedepend)
         ("presentproto" ,presentproto)
         ("s2tc" ,s2tc)
+        ("llvm" ,llvm)
         ("wayland" ,wayland)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("python" ,python-2)))
     (arguments
      `(#:configure-flags
-       '(;; drop r300 from default gallium drivers, as it requires llvm
-         "--with-gallium-drivers=r600,svga,swrast,nouveau,virgl"
+       '("--with-gallium-drivers=i915,r300,r600,svga,swrast,nouveau,virgl"
+         "--enable-gallium-llvm"
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "--with-egl-platforms=x11,drm,wayland"
