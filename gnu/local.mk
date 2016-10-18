@@ -794,6 +794,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/ldc-1.1.0-disable-dmd-tests.patch	\
   %D%/packages/patches/ldc-1.1.0-disable-phobos-tests.patch	\
+  %D%/packages/patches/ledger-fix-uninitialized.patch		\
+  %D%/packages/patches/ledger-revert-boost-python-fix.patch	\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
