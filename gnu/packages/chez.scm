@@ -352,3 +352,50 @@ programming in Scheme.")
       (description "Chez-sockets is an extensible sockets library for
 Chez Scheme.")
       (license expat))))
+
+;; Help function for Chez Scheme to add the current path to
+;; CHEZSCHEMELIBDIRS.
+(define chez-configure
+  '(lambda _
+     (let ((chez-env (getenv "CHEZSCHEMELIBDIRS")))
+       (setenv "CHEZSCHEMELIBDIRS"
+               (if chez-env
+                   (string-append ".:" chez-env)
+                   "."))
+       #t)))
+
+;; Help function to define make flags for some Chez Scheme custom make
+;; files.
+(define (chez-make-flags name version)
+  `(let ((out (assoc-ref %outputs "out")))
+     (list (string-append "PREFIX=" out)
+           (string-append "DOCDIR=" out "/share/doc/"
+                          ,name "-" ,version))))
+
+(define-public chez-matchable
+  (package
+    (name "chez-matchable")
+    (version "20160306")
+    (home-page "https://github.com/fedeinthemix/chez-matchable")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/archive" "/v" version ".tar.gz"))
+       (sha256
+        (base32 "0cl4vc6487pikjq159pj4n5ghyaax31nywb5n4yn1682h3ir1hs0"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("chez-srfi" ,chez-srfi))) ; for tests
+    (native-inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (arguments
+     `(#:make-flags ,(chez-make-flags name version)
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure ,chez-configure))))
+    (synopsis "Portable hygienic pattern matcher for Scheme")
+    (description "This package provides a superset of the popular Scheme
+@code{match} package by Andrew Wright, written in fully portable
+@code{syntax-rules} and thus preserving hygiene.")
+    (license public-domain)))
