@@ -561,12 +561,15 @@ OpenGL.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("unzip" ,unzip)))
-    (inputs
-     `(("mesa" ,mesa)
+    (propagated-inputs
+     `(("mesa" ,mesa)                             ;included in public headers
+
+       ;; These are in 'Requires.private' of 'glfw3.pc'.
        ("libx11" ,libx11)
        ("libxrandr" ,libxrandr)
        ("libxinerama" ,libxinerama)
-       ("libxcursor" ,libxcursor)))
+       ("libxcursor" ,libxcursor)
+       ("libxxf86vm" ,libxxf86vm)))
     (home-page "http://www.glfw.org")
     (synopsis "OpenGL application development library")
     (description
