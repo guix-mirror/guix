@@ -48,6 +48,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mit-krb5)
@@ -423,6 +424,44 @@ DNS queries are allowed.  The bandwidth is asymmetrical, with limited upstream
 and up to 1 Mbit/s downstream.")
     ;; src/md5.[ch] is released under the zlib license
     (license (list license:isc license:zlib))))
+
+(define-public whois
+  (package
+    (name "whois")
+    (version "5.2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://debian/pool/main/w/whois/"
+                           name "_" version ".tar.xz"))
+       (sha256
+        (base32
+         "1wfdyqi64l5x56j259jrrlbh19b7q7i6r83a8q8rjzcqp0kl0vdj"))))
+    (build-system gnu-build-system)
+    ;; TODO: unbundle mkpasswd binary + its po files.
+    (arguments
+     `(#:tests? #f ; Does not exist
+       #:make-flags (list "CC=gcc"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No configure
+         (add-before 'build 'setenv
+           (lambda _
+             (setenv "HAVE_ICONV" "1")
+             (setenv "HAVE_LIBIDN" "1"))))))
+    (inputs
+     `(("libidn" ,libidn)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("perl" ,perl)))
+    (synopsis "Improved whois client")
+    (description "This whois client is intelligent and can
+automatically select the appropriate whois server for most queries.
+Because of historical reasons this also includes a tool called mkpasswd
+which can be used to encrypt a password with @code{crypt(3)}.")
+    (home-page "https://github.com/rfc1036/whois")
+    (license license:gpl2+)))
 
 (define-public wireshark
   (package
