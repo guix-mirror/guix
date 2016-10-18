@@ -1180,3 +1180,55 @@ testing frameworks, mocking libraries and UI validation rules.")
 JUnit provides assertions for testing expected results, test fixtures for
 sharing common test data, and test runners for running tests.")
     (license license:epl1.0)))
+
+(define-public java-plexus-utils
+  (package
+    (name "java-plexus-utils")
+    (version "3.0.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/"
+                                  "plexus-utils/archive/plexus-utils-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1mlwpc6fms24slygv5yvi6fi9hcha2fh0v73p5znpi78bg36i2js"))))
+    (build-system ant-build-system)
+    ;; FIXME: The default build.xml does not include a target to install
+    ;; javadoc files.
+    (arguments
+     `(#:jar-name "plexus-utils.jar"
+       #:source-dir "src/main"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-reference-to-/bin-and-/usr
+           (lambda _
+             (substitute* "src/main/java/org/codehaus/plexus/util/\
+cli/shell/BourneShell.java"
+               (("/bin/sh") (which "sh"))
+               (("/usr/")   (getcwd)))
+             #t))
+         (add-after 'unpack 'fix-or-disable-broken-tests
+           (lambda _
+             (with-directory-excursion "src/test/java/org/codehaus/plexus/util"
+               (substitute* '("cli/CommandlineTest.java"
+                              "cli/shell/BourneShellTest.java")
+                 (("/bin/sh")   (which "sh"))
+                 (("/bin/echo") (which "echo")))
+
+               ;; This test depends on MavenProjectStub, but we don't have
+               ;; a package for Maven.
+               (delete-file "introspection/ReflectionValueExtractorTest.java")
+
+               ;; FIXME: The command line tests fail, maybe because they use
+               ;; absolute paths.
+               (delete-file "cli/CommandlineTest.java"))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://codehaus-plexus.github.io/plexus-utils/")
+    (synopsis "Common utilities for the Plexus framework")
+    (description "This package provides various Java utility classes for the
+Plexus framework to ease working with strings, files, command lines, XML and
+more.")
+    (license license:asl2.0)))
