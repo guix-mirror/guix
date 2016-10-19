@@ -5888,6 +5888,28 @@ packages.")
 Bioconductor, CRAN, and Github.")
     (license license:artistic2.0)))
 
+(define-public r-getopt
+  (package
+    (name "r-getopt")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "getopt" version))
+       (sha256
+        (base32
+         "00f57vgnzmg7cz80rjmjz1556xqcmx8nhrlbbhaq4w7gl2ibl87r"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/trevorld/getopt")
+    (synopsis "Command-line option processor for R")
+    (description
+     "This package is designed to be used with Rscript to write shebang
+scripts that accept short and long options.  Many users will prefer to
+use the packages @code{optparse} or @code{argparse} which add extra
+features like automatically generated help options and usage texts,
+support for default values, positional argument support, etc.")
+    (license license:gpl2+)))
+
 (define-public r-dnacopy
   (package
     (name "r-dnacopy")
