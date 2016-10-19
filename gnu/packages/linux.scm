@@ -3018,3 +3018,28 @@ of flash storage.")
       (list license:gpl2 ; Almost everything is gpl2 or gpl2+
             license:mpl1.1 ; All ftl* files
             license:expat)))) ; libiniparser
+
+(define-public libseccomp
+  (package
+    (name "libseccomp")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/seccomp/libseccomp/"
+                                  "releases/download/v" version
+                                  "/libseccomp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0asnlkzqms520r0dra08dzcz5hh6hs7lkajfw9wij3vrd0hxsnzz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (synopsis "Interface to Linux's seccomp syscall filtering mechanism")
+    (description "The libseccomp library provides an easy to use, platform
+independent, interface to the Linux Kernel's syscall filtering mechanism.  The
+libseccomp API is designed to abstract away the underlying BPF based syscall
+filter language and present a more conventional function-call based filtering
+interface that should be familiar to, and easily adopted by, application
+developers.")
+    (home-page "https://github.com/seccomp/libseccomp")
+    (license license:lgpl2.1)))
