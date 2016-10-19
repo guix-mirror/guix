@@ -113,6 +113,37 @@ interactive dialogs to guide them.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/c-graph/")))
 
+(define-public coda
+  (package
+    (name "coda")
+    (version "2.17.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/stcorp/coda/releases/download/"
+                           version "/coda-" version ".tar.gz"))
+       (sha256
+        (base32 "04b9l3wzcix0mnfq77mwnil6cbr8h2mki8myvy0lzn236qcwaq1h"))))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("python" ,python)
+       ("python-numpy" ,python-numpy)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("hdf4" ,hdf4-alt)
+       ("hdf5" ,hdf5)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-hdf4" "--with-hdf5" "--enable-python")))
+    (synopsis "A common interface to various earth observation data formats")
+    (description
+     "The Common Data Access toolbox (CODA) provides a set of interfaces for
+reading remote sensing data from earth observation data files.  It consists of
+command line applications and interfaces to the C, Fortran, Python, and Java
+programming languages.")
+    (home-page "https://stcorp.nl/coda")
+    (license license:gpl2+)))
+
 (define-public units
   (package
    (name "units")
