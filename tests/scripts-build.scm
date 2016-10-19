@@ -107,7 +107,7 @@
               (inputs `(("foo" ,grep)
                         ("bar" ,(dummy-package "chbouib"
                                   (native-inputs `(("x" ,grep)))))))))
-         (t (options->transformation '((with-input . "grep=findutils")))))
+         (t (options->transformation '((with-graft . "grep=findutils")))))
     (with-store store
       (let ((new (t store p)))
         (and (not (eq? new p))
