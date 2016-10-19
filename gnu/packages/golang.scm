@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is an addendum GNU Guix.
 ;;;
@@ -139,7 +140,9 @@
                (setenv "GOOS" "linux")
                (setenv "GOROOT" (dirname (getcwd)))
                (setenv "GOROOT_FINAL" output)
-               (setenv "CGO_ENABLED" "1")
+               ;; Go 1.4's cgo will not work with binutils >= 2.27:
+               ;; https://github.com/golang/go/issues/16906
+               (setenv "CGO_ENABLED" "0")
                (zero? (system* "sh" "all.bash")))))
 
          (replace 'install
@@ -306,6 +309,18 @@ sequential processes (CSP) concurrent programming features added.")
                  (setenv "GOGC" "400")
                  (setenv "GO_TEST_TIMEOUT_SCALE" "9999")
                  #t)))
+
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; FIXME: Some of the .a files are not bit-reproducible.
+               (let* ((output (assoc-ref outputs "out")))
+                 (setenv "CC" (which "gcc"))
+                 (setenv "GOOS" "linux")
+                 (setenv "GOROOT" (dirname (getcwd)))
+                 (setenv "GOROOT_FINAL" output)
+                 (setenv "CGO_ENABLED" "1")
+                 (zero? (system* "sh" "all.bash")))))
+
            (replace 'install
              ;; TODO: Most of this could be factorized with Go 1.4.
              (lambda* (#:key outputs #:allow-other-keys)
