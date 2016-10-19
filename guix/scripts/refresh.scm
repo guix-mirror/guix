@@ -50,7 +50,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:export (guix-refresh
             %updaters))
 

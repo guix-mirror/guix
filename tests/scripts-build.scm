@@ -102,4 +102,23 @@
                        ((("x" dep))
                         (eq? dep findutils)))))))))))
 
+(test-assert "options->transformation, with-graft"
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (native-inputs `(("x" ,grep)))))))))
+         (t (options->transformation '((with-graft . "grep=findutils")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-full-name dep1)
+                               (package-full-name grep))
+                     (eq? (package-replacement dep1) findutils)
+                     (string=? (package-name dep2) "chbouib")
+                     (match (package-native-inputs dep2)
+                       ((("x" dep))
+                        (eq? (package-replacement dep) findutils)))))))))))
+
 (test-end)

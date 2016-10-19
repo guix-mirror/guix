@@ -19,11 +19,12 @@
 (define-module (guix serialization)
   #:use-module (guix combinators)
   #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 binary-ports)
+  #:use-module ((ice-9 rdelim) #:prefix rdelim:)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
   #:export (write-int read-int
@@ -143,7 +144,7 @@ substitute invalid byte sequences with question marks.  This is a
          (port (open-bytevector-input-port bv)))
     (set-port-encoding! port "UTF-8")
     (set-port-conversion-strategy! port 'substitute)
-    (get-string-all port)))
+    (rdelim:read-string port)))
 
 (define (write-string-list l p)
   (write-int (length l) p)

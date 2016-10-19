@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
@@ -44,6 +44,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
@@ -247,6 +248,134 @@
                    (string-append ghc-bootstrap-path "/ghc-7.8.4")
                  (zero? (system* "make" "install"))))
              %standard-phases)))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "GHC_PACKAGE_PATH")
+                                (files (list
+                                        (string-append "lib/ghc-" version)))
+                                (file-pattern ".*\\.conf\\.d$")
+                                (file-type 'directory))))
+    (home-page "https://www.haskell.org/ghc")
+    (synopsis "The Glasgow Haskell Compiler")
+    (description
+     "The Glasgow Haskell Compiler (GHC) is a state-of-the-art compiler and
+interactive environment for the functional language Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-8
+  (package
+    (name "ghc")
+    (version "8.0.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://www.haskell.org/ghc/dist/"
+                          version "/" name "-" version "-src.tar.xz"))
+      (sha256
+       (base32 "1lniqy29djhjkddnailpaqhlqh4ld2mqvb1fxgxw1qqjhz6j1ywh"))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (outputs '("out" "doc"))
+    (inputs
+     `(("gmp" ,gmp)
+       ("ncurses" ,ncurses)
+       ("libffi" ,libffi)
+       ("libedit" ,libedit)
+       ("ghc-testsuite"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://www.haskell.org/ghc/dist/"
+                 version "/" name "-" version "-testsuite.tar.xz"))
+           (sha256
+            (base32 "0lc1vjivkxn01aw3jg2gd7fmqb5pj7a5j987c7pn5r7caqv1cmxw"))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("python" ,python-2)                ; for tests
+       ("ghostscript" ,ghostscript)        ; for tests
+       ;; GHC is built with GHC.
+       ("ghc-bootstrap" ,ghc)))
+    (arguments
+     `(#:test-target "test"
+       ;; We get a smaller number of test failures by disabling parallel test
+       ;; execution.
+       #:parallel-tests? #f
+
+       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
+       ;; gremlin) doesn't support it yet, so skip this phase.
+       #:validate-runpath? #f
+
+       ;; Don't pass --build=<triplet>, because the configure script
+       ;; auto-detects slightly different triplets for --host and --target and
+       ;; then complains that they don't match.
+       #:build #f
+
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build rpath)
+                  (srfi srfi-26)
+                  (srfi srfi-1))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build rpath))
+       #:configure-flags
+       (list
+        (string-append "--with-gmp-libraries="
+                       (assoc-ref %build-inputs "gmp") "/lib")
+        (string-append "--with-gmp-includes="
+                       (assoc-ref %build-inputs "gmp") "/include")
+        "--with-system-libffi"
+        (string-append "--with-ffi-libraries="
+                       (assoc-ref %build-inputs "libffi") "/lib")
+        (string-append "--with-ffi-includes="
+                       (assoc-ref %build-inputs "libffi") "/include")
+        (string-append "--with-curses-libraries="
+                       (assoc-ref %build-inputs "ncurses") "/lib")
+        (string-append "--with-curses-includes="
+                       (assoc-ref %build-inputs "ncurses") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-testsuite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion ".."
+               (copy-file (assoc-ref inputs "ghc-testsuite")
+                          "ghc-testsuite.tar.xz")
+               (zero? (system* "tar" "xvf" "ghc-testsuite.tar.xz")))))
+         (add-before 'build 'fix-lib-paths
+           (lambda _
+             (substitute*
+                 (list "libraries/process/System/Process/Posix.hs"
+                       "libraries/process/tests/process001.hs"
+                       "libraries/process/tests/process002.hs"
+                       "libraries/unix/cbits/execvpe.c")
+               (("/bin/sh") (which "sh"))
+               (("/bin/ls") (which "ls")))
+             #t))
+         (add-before 'build 'fix-environment
+           (lambda _
+             (unsetenv "GHC_PACKAGE_PATH")
+             (setenv "CONFIG_SHELL" (which "bash"))
+             #t))
+         (add-before 'check 'fix-testsuite
+           (lambda _
+             (substitute*
+                 (list "testsuite/timeout/Makefile"
+                       "testsuite/timeout/timeout.py"
+                       "testsuite/timeout/timeout.hs"
+                       "testsuite/tests/programs/life_space_leak/life.test")
+               (("/bin/sh") (which "sh"))
+               (("/bin/rm") "rm"))
+             #t))
+         ;; the testsuite can't find shared libraries.
+         (add-before 'check 'configure-testsuite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((gmp (assoc-ref inputs "gmp"))
+                    (gmp-lib (string-append gmp "/lib"))
+                    (ffi (assoc-ref inputs "libffi"))
+                    (ffi-lib (string-append ffi "/lib"))
+                    (ncurses (assoc-ref inputs "ncurses"))
+                    (ncurses-lib (string-append ncurses "/lib")))
+               (setenv "LD_LIBRARY_PATH"
+                       (string-append gmp-lib ":" ffi-lib ":" ncurses-lib))
+               #t))))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
                                 (files (list
@@ -7598,4 +7727,179 @@ versions of these packages distributed with different versions of GHC.
 In particular, this library supports working with POSIX files that have paths
 which can't be decoded in the current locale encoding.")
     (license license:expat)))
+
+(define-public ghc-storable-complex
+  (package
+    (name "ghc-storable-complex")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/storable-complex/storable-complex-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "01kwwkpbfjrv26vj83cd92px5qbq1bpgxj0r45534aksqhany1xb"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/cartazio/storable-complex")
+    (synopsis "Haskell Storable instance for Complex")
+    (description "This package provides a Haskell library including a
+Storable instance for Complex which is binary compatible with C99, C++
+and Fortran complex data types.")
+    (license license:bsd-3)))
+
+(define-public ghc-hmatrix
+  (package
+    (name "ghc-hmatrix")
+    (version "0.17.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hmatrix/hmatrix-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1fgsrh2y9y971pzrd3767rg97bjr1ghpdvwmn1nn65s90rc9bv98"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-random" ,ghc-random)
+       ("ghc-split" ,ghc-split)
+       ("ghc-storable-complex" ,ghc-storable-complex)
+       ("ghc-vector" ,ghc-vector)
+       ;;("openblas" ,openblas)
+       ("lapack" ,lapack)))
+    ;; Guix's OpenBLAS is built with the flag "NO_LAPACK=1" which
+    ;; disables inclusion of the LAPACK functions.
+    ;; (arguments `(#:configure-flags '("--flags=openblas")))
+    (home-page "https://github.com/albertoruiz/hmatrix")
+    (synopsis "Haskell numeric linear algebra library")
+    (description "The HMatrix package provices a Haskell library for
+dealing with linear systems, matrix decompositions, and other
+numerical computations based on BLAS and LAPACK.")
+    (license license:bsd-3)))
+
+(define-public ghc-hmatrix-gsl
+  (package
+    (name "ghc-hmatrix-gsl")
+    (version "0.17.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hmatrix-gsl/hmatrix-gsl-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1jbqwn9d2nldc4klhy0n8gcxr889h0daw2mjfhwgksfy1bwfjl7w"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hmatrix" ,ghc-hmatrix)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-random" ,ghc-random)
+       ("gsl" ,gsl)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/albertoruiz/hmatrix")
+    (synopsis "Haskell GSL binding")
+    (description "This Haskell library provides a purely functional
+interface to selected numerical computations, internally implemented
+using GSL.")
+    (license license:gpl3+)))
+
+(define-public ghc-hmatrix-special
+  (package
+    (name "ghc-hmatrix-special")
+    (version "0.4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://hackage.haskell.org/package/hmatrix-special/hmatrix-special-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "0cr9y3swzj7slrd84g1nhdkp1kpq4q5ihwapmiaidpr2bv3hrfhz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hmatrix" ,ghc-hmatrix)
+       ("ghc-hmatrix-gsl" ,ghc-hmatrix-gsl)))
+    (home-page "https://github.com/albertoruiz/hmatrix")
+    (synopsis "Haskell interface to GSL special functions")
+    (description "This library provides an interface to GSL special
+functions for Haskell.")
+    (license license:gpl3+)))
+
+(define-public ghc-hmatrix-gsl-stats
+  (package
+    (name "ghc-hmatrix-gsl-stats")
+    (version "0.4.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://hackage.haskell.org/package/hmatrix-gsl-stats/hmatrix-gsl-stats-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "0f3pzi494n4js0xiq5b38n07cnby0h9da6gmwywf8plvxm9271fl"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)
+       ("ghc-storable-complex" ,ghc-storable-complex)
+       ("ghc-hmatrix" ,ghc-hmatrix)
+       ("gsl" ,gsl)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://code.haskell.org/hmatrix-gsl-stats")
+    (synopsis "GSL Statistics interface for Haskell")
+    (description "This Haskell library provides a purely functional
+interface for statistics based on hmatrix and GSL.")
+    (license license:bsd-3)))
+
+(define-public ghc-easyplot
+  (package
+    (name "ghc-easyplot")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/easyplot/easyplot-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "18kndgvdj2apjpfga6fp7m16y1gx8zrwp3c5vfj03sx4v6jvciqk"))))
+    (build-system haskell-build-system)
+    (propagated-inputs `(("gnuplot" ,gnuplot)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-setup-suffix
+                    (lambda _ (rename-file "Setup.lhs" "Setup.hs") #t)))))
+    (home-page "http://hub.darcs.net/scravy/easyplot")
+    (synopsis "Haskell plotting library based on gnuplot")
+    (description "This package provides a plotting library for
+Haskell, using gnuplot for rendering.")
+    (license license:expat)))
+
+(define-public ghc-hashtables
+  (package
+    (name "ghc-hashtables")
+    (version "1.2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hashtables/hashtables-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1b6w9xznk42732vpd8ili60k12yq190xnajgga0iwbdpyg424lgg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "http://github.com/gregorycollins/hashtables")
+    (synopsis "Haskell Mutable hash tables in the ST monad")
+    (description "This package provides a Haskell library including a
+couple of different implementations of mutable hash tables in the ST
+monad, as well as a typeclass abstracting their common operations, and
+a set of wrappers to use the hash tables in the IO monad.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here

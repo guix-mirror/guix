@@ -1,0 +1,17 @@
+Description: Avoid compilation error with gcc-4.4.
+ "const char* -> char*" conversion is fatal in that version
+Origin: vendor, https://bugs.launchpad.net/ubuntu/+source/kobodeluxe/+bug/461373
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/kobodeluxe/+bug/461373
+Bug-Debian: http://bugs.debian.org/552548
+Forwarded: http://www.freelists.org/post/olofsonprojects/kobodlpatch-compile-error-in-windowcpp-with-g44
+--- a/graphics/window.cpp
++++ b/graphics/window.cpp
+@@ -398,7 +398,7 @@ void window_t::center_token_fxp(int _x,
+ 		 */
+ 		if(token)
+ 		{
+-			char *tok = strchr(txt, token);
++			const char *tok = strchr(txt, token);
+ 			if(tok)
+ 				tokpos = tok-txt;
+ 			else

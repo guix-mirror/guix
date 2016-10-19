@@ -142,6 +142,10 @@ monad."
   "Return #t if S starts with what looks like an abbreviation or acronym."
   (string-match "^[A-Z][A-Z0-9]+\\>" s))
 
+(define %quoted-identifier-rx
+  ;; A quoted identifier, like 'this'.
+  (make-regexp "['`][[:graph:]]+'"))
+
 (define (check-description-style package)
   ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
   (define (check-not-empty description)
@@ -173,6 +177,16 @@ trademark sign '~a' at ~d")
                      'description))
       (else #t)))
 
+  (define (check-quotes description)
+    "Check whether DESCRIPTION contains single quotes and suggest @code."
+    (when (regexp-exec %quoted-identifier-rx description)
+      (emit-warning package
+
+                    ;; TRANSLATORS: '@code' is Texinfo markup and must be kept
+                    ;; as is.
+                    (_ "use @code or similar ornament instead of quotes")
+                    'description)))
+
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
                 (string-prefix-ci? (package-name package) description))
@@ -203,6 +217,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
     (if (string? description)
         (begin
           (check-not-empty description)
+          (check-quotes description)
           (check-trademarks description)
           ;; Use raw description for this because Texinfo rendering
           ;; automatically fixes end of sentence space.

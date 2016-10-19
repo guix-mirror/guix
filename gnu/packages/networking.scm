@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -927,3 +928,27 @@ HTTPS on port 443, allowing SSH connections from inside corporate firewalls
 that block port 22.")
     (license (list license:bsd-2        ; tls.[ch]
                    license:gpl2+))))    ; everything else
+
+(define-public iperf
+  (package
+    (name "iperf")
+    (version "3.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.es.net/pub/iperf"
+                                  "/iperf-" version ".tar.gz"))
+              (sha256
+                (base32
+                 "1gwmhm29zlp5grrpglmqj7vgx19s6xy33hk6hpbn8jnpn5lxpn30"))))
+    (build-system gnu-build-system)
+    (synopsis "TCP, UDP and SCTP bandwidth measurement tool")
+    (description
+     "iPerf is a tool to measure achievable bandwidth on IP networks.  It
+supports tuning of various parameters related to timing, buffers and
+protocols (TCP, UDP, SCTP with IPv4 and IPv6).  For each test it reports
+the bandwidth, loss, and other parameters.")
+    (home-page "http://software.es.net/iperf/")
+    (license (list license:bsd-3             ; Main distribution.
+                   license:ncsa              ; src/{units,iperf_locale,tcp_window_size}.c
+                   license:expat             ; src/{cjson,net}.[ch]
+                   license:public-domain)))) ; src/portable_endian.h

@@ -456,7 +456,8 @@ computations.")
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
         (base32 "16yr50j845zlfx20skmw3y75ww77akk9gg0affjqkg66ih5r03mv"))
-       (patches (search-patches "hdf4-reproducibility.patch"
+       (patches (search-patches "hdf4-architectures.patch"
+                                "hdf4-reproducibility.patch"
                                 "hdf4-shared-fortran.patch"))))
 
     (build-system gnu-build-system)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +22,8 @@
   #:use-module (guix pk-crypto)
   #:use-module (guix pki)
   #:use-module (guix ui)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
+  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 match)
   #:export (guix-authenticate))
 
@@ -36,12 +37,12 @@
 
 (define read-canonical-sexp
   ;; Read a gcrypt sexp from a port and return it.
-  (compose string->canonical-sexp get-string-all))
+  (compose string->canonical-sexp read-string))
 
 (define (read-hash-data port key-type)
   "Read sha256 hash data from PORT and return it as a gcrypt sexp.  KEY-TYPE
 is a symbol representing the type of public key algo being used."
-  (let* ((hex (get-string-all port))
+  (let* ((hex (read-string port))
          (bv  (base16-string->bytevector (string-trim-both hex))))
     (bytevector->hash-data bv #:key-type key-type)))
 

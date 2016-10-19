@@ -280,8 +280,19 @@ derivations to the corresponding set of grafts."
                  (let* ((new    (graft-derivation/shallow store drv applicable
                                                           #:guile guile
                                                           #:system system))
-                        (grafts (cons (graft (origin drv) (replacement new))
-                                      grafts)))
+
+                        ;; Replace references to any of the outputs of DRV,
+                        ;; even if that's more than needed.  This is so that
+                        ;; the result refers only to the outputs of NEW and
+                        ;; not to those of DRV.
+                        (grafts (append (map (lambda (output)
+                                               (graft
+                                                 (origin drv)
+                                                 (origin-output output)
+                                                 (replacement new)
+                                                 (replacement-output output)))
+                                             (derivation-output-names drv))
+                                        grafts)))
                    (return/cache cache grafts))))))))))))
 
 (define* (graft-derivation store drv grafts

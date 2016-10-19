@@ -307,11 +307,6 @@ file name pairs."
         (else
          (error "unsupported file type" stat)))))
 
-  ;; XXX: Work around occasional "suspicious ownership or permission" daemon
-  ;; errors that arise when we create the top-level /gnu/store/… directory as
-  ;; #o777.
-  (umask #o022)
-
   ;; Use 'exit-on-exception' to force an exit upon I/O errors, given that
   ;; 'n-par-for-each' silently swallows exceptions.
   ;; See <http://bugs.gnu.org/23581>.

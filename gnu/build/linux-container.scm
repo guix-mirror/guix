@@ -291,15 +291,17 @@ return the exit status."
      (call-with-clean-exit
       (lambda ()
         (for-each (lambda (ns)
-                    (call-with-input-file (namespace-file (getpid) ns)
-                      (lambda (current-ns-port)
-                        (call-with-input-file (namespace-file pid ns)
-                          (lambda (new-ns-port)
-                            ;; Joining the namespace that the process
-                            ;; already belongs to would throw an error.
-                            (unless (= (port->fdes current-ns-port)
-                                       (port->fdes new-ns-port))
-                              (setns (port->fdes new-ns-port) 0)))))))
+                    (let ((source (namespace-file (getpid) ns))
+                          (target (namespace-file pid ns)))
+                      ;; Joining the namespace that the process already
+                      ;; belongs to would throw an error so avoid that.
+                      ;; XXX: This /proc interface leads to TOCTTOU.
+                      (unless (string=? (readlink source) (readlink target))
+                        (call-with-input-file source
+                          (lambda (current-ns-port)
+                            (call-with-input-file target
+                              (lambda (new-ns-port)
+                                (setns (fileno new-ns-port) 0))))))))
                   ;; It's important that the user namespace is joined first,
                   ;; so that the user will have the privileges to join the
                   ;; other namespaces.  Furthermore, it's important that the

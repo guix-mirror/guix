@@ -1,0 +1,43 @@
+# Patch snarfed from
+# http://http.debian.net/debian/pool/main/k/kobodeluxe/kobodeluxe_0.5.1-8.debian.tar.xz
+#
+# Disable reading of configs, graphics, and data from the current directory.
+# So it's safe to run kobodeluxe from anywhere w/o worry about an attacker
+# feeding it bad data.
+--- kobodeluxe-0.5.1.orig/kobo.cpp
++++ kobodeluxe-0.5.1/kobo.cpp
+@@ -141,21 +141,21 @@
+ 	 * Graphics data
+ 	 */
+ 	/* Current dir; from within the build tree */
+-	fmap->addpath("GFX", "./data/gfx");
++	//fmap->addpath("GFX", "./data/gfx");
+ 	/* Real data dir */
+ 	fmap->addpath("GFX", "DATA>>gfx");
+ 	/* Current dir */
+-	fmap->addpath("GFX", "./gfx");
++	//fmap->addpath("GFX", "./gfx");
+
+ 	/*
+ 	 * Sound data
+ 	 */
+ 	/* Current dir; from within the build tree */
+-	fmap->addpath("SFX", "./data/sfx");
++	//fmap->addpath("SFX", "./data/sfx");
+ 	/* Real data dir */
+ 	fmap->addpath("SFX", "DATA>>sfx");
+ 	/* Current dir */
+-	fmap->addpath("SFX", "./sfx");
++	//fmap->addpath("SFX", "./sfx");
+
+ 	/*
+ 	 * Score files (user and global)
+@@ -173,7 +173,7 @@
+ 	/* System local */
+ 	fmap->addpath("CONFIG", SYSCONF_DIR);
+ 	/* In current dir (last resort) */
+-	fmap->addpath("CONFIG", "./");
++	//fmap->addpath("CONFIG", "./");
+ }
+
+

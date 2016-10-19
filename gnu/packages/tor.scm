@@ -30,7 +30,6 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pcre)
-  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages autotools)
@@ -40,14 +39,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.2.8.8")
+    (version "0.2.8.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1pp3h0a1cl25fv04b3j6wp8aw1sfpbd2lmag397dpp2k2b305bxi"))))
+               "05jkvhbgyq81fcmk1xpl3yw97ljj5sg9pngl27zlmgl7p0xjfp1z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))  ; for tests
@@ -73,28 +72,16 @@ applications based on the TCP protocol.")
 (define-public torsocks
   (package
     (name "torsocks")
-    (version "2.0.0")
+    (version "2.2.0")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.torproject.org/torsocks.git")
-                    (commit (string-append "v" version))))
+              (method url-fetch)
+              (uri (string-append "https://people.torproject.org/~dgoulet/"
+                                  name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0an2q5ail9z414riyjbkjkm29504hy778j914baz2gn5hlv2cfak"))
-              (file-name (string-append name "-" version "-checkout"))
-              (patches (search-patches "torsocks-dns-test.patch"))))
+                "0byr9ga9w79qz4vp0m11sbmspad7fsal9wm67r4znzb7zb7cis19"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'bootstrap
-                    (lambda _
-                      (system* "autoreconf" "-vfi"))))))
-    (native-inputs `(("autoconf" ,(autoconf-wrapper))
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)
-                     ("perl-test-harness" ,perl-test-harness)))
-    (home-page "http://www.torproject.org/")
+    (home-page "https://www.torproject.org/")
     (synopsis "Use socks-friendly applications with Tor")
     (description
      "Torsocks allows you to use most socks-friendly applications in a safe

@@ -23,7 +23,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 rdelim)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
@@ -46,7 +46,7 @@
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
   #:use-module (guix store)
-  #:use-module (guix serialization)
+  #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix zlib)
   #:use-module (guix ui)
   #:use-module (guix scripts)
@@ -167,7 +167,7 @@ compression disabled~%"))
   (delay
     (call-with-input-file file
       (compose string->canonical-sexp
-               get-string-all))))
+               read-string))))
 
 (define %private-key
   (lazy-read-file-sexp %private-key-file))

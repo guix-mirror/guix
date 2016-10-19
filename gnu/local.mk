@@ -70,6 +70,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cdrom.scm			\
   %D%/packages/certs.scm			\
   %D%/packages/check.scm			\
+  %D%/packages/chez.scm				\
   %D%/packages/ci.scm				\
   %D%/packages/cmake.scm			\
   %D%/packages/code.scm				\
@@ -583,8 +584,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
-  %D%/packages/patches/hdf4-shared-fortran.patch 		\
+  %D%/packages/patches/hdf4-architectures.patch 		\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
+  %D%/packages/patches/hdf4-shared-fortran.patch 		\
   %D%/packages/patches/hdf5-config-date.patch			\
   %D%/packages/patches/hdf-eos5-build-shared.patch 		\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
@@ -605,23 +607,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jansson-CVE-2016-4425.patch		\
-  %D%/packages/patches/jasper-CVE-2007-2721.patch		\
-  %D%/packages/patches/jasper-CVE-2008-3520.patch		\
-  %D%/packages/patches/jasper-CVE-2008-3522.patch		\
-  %D%/packages/patches/jasper-CVE-2011-4516-and-CVE-2011-4517.patch \
-  %D%/packages/patches/jasper-CVE-2014-8137.patch		\
-  %D%/packages/patches/jasper-CVE-2014-8138.patch		\
-  %D%/packages/patches/jasper-CVE-2014-8157.patch		\
-  %D%/packages/patches/jasper-CVE-2014-8158.patch		\
-  %D%/packages/patches/jasper-CVE-2014-9029.patch		\
-  %D%/packages/patches/jasper-CVE-2016-1577.patch		\
-  %D%/packages/patches/jasper-CVE-2016-1867.patch		\
-  %D%/packages/patches/jasper-CVE-2016-2089.patch		\
-  %D%/packages/patches/jasper-CVE-2016-2116.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
+  %D%/packages/patches/kobodeluxe-paths.patch			\
+  %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
+  %D%/packages/patches/kobodeluxe-const-charp-conversion.patch	\
+  %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
+  %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
+  %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
@@ -844,7 +839,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\
-  %D%/packages/patches/torsocks-dns-test.patch			\
   %D%/packages/patches/totem-debug-format-fix.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\

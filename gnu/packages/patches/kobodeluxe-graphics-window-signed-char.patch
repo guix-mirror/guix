@@ -1,0 +1,38 @@
+# This was created in responce to Debian bug #163979
+# Thing is, if you want to compant "-1" with a char value,
+# you better make that char signed
+--- kobodeluxe-0.5.1.orig/graphics/window.cpp
++++ kobodeluxe-0.5.1/graphics/window.cpp
+@@ -331,7 +331,7 @@
+ }
+
+
+-void window_t::center_token(int _x, int _y, const char *txt, char token)
++void window_t::center_token(int _x, int _y, const char *txt, signed char token)
+ {
+ 	center_token_fxp(PIXEL2CS(_x), PIXEL2CS(_y), txt, token);
+ }
+@@ -374,7 +374,7 @@
+ }
+
+
+-void window_t::center_token_fxp(int _x, int _y, const char *txt, char token)
++void window_t::center_token_fxp(int _x, int _y, const char *txt, signed char token)
+ {
+ 	_x = CS2PIXEL((_x * xs + 128) >> 8);
+ 	_y = CS2PIXEL((_y * ys + 128) >> 8);
+--- kobodeluxe-0.5.1.orig/graphics/window.h
++++ kobodeluxe-0.5.1/graphics/window.h
+@@ -265,10 +265,10 @@
+ 	void font(int fnt);
+ 	void string(int _x, int _y, const char *txt);
+ 	void center(int _y, const char *txt);
+-	void center_token(int _x, int _y, const char *txt, char token = 0);
++	void center_token(int _x, int _y, const char *txt, signed char token = 0);
+ 	void string_fxp(int _x, int _y, const char *txt);
+ 	void center_fxp(int _y, const char *txt);
+-	void center_token_fxp(int _x, int _y, const char *txt, char token = 0);
++	void center_token_fxp(int _x, int _y, const char *txt, signed char token = 0);
+ 	int textwidth(const char *txt, int min = 0, int max = 255);
+ 	int textwidth_fxp(const char *txt, int min = 0, int max = 255);
+ 	int fontheight();

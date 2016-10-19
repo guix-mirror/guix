@@ -179,27 +179,48 @@ matching URIs given in SOURCES."
         (_
          obj)))))
 
-(define (transform-package-inputs replacement-specs)
-  "Return a procedure that, when passed a package, replaces its direct
-dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
-strings like \"guile=guile@2.1\" meaning that, any direct dependency on a
-package called \"guile\" must be replaced with a dependency on a version 2.1
-of \"guile\"."
+(define (evaluate-replacement-specs specs proc)
+  "Parse SPECS, a list of strings like \"guile=guile@2.1\", and invoke PROC on
+each package pair specified by SPECS.  Return the resulting list.  Raise an
+error if an element of SPECS uses invalid syntax, or if a package it refers to
+could not be found."
   (define not-equal
     (char-set-complement (char-set #\=)))
 
-  (define replacements
-    ;; List of name/package pairs.
-    (map (lambda (spec)
-           (match (string-tokenize spec not-equal)
-             ((old new)
-              (cons (specification->package old)
-                    (specification->package new)))
-             (x
-              (leave (_ "invalid replacement specification: ~s~%") spec))))
-         replacement-specs))
+  (map (lambda (spec)
+         (match (string-tokenize spec not-equal)
+           ((old new)
+            (proc (specification->package old)
+                  (specification->package new)))
+           (x
+            (leave (_ "invalid replacement specification: ~s~%") spec))))
+       specs))
 
-  (let ((rewrite (package-input-rewriting replacements)))
+(define (transform-package-inputs replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"guile=guile@2.1\" meaning that, any dependency on a package
+called \"guile\" must be replaced with a dependency on a version 2.1 of
+\"guile\"."
+  (let* ((replacements (evaluate-replacement-specs replacement-specs cons))
+         (rewrite      (package-input-rewriting replacements)))
+    (lambda (store obj)
+      (if (package? obj)
+          (rewrite obj)
+          obj))))
+
+(define (transform-package-inputs/graft replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"gnutls=gnutls@3.5.4\" meaning that packages are built using the
+current 'gnutls' package, after which version 3.5.4 is grafted onto them."
+  (define (replacement-pair old new)
+    (cons old
+          (package (inherit old) (replacement new))))
+
+  (let* ((replacements (evaluate-replacement-specs replacement-specs
+                                                   replacement-pair))
+         (rewrite      (package-input-rewriting replacements)))
     (lambda (store obj)
       (if (package? obj)
           (rewrite obj)
@@ -211,20 +232,22 @@ of \"guile\"."
   ;; procedure; it is called with two arguments: the store, and a list of
   ;; things to build.
   `((with-source . ,transform-package-source)
-    (with-input  . ,transform-package-inputs)))
+    (with-input  . ,transform-package-inputs)
+    (with-graft  . ,transform-package-inputs/graft)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
-  (list (option '("with-source") #t #f
-                (lambda (opt name arg result . rest)
-                  (apply values
-                         (cons (alist-cons 'with-source arg result)
-                               rest))))
-        (option '("with-input") #t #f
-                (lambda (opt name arg result . rest)
-                  (apply values
-                         (cons (alist-cons 'with-input arg result)
-                               rest))))))
+  (let ((parser (lambda (symbol)
+                  (lambda (opt name arg result . rest)
+                    (apply values
+                           (alist-cons symbol arg result)
+                           rest)))))
+    (list (option '("with-source") #t #f
+                  (parser 'with-source))
+          (option '("with-input") #t #f
+                  (parser 'with-input))
+          (option '("with-graft") #t #f
+                  (parser 'with-graft)))))
 
 (define (show-transformation-options-help)
   (display (_ "
@@ -232,7 +255,10 @@ of \"guile\"."
                          use SOURCE when building the corresponding package"))
   (display (_ "
       --with-input=PACKAGE=REPLACEMENT
-                         replace dependency PACKAGE by REPLACEMENT")))
+                         replace dependency PACKAGE by REPLACEMENT"))
+  (display (_ "
+      --with-graft=PACKAGE=REPLACEMENT
+                         graft REPLACEMENT on packages that refer to PACKAGE")))
 
 
 (define (options->transformation opts)

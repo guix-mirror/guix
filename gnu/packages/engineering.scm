@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,11 +30,14 @@
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -45,6 +49,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
@@ -459,3 +464,100 @@ you load several files on top of each other, do measurements on the displayed
 image, etc.  Besides viewing Gerbers, you may also view Excellon drill files
 as well as pick-place files.")
     (license license:gpl2+)))
+
+(define-public ao
+  (let ((commit "0bc2354b8dcd1a82a0fd6647706b126045e52734"))
+    (package
+      (name "ao-cad")            ;XXX: really "ao", but it collides with libao
+      (version (string-append "0." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mkeeter/ao")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0lm7iljklafs8dhlvaab2yhwx4xymrdjrqk9c5xvn59hlvbgl1j5"))
+                (file-name (string-append name "-" version "-checkout"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; Remove bundled libraries: Eigen, glm, and catch.  TODO:
+                 ;; Unbundle efsw <https://github.com/diegostamigni/efsw>.
+                 '(begin
+                    (delete-file-recursively "vendor")
+
+                    ;; Use #include <catch.hpp>.
+                    (substitute* (find-files "." "\\.[ch]pp$")
+                      (("catch/catch\\.hpp")
+                       "catch.hpp"))))))
+      (build-system cmake-build-system)
+      (arguments
+       `(;; Have the RUNPATH of libao.so point to $libdir, where libefsw.so
+         ;; lives.
+         #:configure-flags (list (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                                                "-Wl,-rpath="
+                                                (assoc-ref %outputs "out")
+                                                "/lib"))
+
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'add-eigen-to-search-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; Allow things to find our own Eigen and Catch.
+               (let ((eigen (assoc-ref inputs "eigen")))
+                 (setenv "CPLUS_INCLUDE_PATH"
+                         (string-append eigen "/include/eigen3:"
+                                        (getenv "CPLUS_INCLUDE_PATH")))
+                 #t)))
+           (add-after 'install 'install-guile-bindings
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Install the Guile bindings (the build system only installs
+               ;; libao.so.)
+               (let* ((out    (assoc-ref outputs "out"))
+                      (moddir (string-append out "/share/guile/site/2.0")))
+                 (install-file "bind/libao.so"
+                               (string-append out "/lib"))
+
+                 ;; Go to the source directory.
+                 (with-directory-excursion ,(string-append "../"
+                                                           name "-" version
+                                                           "-checkout")
+                   (substitute* "bind/guile/ao/bind.scm"
+                     (("\\(define libao \\(dynamic-link .*$")
+                      (string-append "(define libao (dynamic-link \""
+                                     out "/lib/libao\")) ;")))
+
+                   (for-each (lambda (file)
+                               (install-file file
+                                             (string-append moddir
+                                                            "/ao")))
+                             (find-files "bind/guile" "\\.scm$"))
+
+                   (substitute* "bin/ao-guile"
+                     (("\\(add-to-load-path .*")
+                      (string-append "(add-to-load-path \"" moddir "\")")))
+
+                   (install-file "bin/ao-guile"
+                                 (string-append out "/bin"))
+                   #t)))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("boost" ,boost)
+         ("catch" ,catch-framework)
+         ("libpng" ,libpng)
+         ("glfw" ,glfw)
+         ("libepoxy" ,libepoxy)
+         ("eigen" ,eigen)
+         ("glm" ,glm)
+         ("guile" ,guile-2.0)))
+      (home-page "http://www.mattkeeter.com/projects/ao/")
+      (synopsis "Tool for programmatic computer-aided design")
+      (description
+       "Ao is a tool for programmatic computer-aided design (CAD).  In Ao,
+solid models are defined as Scheme scripts, and there are no opaque function
+calls into the geometry kernel: everything is visible to the user.  Even
+fundamental, primitive shapes are represented as code in the user-level
+language.")
+      (license (list license:lgpl2.1+             ;library
+                     license:gpl2+)))))           ;Guile bindings

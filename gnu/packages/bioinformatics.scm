@@ -5888,6 +5888,99 @@ packages.")
 Bioconductor, CRAN, and Github.")
     (license license:artistic2.0)))
 
+(define-public r-biocviews
+  (package
+    (name "r-biocviews")
+    (version "1.42.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "biocViews" version))
+              (sha256
+               (base32
+                "07rjk10b91pkriyq297w86199r2d3sfji3ggs9mq2gyalsa8y4b6"))))
+    (properties
+     `((upstream-name . "biocViews")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-graph" ,r-graph)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)
+       ("r-knitr" ,r-knitr)
+       ("r-runit" ,r-runit)))
+    (home-page "http://bioconductor.org/packages/biocViews")
+    (synopsis "Bioconductor package categorization helper")
+    (description "The purpose of biocViews is to create HTML pages that
+categorize packages in a Bioconductor package repository according to keywords,
+also known as views, in a controlled vocabulary.")
+    (license license:artistic2.0)))
+
+(define-public r-biocstyle
+  (package
+   (name "r-biocstyle")
+   (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocStyle" version))
+              (sha256
+               (base32
+                "0qbk23fz8cn260isd9xlh9lxfj4adar6iqzai01c4kz0p31f45za"))))
+    (properties
+     `((upstream-name . "BiocStyle")))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/BiocStyle")
+    (synopsis "Bioconductor formatting styles")
+    (description "This package provides standard formatting styles for
+Bioconductor PDF and HTML documents.  Package vignettes illustrate use and
+functionality.")
+    (license license:artistic2.0)))
+
+(define-public r-getopt
+  (package
+    (name "r-getopt")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "getopt" version))
+       (sha256
+        (base32
+         "00f57vgnzmg7cz80rjmjz1556xqcmx8nhrlbbhaq4w7gl2ibl87r"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/trevorld/getopt")
+    (synopsis "Command-line option processor for R")
+    (description
+     "This package is designed to be used with Rscript to write shebang
+scripts that accept short and long options.  Many users will prefer to
+use the packages @code{optparse} or @code{argparse} which add extra
+features like automatically generated help options and usage texts,
+support for default values, positional argument support, etc.")
+    (license license:gpl2+)))
+
+(define-public r-optparse
+  (package
+    (name "r-optparse")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "optparse" version))
+       (sha256
+        (base32
+         "1g8as89r91xxi5j5azsd6vrfrhg84mnfx2683j7pacdp8s33radw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-getopt" ,r-getopt)))
+    (home-page
+     "https://github.com/trevorld/optparse")
+    (synopsis "Command line option parser")
+    (description
+     "This package provides a command line parser inspired by Python's
+@code{optparse} library to be used with Rscript to write shebang scripts
+that accept short and long options.")
+    (license license:gpl2+)))
+
 (define-public r-dnacopy
   (package
     (name "r-dnacopy")

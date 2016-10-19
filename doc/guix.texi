@@ -4513,6 +4513,30 @@ This is a recursive, deep replacement.  So in this example, both
 
 This is implemented using the @code{package-input-rewriting} Scheme
 procedure (@pxref{Defining Packages, @code{package-input-rewriting}}).
+
+@item --with-graft=@var{package}=@var{replacement}
+This is similar to @code{--with-input} but with an important difference:
+instead of rebuilding all the dependency chain, @var{replacement} is
+built and then @dfn{grafted} onto the binaries that were initially
+referring to @var{package}.  @xref{Security Updates}, for more
+information on grafts.
+
+For example, the command below grafts version 3.5.4 of GnuTLS onto Wget
+and all its dependencies, replacing references to the version of GnuTLS
+they currently refer to:
+
+@example
+guix build --with-graft=gnutls=gnutls@@3.5.4 wget
+@end example
+
+This has the advantage of being much faster than rebuilding everything.
+But there is a caveat: it works if and only if @var{package} and
+@var{replacement} are strictly compatible---for example, if they provide
+a library, the application binary interface (ABI) of those libraries
+must be compatible.  If @var{replacement} is somehow incompatible with
+@var{package}, then the resulting package may be unusable.  Use with
+care!
+
 @end table
 
 @node Additional Build Options

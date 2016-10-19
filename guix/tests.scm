@@ -27,7 +27,7 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:use-module (web uri)
   #:export (open-connection-for-tests
             random-text

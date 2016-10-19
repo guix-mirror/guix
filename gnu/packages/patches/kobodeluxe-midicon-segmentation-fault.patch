@@ -1,0 +1,24 @@
+From: Emile CARRY <emile.carry@sequanux.org>
+Date: Wed, 6 Apr 2016 00:27:17 +0200
+Subject: midicon segmentation fault
+
+Debian-Bug: https://bugs.debian.org/819897
+Forwarded: no
+---
+ sound/a_midicon.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/a_midicon.c b/sound/a_midicon.c
+index 57de3cf..ded2988 100644
+--- a/sound/a_midicon.c
++++ b/sound/a_midicon.c
+@@ -120,8 +120,8 @@ static inline void __press(unsigned ch, unsigned key)
+ {
+ 	m[ch].next[key] = -1;
+ 	m[ch].prev[key] = m[ch].last;
+-	m[ch].next[m[ch].last] = (char)key;
+ 	m[ch].last = (char)key;
++	m[ch].next[m[ch].last] = (char)key;
+ }
+
+
