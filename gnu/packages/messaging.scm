@@ -504,7 +504,7 @@ Among its features are: a tabbed chat window and single window modes; support
 for group chat (with Multi-User Chat protocol), invitation, chat to group chat
 transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
-    (license license:gpl3+)))
+    (license license:gpl3)))
 
 (define-public prosody
   (package
