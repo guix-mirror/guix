@@ -21,7 +21,8 @@
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix derivations)
-  #:use-module (guix serialization)
+  #:use-module ((guix serialization)
+                #:select (nar-error? nar-error-file))
   #:use-module (guix nar)
   #:use-module (guix utils)
   #:use-module ((guix build syscalls) #:select (fcntl-flock))
@@ -37,7 +38,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:export (build-machine
             build-requirements
             guix-offload))
@@ -336,7 +337,7 @@ hook."
 
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guile" "-c" ,(object->string script)))))
-    (get-string-all pipe)
+    (read-string pipe)
     (let ((status (close-pipe pipe)))
       (unless (zero? status)
         ;; Better be safe than sorry: if we ignore the error here, then FILE
@@ -368,7 +369,7 @@ hook."
 
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guile" "-c" ,(object->string script)))))
-    (get-string-all pipe)
+    (read-string pipe)
     (close-pipe pipe)))
 
 (define* (offload drv machine
@@ -462,7 +463,7 @@ success, #f otherwise."
                                   '("guix" "archive" "--missing")))
                     (open-input-string files)))
                   ((result)
-                   (get-string-all missing)))
+                   (read-string missing)))
       (for-each waitpid pids)
       (string-tokenize result)))
 

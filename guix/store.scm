@@ -25,7 +25,7 @@
   #:autoload   (guix base32) (bytevector->base32-string)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -481,7 +481,7 @@ encoding conversion errors."
            (let ((s (read-maybe-utf8-string p)))
              (display s (current-build-output-port))
              (when (string-any %newlines s)
-               (flush-output-port (current-build-output-port)))
+               (force-output (current-build-output-port)))
              #f))
           ((= k %stderr-error)
            ;; Report an error.

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +22,8 @@
   #:use-module ((guix utils) #:select (with-atomic-file-output))
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (ice-9 match)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 binary-ports)
   #:export (%public-key-file
             %private-key-file
             %acl-file
@@ -80,7 +81,7 @@ element in KEYS must be a canonical sexp with type 'public-key'."
     (when (file-exists? %public-key-file)
       (let ((public-key (call-with-input-file %public-key-file
                           (compose string->canonical-sexp
-                                   get-string-all))))
+                                   read-string))))
         (mkdir-p (dirname %acl-file))
         (with-atomic-file-output %acl-file
           (lambda (port)
@@ -99,7 +100,7 @@ element in KEYS must be a canonical sexp with type 'public-key'."
       (call-with-input-file %acl-file
         (compose canonical-sexp->sexp
                  string->canonical-sexp
-                 get-string-all))
+                 read-string))
       (public-keys->acl '())))                    ; the empty ACL
 
 (define (acl->public-keys acl)

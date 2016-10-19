@@ -31,7 +31,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:export (guix-download))
 
 

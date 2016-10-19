@@ -40,7 +40,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:export (guix-archive))
 
 
@@ -290,7 +290,7 @@ the input port."
   (define (read-key)
     (catch 'gcry-error
       (lambda ()
-        (string->canonical-sexp (get-string-all (current-input-port))))
+        (string->canonical-sexp (read-string (current-input-port))))
       (lambda (key proc err)
         (leave (_ "failed to read public key: ~a: ~a~%")
                (error-source err) (error-string err)))))

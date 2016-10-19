@@ -28,7 +28,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
   #:use-module (guix utils)

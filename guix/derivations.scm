@@ -23,7 +23,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -885,7 +885,7 @@ recursively."
   (define (substitute-file file initial replacements)
     (define contents
       (with-fluids ((%default-port-encoding #f))
-        (call-with-input-file file get-string-all)))
+        (call-with-input-file file read-string)))
 
     (let ((updated (substitute contents initial replacements)))
       (if (string=? updated contents)

@@ -24,7 +24,7 @@
   #:use-module (guix combinators)
   #:use-module (guix config)
   #:use-module (guix records)
-  #:use-module (guix serialization)
+  #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module (guix base64)
@@ -43,7 +43,6 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 binary-ports)
-  #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -938,7 +937,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
     (and (file-exists? %public-key-file)
          (let ((key (call-with-input-file %public-key-file
                       (compose string->canonical-sexp
-                               get-string-all))))
+                               read-string))))
            (match acl
              ((thing)
               (equal? (canonical-sexp->string thing)

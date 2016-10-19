@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,7 @@
 (define-module (guix hash)
   #:use-module (guix gcrypt)
   #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports)
+  #:use-module (ice-9 binary-ports)
   #:use-module (system foreign)
   #:use-module ((guix build utils) #:select (dump-port))
   #:use-module (srfi srfi-11)
