@@ -218,6 +218,14 @@ string) on HTTP requests."
                              (check-description-style pkg)))
                          "should not contain trademark sign"))))
 
+(test-assert "description: suggest ornament instead of quotes"
+  (->bool
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (description "This is a 'quoted' thing."))))
+                        (check-description-style pkg)))
+                    "use @code")))
+
 (test-assert "synopsis: not a string"
   (->bool
    (string-contains (with-warnings
