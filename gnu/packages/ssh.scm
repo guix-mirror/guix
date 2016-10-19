@@ -121,6 +121,7 @@ a server that supports the SSH-2 protocol.")
                                         tail)
                          (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
                                         tail))))
+            (patches (search-patches "openssh-memory-exhaustion.patch"))
             (sha256 (base32
                      "1k5y1wi29d47cgizbryxrhc1fbjsba2x8l5mqfa9b9nadnd9iyrz"))))
    (build-system gnu-build-system)
