@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,15 +43,16 @@
                "03mcg0bxkzprlsx8y6h22w924pzx4a9zr7zm3g11j8j3x9lz75f7"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'patch-/bin/sh
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((bash (assoc-ref inputs "bash")))
-                     ;; Refer to the actual shell.
-                     (substitute* '("lib/spawni.c" "src/funcs.c")
-                       (("/bin/sh")
-                        (string-append bash "/bin/sh")))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/sh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash")))
+               ;; Refer to the actual shell.
+               (substitute* '("lib/spawni.c" "src/funcs.c")
+                 (("/bin/sh")
+                  (string-append bash "/bin/sh")))
+               #t))))))
     (inputs
      `(("boehm-gc" ,libgc)
        ("ncurses" ,ncurses)
