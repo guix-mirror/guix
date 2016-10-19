@@ -5916,6 +5916,26 @@ categorize packages in a Bioconductor package repository according to keywords,
 also known as views, in a controlled vocabulary.")
     (license license:artistic2.0)))
 
+(define-public r-biocstyle
+  (package
+   (name "r-biocstyle")
+   (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocStyle" version))
+              (sha256
+               (base32
+                "0qbk23fz8cn260isd9xlh9lxfj4adar6iqzai01c4kz0p31f45za"))))
+    (properties
+     `((upstream-name . "BiocStyle")))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/BiocStyle")
+    (synopsis "Bioconductor formatting styles")
+    (description "This package provides standard formatting styles for
+Bioconductor PDF and HTML documents.  Package vignettes illustrate use and
+functionality.")
+    (license license:artistic2.0)))
+
 (define-public r-getopt
   (package
     (name "r-getopt")
