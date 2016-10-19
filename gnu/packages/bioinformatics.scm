@@ -5888,6 +5888,34 @@ packages.")
 Bioconductor, CRAN, and Github.")
     (license license:artistic2.0)))
 
+(define-public r-biocviews
+  (package
+    (name "r-biocviews")
+    (version "1.42.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "biocViews" version))
+              (sha256
+               (base32
+                "07rjk10b91pkriyq297w86199r2d3sfji3ggs9mq2gyalsa8y4b6"))))
+    (properties
+     `((upstream-name . "biocViews")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-graph" ,r-graph)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)
+       ("r-knitr" ,r-knitr)
+       ("r-runit" ,r-runit)))
+    (home-page "http://bioconductor.org/packages/biocViews")
+    (synopsis "Bioconductor package categorization helper")
+    (description "The purpose of biocViews is to create HTML pages that
+categorize packages in a Bioconductor package repository according to keywords,
+also known as views, in a controlled vocabulary.")
+    (license license:artistic2.0)))
+
 (define-public r-getopt
   (package
     (name "r-getopt")
