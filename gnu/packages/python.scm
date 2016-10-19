@@ -958,7 +958,7 @@ Python file, so it can be easily copied into your project.")
     (build-system python-build-system)
     (inputs
      `(("python-six" ,python-six)))
-    (home-page "http://labix.org/python-dateutil")
+    (home-page "https://dateutil.readthedocs.io/en/stable/")
     (synopsis "Extensions to the standard datetime module")
     (description
      "The dateutil module provides powerful extensions to the standard
@@ -988,7 +988,7 @@ datetime module, available in Python 2.3+.")
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
-    (home-page "http://labix.org/python-dateutil")
+    (home-page "https://dateutil.readthedocs.io/en/stable/")
     (synopsis "Extensions to the standard datetime module")
     (description
      "The dateutil module provides powerful extensions to the standard
