@@ -148,25 +148,30 @@
 
 (unless perform-container-tests?
   (test-skip 1))
-(test-assert "pivot-root"
+(test-equal "pivot-root"
+  #t
   (match (pipe)
     ((in . out)
      (match (clone (logior CLONE_NEWUSER CLONE_NEWNS SIGCHLD))
        (0
-        (close in)
-        (call-with-temporary-directory
-         (lambda (root)
-           (let ((put-old (string-append root "/real-root")))
-             (mount "none" root "tmpfs")
-             (mkdir put-old)
-             (call-with-output-file (string-append root "/test")
-               (lambda (port)
-                 (display "testing\n" port)))
-             (pivot-root root put-old)
-             ;; The test file should now be located inside the root directory.
-             (write (file-exists? "/test") out)
-             (close out))))
-        (primitive-exit 0))
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (close in)
+            (call-with-temporary-directory
+             (lambda (root)
+               (let ((put-old (string-append root "/real-root")))
+                 (mount "none" root "tmpfs")
+                 (mkdir put-old)
+                 (call-with-output-file (string-append root "/test")
+                   (lambda (port)
+                     (display "testing\n" port)))
+                 (pivot-root root put-old)
+                 ;; The test file should now be located inside the root directory.
+                 (write (file-exists? "/test") out)
+                 (close out)))))
+          (lambda ()
+            (primitive-exit 0))))
        (pid
         (close out)
         (let ((result (read in)))
