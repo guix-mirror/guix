@@ -32,14 +32,14 @@
 (define-public zile
   (package
     (name "zile")
-    (version "2.4.11")
+    (version "2.4.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/zile/zile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1k593y1xzvlj52q0gyhcx2lllws4sg84b8r9pcginjb1vjypplhz"))))
+               "03mcg0bxkzprlsx8y6h22w924pzx4a9zr7zm3g11j8j3x9lz75f7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
@@ -59,7 +59,7 @@
      `(("perl" ,perl)
        ("help2man" ,help2man)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/zile/")
+    (home-page "https://www.gnu.org/software/zile/")
     (synopsis "Lightweight Emacs clone")
     (description
      "GNU Zile is a lightweight Emacs clone.  It usage is similar to the
