@@ -100,18 +100,18 @@ reliability in mind.")
                      "free software"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; This is an old 'configure' script that doesn't
-                   ;; understand variables passed as arguments.
-                   (let ((out (assoc-ref outputs "out")))
-                     (setenv "CONFIG_SHELL" (which "sh"))
-                     (setenv "SHELL" (which "sh"))
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)
-       #:tests? #f))                              ;there are no tests
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; This is an old 'configure' script that doesn't
+                    ;; understand variables passed as arguments.
+                    (let ((out (assoc-ref outputs "out")))
+                      (setenv "CONFIG_SHELL" (which "sh"))
+                      (setenv "SHELL" (which "sh"))
+                      (zero? (system* "./configure"
+                                      (string-append "--prefix=" out)))))))
+                #:tests? #f))           ;there are no tests
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.ncftp.com/ncftp/")
     (synopsis "Command-line File Transfer Protocol (FTP) client")
