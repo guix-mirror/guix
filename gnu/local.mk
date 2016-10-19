@@ -611,7 +611,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
-  %D%/packages/patches/kobodeluxe-spelling.patch		\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
   %D%/packages/patches/kobodeluxe-const-charp-conversion.patch	\
   %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
