@@ -11307,3 +11307,26 @@ useful as a validator for JSON data.")
     (description
       "This package provides HTTP basic access authentication for Flask.")
     (license license:bsd-3)))
+
+(define-public python-flask-sqlalchemy
+  (package
+    (name "python-flask-sqlalchemy")
+    (version "2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-SQLAlchemy" version))
+        (sha256
+          (base32
+            "1i9ps5d5snih9xlqhrvmi3qfiygkmqzxh92n25kj4pf89kj4s965"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (home-page
+      "http://github.com/mitsuhiko/flask-sqlalchemy")
+    (synopsis
+      "Module adding SQLAlchemy support to your Flask application")
+    (description
+      "This package adds SQLAlchemy support to your Flask application.")
+    (license license:bsd-3)))
