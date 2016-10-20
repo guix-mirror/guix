@@ -44,6 +44,8 @@
             %graphviz-backend
             graph-backend?
             graph-backend
+            graph-backend-name
+            graph-backend-description
 
             export-graph))
 
@@ -140,12 +142,14 @@ typically returned by 'node-edges' or 'node-back-edges'."
 ;;;
 
 (define-record-type <graph-backend>
-  (graph-backend prologue epilogue node edge)
+  (graph-backend name description prologue epilogue node edge)
   graph-backend?
-  (prologue graph-backend-prologue)
-  (epilogue graph-backend-epilogue)
-  (node     graph-backend-node)
-  (edge     graph-backend-edge))
+  (name         graph-backend-name)
+  (description  graph-backend-description)
+  (prologue     graph-backend-prologue)
+  (epilogue     graph-backend-epilogue)
+  (node         graph-backend-node)
+  (edge         graph-backend-edge))
 
 (define %colors
   ;; See colortbl.h in Graphviz.
@@ -170,7 +174,9 @@ typically returned by 'node-edges' or 'node-back-edges'."
           id1 id2 (pop-color id1)))
 
 (define %graphviz-backend
-  (graph-backend emit-prologue emit-epilogue
+  (graph-backend "graphviz"
+                 "Generate graph in DOT format for use with Graphviz."
+                 emit-prologue emit-epilogue
                  emit-node emit-edge))
 
 (define* (export-graph sinks port
@@ -181,7 +187,7 @@ typically returned by 'node-edges' or 'node-back-edges'."
 given BACKEND.  Use NODE-TYPE to traverse the DAG.  When REVERSE-EDGES? is
 true, draw reverse arrows."
   (match backend
-    (($ <graph-backend> emit-prologue emit-epilogue emit-node emit-edge)
+    (($ <graph-backend> _ _ emit-prologue emit-epilogue emit-node emit-edge)
      (emit-prologue (node-type-name node-type) port)
 
      (match node-type
