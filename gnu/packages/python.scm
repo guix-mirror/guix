@@ -11232,3 +11232,25 @@ useful as a validator for JSON data.")
       (inherit base)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs base))))))
+
+(define-public python-aniso8601
+  (package
+    (name "python-aniso8601")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aniso8601" version))
+        (sha256
+          (base32
+            "1k5mjg9iqbjfslb5prrsfz7dhlvi6s35p1jxq8dm87w1b7dn5i2g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil-2" ,python-dateutil-2)))
+    (home-page
+      "https://bitbucket.org/nielsenb/aniso8601")
+    (synopsis
+      "Python library for parsing ISO 8601 strings")
+    (description
+      "This package contains a library for parsing ISO 8601 datetime strings.")
+    (license license:bsd-3)))
