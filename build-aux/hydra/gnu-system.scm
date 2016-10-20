@@ -122,7 +122,8 @@ SYSTEM."
 
 (define %cross-targets
   '("mips64el-linux-gnu"
-    "mips64el-linux-gnuabi64"))
+    "mips64el-linux-gnuabi64"
+    "arm-linux-gnueabihf"))
 
 (define (demo-os)
   "Return the \"demo\" 'operating-system' structure."
