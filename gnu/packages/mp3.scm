@@ -25,6 +25,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -38,6 +39,7 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages linux)               ;alsa-lib
+  #:use-module (gnu packages video)               ;ffmpeg
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -482,3 +484,31 @@ to write your own applications or plugins that are callable from the
 command-line tool.")
     (home-page "http://eyed3.nicfit.net/")
     (license license:gpl2+)))
+
+(define-public chromaprint
+  (package
+    (name "chromaprint")
+    (version "1.3.2")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://bitbucket.org/acoustid/chromaprint/downloads/"
+            "chromaprint-" version ".tar.gz"))
+      (sha256
+       (base32 "0lln8dh33gslb9cbmd1hcv33pr6jxdwipd8m8gbsyhksiq6r1by3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; tests require googletest *sources*
+       ;;#:configure-flags '("-DBUILD_TESTS=ON") ; for building the tests
+       #:test-target "check"))
+    (inputs
+     ;; requires one of FFmpeg (prefered), FFTW3 or vDSP
+     ;; use the same ffmpeg version as for acoustid-fingerprinter
+     `(("ffmpeg" ,ffmpeg)
+       ("boots" ,boost)))
+    (home-page "https://acoustid.org/chromaprint")
+    (synopsis "Audio fingerprinting library")
+    (description "Chromaprint is a library for calculating audio
+fingerprints which are used by the Acoustid service.  Its main purpose
+is to provide an accurate identifier for record tracks.")
+    (license license:lgpl2.1+)))
