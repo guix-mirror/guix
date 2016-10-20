@@ -80,6 +80,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages statistics)
@@ -11943,3 +11944,46 @@ python-axolotl.")
 
 (define-public python2-axolotl-curve25519
   (package-with-python2 python-axolotl-curve25519))
+
+(define-public python-axolotl
+  (package
+    (name "python-axolotl")
+    (version "0.1.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tgalal/python-axolotl/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1z8d89p7v40p4bwywjm9h4z28fdvra79ddw06azlkrfjbl7dxmz8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Don't install tests
+         (add-before 'install 'remove-tests
+           (lambda _
+             (for-each delete-file-recursively
+                       '("axolotl/tests" "build/lib/axolotl/tests"))
+             #t)))
+       ;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765
+       #:configure-flags '("--root=/")))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-axolotl-curve25519" ,python-axolotl-curve25519)
+       ("python-dateutil" ,python-dateutil)
+       ("python-protobuf" ,python-protobuf)
+       ("python-pycrypto" ,python-pycrypto)))
+    (home-page "https://github.com/tgalal/python-axolotl")
+    (synopsis "Python port of libaxolotl-android")
+    (description "This is a python port of libaxolotl-android.  This
+is a ratcheting forward secrecy protocol that works in synchronous and
+asynchronous messaging environments.")
+    (license license:gpl3)))
+
+(define-public python2-axolotl
+  (package-with-python2 python-axolotl))
