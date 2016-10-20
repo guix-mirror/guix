@@ -30,6 +30,7 @@
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11909,3 +11910,36 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
       (inherit base)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs base))))))
+
+(define-public python-axolotl-curve25519
+  (package
+    (name "python-axolotl-curve25519")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://github.com/tgalal/python-axolotl-curve25519")
+             (commit "e4a9c4de0eae27223200579c58d1f8f6d20637e2")))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "0agap5q0hmvf6cwzjqc05kw53pjgf6942pcivpazksmg1vk400ra"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765
+       #:configure-flags '("--root=/")))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/tgalal/python-axolotl-curve25519")
+    (synopsis "Python wrapper for curve25519 library")
+    (description "This is a python wrapper for the curve25519 library
+with ed25519 signatures.  The C code was pulled from
+libaxolotl-android.  At the moment this wrapper is meant for use by
+python-axolotl.")
+    (license (list license:gpl3    ; Most files
+                   license:isc)))) ; curve/curve25519-donna.c
+
+(define-public python2-axolotl-curve25519
+  (package-with-python2 python-axolotl-curve25519))
