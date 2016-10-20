@@ -5936,6 +5936,54 @@ Bioconductor PDF and HTML documents.  Package vignettes illustrate use and
 functionality.")
     (license license:artistic2.0)))
 
+(define-public r-bioccheck
+  (package
+    (name "r-bioccheck")
+    (version "1.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocCheck" version))
+              (sha256
+               (base32
+                "1rfy37xg1nc2cmgbclvzsi7sgmdcdjiahsx9crgx3yaw7kxgiack"))))
+    (properties
+     `((upstream-name . "BiocCheck")))
+    (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; This package can be used by calling BiocCheck(<package>) from
+         ;; within R, or by running R CMD BiocCheck <package>.  This phase
+         ;; makes sure the latter works.  For this to work, the BiocCheck
+         ;; script must be somewhere on the PATH (not the R bin directory).
+         (add-after 'install 'install-bioccheck-subcommand
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dest-dir (string-append out "/bin"))
+                    (script-dir
+                     (string-append out "/site-library/BiocCheck/script/")))
+               (mkdir-p dest-dir)
+               (symlink (string-append script-dir "/checkBadDeps.R")
+                        (string-append dest-dir "/checkBadDeps.R"))
+               (symlink (string-append script-dir "/BiocCheck")
+                        (string-append dest-dir "/BiocCheck")))
+             #t)))))
+    (native-inputs
+     `(("which" ,which)))
+    (propagated-inputs
+     `(("r-graph" ,r-graph)
+       ("r-knitr" ,r-knitr)
+       ("r-httr" ,r-httr)
+       ("r-optparse" ,r-optparse)
+       ("r-devtools" ,r-devtools)
+       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-biocviews" ,r-biocviews)))
+    (home-page "http://bioconductor.org/packages/BiocCheck")
+    (synopsis "Executes Bioconductor-specific package checks")
+    (description "This package contains tools to perform additional quality
+checks on R packages that are to be submitted to the Bioconductor repository.")
+    (license license:artistic2.0)))
+
 (define-public r-getopt
   (package
     (name "r-getopt")
