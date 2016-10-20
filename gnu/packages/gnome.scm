@@ -2598,13 +2598,18 @@ service via the system message bus.")
                          "/share/zoneinfo"))
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'check 'pre-check
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "data/check-timezones.sh"
-              (("/usr/share/zoneinfo/zone.tab")
-               (string-append (assoc-ref inputs "tzdata")
-                              "/share/zoneinfo/zone.tab")))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "data/check-timezones.sh"
+               (("/usr/share/zoneinfo/zone.tab")
+                (string-append (assoc-ref inputs "tzdata")
+                               "/share/zoneinfo/zone.tab")))
+
+             ;; 'Asia/Rangoon' was renamed in tzdata-2016:
+             ;; <https://github.com/eggert/tz/commit/4368251ebf11310a4aadccd1910daeac9080c501>.
+             (substitute* "data/Locations.xml"
+               (("Asia/Rangoon")
+                "Asia/Yangon"))
             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
