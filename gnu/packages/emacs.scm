@@ -1197,6 +1197,28 @@ and stored in memory.")
     (description "This package provides a modern list API library for Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-d-mode
+  (package
+    (name "emacs-d-mode")
+    (version "2.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode/"
+                    "archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0knpgi55jm09282aqf8pv55zillpnpzf9f4sgm6gwsmvxf17xaw0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-undercover" ,emacs-undercover)))
+    (home-page "https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode")
+    (synopsis "Emacs major mode for editing D code")
+    (description "This package provides an Emacs major mode for highlighting
+code written in the D programming language.  This mode is currently known to
+work with Emacs 24 and 25.")
+    (license license:gpl2+)))
+
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
