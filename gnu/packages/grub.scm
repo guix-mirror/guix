@@ -133,3 +133,29 @@ on the same computer; upon booting the computer, the user is presented with a
 menu to select one of the installed operating systems.")
     (license gpl3+)
     (properties '((cpe-name . "grub2")))))
+
+(define-public grub-efi
+  (package
+    (inherit grub)
+    (name "grub-efi")
+    (synopsis "GRand Unified Boot loader (UEFI version)")
+    (inputs
+     `(("efibootmgr" ,efibootmgr)
+       ,@(package-inputs grub)))
+    (arguments
+     `(;; TODO: Tests need a UEFI firmware for qemu. There is one at
+       ;; https://github.com/tianocore/edk2/tree/master/OvmfPkg .
+       ;; Search for 'OVMF' in "tests/util/grub-shell.in".
+       #:tests? #f
+       ,@(substitute-keyword-arguments (package-arguments grub)
+           ((#:configure-flags flags) `(cons* "--with-platform=efi"
+                                              ,flags))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'patch-stuff 'use-absolute-efibootmgr-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "grub-core/osdep/unix/platform.c"
+                     (("efibootmgr")
+                      (string-append (assoc-ref inputs "efibootmgr")
+                                     "/sbin/efibootmgr")))
+                   #t)))))))))
