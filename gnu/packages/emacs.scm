@@ -575,7 +575,7 @@ process, passing on the arguments as command line arguments.")
 (define-public haskell-mode
   (package
     (name "haskell-mode")
-    (version "13.14.2")
+    (version "16.1")
     (source (origin
               (method url-fetch)
               (file-name (string-append name "-" version ".tar.gz"))
@@ -583,7 +583,12 @@ process, passing on the arguments as command line arguments.")
                     "https://github.com/haskell/haskell-mode/archive/v"
                     version ".tar.gz"))
               (sha256
-               (base32 "1kxc2yj8vb122dv91r68h7c5ladcryx963fr16plfhg71fv7f9av"))))
+               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))))
+    (inputs
+     `(("emacs-el-search" ,emacs-el-search) ; for tests
+       ("emacs-stream" ,emacs-stream)))     ; for tests
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("texinfo" ,texinfo)))
@@ -592,15 +597,38 @@ process, passing on the arguments as command line arguments.")
      `(#:make-flags (list (string-append "EMACS="
                                          (assoc-ref %build-inputs "emacs")
                                          "/bin/emacs"))
+       #:modules ((ice-9 match)
+                  (srfi srfi-26)
+                  ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before
           'build 'pre-build
           (lambda* (#:key inputs #:allow-other-keys)
+            (define (el-dir store-dir)
+              (match (find-files store-dir)
+                ((f1 f2 ...) (dirname f1))
+                (_ "")))
+
             (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
+              (define emacs-prefix? (cut string-prefix? "emacs-" <>))
+
               (setenv "SHELL" "sh")
+              (setenv "EMACSLOADPATH"
+                      (string-concatenate
+                       (map (match-lambda
+                              (((? emacs-prefix? name) . dir)
+                               (string-append (el-dir dir) ":"))
+                              (_ ""))
+                            inputs)))
               (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
+              (substitute* "tests/haskell-code-conventions.el"
+                ;; Function name recently changed in "emacs-el-search".
+                (("el-search--search-pattern") "el-search-forward")
+                ;; Don't contact home.
+                (("\\(when \\(>= emacs-major-version 25\\)")
+                 "(require 'el-search) (when nil"))
               #t)))
          (replace
           'install
@@ -621,9 +649,9 @@ process, passing on the arguments as command line arguments.")
                 (install-file "haskell-mode.info" info))
                (copy-to-dir doc '("CONTRIBUTING.md" "NEWS" "README.md"))
                (copy-to-dir el-dir (find-files "." "\\.elc?"))
-               ;; these are now distributed with emacs
+               ;; These are part of other packages.
                (with-directory-excursion el-dir
-                 (for-each delete-file '("cl-lib.el" "ert.el")))
+                 (for-each delete-file '("dash.el" "ert.el")))
                #t))))))
     (home-page "https://github.com/haskell/haskell-mode")
     (synopsis "Haskell mode for Emacs")
