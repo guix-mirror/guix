@@ -323,8 +323,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.2"
-                    "111v014j9b2zgyhv8f0aka5lmyc3imdc5yag7azw6hv3vjqqkn67"
+  (make-linux-libre "4.8.3"
+                    "0plsy54rfk293f4f0sl1667lzbs3gchrf9sx0ghrq85w49d5ag61"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -341,8 +341,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.2")
-(define %linux-libre-hash "111v014j9b2zgyhv8f0aka5lmyc3imdc5yag7azw6hv3vjqqkn67")
+(define %linux-libre-version "4.8.3")
+(define %linux-libre-hash "0plsy54rfk293f4f0sl1667lzbs3gchrf9sx0ghrq85w49d5ag61")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
