@@ -483,13 +483,16 @@ elpa.gnu.org, and all the GNOME packages."
     (let-values (((name version) (package-name->name+version file)))
       (even-minor-version? (or version name))))
 
+  (define upstream-name
+    ;; Some packages like "NetworkManager" have camel-case names.
+    (or (assoc-ref (package-properties package) 'upstream-name)
+        (package-name package)))
+
   (false-if-ftp-error
-   (latest-ftp-release (package-name package)
+   (latest-ftp-release upstream-name
                        #:server "ftp.gnome.org"
                        #:directory (string-append "/pub/gnome/sources/"
-                                                  (match (package-name package)
-                                                    ("gconf" "GConf")
-                                                    (x       x)))
+                                                  upstream-name)
 
 
                        ;; <https://www.gnome.org/gnome-3/source/> explains

@@ -1130,7 +1130,8 @@ use in GNOME applications, built on top of CORBA.")
     (synopsis "Store application preferences")
     (description "Gconf is a system for storing application preferences.  It
 is intended for user preferences; not arbitrary data storage.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (properties '((upstream-name . "GConf")))))
 
 
 (define-public gnome-mime-data
@@ -4481,7 +4482,8 @@ devices and connections, attempting to keep active network connectivity when
 available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
 devices, and provides VPN integration with a variety of different VPN
 services.")
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties '((upstream-name . "NetworkManager")))))
 
 (define-public mobile-broadband-provider-info
   (package
