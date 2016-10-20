@@ -1711,7 +1711,7 @@ for OpenSMTPD to extend its functionality.")
     (description
      "The mailmanclient library provides official Python bindings for
 the GNU Mailman 3 REST API.")
-    (properties `((python2-variant . ,(delay python2-mailmainclient))))
+    (properties `((python2-variant . ,(delay python2-mailmanclient))))
     (license lgpl3+)))
 
 (define-public python2-mailmanclient
