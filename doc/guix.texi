@@ -8284,10 +8284,13 @@ configure networking."
 @end deffn
 
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
-  [#:servers @var{%ntp-servers}]
+  [#:servers @var{%ntp-servers}] @
+  [#:allow-large-adjustment? #f]
 Return a service that runs the daemon from @var{ntp}, the
 @uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
 keep the system clock synchronized with that of @var{servers}.
+@var{allow-large-adjustment?} determines whether @command{ntpd} is allowed to
+make an initial adjustment of more than 1,000 seconds.
 @end deffn
 
 @defvr {Scheme Variable} %ntp-servers
