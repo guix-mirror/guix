@@ -3320,3 +3320,21 @@ This package contains the library runtime.")
     (description "This package provides an Emacs major mode for
 editing nginx config files.")
     (license license:gpl2+)))
+
+(define-public emacs-stream
+  (package
+    (name "emacs-stream")
+    (version "2.2.0")
+    (home-page "https://github.com/NicolasPetton/stream")
+    (source
+     (origin
+       (method url-fetch)
+       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append home-page "/archive/"version ".tar.gz"))
+       (sha256
+        (base32 "03ql4nqfz5pn55mjly6clhvc3g7x2d28kj7mrlqmigvjbql39xxc"))))
+    (build-system emacs-build-system)
+    (synopsis "Implementation of streams for Emacs")
+    (description "This library provides an implementation of streams for Emacs.
+Streams are implemented as delayed evaluation of cons cells.")
+    (license license:gpl3+)))
