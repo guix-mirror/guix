@@ -11254,3 +11254,34 @@ useful as a validator for JSON data.")
     (description
       "This package contains a library for parsing ISO 8601 datetime strings.")
     (license license:bsd-3)))
+
+(define-public python-flask-restful
+  (package
+    (name "python-flask-restful")
+    (version "0.3.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-RESTful" version))
+        (sha256
+          (base32
+            "0hjcmdb56b7z4bkw848lxfkyrpnkwzmqn2dgnlv12mwvjpzsxr6c"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-aniso8601" ,python-aniso8601)
+        ("python-flask" ,python-flask)
+        ("python-pycrypto" ,python-pycrypto)
+        ("python-pytz" ,python-pytz)))
+    (native-inputs
+      `(;; Optional dependency of Flask. Tests need it.
+        ("python-blinker" ,python-blinker)
+        ("python-mock" ,python-mock) ; For tests
+        ("python-nose" ,python-nose) ; For tests
+        ("python-sphinx" ,python-sphinx)))
+    (home-page
+      "https://www.github.com/flask-restful/flask-restful/")
+    (synopsis
+      "Flask module for creating REST APIs")
+    (description
+      "This package contains a Flask module for creating REST APIs.")
+    (license license:bsd-3)))
