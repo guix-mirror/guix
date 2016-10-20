@@ -3338,3 +3338,27 @@ editing nginx config files.")
     (description "This library provides an implementation of streams for Emacs.
 Streams are implemented as delayed evaluation of cons cells.")
     (license license:gpl3+)))
+
+(define-public emacs-el-search
+  (let ((commit "f26277bfbb3fc3fc74beea6592f294c439796bd4")
+        (revision "1"))
+    (package
+      (name "emacs-el-search")
+      ;; No ufficial release.
+      (version (string-append "0.0-" revision "." (string-take commit 7)))
+      (home-page "https://github.com/emacsmirror/el-search")
+      (source
+       (origin
+         (method git-fetch)
+         (file-name (string-append name "-" version ".tar.gz"))
+         (uri (git-reference
+               (commit commit)
+               (url (string-append home-page ".git"))))
+         (sha256
+          (base32 "12xf40h9sb7xxg2r97gsia94q02543mgiiiw46fzh1ac7b7993g6"))))
+      (build-system emacs-build-system)
+      (inputs `(("emacs-stream" ,emacs-stream)))
+      (synopsis "Expression based interactive search for emacs-lisp-mode")
+      (description "This package provides expression based interactive search
+procedures for emacs-lisp-mode.")
+      (license license:gpl3+))))
