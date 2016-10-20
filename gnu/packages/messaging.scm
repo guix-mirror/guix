@@ -452,7 +452,7 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.5")
+    (version "0.16.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -460,34 +460,27 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "14fhcqnkqygh91132dnf1idayj4r3iqbwb44sd3mxv20n6ribh55"))))
+                "1p3qwzy07f0wkika9yigyiq167l2k6wn12flqa7x55z4ihbysmqk"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; The only check done by gajim-0.16.x is to check that the
-       ;; translations are up-to-date, and in 0.16.5 they are not, so
-       ;; "make check" fails.  Therefore, we disable tests for now.
-       ;;
-       ;; XXX TODO Try re-enabling tests in gajim-0.16.6 or later.
-       ;;
-       #:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Make sure all Python scripts run with the correct PYTHONPATH.
-            (let ((out (assoc-ref outputs "out"))
-                  (path (getenv "PYTHONPATH")))
-              (for-each (lambda (name)
-                          (let ((file (string-append out "/bin/" name)))
-                            ;; Wrapping destroys identification of intended
-                            ;; application, so we need to override "APP".
-                            (substitute* file
-                              (("APP=`basename \\$0`")
-                               (string-append "APP=" name)))
-                            (wrap-program file
-                              `("PYTHONPATH" ":" prefix (,path)))))
-                        '("gajim" "gajim-remote" "gajim-history-manager")))
-            #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure all Python scripts run with the correct PYTHONPATH.
+             (let ((out (assoc-ref outputs "out"))
+                   (path (getenv "PYTHONPATH")))
+               (for-each (lambda (name)
+                           (let ((file (string-append out "/bin/" name)))
+                             ;; Wrapping destroys identification of intended
+                             ;; application, so we need to override "APP".
+                             (substitute* file
+                               (("APP=`basename \\$0`")
+                                (string-append "APP=" name)))
+                             (wrap-program file
+                               `("PYTHONPATH" ":" prefix (,path)))))
+                         '("gajim" "gajim-remote" "gajim-history-manager")))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)))
     (propagated-inputs
