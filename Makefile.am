@@ -382,6 +382,8 @@ EXTRA_DIST =						\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/run-system-tests.scm			\
+  d3.v3.js						\
+  graph.js						\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
