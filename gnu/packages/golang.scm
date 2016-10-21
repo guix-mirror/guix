@@ -114,6 +114,13 @@
                   ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
                   ("os/os_test.go" "(.+)(TestHostname.+)")
                   ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+
+                  ;; Tzdata 2016g changed the name of the time zone used in this
+                  ;; test, and the patch for Go 1.7 does not work for 1.4.3:
+                  ;; https://github.com/golang/go/issues/17545
+                  ;; https://github.com/golang/go/issues/17276
+                  ("time/time_test.go" "(.+)(TestLoadFixed.+)")
+
                   ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
