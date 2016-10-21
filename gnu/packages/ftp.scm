@@ -139,18 +139,18 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
         (patches (search-patches "weex-vacopy.patch"))))
     (build-system gnu-build-system)
     (arguments
-      `(#:phases
-        (alist-replace 'configure
-          ;; configure does not work followed by both "SHELL=..." and
-          ;; "CONFIG_SHELL=..."; set environment variables instead
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                  (bash (which "bash")))
-              (setenv "SHELL" bash)
-              (setenv "CONFIG_SHELL" bash)
-              (zero? (system* bash "./configure"
-                              (string-append "--prefix=" out)))))
-          %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  ;; configure does not work followed by both "SHELL=..." and
+                  ;; "CONFIG_SHELL=..."; set environment variables instead
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bash (which "bash")))
+                      (setenv "SHELL" bash)
+                      (setenv "CONFIG_SHELL" bash)
+                      (zero? (system* bash "./configure"
+                                      (string-append "--prefix=" out)))))))))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
     (description
