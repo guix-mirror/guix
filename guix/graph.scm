@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
             node-transitive-edges
             node-reachable-count
 
+            %graph-backends
             %graphviz-backend
             graph-backend?
             graph-backend
@@ -178,6 +180,14 @@ typically returned by 'node-edges' or 'node-back-edges'."
                  "Generate graph in DOT format for use with Graphviz."
                  emit-prologue emit-epilogue
                  emit-node emit-edge))
+
+
+;;;
+;;; Shared.
+;;;
+
+(define %graph-backends
+  (list %graphviz-backend))
 
 (define* (export-graph sinks port
                        #:key

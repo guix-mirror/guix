@@ -5827,6 +5827,13 @@ the values listed above.
 @item --list-types
 List the supported graph types.
 
+@item --backend=@var{backend}
+@itemx -b @var{backend}
+Produce a graph using the selected @var{backend}.
+
+@item --list-backends
+List the supported graph backends.
+
 @item --expression=@var{expr}
 @itemx -e @var{expr}
 Consider the package @var{expr} evaluates to.
