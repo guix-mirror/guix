@@ -5605,3 +5605,34 @@ characters and categories for the installed fonts, and to examine their
 detailed properties.  It is an easy way to find the character you might
 only know by its Unicode name or code point.")
     (license license:gpl3+)))
+
+(define-public bluefish
+  (package
+    (name "bluefish")
+    (version "2.2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.bennewitz.com/bluefish/stable/source/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vnl6raxbvc4hacg3pr6sqyjh707d304dhk5nyhlp7m0m1y3j756"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("gtk+" ,gtk+)
+       ("python" ,python-2)
+       ("xmllint" ,libxml2)
+       ("gucharmap" ,gucharmap)))
+    (home-page "http://bluefish.openoffice.nl")
+    (synopsis "Web development studio")
+    (description
+     "Bluefish is an editor targeted towards programmers and web developers,
+with many options to write web sites, scripts and other code.
+Bluefish supports many programming and markup languages.")
+    (license license:gpl3+)))
