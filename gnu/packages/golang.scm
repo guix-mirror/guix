@@ -282,7 +282,18 @@ sequential processes (CSP) concurrent programming features added.")
                     ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
                     ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
                     ("syscall/exec_linux_test.go"
-                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
+                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")
+                    ;; This test broke when tzdata updated to 2016g:
+                    ;; https://github.com/golang/go/issues/17276
+
+                    ;; Applying the upstream patch causes the failure of another
+                    ;; test, because that test requires upstream's mtimes to be
+                    ;; preserved, but applying the patch and re-packing the
+                    ;; tarball causes mtimes to be set to Unix epoch.
+                    ;; https://github.com/golang/go/issues/17535
+
+                    ;; TODO Try re-enabling this test for Go > 1.7.3.
+                    ("time/time_test.go" "(.+)(TestLoadFixed.+)")))
 
                  (substitute* "../misc/cgo/testsanitizers/test.bash"
                    (("(CC=)cc" all var) (string-append var "gcc")))
