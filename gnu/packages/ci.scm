@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,4 +182,54 @@
        "Hydra is a tool for continuous integration testing and software
 release that uses a purely functional language to describe build jobs and
 their dependencies.")
+      (license l:gpl3+))))
+
+(define-public cuirass
+  (let ((commit "7248c0038f3d0bfcf6c469d534efb4a13952c112")
+        (revision "1"))
+    (package
+      (name "cuirass")
+      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/mthl/cuirass")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0hkwh2pcz3wzg1n533ch2w7vwr97yr369q4ki0yqk99wfipjrydw"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'bootstrap
+             (lambda _ (zero? (system* "sh" "bootstrap"))))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; Wrap the 'cuirass' command to refer to the right modules.
+               (let* ((out    (assoc-ref outputs "out"))
+                      (json   (assoc-ref inputs "guile-json"))
+                      (sqlite (assoc-ref inputs "guile-sqlite3"))
+                      (guix   (assoc-ref inputs "guix"))
+                      (mods   (string-append json "/share/guile/site/2.0:"
+                                             sqlite "/share/guile/site/2.0:"
+                                             guix "/share/guile/site/2.0")))
+                 (wrap-program (string-append out "/bin/cuirass")
+                   `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))))))))
+      (inputs
+       `(("guile" ,guile-2.0)
+         ("guile-json" ,guile-json)
+         ("guile-sqlite3" ,guile-sqlite3)
+         ("guix" ,guix)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (synopsis "Continuous integration system")
+      (description
+       "Cuirass is a continuous integration tool using GNU Guix.  It is
+intended as a replacement for Hydra.")
+      (home-page "https://notabug.org/mthl/cuirass")
       (license l:gpl3+))))
