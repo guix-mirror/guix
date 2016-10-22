@@ -976,6 +976,8 @@ Laurens Hammond and Don Leslie.")
                (base32
                 "1jzzmfwssklzw8fvvil04n8csc0zm99fnd9p2xa7c0xchg37lvhn"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-build? #f)) ; Race conditions cause build failures
     (inputs
      `(("rapicorn" ,rapicorn)
        ("guile" ,guile-1.8)
