@@ -19,7 +19,7 @@
 (define-module (gnu packages chez)
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3 expat
+                #:select (gpl2+ gpl3+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3 expat
                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -470,3 +470,31 @@ concatenating, composing and extending these formatters efficiently
 without resorting to capturing and manipulating intermediate
 strings.")
     (license bsd-3)))
+
+(define-public chez-mit
+  (package
+    (name "chez-mit")
+    (version "0.1")
+    (home-page "https://github.com/fedeinthemix/chez-mit")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "1p11q061znwxzxrxg3vw4dbsnpv1dav12hjhnkrjnzyyjvvdm2kn"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("chez-srfi" ,chez-srfi))) ; for tests
+    (native-inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (arguments
+     `(#:make-flags ,(chez-make-flags name version)
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure ,chez-configure))))
+    (synopsis "MIT/GNU Scheme compatibility library for Chez Scheme")
+    (description "This package provides a set of MIT/GNU Scheme compatibility
+libraries for Chez Scheme.  The main goal was to provide the functionality
+required to port the program 'Scmutils' to Chez Scheme.")
+    (license gpl3+)))
