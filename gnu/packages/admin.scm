@@ -1556,7 +1556,7 @@ platform-specific methods.")
              #t)))))
     (inputs
      `(("openldap" ,openldap)
-       ("openssl" ,openssl)
+       ("gnutls" ,gnutls)
        ("sasl" ,cyrus-sasl)))
     (synopsis "User-space component to the Linux auditing system")
     (description
