@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,9 +24,11 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
-  #:use-module (gnu packages curl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config))
 
 (define-public libyubikey
   (package
@@ -46,6 +49,37 @@
 the low-level development kit for the Yubico YubiKey authentication device.")
     (home-page "https://developers.yubico.com/yubico-c/")
     (license license:bsd-2)))
+
+(define-public pcsc-lite
+  (package
+    (name "pcsc-lite")
+    (version "1.8.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://alioth.debian.org/frs/download.php/file/4179/"
+                    "pcsc-lite-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0189s10xsgcmdvc2sixakncwlv47cg6by6m9vdm038gn32q34bdj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers")))
+    (native-inputs
+     `(("perl" ,perl)                   ; for pod2man
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libudev" ,eudev)))
+    (home-page "https://pcsclite.alioth.debian.org/pcsclite.html")
+    (synopsis "Middleware to access a smart card using PC/SC")
+    (description
+     "pcsc-lite provides an interface to communicate with smartcards and
+readers using the SCard API.  pcsc-lite is used to connect to the PC/SC daemon
+from a client application and provide access to the desired reader.")
+    (license (list license:bsd-3                ; pcsc-lite
+                   license:expat                ; src/sd-daemon.[ch]
+                   license:isc                  ; src/strlcat.c src/strlcpy.c
+                   license:gpl3+))))            ; src/spy/*
 
 (define-public ykclient
   (package
