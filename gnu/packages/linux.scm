@@ -220,7 +220,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                            (extra-version #f)
                            (configuration-file #f)
                            (defconfig "defconfig")
-                           (extra-options %default-extra-linux-options))
+                           (extra-options %default-extra-linux-options)
+                           (patches (list %boot-logo-patch)))
   (package
     (name (if extra-version
               (string-append "linux-libre-" extra-version)
@@ -230,7 +231,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256 (base32 hash))
-              (patches (list %boot-logo-patch))))
+              (patches patches)))
     (supported-systems supported-systems)
     (build-system gnu-build-system)
     (native-inputs
