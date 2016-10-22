@@ -11222,7 +11222,13 @@ is used by PostgreSQL and the OpenSSH Server for example.")
 The schema format is based on the JSON Schema
 proposal (http://json-schema.org), so combined with json the library is also
 useful as a validator for JSON data.")
-  (license license:expat)))
+  (license license:expat)
+  (properties `((python2-variant . ,(delay python2-validictory))))))
 
 (define-public python2-validictory
-    (package-with-python2 python-validictory))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-validictory))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
