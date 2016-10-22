@@ -339,7 +339,10 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre "4.1.34"
                     "0dajsb363p9lgga22ml8gp9k9lxd8mvrzxk9y3h9c6hpzfcmqdqr"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches (list %boot-logo-patch
+                                    (search-patch
+                                     "linux-libre-4.1-CVE-2016-5195.patch"))))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
 (define %linux-libre-version "4.8.3")
