@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@libertad.pw>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages security-token)
   #:use-module (gnu packages tls)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -261,6 +263,7 @@ compatible to GNU Pth.")
        ("libksba" ,libksba)
        ("npth" ,npth)
        ("openldap" ,openldap)
+       ("pcsc-lite" ,pcsc-lite)
        ("readline" ,readline)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
@@ -268,10 +271,14 @@ compatible to GNU Pth.")
     `(#:configure-flags '("--enable-gpg2-is-gpg")
       #:phases
       (modify-phases %standard-phases
-        (add-before 'configure 'patch-config-files
-          (lambda _
+        (add-before 'configure 'patch-paths
+          (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "tests/openpgp/defs.inc"
               (("/bin/pwd") (which "pwd")))
+            (substitute* "scd/scdaemon.c"
+              (("\"(libpcsclite\\.so[^\"]*)\"" _ name)
+               (string-append "\"" (assoc-ref inputs "pcsc-lite")
+                              "/lib/" name "\"")))
             #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
