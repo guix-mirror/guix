@@ -514,17 +514,17 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.7.9")
+    (version "4.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://www.iro.umontreal.ca/~gambit/download/gambit/v"
-             (version-major+minor version) "/source/gambc-v"
+             (version-major+minor version) "/source/gambit-v"
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "0kzia3wlxnw5m0cc7681y3pabcl9iflpkbdl0zcfpxfhpgpa5r0p"))))
+        (base32 "0xwmqzqvk83xyjz48vp36p5vj1415rl3pi3xq7y8i3p8s409a98b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
