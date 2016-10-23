@@ -712,6 +712,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupdf-CVE-2016-6265.patch		\
   %D%/packages/patches/mupdf-CVE-2016-6525.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
+  %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/nasm-no-ps-pdf.patch			\
   %D%/packages/patches/net-tools-bitrot.patch			\

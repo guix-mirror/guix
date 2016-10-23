@@ -32,6 +32,7 @@
               (method url-fetch)
               (uri (string-append "http://www.musl-libc.org/releases/"
                                   name "-" version ".tar.gz"))
+              (patches (search-patches "musl-CVE-2016-8859.patch"))
               (sha256
                (base32
                 "1ymhxkskivzph0q34zadwfglc5gyahqajm7chqqn2zraxv3lgr4p"))))
