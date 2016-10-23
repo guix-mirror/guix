@@ -781,15 +781,17 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "1.900.5")
+    (version "1.900.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "1fvy4ngc6064g128q4484qpinsn05y9qw6lrccc4czhalla2w26m"))))
+                "0nmy5248gar057s94a30fssvq70m3jy4vdrfcispvn01ih33fa19"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("CFLAGS=-std=c99"))) ; 1.900.13 added c++ style comments
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
