@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,8 +48,10 @@
    (arguments
     `(#:configure-flags
       '("--enable-rpath"
-        ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                        (%current-system)))
+        ,@(if (let ((s (or (%current-target-system)
+                           (%current-system))))
+                (or (string-prefix? "arm" s)
+                    (string-prefix? "mips" s)))
               '("--with-data-packaging=archive")
               '()))
       #:phases
