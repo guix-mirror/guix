@@ -324,8 +324,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.3"
-                    "0plsy54rfk293f4f0sl1667lzbs3gchrf9sx0ghrq85w49d5ag61"
+  (make-linux-libre "4.8.4"
+                    "06fb2b1y7w0ixq4savn3hddp326mmzmg3400dpr8lyg919bwck3x"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -345,8 +345,8 @@ It has been modified to remove all non-free binary blobs.")
                                      "linux-libre-4.1-CVE-2016-5195.patch"))))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.3")
-(define %linux-libre-hash "0plsy54rfk293f4f0sl1667lzbs3gchrf9sx0ghrq85w49d5ag61")
+(define %linux-libre-version "4.8.4")
+(define %linux-libre-hash "06fb2b1y7w0ixq4savn3hddp326mmzmg3400dpr8lyg919bwck3x")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
