@@ -116,13 +116,13 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "7.05")
+   (version "7.07")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256 (base32
-                     "1i102yr8yp2ny587n6pd966443h1pqxyw5q0n5afq575046jj98g"))))
+                     "0rl33f1g42hxzqfv2a33gls8cb77q4w432xkims1dnfwhzagrv7k"))))
    (build-system gnu-build-system)
    (inputs
     `(("libxml2" ,libxml2)

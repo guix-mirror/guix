@@ -301,6 +301,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pumpio.scm			\
   %D%/packages/pretty-print.scm			\
   %D%/packages/protobuf.scm			\
+  %D%/packages/psyc.scm                         \
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/qemu.scm				\
@@ -593,7 +594,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
-  %D%/packages/patches/hop-bigloo-4.0b.patch			\
   %D%/packages/patches/hop-linker-flags.patch			\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
@@ -619,7 +619,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/ldc-disable-tests.patch			\
-  %D%/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -672,6 +671,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
+  %D%/packages/patches/linux-libre-4.1-CVE-2016-5195.patch	\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
@@ -713,6 +713,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ninja-tests.patch			\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
+  %D%/packages/patches/notmuch-emacs-25-compatibility-fix.patch	\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
@@ -725,6 +726,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openjpeg-CVE-2016-5157.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-7163.patch		\
   %D%/packages/patches/openjpeg-use-after-free-fix.patch	\
+  %D%/packages/patches/openssh-memory-exhaustion.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
@@ -815,6 +817,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\
+  %D%/packages/patches/slim-reset.patch				\
+  %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slock-CVE-2016-6866.patch		\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   %D%/packages/patches/soprano-find-clucene.patch		\

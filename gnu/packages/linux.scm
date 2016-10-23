@@ -219,7 +219,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                            (extra-version #f)
                            (configuration-file #f)
                            (defconfig "defconfig")
-                           (extra-options %default-extra-linux-options))
+                           (extra-options %default-extra-linux-options)
+                           (patches (list %boot-logo-patch)))
   (package
     (name (if extra-version
               (string-append "linux-libre-" extra-version)
@@ -229,7 +230,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256 (base32 hash))
-              (patches (list %boot-logo-patch))))
+              (patches patches)))
     (supported-systems supported-systems)
     (build-system gnu-build-system)
     (native-inputs
@@ -322,14 +323,14 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.2"
-                    "111v014j9b2zgyhv8f0aka5lmyc3imdc5yag7azw6hv3vjqqkn67"
+  (make-linux-libre "4.8.4"
+                    "06fb2b1y7w0ixq4savn3hddp326mmzmg3400dpr8lyg919bwck3x"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.25"
-                    "1a677h8vvjkbzqwnklqnjvhq33lwig5z453dwi125zzzvawgr463"
+  (make-linux-libre "4.4.27"
+                    "07g0y8zbspw8d65386llcsnqlbv2s24dxvvbwm9kwm87rk3vin1r"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -337,11 +338,14 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre "4.1.34"
                     "0dajsb363p9lgga22ml8gp9k9lxd8mvrzxk9y3h9c6hpzfcmqdqr"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches (list %boot-logo-patch
+                                    (search-patch
+                                     "linux-libre-4.1-CVE-2016-5195.patch"))))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.2")
-(define %linux-libre-hash "111v014j9b2zgyhv8f0aka5lmyc3imdc5yag7azw6hv3vjqqkn67")
+(define %linux-libre-version "4.8.4")
+(define %linux-libre-hash "06fb2b1y7w0ixq4savn3hddp326mmzmg3400dpr8lyg919bwck3x")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -2974,14 +2978,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "142")
+    (version "143")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "15a9hllwj32l1zh7x4swx8985x6nqrplvxjyfdsqysxw2pk6pixr"))
+                "1mn5i1d6ybfxqgr6smlpxcx1wb53h0r2rp90ild7919b9yqxpk0x"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3040,3 +3044,28 @@ of flash storage.")
       (list license:gpl2 ; Almost everything is gpl2 or gpl2+
             license:mpl1.1 ; All ftl* files
             license:expat)))) ; libiniparser
+
+(define-public libseccomp
+  (package
+    (name "libseccomp")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/seccomp/libseccomp/"
+                                  "releases/download/v" version
+                                  "/libseccomp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0asnlkzqms520r0dra08dzcz5hh6hs7lkajfw9wij3vrd0hxsnzz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (synopsis "Interface to Linux's seccomp syscall filtering mechanism")
+    (description "The libseccomp library provides an easy to use, platform
+independent, interface to the Linux Kernel's syscall filtering mechanism.  The
+libseccomp API is designed to abstract away the underlying BPF based syscall
+filter language and present a more conventional function-call based filtering
+interface that should be familiar to, and easily adopted by, application
+developers.")
+    (home-page "https://github.com/seccomp/libseccomp")
+    (license license:lgpl2.1)))

@@ -427,7 +427,7 @@ and up to 1 Mbit/s downstream.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.0")
+    (version "2.2.1")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -436,7 +436,7 @@ and up to 1 Mbit/s downstream.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "010i7wpsv2231pwb1xdqs0xfwywi3514siidv6wnrfpw3rs7x156"))))
+         "0jciaqz119vmznd8mi4gq5dgwz7vn453cnm2086mxcy80jpj43lh"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)

@@ -401,22 +401,21 @@ many readers as needed).")
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
-    (version "1.7")
+    (version "2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "153vv75gb7l62sp3666rc97i63rnaqbx2rjar7d9b5w81fhwv4r5"))))
+               "0avqa7iiqpw0wgj9ga5ffxka4znrhpx1bv3bb2ah7mnylap91sfw"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.0)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags (list "--with-ncursesw"  ; Unicode support
-                               (string-append "--with-guilesitedir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.0"))
+                               "--with-gnu-filesystem-hierarchy")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'post-install
@@ -426,7 +425,7 @@ many readers as needed).")
                     (files (find-files dir ".scm")))
                (substitute* files
                  (("\"libguile-ncurses\"")
-                  (format #f "\"~a/lib/libguile-ncurses\""
+                  (format #f "\"~a/lib/guile/2.0/libguile-ncurses\""
                           out)))))))))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")

@@ -7832,14 +7832,14 @@ text.")
 (define-public python-rsa
   (package
    (name "python-rsa")
-   (version "3.2")
+   (version "3.4.2")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "rsa" version))
      (sha256
       (base32
-       "0xwp929g7lvb1sghxfpqlxvgg96qcwqdbhh27sjplx30n3xp3wrh"))))
+       "1dcxvszbikgzh99ybdc7jq0zb9wspy2ds8z9mjsqiyv3q884xpr5"))))
    (build-system python-build-system)
    (inputs
     `(("python-pyasn1" ,python-pyasn1)
@@ -7939,14 +7939,14 @@ document.")
 (define-public python-botocore
   (package
    (name "python-botocore")
-   (version "1.3.17")
+   (version "1.4.62")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "botocore" version))
      (sha256
       (base32
-       "08vpvdixx1c1lfv6vzjig68bpiir7wfyhzf49ysxgvhbprg5ra0w"))))
+       "1zxczlwqy9bl27d9bc5x99mb5mcsxm350240lp5nx7014xb311lj"))))
    (build-system python-build-system)
    (inputs
     `(("python-dateutil" ,python-dateutil-2)
@@ -7969,16 +7969,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.9.17")
+   (version "1.11.5")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append
-           "https://pypi.python.org/packages/source/a/awscli/awscli-"
-           version ".tar.gz"))
+     (uri (pypi-uri name version))
      (sha256
       (base32
-       "1nj7jqvlpq57hfhby1njsbf8303gapa3njc4dramr6p3ffzvfi2i"))))
+       "0lclasm0wnayd3b8zl9l91i32nbgrhh0ncf9lksss4cv0myfwmfg"))))
    (build-system python-build-system)
    (inputs
     `(("python-colorama" ,python-colorama)
@@ -7990,7 +7988,8 @@ interface to the Amazon Web Services (AWS) API.")
       ("python-sphinx" ,python-sphinx)
       ("python-tox" ,python-tox)
       ("python-wheel" ,python-wheel)
-      ("python-botocore" ,python-botocore)))
+      ("python-botocore" ,python-botocore)
+      ("python-s3transfer" ,python-s3transfer)))
    (home-page "http://aws.amazon.com/cli/")
    (synopsis "Command line client for AWS")
    (description "AWS CLI provides a unified command line interface to the
@@ -8962,6 +8961,42 @@ anymore.")
 
 (define-public python2-pathlib
   (package-with-python2 python-pathlib))
+
+(define-public python2-pathlib2
+  (package
+    (name "python2-pathlib2")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pathlib2" version))
+              (sha256
+               (base32
+                "0p050msg5c8d0kadv702jnfshaxrb0il765cpkgnhn6mq5hakcyy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)
+       ("python2-six" ,python2-six)))
+    (home-page "http://pypi.python.org/pypi/pathlib2/")
+    (synopsis "Object-oriented file system paths - backport of standard
+pathlib module")
+    (description "The goal of pathlib2 is to provide a backport of standard
+pathlib module which tracks the standard library module, so all the newest
+features of the standard pathlib can be used also on older Python versions.
+
+Pathlib offers a set of classes to handle file system paths.  It offers the
+following advantages over using string objects:
+
+@enumerate
+@item No more cumbersome use of os and os.path functions.  Everything can
+be done easily through operators, attribute accesses, and method calls.
+@item Embodies the semantics of different path types.  For example,
+comparing Windows paths ignores casing.
+@item Well-defined semantics, eliminating any inconsistencies or
+ambiguities (forward vs. backward slashes, etc.).
+@end enumerate")
+    (license license:expat)))
 
 (define-public python-jellyfish
   (package
@@ -11165,3 +11200,240 @@ replay them during future tests.  It is designed to work with python-requests.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-s3transfer
+  (package
+    (name "python-s3transfer")
+    (version "0.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "s3transfer" version))
+              (sha256
+               (base32
+                "1jivjkp3xqif9gzr5fiq28jsskmh50vzzd7ldsb4rbyiw1iyv3hy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-docutils" ,python-docutils)))
+    (inputs
+     `(("python-botocore" ,python-botocore)))
+    (synopsis "Amazon S3 Transfer Manager")
+    (description "S3transfer is a Python library for managing Amazon S3
+transfers.")
+    (home-page "https://github.com/boto/s3transfer")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-s3transfer))))))
+
+(define-public python2-s3transfer
+  (let ((base (package-with-python2 (strip-python2-variant python-s3transfer))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-futures" ,python2-futures)
+         ("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-setproctitle
+(package
+  (name "python-setproctitle")
+  (version "1.1.10")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "setproctitle" version))
+      (sha256
+        (base32
+          "163kplw9dcrw0lffq1bvli5yws3rngpnvrxrzdw89pbphjjvg0v2"))))
+  (build-system python-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+        (add-before 'check 'patch-Makefile
+           ;; Stricly this is only required for the python2 variant.
+           ;; But adding a phase in an inherited package seems to be
+           ;; cumbersum. So we patch even for python3.
+           (lambda _
+             (let ((nose (assoc-ref %build-inputs "python2-nose")))
+               (when nose
+                 (substitute* "Makefile"
+                   (("\\$\\(PYTHON\\) [^ ]which nosetests[^ ] ")
+                    (string-append nose "/bin/nosetests "))))
+               #t)))
+        (replace 'check
+           (lambda _
+             (setenv "PYTHON" (or (which "python3") (which "python")))
+             (setenv "PYCONFIG" (or (which "python3-config")
+                                    (which "python-config")))
+             (setenv "CC" "gcc")
+             ;; No need to extend PYTHONPATH to find the built package, since
+             ;; the Makefile will build anyway
+             (zero? (system* "make" "check")))))))
+  (native-inputs
+   `(("procps" ,procps))) ; required for tests
+  (home-page
+    "https://github.com/dvarrazzo/py-setproctitle")
+  (synopsis
+   "Setproctitle implementation for Python to customize the process title")
+  (description "The library allows a process to change its title (as displayed
+by system tools such as ps and top).
+
+Changing the title is mostly useful in multi-process systems, for
+example when a master process is forked: changing the children's title
+allows to identify the task each process is busy with.  The technique
+is used by PostgreSQL and the OpenSSH Server for example.")
+  (license license:bsd-3)
+  (properties `((python2-variant . ,(delay python2-setproctitle))))))
+
+(define-public python2-setproctitle
+  (let ((base (package-with-python2
+               (strip-python2-variant python-setproctitle))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-nose" ,python2-nose)
+                       ,@(package-native-inputs base))))))
+
+(define-public python-validictory
+  (package
+    (name "python-validictory")
+    (version "1.0.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "validictory" version))
+      (sha256
+       (base32
+        "1zf1g9sw47xzp5f80bd94pb42j9yqv82lcrgcvdwr6nkaphfi37q"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           ;; Move the tests out of the package directory to avoid
+           ;; packaging them.
+           (lambda* _
+             (rename-file "validictory/tests" "tests")
+             (delete-file "tests/__init__.py")))
+         (replace 'check
+           (lambda _
+             ;; Extend PYTHONPATH so the built package will be found.
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "py.test" "-vv" )))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/jamesturk/validictory")
+    (synopsis "General purpose Python data validator")
+    (description "It allows validation of arbitrary Python data structures.
+
+The schema format is based on the JSON Schema
+proposal (http://json-schema.org), so combined with json the library is also
+useful as a validator for JSON data.")
+  (license license:expat)
+  (properties `((python2-variant . ,(delay python2-validictory))))))
+
+(define-public python2-validictory
+  (let ((base (package-with-python2
+               (strip-python2-variant python-validictory))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
+
+(define-public python-aniso8601
+  (package
+    (name "python-aniso8601")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aniso8601" version))
+        (sha256
+          (base32
+            "1k5mjg9iqbjfslb5prrsfz7dhlvi6s35p1jxq8dm87w1b7dn5i2g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil-2" ,python-dateutil-2)))
+    (home-page
+      "https://bitbucket.org/nielsenb/aniso8601")
+    (synopsis
+      "Python library for parsing ISO 8601 strings")
+    (description
+      "This package contains a library for parsing ISO 8601 datetime strings.")
+    (license license:bsd-3)))
+
+(define-public python-flask-restful
+  (package
+    (name "python-flask-restful")
+    (version "0.3.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-RESTful" version))
+        (sha256
+          (base32
+            "0hjcmdb56b7z4bkw848lxfkyrpnkwzmqn2dgnlv12mwvjpzsxr6c"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-aniso8601" ,python-aniso8601)
+        ("python-flask" ,python-flask)
+        ("python-pycrypto" ,python-pycrypto)
+        ("python-pytz" ,python-pytz)))
+    (native-inputs
+      `(;; Optional dependency of Flask. Tests need it.
+        ("python-blinker" ,python-blinker)
+        ("python-mock" ,python-mock) ; For tests
+        ("python-nose" ,python-nose) ; For tests
+        ("python-sphinx" ,python-sphinx)))
+    (home-page
+      "https://www.github.com/flask-restful/flask-restful/")
+    (synopsis
+      "Flask module for creating REST APIs")
+    (description
+      "This package contains a Flask module for creating REST APIs.")
+    (license license:bsd-3)))
+
+(define-public python-flask-basicauth
+  (package
+    (name "python-flask-basicauth")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-BasicAuth" version))
+        (sha256
+          (base32
+            "1zq1spkjr4sjdnalpp8wl242kdqyk6fhbnhr8hi4r4f0km4bspnz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)))
+    (home-page
+      "https://github.com/jpvanhal/flask-basicauth")
+    (synopsis
+      "HTTP basic access authentication for Flask")
+    (description
+      "This package provides HTTP basic access authentication for Flask.")
+    (license license:bsd-3)))
+
+(define-public python-flask-sqlalchemy
+  (package
+    (name "python-flask-sqlalchemy")
+    (version "2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-SQLAlchemy" version))
+        (sha256
+          (base32
+            "1i9ps5d5snih9xlqhrvmi3qfiygkmqzxh92n25kj4pf89kj4s965"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (home-page
+      "http://github.com/mitsuhiko/flask-sqlalchemy")
+    (synopsis
+      "Module adding SQLAlchemy support to your Flask application")
+    (description
+      "This package adds SQLAlchemy support to your Flask application.")
+    (license license:bsd-3)))

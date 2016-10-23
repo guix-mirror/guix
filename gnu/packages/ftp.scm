@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,18 +34,16 @@
 (define-public lftp
   (package
     (name "lftp")
-    (version "4.6.1")
+    (version "4.7.3")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://lftp.yar.ru/ftp/lftp-"
+              (uri (list (string-append "https://lftp.yar.ru/ftp/lftp-"
                                         version ".tar.xz")
-                         (string-append "http://lftp.yar.ru/ftp/old/lftp-"
+                         (string-append "https://lftp.yar.ru/ftp/old/lftp-"
                                         version ".tar.xz")))
               (sha256
                (base32
-                "1grmp8zg7cjgjinz66mrh53whigkqzl90nlxj05hapnhk3ns3vni"))
-              (patches (search-patches
-                        "lftp-dont-save-unknown-host-fingerprint.patch"))))
+                "0z4flhqvq9w9md1348jdw0lnk0dlljyicz8597inl6jcvjf2a8iv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -52,7 +51,19 @@
      `(("zlib" ,zlib)
        ("readline" ,readline)
        ("gnutls" ,gnutls)))
-    (home-page "http://lftp.yar.ru/")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Disable tests that require network access, which is most of them.
+         (add-before 'check 'disable-impure-tests
+                     (lambda _
+                       (substitute* "tests/Makefile"
+                         (("(ftp-cls-l|ftp-list|http-get)\\$\\(EXEEXT\\)") "")
+                         (("lftp-https-get ") "")))))
+       #:configure-flags
+       (list (string-append "--with-readline="
+                            (assoc-ref %build-inputs "readline")))))
+    (home-page "https://lftp.yar.ru/")
     (synopsis "Command-line file transfer program")
     (description
      "LFTP is a sophisticated FTP/HTTP client, and a file transfer program
@@ -89,18 +100,18 @@ reliability in mind.")
                      "free software"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; This is an old 'configure' script that doesn't
-                   ;; understand variables passed as arguments.
-                   (let ((out (assoc-ref outputs "out")))
-                     (setenv "CONFIG_SHELL" (which "sh"))
-                     (setenv "SHELL" (which "sh"))
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)
-       #:tests? #f))                              ;there are no tests
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; This is an old 'configure' script that doesn't
+                    ;; understand variables passed as arguments.
+                    (let ((out (assoc-ref outputs "out")))
+                      (setenv "CONFIG_SHELL" (which "sh"))
+                      (setenv "SHELL" (which "sh"))
+                      (zero? (system* "./configure"
+                                      (string-append "--prefix=" out)))))))
+                #:tests? #f))           ;there are no tests
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.ncftp.com/ncftp/")
     (synopsis "Command-line File Transfer Protocol (FTP) client")
@@ -128,18 +139,18 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
         (patches (search-patches "weex-vacopy.patch"))))
     (build-system gnu-build-system)
     (arguments
-      `(#:phases
-        (alist-replace 'configure
-          ;; configure does not work followed by both "SHELL=..." and
-          ;; "CONFIG_SHELL=..."; set environment variables instead
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                  (bash (which "bash")))
-              (setenv "SHELL" bash)
-              (setenv "CONFIG_SHELL" bash)
-              (zero? (system* bash "./configure"
-                              (string-append "--prefix=" out)))))
-          %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  ;; configure does not work followed by both "SHELL=..." and
+                  ;; "CONFIG_SHELL=..."; set environment variables instead
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bash (which "bash")))
+                      (setenv "SHELL" bash)
+                      (setenv "CONFIG_SHELL" bash)
+                      (zero? (system* bash "./configure"
+                                      (string-append "--prefix=" out)))))))))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
     (description

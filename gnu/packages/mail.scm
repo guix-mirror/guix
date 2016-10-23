@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -76,7 +76,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gdb)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages screen)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
@@ -192,14 +194,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.7.0")
+    (version "1.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0idkamdiwj9fgqaz1vzkfg78cnmkzp74skv0ibw2xjfq6ds9hghx"))
+               "1pyns0xw52s4yma1a93pdcl4dirs55q2m1hd7w1r11nlhf7giip9"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -499,19 +501,27 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.22.1")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jwpda3q023dn3sp41n8648951i7iagfv8zzpriv7hpkjivlafg7"))))
+                "1f51l34rdhjf8lvafrwybkxdsdwx8k9397m7qxd8rdg2irjmpry5"))
+              (patches
+               ;; Remove this for the next release. See this thread for context:
+               ;; https://notmuchmail.org/pipermail/notmuch/2016/023227.html
+               (search-patches "notmuch-emacs-25-compatibility-fix.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; FIXME: 694 tests; 170 fail and 100 are skipped
-                   ; with perl input: 50 fail and 100 are skipped
+     '(#:make-flags (list "V=1") ; Verbose test output.
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-notmuch-lib.el
+                    (lambda _
+                      (substitute* "emacs/notmuch-lib.el"
+                        (("/bin/sh") (which "sh")))
+                      #t))
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
                       (setenv "CC" "gcc")
@@ -519,21 +529,35 @@ invoking @command{notifymuch} from the post-new hook.")
 
                       (let ((out (assoc-ref outputs "out")))
                         (zero? (system* "./configure"
-                                        (string-append "--prefix=" out)))))))))
+                                        (string-append "--prefix=" out))))))
+                  (add-before 'check 'prepare-test-environment
+                    (lambda _
+                      (setenv "TEST_CC" "gcc")
+                      ;; Patch various inline shell invocations.
+                      (substitute* (find-files "test" "\\.sh$")
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
-       ("emacs" ,emacs-minimal)
+       ("emacs" ,emacs-no-x) ; Minimal lacks libxml, needed for some tests.
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("python-docutils" ,python2-docutils)
-       ("python-sphinx" ,python2-sphinx)))
+       ("python-sphinx" ,python2-sphinx)
+
+       ;; The following are required for tests only.
+       ("which" ,which)
+       ("dtach" ,dtach)
+       ("gnupg" ,gnupg)
+       ("man" ,man-db)
+       ("perl" ,perl)))
     (inputs
      `(("glib" ,glib)
        ("gmime" ,gmime)
        ("talloc" ,talloc)
        ("xapian" ,xapian)
        ("zlib" ,zlib)))
-    (home-page "http://notmuchmail.org/")
+    (home-page "https://notmuchmail.org/")
     (synopsis "Thread-based email index, search, and tagging")
     (description
      "Notmuch is a command-line based program for indexing, searching, read-
@@ -584,7 +608,7 @@ useful for email address completion.")
 (define-public python-notmuch
   (package
     (name "python-notmuch")
-    (version "0.22.1")
+    (version (package-version notmuch))
     ;; Notmuch python bindings are now unavailable on pypi.  The
     ;; bindings are distributed via the notmuch release tarball.
     (source (package-source notmuch))
@@ -606,7 +630,7 @@ useful for email address completion.")
                  (("libnotmuch\\.so\\.")
                   (string-append notmuch "/lib/libnotmuch.so.")))
                #t))))))
-    (home-page "http://notmuchmail.org/")
+    (home-page (package-home-page notmuch))
     (synopsis "Python bindings of the Notmuch mail indexing library")
     (description
      "This package provides Python bindings to use the Notmuch mail indexing
@@ -1664,3 +1688,35 @@ e-mails with other systems speaking the SMTP protocol.")
      "This package provides extra tables, filters, and various other addons
 for OpenSMTPD to extend its functionality.")
     (home-page "https://www.opensmtpd.org")))
+
+(define-public python-mailmanclient
+  (package
+    (name "python-mailmanclient")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mailmanclient" version))
+       (sha256
+        (base32
+         "1cfjh45fgbsax5hjj2inq9nk33dhdvh63xhysc8dhnqidgqgm8c5"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Requires mailman running
+    (inputs
+     `(("python-six" ,python-six)
+       ("python-httplib2" ,python-httplib2)))
+    (home-page "https://launchpad.net/mailman.client")
+    (synopsis "Python bindings for the Mailman 3 REST API")
+    (description
+     "The mailmanclient library provides official Python bindings for
+the GNU Mailman 3 REST API.")
+    (properties `((python2-variant . ,(delay python2-mailmanclient))))
+    (license lgpl3+)))
+
+(define-public python2-mailmanclient
+  (let ((base (package-with-python2
+               (strip-python2-variant python-mailmanclient))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools))))))

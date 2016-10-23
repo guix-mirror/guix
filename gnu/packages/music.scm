@@ -838,6 +838,46 @@ your own lessons.")
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (license license:gpl3+)))
 
+(define-public jalv-select
+  (package
+    (name "jalv-select")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/jalv_select/"
+                                  "archive/V" version ".tar.gz"))
+              (sha256
+               (base32
+                "01y93l5c1f8za04a0y4b3v0nhsm1lhj6rny9xpdgd7jz6sl6w581"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'ignore-PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "jalv.select.cpp"
+               (("echo \\$PATH | tr ':' '\\\n' | xargs ls")
+                (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
+             (substitute* "jalv.select.h"
+               (("gtkmm.h") "gtkmm-2.4/gtkmm.h"))
+             #t)))))
+    (inputs
+     `(("lilv" ,lilv)
+       ("lv2" ,lv2)
+       ("jalv" ,jalv)
+       ("gtkmm" ,gtkmm-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/brummer10/jalv_select")
+    (synopsis "GUI to select LV2 plugins and run them with jalv")
+    (description
+     "The jalv.select package provides a graphical user interface allowing
+users to select LV2 plugins and run them with jalv.")
+    (license license:public-domain)))
+
 (define-public synthv1
   (package
     (name "synthv1")
@@ -976,6 +1016,8 @@ Laurens Hammond and Don Leslie.")
                (base32
                 "1jzzmfwssklzw8fvvil04n8csc0zm99fnd9p2xa7c0xchg37lvhn"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-build? #f)) ; Race conditions cause build failures
     (inputs
      `(("rapicorn" ,rapicorn)
        ("guile" ,guile-1.8)
@@ -1362,53 +1404,6 @@ multiplatform realtime MIDI I/O library is also provided with various output
 backends, including ALSA, OSS, Network and FluidSynth.")
     (license license:gpl2+)))
 
-(define-public vmpk
-  (package
-    (name "vmpk")
-    (version "0.6.2a")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/vmpk/vmpk/"
-                                  (string-drop-right version 1)
-                                  "/vmpk-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0259iikvxnfdiifrh02g8xgcxikrkca4nhd3an8xzx0bd6bk8ifi"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f  ; no test target
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cmake_admin/CreateManpages.cmake"
-               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
-             #t)))))
-    (inputs
-     `(("drumstick" ,drumstick)
-       ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)
-       ("qtx11extras" ,qtx11extras)))
-    (native-inputs
-     `(("libxslt" ,libxslt) ;for xsltproc
-       ("docbook-xsl" ,docbook-xsl)
-       ("pkg-config" ,pkg-config)))
-    (home-page "http://vmpk.sourceforge.net")
-    (synopsis "Virtual MIDI piano keyboard")
-    (description
-     "Virtual MIDI Piano Keyboard is a MIDI events generator and receiver.  It
-doesn't produce any sound by itself, but can be used to drive a MIDI
-synthesizer (either hardware or software, internal or external).  You can use
-the computer's keyboard to play MIDI notes, and also the mouse.  You can use
-the Virtual MIDI Piano Keyboard to display the played MIDI notes from another
-instrument or MIDI file player.")
-    (license license:gpl3+)))
-
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
@@ -1645,6 +1640,55 @@ follows a traditional multi-track tape recorder control paradigm.")
     (description "GXtuner is a simple guitar tuner for JACK with an
 analogue-like user interface.")
     (license license:gpl2+)))
+
+(define-public mod-host
+  ;; The last release was in 2014 but since then more than 140 commits have
+  ;; been made.
+  (let ((commit "72aca771e3a4e3889641b9bab84985586c9bb926")
+        (revision "1"))
+    (package
+      (name "mod-host")
+      (version (string-append "0.10.6-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/moddevices/mod-host")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "19szi8cy65jlchbrmbjbma03g6gxj9zyyp4dgw1k06r0cxbx82gq"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests included
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'fix-jack-installation-directory
+             (lambda _
+               ;; Do not attempt to install files to output of "jack" package.
+               (substitute* "Makefile"
+                 (("\\$\\(shell pkg-config --variable=libdir jack\\)")
+                  "lib"))
+               #t)))))
+      (inputs
+       `(("lilv" ,lilv)
+         ("fftw" ,fftw)
+         ("fftwf" ,fftwf)
+         ("lv2" ,lv2)
+         ("jack" ,jack-1)
+         ("readline" ,readline)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("python" ,python-2)))
+      (home-page "https://github.com/moddevices/mod-host")
+      (synopsis "LV2 host for Jack controllable via socket or command line")
+      (description "mod-host is an LV2 plugin host for JACK, controllable via
+socket or command line.")
+      (license license:gpl3+))))
 
 (define-public pianobar
   (package
@@ -2353,3 +2397,37 @@ slow gear audio effect to produce volume swells."))))
       (synopsis "Wah emulation with switchless activation")
       (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
 a simulation of an analog Wah pedal with switchless activation."))))
+
+(define-public mod-utilities
+  (let ((commit "7cdeeac26ae682730740105ece121d4dddb8ba3f")
+        (revision "1"))
+    (package
+      (name "mod-utilities")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/moddevices/mod-utilities.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ilnkbrmwrszxvc21qlb86h29yz7cnc6rcp0jmna1y693ny2qhf4"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; there are no tests
+         #:make-flags
+         (list (string-append "INSTALL_PATH="
+                              (assoc-ref %outputs "out")
+                              "/lib/lv2"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (inputs
+       `(("lv2" ,lv2)))
+      (home-page "https://github.com/moddevices/mod-utilities")
+      (synopsis "LV2 utility plugins")
+      (description "This package provides LV2 audio utility plugins, such as
+filters, crossovers, simple gain plugins without zipper noise, switch box
+plugins, a switch trigger, a toggle switch, and a peakmeter.")
+      (license license:gpl2+))))

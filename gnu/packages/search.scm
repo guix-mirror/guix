@@ -35,30 +35,38 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.2.21")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://oligarchy.co.uk/xapian/" version
+              (uri (string-append "https://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
               (sha256
-               (base32 "0grd2s6gf8yzqwdaa50g57j9d81mxkrrpkyldm2shgyizdc8gx33"))))
+               (base32 "0xv4da5rmqqzkkkzx2v3jwh5hz5zxhd2b7m8x30fk99a25blyn0h"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'patch-remotetcp-harness
-                 (lambda _
-                   (substitute* "tests/harness/backendmanager_remotetcp.cc"
-                     (("/bin/sh") (which "bash"))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; As of Xapian 1.3.3, the TCP server implementation uses
+           ;; getaddrinfo(). This does not work in the build environment,
+           ;; so exclude those tests. See HACKING for the list of targets.
+           (lambda _
+             (zero? (system* "make"
+                             "check-inmemory"
+                             "check-remoteprog"
+                             ;"check-remotetcp"
+                             "check-multi"
+                             "check-glass"
+                             "check-chert")))))))
     (synopsis "Search Engine Library")
     (description
      "Xapian is a highly adaptable toolkit which allows developers to easily
 add advanced indexing and search facilities to their own applications.  It
 supports the Probabilistic Information Retrieval model and also supports a
 rich set of boolean query operators.")
-    (home-page "http://xapian.org/")
+    (home-page "https://xapian.org/")
     (license (list gpl2+ bsd-3 x11))))
 
 (define-public libtocc

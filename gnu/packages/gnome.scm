@@ -5622,3 +5622,67 @@ is suitable as a default application in a Desktop environment.")
 and customizable.  Xpad consists of independent pad windows, each is
 basically a text box in which notes can be written.")
     (license license:gpl3+)))
+
+(define-public gucharmap
+  (package
+    (name "gucharmap")
+    (version "3.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0c1q9w5vql0vvg6g0knxfnv4ap19fg5cdrwndi1cj9lsym92c78j"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin") ; for glib-compile-resources.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("xmllint" ,libxml2)))
+    (home-page "https://wiki.gnome.org/Apps/Gucharmap")
+    (synopsis "Unicode character picker and font browser")
+    (description
+     "This program allows you to browse through all the available Unicode
+characters and categories for the installed fonts, and to examine their
+detailed properties.  It is an easy way to find the character you might
+only know by its Unicode name or code point.")
+    (license license:gpl3+)))
+
+(define-public bluefish
+  (package
+    (name "bluefish")
+    (version "2.2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.bennewitz.com/bluefish/stable/source/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vnl6raxbvc4hacg3pr6sqyjh707d304dhk5nyhlp7m0m1y3j756"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("gtk+" ,gtk+)
+       ("python" ,python-2)
+       ("xmllint" ,libxml2)
+       ("gucharmap" ,gucharmap)))
+    (home-page "http://bluefish.openoffice.nl")
+    (synopsis "Web development studio")
+    (description
+     "Bluefish is an editor targeted towards programmers and web developers,
+with many options to write web sites, scripts and other code.
+Bluefish supports many programming and markup languages.")
+    (license license:gpl3+)))

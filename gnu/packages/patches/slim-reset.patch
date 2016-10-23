@@ -1,0 +1,33 @@
+Do not reset chosen session and maintain the session-choser dialog after a
+failed login attempt.
+
+Patch by E. Bavier
+
+--- slim-1.3.6/panel.cpp.orig	1969-12-31 18:00:00.000000000 -0600
++++ slim-1.3.6/panel.cpp	2016-10-17 17:00:07.259649063 -0500
+@@ -260,13 +260,12 @@
+ }
+ 
+ void Panel::ClearPanel() {
+-	session_name = "";
+-    session_exec = "";
+ 	Reset();
+ 	XClearWindow(Dpy, Root);
+ 	XClearWindow(Dpy, Win);
+ 	Cursor(SHOW);
+ 	ShowText();
++	ShowSession();
+ 	XFlush(Dpy);
+ }
+ 
+@@ -760,9 +760,7 @@
+         pair<string,string> ses = cfg->nextSession();
+         session_name = ses.first;
+         session_exec = ses.second;
+-        if (session_name.size() > 0) {
+-                ShowSession();
+-        }
++        ShowSession();
+  }
+ 
+ /* Display session type on the screen */

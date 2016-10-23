@@ -205,58 +205,57 @@ features an integrated Emacs-like editor and a large runtime library.")
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
 
-                   (substitute* "configure"
-                     (("^shell=.*$")
-                      (string-append "shell=" (which "bash") "\n")))
+             (substitute* "configure"
+               (("^shell=.*$")
+                (string-append "shell=" (which "bash") "\n")))
 
-                   ;; Since libgc's pthread redirects are used, we end up
-                   ;; using libgc symbols, so we must link against it.
-                   ;; Reported on 2013-06-25.
-                   (substitute* "api/pthread/src/Makefile"
-                     (("^EXTRALIBS[[:blank:]]*=(.*)$" _ value)
-                      (string-append "EXTRALIBS = "
-                                     (string-trim-right value)
-                                     " -l$(GCLIB)_fth-$(RELEASE)"
-                                     " -Wl,-rpath=" (assoc-ref outputs "out")
-                                     "/lib/bigloo/" ,version)))
+             ;; Since libgc's pthread redirects are used, we end up
+             ;; using libgc symbols, so we must link against it.
+             ;; Reported on 2013-06-25.
+             (substitute* "api/pthread/src/Makefile"
+               (("^EXTRALIBS[[:blank:]]*=(.*)$" _ value)
+                (string-append "EXTRALIBS = "
+                               (string-trim-right value)
+                               " -l$(GCLIB)_fth-$(RELEASE)"
+                               " -Wl,-rpath=" (assoc-ref outputs "out")
+                               "/lib/bigloo/" ,version)))
 
-                   ;; Those variables are used by libgc's `configure'.
-                   (setenv "SHELL" (which "sh"))
-                   (setenv "CONFIG_SHELL" (which "sh"))
+             ;; Those variables are used by libgc's `configure'.
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))
 
-                   ;; ... but they turned out to be overridden later, so work
-                   ;; around that.
-                   (substitute* (find-files "gc" "^configure-gc")
-                     (("sh=/bin/sh")
-                      (string-append "sh=" (which "sh"))))
+             ;; ... but they turned out to be overridden later, so work
+             ;; around that.
+             (substitute* (find-files "gc" "^configure-gc")
+               (("sh=/bin/sh")
+                (string-append "sh=" (which "sh"))))
 
-                   ;; The `configure' script doesn't understand options
-                   ;; of those of Autoconf.
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero?
-                      (system* "./configure"
-                               (string-append "--prefix=" out)
-                               ;; FIXME: Currently fails, see
-                               ;; <http://article.gmane.org/gmane.lisp.scheme.bigloo/6126>.
-                               ;; "--customgc=no" ; use our libgc
-                               (string-append"--mv=" (which "mv"))
-                               (string-append "--rm=" (which "rm"))
-                               (string-append "--ldflags=-Wl,-rpath="
-                                              (assoc-ref outputs "out")
-                                              "/lib/bigloo/" ,version)))))
-                 (alist-cons-after
-                  'install 'install-emacs-modes
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (dir (string-append out "/share/emacs/site-lisp")))
-                      (zero? (system* "make" "-C" "bmacs" "all" "install"
-                                      (string-append "EMACSBRAND=emacs24")
-                                      (string-append "EMACSDIR=" dir)))))
-                  %standard-phases))))
+             ;; The `configure' script doesn't understand options
+             ;; of those of Autoconf.
+             (let ((out (assoc-ref outputs "out")))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         ;; FIXME: Currently fails, see
+                         ;; <http://article.gmane.org/gmane.lisp.scheme.bigloo/6126>.
+                         ;; "--customgc=no" ; use our libgc
+                         (string-append"--mv=" (which "mv"))
+                         (string-append "--rm=" (which "rm"))
+                         (string-append "--ldflags=-Wl,-rpath="
+                                        (assoc-ref outputs "out")
+                                        "/lib/bigloo/" ,version))))))
+         (add-after 'install 'install-emacs-modes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share/emacs/site-lisp")))
+               (zero? (system* "make" "-C" "bmacs" "all" "install"
+                               (string-append "EMACSBRAND=emacs24")
+                               (string-append "EMACSDIR=" dir)))))))))
     (inputs
      `(("emacs" ,emacs)                      ;UDE needs the X version of Emacs
 
@@ -283,32 +282,30 @@ Scheme and C programs and between Scheme and Java programs.")
 (define-public hop
   (package
     (name "hop")
-    (version "2.4.0")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1v2r4ga58kk1sx0frn8qa8ccmjpic9csqzpk499wc95y9c4b1wy3"))
-             (patches (search-patches "hop-bigloo-4.0b.patch"
-                                      "hop-linker-flags.patch"))))
+               "1bvp7pc71bln5yvfj87s8750c6l53wjl6f8m12v62q9926adhwys"))
+             (patches (search-patches "hop-linker-flags.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (zero?
-             (system* "./configure"
-                      (string-append "--prefix=" out)
-                      (string-append "--blflags="
-                                     ;; user flags completely override useful
-                                     ;; default flags, so repeat them here.
-                                     "-copt \\$(CPICFLAGS) -L\\$(BUILDLIBDIR) "
-                                     "-ldopt -Wl,-rpath," out "/lib")))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         (string-append "--blflags="
+                                        ;; user flags completely override useful
+                                        ;; default flags, so repeat them here.
+                                        "-copt \\$(CPICFLAGS) -L\\$(BUILDLIBDIR) "
+                                        "-ldopt -Wl,-rpath," out "/lib")))))))
        #:tests? #f))                                ; no test suite
     (inputs `(("avahi" ,avahi)
               ("bigloo" ,bigloo)
@@ -517,17 +514,17 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.7.4")
+    (version "4.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://www.iro.umontreal.ca/~gambit/download/gambit/v"
-             (version-major+minor version) "/source/gambc-v"
+             (version-major+minor version) "/source/gambit-v"
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "0y2pklh4k65yrmxv63ass76xckrk9wqimbdad2gha35v2mi7blhs"))))
+        (base32 "0xwmqzqvk83xyjz48vp36p5vj1415rl3pi3xq7y8i3p8s409a98b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -535,16 +532,16 @@ of libraries.")
        ;; use >= 1 GB memory, but makes Gambit much faster.
        '("--enable-single-host")
        #:phases
-       (alist-cons-before
-        'check 'fix-tests
-        (lambda _
-          (substitute* '("tests/makefile")
-            ;; '-:' is how run-time options are set.  'tl' sets some terminal
-            ;; option, which makes it fail in our build environment.  It
-            ;; recommends using 'd-' as a solution, which sets the REPL
-            ;; interaction channel to stdin/stdout.
-            (("gsi -:tl") "gsi -:d-,tl")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda _
+             (substitute* '("tests/makefile")
+               ;; '-:' is how run-time options are set.  'tl' sets some terminal
+               ;; option, which makes it fail in our build environment.  It
+               ;; recommends using 'd-' as a solution, which sets the REPL
+               ;; interaction channel to stdin/stdout.
+               (("gsi -:tl") "gsi -:d-,tl"))
+             #t)))))
     (home-page "http://www.iro.umontreal.ca/~gambit/")
     (synopsis "Efficient Scheme interpreter and compiler")
     (description

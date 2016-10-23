@@ -258,14 +258,14 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "0.26.1")
+    (version "0.27.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "1h9d6x335wxpm49yphzm9n1hbh2hcg0p2rphv76mrvsss91bcm1g"))))
+        (base32 "1gg7k63jd6128mmzciwqmgixqhyqnninimaqyvjbx1hv0q6gd310"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Tests require a network connection.

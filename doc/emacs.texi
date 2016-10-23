@@ -417,12 +417,12 @@ this variable, for example:
 @end example
 
 @item guix-use-substitutes
-Has the same meaning as @code{--no-substitutes} option (@pxref{Invoking
-guix build}).
+If nil, has the same meaning as @code{--no-substitutes} option
+(@pxref{Invoking guix build}).
 
 @item guix-dry-run
-Has the same meaning as @code{--dry-run} option (@pxref{Invoking guix
-build}).
+If non-nil, has the same meaning as @code{--dry-run} option
+(@pxref{Invoking guix build}).
 
 @end table
 

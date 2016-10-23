@@ -351,8 +351,24 @@ tools (analyzer, mono/stereo tools, crossovers).")
                (base32
                 "0qm3ak07vc1l3f5c3c2lq9gkfknlxwn8ks03cysw1pk8hj7dwnv6"))))
     (build-system cmake-build-system)
-    ;; There are no tests
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:tests? #f ; There are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-compiler-flags
+           (lambda _
+             (substitute* '("src/casynth/CMakeLists.txt"
+                            "src/cheapdist/CMakeLists.txt"
+                            "src/duffer/CMakeLists.txt"
+                            "src/envfollower/CMakeLists.txt"
+                            "src/ewham/CMakeLists.txt"
+                            "src/hip2b/CMakeLists.txt"
+                            "src/lushlife/CMakeLists.txt"
+                            "src/powercut/CMakeLists.txt"
+                            "src/powerup/CMakeLists.txt"
+                            "src/stuck/CMakeLists.txt")
+                          (("-msse2 -mfpmath=sse") ""))
+             #t)))))
     (inputs
      `(("cairo" ,cairo)
        ("fftwf" ,fftwf)
@@ -964,6 +980,16 @@ fill the rack with effects from more than 25 built-in modules including stuff
 from a simple noise gate to modulation effects like flanger, phaser or
 auto-wah.")
     (license license:gpl2+)))
+
+(define-public guitarix-lv2
+  (package (inherit guitarix)
+    (name "guitarix-lv2")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guitarix)
+       ((#:configure-flags flags)
+        `(cons "--lv2-only" ,flags))))
+    (inputs
+     (alist-delete "webkitgtk/gtk+-2" (package-inputs guitarix)))))
 
 (define-public rakarrack
   (package

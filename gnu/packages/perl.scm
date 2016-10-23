@@ -5822,7 +5822,7 @@ It constructs the right value for the build system to do the right thing.")
 (define-public perl-test-mockobject
   (package
     (name "perl-test-mockobject")
-    (version "1.20140408")
+    (version "1.20150527")
     (source
      (origin
        (method url-fetch)
@@ -5830,7 +5830,7 @@ It constructs the right value for the build system to do the right thing.")
                            "Test-MockObject-" version ".tar.gz"))
        (sha256
         (base32
-         "1anpf9l2wdriwaxw6pf76ghxkh4zm25n3wnhfqy1b439xqnhvzg5"))))
+         "160xvhbpwqjaff4fgckvldknldzcbn1z3jvyzybs7cqlj1x3bwdd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)

@@ -1,0 +1,35 @@
+Display configurable login message after successful authentication.
+
+Patch by E. Bavier
+
+--- slim-1.3.6/panel.cpp.orig	1969-12-31 18:00:00.000000000 -0600
++++ slim-1.3.6/panel.cpp	2016-10-17 17:00:07.259649063 -0500
+@@ -260,6 +260,7 @@
+ 
+ void Panel::ClosePanel() {
+ 	XUngrabKeyboard(Dpy, CurrentTime);
++	XClearWindow(Dpy, Root);
+ 	XUnmapWindow(Dpy, Win);
+ 	XDestroyWindow(Dpy, Win);
+ 	XFlush(Dpy);
+--- slim-1.3.6/cfg.cpp.orig	2016-10-17 17:08:06.767666139 -0500
++++ slim-1.3.6/cfg.cpp	2016-10-17 17:06:53.115663516 -0500
+@@ -52,6 +52,7 @@
+ 	options.insert(option("lockfile","/var/run/slim.lock"));
+ 	options.insert(option("logfile","/var/log/slim.log"));
+ 	options.insert(option("authfile","/var/run/slim.auth"));
++	options.insert(option("login_msg","Logging in..."));
+ 	options.insert(option("shutdown_msg","The system is halting..."));
+ 	options.insert(option("reboot_msg","The system is rebooting..."));
+ 	options.insert(option("sessiondir",""));
+--- slim-1.3.6/app.cpp.orig	2016-10-17 17:08:41.731667384 -0500
++++ slim-1.3.6/app.cpp	2016-10-17 17:07:48.415665486 -0500
+@@ -520,6 +520,8 @@
+ 	struct passwd *pw;
+ 	pid_t pid;
+ 
++	LoginPanel->Message((char*)cfg->getOption("login_msg").c_str());
++
+ #ifdef USE_PAM
+ 	try{
+ 		pam.open_session();

@@ -403,14 +403,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.1.4")
+    (version "3.1.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0nvb2k0maj5g8llfg47j8z5xpvp4q3g9pab2pp6vpjd5vmwb6358"))))
+               "16mqb1fs6ahqqv6a64dk4d8rp75ixdsipfzsz0vmc749yw2k3k29"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -792,7 +792,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.20.0")
+    (version "0.21.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -800,7 +800,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0mibhjg5skcwcfpg6dx7yi2gj14xawnq2jzmcfwq9knmvv9cjvpy"))
+                "1lwvvhldqrkp44zdm3wbi7qrsln13s8ympwwckqhwl4whp78wpyh"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs

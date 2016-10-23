@@ -265,11 +265,13 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   ntp-configuration?
   (ntp      ntp-configuration-ntp
             (default ntp))
-  (servers  ntp-configuration-servers))
+  (servers  ntp-configuration-servers)
+  (allow-large-adjustment? ntp-allow-large-adjustment?
+                           (default #f)))
 
 (define ntp-shepherd-service
   (match-lambda
-    (($ <ntp-configuration> ntp servers)
+    (($ <ntp-configuration> ntp servers allow-large-adjustment?)
      (let ()
        ;; TODO: Add authentication support.
        (define config
@@ -296,7 +298,10 @@ restrict -6 ::1\n"))
               (requirement '(user-processes networking))
               (start #~(make-forkexec-constructor
                         (list (string-append #$ntp "/bin/ntpd") "-n"
-                              "-c" #$ntpd.conf "-u" "ntpd")))
+                              "-c" #$ntpd.conf "-u" "ntpd"
+                              #$@(if allow-large-adjustment?
+                                     '("-g")
+                                     '()))))
               (stop #~(make-kill-destructor))))))))
 
 (define %ntp-accounts
@@ -331,12 +336,18 @@ restrict -6 ::1\n"))
                                           ntp-service-activation)))))
 
 (define* (ntp-service #:key (ntp ntp)
-                      (servers %ntp-servers))
+                      (servers %ntp-servers)
+                      allow-large-adjustment?)
   "Return a service that runs the daemon from @var{ntp}, the
 @uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
-keep the system clock synchronized with that of @var{servers}."
+keep the system clock synchronized with that of @var{servers}.
+@var{allow-large-adjustment?} determines whether @command{ntpd} is allowed to
+make an initial adjustment of more than 1,000 seconds."
   (service ntp-service-type
-           (ntp-configuration (ntp ntp) (servers servers))))
+           (ntp-configuration (ntp ntp)
+                              (servers servers)
+                              (allow-large-adjustment?
+                               allow-large-adjustment?))))
 
 
 ;;;
