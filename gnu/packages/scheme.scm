@@ -532,16 +532,16 @@ of libraries.")
        ;; use >= 1 GB memory, but makes Gambit much faster.
        '("--enable-single-host")
        #:phases
-       (alist-cons-before
-        'check 'fix-tests
-        (lambda _
-          (substitute* '("tests/makefile")
-            ;; '-:' is how run-time options are set.  'tl' sets some terminal
-            ;; option, which makes it fail in our build environment.  It
-            ;; recommends using 'd-' as a solution, which sets the REPL
-            ;; interaction channel to stdin/stdout.
-            (("gsi -:tl") "gsi -:d-,tl")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda _
+             (substitute* '("tests/makefile")
+               ;; '-:' is how run-time options are set.  'tl' sets some terminal
+               ;; option, which makes it fail in our build environment.  It
+               ;; recommends using 'd-' as a solution, which sets the REPL
+               ;; interaction channel to stdin/stdout.
+               (("gsi -:tl") "gsi -:d-,tl"))
+             #t)))))
     (home-page "http://www.iro.umontreal.ca/~gambit/")
     (synopsis "Efficient Scheme interpreter and compiler")
     (description
