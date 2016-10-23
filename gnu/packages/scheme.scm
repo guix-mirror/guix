@@ -205,58 +205,57 @@ features an integrated Emacs-like editor and a large runtime library.")
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
 
-                   (substitute* "configure"
-                     (("^shell=.*$")
-                      (string-append "shell=" (which "bash") "\n")))
+             (substitute* "configure"
+               (("^shell=.*$")
+                (string-append "shell=" (which "bash") "\n")))
 
-                   ;; Since libgc's pthread redirects are used, we end up
-                   ;; using libgc symbols, so we must link against it.
-                   ;; Reported on 2013-06-25.
-                   (substitute* "api/pthread/src/Makefile"
-                     (("^EXTRALIBS[[:blank:]]*=(.*)$" _ value)
-                      (string-append "EXTRALIBS = "
-                                     (string-trim-right value)
-                                     " -l$(GCLIB)_fth-$(RELEASE)"
-                                     " -Wl,-rpath=" (assoc-ref outputs "out")
-                                     "/lib/bigloo/" ,version)))
+             ;; Since libgc's pthread redirects are used, we end up
+             ;; using libgc symbols, so we must link against it.
+             ;; Reported on 2013-06-25.
+             (substitute* "api/pthread/src/Makefile"
+               (("^EXTRALIBS[[:blank:]]*=(.*)$" _ value)
+                (string-append "EXTRALIBS = "
+                               (string-trim-right value)
+                               " -l$(GCLIB)_fth-$(RELEASE)"
+                               " -Wl,-rpath=" (assoc-ref outputs "out")
+                               "/lib/bigloo/" ,version)))
 
-                   ;; Those variables are used by libgc's `configure'.
-                   (setenv "SHELL" (which "sh"))
-                   (setenv "CONFIG_SHELL" (which "sh"))
+             ;; Those variables are used by libgc's `configure'.
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))
 
-                   ;; ... but they turned out to be overridden later, so work
-                   ;; around that.
-                   (substitute* (find-files "gc" "^configure-gc")
-                     (("sh=/bin/sh")
-                      (string-append "sh=" (which "sh"))))
+             ;; ... but they turned out to be overridden later, so work
+             ;; around that.
+             (substitute* (find-files "gc" "^configure-gc")
+               (("sh=/bin/sh")
+                (string-append "sh=" (which "sh"))))
 
-                   ;; The `configure' script doesn't understand options
-                   ;; of those of Autoconf.
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero?
-                      (system* "./configure"
-                               (string-append "--prefix=" out)
-                               ;; FIXME: Currently fails, see
-                               ;; <http://article.gmane.org/gmane.lisp.scheme.bigloo/6126>.
-                               ;; "--customgc=no" ; use our libgc
-                               (string-append"--mv=" (which "mv"))
-                               (string-append "--rm=" (which "rm"))
-                               (string-append "--ldflags=-Wl,-rpath="
-                                              (assoc-ref outputs "out")
-                                              "/lib/bigloo/" ,version)))))
-                 (alist-cons-after
-                  'install 'install-emacs-modes
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (dir (string-append out "/share/emacs/site-lisp")))
-                      (zero? (system* "make" "-C" "bmacs" "all" "install"
-                                      (string-append "EMACSBRAND=emacs24")
-                                      (string-append "EMACSDIR=" dir)))))
-                  %standard-phases))))
+             ;; The `configure' script doesn't understand options
+             ;; of those of Autoconf.
+             (let ((out (assoc-ref outputs "out")))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         ;; FIXME: Currently fails, see
+                         ;; <http://article.gmane.org/gmane.lisp.scheme.bigloo/6126>.
+                         ;; "--customgc=no" ; use our libgc
+                         (string-append"--mv=" (which "mv"))
+                         (string-append "--rm=" (which "rm"))
+                         (string-append "--ldflags=-Wl,-rpath="
+                                        (assoc-ref outputs "out")
+                                        "/lib/bigloo/" ,version))))))
+         (add-after 'install 'install-emacs-modes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share/emacs/site-lisp")))
+               (zero? (system* "make" "-C" "bmacs" "all" "install"
+                               (string-append "EMACSBRAND=emacs24")
+                               (string-append "EMACSDIR=" dir)))))))))
     (inputs
      `(("emacs" ,emacs)                      ;UDE needs the X version of Emacs
 
