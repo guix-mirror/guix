@@ -313,14 +313,14 @@ command-line tool as well as a C library, libmpg123.")
 (define-public mpg321
   (package
     (name "mpg321")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/mpg321/mpg321/"
                                  version "/mpg321-" version ".tar.gz"))
              (sha256
               (base32
-               "0yamsqvj15nsxxnjs9mgyslzx7krgsfk3q1hk3g6l8w9bbbj770b"))))
+               "0ki8mh76bbmdh77qsiw682dvi8y468yhbdabqwg05igmwc1wqvq5"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-alsa")))
     (inputs
