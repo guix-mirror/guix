@@ -295,19 +295,18 @@ Scheme and C programs and between Scheme and Java programs.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (zero?
-             (system* "./configure"
-                      (string-append "--prefix=" out)
-                      (string-append "--blflags="
-                                     ;; user flags completely override useful
-                                     ;; default flags, so repeat them here.
-                                     "-copt \\$(CPICFLAGS) -L\\$(BUILDLIBDIR) "
-                                     "-ldopt -Wl,-rpath," out "/lib")))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         (string-append "--blflags="
+                                        ;; user flags completely override useful
+                                        ;; default flags, so repeat them here.
+                                        "-copt \\$(CPICFLAGS) -L\\$(BUILDLIBDIR) "
+                                        "-ldopt -Wl,-rpath," out "/lib")))))))
        #:tests? #f))                                ; no test suite
     (inputs `(("avahi" ,avahi)
               ("bigloo" ,bigloo)
