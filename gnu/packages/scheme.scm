@@ -283,16 +283,15 @@ Scheme and C programs and between Scheme and Java programs.")
 (define-public hop
   (package
     (name "hop")
-    (version "2.4.0")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1v2r4ga58kk1sx0frn8qa8ccmjpic9csqzpk499wc95y9c4b1wy3"))
-             (patches (search-patches "hop-bigloo-4.0b.patch"
-                                      "hop-linker-flags.patch"))))
+               "1bvp7pc71bln5yvfj87s8750c6l53wjl6f8m12v62q9926adhwys"))
+             (patches (search-patches "hop-linker-flags.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
