@@ -7926,6 +7926,7 @@ declaration.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * Network File System::         NFS related services.
+* Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -11747,6 +11748,84 @@ If it is @code{#f} then the daemon will use the host's fully qualified domain na
 @end table
 @end deftp
 
+@node Continuous Integration
+@subsubsection Continuous Integration
+
+@cindex continuous integration
+@uref{https://notabug.org/mthl/cuirass, Cuirass} is a continuous
+integration tool for Guix.  It can be used both for development and for
+providing substitutes to others (@pxref{Substitutes}).
+
+The @code{(gnu services cuirass)} module provides the following service.
+
+@deffn {Scheme Procedure} cuirass-service @
+       [#:config @code{(cuirass-configuration)}]
+Return a service that runs @command{cuirass}.
+
+The @var{#:config} keyword argument specifies the configuration for
+@command{cuirass}, which must be a @code{<cuirass-configuration>}
+object, by default it doesn't provide any build job.  If you want to
+provide your own configuration you will most likely use the
+@code{cuirass-configuration} special form which returns such objects.
+@end deffn
+
+In order to add build jobs you will have to set the
+@code{specifications} field.  Here is an example of a cuirass service
+defining a build job based on a specification that can be found in
+Cuirass source tree.
+
+@example
+(let ((spec `((#:name . "guix")
+              (#:url . "git://git.savannah.gnu.org/guix.git")
+              (#:load-path . ".")
+              ;; Adapt to a valid absolute file name.
+              (#:file . "/.../cuirass/tests/gnu-system.scm")
+              (#:proc . hydra-jobs)
+              (#:arguments (subset . "hello"))
+              (#:branch . "master"))))
+  (cuirass-service #:config (cuirass-configuration
+                             (specifications (list spec)))))
+@end example
+
+While information related to build jobs are located directly in the
+specifications, global settings for the @command{cuirass} process are
+accessible in other @code{cuirass-configuration} fields.
+
+@deftp {Data Type} cuirass-configuration
+Data type representing the configuration of Cuirass.
+
+@table @asis
+@item @code{cache-directory} (default: @code{""})
+Location of the repository cache.
+
+@item @code{user} (default: @code{"cuirass"})
+Owner of the @code{cuirass} process.
+
+@item @code{group} (default: @code{"cuirass"})
+Owner's group of the @code{cuirass} process.
+
+@item @code{interval} (default: @code{60})
+Number of seconds between the poll of the repositories followed by the
+Cuirass jobs.
+
+@item @code{database} (default: @code{"/var/run/cuirass/cuirass.db"})
+Location of sqlite database which contains the build results and previously
+added specifications.
+
+@item @code{specifications} (default: @code{'()})
+A list of specifications, where a specification is an association list
+(@pxref{Associations Lists,,, guile, GNU Guile Reference Manual}) whose
+keys are keywords (@code{#:keyword-example}) as shown in the example
+above.
+
+@item @code{use-substitutes?} (default: @code{#f})
+This allows using substitutes to avoid building every dependencies of a job
+from source.
+
+@item @code{one-shot?} (default: @code{#f})
+Only evaluate specifications and build derivations once.
+@end table
+@end deftp
 
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
