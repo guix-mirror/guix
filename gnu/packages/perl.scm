@@ -2143,7 +2143,7 @@ catch, or can simply be recorded.")
 (define-public perl-eval-closure
   (package
     (name "perl-eval-closure")
-    (version "0.12")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -2151,7 +2151,7 @@ catch, or can simply be recorded.")
                            "Eval-Closure-" version ".tar.gz"))
        (sha256
         (base32
-         "0ssvlgx3y1y28wrrp0lmmffzqxfrwb2lb3p60b8cjvxsf1c3jbfv"))))
+         "1bcc47r6zm3hfr6ccsrs72kgwxm3wkk07mgnpsaxi67cypr482ga"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
