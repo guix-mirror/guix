@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,10 +26,49 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config))
+
+(define-public ccid
+  (package
+    (name "ccid")
+    (version "1.4.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://alioth.debian.org/frs/download.php/file/4187/"
+                    "ccid-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "029n4lpy5nvg278s4mybisyj4lm0bcjslvwfslw6hkghw162n1kb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "--enable-usbdropdir=" %output
+                                              "/pcsc/drivers"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile
+           (lambda _
+             (substitute* "src/Makefile.in"
+               (("/bin/echo") (which "echo")))
+             #t)))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("pcsc-lite" ,pcsc-lite)))
+    (home-page "https://pcsclite.alioth.debian.org/ccid.html")
+    (synopsis "PC/SC driver for USB smart card devices")
+    (description
+     "This package provides a PC/SC IFD handler implementation for devices
+compliant with the CCID and ICCD protocols.  It supports a wide range of
+readers and is needed to communicate with such devices through the
+@command{pcscd} resource manager.")
+    (license license:lgpl2.1+)))
 
 (define-public libyubikey
   (package
