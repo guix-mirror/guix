@@ -7902,4 +7902,24 @@ monad, as well as a typeclass abstracting their common operations, and
 a set of wrappers to use the hash tables in the IO monad.")
     (license license:bsd-3)))
 
+(define-public ghc-data-accessor
+  (package
+    (name "ghc-data-accessor")
+    (version "0.2.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://package/data-accessor/data-accessor-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1vf2g1gac3rm32g97rl0fll51m88q7ry4m6khnl5j47qsmx24r9l"))))
+    (build-system haskell-build-system)
+    (home-page "http://www.haskell.org/haskellwiki/Record_access")
+    (synopsis
+     "Haskell utilities for accessing and manipulating fields of records")
+    (description "This package provides Haskell modules for accessing and
+manipulating fields of records.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
