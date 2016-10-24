@@ -7960,4 +7960,38 @@ Accessor to access state in transformers State monad.")
 helper functions for Lists, Maybes, Tuples, Functions.")
     (license license:bsd-3)))
 
+(define-public ghc-gnuplot
+  (package
+    (name "ghc-gnuplot")
+    (version "0.5.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://package/gnuplot/gnuplot-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1xz8prw9xjk0rsyrkp9bsmxykzrbhpv9qhhkdapy75mdbmgwjm7s"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-data-accessor-transformers" ,ghc-data-accessor-transformers)
+       ("ghc-data-accessor" ,ghc-data-accessor)
+       ("gnuplot" ,gnuplot)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-path-to-gnuplot
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gnuplot (assoc-ref inputs "gnuplot")))
+               (substitute* "os/generic/Graphics/Gnuplot/Private/OS.hs"
+                 (("(gnuplotName = ).*$" all cmd)
+                  (string-append cmd "\"" gnuplot "/bin/gnuplot\"")))))))))
+    (home-page "http://www.haskell.org/haskellwiki/Gnuplot")
+    (synopsis "2D and 3D plots using gnuplot")
+    (description "This package provides a Haskell module for creating 2D and
+3D plots using gnuplot.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
