@@ -466,6 +466,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
+       ("x265" ,x265)
        ("xvid" ,xvid)
        ("zlib" ,zlib)))
     (native-inputs
@@ -549,6 +550,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libvpx"
          "--enable-libxvid"
          "--enable-libx264"
+         "--enable-libx265"
          "--enable-openal"
          "--enable-opengl"
          "--enable-x11grab"
