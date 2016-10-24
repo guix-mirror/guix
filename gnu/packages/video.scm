@@ -680,6 +680,7 @@ audio/video codec library.")
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
+       ("x265" ,x265)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
