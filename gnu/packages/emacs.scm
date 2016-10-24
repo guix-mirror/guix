@@ -298,8 +298,36 @@ metadata.")
     (license license:bsd-3)))
 
 (define-public geiser-next
-  ;; This has become "geiser".
-  (deprecated-package "geiser-next" geiser))
+  ;; Geiser's upcoming version supports Chibi and Chez, while it was forgot to
+  ;; include some required files in 0.9.  When the next Geiser release comes
+  ;; out, we can remove this.
+  (let ((commit "16035b9fa475496f7f89a57fa81455057af749a0")
+        (revision "1"))
+    (package
+      (inherit geiser)
+      (name "geiser-next")
+      (version (string-append "0.9-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (file-name (string-append name "-" version ".tar.gz"))
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/geiser.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1rrafizrhjkai0msryjiz4c5dcdyihf0i2wmgiy8br74rwbxpyl5"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ,@(package-native-inputs geiser)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments geiser)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'autogen
+               (lambda _
+                 (zero? (system* "sh" "autogen.sh")))))))))))
 
 (define-public paredit
   (package
