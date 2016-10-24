@@ -292,7 +292,7 @@ developers consider to have good quality code and correct functionality.")
      ;;  vo-amrwbenc, vo-aacenc, bs2b, chromaprint, directfb, daala, libdts,
      ;;  faac, flite, libgsm, libde265, libmms, libmimic, mjpegtools,
      ;;  mpeg2enc, libofa, opencv, openh264, openni2, libtimemmgr, wildmidi,
-     ;;  openspc, gme, sbc, schroedinger, zbar, librtmp, spandsp, x265
+     ;;  openspc, gme, sbc, schroedinger, zbar, librtmp, spandsp
      `(("bluez" ,bluez)
        ("curl" ,curl)
        ("faad2" ,faad2)
@@ -328,6 +328,7 @@ developers consider to have good quality code and correct functionality.")
        ;("qtdeclarative" ,qtdeclarative)
        ;("qtx11extras" ,qtx11extras)
        ("soundtouch" ,soundtouch)
+       ("x265" ,x265)
        ("wayland" ,wayland)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
