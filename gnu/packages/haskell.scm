@@ -7942,4 +7942,22 @@ manipulating fields of records.")
 Accessor to access state in transformers State monad.")
     (license license:bsd-3)))
 
+(define-public ghc-utility-ht
+  (package
+    (name "ghc-utility-ht")
+    (version "0.0.12")
+    (home-page "https://hackage.haskell.org/package/utility-ht")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/utility-ht-" version ".tar.gz"))
+       (sha256
+        (base32 "1vq5bd51rl9l5lgfmaqxgiggddk38hzgngcj7qgrqnalcd1myi54"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (synopsis "Haskell helper functions for Lists, Maybes, Tuples, Functions")
+    (description "This package includes Hakell modules providing various
+helper functions for Lists, Maybes, Tuples, Functions.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
