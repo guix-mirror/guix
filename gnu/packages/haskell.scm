@@ -7922,4 +7922,24 @@ a set of wrappers to use the hash tables in the IO monad.")
 manipulating fields of records.")
     (license license:bsd-3)))
 
+(define-public ghc-data-accessor-transformers
+  (package
+    (name "ghc-data-accessor-transformers")
+    (version "0.2.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://package/data-accessor-transformers/data-accessor-transformers-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0yp030vafbpddl27m606aibbbr5ar5j5bsv4bksscz3cq4yq5j10"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-data-accessor" ,ghc-data-accessor)))
+    (home-page "http://www.haskell.org/haskellwiki/Record_access")
+    (synopsis "Use Accessor to access state in transformers State monad")
+    (description "This package provides Haskell modules to allow use of
+Accessor to access state in transformers State monad.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
