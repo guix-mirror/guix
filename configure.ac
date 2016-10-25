@@ -21,9 +21,6 @@ AC_USE_SYSTEM_EXTENSIONS
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.1])
 
-guilemoduledir="${datarootdir}/guile/site/2.0"
-AC_SUBST([guilemoduledir])
-
 GUIX_SYSTEM_TYPE
 GUIX_ASSERT_SUPPORTED_SYSTEM
 
@@ -77,7 +74,7 @@ m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
 m4_pattern_forbid([^GUILE_P$])
 
 dnl Search for 'guile' and 'guild'.  Prefer 2.0 until the 2.2 upgrade is
-dnl complete.
+dnl complete.  This macro defines 'GUILE_EFFECTIVE_VERSION'.
 GUILE_PKG([2.0 2.2])
 GUILE_PROGS
 if test "x$GUILD" = "x"; then
@@ -89,6 +86,10 @@ if test "x$GUILE_EFFECTIVE_VERSION" = "x2.0"; then
 else
   AC_MSG_WARN([Guile $GUILE_EFFECTIVE_VERSION is not fully supported!])
 fi
+
+dnl Installation directory for .scm and .go files.
+guilemoduledir="${datarootdir}/guile/site/$GUILE_EFFECTIVE_VERSION"
+AC_SUBST([guilemoduledir])
 
 dnl guile-json is used for the PyPI package importer
 GUILE_MODULE_AVAILABLE([have_guile_json], [(json)])
