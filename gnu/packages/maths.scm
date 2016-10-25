@@ -123,18 +123,28 @@ interactive dialogs to guide them.")
        (uri (string-append "https://github.com/stcorp/coda/releases/download/"
                            version "/coda-" version ".tar.gz"))
        (sha256
-        (base32 "04b9l3wzcix0mnfq77mwnil6cbr8h2mki8myvy0lzn236qcwaq1h"))))
+        (base32 "04b9l3wzcix0mnfq77mwnil6cbr8h2mki8myvy0lzn236qcwaq1h"))
+       (patches (search-patches "coda-use-system-libs.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Make sure we don't use the bundled software.
+        '(for-each (lambda (d)
+                     (delete-file-recursively (string-append "libcoda/" d)))
+                   '("zlib" "pcre" "expat")))))
     (native-inputs
      `(("fortran" ,gfortran)
        ("python" ,python)
        ("python-numpy" ,python-numpy)))
     (inputs
      `(("zlib" ,zlib)
+       ("pcre" ,pcre)
+       ("expat" ,expat)
        ("hdf4" ,hdf4-alt)
        ("hdf5" ,hdf5)))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-hdf4" "--with-hdf5" "--enable-python")))
+     '(#:configure-flags '("--with-hdf4" "--with-hdf5" "--enable-python"
+                           "LIBS= -lz -lpcre -lexpat")))
     (synopsis "A common interface to various earth observation data formats")
     (description
      "The Common Data Access toolbox (CODA) provides a set of interfaces for
