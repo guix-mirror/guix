@@ -501,18 +501,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.23")
+    (version "0.23.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1f51l34rdhjf8lvafrwybkxdsdwx8k9397m7qxd8rdg2irjmpry5"))
-              (patches
-               ;; Remove this for the next release. See this thread for context:
-               ;; https://notmuchmail.org/pipermail/notmuch/2016/023227.html
-               (search-patches "notmuch-emacs-25-compatibility-fix.patch"))))
+                "106ijsnilqf8760z4cq99rqzjsvyaw86d0lgnzz7v95gm4d2l0g8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
