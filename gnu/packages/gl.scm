@@ -203,7 +203,15 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "12b3i59xdn2in2hchrkgh4fwij8zhznibx976l3pdj3qkyvlzcms"))))
+          "12b3i59xdn2in2hchrkgh4fwij8zhznibx976l3pdj3qkyvlzcms"))
+        (patches
+         ;; XXX To prevent a large number of rebuilds on other systems,
+         ;; apply the following patch on MIPS systems only.  In the next
+         ;; core-updates cycle, this patch could be applied on all platforms.
+         (if (string-prefix? "mips" (or (%current-target-system)
+                                        (%current-system)))
+             (search-patches "mesa-wayland-egl-symbols-check-mips.patch")
+             '()))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)

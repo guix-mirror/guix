@@ -1,0 +1,15 @@
+Fix 'wayland-egl-symbols-check' on mips64el-linux, where an additional symbol
+(_ftext) is present in libwayland-egl.so.
+
+Patch by Mark H Weaver <mhw@netris.org>
+
+--- mesa-12.0.1/src/egl/wayland/wayland-egl/wayland-egl-symbols-check.orig	2016-01-18 02:39:25.000000000 -0500
++++ mesa-12.0.1/src/egl/wayland/wayland-egl/wayland-egl-symbols-check	2016-10-24 16:25:07.110721426 -0400
+@@ -7,6 +7,7 @@
+ wl_egl_window_destroy
+ wl_egl_window_get_attached_size
+ _fini
++_ftext
+ _init
+ EOF
+ done)
