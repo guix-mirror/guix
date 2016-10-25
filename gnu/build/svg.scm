@@ -22,9 +22,11 @@
   #:export (svg->png))
 
 ;; We need Guile-RSVG and Guile-Cairo.  Load them lazily, at run time, to
-;; allow compilation to proceed.
-(module-use! (current-module) (resolve-interface '(rsvg)))
-(module-use! (current-module) (resolve-interface '(cairo)))
+;; allow compilation to proceed.  See also <http://bugs.gnu.org/12202>.
+(module-autoload! (current-module)
+                  '(rsvg) '(rsvg-handle-new-from-file))
+(module-autoload! (current-module)
+                  '(cairo) '(cairo-image-surface-create))
 
 (define* (downscaled-surface surface
                              #:key
