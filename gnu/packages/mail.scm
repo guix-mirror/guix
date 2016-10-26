@@ -1618,7 +1618,7 @@ some additional standard extensions.  It allows ordinary machines to exchange
 e-mails with other systems speaking the SMTP protocol.")
     (home-page "https://www.opensmtpd.org")
     (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
-                   public-domain isc openssl))))
+                   public-domain isc license:openssl))))
 
 (define-public opensmtpd-extras
   (package
@@ -1681,8 +1681,8 @@ e-mails with other systems speaking the SMTP protocol.")
                                          (assoc-ref %build-inputs "python-2"))
                           (string-append "--with-lua="
                                          (assoc-ref %build-inputs "lua")))))
-    (license (list bsd-2 bsd-3 bsd-4 non-copyleft
-                   public-domain isc openssl))
+    (license (list bsd-2 bsd-3 bsd-4
+                   public-domain isc license:openssl))
     (synopsis "Extra tables, filters, and various other addons for OpenSMTPD")
     (description
      "This package provides extra tables, filters, and various other addons
