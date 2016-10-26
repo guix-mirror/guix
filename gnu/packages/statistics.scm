@@ -1129,13 +1129,13 @@ flexible and easy to set up.")
 (define-public r-r6
   (package
     (name "r-r6")
-    (version "2.1.3")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R6" version))
               (sha256
                (base32
-                "19qrkgxvssyi51fm80h93sabzz0n2vgqgv1w8xjqbsap0nx379vy"))))
+                "1ir51pb0y6yj05qaxsflk4a6hv8n73cwlb0qajcskbrz632dsyvx"))))
     (build-system r-build-system)
     (home-page "https://github.com/wch/R6/")
     (synopsis "Classes with reference semantics in R")
