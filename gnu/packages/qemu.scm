@@ -230,10 +230,10 @@ server and embedded PowerPC, and S390 guests.")
        ("pci.ids"
         ,(origin
            (method url-fetch)
-           (uri "http://pciids.sourceforge.net/v2.2/pci.ids")
+           (uri "https://raw.githubusercontent.com/pciutils/pciids/f9477789526f9d380bc57aa92e357c521738d5dd/pci.ids")
            (sha256
             (base32
-             "0h8v0lrlrxkfnjiwnwiq86zyvb8qa2n3844dp1m01lh2nb2fliqw"))))
+             "0g6dbwlamagxqxvng67xng3w2x56c0np4md1v1p1jn32qw518az0"))))
        ("usb.ids"
         ,(origin
            (method url-fetch)
