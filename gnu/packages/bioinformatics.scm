@@ -6756,13 +6756,13 @@ microarray data, using nearest neighbor averaging.")
 (define-public r-seqpattern
   (package
     (name "r-seqpattern")
-    (version "1.4.0")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "seqPattern" version))
               (sha256
                (base32
-                "1dj9hfnbdj11yjxwd8jmxrdkj7n6gmaaj6244g2psgarhjcp4wfb"))))
+                "0lsa5pz36xapi3yiv78k3z286a5md5sm5g21pgfyg8zmhmkxr7y8"))))
     (properties
      `((upstream-name . "seqPattern")))
     (build-system r-build-system)
@@ -6770,6 +6770,7 @@ microarray data, using nearest neighbor averaging.")
      `(("r-biostrings" ,r-biostrings)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-kernsmooth" ,r-kernsmooth)
        ("r-plotrix" ,r-plotrix)))
     (home-page "http://bioconductor.org/packages/seqPattern")
     (synopsis "Visualising oligonucleotide patterns and motif occurrences")
