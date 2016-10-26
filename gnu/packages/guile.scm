@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1291,5 +1292,85 @@ is no support for parsing block and inline level HTML.")
 
 (define-public guile2.2-commonmark
   (package-for-guile-2.2 guile-commonmark))
+
+(define-public guile-bytestructures
+  (package
+    (name "guile-bytestructures")
+    (version "20160726.53127f6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/TaylanUB/scheme-bytestructures")
+                    (commit "53127f608caf64b34fa41c389b2743b546fbe9da")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0l4nx1vp9fkrgrgwjiycj7nx6wfjfd39rqamv4pmq7issi8mrywq"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match)
+                      (ice-9 popen)
+                      (ice-9 rdelim))
+         (let* ((out (assoc-ref %outputs "out"))
+                (guile (assoc-ref %build-inputs "guile"))
+                (effective (read-line
+                            (open-pipe* OPEN_READ
+                                        (string-append guile "/bin/guile")
+                                        "-c" "(display (effective-version))")))
+                (module-dir (string-append out "/share/guile/site/"
+                                           effective))
+                (source (assoc-ref %build-inputs "source"))
+                (doc (string-append out "/share/doc/scheme-bytestructures"))
+                (scm-files (filter (lambda (path)
+                                     (not (string-prefix? "bytestructures/r7" path)))
+                                   (with-directory-excursion source
+                                     (find-files "bytestructures" "\\.scm$"))))
+                (guild (string-append (assoc-ref %build-inputs "guile")
+                                      "/bin/guild")))
+           ;; Make installation directories.
+           (mkdir-p doc)
+
+           ;; Compile .scm files and install.
+           (chdir source)
+           (setenv "GUILE_AUTO_COMPILE" "0")
+           (for-each (lambda (file)
+                       (let* ((dest-file (string-append module-dir "/"
+                                                        file))
+                              (go-file (string-append module-dir "/"
+                                                      (substring file 0
+                                                                 (string-rindex file #\.))
+                                                      ".go")))
+                         ;; Install source module.
+                         (mkdir-p (dirname dest-file))
+                         (copy-file file dest-file)
+
+                         ;; Install compiled module.
+                         (mkdir-p (dirname go-file))
+                         (unless (zero? (system* guild "compile"
+                                                 "-L" source
+                                                 "-o" go-file
+                                                 file))
+                           (error (format #f "Failed to compile ~s to ~s!"
+                                          file go-file)))))
+                     scm-files)
+
+           ;; Also copy over the README.
+           (install-file "README.md" doc)
+           #t))))
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (home-page "https://github.com/TaylanUB/scheme-bytestructures")
+    (synopsis "Structured access to bytevector contents for Guile")
+    (description
+     "Guile bytestructures offers a system imitating the type system
+of the C programming language, to be used on bytevectors.  C's type
+system works on raw memory, and Guile works on bytevectors which are
+an abstraction over raw memory.  It's also more powerful than the C
+type system, elevating types to first-class status.")
+    (license gpl3+)))
 
 ;;; guile.scm ends here

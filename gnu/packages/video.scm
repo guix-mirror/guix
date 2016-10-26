@@ -250,6 +250,37 @@ H.264 (MPEG-4 AVC) video streams.")
                     "file://extras/cl.h"
                     "See extras/cl.h in the distribution.")))))
 
+(define-public x265
+  (package
+    (name "x265")
+    (version "2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://download.videolan.org/videolan/x265/"
+                            "x265_" version ".tar.gz"))
+        (sha256
+         (base32
+          "0hx6sr9l7586gs4qds2sj0i1m5brxkaqq3cwmibhfb559fpvkz48"))
+        (modules '((guix build utils)))
+        (snippet
+         '(delete-file-recursively "source/compat/getopt"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'prepare-build
+           (lambda _
+             (delete-file-recursively "build")
+             (chdir "source")
+             #t)))))
+    (home-page "http://x265.org/")
+    (synopsis "Library for encoding h.265/HEVC video streams")
+    (description "x265 is a H.265 / HEVC video encoder application library,
+designed to encode video or images into an H.265 / HEVC encoded bitstream.")
+    (license license:gpl2+)))
+
 (define-public libass
   (package
     (name "libass")
@@ -435,6 +466,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
+       ("x265" ,x265)
        ("xvid" ,xvid)
        ("zlib" ,zlib)))
     (native-inputs
@@ -518,6 +550,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libvpx"
          "--enable-libxvid"
          "--enable-libx264"
+         "--enable-libx265"
          "--enable-openal"
          "--enable-opengl"
          "--enable-x11grab"
@@ -647,6 +680,7 @@ audio/video codec library.")
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
+       ("x265" ,x265)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags

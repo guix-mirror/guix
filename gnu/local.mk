@@ -229,6 +229,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/llvm.scm				\
   %D%/packages/lout.scm				\
   %D%/packages/logging.scm			\
+  %D%/packages/lolcode.scm                      \
   %D%/packages/lsof.scm				\
   %D%/packages/lua.scm				\
   %D%/packages/lxde.scm				\
@@ -327,6 +328,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sdcc.scm				\
   %D%/packages/sdl.scm				\
   %D%/packages/search.scm			\
+  %D%/packages/security-token.scm		\
   %D%/packages/serialization.scm		\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
@@ -386,7 +388,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/xdisorg.scm			\
   %D%/packages/xorg.scm				\
   %D%/packages/xfce.scm				\
-  %D%/packages/yubico.scm			\
   %D%/packages/zile.scm				\
   %D%/packages/zip.scm				\
 						\
@@ -433,6 +434,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/linux-initrd.scm			\
   %D%/build/linux-modules.scm			\
   %D%/build/marionette.scm			\
+  %D%/build/svg.scm				\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
@@ -486,6 +488,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/cmake-fix-tests.patch			\
+  %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
@@ -589,6 +592,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
   %D%/packages/patches/hdf4-shared-fortran.patch 		\
   %D%/packages/patches/hdf5-config-date.patch			\
+  %D%/packages/patches/hdf-eos2-build-shared.patch 		\
+  %D%/packages/patches/hdf-eos2-remove-gctp.patch		\
+  %D%/packages/patches/hdf-eos2-fortrantests.patch		\
   %D%/packages/patches/hdf-eos5-build-shared.patch 		\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
@@ -671,7 +677,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
-  %D%/packages/patches/linux-libre-4.1-CVE-2016-5195.patch	\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
@@ -703,7 +708,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
   %D%/packages/patches/mupdf-CVE-2016-6265.patch		\
   %D%/packages/patches/mupdf-CVE-2016-6525.patch		\
+  %D%/packages/patches/mupdf-CVE-2016-8674.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
+  %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/nasm-no-ps-pdf.patch			\
   %D%/packages/patches/net-tools-bitrot.patch			\
@@ -714,7 +721,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ninja-tests.patch			\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
-  %D%/packages/patches/notmuch-emacs-25-compatibility-fix.patch	\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\

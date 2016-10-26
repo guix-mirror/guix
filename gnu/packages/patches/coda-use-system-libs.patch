@@ -1,0 +1,46 @@
+Remove dependencies on bundled zlib, pcre and expat.
+
+diff --git a/Makefile.in b/Makefile.in
+index 4360a26..80f9f59 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -210,8 +210,7 @@ coda_matlab_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+ @BUILD_MATLAB_TRUE@@SUBPACKAGE_MODE_FALSE@	-rpath \
+ @BUILD_MATLAB_TRUE@@SUBPACKAGE_MODE_FALSE@	$(matlabmexexecdir)
+ am__DEPENDENCIES_1 =
+-libcoda_la_DEPENDENCIES = @LTLIBOBJS@ libexpat_internal.la \
+-	libpcre_internal.la libz_internal.la $(am__DEPENDENCIES_1) \
++libcoda_la_DEPENDENCIES = @LTLIBOBJS@ $(am__DEPENDENCIES_1) \
+ 	$(am__DEPENDENCIES_1)
+ am__libcoda_la_SOURCES_DIST = libcoda/coda-ascbin-cursor.c \
+ 	libcoda/coda-ascbin.h libcoda/coda-ascii-cursor.c \
+@@ -306,8 +305,7 @@ libcoda_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ 	$(libcoda_la_LDFLAGS) $(LDFLAGS) -o $@
+ @SUBPACKAGE_MODE_FALSE@am_libcoda_la_rpath = -rpath $(libdir)
+-am__DEPENDENCIES_2 = @LTLIBOBJS@ libexpat_internal.la \
+-	libpcre_internal.la libz_internal.la $(am__DEPENDENCIES_1) \
++am__DEPENDENCIES_2 = @LTLIBOBJS@ $(am__DEPENDENCIES_1) \
+ 	$(am__DEPENDENCIES_1)
+ libcoda_internal_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
+ am__libcoda_internal_la_SOURCES_DIST = libcoda/coda-ascbin-cursor.c \
+@@ -898,8 +896,8 @@ INSTALL_DATA_HOOK_TARGETS = $(am__append_1)
+ UNINSTALL_HOOK_TARGETS = 
+ CLEAN_LOCAL_TARGETS = $(am__append_11)
+ ALL_LOCAL_TARGETS = 
+-@SUBPACKAGE_MODE_FALSE@noinst_LTLIBRARIES = libcoda_internal.la libexpat_internal.la libpcre_internal.la libz_internal.la
+-@SUBPACKAGE_MODE_TRUE@noinst_LTLIBRARIES = libcoda_internal.la libexpat_internal.la libpcre_internal.la libz_internal.la
++@SUBPACKAGE_MODE_FALSE@noinst_LTLIBRARIES = libcoda_internal.la
++@SUBPACKAGE_MODE_TRUE@noinst_LTLIBRARIES = libcoda_internal.la
+ 
+ # libraries (+ related files)
+ @SUBPACKAGE_MODE_FALSE@lib_LTLIBRARIES = libcoda.la
+@@ -1048,7 +1046,7 @@ libcoda_hdf5_files = \
+ 
+ libcoda_la_CPPFLAGS = -Ilibcoda/expat -I$(srcdir)/libcoda/expat -Ilibcoda/pcre -I$(srcdir)/libcoda/pcre -Ilibcoda/zlib -I$(srcdir)/libcoda/zlib $(AM_CPPFLAGS)
+ libcoda_la_LDFLAGS = -no-undefined -version-info $(LIBCODA_CURRENT):$(LIBCODA_REVISION):$(LIBCODA_AGE)
+-libcoda_la_LIBADD = @LTLIBOBJS@ libexpat_internal.la libpcre_internal.la libz_internal.la $(HDF4LIBS) $(HDF5LIBS)
++libcoda_la_LIBADD = @LTLIBOBJS@ $(HDF4LIBS) $(HDF5LIBS)
+ libcoda_internal_la_SOURCES = libcoda/coda-ascbin-cursor.c \
+ 	libcoda/coda-ascbin.h libcoda/coda-ascii-cursor.c \
+ 	libcoda/coda-ascii-internal.h libcoda/coda-ascii.c \

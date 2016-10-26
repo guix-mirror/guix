@@ -1614,7 +1614,7 @@ Hints specification (EWMH).")
               (sha256
                (base32
                 "1s3dxvdwzmppsp2dfg90rccilf4hknhwjdy7lazr9sys58zchyx0"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
        ;; See https://bugzilla.gnome.org/show_bug.cgi?id=732387

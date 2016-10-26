@@ -1,0 +1,55 @@
+Don't build the GCTP bundled with the source and link with the
+system's -lgctp instead.  We also remove references to the
+"testdrivers" directory, which is not distributed together with the
+source, causing autoreconf to fail.
+
+diff --git a/Makefile.in b/Makefile.in
+index d468af2..90428a7 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -206,7 +206,7 @@ LIBGCTP = $(top_builddir)/gctp/src/libGctp.la
+ @TESTDRIVERS_CONDITIONAL_TRUE@TESTDRIVERS = testdrivers
+ @INSTALL_INCLUDE_CONDITIONAL_FALSE@INCLUDE = 
+ @INSTALL_INCLUDE_CONDITIONAL_TRUE@INCLUDE = include
+-SUBDIRS = gctp src $(INCLUDE) samples $(TESTDRIVERS)
++SUBDIRS = src $(INCLUDE) samples $(TESTDRIVERS)
+ all: all-recursive
+ 
+ .SUFFIXES:
+diff --git a/include/Makefile.in b/include/Makefile.in
+index 9938b23..afb7f40 100644
+--- a/include/Makefile.in
++++ b/include/Makefile.in
+@@ -190,7 +190,7 @@ LIBGCTP = $(top_builddir)/gctp/src/libGctp.la
+ # Boilerplate include
+ 
+ # Headers to install
+-include_HEADERS = HE2_config.h HdfEosDef.h HDFEOSVersion.h cfortHdf.h ease.h
++include_HEADERS = HdfEosDef.h HDFEOSVersion.h cfortHdf.h ease.h
+ all: HE2_config.h
+ 	$(MAKE) $(AM_MAKEFLAGS) all-am
+ 
+diff --git a/samples/Makefile.in b/samples/Makefile.in
+index 9da6e28..6a6186c 100644
+--- a/samples/Makefile.in
++++ b/samples/Makefile.in
+@@ -108,7 +108,6 @@ AppendField_SOURCES = AppendField.c
+ AppendField_OBJECTS = AppendField.$(OBJEXT)
+ AppendField_LDADD = $(LDADD)
+ am__DEPENDENCIES_1 = $(top_builddir)/src/libhdfeos.la
+-am__DEPENDENCIES_2 = $(top_builddir)/gctp/src/libGctp.la
+ AppendField_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+ DefineFields_SOURCES = DefineFields.c
+ DefineFields_OBJECTS = DefineFields.$(OBJEXT)
+@@ -481,7 +480,7 @@ sharedstatedir = @sharedstatedir@
+ sysconfdir = @sysconfdir@
+ target_alias = @target_alias@
+ LIBHDFEOS2 = $(top_builddir)/src/libhdfeos.la
+-LIBGCTP = $(top_builddir)/gctp/src/libGctp.la
++LIBGCTP =
+ 
+ # Boilerplate definitions file
+ 
+-- 
+2.10.0
+

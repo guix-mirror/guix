@@ -1,0 +1,329 @@
+Fix multi-line string formatting in fortran test programs (reported upstream).
+
+diff --git a/samples/appendfield.f b/samples/appendfield.f
+index 42c4b6b..58257f7 100644
+--- a/samples/appendfield.f
++++ b/samples/appendfield.f
+@@ -22,8 +22,8 @@ c
+          inarray(i) = i
+       enddo
+       
+-      swfid = swopen("SwathFile_created_with_hadeos_sample_file_writer_o
+-     1f_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++      swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+       swid = swattach(swfid, "Swath1")
+ 
+ 
+diff --git a/samples/definefields.f b/samples/definefields.f
+index 89859e4..f3b3497 100644
+--- a/samples/definefields.f
++++ b/samples/definefields.f
+@@ -24,8 +24,8 @@ c	DFACC_RDWR accesscode in the open statement.  The SWopen
+ c	routine returns the swath fileid, swfid, which is used to
+ c	identify the file in subsequent routines.
+ 
+-	swfid = swopen("SwathFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ 
+ c
+diff --git a/samples/definegdflds.f b/samples/definegdflds.f
+index 177422e..1b7fcf6 100644
+--- a/samples/definegdflds.f
++++ b/samples/definegdflds.f
+@@ -21,8 +21,8 @@
+ 	fillval1=-7.0
+ 	fillval2=-9999.0
+ 
+-	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_writer_
+-     1of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ 
+ 	gdid1 = gdattach(gdfid, "UTMGrid")
+diff --git a/samples/definelevels.f b/samples/definelevels.f
+index 2496d5f..64b2842 100644
+--- a/samples/definelevels.f
++++ b/samples/definelevels.f
+@@ -32,8 +32,8 @@ c	DFACC_RDWR access code in the open statement.  The ptopen
+ c	routine returns the point fileid, ptfid, which is used to
+ c	identify the file in subsequent routines.
+ 
+-	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_write"//
++     1  "r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ 
+ c
+diff --git a/samples/inquiregrid.f b/samples/inquiregrid.f
+index 8110461..8ce71e4 100644
+--- a/samples/inquiregrid.f
++++ b/samples/inquiregrid.f
+@@ -18,8 +18,8 @@
+ 
+ 
+ 	
+-	gdfid = gdopen('GridFile_created_with_hadeos_sample_file_writer_
+-     1of_HDFEOS2_version_219_or_higher_release.hdf', DFACC_READ)
++	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
+ 
+     
+ 	if (gdfid .ne. -1) then
+diff --git a/samples/inquireswath.f b/samples/inquireswath.f
+index 899ee59..78c292b 100644
+--- a/samples/inquireswath.f
++++ b/samples/inquireswath.f
+@@ -24,8 +24,8 @@ c
+ c	Open the Swath File for read only access
+ c
+ 
+-	swfid = swopen("SwathFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
++	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
+ 
+     
+ 	if (swfid .NE. -1) then
+diff --git a/samples/readdimscalegrid.f b/samples/readdimscalegrid.f
+index fed5540..a0bb48a 100644
+--- a/samples/readdimscalegrid.f
++++ b/samples/readdimscalegrid.f
+@@ -34,8 +34,8 @@
+ !     * id, gdfid, which is used to identify the file in subsequent routines.
+ !     */
+ 
+-	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_writer_
+-     1of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ !    /*
+ !     * If the grid file cannot be found, gdopen will return -1 for the file
+diff --git a/samples/readdimscaleswath.f b/samples/readdimscaleswath.f
+index 97b6264..1b61624 100644
+--- a/samples/readdimscaleswath.f
++++ b/samples/readdimscaleswath.f
+@@ -33,8 +33,8 @@
+ !     * id, swfid, which is used to identify the file in subsequent routines.
+ !     */
+ 
+-	swfid = swopen("SwathFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ !    /*
+ !     * If the swath file cannot be found, swopen will return -1 for the file
+diff --git a/samples/readfields.f b/samples/readfields.f
+index 873b30a..29d42f0 100644
+--- a/samples/readfields.f
++++ b/samples/readfields.f
+@@ -21,8 +21,8 @@ c
+ c     Open the HDF swath file, "SwathFile.hdf"
+ c 
+ 
+-	swfid = swopen("SwathFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
++	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
+ 
+ 
+ 	if (swfid .NE. -1) then
+diff --git a/samples/readgdflds.f b/samples/readgdflds.f
+index e5fe85f..ff2bd86 100644
+--- a/samples/readgdflds.f
++++ b/samples/readgdflds.f
+@@ -9,8 +9,8 @@
+ 	integer DFNT_FLOAT32
+ 	parameter (DFNT_FLOAT32=5)
+ 
+-	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_writer_
+-     1of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ 	if (gdfid .ne. -1) then
+ 
+diff --git a/samples/readlevels.f b/samples/readlevels.f
+index a7fd033..f349398 100644
+--- a/samples/readlevels.f
++++ b/samples/readlevels.f
+@@ -36,8 +36,8 @@ c
+ c     Open the HDF swath file, "PointFile.hdf".
+ c
+ 
+-	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
++	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_write"//
++     +  "r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
+ 
+ c
+ c    Read Simple Point
+@@ -47,6 +47,8 @@ c
+ 	status = ptlevinfo(ptid, 0, fldlist, fldtype, fldorder)
+ 	n = ptnrecs(ptid, 0)
+ 
++	write(*,*) n
++
+ 	do 5 i=1,n
+ 	   recs(i) = i - 1
+  5	continue
+diff --git a/samples/setupgrid.f b/samples/setupgrid.f
+index be5408c..cf4bd04 100644
+--- a/samples/setupgrid.f
++++ b/samples/setupgrid.f
+@@ -34,8 +34,8 @@ c      code in the open statement.  The GDopen routine returns the grid
+ c      file id, gdfid, which is used to identify the file in subsequent
+ c      routines in the library.
+ c
+-      gdfid = gdopen('GridFile_created_with_hadeos_sample_file_writer_of
+-     1_HDFEOS2_version_219_or_higher_release.hdf',DFACC_CREATE)
++      gdfid = gdopen('GridFile_created_with_hadeos_sample_file_writer_"//
++     1"of_HDFEOS2_version_219_or_higher_release.hdf',DFACC_CREATE)
+ 
+ c    
+ c     Create UTM Grid
+diff --git a/samples/setupswath.f b/samples/setupswath.f
+index d0289d6..fbaa0bb 100644
+--- a/samples/setupswath.f
++++ b/samples/setupswath.f
+@@ -22,8 +22,8 @@ c      code in the open statement.  The SWopen routine returns the swath
+ c      file id, swfid, which is used to identify the file in subsequent
+ c      routines in the library.
+ c
+-      swfid = swopen('SwathFile_created_with_hadeos_sample_file_writer_o
+-     1f_HDFEOS2_version_219_or_higher_release.hdf',DFACC_CREATE)
++      swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf",DFACC_CREATE)
+ 
+ c    
+ c     The first of these, SWcreate, creates the swath, "Swath1", within the
+diff --git a/samples/subsetgrid.f b/samples/subsetgrid.f
+index c57e541..087e5b1 100644
+--- a/samples/subsetgrid.f
++++ b/samples/subsetgrid.f
+@@ -22,8 +22,8 @@ c
+ c     Open the HDF grid file, "GridFile.hdf"
+ c 
+ 
+-	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_writer_
+-     1of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
++	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
+ 
+ 	if (gdfid .NE. -1) then
+ 
+diff --git a/samples/subsetpoint.f b/samples/subsetpoint.f
+index 9e72c5f..2e76d7d 100644
+--- a/samples/subsetpoint.f
++++ b/samples/subsetpoint.f
+@@ -21,8 +21,8 @@ c
+ c     Open the HDF point file, "PointFile.hdf"
+ c 
+ 
+-	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
++	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_write"//
++     1  "r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
+ 
+ 	if (ptfid .NE. -1) then
+ 
+diff --git a/samples/subsetswath.f b/samples/subsetswath.f
+index dcee609..9af8a46 100644
+--- a/samples/subsetswath.f
++++ b/samples/subsetswath.f
+@@ -28,8 +28,8 @@ c
+ c     Open the HDF swath file, "SwathFile.hdf"
+ c 
+ 
+-	swfid = swopen("SwathFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
++	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_READ)
+ 
+ 	if (swfid .NE. -1) then
+ 
+diff --git a/samples/writedimscalegrid.f b/samples/writedimscalegrid.f
+index 09688d8..42013fe 100644
+--- a/samples/writedimscalegrid.f
++++ b/samples/writedimscalegrid.f
+@@ -29,8 +29,8 @@
+ !     * id, gdfid, which is used to identify the file in subsequent routines.
+ !     */
+ 
+-	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_writer_
+-     1of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ !    /*
+ !     * If the grid file cannot be found, gdopen will return -1 for the file
+diff --git a/samples/writedimscaleswath.f b/samples/writedimscaleswath.f
+index 1151671..1a911a6 100644
+--- a/samples/writedimscaleswath.f
++++ b/samples/writedimscaleswath.f
+@@ -31,8 +31,8 @@
+ !     * id, swfid, which is used to identify the file in subsequent routines.
+ !     */
+ 
+-	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write
+-     1r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ !    /*
+ !     * If the swath file cannot be found, swopen will return -1 for the file
+diff --git a/samples/writefields.f b/samples/writefields.f
+index a743661..862b96c 100644
+--- a/samples/writefields.f
++++ b/samples/writefields.f
+@@ -31,8 +31,8 @@ c
+ c     Open the HDF swath file, "SwathFile.hdf"
+ c 
+ 
+-	swfid = swopen("SwathFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	swfid = swopen("SwathFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ 
+ 	if (swfid .NE. -1) then
+diff --git a/samples/writegdflds.f b/samples/writegdflds.f
+index d1540b3..81aef75 100644
+--- a/samples/writegdflds.f
++++ b/samples/writegdflds.f
+@@ -23,8 +23,8 @@
+ 	enddo
+ 
+ 
+-	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_writer_
+-     1of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	gdfid = gdopen("GridFile_created_with_hadeos_sample_file_write"//
++     1"r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ 	if (gdfid .ne. -1) then
+ 
+diff --git a/samples/writelevels.f b/samples/writelevels.f
+index 88e7780..cb40c9e 100644
+--- a/samples/writelevels.f
++++ b/samples/writelevels.f
+@@ -32,8 +32,8 @@ c
+ c     Open the HDF point file, "PointFile.hdf".
+ c
+ 
+-	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_writer
+-     1_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
++	ptfid = ptopen("PointFile_created_with_hadeos_sample_file_write"//
++     +  "r_of_HDFEOS2_version_219_or_higher_release.hdf", DFACC_RDWR)
+ 
+ 
+ c
+-- 
+2.10.0
+

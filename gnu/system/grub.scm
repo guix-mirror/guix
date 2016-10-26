@@ -27,9 +27,8 @@
   #:use-module (gnu artwork)
   #:use-module (gnu system file-systems)
   #:autoload   (gnu packages grub) (grub)
-  #:autoload   (gnu packages inkscape) (inkscape)
-  #:autoload   (gnu packages imagemagick) (imagemagick)
   #:autoload   (gnu packages compression) (gzip)
+  #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -132,25 +131,23 @@ object denoting a file name."
 ;;; Background image & themes.
 ;;;
 
-(define (svg->png svg)
-  "Build a PNG from SVG."
-  ;; Don't use #:local-build? so that it's substitutable.
+(define* (svg->png svg #:key width height)
+  "Build a PNG of HEIGHT x WIDTH from SVG."
   (gexp->derivation "grub-image.png"
-                    #~(zero?
-                       (system* (string-append #$inkscape "/bin/inkscape")
-                                "--without-gui"
-                                (string-append "--export-png=" #$output)
-                                #$svg))))
+                    (with-imported-modules '((gnu build svg))
+                      #~(begin
+                          ;; We need these two libraries.
+                          (add-to-load-path (string-append #$guile-rsvg
+                                                           "/share/guile/site/"
+                                                           (effective-version)))
+                          (add-to-load-path (string-append #$guile-cairo
+                                                           "/share/guile/site/"
+                                                           (effective-version)))
 
-(define (resize-image image width height)
-  "Resize IMAGE to WIDTHxHEIGHT."
-  ;; Don't use #:local-build? so that it's substitutable.
-  (let ((size (string-append (number->string width)
-                             "x" (number->string height))))
-    (gexp->derivation "grub-image.resized.png"
-                      #~(zero?
-                         (system* (string-append #$imagemagick "/bin/convert")
-                                  "-resize" #$size #$image #$output)))))
+                          (use-modules (gnu build svg))
+                          (svg->png #$svg #$output
+                                    #:width #$width
+                                    #:height #$height)))))
 
 (define* (grub-background-image config #:key (width 1024) (height 768))
   "Return the GRUB background image defined in CONFIG with a ratio of
@@ -160,8 +157,8 @@ WIDTH/HEIGHT, or #f if none was found."
                         (= (grub-image-aspect-ratio image) ratio))
                       (grub-theme-images (grub-configuration-theme config)))))
     (if image
-        (mlet %store-monad ((png (svg->png (grub-image-file image))))
-          (resize-image png width height))
+        (svg->png (grub-image-file image)
+                  #:width width #:height height)
         (with-monad %store-monad
           (return #f)))))
 

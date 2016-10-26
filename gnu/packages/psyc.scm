@@ -18,15 +18,24 @@
 
 (define-module (gnu packages psyc)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
 (define-public perl-net-psyc
@@ -143,3 +152,76 @@ core aspects of PSYC, useful for all kinds of clients and servers
 including psyced.")
     (synopsis "PSYC library in C")
     (license license:agpl3+)))
+
+;; This commit removes the historic bundled pcre, not released as a tarball so far.
+(define-public psyclpc
+  (let* ((commit "8bd51f2a4847860ba8b82dc79348ab37d516011e")
+         (revision "1"))
+  (package
+    (name "psyclpc")
+    (version (string-append "20160821-" revision "." (string-take commit 7)))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.psyced.org/git/psyclpc")
+                    (commit commit)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "10w4kx9ygcv1lcmd7j4knvjiy8dac1y3hjfv3lhp67jpv6w3iagz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests/checks.
+       #:configure-flags
+       ;; If you have questions about this part, look at
+       ;; "src/settings/psyced" and the ebuild.
+       (list
+        "--enable-use-tls=yes"
+        "--enable-use-mccp" ; Mud Client Compression Protocol, leave this enabled.
+        (string-append "--prefix="
+                       (assoc-ref %outputs "out"))
+        ;; src/Makefile: Set MUD_LIB to the directory which contains
+        ;; the mud data. defaults to MUD_LIB = @libdir@
+        (string-append "--libdir="
+                       (assoc-ref %outputs "out")
+                       "/opt/psyced/world")
+        (string-append "--bindir="
+                       (assoc-ref %outputs "out")
+                       "/opt/psyced/bin")
+        ;; src/Makefile: Set ERQ_DIR to directory which contains the
+        ;; stuff which ERQ can execute (hopefully) savely.  Was formerly
+        ;; defined in config.h. defaults to ERQ_DIR= @libexecdir@
+        (string-append "--libexecdir="
+                       (assoc-ref %outputs "out")
+                       "/opt/psyced/run"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir-to-src
+           ;; We need to pass this as env variables
+           ;; and manually change the directory.
+           (lambda _
+             (chdir "src")
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (setenv "SHELL" (which "sh"))
+             #t)))
+       #:make-flags (list "install-all")))
+    (inputs
+     `(("zlib" ,zlib)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("bison" ,bison)
+       ("gnu-gettext" ,gnu-gettext)
+       ("help2man" ,help2man)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "http://lpc.psyc.eu/")
+    (synopsis "psycLPC is a multi-user network server programming language")
+    (description
+     "LPC is a bytecode language, invented to specifically implement
+multi user virtual environments on the internet.  This technology is used for
+MUDs and also the psyced implementation of the Protocol for SYnchronous
+Conferencing (PSYC).  psycLPC is a fork of LDMud with some new features and
+many bug fixes.")
+    (license license:gpl2))))

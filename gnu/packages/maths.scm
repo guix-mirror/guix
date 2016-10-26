@@ -113,6 +113,47 @@ interactive dialogs to guide them.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/c-graph/")))
 
+(define-public coda
+  (package
+    (name "coda")
+    (version "2.17.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/stcorp/coda/releases/download/"
+                           version "/coda-" version ".tar.gz"))
+       (sha256
+        (base32 "04b9l3wzcix0mnfq77mwnil6cbr8h2mki8myvy0lzn236qcwaq1h"))
+       (patches (search-patches "coda-use-system-libs.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Make sure we don't use the bundled software.
+        '(for-each (lambda (d)
+                     (delete-file-recursively (string-append "libcoda/" d)))
+                   '("zlib" "pcre" "expat")))))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("python" ,python)
+       ("python-numpy" ,python-numpy)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("pcre" ,pcre)
+       ("expat" ,expat)
+       ("hdf4" ,hdf4-alt)
+       ("hdf5" ,hdf5)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-hdf4" "--with-hdf5" "--enable-python"
+                           "LIBS= -lz -lpcre -lexpat")))
+    (synopsis "A common interface to various earth observation data formats")
+    (description
+     "The Common Data Access toolbox (CODA) provides a set of interfaces for
+reading remote sensing data from earth observation data files.  It consists of
+command line applications and interfaces to the C, Fortran, Python, and Java
+programming languages.")
+    (home-page "https://stcorp.nl/coda")
+    (license license:gpl2+)))
+
 (define-public units
   (package
    (name "units")
@@ -543,6 +584,41 @@ incompatible with HDF5.")
 extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+
+(define-public hdf-eos2
+  (package
+    (name "hdf-eos2")
+    (version "19.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "ftp://edhs1.gsfc.nasa.gov\
+/edhs/hdfeos/latest_release/HDF-EOS2.19v1.00.tar.Z")
+       (sha256
+        (base32 "0c9fcz25s292ldap12wxmlrvnyz99z24p63d8fwx51bf8s0s1zrz"))
+       (patches (search-patches "hdf-eos2-remove-gctp.patch"
+                                "hdf-eos2-build-shared.patch"
+                                "hdf-eos2-fortrantests.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     `(("hdf4" ,hdf4-alt) ; assume most HDF-EOS2 users won't use the HDF4 netCDF API
+       ("zlib" ,zlib)
+       ("libjpeg" ,libjpeg)
+       ("gctp" ,gctp)))
+    (arguments
+     `( #:configure-flags '("--enable-install-include" "--enable-shared"
+                            "CC=h4cc -Df2cFortran" "LIBS=-lgctp")
+        #:parallel-tests? #f))
+    (home-page "http://hdfeos.org/software/library.php#HDF-EOS2")
+    (synopsis "HDF4-based data format for NASA's Earth Observing System")
+    (description "HDF-EOS2 is a software library built on HDF4 which supports
+the construction of data structures used in NASA's Earth Observing
+System (Grid, Point and Swath).")
+
+    ;; Source files carry a permissive license header.
+    (license (license:non-copyleft home-page))))
 
 (define-public hdf-eos5
   (package
@@ -1911,14 +1987,14 @@ full text searching.")
 (define-public armadillo
   (package
     (name "armadillo")
-    (version "6.700.7")
+    (version "7.500.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0xbidcxrvbq33xf7iysg2nic2ai9a043psl33kiv6ifkk7p8hcra"))))
+                "1x98d32cgxbzbbma2ak6c37wnbpq13xxyxyd6jjvflv748mzi9ks"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ;no test target
     (inputs
@@ -1939,14 +2015,14 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
 
 (define-public armadillo-for-rcpparmadillo
   (package (inherit armadillo)
-    (version "7.400.2")
+    (version "7.500.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0xmpnqhm9mwr1lssjyarj0cl8b4svbqv6z1xa1dxlwd2ly1srkg4"))))))
+                "1x98d32cgxbzbbma2ak6c37wnbpq13xxyxyd6jjvflv748mzi9ks"))))))
 
 (define-public muparser
   ;; When switching download sites, muparser re-issued a 2.2.5 release with a

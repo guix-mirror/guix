@@ -35,7 +35,7 @@
 (define-public windowmaker
   (package
     (name "windowmaker")
-    (version "0.95.6")
+    (version "0.95.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -43,7 +43,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i3dw1yagsa3rs9x2na2ynqlgmbahayws0kz4vl00fla6550nns3"))))
+                "1acph0nq6fsb452sl7j7a7kcc87zqqaw7qms1p8ijar19dn4hbc4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before

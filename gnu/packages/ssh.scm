@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -506,3 +507,28 @@ manipulating key files.")
 authentication with SSH's so-called @dfn{interactive keyboard password
 authentication}.")
     (license license:gpl2+)))
+
+(define-public autossh
+  (package
+    (name "autossh")
+    (version "1.4e")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.harding.motd.ca/autossh/autossh-"
+             version ".tgz"))
+       (sha256
+        (base32 "0mlicw28vq2jxa0jf0dys5ja75v0fxpjavlq9dpif6bnknji13ly"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ; There is no "make check" or anything similar
+    (inputs `(("openssh" ,openssh)))
+    (synopsis "Automatically restart SSH sessions and tunnels")
+    (description "autossh is a program to start a copy of @command{ssh} and
+monitor it, restarting it as necessary should it die or stop passing traffic.")
+    (home-page "http://www.harding.motd.ca/autossh/")
+    (license
+     ;; Why point to a source file?  Well, all the individual files have a
+     ;; copy of this license in their headers, but there's no separate file
+     ;; with that information.
+     (license:non-copyleft "file://autossh.c"))))

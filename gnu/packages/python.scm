@@ -2298,13 +2298,13 @@ files.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2015.11.20.1")
+    (version "2016.8.31")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "05lgwf9rz1kn465azy2bpb3zmpnsn9gkypbhnjlclchv98ssgc1h"))))
+                "06c9dcyv8ss050gkv5xjivbxhm6qm0s9vzy4r33wqabgv118lw7p"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
