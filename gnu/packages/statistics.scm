@@ -2133,14 +2133,14 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.0")
+    (version "1.1")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0c7gs9c8xdjfxviw0syh13pf3vys2b2ssixmnyqbji64xdscn7pz"))))
+            "1czvkaz1ji3jyj6qrvbswisqs9d05ljqc4vjkfdrf6hygix7azd0"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (arguments
@@ -2159,6 +2159,8 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
              #t)))))
     (propagated-inputs
      `(("r-catools" ,r-catools)
+       ("r-evaluate" ,r-evaluate)
+       ("r-tibble" ,r-tibble)
        ("r-htmltools" ,r-htmltools)
        ("r-jsonlite" ,r-jsonlite)
        ("r-base64enc" ,r-base64enc)
