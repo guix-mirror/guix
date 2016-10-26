@@ -5853,13 +5853,13 @@ barplots or heatmaps.")
 (define-public r-biocgenerics
   (package
     (name "r-biocgenerics")
-    (version "0.18.0")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocGenerics" version))
               (sha256
                (base32
-                "1jjp48vbph09w5bmc7368gjjywsa1lmzfybpiwlypr60b51vlkp6"))))
+                "06szdz7dfs1iyv5zdl4fjzad18nnf1zf3wvglc6c6yd9mrqlf7vk"))))
     (properties
      `((upstream-name . "BiocGenerics")))
     (build-system r-build-system)
