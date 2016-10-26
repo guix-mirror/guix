@@ -6832,7 +6832,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
 (define-public r-genomationdata
   (package
     (name "r-genomationdata")
-    (version "1.4.2")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -6842,7 +6842,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
                                   "genomationData_" version ".tar.gz"))
               (sha256
                (base32
-                "1zl7gg144fs7zfycsmq5492sm1bqy7l527xbc2zj04schd9wsan2"))))
+                "16dqwb7wx1igx77zdbcskx5m1hs4g4gp2hl56zzm70hcagnlkz8y"))))
     (build-system r-build-system)
     ;; As this package provides little more than large data files, it doesn't
     ;; make sense to build substitutes.
