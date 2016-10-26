@@ -3278,6 +3278,30 @@ conversion of R objects to LaTeX code, and recoding variables.")
 framework, with additional code inspection and report generation tools.")
     (license license:gpl2+)))
 
+(define-public r-kernsmooth
+  (package
+    (name "r-kernsmooth")
+    (version "2.23-15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "KernSmooth" version))
+       (sha256
+        (base32
+         "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
+    (properties `((upstream-name . "KernSmooth")))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/KernSmooth")
+    (synopsis "Functions for kernel smoothing")
+    (description
+     "This package provides functions for kernel smoothing (and density
+estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
+\"Kernel Smoothing\".")
+    ;; Unlimited use and distribution
+    (license (license:non-copyleft "file://LICENSE.note"))))
+
 (define-public r-zoo
   (package
     (name "r-zoo")
