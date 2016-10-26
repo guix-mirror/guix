@@ -198,13 +198,13 @@ available, greatly increasing its breadth and scope.")
 (define-public r-colorspace
   (package
     (name "r-colorspace")
-    (version "1.2-6")
+    (version "1.2-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "colorspace" version))
        (sha256
-        (base32 "0y8n4ljwhbdvkysdwgqzcnpv107pb3px1jip3k6svv86p72nacds"))))
+        (base32 "0flw97iwwpkxy6si9cn982jhl61wb1rxi3r0nz2xxf0c3fzw18d5"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/colorspace")
     (synopsis "Color space manipulation")
