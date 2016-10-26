@@ -6655,13 +6655,13 @@ information about the latest version of the Gene Ontologies.")
 (define-public r-graph
   (package
     (name "r-graph")
-    (version "1.50.0")
+    (version "1.52.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "graph" version))
               (sha256
                (base32
-                "0ys5s19m5r30rlr0fnx2h0z2qw7n2xrad4l2yfb1bbrk8dwyf4pi"))))
+                "0g3dk5vsdp489fmyg8mifczmzgqrjlakkkr8i96dj15gghp3l135"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)))
