@@ -5363,14 +5363,14 @@ the graph algorithms contained in the Boost library.")
 (define-public r-gseabase
   (package
     (name "r-gseabase")
-    (version "1.34.1")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GSEABase" version))
        (sha256
         (base32
-         "1mvgja8malrnbzfakzjl5mmi7g080kj8zgxwc5964hcmn33i937j"))))
+         "0l2x7yj7lfb0m2dmsav5ib026dikpgl4crdckrnj776yy08lgxpj"))))
     (properties `((upstream-name . "GSEABase")))
     (build-system r-build-system)
     (propagated-inputs
