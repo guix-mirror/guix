@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages ghostscript)
@@ -319,6 +321,9 @@ and corrections.  It is based on a Bayesian filter.")
                (base32
                 "0smxh5ag3cbn92kp49jq950j5m2pivs9kr04prpd1lw62hy7gnhr"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("libxslt" ,libxslt)))  ; for xsltproc
     (inputs `(("python2-pysqlite" ,python2-pysqlite)
               ("python2-six" ,python2-six)))
     (arguments
@@ -328,8 +333,21 @@ and corrections.  It is based on a Bayesian filter.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'wrap-binary
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+         (add-after 'build 'build-documentation
+           (lambda _
+             (substitute* "docs/Makefile"
+               ;; Prevent xmllint and xsltproc from downloading a DTD file.
+               (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
+             (zero? (system* "make" "-C" "docs" "man"))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (install-file "docs/offlineimap.1" (string-append man "/man1"))
+               (install-file "docs/offlineimapui.7" (string-append man "/man7"))
+               #t)))
+         (add-after 'install-documentation 'wrap-binary
+           (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin/offlineimap")))
                (wrap-program bin
