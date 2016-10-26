@@ -6188,27 +6188,33 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.18.7")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "002kif2c66wbcng953m3g1jys7w1lgz7hh3zsk4jlnhc20jdv1vj"))))
+                "1lwzfgahz8ipwli73kcfqb18y6adi129hap1gnycnj3980m54i8q"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
        ("r-dbi" ,r-dbi)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)
        ("r-zlibbioc" ,r-zlibbioc)))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/VariantAnnotation")
