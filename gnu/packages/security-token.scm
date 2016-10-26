@@ -19,7 +19,7 @@
 
 (define-module (gnu packages security-token)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -45,7 +45,7 @@
      "This package contains a C library and command-line tools that make up
 the low-level development kit for the Yubico YubiKey authentication device.")
     (home-page "https://developers.yubico.com/yubico-c/")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public ykclient
   (package
@@ -74,4 +74,4 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 one-time-password (OTP) YubiKey against Yubico’s servers.  See the Yubico
 website for more information about Yubico and the YubiKey.")
     (home-page "https://developers.yubico.com/yubico-c-client/")
-    (license bsd-2)))
+    (license license:bsd-2)))
