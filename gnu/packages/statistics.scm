@@ -408,14 +408,14 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.2-7")
+    (version "1.2-7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "18x3mdq5cdhbk1lw5cj7vbr41lk8w9p4i5kzh8wslgq6p3d9ac3c"))))
+         "09rd51na9spz0lm1lylkfhw43w7c922b83m4jsggmpg3pbd6dssa"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
