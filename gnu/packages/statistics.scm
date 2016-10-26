@@ -2413,13 +2413,13 @@ multiple breakpoints are allowed.")
 (define-public r-snow
   (package
     (name "r-snow")
-    (version "0.4-1")
+    (version "0.4-2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "snow" version))
               (sha256
                (base32
-                "19r2yq8aqw99vwyx81p6ay4afsfqffal1wzvizk3dj882s2n4j8w"))))
+                "1mxbrkpnmq32x4wd0194d541661yvfrrjlr3lsf7qq53ms3h21zf"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/snow")
     (synopsis "Support for simple parallel computing in R")
