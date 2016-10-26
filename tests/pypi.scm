@@ -122,7 +122,7 @@ baz > 13.37")
                      ('base32
                       (? string? hash)))))
          ('build-system 'python-build-system)
-         ('inputs
+         ('propagated-inputs
           ('quasiquote
            (("python-bar" ('unquote 'python-bar))
             ("python-baz" ('unquote 'python-baz))
@@ -182,7 +182,7 @@ baz > 13.37")
                      ('base32
                       (? string? hash)))))
          ('build-system 'python-build-system)
-         ('inputs
+         ('propagated-inputs
           ('quasiquote
            (("python-bar" ('unquote 'python-bar))
             ("python-baz" ('unquote 'python-baz))
