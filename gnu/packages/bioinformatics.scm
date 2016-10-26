@@ -602,15 +602,19 @@ e.g. microbiome samples, genomes, metagenomes.")
                  (map (compose package-transitive-target-inputs cadr) inputs))))))
     (package
       (name "bioperl-minimal")
-      (version "1.6.924")
+      (version "1.7.0")
       (source
        (origin
          (method url-fetch)
-         (uri (string-append "mirror://cpan/authors/id/C/CJ/CJFIELDS/BioPerl-"
-                             version ".tar.gz"))
+         (uri (string-append "https://github.com/bioperl/bioperl-live/"
+                             "archive/release-"
+                             (string-map (lambda (c)
+                                           (if (char=? c #\.)
+                                               #\- c)) version)
+                             ".tar.gz"))
          (sha256
           (base32
-           "1l3npcvvvwjlhkna9dndpfv1hklhrgva013kw96m0n1wpd37ask1"))))
+           "12phgpxwgkqflkwfb9dcqg7a31dpjlfhar8wcgv0aj5ln4akfz06"))))
       (build-system perl-build-system)
       (arguments
        `(#:phases
