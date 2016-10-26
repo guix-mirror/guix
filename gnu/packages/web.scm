@@ -3310,13 +3310,13 @@ applications.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "1.2")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "04fwasg400v8dvkcn1fcha1jzdz8lbyxi0679q7flsyrp57b3jrf"))))
+                "0hyvyjzf5ja7kfhzmlfgp86hg1lxrriiwbnr6pxabwwslswj3cmj"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
