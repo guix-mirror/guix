@@ -6783,13 +6783,13 @@ reference point and sorted by a user defined feature.")
 (define-public r-genomation
   (package
     (name "r-genomation")
-    (version "1.4.2")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "genomation" version))
               (sha256
                (base32
-                "017hxh3yhizlsswd2vw8504arkckrcgq5zraiw67lldq9wzs5qzg"))))
+                "1m4mz7wihj8yqivwkzw68div8ybk4rjsai3ffki7xp7sh21ax03y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
@@ -6805,11 +6805,17 @@ reference point and sorted by a user defined feature.")
        ("r-matrixstats" ,r-matrixstats)
        ("r-plotrix" ,r-plotrix)
        ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
        ("r-readr" ,r-readr)
        ("r-reshape2" ,r-reshape2)
+       ("r-rhtslib" ,r-rhtslib)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
+       ("r-runit" ,r-runit)
+       ("r-s4vectors" ,r-s4vectors)
        ("r-seqpattern" ,r-seqpattern)))
+    (inputs
+     `(("zlib" ,zlib)))
     (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
     (synopsis "Summary, annotation and visualization of genomic data")
     (description
