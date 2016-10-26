@@ -3,6 +3,8 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -667,24 +669,30 @@ processed, #f otherwise."
                      ((head tail ...) head))))
     (match (assoc-ref opts 'query)
       (('list-generations pattern)
-       (define (list-generation number)
+       (define (list-generation display-function number)
          (unless (zero? number)
            (display-generation profile number)
-           (display-profile-content profile number)
+           (display-function profile number)
            (newline)))
-
+       (define (diff-profiles profile numbers)
+         (unless (null-list? (cdr numbers))
+           (display-profile-content-diff profile (car numbers) (cadr numbers))
+           (diff-profiles profile (cdr numbers))))
        (cond ((not (file-exists? profile))      ; XXX: race condition
               (raise (condition (&profile-not-found-error
                                  (profile profile)))))
              ((string-null? pattern)
-              (for-each list-generation (profile-generations profile)))
+              (list-generation display-profile-content
+                               (car (profile-generations profile)))
+              (diff-profiles profile (profile-generations profile)))
              ((matching-generations pattern profile)
               =>
               (lambda (numbers)
                 (if (null-list? numbers)
                     (exit 1)
                     (leave-on-EPIPE
-                     (for-each list-generation numbers)))))
+                     (list-generation display-profile-content (car numbers))
+                     (diff-profiles profile numbers)))))
              (else
               (leave (_ "invalid syntax: ~a~%")
                      pattern)))

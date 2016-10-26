@@ -7,6 +7,8 @@
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,6 +89,7 @@
             matching-generations
             display-generation
             display-profile-content
+            display-profile-content-diff
             roll-back*
             switch-to-generation*
             delete-generation*
@@ -1069,6 +1072,31 @@ DURATION-RELATION with the current time."
           ;; gender where applicable.
           (format #t (_ "~a\t(current)~%") header)
           (format #t "~a~%" header)))))
+
+(define (display-profile-content-diff profile gen1 gen2)
+  "Display the changed packages in PROFILE GEN2 compared to generation GEN2."
+
+  (define (equal-entry? first second)
+    (string= (manifest-entry-item first) (manifest-entry-item second)))
+
+  (define (display-entry entry prefix)
+    (match entry
+      (($ <manifest-entry> name version output location _)
+       (format #t " ~a ~a\t~a\t~a\t~a~%" prefix name version output location))))
+
+  (define (list-entries number)
+    (manifest-entries (profile-manifest (generation-file-name profile number))))
+
+  (define (display-diff profile old new)
+    (display-generation profile new)
+    (let ((added (lset-difference
+                  equal-entry? (list-entries new) (list-entries old)))
+          (removed (lset-difference
+                    equal-entry? (list-entries old) (list-entries new))))
+      (for-each (cut display-entry <> "+") added)
+      (for-each (cut display-entry <> "-") removed)))
+
+  (display-diff profile gen1 gen2))
 
 (define (display-profile-content profile number)
   "Display the packages in PROFILE, generation NUMBER, in a human-readable
