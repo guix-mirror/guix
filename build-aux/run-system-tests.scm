@@ -68,7 +68,8 @@
                            (out -> (map derivation->output-path drv)))
         (mbegin %store-monad
           (show-what-to-build* drv)
-          (set-build-options* #:keep-going? #t #:keep-failed? #t)
+          (set-build-options* #:keep-going? #t #:keep-failed? #t
+                              #:fallback? #t)
           (built-derivations* drv)
           (mlet %store-monad ((valid  (filterm (store-lift valid-path?)
                                                out))
