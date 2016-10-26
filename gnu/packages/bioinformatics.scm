@@ -6162,17 +6162,18 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.14.0")
+    (version "3.16.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "14vrygy7rz5ngaap4kgkvr3j18y5l6m742n79h68plk6iqgmsskn"))))
+                "1qr20j55m35dwzqyzzmla69gk5bzff8v1v2qjh7yd3362wq1ch49"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-limma" ,r-limma)))
+     `(("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)))
     (home-page "http://bioinf.wehi.edu.au/edgeR")
     (synopsis "EdgeR does empirical analysis of digital gene expression data")
     (description "This package can do differential expression analysis of
