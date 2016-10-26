@@ -146,7 +146,10 @@
              (waitpid fork-pid)
              result))))))))
 
-(unless perform-container-tests?
+;; XXX: Skip this test when running Linux > 4.7.5 to work around
+;; <https://bugzilla.kernel.org/show_bug.cgi?id=183461>.
+(when (or (not perform-container-tests?)
+          (version>? (utsname:release (uname)) "4.7.5"))
   (test-skip 1))
 (test-equal "pivot-root"
   #t
