@@ -606,13 +606,13 @@ the input of another.")
 (define-public r-reshape2
   (package
     (name "r-reshape2")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reshape2" version))
        (sha256
-        (base32 "0hl082dyk3pk07nqprpn5dvnrkqhnf6zjnjig1ijddxhlmsrzm7v"))))
+        (base32 "0swvjmc9f8cvkrsz463cp6snd8bncbv6q8yrfrb4rgkr0dhq6dvd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
