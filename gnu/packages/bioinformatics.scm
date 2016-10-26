@@ -5216,14 +5216,14 @@ microarrays.")
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "geneplotter" version))
        (sha256
         (base32
-         "0lvrywl0251g4y0h0qlgkbg4l83ja5544c85z1wj30qxiy77iqc2"))))
+         "1p6yvxi243irhjxwm97hp73abhwampj0myyf8z00ij166674pc7h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
