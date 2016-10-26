@@ -33,6 +33,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:export (%test-installed-os
+            %test-separate-store-os
             %test-encrypted-os))
 
 ;;; Commentary:
@@ -222,6 +223,87 @@ build (current-guix) and then store a couple of full system images.")
                       "installed-os")))))
 
 
+;;;
+;;; Separate /gnu/store partition.
+;;;
+
+(define-os-with-source (%separate-store-os %separate-store-os-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.UTF-8")
+
+    (bootloader (grub-configuration (device "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons* (file-system
+                           (device "root-fs")
+                           (title 'label)
+                           (mount-point "/")
+                           (type "ext4"))
+                         (file-system
+                           (device "store-fs")
+                           (title 'label)
+                           (mount-point "/gnu")
+                           (type "ext4")
+                           (needed-for-boot? #t)) ;definitely!
+                         %base-file-systems))
+    (users %base-user-accounts)
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %separate-store-installation-script
+  ;; Installation with a separate /gnu partition.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+guix build isc-dhcp
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 100M \\
+  mkpart primary ext2 100M 1G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+mkfs.ext4 -L root-fs /dev/vdb2
+mkfs.ext4 -L store-fs /dev/vdb3
+mount /dev/vdb2 /mnt
+mkdir /mnt/gnu
+mount /dev/vdb3 /mnt/gnu
+df -h /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-separate-store-os
+  (system-test
+   (name "separate-store-os")
+   (description
+    "Test basic functionality of an OS installed like one would do by hand,
+where /gnu lives on a separate partition.")
+   (value
+    (mlet* %store-monad ((image   (run-install %separate-store-os
+                                               %separate-store-os-source
+                                               #:script
+                                               %separate-store-installation-script))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %separate-store-os command "separate-store-os")))))
+
+
+;;;
+;;; LUKS-encrypted root file system.
+;;;
+
 (define-os-with-source (%encrypted-root-os %encrypted-root-os-source)
   ;; The OS we want to install.
   (use-modules (gnu) (gnu tests) (srfi srfi-1))
