@@ -1250,14 +1250,14 @@ Groups in Data\".")
 (define-public r-foreign
   (package
     (name "r-foreign")
-    (version "0.8-66")
+    (version "0.8-67")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreign" version))
        (sha256
         (base32
-         "19278jm85728zb20800w6hq9q8jy8ywdn81mgmlnxkmrr9giwh6p"))))
+         "1mcrm2pydimbyjhkrw5h380bifj1jhwzifph1xgh90asf3lvd1xd"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/foreign")
     (synopsis "Read data stored by other statistics software in R")
