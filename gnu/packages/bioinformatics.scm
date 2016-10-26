@@ -7246,20 +7246,22 @@ libraries for systems that do not have these available via other means.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.4.3")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "1wgpn9x8abjj7fc087pdavqc3fz0pl5xdh231mgjila18irwlhb3"))))
+         "1vk3ng61dhi3pbia1lp3gl3mlr3i1vb2lkq83qb53i9dzz128wh9"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-zlibbioc" ,r-zlibbioc)))
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)))
     (home-page "https://github.com/nhayden/Rhtslib")
     (synopsis "High-throughput sequencing library as an R package")
     (description
