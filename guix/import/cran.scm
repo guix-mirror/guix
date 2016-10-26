@@ -424,13 +424,30 @@ dependencies."
 
 (define (bioconductor-package? package)
   "Return true if PACKAGE is an R package from Bioconductor."
-  (and (string-prefix? "r-" (package-name package))
-       (match (and=> (package-source package) origin-uri)
-         ((? string? uri)
-          (string-prefix? "http://bioconductor.org" uri))
-         ((? list? uris)
-          (any (cut string-prefix? "http://bioconductor.org" <>) uris))
-         (_ #f))))
+  (let ((predicate (lambda (uri)
+                     (and (string-prefix? "http://bioconductor.org" uri)
+                          ;; Data packages are not listed in SVN
+                          (not (string-contains uri "/data/annotation/"))))))
+    (and (string-prefix? "r-" (package-name package))
+         (match (and=> (package-source package) origin-uri)
+           ((? string? uri)
+            (predicate uri))
+           ((? list? uris)
+            (any predicate uris))
+           (_ #f)))))
+
+(define (bioconductor-data-package? package)
+  "Return true if PACKAGE is an R data package from Bioconductor."
+  (let ((predicate (lambda (uri)
+                     (and (string-prefix? "http://bioconductor.org" uri)
+                          (string-contains uri "/data/annotation/")))))
+    (and (string-prefix? "r-" (package-name package))
+         (match (and=> (package-source package) origin-uri)
+           ((? string? uri)
+            (predicate uri))
+           ((? list? uris)
+            (any predicate uris))
+           (_ #f)))))
 
 (define %cran-updater
   (upstream-updater
