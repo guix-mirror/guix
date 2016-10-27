@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages python)
@@ -104,6 +105,7 @@ debugging information in STABS, DWARF 2, and CodeView 8 formats.")
               (base32
                "19j9nwl88k660045s40cbz5zrl1wpd2mcxnnc8qqnnaj311a58qz"))))
     (build-system gnu-build-system)
+    (native-inputs `(("zlib" ,zlib)))
     (synopsis "Library for generating assembly code at runtime")
     (description
      "GNU Lightning is a library that generates assembly language code at
