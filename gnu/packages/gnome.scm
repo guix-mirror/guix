@@ -3841,7 +3841,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.23.5")
+    (version "0.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3849,7 +3849,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0fgs1rgvkmy79bmpxrsvm5w8rvqml4l1vnwma0xqx5zzm02p8a07"))))
+                "0f3ly7nxy3kqwgs40avsqkxcz98bfmlhlk30n0d7j7ndk67zz57h"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -3872,7 +3872,8 @@ metadata in photo and video files of various formats.")
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("libgudev" ,libgudev)
-       ("libgphoto2" ,libgphoto2)))
+       ("libgphoto2" ,libgphoto2)
+       ("gcr" ,gcr)))
     (home-page "https://wiki.gnome.org/Apps/Shotwell")
     (synopsis "Photo manager for GNOME 3")
     (description
