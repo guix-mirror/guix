@@ -191,9 +191,9 @@ the installed system."
 
     (gexp->derivation "installation" install)))
 
-(define (qemu-command/writable-image image)
+(define* (qemu-command/writable-image image #:key (memory-size 256))
   "Return as a monadic value the command to run QEMU on a writable copy of
-IMAGE, a disk image."
+IMAGE, a disk image.  The QEMU VM is has access to MEMORY-SIZE MiB of RAM."
   (mlet %store-monad ((system (current-system)))
     (return #~(let ((image #$image))
                 ;; First we need a writable copy of the image.
@@ -205,7 +205,7 @@ IMAGE, a disk image."
                   ,@(if (file-exists? "/dev/kvm")
                         '("-enable-kvm")
                         '())
-                  "-no-reboot" "-m" "256"
+                  "-no-reboot" "-m" #$(number->string memory-size)
                   "-drive" "file=disk.img,if=virtio")))))
 
 
