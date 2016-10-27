@@ -1407,7 +1407,8 @@ backported for previous versions of Python from 2.4 to 3.3.")
       (uri (pypi-uri "parse" version))
       (sha256
        (base32
-        "0y31i3mwgv35qn0kzzjn9q8jqfdqmbi6sr6yfvn8rq4lqjm5lhvi"))))
+        "0y31i3mwgv35qn0kzzjn9q8jqfdqmbi6sr6yfvn8rq4lqjm5lhvi"))
+      (patches (search-patches "python-parse-too-many-fields.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
