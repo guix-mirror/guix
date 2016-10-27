@@ -146,7 +146,8 @@ with arguments to the field constructor.")
                           (("setuptools_scm==1.8.0") "setuptools_scm"))
              #t)))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-django" ,python-django)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest)))
