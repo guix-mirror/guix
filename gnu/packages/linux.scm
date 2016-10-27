@@ -70,6 +70,8 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -3073,3 +3075,44 @@ interface that should be familiar to, and easily adopted by, application
 developers.")
     (home-page "https://github.com/seccomp/libseccomp")
     (license license:lgpl2.1)))
+
+(define-public radeontop
+  (package
+    (name "radeontop")
+    (version "0.9")
+    (home-page "https://github.com/clbr/radeontop/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07fnimn6wwablmdjw0av11hk9a6xilbryh09izq4b2ic4b8md2p7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ;; getver.sh uses ‘git --describe’, isn't worth an extra git
+                  ;; dependency, and doesn't even work on release(!) tarballs.
+                  (add-after 'unpack 'report-correct-version
+                    (lambda _ (substitute* "getver.sh"
+                                (("ver=unknown")
+                                 (string-append "ver=" ,version)))))
+                  (delete 'configure))  ; no configure script
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:tests? #f))                    ; no tests
+    (native-inputs
+     `(("gnu-gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libpciaccess" ,libpciaccess)
+       ("ncurses" ,ncurses)))
+    (synopsis "Usage monitor for AMD Radeon graphics")
+    (description "RadeonTop monitors resource consumption on supported AMD
+Radeon Graphics Processing Units (GPUs), either in real time as bar graphs on
+a terminal or saved to a file for further processing.  It measures both the
+activity of the GPU as a whole, which is also accurate during OpenCL
+computations, as well as separate component statistics that are only meaningful
+under OpenGL graphics workloads.")
+    (license license:gpl3)))
