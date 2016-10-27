@@ -8898,6 +8898,9 @@ anymore.")
                (base32
                 "0p050msg5c8d0kadv702jnfshaxrb0il765cpkgnhn6mq5hakcyy"))))
     (build-system python-build-system)
+    ;; We only need the the Python 2 variant, since for Python 3 our minimum
+    ;; version is 3.4 which already includes this package as part of the
+    ;; standard library.
     (arguments
      `(#:python ,python-2))
     (native-inputs
