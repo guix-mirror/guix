@@ -11212,8 +11212,18 @@ replay them during future tests.  It is designed to work with python-requests.")
                (base32
                 "1jivjkp3xqif9gzr5fiq28jsskmh50vzzd7ldsb4rbyiw1iyv3hy"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; 7 of the 'integration' tests require network access or login
+             ;; credentials.
+             (zero? (system* "nosetests" "--exclude=integration")))))))
     (native-inputs
-     `(("python-docutils" ,python-docutils)))
+     `(("python-docutils" ,python-docutils)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (inputs
      `(("python-botocore" ,python-botocore)))
     (synopsis "Amazon S3 Transfer Manager")
