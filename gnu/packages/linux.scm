@@ -2374,6 +2374,35 @@ assemble, report on, and monitor arrays.  It can also move spares between raid
 arrays when needed.")
     (license license:gpl2+)))
 
+(define-public mdadm-static
+  (package
+    (inherit mdadm)
+    (name "mdadm-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments mdadm)
+       ((#:make-flags flags)
+        `(cons "LDFLAGS = -static" ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'remove-cruft
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out         (assoc-ref outputs "out"))
+                      (precious?   (lambda (file)
+                                     (member file '("." ".." "sbin"))))
+                      (directories (scandir out (negate precious?))))
+                 (with-directory-excursion out
+                   (for-each delete-file-recursively directories)
+                   (remove-store-references "sbin/mdadm")
+                   (delete-file "sbin/mdmon")
+                   #t))))))
+       ((#:modules modules %gnu-build-system-modules)
+        `((ice-9 ftw) ,@modules))
+       ((#:strip-flags _ '())
+        ''("--strip-all"))                        ;strip a few extra KiB
+       ((#:allowed-references _ '("out"))
+        '("out"))))                               ;refer only self
+    (synopsis "Statically-linked 'mdadm' command for use in an initrd")))
+
 (define-public libaio
   (package
     (name "libaio")
