@@ -1412,10 +1412,9 @@ backported for previous versions of Python from 2.4 to 3.3.")
     (build-system python-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'check
-        (lambda _ (zero? (system* "python" "test_parse.py")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "python" "test_parse.py")))))))
     (home-page "https://github.com/r1chardj0n3s/parse")
     (synopsis "Parse strings")
     (description
