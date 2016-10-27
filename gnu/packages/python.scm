@@ -8093,6 +8093,17 @@ python-xdo for newer bindings.)")
         (base32
          "0vyl26y9cg409cfyj8rhqxazsdnd0jipgjw06civhrd53yyi1pzz"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-django-test
+           ;; Don't fail the tests when the inputs for the optional tests cannot be found.
+           (lambda _
+             (substitute*
+               "tests/runtests.py"
+               (("'ext_django.tests', 'ext_sqlalchemy', 'ext_dateutil', 'locale_babel'") "")
+               (("sys.stderr.write(\"### Disabled test '%s', dependency not found\n\" % name)") ""))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://wtforms.simplecodes.com/")
