@@ -192,15 +192,15 @@ not valid header was found."
 
 (define (disk-partitions)
   "Return the list of device names corresponding to valid disk partitions."
-  (define (partition? major minor)
-    (let ((marker (format #f "/sys/dev/block/~a:~a/partition" major minor)))
-      (catch 'system-error
-        (lambda ()
-          (not (zero? (call-with-input-file marker read))))
-        (lambda args
-          (if (= ENOENT (system-error-errno args))
-              #f
-              (apply throw args))))))
+  (define (last-character str)
+    (string-ref str (- (string-length str) 1)))
+
+  (define (partition? name major minor)
+    ;; Select device names that end in a digit, like libblkid's 'probe_all'
+    ;; function does.  Checking for "/sys/dev/block/MAJOR:MINOR/partition"
+    ;; doesn't work for partitions coming from mapped devices.
+    (and (char-set-contains? char-set:digit (last-character name))
+         (> major 2)))                      ;ignore RAM disks and floppy disks
 
   (call-with-input-file "/proc/partitions"
     (lambda (port)
@@ -217,7 +217,7 @@ not valid header was found."
               (match (string-tokenize line)
                 (((= string->number major) (= string->number minor)
                   blocks name)
-                 (if (partition? major minor)
+                 (if (partition? name major minor)
                      (loop (cons name parts))
                      (loop parts))))))))))
 
@@ -232,12 +232,15 @@ warning and #f as the result."
         ;; When running on the hand-made /dev,
         ;; 'disk-partitions' could return partitions for which
         ;; we have no /dev node.  Handle that gracefully.
-        (if (= ENOENT (system-error-errno args))
-            (begin
-              (format (current-error-port)
-                      "warning: device '~a' not found~%" device)
-              #f)
-            (apply throw args))))))
+        (let ((errno (system-error-errno args)))
+          (cond ((= ENOENT errno)
+                 (format (current-error-port)
+                         "warning: device '~a' not found~%" device)
+                 #f)
+                ((= ENOMEDIUM errno)              ;for removable media
+                 #f)
+                (else
+                 (apply throw args))))))))
 
 (define (partition-predicate read field =)
   "Return a predicate that returns true if the FIELD of partition header that
