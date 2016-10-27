@@ -176,6 +176,9 @@ useful tools for testing Django applications and projects.")
                (base32
                 "0f78hmk8c903zwfzlsiw7ivgag81ymmb5hi73rzxbhnlg2v0l3fx"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)))
     (home-page "https://django-filter.readthedocs.io/en/latest/")
     (synopsis "Reusable Django application to filter querysets dynamically")
     (description
