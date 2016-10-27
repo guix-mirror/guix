@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,8 @@
     (inputs
      `(("gtk+" ,gtk+)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gtk+-bin" ,gtk+ "bin") ; gtk-update-icon-cache
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/gxmessage/")
     (synopsis "Open popup message window with buttons for return")
