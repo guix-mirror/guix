@@ -88,7 +88,7 @@ joystick, and graphics hardware.")
 (define-public sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
              (method url-fetch)
              (uri
@@ -96,7 +96,7 @@ joystick, and graphics hardware.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "0jqp46mxxbh9lhpx1ih6sp93k752j2smhpc0ad0q4cb3px0famfs"))))
+               "11c75qj1qxmx67iwkvf9z4x69phk301pdn86zzr6jncnap7kh824"))))
     (license bsd-3)))
 
 (define-public libmikmod
