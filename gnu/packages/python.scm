@@ -7711,14 +7711,14 @@ concurrent.futures package from Python 3.2")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.13.1")
+    (version "1.18.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "10rrbr6c6k7j5dvfsyj4b2gsgxg9gggnn708qixf6ll57xqivfkf"))))
+          "1wb8aqnq53vzh2amrv8kc66f3h6fx217y0q62y6n30a64p2yqmam"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
@@ -7733,7 +7733,7 @@ concurrent.futures package from Python 3.2")
        ("python-ndg-httpsclient" ,python-ndg-httpsclient)
        ("python-pyasn1" ,python-pyasn1)
        ("python-pyopenssl" ,python-pyopenssl)))
-    (home-page "http://urllib3.readthedocs.org/")
+    (home-page "https://urllib3.readthedocs.org/")
     (synopsis "HTTP library with thread-safe connection pooling")
     (description
      "Urllib3 supports features left out of urllib and urllib2 libraries.  It
