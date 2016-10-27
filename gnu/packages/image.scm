@@ -781,14 +781,14 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "1.900.13")
+    (version "1.900.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "0nmy5248gar057s94a30fssvq70m3jy4vdrfcispvn01ih33fa19"))))
+                "0wgrz6970sf8apyld35vrxamzx46fq15l0ipkvjsjlbwfrhj57rl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CFLAGS=-std=c99"))) ; 1.900.13 added c++ style comments
