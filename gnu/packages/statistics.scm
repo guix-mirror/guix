@@ -118,6 +118,13 @@ be output in text, PostScript, PDF or HTML.")
                             "/lib/R/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'patch-uname
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((uname-bin (string-append (assoc-ref inputs "coreutils")
+                                             "/bin/uname")))
+               (substitute* "src/scripts/R.sh.in"
+                 (("uname") uname-bin)))
+             #t))
          (add-before
           'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
@@ -169,6 +176,7 @@ be output in text, PostScript, PDF or HTML.")
      `(;; We need not only cairo here, but pango to ensure that tests for the
        ;; "cairo" bitmapType plotting backend succeed.
        ("pango" ,pango)
+       ("coreutils" ,coreutils)
        ("curl" ,curl)
        ("tzdata" ,tzdata)
        ("gfortran" ,gfortran)
