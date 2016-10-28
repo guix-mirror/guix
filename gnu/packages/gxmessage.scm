@@ -38,11 +38,19 @@
              (sha256
               (base32 "01ggvvp0nyn8xczh93icifnji468wsjgqzd1f1bixwsqziaicknv"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("gtk+" ,gtk+)))
     (native-inputs
-     `(("gtk+-bin" ,gtk+ "bin") ; gtk-update-icon-cache
-       ("intltool" ,intltool)
+     `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/gxmessage/")
     (synopsis "Open popup message window with buttons for return")
