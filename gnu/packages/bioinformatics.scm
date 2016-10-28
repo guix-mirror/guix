@@ -7394,6 +7394,39 @@ library implementing most of the pipeline's features.")
 @dfn{RNA-centric annotation system} (RCAS).")
     (license license:agpl3+)))
 
+(define-public r-mutationalpatterns
+  (package
+    (name "r-mutationalpatterns")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MutationalPatterns" version))
+       (sha256
+        (base32
+         "1a3c2bm0xx0q4gf98jiw74msmdf2fr8rbsdysd5ww9kqlzmsbr17"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-iranges" ,r-iranges)
+       ("r-nmf" ,r-nmf)
+       ("r-plyr" ,r-plyr)
+       ("r-pracma" ,r-pracma)
+       ("r-reshape2" ,r-reshape2)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "http://bioconductor.org/packages/MutationalPatterns/")
+    (synopsis "Extract and visualize mutational patterns in genomic data")
+    (description "This package provides an extensive toolset for the
+characterization and visualization of a wide range of mutational patterns
+in SNV base substitution data.")
+    (license license:expat)))
+
 (define-public emboss
   (package
     (name "emboss")

@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,7 @@
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "http://libsdl.org/release/SDL-"
+              (string-append "https://libsdl.org/release/SDL-"
                              version ".tar.gz"))
              (sha256
               (base32
@@ -81,34 +82,34 @@
     (description "Simple DirectMedia Layer is a cross-platform development
 library designed to provide low level access to audio, keyboard, mouse,
 joystick, and graphics hardware.")
-    (home-page "http://libsdl.org/")
+    (home-page "https://libsdl.org/")
     (license lgpl2.1)))
 
 (define-public sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "http://libsdl.org/release/SDL2-"
+              (string-append "https://libsdl.org/release/SDL2-"
                              version ".tar.gz"))
              (sha256
               (base32
-               "0jqp46mxxbh9lhpx1ih6sp93k752j2smhpc0ad0q4cb3px0famfs"))))
+               "11c75qj1qxmx67iwkvf9z4x69phk301pdn86zzr6jncnap7kh824"))))
     (license bsd-3)))
 
 (define-public libmikmod
   (package
     (name "libmikmod")
-    (version "3.3.7")
+    (version "3.3.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/mikmod/libmikmod/"
                                  version "/libmikmod-" version ".tar.gz"))
              (sha256
               (base32
-               "18nrkf5l50hfg0y50yxr7bvik9f002lhn8c00nbcp6dgm5011x2c"))))
+               "0j7g4jpa2zgzw7x6s3rldypa7zlwjvn97rwx0sylx1iihhlzbcq0"))))
     (build-system gnu-build-system)
     (arguments
      ;; By default, libmikmod tries to dlopen libasound etc., which won't work
@@ -154,7 +155,7 @@ other supporting functions for SDL.")
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "http://www.libsdl.org/projects/SDL_image/release/SDL_image-"
+              (string-append "https://www.libsdl.org/projects/SDL_image/release/SDL_image-"
                              version ".tar.gz"))
              (sha256
               (base32
@@ -180,7 +181,7 @@ other supporting functions for SDL.")
     (description "SDL_image is an image file loading library for SDL that
 supports the following formats: BMP, GIF, JPEG, LBM, PCX, PNG, PNM, TGA, TIFF,
 WEBP, XCF, XPM, and XV.")
-    (home-page "http://www.libsdl.org/projects/SDL_image/")
+    (home-page "https://www.libsdl.org/projects/SDL_image/")
     (license zlib)))
 
 (define-public sdl-mixer
@@ -190,7 +191,7 @@ WEBP, XCF, XPM, and XV.")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://www.libsdl.org/projects/SDL_mixer/release/SDL_mixer-"
+               (string-append "https://www.libsdl.org/projects/SDL_mixer/release/SDL_mixer-"
                               version ".tar.gz"))
               (sha256
                (base32
@@ -218,7 +219,7 @@ WEBP, XCF, XPM, and XV.")
 It supports any number of simultaneously playing channels of 16 bit stereo
 audio, plus a single channel of music.  Supported format include FLAC, MOD,
 MIDI, Ogg Vorbis, and MP3.")
-    (home-page "http://www.libsdl.org/projects/SDL_mixer/")
+    (home-page "https://www.libsdl.org/projects/SDL_mixer/")
     (license zlib)))
 
 (define-public sdl-net
@@ -228,7 +229,7 @@ MIDI, Ogg Vorbis, and MP3.")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://www.libsdl.org/projects/SDL_net/release/SDL_net-"
+               (string-append "https://www.libsdl.org/projects/SDL_net/release/SDL_net-"
                               version ".tar.gz"))
               (sha256
                (base32
@@ -239,7 +240,7 @@ MIDI, Ogg Vorbis, and MP3.")
     (synopsis "SDL networking library")
     (description "SDL_net is a small, cross-platform networking library for
 SDL.")
-    (home-page "http://www.libsdl.org/projects/SDL_net/")
+    (home-page "https://www.libsdl.org/projects/SDL_net/")
     (license zlib)))
 
 (define-public sdl-ttf
@@ -249,7 +250,7 @@ SDL.")
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "http://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-"
+              (string-append "https://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-"
                              version ".tar.gz"))
              (sha256
               (base32
@@ -261,7 +262,7 @@ SDL.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "SDL TrueType font library")
     (description "SDL_ttf is a TrueType font rendering library for SDL.")
-    (home-page "http://www.libsdl.org/projects/SDL_ttf/")
+    (home-page "https://www.libsdl.org/projects/SDL_ttf/")
     (license zlib)))
 
 (define* (sdl-union #:optional (packages (list sdl sdl-gfx sdl-net sdl-ttf
@@ -308,7 +309,7 @@ directory.")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://www.libsdl.org/projects/SDL_image/release/SDL2_image-"
+               (string-append "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-"
                               version ".tar.gz"))
               (sha256
                (base32
@@ -342,7 +343,7 @@ directory.")
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-"
+              (string-append "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-"
                              version ".tar.gz"))
              (modules '((guix build utils)))
              (snippet

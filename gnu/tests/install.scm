@@ -33,6 +33,8 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:export (%test-installed-os
+            %test-separate-store-os
+            %test-raid-root-os
             %test-encrypted-os))
 
 ;;; Commentary:
@@ -190,9 +192,9 @@ the installed system."
 
     (gexp->derivation "installation" install)))
 
-(define (qemu-command/writable-image image)
+(define* (qemu-command/writable-image image #:key (memory-size 256))
   "Return as a monadic value the command to run QEMU on a writable copy of
-IMAGE, a disk image."
+IMAGE, a disk image.  The QEMU VM is has access to MEMORY-SIZE MiB of RAM."
   (mlet %store-monad ((system (current-system)))
     (return #~(let ((image #$image))
                 ;; First we need a writable copy of the image.
@@ -204,7 +206,7 @@ IMAGE, a disk image."
                   ,@(if (file-exists? "/dev/kvm")
                         '("-enable-kvm")
                         '())
-                  "-no-reboot" "-m" "256"
+                  "-no-reboot" "-m" #$(number->string memory-size)
                   "-drive" "file=disk.img,if=virtio")))))
 
 
@@ -222,6 +224,170 @@ build (current-guix) and then store a couple of full system images.")
                       "installed-os")))))
 
 
+;;;
+;;; Separate /gnu/store partition.
+;;;
+
+(define-os-with-source (%separate-store-os %separate-store-os-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.UTF-8")
+
+    (bootloader (grub-configuration (device "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons* (file-system
+                           (device "root-fs")
+                           (title 'label)
+                           (mount-point "/")
+                           (type "ext4"))
+                         (file-system
+                           (device "store-fs")
+                           (title 'label)
+                           (mount-point "/gnu")
+                           (type "ext4")
+                           (needed-for-boot? #t)) ;definitely!
+                         %base-file-systems))
+    (users %base-user-accounts)
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %separate-store-installation-script
+  ;; Installation with a separate /gnu partition.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+guix build isc-dhcp
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 100M \\
+  mkpart primary ext2 100M 1G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+mkfs.ext4 -L root-fs /dev/vdb2
+mkfs.ext4 -L store-fs /dev/vdb3
+mount /dev/vdb2 /mnt
+mkdir /mnt/gnu
+mount /dev/vdb3 /mnt/gnu
+df -h /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-separate-store-os
+  (system-test
+   (name "separate-store-os")
+   (description
+    "Test basic functionality of an OS installed like one would do by hand,
+where /gnu lives on a separate partition.")
+   (value
+    (mlet* %store-monad ((image   (run-install %separate-store-os
+                                               %separate-store-os-source
+                                               #:script
+                                               %separate-store-installation-script))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %separate-store-os command "separate-store-os")))))
+
+
+;;;
+;;; RAID root device.
+;;;
+
+(define-os-with-source (%raid-root-os %raid-root-os-source)
+  ;; An OS whose root partition is a RAID partition.
+  (use-modules (gnu) (gnu tests))
+
+  (operating-system
+    (host-name "raidified")
+    (timezone "Europe/Paris")
+    (locale "en_US.utf8")
+
+    (bootloader (grub-configuration (device "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (initrd (lambda (file-systems . rest)
+              ;; Add a kernel module for RAID-0 (aka. "stripe").
+              (apply base-initrd file-systems
+                     #:extra-modules '("raid0")
+                     rest)))
+    (mapped-devices (list (mapped-device
+                           (source (list "/dev/vda2" "/dev/vda3"))
+                           (target "/dev/md0")
+                           (type raid-device-mapping))))
+    (file-systems (cons (file-system
+                          (device "root-fs")
+                          (title 'label)
+                          (mount-point "/")
+                          (type "ext4")
+                          (dependencies mapped-devices))
+                        %base-file-systems))
+    (users %base-user-accounts)
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %raid-root-installation-script
+  ;; Installation with a separate /gnu partition.  See
+  ;; <https://raid.wiki.kernel.org/index.php/RAID_setup> for more on RAID and
+  ;; mdadm.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 600M \\
+  mkpart primary ext2 600M 1200M \\
+  set 1 boot on \\
+  set 1 bios_grub on
+mdadm --create /dev/md0 --verbose --level=stripe --raid-devices=2 \\
+  /dev/vdb2 /dev/vdb3
+mkfs.ext4 -L root-fs /dev/md0
+mount /dev/md0 /mnt
+df -h /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-raid-root-os
+  (system-test
+   (name "raid-root-os")
+   (description
+    "Test functionality of an OS installed with a RAID root partition managed
+by 'mdadm'.")
+   (value
+    (mlet* %store-monad ((image   (run-install %raid-root-os
+                                               %raid-root-os-source
+                                               #:script
+                                               %raid-root-installation-script
+                                               #:target-size (* 1300 MiB)))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %raid-root-os
+                      `(,@command) "raid-root-os")))))
+
+
+;;;
+;;; LUKS-encrypted root file system.
+;;;
+
 (define-os-with-source (%encrypted-root-os %encrypted-root-os-source)
   ;; The OS we want to install.
   (use-modules (gnu) (gnu tests) (srfi srfi-1))

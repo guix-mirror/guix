@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,29 +31,29 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.11.0")
+    (version "3.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://valgrind.org/downloads/valgrind-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0hiv871b9bk689mv42mkhp76za78l5773glszfkdbpf1m1qn4fbc"))
+               "18bnrw9b1d55wi1wnl68n25achsp9w48n51n1xw4fwjjnaal7jk7"))
              (patches (search-patches "valgrind-enable-arm.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'patch-suppression-files
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Don't assume the FHS.
-                   (let* ((out (assoc-ref outputs "out"))
-                          (dir (string-append out "/lib/valgrind")))
-                     (substitute* (find-files dir "\\.supp$")
-                       (("obj:/lib") "obj:*/lib")
-                       (("obj:/usr/X11R6/lib") "obj:*/lib")
-                       (("obj:/usr/lib") "obj:*/lib"))
-                     #t))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-suppression-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Don't assume the FHS.
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/lib/valgrind")))
+               (substitute* (find-files dir "\\.supp$")
+                 (("obj:/lib") "obj:*/lib")
+                 (("obj:/usr/X11R6/lib") "obj:*/lib")
+                 (("obj:/usr/lib") "obj:*/lib"))
+               #t))))))
     (inputs `(;; GDB is needed to provide a sane default for `--db-command'.
               ("gdb" ,gdb)))
     (native-inputs `(("perl" ,perl)))

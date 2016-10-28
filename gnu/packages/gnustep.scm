@@ -76,7 +76,10 @@
        ("libxft" ,libxft)
        ("libx11" ,libx11)
        ("fontconfig" ,fontconfig)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg)
+       ("giflib" ,giflib)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://windowmaker.org/")

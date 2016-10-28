@@ -24,7 +24,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
-  #:autoload   (gnu packages linux) (mdadm)
+  #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (mapped-device
@@ -150,12 +150,14 @@ TARGET (e.g., \"/dev/md0\"), using 'mdadm'."
           (sleep 1)
           (loop (+ 1 attempts))))
 
-      (zero? (apply system* (string-append #$mdadm "/sbin/mdadm")
+      ;; Use 'mdadm-static' rather than 'mdadm' to avoid pulling its whole
+      ;; closure (80 MiB) in the initrd when a RAID device is needed for boot.
+      (zero? (apply system* #$(file-append mdadm-static "/sbin/mdadm")
                     "--assemble" #$target sources))))
 
 (define (close-raid-device sources target)
   "Return a gexp that stops the RAID device TARGET."
-  #~(zero? (system* (string-append #$mdadm "/sbin/mdadm")
+  #~(zero? (system* #$(file-append mdadm-static "/sbin/mdadm")
                     "--stop" #$target)))
 
 (define raid-device-mapping
