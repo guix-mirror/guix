@@ -34,6 +34,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gdb)
+  #:use-module (gnu packages libftdi)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -306,3 +307,58 @@ SEGGER J-Link and compatible devices.")
     (description "Jim is a small footprint implementation of the Tcl programming
 language.")
     (license license:bsd-2)))
+
+(define-public openocd
+  ;; FIXME: Use tarball release after nrf52 patch is merged.
+  (let ((commit "674141e8a7a6413cb803d90c2a20150260015f81")
+        (revision "1"))
+    (package
+      (name "openocd")
+      (version (string-append "0.9.0-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.code.sf.net/p/openocd/code.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1i86jp0wawq78d73z8hp7q1pn7lmlvhjjr19f7299h4w40a5jf8j"))
+                (file-name (string-append name "-" version "-checkout"))
+                (patches
+                 (search-patches "openocd-nrf52.patch"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("hidapi" ,hidapi)
+         ("jimtcl" ,jimtcl)
+         ("libftdi" ,libftdi)
+         ("libjaylink" ,libjaylink)
+         ("libusb-compat" ,libusb-compat)))
+      (arguments
+       '(#:configure-flags
+         (append (list "--disable-werror"
+                       "--disable-internal-jimtcl"
+                       "--disable-internal-libjaylink")
+                 (map (lambda (programmer)
+                        (string-append "--enable-" programmer))
+                      '("amtjtagaccel" "armjtagew" "buspirate" "ftdi"
+                        "gw16012" "jlink" "oocd_trace" "opendous" "osbdm"
+                        "parport" "aice" "cmsis-dap" "dummy" "jtag_vpi"
+                        "remote-bitbang" "rlink" "stlink" "ti-icdi" "ulink"
+                        "usbprog" "vsllink" "usb-blaster-2" "usb_blaster"
+                        "presto" "openjtag")))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autoreconf
+             (lambda _
+               (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "http://openocd.org")
+      (synopsis "On-Chip Debugger")
+      (description "OpenOCD provides on-chip programming and debugging support
+with a layered architecture of JTAG interface and TAP support.")
+      (license license:gpl2))))
