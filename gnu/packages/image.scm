@@ -669,7 +669,7 @@ multi-dimensional image processing.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "0.4.3")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -677,7 +677,8 @@ multi-dimensional image processing.")
              "http://downloads.webmproject.org/releases/webp/libwebp-" version
              ".tar.gz"))
        (sha256
-        (base32 "1i4hfczjm3b1qj1g4cc9hgb69l47f3nkgf6hk7nz4dm9zmc0vgpg"))))
+        (base32
+         "1pqki1g8nzi8qgciysypd5r38zccv81np1dn43g27830rmpnrmka"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
