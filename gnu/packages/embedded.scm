@@ -31,6 +31,7 @@
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gdb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo))
 
@@ -223,3 +224,15 @@ languages are C and C++.")
 (define-public arm-none-eabi-nano-toolchain-6
   (arm-none-eabi-toolchain gcc-arm-none-eabi-6
                            newlib-nano-arm-none-eabi))
+
+(define-public gdb-arm-none-eabi
+  (package
+    (inherit gdb)
+    (name "gdb-arm-none-eabi")
+    (arguments
+     `(#:configure-flags '("--target=arm-none-eabi"
+                           "--enable-multilib"
+                           "--enable-interwork"
+                           "--enable-languages=c,c++"
+                           "--disable-nls")
+     ,@(package-arguments gdb)))))
