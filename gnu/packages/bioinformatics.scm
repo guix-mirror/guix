@@ -1426,13 +1426,13 @@ also includes an interface for tabix.")
 (define-public python-twobitreader
   (package
     (name "python-twobitreader")
-    (version "3.1.2")
+    (version "3.1.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "twobitreader" version))
               (sha256
                (base32
-                "0y408fp6psqzwxpcpqn0wp7fr41dwz8d54wpj6j261fj5q8vs169"))))
+                "1q8wnj2kga9nz1lwc4w7qv52smfm536hp6mc8w6s53lhyj0mpi22"))))
     (properties `((python2-variant . ,(delay python2-twobitreader))))
     (build-system python-build-system)
     (arguments
