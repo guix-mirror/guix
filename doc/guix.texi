@@ -4791,7 +4791,9 @@ The general syntax is:
 guix hash @var{option} @var{file}
 @end example
 
-@command{guix hash} has the following options:
+When @var{file} is @code{-} (a hyphen), @command{guix hash} computes the
+hash of data read from standard input.  @command{guix hash} has the
+following options:
 
 @table @code
 
