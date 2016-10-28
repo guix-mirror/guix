@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +100,8 @@
             boot-parameters?
             boot-parameters-label
             boot-parameters-root-device
+            boot-parameters-store-device
+            boot-parameters-store-mount-point
             boot-parameters-kernel
             boot-parameters-kernel-arguments
             boot-parameters-initrd
@@ -733,6 +736,12 @@ listed in OS.  The C library expects to find it under
                            (file-system-device root-fs)))
        (entries ->  (list (menu-entry
                            (label label)
+
+                           ;; The device where the kernel and initrd live.
+                           (device (file-system-device store-fs))
+                           (device-mount-point
+                            (file-system-mount-point store-fs))
+
                            (linux kernel)
                            (linux-arguments
                             (cons* (string-append "--root=" root-device)
@@ -741,8 +750,7 @@ listed in OS.  The C library expects to find it under
                                                     "/boot")
                                    (operating-system-kernel-arguments os)))
                            (initrd initrd)))))
-    (grub-configuration-file (operating-system-bootloader os)
-                             store-fs entries
+    (grub-configuration-file (operating-system-bootloader os) entries
                              #:old-entries old-entries)))
 
 (define (operating-system-parameters-file os)
@@ -750,16 +758,24 @@ listed in OS.  The C library expects to find it under
 this file is the reconstruction of GRUB menu entries for old configurations."
   (mlet %store-monad ((initrd   (operating-system-initrd-file os))
                       (root ->  (operating-system-root-file-system os))
+                      (store -> (operating-system-store-file-system os))
                       (label -> (kernel->grub-label
                                  (operating-system-kernel os))))
     (gexp->file "parameters"
-                #~(boot-parameters (version 0)
-                                   (label #$label)
-                                   (root-device #$(file-system-device root))
-                                   (kernel #$(operating-system-kernel-file os))
-                                   (kernel-arguments
-                                    #$(operating-system-kernel-arguments os))
-                                   (initrd #$initrd))
+                #~(boot-parameters
+                   (version 0)
+                   (label #$label)
+                   (root-device #$(file-system-device root))
+                   (kernel #$(operating-system-kernel-file os))
+                   (kernel-arguments
+                    #$(operating-system-kernel-arguments os))
+                   (initrd #$initrd)
+                   (store
+                    (device #$(case (file-system-title store)
+                                ((uuid) (file-system-device store))
+                                ((label) (file-system-device store))
+                                (else #f)))
+                    (mount-point #$(file-system-mount-point store))))
                 #:set-load-path? #f)))
 
 
@@ -770,7 +786,16 @@ this file is the reconstruction of GRUB menu entries for old configurations."
 (define-record-type* <boot-parameters>
   boot-parameters make-boot-parameters boot-parameters?
   (label            boot-parameters-label)
+  ;; Because we will use the 'store-device' to create the GRUB search command,
+  ;; the 'store-device' has slightly different semantics than 'root-device'.
+  ;; The 'store-device' can be a file system uuid, a file system label, or #f,
+  ;; but it cannot be a device path such as "/dev/sda3", since GRUB would not
+  ;; understand that.  The 'root-device', on the other hand, corresponds
+  ;; exactly to the device field of the <file-system> object representing the
+  ;; OS's root file system, so it might be a device path like "/dev/sda3".
   (root-device      boot-parameters-root-device)
+  (store-device     boot-parameters-store-device)
+  (store-mount-point boot-parameters-store-mount-point)
   (kernel           boot-parameters-kernel)
   (kernel-arguments boot-parameters-kernel-arguments)
   (initrd           boot-parameters-initrd))
@@ -804,7 +829,21 @@ this file is the reconstruction of GRUB menu entries for old configurations."
          (('initrd ('string-append directory file)) ;the old format
           (string-append directory file))
          (('initrd (? string? file))
-          file)))))
+          file)))
+
+      (store-device
+       (match (assq 'store rest)
+         (('store ('device device) _ ...)
+          device)
+         (_                                       ;the old format
+          root)))
+
+      (store-mount-point
+       (match (assq 'store rest)
+         (('store ('device _) ('mount-point mount-point) _ ...)
+          mount-point)
+         (_                                       ;the old format
+          "/")))))
     (x                                            ;unsupported format
      (warning (_ "unrecognized boot parameters for '~a'~%")
               system)

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -384,6 +385,8 @@ it atomically, and then run OS's activation script."
         (label (string-append label " (#"
                               (number->string number) ", "
                               (seconds->string time) ")"))
+        (device (boot-parameters-store-device params))
+        (device-mount-point (boot-parameters-store-mount-point params))
         (linux kernel)
         (linux-arguments
          (cons* (string-append "--root=" root-device)
