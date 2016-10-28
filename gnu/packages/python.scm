@@ -8129,6 +8129,11 @@ server with very acceptable performance.")
         (base32
          "13kf9bdxrc95y9vriaz0viry3ah11nz4rlrykcfvb8nlqpx3dcm4"))))
     (build-system python-build-system)
+    (arguments
+     '(;; Wsgiproxy2's test suite requires Restkit, which does not yet fully
+       ;; support Python 3:
+       ;; https://github.com/benoitc/restkit/issues/140
+       #:tests? #f))
     (native-inputs
      `(("unzip" ,unzip)
        ("python-nose" ,python-nose)
