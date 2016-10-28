@@ -1435,6 +1435,11 @@ also includes an interface for tabix.")
                 "0y408fp6psqzwxpcpqn0wp7fr41dwz8d54wpj6j261fj5q8vs169"))))
     (properties `((python2-variant . ,(delay python2-twobitreader))))
     (build-system python-build-system)
+    (arguments
+     '(;; Tests are not distributed in the PyPi release.
+       ;; TODO Try building from the Git repo or asking the upstream maintainer
+       ;; to distribute the tests on PyPi.
+       #:tests? #f))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)))
     (home-page "https://github.com/benjschiller/twobitreader")
