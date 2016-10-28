@@ -4823,6 +4823,16 @@ libxml2 and libxslt.")
         (base32
          "1rf94360s8pmn37vxqjl0g74krq2p6nj3wbn6pj94ik6ny44q24f"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The Python 2 source is the definitive source of beautifulsoup4. We
+         ;; must use this conversion script when building with Python 3. The
+         ;; conversion script also runs the tests.
+         ;; For more information, see the file 'convert-py3k' in the source
+         ;; distribution.
+         (replace 'check
+           (lambda _ (zero? (system* "./convert-py3k")))))))
     (home-page
      "http://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
@@ -4840,7 +4850,8 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
   (package
     (inherit (package-with-python2
               (strip-python2-variant python-beautifulsoup4)))
-    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))
+    (arguments `(#:python ,python-2))))
 
 (define-public python2-cssutils
   (package
