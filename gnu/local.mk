@@ -663,6 +663,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libupnp-CVE-2016-6255.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
+  %D%/packages/patches/libwebp-CVE-2016-9085.patch		\
   %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
   %D%/packages/patches/libwmf-CVE-2006-3376.patch		\
   %D%/packages/patches/libwmf-CVE-2007-0455.patch		\

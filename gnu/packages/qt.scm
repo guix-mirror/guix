@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1112,3 +1113,52 @@ contain over 620 classes.")
       "QtKeychain is a Qt library to store passwords and other secret data
 securely.  It will not store any data unencrypted unless explicitly requested.")
     (license license:bsd-3)))
+
+(define-public qwt
+  (package
+    (name "qwt")
+    (version "6.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+         (string-append "mirror://sourceforge/qwt/qwt/"
+                        version "/qwt-" version ".tar.bz2"))
+        (sha256
+         (base32 "0cwp63s03dw351xavb3pzbjlqvx7kj88wv7v4a2b18m9f97d7v7k"))))
+  (build-system gnu-build-system)
+  (inputs
+   `(("qtbase" ,qtbase)
+     ("qtsvg" ,qtsvg)
+     ("qttools" ,qttools)))
+  (arguments
+   `(#:phases
+     (modify-phases %standard-phases
+       (replace 'configure
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* '("qwtconfig.pri")
+               (("/usr/local/qwt-\\$\\$QWT\\_VERSION") out))
+             (zero? (system* "qmake")))))
+       (add-after 'install 'install-documentation
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (man (string-append out "/share/man")))
+             ;; Remove some incomplete manual pages.
+             (for-each delete-file (find-files "doc/man/man3" "^_tmp.*"))
+             (mkdir-p man)
+             (copy-recursively "doc/man" man)
+             #t))))))
+  (home-page "http://qwt.sourceforge.net")
+  (synopsis "Qt widgets for plots, scales, dials and other technical software
+GUI components")
+  (description
+   "The Qwt library contains widgets and components which are primarily useful
+for technical and scientific purposes.  It includes a 2-D plotting widget,
+different kinds of sliders, and much more.")
+  (license
+   (list
+    ;; The Qwt license is LGPL2.1 with some exceptions.
+    (license:non-copyleft "http://qwt.sourceforge.net/qwtlicense.html")
+    ;; textengines/mathml/qwt_mml_document.{cpp,h} is dual LGPL2.1/GPL3 (either).
+    license:lgpl2.1 license:gpl3))))

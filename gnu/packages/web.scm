@@ -3162,6 +3162,8 @@ their web site.")
         (base32
          "00hb4qg2am06g81mygfi1jsbx8830024jm45g6qp9g8fr6am91yf"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))
     (home-page
      "https://github.com/kurtmckee/feedparser")
     (synopsis "Parse feeds in Python")

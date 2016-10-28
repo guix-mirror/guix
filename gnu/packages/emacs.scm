@@ -2228,6 +2228,26 @@ perspective only its buffers are available by default.")
     ;; the Expat license.
     (license license:gpl3+)))
 
+(define-public emacs-request
+  (package
+    (name "emacs-request")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tkf/emacs-request/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0sll9g9x15jxrdr58pdxx4iz74rnjd43q521iqm890i6hmkrgwap"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tkf/emacs-request")
+    (synopsis "Package for speaking HTTP in Emacs Lisp")
+    (description "This package provides a HTTP request library with multiple
+backends.  It supports url.el which is shipped with Emacs and the curl command
+line program.")
+    (license license:gpl3+)))
+
 (define-public emacs-rudel
   (package
     (name "emacs-rudel")
