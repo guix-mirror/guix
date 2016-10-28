@@ -4814,14 +4814,14 @@ libxml2 and libxslt.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.5.0")
+    (version "4.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "1rf94360s8pmn37vxqjl0g74krq2p6nj3wbn6pj94ik6ny44q24f"))))
+         "1qgmhw65ncsgccjhslgkkszif47q6gvxwqv4mim17agxd81p951w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
