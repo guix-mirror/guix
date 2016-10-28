@@ -2086,6 +2086,32 @@ number.")
 @code{org-mode} to be rendered as UTF-8 characters.")
     (license license:gpl3+)))
 
+(define-public emacs-org-trello
+  (package
+    (name "emacs-org-trello")
+    (version "0.7.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/org-trello/org-trello/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "074dka8g673bj1ck5vavbjaij5jyniygdlw51mdds005wd2br9wf"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-deferred" ,emacs-deferred)
+       ("emacs-request" ,emacs-request)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://org-trello.github.io")
+    (synopsis "Emacs minor mode for interacting with Trello")
+    (description "This package provides an Emacs minor mode to extend
+@code{org-mode} with Trello abilities.  Trello is an online project
+organizer.")
+    (license license:gpl3+)))
+
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
