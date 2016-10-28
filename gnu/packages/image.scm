@@ -676,6 +676,7 @@ multi-dimensional image processing.")
        (uri (string-append
              "http://downloads.webmproject.org/releases/webp/libwebp-" version
              ".tar.gz"))
+       (patches (search-patches "libwebp-CVE-2016-9085.patch"))
        (sha256
         (base32
          "1pqki1g8nzi8qgciysypd5r38zccv81np1dn43g27830rmpnrmka"))))
