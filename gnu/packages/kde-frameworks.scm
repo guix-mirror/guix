@@ -216,16 +216,16 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
 (define-public bluez-qt
   (package
     (name "bluez-qt")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "0gy0m7lcwwklf021l5i3v7j0cl7qz7cgvzrwpj87ix3kyw5xs80z"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "111gqxw1bvazdhxk5rcfhi438i6bd92r3wvlkxsdqrp7ypcqdpig"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("dbus" ,dbus)
@@ -234,13 +234,13 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
-        '("-DINSTALL_UDEV_RULE:BOOL=OFF")
+       '("-DINSTALL_UDEV_RULE:BOOL=OFF")
        #:phases
-        (modify-phases %standard-phases
-          (replace 'check
-            (lambda* _
-              (setenv "DBUS_FATAL_WARNINGS" "0")
-              (zero? (system* "dbus-launch" "ctest" ".")))))))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (zero? (system* "dbus-launch" "ctest" ".")))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QML wrapper for BlueZ")
     (description "bluez-qt is a Qt-style library for accessing the bluez
