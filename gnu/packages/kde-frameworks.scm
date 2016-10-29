@@ -1585,16 +1585,16 @@ maintaining an index of the contents of your files.")
 (define-public kactivities
   (package
     (name "kactivities")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0s8g43zk6h35bq1am1nnhj0qvmhd6kz42gs8l7ybga0367jghzhf"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08x07rlf2gff1j9jahznz2838919vab1ay8jppz3bp5kywx104yk"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
