@@ -147,15 +147,15 @@ common build settings used in software produced by the KDE community.")
   (package
     (name "kpmcore")
     (version "2.2.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/kpmcore"
-                            "/" version "/src/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1blila6ncqbmzhycx3szrbkxc000pzh62956mw5ihxvhrqpncg2p"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/kpmcore"
+                    "/" version "/src/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1blila6ncqbmzhycx3szrbkxc000pzh62956mw5ihxvhrqpncg2p"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
