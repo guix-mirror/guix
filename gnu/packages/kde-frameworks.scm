@@ -1743,16 +1743,16 @@ KCModules can be created with the KConfigWidgets framework.")
 (define-public kconfigwidgets
   (package
     (name "kconfigwidgets")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0v25r50gh5i984lzlv0rradghglcfqf0gsfmnkn23h87b86fm9l2"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0sbhirfsjmsxiwaqqh5jh85bhwmij93gj5knnb0bs0al4hy29918"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kauth" ,kauth)
