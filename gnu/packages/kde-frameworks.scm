@@ -1986,16 +1986,16 @@ emoticons coming from different providers.")
 (define-public kglobalaccel
   (package
     (name "kglobalaccel")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "123v0ld1q88hbm3d0mqgq6lcivfkqh7pbz4hb4n76ab5v43qc15c"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1z2knfxcla1f191cifij1fzw88b076yx6qjxraqfsmkc6g6i2bmj"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -2005,6 +2005,7 @@ emoticons coming from different providers.")
        ("kcrash" ,kcrash)
        ("kcoreaddons" ,kcoreaddons)
        ("kdbusaddons" ,kdbusaddons)
+       ("kservice" ,kservice)
        ("kwindowsystem" ,kwindowsystem)
        ("libxcb" ,libxcb)
        ("qtbase" ,qtbase)
