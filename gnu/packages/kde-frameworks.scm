@@ -2120,16 +2120,16 @@ makes starting KDE applications faster and reduces memory consumption.")
 (define-public kio
   (package
     (name "kio")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0zncj9yf8zaylazlwvirylpk9vki3j889b1x2s0aav54vvj7vdi5"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "129sglaw1480v3i1xdyv6k1w3spbj8s00rkdr5mzlcdaqiig69rn"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kbookmarks" ,kbookmarks)
@@ -2173,7 +2173,8 @@ makes starting KDE applications faster and reduces memory consumption.")
              (setenv "HOME" (getcwd))
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     ;;(replace 'check
     ;;  (lambda _
     ;;    (setenv "DBUS_FATAL_WARNINGS" "0")
