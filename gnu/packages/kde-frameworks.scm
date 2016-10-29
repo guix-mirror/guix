@@ -1049,11 +1049,7 @@ which are used in DBus communication.")
     (native-inputs
      `(("bison" ,bison)
        ("extra-cmake-modules" ,extra-cmake-modules)
-       ;; extra-cmake-modules forces C89 for all C files for compatibility with
-       ;; Windows.  Flex 2.6.0 generates a lexer containing a single line
-       ;; comment.  Single line comments are part of the C99 standard, so the
-       ;; lexer won't compile if C89 is used.
-       ("flex" ,flex-2.6.1)
+       ("flex" ,flex)
        ("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)
@@ -2456,11 +2452,7 @@ typed.")
     (native-inputs
      `(("bison" ,bison)
        ("extra-cmake-modules" ,extra-cmake-modules)
-       ;; extra-cmake-modules forces C89 for all C files for compatibility with
-       ;; Windows.  Flex 2.6.0 generates a lexer containing a single line
-       ;; comment.  Single line comments are part of the C99 standard, so the
-       ;; lexer won't compile if C89 is used.
-       ("flex" ,flex-2.6.1)))
+       ("flex" ,flex)))
     (inputs
      `(("kcrash" ,kcrash)
        ("kdbusaddons" ,kdbusaddons)
