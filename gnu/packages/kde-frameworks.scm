@@ -120,16 +120,16 @@ common build settings used in software produced by the KDE community.")
 (define-public gpgmepp
   (package
     (name "gpgmepp")
-    (version "16.04.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/applications"
-                            "/" version "/src/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1850pdysi7c1w0nxnhcbrhnkrfqyrcl0laxyjcw1g1ln764pwcmj"))))
+    (version "16.08.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/applications"
+                    "/" version "/src/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0828qlhdi1i26n2xgyb01c0q77m6jlppbxv6mprryxq0ma88940a"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
