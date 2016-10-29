@@ -1528,16 +1528,16 @@ gallons).")
 (define-public baloo
   (package
     (name "baloo")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1ayfdg6j9lvas17ryjdv4a0kaj6vw3bxfy2x9nadl0gkc9pak4nh"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0dqa5sxz2z440h6zry7s1x0r1d919qky69i5fv2nir7y844xx2cc"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kcoreaddons" ,kcoreaddons)
