@@ -5236,30 +5236,28 @@ connection to each user.")
 (define-public python-waf
   (package
     (name "python-waf")
-    (version "1.9.1")
+    (version "1.9.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://waf.io/"
+              (uri (string-append "http://waf.io/"
                                   "waf-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nc4qaqx2vsanlpp9mcwvf91xjqpkvcc6fcxd5sb4fwvaxamw5v6"))))
+                "1sl3ipi2czds57rlzjnpdzqa0skx8asfvmh3qmibpvdwf15rpppg"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'build
-                  (lambda _
-                    (zero? (begin
-                             (system* "python" "waf-light" "configure")
-                             (system* "python" "waf-light" "build")))))
+           (lambda _
+             (zero? (system* "python" "waf-light" "configure" "build"))))
          (replace 'check
-                  (lambda _
-                    (zero? (system* "python" "waf" "--version"))))
+           (lambda _
+             (zero? (system* "python" "waf" "--version"))))
          (replace 'install
-                  (lambda _
-                    (copy-file "waf" %output))))))
-    (home-page "https://waf.io/")
+           (lambda _
+             (copy-file "waf" %output))))))
+    (home-page "http://waf.io/")
     (synopsis "Python-based build system")
     (description
      "Waf is a Python-based framework for configuring, compiling and installing
