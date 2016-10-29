@@ -1286,16 +1286,16 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "34")
+    (version "35")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/vapoursynth/vapoursynth/archive/R"
                     version ".tar.gz"))
-              (file-name (string-append name "-" version))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rfldphg4gy3sdfffi5yzklqz93vsj2j6nny8snjbavnf161blyi"))))
+                "0629ys2lf618n9cc644xlvx0vx52v2fp3sx14p4mx5rg9nlasb3n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
