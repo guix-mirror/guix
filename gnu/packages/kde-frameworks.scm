@@ -1068,16 +1068,16 @@ system.")
 (define-public sonnet
   (package
     (name "sonnet")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "152xz7fb1iwhb5w1n4xqvc648iaxi0inrl4kavxcsir61das1xyl"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "07i3gng309vsf5kp5dlwca0lpi3iqc0lp0ixdvx75q832gk8ivrv"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
