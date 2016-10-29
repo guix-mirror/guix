@@ -1420,16 +1420,16 @@ covers feedback and persistent events.")
 (define-public kpackage
   (package
     (name "kpackage")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "03aqzkpqz3c1v4qgwfbs3ncdbapiyg7psrkhxqv3z48rklavk1ri"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0y07zh8ryibm69ljp9f169qfal6r4lngz1ljxgrr6qw15cjkjygk"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1444,9 +1444,10 @@ covers feedback and persistent events.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
-           (lambda* _
+           (lambda _
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
-             (setenv "HOME" (getcwd)))))))
+             (setenv "HOME" (getcwd))
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Installation and loading of additional content as packages")
     (description "The Package framework lets the user install and load packages
