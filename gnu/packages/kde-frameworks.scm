@@ -2439,22 +2439,28 @@ typed.")
 (define-public kservice
   (package
     (name "kservice")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0w0nsg64d6xhgijr2vh0j5p544qi0q55jpqa9v9mv956zrrdssdk"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "129bjdr272qkz2inmagy8jnxasifrl4d82x8rp9akfar29qsj6x6"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("bison" ,bison)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ;; extra-cmake-modules forces C89 for all C files for compatibility with
+       ;; Windows.  Flex 2.6.0 generates a lexer containing a single line
+       ;; comment.  Single line comments are part of the C99 standard, so the
+       ;; lexer won't compile if C89 is used.
+       ("flex" ,flex-2.6.1)))
     (inputs
      `(("kcrash" ,kcrash)
        ("kdbusaddons" ,kdbusaddons)
