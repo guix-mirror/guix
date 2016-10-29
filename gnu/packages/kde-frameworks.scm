@@ -1010,19 +1010,20 @@ which are used in DBus communication.")
 (define-public oxygen-icons
   (package
     (name "oxygen-icons")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "5" "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1c7spjbzk04725vv0ly7vmyvwa96mfa5ki2pm146ld4888a896wm"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "5" "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lb09ykj5ayj5lv7w2k2pqis7z61clr3gkinf6n7jghnlc96222g"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("fdupes" ,fdupes)))
     (inputs
      `(("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
