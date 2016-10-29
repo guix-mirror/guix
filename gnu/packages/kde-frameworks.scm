@@ -1945,16 +1945,16 @@ with su and ssh respectively.")
 (define-public kemoticons
   (package
     (name "kemoticons")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0gmc52k5jb553jvzxwsq79v5y87kgav8i5qqv4bqc9yl7p866zhn"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0rjw2g3lfdxiy56x61d0sdcmcs8rml6h29a05fp6xww2bqcvr9wq"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kservice" ,kservice)))
@@ -1973,7 +1973,8 @@ with su and ssh respectively.")
            (lambda _
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Convert text emoticons to graphical emoticons")
     (description "KEmoticons converts emoticons from text to a graphical
