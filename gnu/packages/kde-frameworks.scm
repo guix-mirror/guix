@@ -2028,16 +2028,16 @@ window does not need focus for them to be activated.")
 (define-public kiconthemes
   (package
     (name "kiconthemes")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1k5zig2n6wzfyv6pc8dpas2862mxjyxxza00m31myrfw5i1a1h6m"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0m70vcrxp0vvqw5grlsn19d2hgdhky8iv2pr0xwzw8v5yrnl1hh2"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -2065,7 +2065,8 @@ window does not need focus for them to be activated.")
                                     "/share"))
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Icon GUI utilities")
     (description "This library contains classes to improve the handling of icons
