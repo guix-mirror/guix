@@ -94,15 +94,15 @@ common build settings used in software produced by the KDE community.")
   (package
     (name "phonon")
     (version "4.9.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/phonon"
-                            "/" version "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1q5hvsk4sfcb91625wcmldy7kgjmfpmpmkgzi6mxkqdd307v8x5v"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/phonon"
+                    "/" version "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1q5hvsk4sfcb91625wcmldy7kgjmfpmpmkgzi6mxkqdd307v8x5v"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
