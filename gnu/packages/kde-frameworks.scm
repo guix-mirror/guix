@@ -35,6 +35,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -1034,20 +1035,25 @@ which are used in DBus communication.")
 (define-public solid
   (package
     (name "solid")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "00wvsxcnvhdx7ijzpcz5wny2ypkxr1drdpr4yvawgpwa678l1107"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "01qlfj30n8sr8xd8l8fimg7hs7h70ynhalk2m9l8dz2qay2pdl27"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("extra-cmake-modules" ,extra-cmake-modules)
+       ;; extra-cmake-modules forces C89 for all C files for compatibility with
+       ;; Windows.  Flex 2.6.0 generates a lexer containing a single line
+       ;; comment.  Single line comments are part of the C99 standard, so the
+       ;; lexer won't compile if C89 is used.
+       ("flex" ,flex-2.6.1)
        ("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)
