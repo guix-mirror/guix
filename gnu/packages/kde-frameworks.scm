@@ -933,33 +933,33 @@ lower level classes for interaction with the X Windowing System.")
 (define-public modemmanager-qt
   (package
     (name "modemmanager-qt")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "0khz5bf84xxa8aqpzwb6x839xx6dbiadwqhyj7cvgha65fh2xinh"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1zw5frscvbsp0jpb071ssqgvm097ylw3zy69y7f0dybhps6lv2jv"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("dbus" ,dbus)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     ; Headers contain #include <ModemManager/ModemManager.h>
+     ;; Headers contain #include <ModemManager/ModemManager.h>
      `(("modem-manager", modem-manager)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
-        (modify-phases %standard-phases
-          (replace 'check
-            (lambda* _
-              (setenv "DBUS_FATAL_WARNINGS" "0")
-              (zero? (system* "dbus-launch" "ctest" ".")))))))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (zero? (system* "dbus-launch" "ctest" ".")))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt wrapper for ModemManager DBus API")
     (description "ModemManagerQt provides access to all ModemManager features
