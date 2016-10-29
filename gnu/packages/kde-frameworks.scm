@@ -1914,16 +1914,16 @@ ini-style description files.")
 (define-public kdesu
   (package
     (name "kdesu")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1ivcnhgvq75xvl0w9g7m45qzallz42ijaq0n1ap09lpdfmjbnrxk"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1l501z102ygibz4000jnngm0cggh2kaf6hzra1ngv5nxqxzkh31a"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kpty" ,kpty)))
