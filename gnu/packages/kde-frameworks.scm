@@ -1312,16 +1312,16 @@ by applications to write metadata.")
 (define-public kimageformats
   (package
     (name "kimageformats")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "12mhgckmhnvcnm8k7mk15mipxrnm7i9ip7ykbjh8nxjiwyk1pmwc"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ijy7di9p37l6fjrmsday402vq4zibq1m37jghkvdymawxcrd22h"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1337,7 +1337,7 @@ by applications to write metadata.")
              (system (string-append (assoc-ref inputs "xorg-server")
                                     "/bin/Xvfb :1 &"))
              (setenv "DISPLAY" ":1")
-            #t)))))
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Plugins to allow QImage to support extra file formats")
     (description "This framework provides additional image format plugins for
