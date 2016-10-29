@@ -395,16 +395,16 @@ Internet).")
 (define-public kconfig
   (package
     (name "kconfig")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1dc2i6icyigw1j6qxgdza6j2g8afh390qmxsa2a54mwl84fkfmxv"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "18dpm0r4nnvmxrask6rv5dkniwna9hh72ffdnvjgrh8p5djs9szi"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -415,18 +415,18 @@ Internet).")
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
-        (modify-phases %standard-phases
-          (add-before 'check 'check-setup
-            (lambda* _
-              (setenv "HOME" (getcwd))
-              (setenv "TMPDIR" (getcwd))
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "TMPDIR" (getcwd))
              #t))
-          (add-before 'check 'start-xorg-server
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; The test suite requires a running X server.
-              (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 &"))
-              (setenv "DISPLAY" ":1")
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Kconfiguration settings framework for Qt")
