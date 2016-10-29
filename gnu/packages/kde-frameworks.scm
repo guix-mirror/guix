@@ -806,16 +806,16 @@ pixel units.")
 (define-public kwayland
   (package
     (name "kwayland")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1h5anbqrxcl1s8kx1l53vcsfr8ifamcjqd47dk8a7lwr1ga6myq2"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0va1kmki2xr4mx2918h333mfkqs5v1mhbzyf71hq190izdz0jdss"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -827,10 +827,11 @@ pixel units.")
      `(#:tests? #f ; FIXME tests require weston to run
                    ; weston requires wayland flags in mesa
        #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'check-setup
-             (lambda* _
-               (setenv "XDG_RUNTIME_DIR" "/tmp"))))))
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "XDG_RUNTIME_DIR" "/tmp")
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt-style API to interact with the wayland client and server")
     (description "As the names suggest they implement a Client respectively a
