@@ -657,6 +657,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-CVE-2016-5314.patch		\
   %D%/packages/patches/libtiff-CVE-2016-5321.patch		\
   %D%/packages/patches/libtiff-CVE-2016-5323.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-5652.patch		\
   %D%/packages/patches/libtiff-oob-accesses-in-decode.patch	\
   %D%/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
