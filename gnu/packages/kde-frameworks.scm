@@ -845,16 +845,16 @@ represented by a QPoint or a QSize.")
 (define-public kwidgetsaddons
   (package
     (name "kwidgetsaddons")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1kppx0ppfhnb6q6sijs2dffyar86wkkx8miqavsjsgw1l2wiymcx"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0p9gxna7y7nigpi0ri7k45g4pf1svq0kxrhk4wf7rj58rilhcfrl"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -865,23 +865,23 @@ represented by a QPoint or a QSize.")
     (arguments
      `(#:tests? #f ; FIXME: Regression after update to qt 5.7
        #:phases
-        (modify-phases %standard-phases
-          (add-before 'check 'check-setup
-            (lambda _
-              (setenv "QT_QPA_PLATFORM" "offscreen") ; a better solution to Xvfb
-              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug info
-              (setenv "DBUS_FATAL_WARNINGS" "0")
-              #t))
-          (add-before 'check 'start-xorg-server
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; The test suite requires a running X server.
-              ;; Xvfb doesn't have proper glx support and needs a pixeldepth
-              ;; of 24 bit to avoid "libGL error: failed to load driver: swrast"
-              ;;                    "Could not initialize GLX"
-              (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 -screen 0 640x480x24 &"))
-              (setenv "DISPLAY" ":1")
-              #t)))))
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen") ; a better solution to Xvfb
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug info
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t))
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             ;; Xvfb doesn't have proper glx support and needs a pixeldepth
+             ;; of 24 bit to avoid "libGL error: failed to load driver: swrast"
+             ;;                    "Could not initialize GLX"
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (setenv "DISPLAY" ":1")
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Large set of desktop widgets")
     (description "Provided are action classes that can be added to toolbars or
