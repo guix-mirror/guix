@@ -1234,16 +1234,16 @@ application crashes.")
 (define-public kdoctools
   (package
     (name "kdoctools")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1r129kpq0d11b9l87cqbal6fm5ycwhsps1g3r1a7jsxz70scz4ri"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hgg19da0918mx8z2614qljvj9j8bny78mwlyljf42814f3ycpam"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1259,19 +1259,20 @@ application crashes.")
        ("qtbase" ,qtbase)))
     (arguments
      `(#:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'cmake-find-docbook
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* (find-files "cmake" "\\.cmake$")
-                (("CMAKE_SYSTEM_PREFIX_PATH")
-                  "CMAKE_PREFIX_PATH"))
-               (substitute* "cmake/FindDocBookXML4.cmake"
-                 (("^.*xml/docbook/schema/dtd.*$")
-                   "xml/dtd/docbook\n"))
-               (substitute* "cmake/FindDocBookXSL.cmake"
-                 (("^.*xml/docbook/stylesheet.*$")
-                  (string-append "xml/xsl/docbook-xsl-"
-                                 ,(package-version docbook-xsl) "\n"))))))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'cmake-find-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "cmake" "\\.cmake$")
+               (("CMAKE_SYSTEM_PREFIX_PATH")
+                "CMAKE_PREFIX_PATH"))
+             (substitute* "cmake/FindDocBookXML4.cmake"
+               (("^.*xml/docbook/schema/dtd.*$")
+                "xml/dtd/docbook\n"))
+             (substitute* "cmake/FindDocBookXSL.cmake"
+               (("^.*xml/docbook/stylesheet.*$")
+                (string-append "xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl) "\n")))
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Create documentation from DocBook")
     (description "Provides tools to generate documentation in various format
