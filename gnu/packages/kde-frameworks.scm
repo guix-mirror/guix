@@ -462,16 +462,16 @@ propagate their changes to their respective configuration files.")
 (define-public kcoreaddons
   (package
     (name "kcoreaddons")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "06sx7by3nvaridnavj5p0bxv4nh47n708jlacfw8ydaikmd9i03h"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0rzpxajv041kdbk92rwxq1qnvzyrxfjy154d8257yj2fj76w1gnw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -482,12 +482,13 @@ propagate their changes to their respective configuration files.")
     (arguments
      `(#:tests? #f ; FIXME: Test failure caused by stout/stderr being interleaved.
        #:phases
-        (modify-phases %standard-phases
-          (add-before 'check 'check-setup
-            (lambda* _
-              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
-              (setenv "HOME" (getcwd))
-              (setenv "TMPDIR" (getcwd)))))))
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
+             (setenv "HOME" (getcwd))
+             (setenv "TMPDIR" (getcwd))
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt addon library with a collection of non-GUI utilities")
     (description "KCoreAddons provides classes built on top of QtCore to
