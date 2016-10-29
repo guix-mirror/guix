@@ -2555,16 +2555,16 @@ library.")
 (define-public ktextwidgets
   (package
     (name "ktextwidgets")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1q10xav2gkii6s3m31c9xvxf1988l7k2lpib6pyhgsidflmwjm02"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0aq2qx64wylxj5q5sr0dxv9h8bmn725llxyi7iwz31dg2ngfr7m4"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("ki18n" ,ki18n)
