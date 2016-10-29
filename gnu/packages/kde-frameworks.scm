@@ -1458,16 +1458,16 @@ were traditional plugins.")
 (define-public kpty
   (package
     (name "kpty")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1ybvdzqpa53kkki9p5da0ff9x3c63rmksk7865wqwlgy8apzi2fs"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "06pka8cbw6a9rk2j5pkz34rfy10bv6il3wqyf7ala32ynv5rcgc3"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1480,11 +1480,11 @@ were traditional plugins.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
-         (lambda _
-           (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-           (substitute* "autotests/kptyprocesstest.cpp"
-             (("/bin/bash") (which "bash")))
-           #t)))))
+           (lambda _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             (substitute* "autotests/kptyprocesstest.cpp"
+               (("/bin/bash") (which "bash")))
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Interfacing with pseudo terminal devices")
     (description "This library provides primitives to interface with pseudo
