@@ -501,16 +501,16 @@ many more.")
 (define-public kdbusaddons
   (package
     (name "kdbusaddons")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "183nxqrhz4qk4qfp1w4an0scp2dvfqcaqbpg4cgbgk0z590q0pkk"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1vgdl9z5xyfr2b5z7n2vdh0s6zab6ccxp30p1cy8hhhrsf04663m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -521,11 +521,11 @@ many more.")
        ("qtx11extras" ,qtx11extras)))
     (arguments
      `(#:phases
-        (modify-phases %standard-phases
-          (replace 'check
-            (lambda* _
-              (setenv "DBUS_FATAL_WARNINGS" "0")
-              (zero? (system* "dbus-launch" "ctest" ".")))))))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (zero? (system* "dbus-launch" "ctest" ".")))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Convenience classes for DBus")
     (description "KDBusAddons provides convenience classes on top of QtDBus,
