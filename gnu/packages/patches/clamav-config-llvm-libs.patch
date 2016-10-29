@@ -1,0 +1,14 @@
+Our llvm does not contain a single top-level library, so consult llvm-config
+for the libraries that need to be linked against.
+
+--- clamav-0.100.2/libclamav/c++/configure.ac	2018-09-19 14:29:07.000000000 -0500
++++ clamav-0.100.2/libclamav/c++/configure.ac	2018-10-06 21:45:09.377249158 -0500
+@@ -105,7 +105,7 @@
+ 
+     if test "x$llvm_linking" = "xdynamic"; then
+         AC_SUBST(LLVMCONFIG_LDFLAGS, [`$llvmconfig --ldflags`])
+-        AC_SUBST(LLVMCONFIG_LIBS, [-lLLVM-$llvmver])
++        AC_SUBST(LLVMCONFIG_LIBS, [`$llvmconfig --libs $llvmcomp`])
+         AC_SUBST(LLVMCONFIG_LIBFILES, [])
+     else
+         if test $llvmver_test -ge 350; then
