@@ -596,16 +596,16 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
 (define-public ki18n
   (package
     (name "ki18n")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "0cw24spmwsqa3ppkw03cm6yjd3sfll0dbbk2ya76fd4nw9hb00dv"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0a66z325bvdv7g6ysml2bf8559nkjhv2fxwj1ja6vsxkn95d54ff"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("gettext" ,gnu-gettext)
@@ -618,10 +618,11 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
        ("qtscript" ,qtscript)))
     (arguments
      `(#:phases
-        (modify-phases %standard-phases
-          (add-before 'check 'check-setup
-            (lambda* _
-              (setenv "HOME" (getcwd)))))))
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Gettext-based UI text internationalization")
     (description "KI18n provides functionality for internationalizing user
