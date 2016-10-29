@@ -78,3 +78,22 @@ regular expressions for each rule.  Whenever it finds a match, it
 executes the corresponding C code.")
     (license (non-copyleft "file://COPYING"
                         "See COPYING in the distribution."))))
+
+(define-public flex-2.6.1
+  ;; The kservice and solid packages use flex.  extra-cmake-modules
+  ;; forces C89 for all C files for compatibility with windows.
+  ;; Flex 2.6.0 generates a lexer containing a single line comment.  Single
+  ;; line comments are part of the C99 standard, so the lexer won't compile
+  ;; if C89 is used.
+  (package
+    (inherit flex)
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/westes/flex"
+                    "/releases/download/v" version "/"
+                    "flex-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fy14c35yz2m1n1m4f02by3501fn0cca37zn7jp8lpp4b3kgjhrw"))))))
