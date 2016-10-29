@@ -1160,16 +1160,16 @@ utilities.")
 (define-public kcompletion
   (package
     (name "kcompletion")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1qln0v31gn86kzwhnkijr1ydf129n32jmiybbckrp4w6hyx6xfxv"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1mb64ii4ilhqhy9p6cl3phs17bg3lr4b60jkkm71yn2wnd4wl47s"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1181,11 +1181,11 @@ utilities.")
        ("qtbase" ,qtbase)))
     (arguments
      `(#:phases
-        (modify-phases %standard-phases
-          (add-before 'check 'check-setup
-            (lambda _
-              (setenv "QT_QPA_PLATFORM" "offscreen")
-              #t)))))
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Powerful autocompletion framework and widgets")
     (description "This framework helps implement autocompletion in Qt-based
