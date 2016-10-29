@@ -51,15 +51,15 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.11.2")
-    (source (origin
+    (version "1.11.5")
+    (source(origin
               (method url-fetch)
               (uri
                (string-append "http://openprinting.org/download/cups-filters/"
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0x864p794m10kn157n6iv1q9nix5f7x82a8xwjf8hlvri4458j2b"))
+                "1hcp1cfx1a71aa6fyayajjh7vw1ia7zya6981gz73vsy2pdb23qf"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -85,7 +85,10 @@
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
        #:configure-flags
-       `(,(string-append "--with-test-font-path="
+       `(,(string-append "--with-gs-path="
+                         (assoc-ref %build-inputs "ghostscript")
+                         "/bin")
+         ,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
          ,(string-append "--with-gs-path="
@@ -108,6 +111,7 @@
        ("libjpeg-8"    ,libjpeg-8)
        ("libpng"       ,libpng)
        ("libtiff"      ,libtiff)
+       ("mupdf"        ,mupdf)
        ("glib"         ,glib)
        ("qpdf"         ,qpdf)
        ("poppler"      ,poppler)
