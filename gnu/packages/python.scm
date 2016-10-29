@@ -29,6 +29,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
+;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3149,6 +3150,30 @@ writing C extensions for Python as easy as Python itself.")
     (name "python2-cython")
     (inputs
      `(("python-2" ,python-2))))) ; this is not automatically changed
+
+;; The RPython toolchain currently does not support Python 3.
+(define-public python2-rpython
+  (package
+    (name "python2-rpython")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rpython" version))
+       (sha256
+        (base32
+         "07pps06fq4c4wmi5ii0sgh9zgwniz5y7frqhm28g3a154l163fxc"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (native-inputs
+     `(("python2-pytest" ,python2-pytest) ; needed for running tests
+       ("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://rpython.readthedocs.org")
+    (synopsis "Framework for implementing interpreters and virtual machines")
+    (description "RPython is a translation and support framework for
+producing implementations of dynamic languages, emphasizing a clean separation
+between language specification and implementation aspects.")
+    (license license:expat)))
 
 ;; This version of numpy is missing the documentation and is only used to
 ;; build matplotlib which is required to build numpy's documentation.
