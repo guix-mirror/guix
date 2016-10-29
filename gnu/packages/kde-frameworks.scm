@@ -2193,16 +2193,16 @@ KIO enabled infrastructure.")
 (define-public knewstuff
   (package
     (name "knewstuff")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0xdv3wh3100vzsx8p2zihy1dvh0wzfmrjkjq71v8igwz5d291zsj"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "05ikb7cvyx3cmrrjh2ss6439a49vmzbi3chjj23ffdz2nd2k7r2f"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("attica" ,attica)
@@ -2237,7 +2237,8 @@ KIO enabled infrastructure.")
            (lambda _ ; XDG_DATA_DIRS isn't set
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Framework for downloading and sharing additional application data")
     (description "The KNewStuff library implements collaborative data sharing
