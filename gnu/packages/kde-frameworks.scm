@@ -2641,16 +2641,16 @@ the passwords on KDE work spaces.")
 (define-public kxmlgui
   (package
     (name "kxmlgui")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1qhixldhhcbklmrpjh67440h1rrzqy70h57hw6ialjdsr3pl6ihp"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hf55ip2irbsbg59r36njgb0h5ygpaspa4x6jfyi4bxj852c3hw1"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kconfig" ,kconfig)
