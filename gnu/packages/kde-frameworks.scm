@@ -768,16 +768,16 @@ to flat and hierarchical lists.")
 (define-public kplotting
   (package
     (name "kplotting")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "0gpypq9kh4b5s6dc7py3m117k3nbxczsfkxgxd9zxvr35kig7ya2"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1qp9q8g9yxy359bylyqyqxjq9wjismajrg4xhxx5xn4s6znyrxny"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -786,13 +786,13 @@ to flat and hierarchical lists.")
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
-        (modify-phases %standard-phases
-          (add-before 'check 'start-xorg-server
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; The test suite requires a running X server.
-              (system (string-append (assoc-ref inputs "xorg-server")
-                                     "/bin/Xvfb :1 &"))
-              (setenv "DISPLAY" ":1")
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Data plotting library")
