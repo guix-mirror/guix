@@ -284,16 +284,16 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
 (define-public kapidox
   (package
     (name "kapidox")
-    (version "5.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/frameworks/"
-                            (version-major+minor version) "/"
-                            name "-" version ".tar.xz"))
-        (sha256
-         (base32
-          "19a7alvn71nxflsyi7y3hghx1iw04qqc77qy54mcxcpkiyvpsggf"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "193m0qpcqdkspdcwc8cwabjjcqyd9d0m5kl53mycyiv1m220x11l"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; has no test target
@@ -311,7 +311,6 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
      `(("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Doxygen Tools")
-
     (description "This framework contains scripts and data for building API
 documentation (dox) in a standard format and style for KDE.
 
