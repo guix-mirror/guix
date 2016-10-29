@@ -2384,16 +2384,16 @@ to easily extend the contacts collection.")
 (define-public krunner
   (package
     (name "krunner")
-    (version "5.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0ff87ijjd47jxf6zw2ggqgngnbyx1rj59wdfgy5wbi3acws6bafl"))))
+    (version "5.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1yyxyippmn0d9ycj1hdjvhl1zd31yxwg89a9zwmj8v8gdfr9flj9"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("plasma-framework" ,plasma-framework)))
@@ -2426,7 +2426,8 @@ to easily extend the contacts collection.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Framework for Plasma runners")
     (description "The Plasma workspace provides an application called KRunner
