@@ -85,10 +85,7 @@
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
        #:configure-flags
-       `(,(string-append "--with-gs-path="
-                         (assoc-ref %build-inputs "ghostscript")
-                         "/bin")
-         ,(string-append "--with-test-font-path="
+       `(,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
          ,(string-append "--with-gs-path="
