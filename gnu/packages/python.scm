@@ -2749,18 +2749,20 @@ logic-free templating system Mustache.")
 (define-public python-joblib
   (package
     (name "python-joblib")
-    (version "0.9.0b4")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/"
-                                  "j/joblib/joblib-" version ".tar.gz"))
+              (uri (pypi-uri "joblib" version))
               (sha256
                (base32
-                "1dvw3f8jgj6h0fxkghbgyclvdzc7l0ig7n0vis70awb5kczb9bs3"))))
+                "0787k919zlfmgymprz5bzv0v1df5bbirlf3awrghmjgvkrd9dci9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
-       ("python-nose"       ,python-nose)))
+       ("python-nose"       ,python-nose)
+       ("python-sphinx"     ,python-sphinx)
+       ("python-docutils"   ,python-docutils)
+       ("python-numpydoc"   ,python-numpydoc)))
     (home-page "http://pythonhosted.org/joblib/")
     (synopsis "Using Python functions as pipeline jobs")
     (description
