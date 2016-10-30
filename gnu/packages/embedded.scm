@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,11 +29,14 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gdb)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo))
 
 ;; We must not use the released GCC sources here, because the cross-compiler
@@ -236,3 +240,40 @@ languages are C and C++.")
                            "--enable-languages=c,c++"
                            "--disable-nls")
      ,@(package-arguments gdb)))))
+
+(define-public libjaylink
+  ;; No release tarballs available.
+  (let ((commit "faa2a433fdd3de211728f3da5921133214af9dd3")
+        (revision "1"))
+    (package
+      (name "libjaylink")
+      (version (string-append "0.1.0-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.zapb.de/libjaylink.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "02crr56csz8whq3q4mrmdzzgwp5b0qvxm0fb18drclc3zj44yxl2"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libusb" ,libusb)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autoreconf
+             (lambda _
+               (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "http://repo.or.cz/w/libjaylink.git")
+      (synopsis "Library to interface Segger J-Link devices")
+      (description "libjaylink is a shared library written in C to access
+SEGGER J-Link and compatible devices.")
+      (license license:gpl2+))))
