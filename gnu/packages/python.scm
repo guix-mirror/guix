@@ -1668,6 +1668,31 @@ and many external plugins.")
 (define-public python2-pytest
   (package-with-python2 python-pytest))
 
+;; This package is used by Borg until we can upgrade all our Python packages to
+;; use a more recent pytest.
+(define-public python-pytest-2.9.2
+  (package
+    (inherit python-pytest)
+    (name "python-pytest")
+    (version "2.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest" version))
+              (sha256
+               (base32
+                "1n6igbc1b138wx1q5gca4pqw1j6nsyicfxds5n0b5989kaxqmh8j"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-invalid-test
+           (lambda _
+             (substitute* "testing/test_argcomplete.py"
+               (("def test_remove_dir_prefix" line)
+                (string-append "@pytest.mark.skip"
+                               "(reason=\"Assumes that /usr exists.\")\n    "
+                               line)))
+             #t)))))))
+
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
