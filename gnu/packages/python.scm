@@ -11376,3 +11376,36 @@ useful as a validator for JSON data.")
     (description
       "This package adds SQLAlchemy support to your Flask application.")
     (license license:bsd-3)))
+
+(define-public python-pyev
+  (package
+    (name "python-pyev")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyev" version))
+        (sha256
+         (base32
+          "0rf603lc0s6zpa1nb25vhd8g4y337wg2wyz56i0agsdh7jchl0sx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libev (string-append (assoc-ref inputs "libev")
+                                         "/lib/libev.so.4")))
+               (substitute* "setup.py"
+                 (("libev_dll_name = find_library\\(\\\"ev\\\"\\)")
+                  (string-append "libev_dll_name = \"" libev "\"")))))))))
+    (inputs
+     `(("libev" ,libev)))
+    (home-page "http://pythonhosted.org/pyev/")
+    (synopsis "Python libev interface")
+    (description "Pyev provides a Python interface to libev.")
+    (license license:gpl3)))
+
+(define-public python2-pyev
+  (package-with-python2 python-pyev))
