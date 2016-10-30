@@ -991,3 +991,37 @@ the bandwidth, loss, and other parameters.")
                    license:ncsa              ; src/{units,iperf_locale,tcp_window_size}.c
                    license:expat             ; src/{cjson,net}.[ch]
                    license:public-domain)))) ; src/portable_endian.h
+
+(define-public nethogs
+  (package
+    (name "nethogs")
+    (version "0.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/raboof/nethogs/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1k4x8r7s4dgcb6n2rjn28h2yyij92mwm69phncl3597cdxr954va"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpcap" ,libpcap)
+       ("ncurses" ,ncurses)))
+    (arguments
+     `(#:make-flags `("CC=gcc"
+                      ,(string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No ./configure script.
+    (home-page "https://github.com/raboof/nethogs")
+    (synopsis "Per-process bandwidth monitor")
+    (description "NetHogs is a small 'net top' tool for Linux.  Instead of
+breaking the traffic down per protocol or per subnet, like most tools do, it
+groups bandwidth by process.
+
+NetHogs does not rely on a special kernel module to be loaded.  If there's
+suddenly a lot of network traffic, you can fire up NetHogs and immediately see
+which PID is causing this.  This makes it easy to identify programs that have
+gone wild and are suddenly taking up your bandwidth.")
+    (license license:gpl2+)))
