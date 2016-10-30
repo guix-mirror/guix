@@ -5264,7 +5264,7 @@ connection to each user.")
     (version "1.9.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://waf.io/"
+              (uri (string-append "https://waf.io/"
                                   "waf-" version ".tar.bz2"))
               (sha256
                (base32
