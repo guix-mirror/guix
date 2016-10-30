@@ -71,6 +71,8 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -323,14 +325,14 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.4"
-                    "06fb2b1y7w0ixq4savn3hddp326mmzmg3400dpr8lyg919bwck3x"
+  (make-linux-libre "4.8.5"
+                    "124sf2jvckn0afy1zfyaqgr1679qsx3fnylw1wpl7p5298hwyf9m"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.27"
-                    "07g0y8zbspw8d65386llcsnqlbv2s24dxvvbwm9kwm87rk3vin1r"
+  (make-linux-libre "4.4.28"
+                    "1yn74vci0bygn5bi9mcgx1zz8xw9m3jb6j260wqsgkv1hbksa2yp"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -341,8 +343,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.4")
-(define %linux-libre-hash "06fb2b1y7w0ixq4savn3hddp326mmzmg3400dpr8lyg919bwck3x")
+(define %linux-libre-version "4.8.5")
+(define %linux-libre-hash "124sf2jvckn0afy1zfyaqgr1679qsx3fnylw1wpl7p5298hwyf9m")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -3095,3 +3097,44 @@ interface that should be familiar to, and easily adopted by, application
 developers.")
     (home-page "https://github.com/seccomp/libseccomp")
     (license license:lgpl2.1)))
+
+(define-public radeontop
+  (package
+    (name "radeontop")
+    (version "0.9")
+    (home-page "https://github.com/clbr/radeontop/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07fnimn6wwablmdjw0av11hk9a6xilbryh09izq4b2ic4b8md2p7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ;; getver.sh uses ‘git --describe’, isn't worth an extra git
+                  ;; dependency, and doesn't even work on release(!) tarballs.
+                  (add-after 'unpack 'report-correct-version
+                    (lambda _ (substitute* "getver.sh"
+                                (("ver=unknown")
+                                 (string-append "ver=" ,version)))))
+                  (delete 'configure))  ; no configure script
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:tests? #f))                    ; no tests
+    (native-inputs
+     `(("gnu-gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libpciaccess" ,libpciaccess)
+       ("ncurses" ,ncurses)))
+    (synopsis "Usage monitor for AMD Radeon graphics")
+    (description "RadeonTop monitors resource consumption on supported AMD
+Radeon Graphics Processing Units (GPUs), either in real time as bar graphs on
+a terminal or saved to a file for further processing.  It measures both the
+activity of the GPU as a whole, which is also accurate during OpenCL
+computations, as well as separate component statistics that are only meaningful
+under OpenGL graphics workloads.")
+    (license license:gpl3)))

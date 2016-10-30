@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 #
 # This file is part of GNU Guix.
@@ -27,6 +27,7 @@ tmpdir="guix-hash-$$"
 trap 'rm -rf "$tmpdir"' EXIT
 
 test `guix hash /dev/null` = 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
+test `echo -n | guix hash -` = 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
 test `guix hash -f nix-base32 /dev/null` = 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
 test `guix hash -f hex /dev/null` = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 test `guix hash -f base32 /dev/null` = 4oymiquy7qobjgx36tejs35zeqt24qpemsnzgtfeswmrw6csxbkq

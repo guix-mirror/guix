@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,10 +29,15 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gdb)
+  #:use-module (gnu packages libftdi)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo))
 
 ;; We must not use the released GCC sources here, because the cross-compiler
@@ -223,3 +229,136 @@ languages are C and C++.")
 (define-public arm-none-eabi-nano-toolchain-6
   (arm-none-eabi-toolchain gcc-arm-none-eabi-6
                            newlib-nano-arm-none-eabi))
+
+(define-public gdb-arm-none-eabi
+  (package
+    (inherit gdb)
+    (name "gdb-arm-none-eabi")
+    (arguments
+     `(#:configure-flags '("--target=arm-none-eabi"
+                           "--enable-multilib"
+                           "--enable-interwork"
+                           "--enable-languages=c,c++"
+                           "--disable-nls")
+     ,@(package-arguments gdb)))))
+
+(define-public libjaylink
+  ;; No release tarballs available.
+  (let ((commit "faa2a433fdd3de211728f3da5921133214af9dd3")
+        (revision "1"))
+    (package
+      (name "libjaylink")
+      (version (string-append "0.1.0-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.zapb.de/libjaylink.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "02crr56csz8whq3q4mrmdzzgwp5b0qvxm0fb18drclc3zj44yxl2"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libusb" ,libusb)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autoreconf
+             (lambda _
+               (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "http://repo.or.cz/w/libjaylink.git")
+      (synopsis "Library to interface Segger J-Link devices")
+      (description "libjaylink is a shared library written in C to access
+SEGGER J-Link and compatible devices.")
+      (license license:gpl2+))))
+
+(define-public jimtcl
+  (package
+    (name "jimtcl")
+    (version "0.77")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/msteveb/jimtcl"
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cmk3qscqckg70chjyimzxa2qcka4qac0j4wq908kiijp45cax08"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Doesn't use autoconf.
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
+    (home-page "http://jim.tcl.tk")
+    (synopsis "Small footprint Tcl implementation")
+    (description "Jim is a small footprint implementation of the Tcl programming
+language.")
+    (license license:bsd-2)))
+
+(define-public openocd
+  ;; FIXME: Use tarball release after nrf52 patch is merged.
+  (let ((commit "674141e8a7a6413cb803d90c2a20150260015f81")
+        (revision "1"))
+    (package
+      (name "openocd")
+      (version (string-append "0.9.0-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.code.sf.net/p/openocd/code.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1i86jp0wawq78d73z8hp7q1pn7lmlvhjjr19f7299h4w40a5jf8j"))
+                (file-name (string-append name "-" version "-checkout"))
+                (patches
+                 (search-patches "openocd-nrf52.patch"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("hidapi" ,hidapi)
+         ("jimtcl" ,jimtcl)
+         ("libftdi" ,libftdi)
+         ("libjaylink" ,libjaylink)
+         ("libusb-compat" ,libusb-compat)))
+      (arguments
+       '(#:configure-flags
+         (append (list "--disable-werror"
+                       "--disable-internal-jimtcl"
+                       "--disable-internal-libjaylink")
+                 (map (lambda (programmer)
+                        (string-append "--enable-" programmer))
+                      '("amtjtagaccel" "armjtagew" "buspirate" "ftdi"
+                        "gw16012" "jlink" "oocd_trace" "opendous" "osbdm"
+                        "parport" "aice" "cmsis-dap" "dummy" "jtag_vpi"
+                        "remote-bitbang" "rlink" "stlink" "ti-icdi" "ulink"
+                        "usbprog" "vsllink" "usb-blaster-2" "usb_blaster"
+                        "presto" "openjtag")))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autoreconf
+             (lambda _
+               (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "http://openocd.org")
+      (synopsis "On-Chip Debugger")
+      (description "OpenOCD provides on-chip programming and debugging support
+with a layered architecture of JTAG interface and TAP support.")
+      (license license:gpl2))))

@@ -148,10 +148,23 @@ void LocalStore::optimisePath_(OptimiseStats & stats, const Path & path, InodeHa
             inodeHash.insert(st.st_ino);
             return;
         }
-        if (errno != EEXIST)
+
+	switch (errno) {
+	case EEXIST:
+	    /* Fall through if another process created ‘linkPath’ before
+	       we did. */
+	    break;
+
+	case ENOSPC:
+	    /* On ext4, that probably means the directory index is full.  When
+	       that happens, it's fine to ignore it: we just effectively
+	       disable deduplication of this file.  */
+	    printMsg(lvlInfo, format("cannot link `%1%' to `%2%': %m") % linkPath % path);
+	    return;
+
+	default:
             throw SysError(format("cannot link `%1%' to `%2%'") % linkPath % path);
-        /* Fall through if another process created ‘linkPath’ before
-           we did. */
+	}
     }
 
     /* Yes!  We've seen a file with the same contents.  Replace the
@@ -195,8 +208,8 @@ void LocalStore::optimisePath_(OptimiseStats & stats, const Path & path, InodeHa
                 printMsg(lvlInfo, format("`%1%' has maximum number of links") % linkPath);
             return;
         }
-        throw SysError(format("cannot link `%1%' to `%2%'") % tempLink % linkPath);
-    }
+	    throw SysError(format("cannot link `%1%' to `%2%'") % tempLink % linkPath);
+	}
 
     /* Atomically replace the old file with the new hard link. */
     if (rename(tempLink.c_str(), path.c_str()) == -1) {

@@ -29,6 +29,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
+;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3172,6 +3173,30 @@ writing C extensions for Python as easy as Python itself.")
     (inputs
      `(("python-2" ,python-2))))) ; this is not automatically changed
 
+;; The RPython toolchain currently does not support Python 3.
+(define-public python2-rpython
+  (package
+    (name "python2-rpython")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rpython" version))
+       (sha256
+        (base32
+         "07pps06fq4c4wmi5ii0sgh9zgwniz5y7frqhm28g3a154l163fxc"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (native-inputs
+     `(("python2-pytest" ,python2-pytest) ; needed for running tests
+       ("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://rpython.readthedocs.org")
+    (synopsis "Framework for implementing interpreters and virtual machines")
+    (description "RPython is a translation and support framework for
+producing implementations of dynamic languages, emphasizing a clean separation
+between language specification and implementation aspects.")
+    (license license:expat)))
+
 ;; This version of numpy is missing the documentation and is only used to
 ;; build matplotlib which is required to build numpy's documentation.
 (define python-numpy-bootstrap
@@ -5258,30 +5283,28 @@ connection to each user.")
 (define-public python-waf
   (package
     (name "python-waf")
-    (version "1.9.1")
+    (version "1.9.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://waf.io/"
+              (uri (string-append "http://waf.io/"
                                   "waf-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nc4qaqx2vsanlpp9mcwvf91xjqpkvcc6fcxd5sb4fwvaxamw5v6"))))
+                "1sl3ipi2czds57rlzjnpdzqa0skx8asfvmh3qmibpvdwf15rpppg"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'build
-                  (lambda _
-                    (zero? (begin
-                             (system* "python" "waf-light" "configure")
-                             (system* "python" "waf-light" "build")))))
+           (lambda _
+             (zero? (system* "python" "waf-light" "configure" "build"))))
          (replace 'check
-                  (lambda _
-                    (zero? (system* "python" "waf" "--version"))))
+           (lambda _
+             (zero? (system* "python" "waf" "--version"))))
          (replace 'install
-                  (lambda _
-                    (copy-file "waf" %output))))))
-    (home-page "https://waf.io/")
+           (lambda _
+             (copy-file "waf" %output))))))
+    (home-page "http://waf.io/")
     (synopsis "Python-based build system")
     (description
      "Waf is a Python-based framework for configuring, compiling and installing
@@ -9652,7 +9675,9 @@ focus on event-based network programming and multiprotocol integration.")
           "0nb4h08di432lv7dy2v9kpwgk0w92f24sqc2hw2s9vwr5b8v8xvj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-twisted" ,python-twisted)))
+     `(("python-pyev" ,python-pyev)
+       ("python-tornado" ,python-tornado)
+       ("python-twisted" ,python-twisted)))
     (home-page "https://pika.readthedocs.org")
     (synopsis "Pure Python AMQP Client Library")
     (description
@@ -10214,6 +10239,8 @@ implementation for Python.")
         (base32
           "1vyjd0b7wciv55i19l44zy0adx8q7ss79lhy2r9d1rwz2y4822zg"))))
   (build-system python-build-system)
+  (arguments
+   '(#:tests? #f)) ; The test suite uses some Windows-specific data types.
   (inputs `(("python-wcwidth" ,python-wcwidth)
             ("python-pygments" ,python-pygments)))
   (native-inputs `(("python-six" ,python-six)))
@@ -10681,6 +10708,8 @@ List.")
         (base32
          "06lx603gdwad5hc3hmn763ngq0rq9bzz1ni3ga72nzk5n872arkd"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; The test suite requires network access.
     (home-page "https://github.com/pombredanne/python-publicsuffix2")
     (synopsis "Get a public suffix for a domain name using the Public Suffix List")
     (description "Get a public suffix for a domain name using the Public Suffix
@@ -11477,3 +11506,36 @@ useful as a validator for JSON data.")
     (description
       "This package adds SQLAlchemy support to your Flask application.")
     (license license:bsd-3)))
+
+(define-public python-pyev
+  (package
+    (name "python-pyev")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyev" version))
+        (sha256
+         (base32
+          "0rf603lc0s6zpa1nb25vhd8g4y337wg2wyz56i0agsdh7jchl0sx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libev (string-append (assoc-ref inputs "libev")
+                                         "/lib/libev.so.4")))
+               (substitute* "setup.py"
+                 (("libev_dll_name = find_library\\(\\\"ev\\\"\\)")
+                  (string-append "libev_dll_name = \"" libev "\"")))))))))
+    (inputs
+     `(("libev" ,libev)))
+    (home-page "http://pythonhosted.org/pyev/")
+    (synopsis "Python libev interface")
+    (description "Pyev provides a Python interface to libev.")
+    (license license:gpl3)))
+
+(define-public python2-pyev
+  (package-with-python2 python-pyev))

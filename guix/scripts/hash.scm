@@ -139,7 +139,9 @@ and 'hexadecimal' can be used as well).\n"))
               (write-file file port #:select? select?)
               (force-output port)
               (get-hash))
-            (call-with-input-file file port-sha256))))
+            (match file
+              ("-" (port-sha256 (current-input-port)))
+              (_   (call-with-input-file file port-sha256))))))
 
     (match args
       ((file)

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
@@ -201,3 +203,39 @@ proposed for standardization.")
   (MTP), which allows media files to be transferred to and from many portable
 devices.")
     (license bsd-3)))
+
+(define-public hidapi
+  (package
+    (name "hidapi")
+    (version "0.8.0-rc1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/signal11/hidapi/archive/hidapi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qdgyj9rgb7n0nk3ghfswrhzzknxqn4ibn3wj8g4r828pw07451w"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))))
+    (inputs
+     `(("libusb" ,libusb)
+       ("udev" ,eudev)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.signal11.us/oss/hidapi/")
+    (synopsis "HID API library")
+    (description
+     "HIDAPI is a library which allows an application to interface with USB and Bluetooth
+HID-Class devices.")
+    ;; HIDAPI can be used under one of three licenses.
+    (license (list gpl3
+                   bsd-3
+                   non-copyleft "file://LICENSE-orig.txt"))))

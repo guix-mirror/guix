@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
 
 (define-module (gnu packages dns)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages linux)
@@ -161,3 +163,40 @@ asynchronous fashion.")
                    license:bsd-3
                    (license:non-copyleft "file://LICENSE") ; includes.h
                    license:openssl))))
+
+(define-public yadifa
+  (package
+    (name "yadifa")
+    (version "2.2.1-6281")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vj71z7i9lfbnp93k28aplwldp5mfli0kvrbwmha6fjha6kcr910"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'omit-example-configurations
+                              (lambda _ (substitute* "Makefile.in"
+                                          ((" (etc|var)") "")))))
+       #:configure-flags (list "--sysconfdir=/etc"      "--localstatedir=/var"
+                               "--enable-shared"        "--disable-static"
+                               "--enable-messages"      "--enable-ctrl"
+                               ;; NSID is a rarely-used debugging aid, that also
+                               ;; causes the build to fail. Just disable it.
+                               "--disable-nsid")))
+    (home-page "http://www.yadifa.eu/")
+    (synopsis "Authoritative DNS name server")
+    (description "YADIFA is an authorative name server for the Domain Name
+System (DNS).  It aims for both higher performance and a smaller memory
+footprint than other implementations, while remaining fully RFC-compliant.
+YADIFA supports dynamic record updates and the Domain Name System Security
+Extensions (DNSSEC).")
+    (license license:bsd-3)))

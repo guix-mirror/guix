@@ -1225,7 +1225,7 @@ arising after the discretization of partial differential equations.")
 (define-public mumps
   (package
     (name "mumps")
-    (version "5.0.1")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
@@ -1233,7 +1233,7 @@ arising after the discretization of partial differential equations.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1820jfp3mbl7n85765v5mp6p0gzqpgr4d2lrnhwj4gl7cwp5ndah"))
+         "0igyc1pfzxdhpbad3v3lb86ixkdbqa1a8gbs15b04r2294h2nabp"))
        (patches (search-patches "mumps-build-parallelism.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1250,8 +1250,7 @@ arising after the discretization of partial differential equations.")
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
+         (replace 'configure
           (lambda* (#:key inputs #:allow-other-keys)
             (call-with-output-file "Makefile.inc"
               (lambda (port)
@@ -1312,15 +1311,13 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                            `((,ptscotch
                               "-lptesmumps -lptscotch -lptscotcherr "
                               "-Dptscotch")))))))))
-         (replace
-          'build
+         (replace 'build
           ;; By default only the d-precision library is built.  Make with "all"
           ;; target so that all precision libraries and examples are built.
           (lambda _
             (zero? (system* "make" "all"
                             (format #f "-j~a" (parallel-job-count))))))
-         (replace
-          'check
+         (replace 'check
           ;; Run the simple test drivers, which read test input from stdin:
           ;; from the "real" input for the single- and double-precision
           ;; testers, and from the "cmplx" input for complex-precision
@@ -1343,15 +1340,15 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                      (zero? (close-pipe tester)))))
                '("s" "d" "c" "z")
                '("real" "real" "cmplx" "cmplx")))))
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (copy-recursively "lib" (string-append out "/lib"))
-              (copy-recursively "include" (string-append out "/include"))
-              (when (file-exists? "libseq/libmpiseq.a")
-                (copy-file "libseq/libmpiseq.a"
-                           (string-append out "/lib/libmpiseq.a")))))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib")))
+               (copy-recursively "lib" libdir)
+               (copy-recursively "include" (string-append out "/include"))
+               (when (file-exists? "libseq/libmpiseq.a")
+                 (install-file "libseq/libmpiseq.a" libdir))
+               #t))))))
     (home-page "http://mumps.enseeiht.fr")
     (synopsis "Multifrontal sparse direct solver")
     (description

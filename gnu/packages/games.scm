@@ -329,7 +329,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.3")
+    (version "6.2.4")
     (source
      (origin
        (method url-fetch)
@@ -337,9 +337,9 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "10hvnfhj9bkpz80x20jgxyqvgvrcgfdp8sfcbcrf1dgjn9v936bq"))))
+         "1vw2w3jwnmn44d5vsw47f8y70xvxcsz9m5msq9fgqlzjch15qhiw"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/chess")
+    (home-page "https://www.gnu.org/software/chess")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
 against the computer in a game of chess, either through the default terminal

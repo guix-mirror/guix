@@ -49,7 +49,7 @@
     (arguments
      `(;; gputils is required for PIC ports
        #:configure-flags
-       '("--disable-pic14-port" "--disable-pic16-port")
+       '("--disable-pic14-port" "--disable-pic16-port" "--enable-ucsim")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-makefile
