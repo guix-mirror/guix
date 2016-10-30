@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
+  #:use-module (rnrs bytevectors)
   #:export (grub-image
             grub-image?
             grub-image-aspect-ratio
@@ -61,16 +63,15 @@
 ;;;
 ;;; Code:
 
-(define (strip-mount-point fs file)
-  "Strip the mount point of FS from FILE, which is a gexp or other lowerable
-object denoting a file name."
-  (let ((mount-point (file-system-mount-point fs)))
-    (if (string=? mount-point "/")
-	file
-	#~(let ((file #$file))
-            (if (string-prefix? #$mount-point file)
-                (substring #$file #$(string-length mount-point))
-                file)))))
+(define (strip-mount-point mount-point file)
+  "Strip MOUNT-POINT from FILE, which is a gexp or other lowerable object
+denoting a file name."
+  (if (string=? mount-point "/")
+      file
+      #~(let ((file #$file))
+          (if (string-prefix? #$mount-point file)
+              (substring #$file #$(string-length mount-point))
+              file))))
 
 (define-record-type* <grub-image>
   grub-image make-grub-image
@@ -121,6 +122,10 @@ object denoting a file name."
   menu-entry make-menu-entry
   menu-entry?
   (label           menu-entry-label)
+  (device          menu-entry-device       ; file system uuid, label, or #f
+                   (default #f))
+  (device-mount-point menu-entry-device-mount-point
+                      (default "/"))
   (linux           menu-entry-linux)
   (linux-arguments menu-entry-linux-arguments
                    (default '()))          ; list of string-valued gexps
@@ -162,12 +167,14 @@ WIDTH/HEIGHT, or #f if none was found."
         (with-monad %store-monad
           (return #f)))))
 
-(define (eye-candy config root-fs system port)
+(define* (eye-candy config store-device store-mount-point
+                    #:key system port)
   "Return in %STORE-MONAD a gexp that writes to PORT (a port-valued gexp) the
 'grub.cfg' part concerned with graphics mode, background images, colors, and
-all that.  ROOT-FS is a file-system object denoting the root file system where
-the store is.  SYSTEM must be the target system string---e.g.,
-\"x86_64-linux\"."
+all that.  STORE-DEVICE designates the device holding the store, and
+STORE-MOUNT-POINT is its mount point; these are used to determine where the
+background image and fonts must be searched for.  SYSTEM must be the target
+system string---e.g., \"x86_64-linux\"."
   (define setup-gfxterm-body
     ;; Intel systems need to be switched into graphics mode, whereas most
     ;; other modern architectures have no other mode and therefore don't need
@@ -191,7 +198,7 @@ the store is.  SYSTEM must be the target system string---e.g.,
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    (strip-mount-point root-fs
+    (strip-mount-point store-mount-point
                        (file-append grub "/share/grub/unicode.pf2")))
 
   (mlet* %store-monad ((image (grub-background-image config)))
@@ -215,10 +222,10 @@ else
   set menu_color_highlight=white/blue
 fi~%"
                            #$setup-gfxterm-body
-                           #$(grub-root-search root-fs font-file)
+                           #$(grub-root-search store-device font-file)
                            #$font-file
 
-                           #$(strip-mount-point root-fs image)
+                           #$(strip-mount-point store-mount-point image)
                            #$(theme-colors grub-theme-color-normal)
                            #$(theme-colors grub-theme-color-highlight))))))
 
@@ -227,8 +234,8 @@ fi~%"
 ;;; Configuration file.
 ;;;
 
-(define (grub-root-search root-fs file)
-  "Return the GRUB 'search' command to look for ROOT-FS, which contains FILE,
+(define (grub-root-search device file)
+  "Return the GRUB 'search' command to look for DEVICE, which contains FILE,
 a gexp.  The result is a gexp that can be inserted in the grub.cfg-generation
 code."
   ;; Usually FILE is a file name gexp like "/gnu/store/…-linux/vmlinuz", but
@@ -236,20 +243,18 @@ code."
   ;; custom menu entries.  In the latter case, don't emit a 'search' command.
   (if (and (string? file) (not (string-prefix? "/" file)))
       ""
-      (case (file-system-title root-fs)
-        ;; Preferably refer to ROOT-FS by its UUID or label.  This is more
+      (match device
+        ;; Preferably refer to DEVICE by its UUID or label.  This is more
         ;; efficient and less ambiguous, see <>.
-        ((uuid)
+        ((? bytevector? uuid)
          (format #f "search --fs-uuid --set ~a"
-                 (uuid->string (file-system-device root-fs))))
-        ((label)
-         (format #f "search --label --set ~a"
-                 (file-system-device root-fs)))
-        (else
-         ;; As a last resort, look for any device containing FILE.
+                 (uuid->string device)))
+        ((? string? label)
+         (format #f "search --label --set ~a" label))
+        (#f
          #~(format #f "search --file --set ~a" #$file)))))
 
-(define* (grub-configuration-file config store-fs entries
+(define* (grub-configuration-file config entries
                                   #:key
                                   (system (%current-system))
                                   (old-entries '()))
@@ -262,22 +267,30 @@ corresponding to old generations of the system."
 
   (define entry->gexp
     (match-lambda
-     (($ <menu-entry> label linux arguments initrd)
-      ;; Use the right file names for LINUX and STORE-FS in case STORE-FS is
-      ;; not the "/" file system.
-      (let ((linux  (strip-mount-point store-fs linux))
-            (initrd (strip-mount-point store-fs initrd)))
+     (($ <menu-entry> label device device-mount-point
+                      linux arguments initrd)
+      ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
+      ;; Use the right file names for LINUX and INITRD in case
+      ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
+      ;; separate partition.
+      (let ((linux  (strip-mount-point device-mount-point linux))
+            (initrd (strip-mount-point device-mount-point initrd)))
         #~(format port "menuentry ~s {
   ~a
   linux ~a ~a
   initrd ~a
 }~%"
                   #$label
-                  #$(grub-root-search store-fs linux)
+                  #$(grub-root-search device linux)
                   #$linux (string-join (list #$@arguments))
                   #$initrd)))))
 
-  (mlet %store-monad ((sugar (eye-candy config store-fs system #~port)))
+  (mlet %store-monad ((sugar (eye-candy config
+                                        (menu-entry-device (first entries))
+                                        (menu-entry-device-mount-point
+                                         (first entries))
+                                        #:system system
+                                        #:port #~port)))
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)

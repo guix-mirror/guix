@@ -186,6 +186,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
+   (replacement libtiff/fixed)
    (version "4.0.6")
    (source (origin
             (method url-fetch)
@@ -224,6 +225,24 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.remotesensing.org/libtiff/")))
+
+(define libtiff/fixed
+  (package
+    (inherit libtiff)
+    (source (origin
+              (inherit (package-source libtiff))
+              (patches (search-patches
+                         "libtiff-oob-accesses-in-decode.patch"
+                         "libtiff-oob-write-in-nextdecode.patch"
+                         "libtiff-CVE-2015-8665+CVE-2015-8683.patch"
+                         "libtiff-CVE-2016-3623.patch"
+                         "libtiff-CVE-2016-3945.patch"
+                         "libtiff-CVE-2016-3990.patch"
+                         "libtiff-CVE-2016-3991.patch"
+                         "libtiff-CVE-2016-5314.patch"
+                         "libtiff-CVE-2016-5321.patch"
+                         "libtiff-CVE-2016-5323.patch"
+                         "libtiff-CVE-2016-5652.patch"))))))
 
 (define-public libwmf
   (package

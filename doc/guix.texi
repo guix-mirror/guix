@@ -11920,6 +11920,17 @@ The Linux kernel image to boot, for example:
 (file-append linux-libre "/bzImage")
 @end example
 
+It is also possible to specify a device explicitly in the file path
+using GRUB's device naming convention (@pxref{Naming convention,,, grub,
+GNU GRUB manual}), for example:
+
+@example
+"(hd0,msdos1)/boot/vmlinuz"
+@end example
+
+If the device is specified explicitly as above, then the @code{device}
+field is ignored entirely.
+
 @item @code{linux-arguments} (default: @code{()})
 The list of extra Linux kernel command-line arguments---e.g.,
 @code{("console=ttyS0")}.
@@ -11927,6 +11938,22 @@ The list of extra Linux kernel command-line arguments---e.g.,
 @item @code{initrd}
 A G-Expression or string denoting the file name of the initial RAM disk
 to use (@pxref{G-Expressions}).
+
+@item @code{device} (default: @code{#f})
+The device where the kernel and initrd are to be found---i.e., the GRUB
+@dfn{root} for this menu entry (@pxref{root,,, grub, GNU GRUB manual}).
+
+This may be a file system label (a string), a file system UUID (a
+bytevector, @pxref{File Systems}), or @code{#f}, in which case GRUB will
+search the device containing the file specified by the @code{linux}
+field (@pxref{search,,, grub, GNU GRUB manual}).  It must @emph{not} be
+an OS device name such as @file{/dev/sda1}.
+
+@item @code{device-mount-point} (default: @code{"/"})
+The mount point of the above device on the system.  You probably do not
+need to change the default value.  GuixSD uses it to strip the prefix of
+store file names for systems where @file{/gnu} or @file{/gnu/store} is
+on a separate partition.
 
 @end table
 @end deftp

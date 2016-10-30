@@ -1652,14 +1652,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.9")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "1wc6kw7hihqqdx8qyl01akygycnan44x400hwrcf54m3hb4isa0k"))))
+                "10v9s7ayvfzd6j6hqfc9zihxgmsc2j0xhxrgy3ah30qkqn6z8w6n"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))

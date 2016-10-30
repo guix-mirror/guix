@@ -5307,7 +5307,7 @@ connection to each user.")
     (version "1.9.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://waf.io/"
+              (uri (string-append "https://waf.io/"
                                   "waf-" version ".tar.bz2"))
               (sha256
                (base32
@@ -11569,3 +11569,30 @@ useful as a validator for JSON data.")
 
 (define-public python2-pyev
   (package-with-python2 python-pyev))
+
+(define-public python-imagesize
+  (package
+    (name "python-imagesize")
+    (version "0.7.1")
+    (source
+      (origin
+      (method url-fetch)
+      (uri (pypi-uri "imagesize" version))
+      (sha256
+        (base32
+          "0qk07k0z4241lkzzjji7z4da04pcvg7bfc4xz1934zlqhwmwdcha"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/shibukawa/imagesize_py")
+    (synopsis "Gets image size of files in variaous formats in Python")
+    (description
+      "This package allows determination of image size from
+PNG, JPEG, JPEG2000 and GIF files in pure Python.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-imagesize))))))
+
+(define-public python2-imagesize
+  (let ((base (package-with-python2 (strip-python2-variant python-imagesize))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))

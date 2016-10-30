@@ -159,7 +159,17 @@
 
                        #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-minimal)))   ;for guix.el
+                     ("emacs" ,emacs-minimal)     ;for guix.el
+
+                     ;; XXX: Keep the development inputs here even though
+                     ;; they're unnecessary, just so that 'guix environment
+                     ;; guix' always contains them.
+                     ("autoconf" ,(autoconf-wrapper))
+                     ("automake" ,automake)
+                     ("gettext" ,gnu-gettext)
+                     ("texinfo" ,texinfo)
+                     ("graphviz" ,graphviz)
+                     ("help2man" ,help2man)))
     (inputs
      (let ((boot-guile (lambda (arch hash)
                          (origin
@@ -243,15 +253,7 @@ the Nix package manager.")
                             (chmod po #o666))
                           (find-files "." "\\.po$"))
 
-                (zero? (system* "sh" "bootstrap"))))))))
-      (native-inputs
-       `(("autoconf" ,(autoconf-wrapper))
-         ("automake" ,automake)
-         ("gettext" ,gettext-minimal)
-         ("texinfo" ,texinfo)
-         ("graphviz" ,graphviz)
-         ("help2man" ,help2man)
-         ,@(package-native-inputs guix-0.11.0))))))
+                (zero? (system* "sh" "bootstrap")))))))))))
 
 (define-public guix guix-devel)
 
