@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 
 (define-module (gnu packages datastructures)
   #:use-module (gnu packages)
+  #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -92,3 +93,26 @@ hashes (CTPH), also called fuzzy checksums.  It can identify similar files
 that have sequences of identical bytes in the same order, even though bytes
 in between these sequences may be different in both content and length.")
     (license license:gpl2+)))
+
+(define-public liburcu
+  (package
+    (name "liburcu")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.lttng.org/files/urcu/"
+                                  "userspace-rcu-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "01j0xp3f0w147yfyzybkjvb7i67i7prsvnkssgvgwry9lvk35khv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))                 ; for tests
+    (home-page "http://liburcu.org/")
+    (synopsis "User-space RCU data synchronisation library")
+    (description "liburcu is a user-space @dfn{Read-Copy-Update} (RCU) data
+synchronisation library.  It provides read-side access that scales linearly
+with the number of cores.  liburcu-cds provides efficient data structures
+based on RCU and lock-free algorithms.  These structures include hash tables,
+queues, stacks, and doubly-linked lists.")
+    (license license:lgpl2.1+)))
