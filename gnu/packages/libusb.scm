@@ -105,7 +105,8 @@ version of libusb to run with newer libusb.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f  ;no tests
-       #:modules ((srfi srfi-26)
+       #:modules ((srfi srfi-1)
+                  (srfi srfi-26)
                   (guix build utils)
                   (guix build python-build-system))
        #:phases
@@ -116,11 +117,9 @@ version of libusb to run with newer libusb.")
                (("lib = locate_library\\(candidates, find_library\\)")
                 (string-append
                  "lib = \""
-                 (car (find-files (assoc-ref inputs "libusb")
-                                  (lambda (file stat)
-                                    (and ((file-name-predicate
-                                           "^libusb-.*\\.so\\..*") file stat)
-                                         (not (symbolic-link? file))))))
+                 (find (negate symbolic-link?)
+                       (find-files (assoc-ref inputs "libusb")
+                                   "^libusb-.*\\.so\\..*"))
                  "\"")))
              #t)))))
     (inputs
