@@ -8382,6 +8382,9 @@ layouts.")
         (base32
          "0j9fsisip21qv4xljsg5dmni1pgpvwrjyyhhql0glydc4bs5rjgv"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-webob" ,python-webob)
+       ("python-webtest" ,python-webtest)))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
        ("python-cssselect" ,python-cssselect)))
@@ -8398,7 +8401,8 @@ fast xml and html manipulation.")
                   (strip-python2-variant python-pyquery))))
     (package
       (inherit pyquery)
-      (native-inputs `(("python2-setuptools" ,python2-setuptools))))))
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs pyquery))))))
 
 (define-public python-webtest
   (package
@@ -10538,6 +10542,10 @@ binary or text.")
                (base32
                 "0skxbhnymwlspjkzga0f7x1hg3y50fwpfghs8g8k7fh6f4nknlym"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The tests require some extra resources to be downloaded.
+       ;; TODO Try packaging these resources.
+       #:tests? #f))
     (home-page "http://nltk.org/")
     (synopsis "Natural Language Toolkit")
     (description "It provides interfaces to over 50 corpora and lexical
