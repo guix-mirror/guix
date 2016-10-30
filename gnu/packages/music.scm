@@ -1772,9 +1772,9 @@ MusicBrainz database.")
 (define-public python2-musicbrainzngs
   (package-with-python2 python-musicbrainzngs))
 
-(define-public python-pyechonest
+(define-public python2-pyechonest
   (package
-    (name "python-pyechonest")
+    (name "python2-pyechonest")
     (version "9.0.0")
     (source (origin
               (method url-fetch)
@@ -1783,6 +1783,11 @@ MusicBrainz database.")
                (base32
                 "1584nira3rkiman9dm81kdshihmkj21s8navndz2l8spnjwb790x"))))
     (build-system python-build-system)
+    (arguments
+     `(;; Python 3 is not supported:
+       ;; https://github.com/echonest/pyechonest/issues/42
+       #:python ,python-2))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://github.com/echonest/pyechonest")
     (synopsis "Python interface to The Echo Nest APIs")
     (description "Pyechonest is a Python library for the Echo Nest API.  With
@@ -1799,13 +1804,7 @@ hotttnesss, audio_summary, or tracks.
 about the track including key, duration, mode, tempo, time signature along with
 detailed track info including timbre, pitch, rhythm and loudness information.
 @end enumerate\n")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-pyechonest))))))
-
-(define-public python2-pyechonest
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-pyechonest)))
-    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+    (license license:bsd-3)))
 
 (define-public python-pylast
   (package
