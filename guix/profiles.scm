@@ -490,12 +490,12 @@ if not found."
             inputs))
     (define (find-among-store-items items)
       (find (lambda (item)
-              (let-values (((pkg-name pkg-version)
+              (let-values (((name* version*)
                             (package-name->name+version
                              (store-path-package-name item))))
-                (and (equal? name pkg-name)
+                (and (string=? name name*)
                      (if version
-                         (string-prefix? version pkg-version)
+                         (string-prefix? version version*)
                          #t))))
             items))
 
