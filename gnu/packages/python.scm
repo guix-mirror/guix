@@ -10151,6 +10151,8 @@ implementation for Python.")
         (base32
           "1vyjd0b7wciv55i19l44zy0adx8q7ss79lhy2r9d1rwz2y4822zg"))))
   (build-system python-build-system)
+  (arguments
+   '(#:tests? #f)) ; The test suite uses some Windows-specific data types.
   (inputs `(("python-wcwidth" ,python-wcwidth)
             ("python-pygments" ,python-pygments)))
   (native-inputs `(("python-six" ,python-six)))
