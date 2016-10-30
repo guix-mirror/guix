@@ -277,3 +277,32 @@ languages are C and C++.")
       (description "libjaylink is a shared library written in C to access
 SEGGER J-Link and compatible devices.")
       (license license:gpl2+))))
+
+(define-public jimtcl
+  (package
+    (name "jimtcl")
+    (version "0.77")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/msteveb/jimtcl"
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cmk3qscqckg70chjyimzxa2qcka4qac0j4wq908kiijp45cax08"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Doesn't use autoconf.
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
+    (home-page "http://jim.tcl.tk")
+    (synopsis "Small footprint Tcl implementation")
+    (description "Jim is a small footprint implementation of the Tcl programming
+language.")
+    (license license:bsd-2)))
