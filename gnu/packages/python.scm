@@ -11079,7 +11079,8 @@ CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
           "0rsaarx2sj4xnw9966rhh4haiqaapm4lm2mfqm48ywd51j5vh1a0"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Tests require the unpackaged pytest-benchmark.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-hardcoded-version
            (lambda _ (substitute*
