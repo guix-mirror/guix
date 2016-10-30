@@ -10618,6 +10618,8 @@ List.")
         (base32
          "06lx603gdwad5hc3hmn763ngq0rq9bzz1ni3ga72nzk5n872arkd"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; The test suite requires network access.
     (home-page "https://github.com/pombredanne/python-publicsuffix2")
     (synopsis "Get a public suffix for a domain name using the Public Suffix List")
     (description "Get a public suffix for a domain name using the Public Suffix
