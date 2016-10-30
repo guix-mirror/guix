@@ -8309,6 +8309,9 @@ layouts.")
         (base32
          "0j9fsisip21qv4xljsg5dmni1pgpvwrjyyhhql0glydc4bs5rjgv"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-webob" ,python-webob)
+       ("python-webtest" ,python-webtest)))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
        ("python-cssselect" ,python-cssselect)))
@@ -8325,7 +8328,8 @@ fast xml and html manipulation.")
                   (strip-python2-variant python-pyquery))))
     (package
       (inherit pyquery)
-      (native-inputs `(("python2-setuptools" ,python2-setuptools))))))
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs pyquery))))))
 
 (define-public python-webtest
   (package
