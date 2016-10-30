@@ -10456,6 +10456,10 @@ binary or text.")
                (base32
                 "0skxbhnymwlspjkzga0f7x1hg3y50fwpfghs8g8k7fh6f4nknlym"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The tests require some extra resources to be downloaded.
+       ;; TODO Try packaging these resources.
+       #:tests? #f))
     (home-page "http://nltk.org/")
     (synopsis "Natural Language Toolkit")
     (description "It provides interfaces to over 50 corpora and lexical
