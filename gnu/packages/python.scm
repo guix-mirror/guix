@@ -9589,7 +9589,9 @@ focus on event-based network programming and multiprotocol integration.")
           "0nb4h08di432lv7dy2v9kpwgk0w92f24sqc2hw2s9vwr5b8v8xvj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-twisted" ,python-twisted)))
+     `(("python-pyev" ,python-pyev)
+       ("python-tornado" ,python-tornado)
+       ("python-twisted" ,python-twisted)))
     (home-page "https://pika.readthedocs.org")
     (synopsis "Pure Python AMQP Client Library")
     (description
