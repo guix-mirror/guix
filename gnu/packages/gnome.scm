@@ -3884,6 +3884,7 @@ metadata in photo and video files of various formats.")
      `(("pkg-config" ,pkg-config)
        ("itstool" ,itstool)
        ("gettext" ,gettext-minimal)
+       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
        ("itstool" ,itstool)
        ("vala" ,vala)))
     (inputs
