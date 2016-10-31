@@ -40,15 +40,15 @@
 (define-public lua
   (package
     (name "lua")
-    (version "5.2.4")
+    (version "5.3.3")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.lua.org/ftp/lua-"
+             (uri (string-append "https://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "0jwznq0l8qg9wh5grwg07b5cy3lzngvl5m2nl1ikp6vqssmf9qmr"))
+              (base32 "18mcfbbmjyp8f2l9yy7n6dzk066nq6man0kpwly4bppphilc04si"))
              (patches (search-patches "lua-pkgconfig.patch"
-                                      "lua52-liblua-so.patch"))))
+                                      "lua-liblua-so.patch"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)))
     (arguments
@@ -69,7 +69,7 @@
                                (string-append "INSTALL_TOP=" out)
                                (string-append "INSTALL_MAN=" out
                                               "/share/man/man1")))))))))
-    (home-page "http://www.lua.org/")
+    (home-page "https://www.lua.org/")
     (synopsis "Embeddable scripting language")
     (description
      "Lua is a powerful, fast, lightweight, embeddable scripting language.  Lua
@@ -80,12 +80,25 @@ automatic memory management with incremental garbage collection, making it ideal
 for configuration, scripting, and rapid prototyping.")
     (license license:x11)))
 
+(define-public lua-5.2
+  (package (inherit lua)
+           (version "5.2.4")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append "https://www.lua.org/ftp/lua-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "0jwznq0l8qg9wh5grwg07b5cy3lzngvl5m2nl1ikp6vqssmf9qmr"))
+              (patches (search-patches "lua-pkgconfig.patch"
+                                       "lua-liblua-so.patch"))))))
+
 (define-public lua-5.1
   (package (inherit lua)
     (version "5.1.5")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.lua.org/ftp/lua-"
+             (uri (string-append "https://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
               (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))
