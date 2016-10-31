@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -63,7 +63,7 @@
 (define-public librecad
   (package
     (name "librecad")
-    (version "2.1.1")
+    (version "2.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -72,7 +72,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "132vv9pzbx64zmbnikyg06d4j47yzlmwi4mywxnd9gkaik4yd2kb"))))
+                "01nvc1g3si05r5np1pzn62ah9w84p8nxa32wqrjh6gdi17jfvi3l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
