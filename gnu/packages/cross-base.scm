@@ -254,7 +254,7 @@ GCC that does not target a libc; otherwise, target that libc."
     (native-inputs
      `(("ld-wrapper-cross" ,(make-ld-wrapper
                              (string-append "ld-wrapper-" target)
-                             #:target target
+                             #:target (const target)
                              #:binutils xbinutils))
        ("binutils-cross" ,xbinutils)
 

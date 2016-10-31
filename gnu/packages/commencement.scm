@@ -424,8 +424,14 @@ the bootstrap environment."
 (define ld-wrapper-boot0
   ;; We need this so binaries on Hurd will have libmachuser and libhurduser
   ;; in their RUNPATH, otherwise validate-runpath will fail.
-  (make-ld-wrapper (string-append "ld-wrapper-" (boot-triplet))
-                   #:target (boot-triplet)
+  ;;
+  ;; XXX: Work around <http://bugs.gnu.org/24832> by fixing the name and
+  ;; triplet on GNU/Linux.  For GNU/Hurd, use the right triplet.
+  (make-ld-wrapper (string-append "ld-wrapper-" "x86_64-guix-linux-gnu")
+                   #:target (lambda (system)
+                              (if (string-suffix? "-linux" system)
+                                  "x86_64-guix-linux-gnu"
+                                  (boot-triplet system)))
                    #:binutils binutils-boot0
                    #:guile %bootstrap-guile
                    #:bash (car (assoc-ref %boot0-inputs "bash"))))

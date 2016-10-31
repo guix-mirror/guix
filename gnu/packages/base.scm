@@ -422,14 +422,22 @@ included.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 
-(define* (make-ld-wrapper name #:key binutils
+(define* (make-ld-wrapper name #:key
+                          (target (const #f))
+                          binutils
                           (guile (canonical-package guile-2.0))
-                          (bash (canonical-package bash)) target
+                          (bash (canonical-package bash))
                           (guile-for-build guile))
   "Return a package called NAME that contains a wrapper for the 'ld' program
-of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  When
-TARGET is not #f, make a wrapper for the cross-linker for TARGET, called
-'TARGET-ld'.  The wrapper uses GUILE and BASH."
+of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  The
+wrapper uses GUILE and BASH.
+
+TARGET must be a one-argument procedure that, given a system type, returns a
+cross-compilation target triplet or #f.  When the result is not #f, make a
+wrapper for the cross-linker for that target, called 'TARGET-ld'."
+  ;; Note: #:system->target-triplet is a procedure so that the evaluation of
+  ;; its result can be delayed until the 'arguments' field is evaluated, thus
+  ;; in a context where '%current-system' is accurate.
   (package
     (name name)
     (version "0")
@@ -441,43 +449,44 @@ TARGET is not #f, make a wrapper for the cross-linker for TARGET, called
               ("wrapper"  ,(search-path %load-path
                                         "gnu/packages/ld-wrapper.in"))))
     (arguments
-     `(#:guile ,guile-for-build
-       #:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (system base compile))
+     (let ((target (target (%current-system))))
+       `(#:guile ,guile-for-build
+         #:modules ((guix build utils))
+         #:builder (begin
+                     (use-modules (guix build utils)
+                                  (system base compile))
 
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (ld  ,(if target
-                                    `(string-append bin "/" ,target "-ld")
-                                    '(string-append bin "/ld")))
-                          (go  (string-append ld ".go")))
+                     (let* ((out (assoc-ref %outputs "out"))
+                            (bin (string-append out "/bin"))
+                            (ld  ,(if target
+                                      `(string-append bin "/" ,target "-ld")
+                                      '(string-append bin "/ld")))
+                            (go  (string-append ld ".go")))
 
-                     (setvbuf (current-output-port) _IOLBF)
-                     (format #t "building ~s/bin/ld wrapper in ~s~%"
-                             (assoc-ref %build-inputs "binutils")
-                             out)
+                       (setvbuf (current-output-port) _IOLBF)
+                       (format #t "building ~s/bin/ld wrapper in ~s~%"
+                               (assoc-ref %build-inputs "binutils")
+                               out)
 
-                     (mkdir-p bin)
-                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
-                     (substitute* ld
-                       (("@SELF@")
-                        ld)
-                       (("@GUILE@")
-                        (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                       (("@BASH@")
-                        (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/bash"))
-                       (("@LD@")
-                        (string-append (assoc-ref %build-inputs "binutils")
-                                       ,(if target
-                                            (string-append "/bin/"
-                                                           target "-ld")
-                                            "/bin/ld"))))
-                     (chmod ld #o555)
-                     (compile-file ld #:output-file go)))))
+                       (mkdir-p bin)
+                       (copy-file (assoc-ref %build-inputs "wrapper") ld)
+                       (substitute* ld
+                         (("@SELF@")
+                          ld)
+                         (("@GUILE@")
+                          (string-append (assoc-ref %build-inputs "guile")
+                                         "/bin/guile"))
+                         (("@BASH@")
+                          (string-append (assoc-ref %build-inputs "bash")
+                                         "/bin/bash"))
+                         (("@LD@")
+                          (string-append (assoc-ref %build-inputs "binutils")
+                                         ,(if target
+                                              (string-append "/bin/"
+                                                             target "-ld")
+                                              "/bin/ld"))))
+                       (chmod ld #o555)
+                       (compile-file ld #:output-file go))))))
     (synopsis "The linker wrapper")
     (description
      "The linker wrapper (or 'ld-wrapper') wraps the linker to add any
