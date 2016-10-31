@@ -361,4 +361,4 @@ language.")
       (synopsis "On-Chip Debugger")
       (description "OpenOCD provides on-chip programming and debugging support
 with a layered architecture of JTAG interface and TAP support.")
-      (license license:gpl2))))
+      (license license:gpl2+))))
