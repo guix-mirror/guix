@@ -48,7 +48,7 @@
             giftware
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             gfl1.0
-            fdl1.1+ fdl1.3+
+            fdl1.1+ fdl1.2+ fdl1.3+
             opl1.0+
             isc
             ijg
