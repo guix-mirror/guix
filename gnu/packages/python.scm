@@ -4583,6 +4583,47 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python2-ipykernel
   (package-with-python2 python-ipykernel))
 
+(define-public python-testpath
+  (package
+    (name "python-testpath")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jupyter/testpath/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04kh3fgvmqz6cfcw79q70qwjz7ib7lxm27cc548iy2rpr33qqf55"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; this package does not even have a setup.py
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'install)
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((dir (string-append
+                                (assoc-ref outputs "out")
+                                "/lib/python"
+                                (string-take (string-take-right
+                                              (assoc-ref inputs "python") 5) 3)
+                                "/site-packages/testpath")))
+                      (mkdir-p dir)
+                      (copy-recursively "testpath" dir))
+                    #t)))))
+    (home-page "https://github.com/takluyver/testpath")
+    (synopsis "Test utilities for code working with files and commands")
+    (description
+     "Testpath is a collection of utilities for Python code working with files
+and commands.  It contains functions to check things on the filesystem, and
+tools for mocking system commands and recording calls to those.")
+    (license license:expat)))
+
+(define-public python2-testpath
+  (package-with-python2 python-testpath))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
