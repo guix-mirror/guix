@@ -4500,6 +4500,31 @@ without using the configuration machinery.")
 (define-public python2-traitlets
   (package-with-python2 python-traitlets))
 
+(define-public python-jupyter-core
+  (package
+    (name "python-jupyter-core")
+    (version "4.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append (pypi-uri "jupyter_core" version)))
+       (sha256
+        (base32
+         "177d9csqldzhsh6xs1p4nf6lzvhzyg6gklqjf69lxgxyadx87v24"))))
+    (build-system python-build-system)
+    ;; FIXME: not sure how to run the tests
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-traitlets" ,python-traitlets)))
+    (home-page "http://jupyter.org/")
+    (synopsis "Jupyter base package")
+    (description
+     "Jupyter core is the base package on which Jupyter projects rely.")
+    (license license:bsd-3)))
+
+(define-public python2-jupyter-core
+  (package-with-python2 python-jupyter-core))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
