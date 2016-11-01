@@ -6,6 +6,7 @@
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+# Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 #
 # This file is part of GNU Guix.
 #
@@ -807,7 +808,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
   %D%/packages/patches/python-disable-ssl-test.patch		\
   %D%/packages/patches/python-fix-tests.patch			\
-  %D%/packages/patches/python-ipython-inputhook-ctype.patch	\
   %D%/packages/patches/python-rarfile-fix-tests.patch		\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\

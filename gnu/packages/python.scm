@@ -4627,34 +4627,38 @@ tools for mocking system commands and recording calls to those.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "3.2.1")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
-       (patches (search-patches "python-ipython-inputhook-ctype.patch"))
-       (uri (string-append "https://pypi.python.org/packages/source/i/"
-                           "ipython/ipython-" version ".tar.gz"))
+       (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "0xwin0sa9n0cabx4cq1ibf5ldsiw5dyimibla82kicz5gbpas4y9"))))
+        (base32 "1npl8g6bfsff9j938ypx0q5fyzy2l8lp0jl8skjjj2zv0z27dlig"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
      `(("python-pyzmq" ,python-pyzmq)
-       ("python-terminado" ,python-terminado)))
-    (inputs
-     `(("readline" ,readline)
-       ("which" ,which)
+       ("python-terminado" ,python-terminado)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
        ("python-numpydoc" ,python-numpydoc)
        ("python-jinja2" ,python-jinja2)
        ("python-mistune" ,python-mistune)
+       ("python-pexpect" ,python-pexpect)
+       ("python-pickleshare" ,python-pickleshare)
+       ("python-simplegeneric" ,python-simplegeneric)
        ("python-jsonschema" ,python-jsonschema)
-       ("python-pygments" ,python-pygments)
-       ("python-requests" ,python-requests) ;; for tests
-       ("python-nose" ,python-nose)))
+       ("python-traitlets" ,python-traitlets)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-pygments" ,python-pygments)))
+    (inputs
+     `(("readline" ,readline)
+       ("which" ,which)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-requests" ,python-requests) ;; for tests
+       ("python-testpath" ,python-testpath)
+       ("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
        ("texlive" ,texlive)
        ("texinfo" ,texinfo)
@@ -4673,13 +4677,13 @@ tools for mocking system commands and recording calls to those.")
                    (examples (string-append doc "/examples")))
               (setenv "LANG" "en_US.utf8")
               (with-directory-excursion "docs"
-                ;; FIXME: html and pdf fail to build
-                ;; (system* "make" "html")
-                ;; (system* "make" "pdf" "PAPER=a4")
+                ;; FIXME: pdf fails to build
+                ;;(system* "make" "pdf" "PAPER=a4")
+                (system* "make" "html")
                 (system* "make" "info"))
               (copy-recursively "docs/man" man1)
               (copy-recursively "examples" examples)
-              ;; (copy-recursively "docs/build/html" html)
+              (copy-recursively "docs/build/html" html)
               ;; (copy-file "docs/build/latex/ipython.pdf"
               ;;            (string-append doc "/ipython.pdf"))
               (mkdir-p info)
