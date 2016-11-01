@@ -6934,6 +6934,36 @@ Jupyter kernels such as IJulia and IRKernel.")
 (define-public python2-jupyter-console
   (package-with-python2 python-jupyter-console))
 
+(define-public jupyter
+  (package
+    (name "jupyter")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter" version))
+       (sha256
+        (base32
+         "0pwf3pminkzyzgx5kcplvvbvwrrzd3baa7lmh96f647k30rlpp6r"))))
+    (build-system python-build-system)
+    ;; FIXME: it's not clear how to run the tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("python-jupyter-console" ,python-jupyter-console)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-notebook" ,python-notebook)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://jupyter.org")
+    (synopsis "Web application for interactive documents")
+    (description
+     "The Jupyter Notebook is a web application that allows you to create and
+share documents that contain live code, equations, visualizations and
+explanatory text.  Uses include: data cleaning and transformation, numerical
+simulation, statistical modeling, machine learning and much more.")
+    (license license:bsd-3)))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
