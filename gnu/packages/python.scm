@@ -6719,6 +6719,46 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python2-bleach
   (package-with-python2 python-bleach))
 
+(define-public python-entrypoints
+  (package
+    (name "python-entrypoints")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/takluyver/entrypoints/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0azqlkh3j0za080lsf5crnhaxx3c93k9dpv5ihkhf5cppgw5sjz5"))))
+    (build-system python-build-system)
+    ;; The package does not come with a setup.py file, so we have to generate
+    ;; one ourselves.
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-setup.py
+           (lambda _
+             (call-with-output-file "setup.py"
+               (lambda (port)
+                 (format port "\
+from setuptools import setup
+setup(name='entrypoints', version='~a', py_modules=['entrypoints'])
+" ,version))))))))
+    (home-page "https://github.com/takluyver/entrypoints")
+    (synopsis "Discover and load entry points from installed Python packages")
+    (description "Entry points are a way for Python packages to advertise
+objects with some common interface.  The most common examples are
+@code{console_scripts} entry points, which define shell commands by
+identifying a Python function to run.  The @code{entrypoints} module contains
+functions to find and load entry points.")
+    (license license:expat)))
+
+(define-public python2-entrypoints
+  (package-with-python2 python-entrypoints))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
