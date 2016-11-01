@@ -4788,6 +4788,22 @@ and written in Python.")
 (define-public python2-html5lib
   (package-with-python2 python-html5lib))
 
+;; Needed for python-bleach, a dependency of python-notebook
+(define-public python-html5lib-0.9
+  (package
+    (inherit python-html5lib)
+    (version "0.999")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "html5lib" version))
+       (sha256
+        (base32
+         "17n4zfsj6ynmbwdwviywmj8r6nzr3xvfx2zs0xhndmvm51z7z263"))))))
+
+(define-public python2-html5lib-0.9
+  (package-with-python2 python-html5lib-0.9))
+
 (define-public python-urwid
   (package
     (name "python-urwid")
