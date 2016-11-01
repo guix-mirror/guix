@@ -7910,7 +7910,7 @@ a set of wrappers to use the hash tables in the IO monad.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://package/data-accessor/data-accessor-"
+             "mirror://hackage/package/data-accessor/data-accessor-"
              version ".tar.gz"))
        (sha256
         (base32 "1vf2g1gac3rm32g97rl0fll51m88q7ry4m6khnl5j47qsmx24r9l"))))
@@ -7930,8 +7930,8 @@ manipulating fields of records.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://package/data-accessor-transformers/data-accessor-transformers-"
-             version ".tar.gz"))
+             "mirror://hackage/package/data-accessor-transformers/"
+             "data-accessor-transformers-" version ".tar.gz"))
        (sha256
         (base32 "0yp030vafbpddl27m606aibbbr5ar5j5bsv4bksscz3cq4yq5j10"))))
     (build-system haskell-build-system)
@@ -7968,7 +7968,7 @@ helper functions for Lists, Maybes, Tuples, Functions.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://package/gnuplot/gnuplot-"
+             "mirror://hackage/package/gnuplot/gnuplot-"
              version ".tar.gz"))
        (sha256
         (base32 "1xz8prw9xjk0rsyrkp9bsmxykzrbhpv9qhhkdapy75mdbmgwjm7s"))))
