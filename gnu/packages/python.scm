@@ -4467,14 +4467,14 @@ standard library.")
 (define-public python-traitlets
   (package
     (name "python-traitlets")
-    (version "4.1.0")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "traitlets" version))
        (sha256
         (base32
-         "0nxgj8jxlm1kqf8cx2x7vjid05zdgbxpqhjbdl46r8njlpgkh3j4"))))
+         "1afy08sa5n9gnkvh3da49c16zkyv598vchv0p1hp7zzjy8895hz4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
