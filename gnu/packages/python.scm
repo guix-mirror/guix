@@ -4557,6 +4557,32 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python2-jupyter-client
   (package-with-python2 python-jupyter-client))
 
+(define-public python-ipykernel
+  (package
+    (name "python-ipykernel")
+    (version "4.5.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "ipykernel" version))
+      (sha256
+       (base32 "15c2bp1x3i6s4xb7vz7742h3kmvdfdfn9n2haywm3mwgvf77jni4"))))
+    (build-system python-build-system)
+    ;; The tests load a submodule of IPython.  However, IPython itself depends
+    ;; on ipykernel.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     ;; imported at runtime during connect
+     `(("python-jupyter-client" ,python-jupyter-client)))
+    (home-page "http://ipython.org")
+    (synopsis "IPython Kernel for Jupyter")
+    (description
+     "This package provides the IPython kernel for Jupyter.")
+    (license license:bsd-3)))
+
+(define-public python2-ipykernel
+  (package-with-python2 python-ipykernel))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
