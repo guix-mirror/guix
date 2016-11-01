@@ -6759,6 +6759,51 @@ functions to find and load entry points.")
 (define-public python2-entrypoints
   (package-with-python2 python-entrypoints))
 
+(define-public python-nbconvert
+  (package
+    (name "python-nbconvert")
+    (version "5.0.0b1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbconvert" version))
+       (sha256
+        (base32
+         "0brclbb18l4nmd5qy3dl9wn05rjdh1fz4rmzdlfqacj12rcdvdgp"))))
+    (build-system python-build-system)
+    ;; The "bdist_egg" target is disabled by default, causing the installation
+    ;; to fail.
+    (arguments `(#:configure-flags (list "bdist_egg")))
+    (propagated-inputs
+     `(("python-bleach" ,python-bleach)
+       ("python-entrypoints" ,python-entrypoints)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jupyter-core" ,python-jupyter-core)
+       ("python-mistune" ,python-mistune)
+       ("python-nbformat" ,python-nbformat)
+       ("python-pygments" ,python-pygments)
+       ("python-setuptools" ,python-setuptools)
+       ("python-traitlets" ,python-traitlets)))
+    (home-page "http://jupyter.org")
+    (synopsis "Converting Jupyter Notebooks")
+    (description "The @code{nbconvert} tool, @{jupyter nbconvert}, converts
+notebooks to various other formats via Jinja templates.  It allows you to
+convert an @code{.ipynb} notebook file into various static formats including:
+
+@enumerate
+@item HTML
+@item LaTeX
+@item PDF
+@item Reveal JS
+@item Markdown (md)
+@item ReStructured Text (rst)
+@item executable script
+@end enumerate\n")
+    (license license:bsd-3)))
+
+(define-public python2-nbconvert
+  (package-with-python2 python-nbconvert))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
