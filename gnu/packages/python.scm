@@ -6693,6 +6693,32 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python2-nbformat
   (package-with-python2 python-nbformat))
 
+(define-public python-bleach
+  (package
+    (name "python-bleach")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bleach" version))
+       (sha256
+        (base32
+         "0jvg3jxrvnx7xmm9gj262v60ib452xlnwlb0navyp7jsvcd0d4qj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-html5lib" ,python-html5lib-0.9)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://github.com/jsocol/bleach")
+    (synopsis "Whitelist-based HTML-sanitizing tool")
+    (description "Bleach is an easy whitelist-based HTML-sanitizing tool.")
+    (license license:asl2.0)))
+
+(define-public python2-bleach
+  (package-with-python2 python-bleach))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
