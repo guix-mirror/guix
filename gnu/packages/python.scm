@@ -6842,6 +6842,32 @@ interactive computing.")
 (define-public python2-notebook
   (package-with-python2 python-notebook))
 
+(define-public python-widgetsnbextension
+  (package
+    (name "python-widgetsnbextension")
+    (version "1.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "widgetsnbextension" version))
+       (sha256
+        (base32
+         "0lff2mrwrgsa1mxmwx3phl9xvy0jqfpg6khbmxy53jbq56rwy666"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-notebook" ,python-notebook)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://ipython.org")
+    (synopsis "IPython HTML widgets for Jupyter")
+    (description "This package provides interactive HTML widgets for Jupyter
+notebooks.")
+    (license license:bsd-3)))
+
+(define-public python2-widgetsnbextension
+  (package-with-python2 python-widgetsnbextension))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
