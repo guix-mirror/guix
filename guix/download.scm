@@ -88,7 +88,7 @@
        "http://ftp.gnome.org/pub/GNOME/"
        "http://mirror.yandex.ru/mirrors/ftp.gnome.org/")
       (hackage
-       "https://hackage.haskell.org/")
+       "http://hackage.haskell.org/")
       (savannah
        "http://download.savannah.gnu.org/releases/"
        "ftp://ftp.twaren.net/Unix/NonGNU/"
