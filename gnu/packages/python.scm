@@ -6868,6 +6868,37 @@ notebooks.")
 (define-public python2-widgetsnbextension
   (package-with-python2 python-widgetsnbextension))
 
+(define-public python-ipywidgets
+  (package
+    (name "python-ipywidgets")
+    (version "5.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipywidgets" version))
+       (sha256
+        (base32
+         "1lk0qrr5l9a0z7qkkn30hv5832whxwxymf1l576fmmad0n7hkxms"))))
+    (build-system python-build-system)
+    ;; FIXME: it's not clear how to run the tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)
+       ("python-setuptools" ,python-setuptools)
+       ("python-traitlets" ,python-traitlets)
+       ("python-widgetsnbextension" ,python-widgetsnbextension)))
+    (home-page "http://ipython.org")
+    (synopsis "IPython HTML widgets for Jupyter")
+    (description "Ipywidgets are interactive HTML widgets for Jupyter
+notebooks and the IPython kernel.  Notebooks come alive when interactive
+widgets are used.  Users gain control of their data and can visualize changes
+in the data.")
+    (license license:bsd-3)))
+
+(define-public python2-ipywidgets
+  (package-with-python2 python-ipywidgets))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
