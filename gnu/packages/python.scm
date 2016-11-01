@@ -4525,6 +4525,38 @@ without using the configuration machinery.")
 (define-public python2-jupyter-core
   (package-with-python2 python-jupyter-core))
 
+(define-public python-jupyter-client
+  (package
+    (name "python-jupyter-client")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_client" version))
+       (sha256
+        (base32
+         "1vjjrpjw7k5sh982pbjnslv7byfbfazjw9g92jvs7dz5qbx556n9"))))
+    (build-system python-build-system)
+    ;; Tests fail because of missing native python kernel which I assume is
+    ;; provided by the ipython package, which we cannot use because it would
+    ;; cause a dependency cycle.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-pyzmq" ,python-pyzmq)
+       ("python-traitlets" ,python-traitlets)
+       ("python-jupyter-core" ,python-jupyter-core)))
+    (home-page "http://jupyter.org/")
+    (synopsis "Jupyter protocol implementation and client libraries")
+    (description
+     "The @code{jupyter_client} package contains the reference implementation
+of the Jupyter protocol.  It also provides client and kernel management APIs
+for working with kernels, and the @code{jupyter kernelspec} entrypoint for
+installing @code{kernelspec}s for use with Jupyter frontends.")
+    (license license:bsd-3)))
+
+(define-public python2-jupyter-client
+  (package-with-python2 python-jupyter-client))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
