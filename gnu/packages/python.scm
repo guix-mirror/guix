@@ -6664,6 +6664,35 @@ Debian-related files, such as:
 (define-public python2-debian
   (package-with-python2 python-debian))
 
+(define-public python-nbformat
+  (package
+    (name "python-nbformat")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbformat" version))
+       (sha256
+        (base32
+         "0mq8iki3d4mnx7wy05phss7x98mds4fqydin8lcagidp1knw1xnv"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; no test target
+    (propagated-inputs
+     `(("python-ipython-genutils" ,python-ipython-genutils)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-jupyter-core" ,python-jupyter-core)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://jupyter.org")
+    (synopsis "Jupyter Notebook format")
+    (description "This package provides the reference implementation of the
+Jupyter Notebook format and Python APIs for working with notebooks.")
+    (license license:bsd-3)))
+
+(define-public python2-nbformat
+  (package-with-python2 python-nbformat))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
