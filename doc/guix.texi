@@ -10937,7 +10937,7 @@ volatile root file system.
 The initial RAM disk produced by @code{base-initrd} honors several
 options passed on the Linux kernel command line (that is, arguments
 passed @i{via} the @code{linux} command of GRUB, or the
-@code{-append} option) of QEMU, notably:
+@code{-append} option of QEMU), notably:
 
 @table @code
 @item --load=@var{boot}
