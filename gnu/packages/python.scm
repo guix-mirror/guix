@@ -6804,6 +6804,44 @@ convert an @code{.ipynb} notebook file into various static formats including:
 (define-public python2-nbconvert
   (package-with-python2 python-nbconvert))
 
+(define-public python-notebook
+  (package
+    (name "python-notebook")
+    (version "4.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "notebook" version))
+              (sha256
+               (base32
+                "0laq5c2f21frq6xcdckgq7raqhznbjb0qs0357g612z87wyn1a9r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; HOME must be set for tests
+             (setenv "HOME" "/tmp")
+             (zero? (system* "nosetests")))))))
+    (propagated-inputs
+     `(("python-jupyter-core" ,python-jupyter-core)
+       ("python-nbformat" ,python-nbformat)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-ipython" ,python-ipython)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)
+       ("python-requests" ,python-requests)))
+    (home-page "http://jupyter.org/")
+    (synopsis "Web-based notebook environment for interactive computing")
+    (description
+     "The Jupyter HTML notebook is a web-based notebook environment for
+interactive computing.")
+    (license license:bsd-3)))
+
+(define-public python2-notebook
+  (package-with-python2 python-notebook))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
