@@ -6899,6 +6899,37 @@ in the data.")
 (define-public python2-ipywidgets
   (package-with-python2 python-ipywidgets))
 
+(define-public python-jupyter-console
+  (package
+    (name "python-jupyter-console")
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_console" version))
+       (sha256
+        (base32
+         "04acmkwsi99rcg3vb54c6n492zv35s92h2ahabc0w6wj976cipvx"))))
+    (build-system python-build-system)
+    ;; FIXME: it's not clear how to run the tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-pygments" ,python-pygments)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://jupyter.org")
+    (synopsis "Jupyter terminal console")
+    (description "This package provides a terminal-based console frontend for
+Jupyter kernels.  It also allows for console-based interaction with non-Python
+Jupyter kernels such as IJulia and IRKernel.")
+    (license license:bsd-3)))
+
+(define-public python2-jupyter-console
+  (package-with-python2 python-jupyter-console))
+
 (define-public python-chardet
   (package
     (name "python-chardet")
