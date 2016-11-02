@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (install-grub
+            install-grub-config
             populate-root-file-system
             reset-timestamps
             register-closure
@@ -36,13 +38,24 @@
 ;;;
 ;;; Code:
 
-(define* (install-grub grub.cfg device mount-point)
+(define (install-grub grub.cfg device mount-point)
   "Install GRUB with GRUB.CFG on DEVICE, which is assumed to be mounted on
 MOUNT-POINT.
 
 Note that the caller must make sure that GRUB.CFG is registered as a GC root
 so that the fonts, background images, etc. referred to by GRUB.CFG are not
 GC'd."
+  (install-grub-config grub.cfg mount-point)
+  (unless (zero? (system* "grub-install" "--no-floppy"
+                          "--boot-directory"
+                          (string-append mount-point "/boot")
+                          device))
+    (error "failed to install GRUB")))
+
+(define (install-grub-config grub.cfg mount-point)
+  "Atomically copy GRUB.CFG into boot/grub/grub.cfg on the MOUNT-POINT.  Note
+that the caller must make sure that GRUB.CFG is registered as a GC root so
+that the fonts, background images, etc. referred to by GRUB.CFG are not GC'd."
   (let* ((target (string-append mount-point "/boot/grub/grub.cfg"))
          (pivot  (string-append target ".new")))
     (mkdir-p (dirname target))
@@ -50,13 +63,7 @@ GC'd."
     ;; Copy GRUB.CFG instead of just symlinking it, because symlinks won't
     ;; work when /boot is on a separate partition.  Do that atomically.
     (copy-file grub.cfg pivot)
-    (rename-file pivot target)
-
-    (unless (zero? (system* "grub-install" "--no-floppy"
-                            "--boot-directory"
-                            (string-append mount-point "/boot")
-                            device))
-      (error "failed to install GRUB"))))
+    (rename-file pivot target)))
 
 (define (evaluate-populate-directive directive target)
   "Evaluate DIRECTIVE, an sexp describing a file or directory to create under
