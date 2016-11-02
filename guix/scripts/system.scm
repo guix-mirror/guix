@@ -366,8 +366,10 @@ it atomically, and then run OS's activation script."
     (date->string (time-utc->date time)
                   "~Y-~m-~d ~H:~M")))
 
-(define* (profile-grub-entries #:optional (profile %system-profile))
-  "Return a list of 'menu-entry' for the generations of PROFILE."
+(define* (profile-grub-entries #:optional (profile %system-profile)
+                                  (numbers (generation-numbers profile)))
+  "Return a list of 'menu-entry' for the generations of PROFILE specified by
+NUMBERS, which is a list of generation numbers."
   (define (system->grub-entry system number time)
     (unless-file-not-found
      (let* ((file             (string-append system "/parameters"))
@@ -395,8 +397,7 @@ it atomically, and then run OS's activation script."
                 kernel-arguments))
         (initrd initrd)))))
 
-  (let* ((numbers (generation-numbers profile))
-         (systems (map (cut generation-file-name profile <>)
+  (let* ((systems (map (cut generation-file-name profile <>)
                        numbers))
          (times   (map (lambda (system)
                          (unless-file-not-found
