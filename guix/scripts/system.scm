@@ -366,7 +366,7 @@ it atomically, and then run OS's activation script."
     (date->string (time-utc->date time)
                   "~Y-~m-~d ~H:~M")))
 
-(define* (previous-grub-entries #:optional (profile %system-profile))
+(define* (profile-grub-entries #:optional (profile %system-profile))
   "Return a list of 'menu-entry' for the generations of PROFILE."
   (define (system->grub-entry system number time)
     (unless-file-not-found
@@ -563,7 +563,7 @@ building anything."
                       (operating-system-grub.cfg os
                                                  (if (eq? 'init action)
                                                      '()
-                                                     (previous-grub-entries)))))
+                                                     (profile-grub-entries)))))
 
        ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
        ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
