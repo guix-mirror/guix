@@ -900,7 +900,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.4.0")
+    (version "4.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -908,12 +908,14 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "05351m4m0whsivlblvs3m0nz5q9v6r06ik80z27gf6ca51kw74dw"))))
+                "12dk5hn1zlraqk2p0z8dv2xgsz0x9v8l3vcvf51fzj0v8b45j2d3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "DESTDIR="
+                            (string-append "BASH_COMPDIR=" out
+                                           "/etc/bash_completion.d")
                             (string-append "LIBDIR=" out "/lib")
                             (string-append "SBINDIR=" out "/sbin")
                             (string-append "CONFDIR=" out "/etc")
