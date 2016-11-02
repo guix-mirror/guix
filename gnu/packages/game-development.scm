@@ -280,14 +280,14 @@ archive on a per-file basis.")
 (define-public love
   (package
     (name "love")
-    (version "0.10.1")
+    (version "0.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/rude/love/downloads/"
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "1ys18m7c4994k5s7avqlf17sc2icx5zgvfplz504q1ka16hwkc52"))))
+               "11x346pw0gqad8nmkmywzx4xpcbfc3dslbrdw5x94n1i25mk0sxj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
