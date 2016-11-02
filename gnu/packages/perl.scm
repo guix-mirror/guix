@@ -2685,6 +2685,34 @@ functionality; it returns a list of file names that match the given pattern.
 For instance, it supports the @code{**/*.pm} form.")
     (license (package-license perl))))
 
+(define-public perl-getopt-long
+  (package
+    (name "perl-getopt-long")
+    (version "v2.49.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JV/JV/"
+                           "Getopt-Long-" (substring version 1) ".tar.gz"))
+       (sha256
+        (base32
+         "0bw8gbhj8s5gmkqvs3m7pk9arqhgqssrby4yimh29ah9alix9ylq"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Getopt-Long")
+    (synopsis "Module to handle parsing command line options")
+    (description "The @code{Getopt::Long} module implements an extended getopt
+function called @code{GetOptions()}.  It parses the command line from
+@code{ARGV}, recognizing and removing specified options and their possible
+values.
+
+This function adheres to the POSIX syntax for command line options, with GNU
+extensions.  In general, this means that options have long names instead of
+single letters, and are introduced with a double dash \"--\".  Support for
+bundling of command line options, as was the case with the more traditional
+single-letter approach, is provided but not enabled by default.")
+    ;; Can be used with either license.
+    (license (list (package-license perl) gpl2+))))
+
 (define-public perl-getopt-long-descriptive
   (package
     (name "perl-getopt-long-descriptive")
