@@ -11155,8 +11155,9 @@ supported:
 @table @code
 @item reconfigure
 Build the operating system described in @var{file}, activate it, and
-switch to it@footnote{This action is usable only on systems already
-running GuixSD.}.
+switch to it@footnote{This action (and the related actions
+@code{switch-generation} and @code{roll-back}) are usable only on
+systems already running GuixSD.}.
 
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
@@ -11177,6 +11178,52 @@ It is highly recommended to run @command{guix pull} once before you run
 guix pull}).  Failing to do that you would see an older version of Guix
 once @command{reconfigure} has completed.
 @end quotation
+
+@item switch-generation
+Switch to an existing system generation.  This action atomically
+switches the system profile to the specified system generation.  It also
+rearranges the system's existing GRUB menu entries.  It makes the menu
+entry for the specified system generation the default, and it moves the
+entries for the other generations to a submenu.  The next time the
+system boots, it will use the specified system generation.
+
+The target generation can be specified explicitly by its generation
+number.  For example, the following invocation would switch to system
+generation 7:
+
+@example
+guix system switch-generation 7
+@end example
+
+The target generation can also be specified relative to the current
+generation with the form @code{+N} or @code{-N}, where @code{+3} means
+``3 generations ahead of the current generation,'' and @code{-1} means
+``1 generation prior to the current generation.''  When specifying a
+negative value such as @code{-1}, you must precede it with @code{--} to
+prevent it from being parsed as an option.  For example:
+
+@example
+guix system switch-generation -- -1
+@end example
+
+Currently, the effect of invoking this action is @emph{only} to switch
+the system profile to an existing generation and rearrange the GRUB menu
+entries.  To actually start using the target system generation, you must
+reboot after running this action.  In the future, it will be updated to
+do the same things as @command{reconfigure}, like activating and
+deactivating services.
+
+This action will fail if the specified generation does not exist.
+
+@item roll-back
+Switch to the preceding system generation.  The next time the system
+boots, it will use the preceding system generation.  This is the inverse
+of @command{reconfigure}, and it is exactly the same as invoking
+@command{switch-generation} with an argument of @code{-1}.
+
+Currently, as with @command{switch-generation}, you must reboot after
+running this action to actually start using the preceding system
+generation.
 
 @item build
 Build the derivation of the operating system, which includes all the

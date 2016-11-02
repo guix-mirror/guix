@@ -407,6 +407,65 @@ NUMBERS, which is a list of generation numbers."
 
 
 ;;;
+;;; Roll-back.
+;;;
+(define (roll-back-system store)
+  "Roll back the system profile to its previous generation.  STORE is an open
+connection to the store."
+  (switch-to-system-generation store "-1"))
+
+;;;
+;;; Switch generations.
+;;;
+(define (switch-to-system-generation store spec)
+  "Switch the system profile to the generation specified by SPEC, and
+re-install grub with a grub configuration file that uses the specified system
+generation as its default entry.  STORE is an open connection to the store."
+  (let ((number (relative-generation-spec->number %system-profile spec)))
+    (if number
+        (begin
+          (reinstall-grub store number)
+          (switch-to-generation* %system-profile number))
+        (leave (_ "cannot switch to system generation '~a'~%") spec))))
+
+(define (reinstall-grub store number)
+  "Re-install grub for existing system profile generation NUMBER.  STORE is an
+open connection to the store."
+  (let* ((generation (generation-file-name %system-profile number))
+         (file (string-append generation "/parameters"))
+         (params (unless-file-not-found
+                  (call-with-input-file file read-boot-parameters)))
+         (root-device (boot-parameters-root-device params))
+         ;; We don't currently keep track of past menu entries' details.  The
+         ;; default values will allow the system to boot, even if they differ
+         ;; from the actual past values for this generation's entry.
+         (grub-config (grub-configuration (device root-device)))
+         ;; Make the specified system generation the default entry.
+         (entries (profile-grub-entries %system-profile (list number)))
+         (old-generations (delv number (generation-numbers %system-profile)))
+         (old-entries (profile-grub-entries %system-profile old-generations))
+         (grub.cfg (run-with-store store
+                     (grub-configuration-file grub-config
+                                              entries
+                                              #:old-entries old-entries))))
+    (show-what-to-build store (list grub.cfg))
+    (build-derivations store (list grub.cfg))
+    ;; This is basically the same as install-grub*, but for now we avoid
+    ;; re-installing the GRUB boot loader itself onto a device, mainly because
+    ;; we don't in general have access to the same version of the GRUB package
+    ;; which was used when installing this other system generation.
+    (let* ((grub.cfg-path (derivation->output-path grub.cfg))
+           (gc-root (string-append %gc-roots-directory "/grub.cfg"))
+           (temp-gc-root (string-append gc-root ".new")))
+      (switch-symlinks temp-gc-root grub.cfg-path)
+      (unless (false-if-exception (install-grub-config grub.cfg-path "/"))
+        (delete-file temp-gc-root)
+        (leave (_ "failed to re-install GRUB configuration file: '~a'~%")
+               grub.cfg-path))
+      (rename-file temp-gc-root gc-root))))
+
+
+;;;
 ;;; Graphs.
 ;;;
 
@@ -641,13 +700,18 @@ building anything."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix system [OPTION] ACTION [FILE]
-Build the operating system declared in FILE according to ACTION.\n"))
+  (display (_ "Usage: guix system [OPTION ...] ACTION [ARG ...] [FILE]
+Build the operating system declared in FILE according to ACTION.
+Some ACTIONS support additional ARGS.\n"))
   (newline)
   (display (_ "The valid values for ACTION are:\n"))
   (newline)
   (display (_ "\
    reconfigure      switch to a new operating system configuration\n"))
+  (display (_ "\
+   roll-back        switch to the previous operating system configuration\n"))
+  (display (_ "\
+   switch-generation switch to an existing operating system configuration\n"))
   (display (_ "\
    list-generations list the system generations\n"))
   (display (_ "\
@@ -809,15 +873,33 @@ resulting from command-line parsing."
   "Process COMMAND, one of the 'guix system' sub-commands.  ARGS is its
 argument list and OPTS is the option alist."
   (case command
+    ;; The following commands do not need to use the store, and they do not need
+    ;; an operating system configuration file.
     ((list-generations)
-     ;; List generations.  No need to connect to the daemon, etc.
      (let ((pattern (match args
                       (() "")
                       ((pattern) pattern)
                       (x (leave (_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
-    (else
-     (process-action command args opts))))
+    ;; The following commands need to use the store, but they do not need an
+    ;; operating system configuration file.
+    ((switch-generation)
+     (let ((pattern (match args
+                      ((pattern) pattern)
+                      (x (leave (_ "wrong number of arguments~%"))))))
+       (with-store store
+         (set-build-options-from-command-line store opts)
+         (switch-to-system-generation store pattern))))
+    ((roll-back)
+     (let ((pattern (match args
+                      (() "")
+                      (x (leave (_ "wrong number of arguments~%"))))))
+       (with-store store
+         (set-build-options-from-command-line store opts)
+         (roll-back-system store))))
+    ;; The following commands need to use the store, and they also
+    ;; need an operating system configuration file.
+    (else (process-action command args opts))))
 
 (define (guix-system . args)
   (define (parse-sub-command arg result)
@@ -827,7 +909,8 @@ argument list and OPTS is the option alist."
         (let ((action (string->symbol arg)))
           (case action
             ((build container vm vm-image disk-image reconfigure init
-              extension-graph shepherd-graph list-generations)
+              extension-graph shepherd-graph list-generations roll-back
+              switch-generation)
              (alist-cons 'action action result))
             (else (leave (_ "~a: unknown action~%") action))))))
 
