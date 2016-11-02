@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,6 +98,7 @@
             generation-number
             generation-numbers
             profile-generations
+            relative-generation-spec->number
             relative-generation
             previous-generation-number
             generation-time
@@ -1038,6 +1040,23 @@ former profiles were found."
     (if (equal? generations '(0))
         '()
         generations)))
+
+(define (relative-generation-spec->number profile spec)
+  "Return PROFILE's generation specified by SPEC, which is a string.  The SPEC
+may be a N, -N, or +N, where N is a number.  If the spec is N, then the number
+returned is N.  If it is -N, then the number returned is the profile's current
+generation number minus N.  If it is +N, then the number returned is the
+profile's current generation number plus N.  Return #f if there is no such
+generation."
+  (let ((number (string->number spec)))
+    (and number
+         (case (string-ref spec 0)
+           ((#\+ #\-)
+            (relative-generation profile number))
+           (else (if (memv number (profile-generations profile))
+                     number
+                     #f))))))
+
 
 (define* (relative-generation profile shift #:optional
                               (current (generation-number profile)))
