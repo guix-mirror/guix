@@ -2808,6 +2808,10 @@ file name explicitly because the default is not very descriptive.
 @item @code{patches} (default: @code{'()})
 A list of file names containing patches to be applied to the source.
 
+This list of patches must be unconditional.  In particular, it cannot
+depend on the value of @code{%current-system} or
+@code{%current-target-system}.
+
 @item @code{snippet} (default: @code{#f})
 A G-expression (@pxref{G-Expressions}) or S-expression that will be run
 in the source directory.  This is a convenient way to modify the source,
