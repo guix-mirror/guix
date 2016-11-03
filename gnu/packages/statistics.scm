@@ -692,20 +692,22 @@ aesthetic attributes.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.0.7")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "1bmnf9d677f2jy8jnb9ymjz1qzm4yrd0qp6k5qrrly06jfffyx7g"))))
+         "1l9d759x9s4ddz51sls8kcjps2i9kwfbc72dnagrdavh82h0al8n"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)))
+    (propagated-inputs
+     `(("r-withr" ,r-withr)))
     (home-page "http://cran.r-project.org/web/packages/gdtools")
     (synopsis "Utilities for graphical rendering")
     (description
