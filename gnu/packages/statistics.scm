@@ -1217,14 +1217,14 @@ database.")
 (define-public r-acepack
   (package
     (name "r-acepack")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "acepack" version))
        (sha256
         (base32
-         "0brivhr0imf2qq1flc9qxibybg1zi5m8pxz8cjn5a8gb42bcv96n"))))
+         "1f98rpfjmhd92rdc3j004plyfpjailz6j0ycysbac0kgj83haxc2"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
