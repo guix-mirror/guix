@@ -639,6 +639,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
+  %D%/packages/patches/libjxr-fix-function-signature.patch	\
+  %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/liboop-mips64-deplibs-fix.patch		\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/liblxqt-include.patch			\
