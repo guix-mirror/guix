@@ -7312,7 +7312,7 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "0.99.6")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/RCAS/archive/v"
@@ -7320,7 +7320,7 @@ paired-end data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ljgl2b4r6w2n0i9i04d9xaphajsvhfkjdj2i2z830nha4m3w8f0"))))
+                "1h7di822ihgkhmmmlfbfz3c2dkjyjxl307i6mx8w0cwjqbna1kp6"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)
