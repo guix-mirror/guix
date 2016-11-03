@@ -145,7 +145,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.8.2")
+    (version "1.10.0")
     (source
      (origin
       (method url-fetch)
@@ -153,7 +153,7 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "13fk751vvfrfhbm4ip28vxyvlsm4b4y0bc0pvf7fqp8azg40jwcx"))))
+        "0jp9rwv0am8qv32q3dzhdcbyygg5wjm4fg20njyhp6n6vybyzkdz"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
