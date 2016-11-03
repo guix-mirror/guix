@@ -1847,7 +1847,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.36.1")
+    (version "5.38.1")
     (source
      (origin
        (method url-fetch)
@@ -1855,7 +1855,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0x1rk659sn3cq0n5c90848ilzr1gb1wf0072fl6jhkdq00qgh2s0"))
+         "1p6646rvq43hk09msyp0dk50cqpkh07mf4x0bc2fqisqmcv6b1hf"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1864,7 +1864,8 @@ to BMP, JPEG or PNG image formats.")
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
      `(("texinfo" ,texinfo)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("python" ,python)))
     (arguments
      `(#:configure-flags
        (list "--enable-gcl"
