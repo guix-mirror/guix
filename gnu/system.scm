@@ -60,6 +60,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (rnrs bytevectors)
   #:export (operating-system
             operating-system?
 
@@ -738,7 +739,7 @@ listed in OS.  The C library expects to find it under
                            (label label)
 
                            ;; The device where the kernel and initrd live.
-                           (device (file-system-device store-fs))
+                           (device (grub-device store-fs))
                            (device-mount-point
                             (file-system-mount-point store-fs))
 
@@ -752,6 +753,14 @@ listed in OS.  The C library expects to find it under
                            (initrd initrd)))))
     (grub-configuration-file (operating-system-bootloader os) entries
                              #:old-entries old-entries)))
+
+(define (grub-device fs)
+  "Given FS, a <file-system> object, return a value suitable for use as the
+device in a <menu-entry>."
+  (case (file-system-title fs)
+    ((uuid) (file-system-device fs))
+    ((label) (file-system-device fs))
+    (else #f)))
 
 (define (operating-system-parameters-file os)
   "Return a file that describes the boot parameters of OS.  The primary use of
@@ -771,10 +780,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                     #$(operating-system-kernel-arguments os))
                    (initrd #$initrd)
                    (store
-                    (device #$(case (file-system-title store)
-                                ((uuid) (file-system-device store))
-                                ((label) (file-system-device store))
-                                (else #f)))
+                    (device #$(grub-device store))
                     (mount-point #$(file-system-mount-point store))))
                 #:set-load-path? #f)))
 
@@ -836,7 +842,11 @@ this file is the reconstruction of GRUB menu entries for old configurations."
          (('store ('device device) _ ...)
           device)
          (_                                       ;the old format
-          root)))
+          ;; Root might be a device path like "/dev/sda1", which is not a
+          ;; suitable GRUB device identifier.
+          (if (string-prefix? "/" root)
+              #f
+              root))))
 
       (store-mount-point
        (match (assq 'store rest)
