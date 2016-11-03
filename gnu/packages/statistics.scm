@@ -3255,14 +3255,14 @@ curves, Cox models, and parametric accelerated failure time models.")
 (define-public r-hmisc
   (package
     (name "r-hmisc")
-    (version "3.17-4")
+    (version "4.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Hmisc" version))
        (sha256
         (base32
-         "1hr2kycpm0h3li9gnlbx9pl6h13das7g2wqfk6cip1kx6lv00ypw"))))
+         "0azxmg9h9c456biydc0wpi9xhljmd37m8bv0zaadbvc93g7x0l4b"))))
     (properties `((upstream-name . "Hmisc")))
     (build-system r-build-system)
     (native-inputs
@@ -3277,7 +3277,13 @@ curves, Cox models, and parametric accelerated failure time models.")
        ("r-gridextra" ,r-gridextra)
        ("r-gtable" ,r-gtable)
        ("r-lattice" ,r-lattice)
+       ;; Hmisc needs survival >= 2.40.1, so it cannot use the survival
+       ;; package that comes with R 3.3.1.
+       ("r-survival" ,r-survival)
        ("r-latticeextra" ,r-latticeextra)
+       ("r-htmltable" ,r-htmltable)
+       ("r-htmltools" ,r-htmltools)
+       ("r-viridis" ,r-viridis)
        ("r-nnet" ,r-nnet)
        ("r-rpart" ,r-rpart)))
     (home-page "http://biostat.mc.vanderbilt.edu/Hmisc")
