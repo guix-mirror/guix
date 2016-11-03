@@ -2518,7 +2518,7 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "1.5.1.1")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2527,7 +2527,7 @@ tactics.")
                     name "-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1qc0hhw9m8sy3n9fips52c7aph3w8a8pdl4n45yaasgxzbvpn9xg"))))
+                "1qb5nk0b3d0ia5zszmg4a3ydf4fiy39fmymb66vwkqn4djajdhzq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no check target
