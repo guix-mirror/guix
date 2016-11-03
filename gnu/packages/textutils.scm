@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -459,3 +460,35 @@ categories.")
     ;;   GNU General Public License, (c) by the Free Software Foundation.
     ;;   Guix excludes this file.
     (license (list license:gpl3+ license:public-domain))))
+
+(define-public dotconf
+  (package
+    (name "dotconf")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/williamh/dotconf/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lsnh0yaw44psmx59hq94cj1932gscp5h8d3cnh05l0svr0cy7kz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; FIXME maketest.sh does not work.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/williamh/dotconf")
+    (synopsis "Configuration file parser library")
+    (description
+     "C library for creating and parsing configuration files.")
+    (license (list license:lgpl2.1         ; Main distribution.
+                   license:asl1.1))))      ; src/readdir.{c,h}

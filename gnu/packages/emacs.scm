@@ -298,8 +298,36 @@ metadata.")
     (license license:bsd-3)))
 
 (define-public geiser-next
-  ;; This has become "geiser".
-  (deprecated-package "geiser-next" geiser))
+  ;; Geiser's upcoming version supports Chibi and Chez, while it was forgot to
+  ;; include some required files in 0.9.  When the next Geiser release comes
+  ;; out, we can remove this.
+  (let ((commit "16035b9fa475496f7f89a57fa81455057af749a0")
+        (revision "1"))
+    (package
+      (inherit geiser)
+      (name "geiser-next")
+      (version (string-append "0.9-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (file-name (string-append name "-" version ".tar.gz"))
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/geiser.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1rrafizrhjkai0msryjiz4c5dcdyihf0i2wmgiy8br74rwbxpyl5"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ,@(package-native-inputs geiser)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments geiser)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'autogen
+               (lambda _
+                 (zero? (system* "sh" "autogen.sh")))))))))))
 
 (define-public paredit
   (package
@@ -575,7 +603,7 @@ process, passing on the arguments as command line arguments.")
 (define-public haskell-mode
   (package
     (name "haskell-mode")
-    (version "13.14.2")
+    (version "16.1")
     (source (origin
               (method url-fetch)
               (file-name (string-append name "-" version ".tar.gz"))
@@ -583,7 +611,12 @@ process, passing on the arguments as command line arguments.")
                     "https://github.com/haskell/haskell-mode/archive/v"
                     version ".tar.gz"))
               (sha256
-               (base32 "1kxc2yj8vb122dv91r68h7c5ladcryx963fr16plfhg71fv7f9av"))))
+               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))))
+    (inputs
+     `(("emacs-el-search" ,emacs-el-search) ; for tests
+       ("emacs-stream" ,emacs-stream)))     ; for tests
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("texinfo" ,texinfo)))
@@ -592,15 +625,38 @@ process, passing on the arguments as command line arguments.")
      `(#:make-flags (list (string-append "EMACS="
                                          (assoc-ref %build-inputs "emacs")
                                          "/bin/emacs"))
+       #:modules ((ice-9 match)
+                  (srfi srfi-26)
+                  ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before
           'build 'pre-build
           (lambda* (#:key inputs #:allow-other-keys)
+            (define (el-dir store-dir)
+              (match (find-files store-dir)
+                ((f1 f2 ...) (dirname f1))
+                (_ "")))
+
             (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
+              (define emacs-prefix? (cut string-prefix? "emacs-" <>))
+
               (setenv "SHELL" "sh")
+              (setenv "EMACSLOADPATH"
+                      (string-concatenate
+                       (map (match-lambda
+                              (((? emacs-prefix? name) . dir)
+                               (string-append (el-dir dir) ":"))
+                              (_ ""))
+                            inputs)))
               (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
+              (substitute* "tests/haskell-code-conventions.el"
+                ;; Function name recently changed in "emacs-el-search".
+                (("el-search--search-pattern") "el-search-forward")
+                ;; Don't contact home.
+                (("\\(when \\(>= emacs-major-version 25\\)")
+                 "(require 'el-search) (when nil"))
               #t)))
          (replace
           'install
@@ -621,9 +677,9 @@ process, passing on the arguments as command line arguments.")
                 (install-file "haskell-mode.info" info))
                (copy-to-dir doc '("CONTRIBUTING.md" "NEWS" "README.md"))
                (copy-to-dir el-dir (find-files "." "\\.elc?"))
-               ;; these are now distributed with emacs
+               ;; These are part of other packages.
                (with-directory-excursion el-dir
-                 (for-each delete-file '("cl-lib.el" "ert.el")))
+                 (for-each delete-file '("dash.el" "ert.el")))
                #t))))))
     (home-page "https://github.com/haskell/haskell-mode")
     (synopsis "Haskell mode for Emacs")
@@ -1652,14 +1708,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.11")
+    (version "0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "10v9s7ayvfzd6j6hqfc9zihxgmsc2j0xhxrgy3ah30qkqn6z8w6n"))))
+                "1swi4d7fhahimid9j12cypmkz7dlqgffrnhfxy5ra44y3j2b35ph"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))
@@ -3320,3 +3376,45 @@ This package contains the library runtime.")
     (description "This package provides an Emacs major mode for
 editing nginx config files.")
     (license license:gpl2+)))
+
+(define-public emacs-stream
+  (package
+    (name "emacs-stream")
+    (version "2.2.0")
+    (home-page "https://github.com/NicolasPetton/stream")
+    (source
+     (origin
+       (method url-fetch)
+       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append home-page "/archive/"version ".tar.gz"))
+       (sha256
+        (base32 "03ql4nqfz5pn55mjly6clhvc3g7x2d28kj7mrlqmigvjbql39xxc"))))
+    (build-system emacs-build-system)
+    (synopsis "Implementation of streams for Emacs")
+    (description "This library provides an implementation of streams for Emacs.
+Streams are implemented as delayed evaluation of cons cells.")
+    (license license:gpl3+)))
+
+(define-public emacs-el-search
+  (let ((commit "f26277bfbb3fc3fc74beea6592f294c439796bd4")
+        (revision "1"))
+    (package
+      (name "emacs-el-search")
+      ;; No ufficial release.
+      (version (string-append "0.0-" revision "." (string-take commit 7)))
+      (home-page "https://github.com/emacsmirror/el-search")
+      (source
+       (origin
+         (method git-fetch)
+         (file-name (string-append name "-" version ".tar.gz"))
+         (uri (git-reference
+               (commit commit)
+               (url (string-append home-page ".git"))))
+         (sha256
+          (base32 "12xf40h9sb7xxg2r97gsia94q02543mgiiiw46fzh1ac7b7993g6"))))
+      (build-system emacs-build-system)
+      (inputs `(("emacs-stream" ,emacs-stream)))
+      (synopsis "Expression based interactive search for emacs-lisp-mode")
+      (description "This package provides expression based interactive search
+procedures for emacs-lisp-mode.")
+      (license license:gpl3+))))

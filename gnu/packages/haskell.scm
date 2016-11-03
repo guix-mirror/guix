@@ -7902,4 +7902,96 @@ monad, as well as a typeclass abstracting their common operations, and
 a set of wrappers to use the hash tables in the IO monad.")
     (license license:bsd-3)))
 
+(define-public ghc-data-accessor
+  (package
+    (name "ghc-data-accessor")
+    (version "0.2.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/data-accessor/data-accessor-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1vf2g1gac3rm32g97rl0fll51m88q7ry4m6khnl5j47qsmx24r9l"))))
+    (build-system haskell-build-system)
+    (home-page "http://www.haskell.org/haskellwiki/Record_access")
+    (synopsis
+     "Haskell utilities for accessing and manipulating fields of records")
+    (description "This package provides Haskell modules for accessing and
+manipulating fields of records.")
+    (license license:bsd-3)))
+
+(define-public ghc-data-accessor-transformers
+  (package
+    (name "ghc-data-accessor-transformers")
+    (version "0.2.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/data-accessor-transformers/"
+             "data-accessor-transformers-" version ".tar.gz"))
+       (sha256
+        (base32 "0yp030vafbpddl27m606aibbbr5ar5j5bsv4bksscz3cq4yq5j10"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-data-accessor" ,ghc-data-accessor)))
+    (home-page "http://www.haskell.org/haskellwiki/Record_access")
+    (synopsis "Use Accessor to access state in transformers State monad")
+    (description "This package provides Haskell modules to allow use of
+Accessor to access state in transformers State monad.")
+    (license license:bsd-3)))
+
+(define-public ghc-utility-ht
+  (package
+    (name "ghc-utility-ht")
+    (version "0.0.12")
+    (home-page "https://hackage.haskell.org/package/utility-ht")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/utility-ht-" version ".tar.gz"))
+       (sha256
+        (base32 "1vq5bd51rl9l5lgfmaqxgiggddk38hzgngcj7qgrqnalcd1myi54"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (synopsis "Haskell helper functions for Lists, Maybes, Tuples, Functions")
+    (description "This package includes Hakell modules providing various
+helper functions for Lists, Maybes, Tuples, Functions.")
+    (license license:bsd-3)))
+
+(define-public ghc-gnuplot
+  (package
+    (name "ghc-gnuplot")
+    (version "0.5.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/gnuplot/gnuplot-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1xz8prw9xjk0rsyrkp9bsmxykzrbhpv9qhhkdapy75mdbmgwjm7s"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-data-accessor-transformers" ,ghc-data-accessor-transformers)
+       ("ghc-data-accessor" ,ghc-data-accessor)
+       ("gnuplot" ,gnuplot)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-path-to-gnuplot
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gnuplot (assoc-ref inputs "gnuplot")))
+               (substitute* "os/generic/Graphics/Gnuplot/Private/OS.hs"
+                 (("(gnuplotName = ).*$" all cmd)
+                  (string-append cmd "\"" gnuplot "/bin/gnuplot\"")))))))))
+    (home-page "http://www.haskell.org/haskellwiki/Gnuplot")
+    (synopsis "2D and 3D plots using gnuplot")
+    (description "This package provides a Haskell module for creating 2D and
+3D plots using gnuplot.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here

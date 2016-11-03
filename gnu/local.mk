@@ -793,7 +793,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3.4-fix-tests.patch		\
   %D%/packages/patches/python-3.5-fix-tests.patch		\
   %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
-  %D%/packages/patches/python-django-fix-testcase.patch		\
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-ipython-inputhook-ctype.patch	\

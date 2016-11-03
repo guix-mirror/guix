@@ -19,7 +19,7 @@
 (define-module (gnu packages chez)
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3 expat
+                #:select (gpl2+ gpl3+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3 expat
                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -470,3 +470,97 @@ concatenating, composing and extending these formatters efficiently
 without resorting to capturing and manipulating intermediate
 strings.")
     (license bsd-3)))
+
+(define-public chez-mit
+  (package
+    (name "chez-mit")
+    (version "0.1")
+    (home-page "https://github.com/fedeinthemix/chez-mit")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "1p11q061znwxzxrxg3vw4dbsnpv1dav12hjhnkrjnzyyjvvdm2kn"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("chez-srfi" ,chez-srfi))) ; for tests
+    (native-inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (arguments
+     `(#:make-flags ,(chez-make-flags name version)
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure ,chez-configure))))
+    (synopsis "MIT/GNU Scheme compatibility library for Chez Scheme")
+    (description "This package provides a set of MIT/GNU Scheme compatibility
+libraries for Chez Scheme.  The main goal was to provide the functionality
+required to port the program 'Scmutils' to Chez Scheme.")
+    (license gpl3+)))
+
+(define-public chez-scmutils
+  (package
+    (name "chez-scmutils")
+    (version "0.1")
+    (home-page "https://github.com/fedeinthemix/chez-scmutils")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "1a5j61pggaiwl1gl6m038rcy5n8r2sj5nyjmz86jydx97mm5i8hj"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("chez-srfi" ,chez-srfi)))      ; for tests
+    (native-inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (propagated-inputs
+     `(("chez-mit" ,chez-mit)
+       ("chez-srfi" ,chez-srfi)))
+    (arguments
+     `(#:make-flags ,(chez-make-flags name version)
+       #:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure ,chez-configure)
+         ;; Since the documentation is lacking, we install the source
+         ;; code.  For things to work correctly we have to replace
+         ;; relative paths by absolute ones in 'include' forms.  This
+         ;; in turn requires us to compile the files in the final
+         ;; destination.
+         (delete 'build)
+         (add-after 'install 'install-src
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "install-src" make-flags))))
+         (add-after 'install-src 'absolute-path-in-scm-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("include +\"\\./scmutils")
+                              (string-append "include \"" (dirname file)))))
+                         (find-files out "\\.sls"))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("include +\"\\./scmutils/simplify")
+                              (string-append "include \"" (dirname file)))))
+                         (find-files out "fbe-syntax\\.scm"))
+               #t)))
+         (add-after 'absolute-path-in-scm-files 'build
+           (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mk-file (car (find-files out "Makefile"))))
+               (with-directory-excursion (dirname mk-file)
+                 (zero? (apply system* "make" "build" make-flags))))))
+         (add-after 'build 'clean-up
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (for-each delete-file
+                         (find-files out "Makefile|compile-all\\.ss"))))))))
+    (synopsis "Port of MIT/GNU Scheme Scmutils to Chez Scheme")
+    (description "This package provides a port of the MIT/GNU Scheme
+Scmutils program to Chez Scheme.  The port consists of a set of
+libraries providing most of the functionality of the original.")
+    (license gpl3+)))

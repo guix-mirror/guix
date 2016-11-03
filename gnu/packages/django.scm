@@ -29,14 +29,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.10")
+    (version "1.10.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "01bh5yra6zyxcpqacahbwfbn0y4ivw07j2jsw3crvmjzivb6if26"))
-              (patches (search-patches "python-django-fix-testcase.patch"))))
+                "0c4c8zs7kzb0bdlpy4vlzv6va26dbazr32h91rldf6waxs6z14kg"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

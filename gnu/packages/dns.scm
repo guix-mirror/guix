@@ -73,7 +73,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public bind
   (package
     (name "bind")
-    (version "9.10.4-P3")
+    (version "9.10.4-P4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -81,7 +81,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1vxs29w4hnl7jcd7sknga58xv1qk2rcpsxyich7cpp7xi77faxd0"))))
+                "11lxkb7d79c75scrs28q4xmr0ii2li69zj1c650al3qxir8yf754"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
