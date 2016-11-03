@@ -504,13 +504,13 @@ panels or collapse high-dimensional arrays to simpler summary statistics.")
 (define-public r-proto
   (package
     (name "r-proto")
-    (version "0.3-10")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "proto" version))
        (sha256
-        (base32 "03mvzi529y6kjcp9bkpk7zlgpcakb3iz73hca6rpjy14pyzl3nfh"))))
+        (base32 "1l843p8vckjckdhgv37ngv47fga5jzy0n00pmipvp05nnaixk54j"))))
     (build-system r-build-system)
     (home-page "http://r-proto.googlecode.com")
     (synopsis "Prototype object-based programming")
