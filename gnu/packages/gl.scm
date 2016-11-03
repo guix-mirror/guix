@@ -204,15 +204,7 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "12b3i59xdn2in2hchrkgh4fwij8zhznibx976l3pdj3qkyvlzcms"))
-        (patches
-         ;; XXX To prevent a large number of rebuilds on other systems,
-         ;; apply the following patch on MIPS systems only.  In the next
-         ;; core-updates cycle, this patch could be applied on all platforms.
-         (if (string-prefix? "mips" (or (%current-target-system)
-                                        (%current-system)))
-             (search-patches "mesa-wayland-egl-symbols-check-mips.patch")
-             '()))))
+          "12b3i59xdn2in2hchrkgh4fwij8zhznibx976l3pdj3qkyvlzcms"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
@@ -239,7 +231,16 @@ also known as DXTn or DXTC) for Mesa.")
         ("wayland" ,wayland)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("python" ,python-2)))
+        ("python" ,python-2)
+
+         ;; XXX To prevent a large number of rebuilds on other systems,
+         ;; apply the following patch on MIPS systems only.  In the next
+         ;; core-updates cycle, this patch could be applied on all platforms.
+        ,@(if (string-prefix? "mips" (or (%current-target-system)
+                                         (%current-system)))
+              `(("mips-patch"
+                 ,(search-patch "mesa-wayland-egl-symbols-check-mips.patch")))
+              '())))
     (arguments
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
@@ -266,6 +267,16 @@ also known as DXTn or DXTC) for Mesa.")
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
        #:phases
        (modify-phases %standard-phases
+         ;; Add an 'apply-mips-patch' phase conditionally (see above.)
+         ,@(if (string-prefix? "mips" (or (%current-target-system)
+                                          (%current-system)))
+               `((add-after 'unpack 'apply-mips-patch
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((patch (assoc-ref inputs "mips-patch")))
+                       (zero? (system* "patch" "-p1" "--force"
+                                       "--input" patch))))))
+               '())
+
          (add-after
            'unpack 'patch-create_test_cases
            (lambda _
