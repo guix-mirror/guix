@@ -3309,6 +3309,35 @@ various contexts including the R console, R Markdown documents, and Shiny web
 applications.")
     (license l:expat)))
 
+(define-public r-htmltable
+  (package
+    (name "r-htmltable")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "htmlTable" version))
+       (sha256
+        (base32
+         "0x2f2hrbhvm53zqwn0ny9wxbk34nwf6zww8cx4bjy5ax15asdllm"))))
+    (properties `((upstream-name . "htmlTable")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-stringr" ,r-stringr)))
+    (home-page "http://gforge.se/packages/")
+    (synopsis "Advanced tables for Markdown/HTML")
+    (description
+     "This package provides functions to build tables with advanced layout
+elements such as row spanners, column spanners, table spanners, zebra
+striping, and more.  While allowing advanced layout, the underlying
+CSS-structure is simple in order to maximize compatibility with word
+processors such as LibreOffice.  The package also contains a few text
+formatting functions that help outputting text compatible with HTML or
+LaTeX.")
+    (license l:gpl3+)))
+
 (define-public r-curl
   (package
     (name "r-curl")
