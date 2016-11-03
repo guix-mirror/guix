@@ -69,6 +69,7 @@
         (mbegin %store-monad
           (show-what-to-build* drv)
           (set-build-options* #:keep-going? #t #:keep-failed? #t
+                              #:print-build-trace #t
                               #:fallback? #t)
           (built-derivations* drv)
           (mlet %store-monad ((valid  (filterm (store-lift valid-path?)
