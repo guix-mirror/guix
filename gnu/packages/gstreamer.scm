@@ -379,7 +379,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.8.2")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -387,7 +387,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0yk8pxg3xi26ndj7pliqdfphy0jmqsq4dmdzy31gbd9rgficgwxm"))))
+                "0nyqkggcxfrbflcf4jyj0h9l1rkbi3r5h61w4fcbp2n72522165g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-system-libav")
@@ -397,7 +397,8 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                      (lambda _
                        (substitute* "gst-libs/ext/libav/configure"
                          (("#! /bin/sh")
-                          (string-append "#! "(which "sh")))))))))
+                          (string-append "#! "(which "sh"))))
+                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
