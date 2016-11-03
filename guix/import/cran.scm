@@ -231,7 +231,7 @@ s-expression corresponding to that package, or #f on failure."
                     (start (string-rindex url #\/)))
                 ;; The URL ends on
                 ;; (string-append "/" name "_" version ".tar.gz")
-                (substring url start end)))
+                (substring url (+ start 1) end)))
              (_ #f)))
           (_ #f)))))
 
