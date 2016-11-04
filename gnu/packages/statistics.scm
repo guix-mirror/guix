@@ -2809,6 +2809,30 @@ bigmemory and synchronicity packages.")
     ;; Users can choose either LGPLv3 or ASL2.0.
     (license (list license:lgpl3 license:asl2.0))))
 
+(define-public r-synchronicity
+  (package
+    (name "r-synchronicity")
+    (version "1.1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "synchronicity" version))
+       (sha256
+        (base32
+         "0d9skpwmsnkn4xb3f2kgyyv8bhdi0r9p1kj3cvi0s92fjjnpi00c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-bigmemory-sri" ,r-bigmemory-sri)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "http://www.bigmemory.org")
+    (synopsis "Boost mutex functionality in R")
+    (description "This package provides support for synchronization
+via mutexes and may eventually support interprocess communication and
+message passing.")
+    ;; Users can choose either LGPLv3 or ASL2.0.
+    (license (list license:lgpl3 license:asl2.0))))
+
 (define-public r-nmf
   (package
     (name "r-nmf")
