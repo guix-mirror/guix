@@ -23,7 +23,6 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module ((gnu packages) #:select (search-patch))
-  #:use-module ((gnu packages commencement) #:select (%final-inputs))
   #:use-module (gnu packages base)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages bash)
@@ -101,14 +100,14 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                           (cross-binutils target)
                                           (cross-bootstrap-libc)))
             ("cross-binutils" ,(cross-binutils target))
-            ,@%final-inputs))
+            ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap))
           ("gcc" ,(package (inherit gcc)
                     (outputs '("out")) ; all in one so libgcc_s is easily found
                     (inputs
                      `(("libc",(glibc-for-bootstrap))
                        ,@(package-inputs gcc)))))
-          ,@(fold alist-delete %final-inputs '("libc" "gcc")))))
+          ,@(fold alist-delete (%final-inputs) '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs
                                 (current-source-location)

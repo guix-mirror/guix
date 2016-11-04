@@ -1003,4 +1003,10 @@ program.  It supports a wide variety of different encodings.")
          (proc  (module-ref iface 'canonical-package)))
     (proc package)))
 
+(define-public (%final-inputs)
+  "Return the list of \"final inputs\"."
+  ;; Avoid circular dependency by lazily resolving 'commencement'.
+  (let ((iface (resolve-interface '(gnu packages commencement))))
+    (module-ref iface '%final-inputs)))
+
 ;;; base.scm ends here

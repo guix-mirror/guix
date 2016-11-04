@@ -23,7 +23,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages commencement)
   #:use-module (gnu packages linux)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -257,11 +256,11 @@ GCC that does not target a libc; otherwise, target that libc."
 
        ;; Call it differently so that the builder can check whether the "libc"
        ;; input is #f.
-       ("libc-native" ,@(assoc-ref %final-inputs "libc"))
+       ("libc-native" ,@(assoc-ref (%final-inputs) "libc"))
 
        ;; Remaining inputs.
        ,@(let ((inputs (append (package-inputs %xgcc)
-                               (alist-delete "libc" %final-inputs))))
+                               (alist-delete "libc" (%final-inputs)))))
            (if libc
                `(("libc" ,libc)
                  ("xkernel-headers"                ;the target headers
