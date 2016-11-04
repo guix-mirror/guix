@@ -2789,6 +2789,26 @@ Fourier transform, fuzzy clustering, support vector machines, shortest path
 computation, bagged clustering, naive Bayes classifier, and more.")
     (license license:gpl2+)))
 
+(define-public r-bigmemory-sri
+  (package
+    (name "r-bigmemory-sri")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bigmemory.sri" version))
+       (sha256
+        (base32 "0mg14ilwdkd64q2ri9jdwnk7mp55dqim7xfifrs65sdsv1934h2m"))))
+    (properties
+     `((upstream-name . "bigmemory.sri")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/bigmemory.sri")
+    (synopsis "Shared resource interface for the bigmemory package")
+    (description "This package provides a shared resource interface for the
+bigmemory and synchronicity packages.")
+    ;; Users can choose either LGPLv3 or ASL2.0.
+    (license (list license:lgpl3 license:asl2.0))))
+
 (define-public r-nmf
   (package
     (name "r-nmf")
