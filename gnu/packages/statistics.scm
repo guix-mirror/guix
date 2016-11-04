@@ -2833,6 +2833,31 @@ message passing.")
     ;; Users can choose either LGPLv3 or ASL2.0.
     (license (list license:lgpl3 license:asl2.0))))
 
+(define-public r-bigmemory
+  (package
+    (name "r-bigmemory")
+    (version "4.5.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bigmemory" version))
+       (sha256
+        (base32
+         "191gbzca557kpk7mdsg716vfyqpr7j5din6qb8hin4g1nkzzwmg6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)
+       ("r-bigmemory-sri" ,r-bigmemory-sri)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "http://www.bigmemory.org")
+    (synopsis "Manage large matrices with shared memory or memory-mapped files")
+    (description "This package provides methods to create, store, access, and
+manipulate large matrices.  Matrices are allocated to shared memory and may use
+memory-mapped files.")
+    ;; Users can choose either LGPLv3 or ASL2.0.
+    (license (list license:lgpl3 license:asl2.0))))
+
 (define-public r-nmf
   (package
     (name "r-nmf")
