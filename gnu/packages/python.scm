@@ -86,6 +86,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
@@ -1582,6 +1583,28 @@ standard library.")
     (arguments
      `(#:python ,python-2
        #:tests? #f)))) ; no setup.py test command
+
+(define-public python-pafy
+  (package
+    (name "python-pafy")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pafy" version))
+       (sha256
+        (base32
+         "1ckvrypyvb7jbqlgwdz0y337ajagjv7dgxyns326nqwypn1wpq0i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     ;; Youtube-dl is a python package which is imported in the file
+     ;; "backend_youtube_dl.py", therefore it needs to be propagated.
+     `(("youtube-dl" ,youtube-dl)))
+    (home-page "https://np1.github.io/pafy/")
+    (synopsis "Retrieve YouTube content and metadata")
+    (description
+     "@code{pafy} is a python library to retrieve YouTube content and metadata.")
+    (license license:lgpl3+)))
 
 (define-public python-py
   (package
