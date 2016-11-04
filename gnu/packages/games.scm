@@ -2563,7 +2563,7 @@ in strikes against the evil corporation.")
 (define-public chromium-bsu
   (package
     (name "chromium-bsu")
-    (version "0.9.15.1")
+    (version "0.9.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name
@@ -2571,18 +2571,11 @@ in strikes against the evil corporation.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01c4mki0rpz6wrqbf18fj4vd7axln5v0xqm80cyksbv63g04s6w6"))))
+                "0jk2w5b6s6nkzri585bbz16cif2fhqcnl5l1mq3rd98r9nil3hd1"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'set-paths 'set-sdl-paths
-                             (lambda* (#:key inputs #:allow-other-keys)
-                               (setenv "CPATH"
-                                       (string-append (assoc-ref inputs "sdl-union")
-                                                      "/include/SDL"))
-                               #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("glu" ,glu)
+    (inputs `(("gettext" ,gnu-gettext)
+              ("glu" ,glu)
               ("quesoglc" ,quesoglc)
               ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
     (home-page "http://chromium-bsu.sourceforge.net/")
