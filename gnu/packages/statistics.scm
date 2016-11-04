@@ -2873,6 +2873,8 @@ memory-mapped files.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
+       ("r-bigmemory" ,r-bigmemory)
+       ("r-synchronicity" ,r-synchronicity)
        ("r-colorspace" ,r-colorspace)
        ("r-digest" ,r-digest)
        ("r-doparallel" ,r-doparallel)
