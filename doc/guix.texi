@@ -921,6 +921,10 @@ Port number of SSH server on the machine.
 The SSH private key file to use when connecting to the machine, in
 OpenSSH format.
 
+@item @code{daemon-socket} (default: @code{"/var/guix/daemon-socket/socket"})
+File name of the Unix-domain socket @command{guix-daemon} is listening
+to on that machine.
+
 @item @code{parallel-builds} (default: @code{1})
 The number of builds that may run in parallel on the machine.
 
