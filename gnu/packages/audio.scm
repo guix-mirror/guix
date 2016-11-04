@@ -2029,14 +2029,14 @@ surround and reverb.")
 (define-public libxmp
   (package
     (name "libxmp")
-    (version "4.3.10")
+    (version "4.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/xmp/libxmp/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1gm5xa0ca7ypcbj3bkmj3k1vvzl7nkch8gjyrm8p1a9vgzr0n761"))))
+                "1kycz4jsyvmf7ny9227b497wc7y5ligydi6fvvldmkf8hk63ad9m"))))
     (build-system gnu-build-system)
     (home-page "http://xmp.sourceforge.net/")
     (synopsis "Module player library")
