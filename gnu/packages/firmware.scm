@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,7 +71,7 @@
 
     ;; The firmware is cross-compiled using a "bare bones" compiler (no libc.)
     ;; Use our own tool chain for that.
-    (native-inputs `(("cross-gcc" ,xgcc-xtensa)
+    (native-inputs `(("cross-gcc" ,(cross-gcc "xtensa-elf"))
                      ("cross-binutils" ,(cross-binutils "xtensa-elf"))
                      ("cmake" ,cmake)
                      ("perl" ,perl)))

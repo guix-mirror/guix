@@ -368,36 +368,14 @@ XBINUTILS and the cross tool chain."
                      ,@(package-native-inputs glibc)))))
 
 
-;;;
-;;; Concrete cross toolchains.
-;;;
-
-(define-public xgcc-mips64el
-  (let* ((triplet "mips64el-linux-gnuabi64")      ;N64 ABI
-         (xgcc    (cross-gcc triplet
-                             (cross-binutils triplet)
-                             (cross-libc triplet))))
-    ;; Don't attempt to build this cross-compiler on i686;
-    ;; see <http://bugs.gnu.org/19598>.
-    (package (inherit xgcc)
-      (supported-systems (fold delete
-                               (package-supported-systems xgcc)
-                               '("mips64el-linux" "i686-linux"))))))
-
-(define-public xgcc-xtensa
-  ;; Bare-bones Xtensa cross-compiler, used to build the Atheros firmware.
-  (cross-gcc "xtensa-elf"))
-
-(define-public xgcc-armhf
-  (let* ((triplet "arm-linux-gnueabihf")
-         (xgcc    (cross-gcc triplet
-                             (cross-binutils triplet)
-                             (cross-libc triplet))))
-    (package (inherit xgcc)
-      (supported-systems (delete "armhf-linux" %supported-systems)))))
-
-;; (define-public xgcc-armel
-;;   (let ((triplet "armel-linux-gnueabi"))
+;;; Concrete cross tool chains are instantiated like this:
+;;
+;; (define-public xgcc-armhf
+;;   (let ((triplet "arm-linux-gnueabihf"))
 ;;     (cross-gcc triplet
 ;;                (cross-binutils triplet)
 ;;                (cross-libc triplet))))
+;;
+;;; We don't do that here because we'd be referring to bindings from (gnu
+;;; packages gcc) from the top level, which doesn't play well with circular
+;;; dependencies among modules.
