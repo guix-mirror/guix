@@ -3956,6 +3956,39 @@ multivalue dictionary that retains the order of insertions and deletions.")
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
 
+(define-public python-flask-babel
+  (package
+    (name "python-flask-babel")
+    (version "0.11.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-Babel" version))
+        (sha256
+          (base32
+            "16b80cipdba9xj3jlaiaq6wgrgpjb70w3j01jjy9hbp4k71kd6yj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-babel" ,python-babel)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/python-babel/flask-babel")
+    (synopsis "Add i18n/l10n support to Flask applications")
+    (description "This package implements internationalization and localization
+support for Flask.  This is based on the Python babel module as well as pytz -
+both of which are installed automatically if you install this library.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-flask-babel))))))
+
+(define-public python2-flask-babel
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-flask-babel))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
