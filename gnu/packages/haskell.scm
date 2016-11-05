@@ -8043,4 +8043,33 @@ deletion notification. This library builds upon existing libraries for platform
 specific Windows, Mac, and Linux filesystem event notification.")
     (license license:bsd-3)))
 
+(define-public ghc-tasty-rerun
+  (package
+    (name "ghc-tasty-rerun")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/tasty-rerun/"
+                    "tasty-rerun-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ycxg7whabgcxyzy6gr536x8ykzx45whh1wrbsc7c58zi862fczd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-reducers" ,ghc-reducers)
+       ("ghc-split" ,ghc-split)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-tasty" ,ghc-tasty)))
+    (home-page "http://github.com/ocharles/tasty-rerun")
+    (synopsis "Run tests by filtering the test tree")
+    (description "This package adds the ability to run tests by filtering the
+test tree based on the result of a previous test run.  You can use this to run
+only those tests that failed in the last run, or to only run the tests that have
+been added since previous test run.")
+  (license license:bsd-3)))
+
 ;;; haskell.scm ends here
