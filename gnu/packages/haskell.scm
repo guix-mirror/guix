@@ -6670,34 +6670,47 @@ constant-time:
     (license license:bsd-3)))
 
 (define-public idris
+  ;; TODO: IDRIS_LIBRARY_PATH only accepts a single path and not a colon
+  ;; separated list.
+  ;; TODO: When installing idris the location of the standard libraries
+  ;; cannot be specified.
+  ;; NOTE: Creating an idris build system:
+  ;; Idris packages can be packaged and installed using a trivial
+  ;; build system.
+  ;; (zero? (system* (string-append idris "/bin/idris")
+  ;;                                "--ibcsubdir"
+  ;;                                (string-append out "/idris/libs/lightyear")
+  ;;                                "--install" "lightyear.ipkg")
+  ;; (native-search-paths
+  ;;   (list (search-path-specification
+  ;;          (variable "IDRIS_LIBRARY_PATH")
+  ;;          (files '("idris/libs")))))
   (package
     (name "idris")
-    (version "0.9.19.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/idris-"
-                           version "/idris-" version ".tar.gz"))
-       (sha256
-        (base32
-         "10641svdsjlxbxmbvylpia04cz5nn9486lpiay8ibqcrc1792qgc"))
-       (modules '((guix build utils)))
-       (snippet
-        '(substitute* "idris.cabal"
-           ;; Package description file has a too-tight version restriction,
-           ;; rendering it incompatible with GHC 7.10.2.  This is fixed
-           ;; upstream.  See
-           ;; <https://github.com/idris-lang/Idris-dev/issues/2734>.
-           (("vector < 0.11") "vector < 0.12")))))
+    (version "0.12.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/"
+                    "idris-" version "/idris-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ijrbgzaahw9aagn4al55nqcggrg9ajlrkq2fjc1saq3xdd3v7rs"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-cc-command
-                              (lambda _
-                                (setenv "CC" "gcc"))))))
+     `(;; FIXME: runhaskell Setup.hs test doesn't set paths required by test
+       ;; suite.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-cc-command
+           (lambda _
+             (setenv "CC" "gcc"))))))
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-async" ,ghc-async)
        ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
@@ -6706,12 +6719,19 @@ constant-time:
        ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-cheapskate" ,ghc-cheapskate)
        ("ghc-fingertree" ,ghc-fingertree)
+       ("ghc-fsnotify" ,ghc-fsnotify)
+       ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-parsers" ,ghc-parsers)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)
        ("ghc-split" ,ghc-split)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-rerun" ,ghc-tasty-rerun)
+       ("ghc-terminal-size" ,ghc-terminal-size)
        ("ghc-text" ,ghc-text)
        ("ghc-trifecta" ,ghc-trifecta)
        ("ghc-uniplate" ,ghc-uniplate)
