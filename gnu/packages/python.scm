@@ -4001,7 +4001,7 @@ both of which are installed automatically if you install this library.")
          (base32
           "1zbmmh7n8m01ikizn2mj1mfwch26nsr1awv9mvskqry7av0mpy98"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)
        ("python-sqlalchemy" ,python-sqlalchemy)))
     (home-page "https://github.com/kvesteri/sqlalchemy-utils")
