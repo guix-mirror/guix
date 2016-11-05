@@ -42,7 +42,7 @@
               ;; maintained.
               (uri (git-reference
                     (url "https://anonscm.debian.org/cgit/collab-maint/w3m.git")
-                    (commit version)))
+                    (commit (string-append "v" version))))
               (file-name (string-append "w3m-" version "-checkout"))
               (sha256
                (base32
