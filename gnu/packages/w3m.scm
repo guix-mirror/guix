@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,37 +29,29 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages)
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public w3m
   (package
     (name "w3m")
-    (version "0.5.3")
+    (version "0.5.3+git20161031")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                 name "-" version "/"
-                                 name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1qx9f0kprf92r1wxl3sacykla0g04qsi0idypzz24b7xy9ix5579"))
-
-             ;; cf. https://bugs.archlinux.org/task/33397
-             (patches (search-patches "w3m-libgc.patch"
-                                      "w3m-force-ssl_verify_server-on.patch"
-                                      "w3m-disable-sslv2-and-sslv3.patch"
-                                      "w3m-disable-weak-ciphers.patch"))))
+              (method git-fetch)
+              ;; Debian's fork of w3m is the only one that is still
+              ;; maintained.
+              (uri (git-reference
+                    (url "https://anonscm.debian.org/cgit/collab-maint/w3m.git")
+                    (commit version)))
+              (file-name (string-append "w3m-" version "-checkout"))
+              (sha256
+               (base32
+                "142vkkmsk76wj9w6r4y2pa1hmy1kkzmc73an9zchx0ikm2z92x6s"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f  ; no check target
                  #:phases (alist-cons-before
                            'configure 'fix-perl
                            (lambda _
-                             ;; https://launchpad.net/bugs/935540
-                             ;; 'struct file_handle' is used by 'glibc'
-                             (substitute* '("istream.c" "istream.h")
-                              (("struct[[:blank:]]+file_handle")
-                               "struct w3m_file_handle"))
                              (substitute* '("scripts/w3mmail.cgi.in"
                                             "scripts/dirlist.cgi.in")
                                (("@PERL@") (which "perl"))))

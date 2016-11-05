@@ -891,10 +891,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
   %D%/packages/patches/vtk-mesa-10.patch			\
-  %D%/packages/patches/w3m-libgc.patch				\
-  %D%/packages/patches/w3m-force-ssl_verify_server-on.patch	\
-  %D%/packages/patches/w3m-disable-sslv2-and-sslv3.patch	\
-  %D%/packages/patches/w3m-disable-weak-ciphers.patch		\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/weex-vacopy.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
