@@ -2316,36 +2316,34 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
 (define-public ghc-trifecta
   (package
     (name "ghc-trifecta")
-    (version "1.5.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/trifecta/trifecta-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0fjhnsbafl3yw34pyhcsvrqy6a2mnhyqys6gna3rrlygs8ck7hpb"))))
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/trifecta/"
+                    "trifecta-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rbhv9m17k7l1zr70i0yw5da0qjgxmfh1da8brj0zdzwjn9ac0mk"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
-                               ; -package ansi-terminal-0.6.2.3"
     (inputs
-     `(("ghc-charset" ,ghc-charset)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-reducers" ,ghc-reducers)
+     `(("ghc-reducers" ,ghc-reducers)
        ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-charset" ,ghc-charset)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-doctest" ,ghc-doctest)
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-hashable" ,ghc-hashable)
+       ("ghc-lens" ,ghc-lens)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-parsers" ,ghc-parsers)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)))
     (home-page "https://github.com/ekmett/trifecta/")
