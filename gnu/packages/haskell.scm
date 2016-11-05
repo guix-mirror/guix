@@ -8015,4 +8015,32 @@ feature, allowing applications to subscribe to notifications when a file is
 accessed or modified.")
     (license license:bsd-3)))
 
+(define-public ghc-fsnotify
+  (package
+    (name "ghc-fsnotify")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/fsnotify/"
+                    "fsnotify-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0asl313a52qx2w6dw25g845683xsl840bwjh118nkwi5v1xipkzb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-async" ,ghc-async)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-hinotify" ,ghc-hinotify)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-temporary-rc" ,ghc-temporary-rc)))
+    (home-page "https://github.com/haskell-fswatch/hfsnotify")
+    (synopsis "Cross platform library for file change notification.")
+    (description "Cross platform library for file creation, modification, and
+deletion notification. This library builds upon existing libraries for platform
+specific Windows, Mac, and Linux filesystem event notification.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
