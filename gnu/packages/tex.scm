@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -439,7 +440,9 @@ PDF documents.")
                                "texmaker.pro"))))))))
     (inputs
      `(("poppler-qt5" ,poppler-qt5)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)
+       ("qtwebkit" ,qtwebkit)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
