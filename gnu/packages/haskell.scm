@@ -8092,4 +8092,23 @@ ported from the Tango math library; approximate and exact equality comparisons
 for general types.")
     (license license:bsd-3)))
 
+(define-public ghc-terminal-size
+  (package
+    (name "ghc-terminal-size")
+    (version "0.3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/terminal-size/"
+                    "terminal-size-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0n4nvj3dbj9gxfnprgish45asn9z4dipv9j98s8i7g2n8yb3xhmm"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/terminal-size")
+    (synopsis "Get terminal window height and width")
+    (description "Get terminal window height and width without ncurses
+dependency.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
