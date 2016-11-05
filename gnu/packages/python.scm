@@ -11607,6 +11607,10 @@ useful as a validator for JSON data.")
         (base32
           "0qk07k0z4241lkzzjji7z4da04pcvg7bfc4xz1934zlqhwmwdcha"))))
     (build-system python-build-system)
+    (arguments
+     '(;; Test files are not distributed on PyPi:
+       ;; https://github.com/shibukawa/imagesize_py/issues/7
+       #:tests? #f))
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in variaous formats in Python")
     (description
