@@ -264,18 +264,18 @@ developers consider to have good quality code and correct functionality.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.6.3")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0q9s5da54819gwncmdi95l5qzx97l9vxk6adx4zmx73a3l82j6wp"))))
+                "0kqwh5r4j05f2w9m353grvypn0106hxcr52409f7rvm3w4b9sprx"))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; XXX: 11 of 54 tests fail
+     '(#:tests? #f ; XXX: 18 of 65 tests fail
        #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
@@ -329,8 +329,9 @@ developers consider to have good quality code and correct functionality.")
        ;("qtx11extras" ,qtx11extras)
        ("soundtouch" ,soundtouch)
        ("x265" ,x265)
-       ("wayland" ,wayland)))
-    (home-page "http://gstreamer.freedesktop.org/")
+       ;("wayland" ,wayland) ; needs wayland-protocols
+       ))
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
     (description
      "GStreamer Bad Plug-ins is a set of plug-ins whose quality aren't up to
