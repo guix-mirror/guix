@@ -4004,6 +4004,8 @@ both of which are installed automatically if you install this library.")
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-sqlalchemy" ,python-sqlalchemy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/kvesteri/sqlalchemy-utils")
     (synopsis "Various utility functions for SQLAlchemy")
     (description
