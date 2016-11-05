@@ -11940,7 +11940,7 @@ with ed25519 signatures.  The C code was pulled from
 libaxolotl-android.  At the moment this wrapper is meant for use by
 python-axolotl.")
     (license (list license:gpl3    ; Most files
-                   license:isc)))) ; curve/curve25519-donna.c
+                   license:bsd-3)))) ; curve/curve25519-donna.c
 
 (define-public python2-axolotl-curve25519
   (package-with-python2 python-axolotl-curve25519))
