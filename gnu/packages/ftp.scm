@@ -25,6 +25,8 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages pkg-config)
@@ -126,31 +128,26 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
 (define-public weex
   (package
     (name "weex")
-    (version "2.6.1.5")
+    (version "2.8.2")
     (source
       (origin
         (method url-fetch)
         (uri
-          (string-append "mirror://sourceforge/weex/weex/" version
-                         "/weex-" version ".tar.gz"))
+          (string-append "mirror://sourceforge/weex/weex/"
+                         "/weex_" version ".tar.gz"))
         (sha256
           (base32
-            "0f5cj5p852wkm24mzy2sxgxyahv2p9rk4wlq21j310pi7wlhgwyl"))
-        (patches (search-patches "weex-vacopy.patch"))))
+            "1ir761hjncr1bamaqcw9j7x57xi3s9jax3223bxwbq30a0vsw1pd"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("gettext" ,gnu-gettext)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'configure
-                  ;; configure does not work followed by both "SHELL=..." and
-                  ;; "CONFIG_SHELL=..."; set environment variables instead
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bash (which "bash")))
-                      (setenv "SHELL" bash)
-                      (setenv "CONFIG_SHELL" bash)
-                      (zero? (system* bash "./configure"
-                                      (string-append "--prefix=" out)))))))))
+         (add-before 'configure 'bootstrap
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
     (description
