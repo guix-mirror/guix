@@ -8072,4 +8072,24 @@ only those tests that failed in the last run, or to only run the tests that have
 been added since previous test run.")
   (license license:bsd-3)))
 
+(define-public ghc-ieee754
+  (package
+    (name "ghc-ieee754")
+    (version "0.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/ieee754/"
+                    "ieee754-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zvfnnd5nm5kgr60214cdyks0kqdqyzpwk5sdh0s60yr8b7fyjny"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/patperry/hs-ieee754")
+    (synopsis "Utilities for dealing with IEEE floating point numbers")
+    (description "Utilities for dealing with IEEE floating point numbers,
+ported from the Tango math library; approximate and exact equality comparisons
+for general types.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
