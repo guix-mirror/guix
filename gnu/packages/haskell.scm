@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7992,6 +7993,26 @@ helper functions for Lists, Maybes, Tuples, Functions.")
     (synopsis "2D and 3D plots using gnuplot")
     (description "This package provides a Haskell module for creating 2D and
 3D plots using gnuplot.")
+    (license license:bsd-3)))
+
+(define-public ghc-hinotify
+  (package
+    (name "ghc-hinotify")
+    (version "0.3.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/hinotify/"
+                    "hinotify-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03c1f4d7x805zdiq2w26kl09xrfjw19saycdkhnixzv2qcr6xm1p"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/kolmodin/hinotify.git")
+    (synopsis "Haskell binding to inotify")
+    (description "This library provides a wrapper to the Linux kernel's inotify
+feature, allowing applications to subscribe to notifications when a file is
+accessed or modified.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here
