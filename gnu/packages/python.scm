@@ -3854,6 +3854,34 @@ simple and Pythonic domain language.")
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
 
+(define-public python-pycodestyle
+  (package
+    (name "python-pycodestyle")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pycodestyle" version))
+        (sha256
+          (base32
+            "1rz2v8506mdjdyxcnv9ygiw6v0d4dqx8z5sjyjm0w2v32h5l5w1p"))))
+    (build-system python-build-system)
+    (home-page "https://pycodestyle.readthedocs.io/")
+    (synopsis "Python style guide checker")
+    (description "@code{pycodestyle} (formerly pep8) is a tool to check
+Python code against some of the style conventions in
+@url{http://www.python.org/dev/peps/pep-0008/,PEP 8}.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pycodestyle))))))
+
+(define-public python2-pycodestyle
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-pycodestyle))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
