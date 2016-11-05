@@ -41,7 +41,8 @@
    (description
      "libidn is a library implementing of the Stringprep, Punycode and IDNA
 specifications.  These are used to encode and decode internationalized domain
-names.  It includes native C, C# and Java libraries.")
+names according to the IDNA2003 specifications.  It includes native C, C# and
+Java libraries.")
    ;; The C code is dual-licensed gpl2+ lgpl3+, the manual is fdl1.3+,
    ;; the command line tool is gpl3+.
    (license (list gpl2+ gpl3+ lgpl3+ fdl1.3+))
