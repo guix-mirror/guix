@@ -3924,6 +3924,38 @@ multivalue dictionary that retains the order of insertions and deletions.")
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
 
+(define-public python-furl
+  (package
+    (name "python-furl")
+    (version "0.5.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "furl" version))
+        (sha256
+          (base32
+            "0lzpfpm686hvz3sr1mcrnd1b3lgmnw8v59gb43wfi98r3b671pqc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-orderedmultidict" ,python-orderedmultidict)))
+    (native-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/gruns/furl")
+    (synopsis "URL manipulation in Python")
+    (description "Furl provides an easy-to-use alternative to the
+@code{urllib} and @code{urlparse} modules for manipulating URLs.")
+    (license license:unlicense)
+    (properties `((python2-variant . ,(delay python2-furl))))))
+
+(define-public python2-furl
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-furl))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
