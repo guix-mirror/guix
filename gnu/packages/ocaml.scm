@@ -329,14 +329,14 @@ written in Objective Caml.")
 (define-public coq
   (package
     (name "coq")
-    (version "8.4pl6")
+    (version "8.5pl2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://coq.inria.fr/distrib/V" version
                                   "/files/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mpbj4yf36kpjg2v2sln12i8dzqn8rag6fd07hslj2lpm4qs4h55"))))
+                "0wyywia0darak2zmc5v0ra9rn0b9whwdfiahralm8v5za499s8w3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
@@ -348,24 +348,24 @@ written in Objective Caml.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (mandir (string-append out "/share/man"))
-                           (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
-                      (zero? (system* "./configure"
-                                      "--prefix" out
-                                      "--mandir" mandir
-                                      "--browser" browser)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mandir (string-append out "/share/man"))
+                    (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
+               (zero? (system* "./configure"
+                               "-prefix" out
+                               "-mandir" mandir
+                               "-browser" browser)))))
          (replace 'build
-                  (lambda _
-                    (zero? (system* "make" "-j" (number->string
-                                                 (parallel-job-count))
-                                    "world"))))
+           (lambda _
+             (zero? (system* "make" "-j" (number->string
+                                          (parallel-job-count))
+                             "world"))))
          (delete 'check)
          (add-after 'install 'check
-                    (lambda _
-                      (with-directory-excursion "test-suite"
-                        (zero? (system* "make"))))))))
+           (lambda _
+             (with-directory-excursion "test-suite"
+               (zero? (system* "make"))))))))
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
     (description
