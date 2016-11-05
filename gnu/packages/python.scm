@@ -3882,6 +3882,48 @@ Python code against some of the style conventions in
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
 
+(define-public python-orderedmultidict
+  (package
+    (name "python-orderedmultidict")
+    (version "0.7.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "orderedmultidict" version))
+        (sha256
+          (base32
+            "1gvqk0jd432wsn88kq4svad68xz3r012jfpnhh9in7bqrkyxidky"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; The package uses nosetest for running the tests.
+             ;; Adding this initfile allows to run the test suite
+             ;; without requiring nosetest.
+             (zero? (system* "touch" "tests/__init__.py")))))))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/gruns/orderedmultidict")
+    (synopsis "Python Ordered Multivalue Dictionary - omdict")
+    (description "This package contains a library for ordered multivalue
+dictionaries.  A multivalue dictionary is a dictionary that can store
+multiple values for the same key.  An ordered multivalue dictionary is a
+multivalue dictionary that retains the order of insertions and deletions.")
+    (license license:unlicense)
+    (properties `((python2-variant . ,(delay python2-orderedmultidict))))))
+
+(define-public python2-orderedmultidict
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-orderedmultidict))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
