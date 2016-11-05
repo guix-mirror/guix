@@ -1173,3 +1173,47 @@ or junctions, and always follows hard links.")
     (description "Unrar is a simple command-line program to list and extract
 RAR archives.")
     (license license:gpl2+)))
+
+(define-public zstd
+  (package
+    (name "zstd")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/facebook/zstd/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02mgk7cbyksfx7mq95cykghb7dya797z0n2jxr5fx9j0x0m56v0h"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove non-free source files.
+               '(begin
+                  (for-each delete-file-recursively
+                            (list
+                             ;; Commercial use of the following is not allowed.
+                             "examples"
+                             "LICENSE-examples"))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no configure script
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"))
+    (home-page "http://zstd.net/")
+    (synopsis "Zstandard real-time compression algorithm")
+    (description "Zstandard (@command{zstd}) is a lossless compression algorithm
+that combines very fast operation with a compression ratio comparable to that of
+zlib.  In most scenarios, both compression and decompression can be performed in
+‘real time’.  The compressor can be configured to provide the most suitable
+trade-off between compression ratio and speed, without affecting decompression
+speed.")
+    (license (list license:bsd-3         ; the main top-level LICENSE file
+                   license:bsd-2         ; quite a few files have but 2 clauses
+                   license:public-domain ; zlibWrapper/examples/fitblk*
+                   license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
