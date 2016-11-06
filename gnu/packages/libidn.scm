@@ -41,8 +41,31 @@
    (description
      "libidn is a library implementing of the Stringprep, Punycode and IDNA
 specifications.  These are used to encode and decode internationalized domain
-names.  It includes native C, C# and Java libraries.")
+names according to the IDNA2003 specifications.  It includes native C, C# and
+Java libraries.")
    ;; The C code is dual-licensed gpl2+ lgpl3+, the manual is fdl1.3+,
    ;; the command line tool is gpl3+.
    (license (list gpl2+ gpl3+ lgpl3+ fdl1.3+))
    (home-page "http://www.gnu.org/software/libidn/")))
+
+(define-public libidn2
+  (package
+    (name "libidn2")
+    (version "0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://alpha.gnu.org/gnu/libidn/libidn2-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1zxzhzx14q2b1xkx746pz4lawvqd8d055yy84n52ndwb4pf7nfax"))))
+    (build-system gnu-build-system)
+    (synopsis "Internationalized domain name library for IDNA2008")
+    (description "Libidn2 is an internationalized domain library implementing
+the IDNA2008 specifications.   Libidn2 is believed to be a complete IDNA2008
+implementation, but has yet to be as extensively used as the original Libidn
+library.")
+    (home-page "https://www.gnu.org/software/libidn/#libidn2")
+    ;; The command-line tool 'idn2' is GPL3+, while the library is dual-licensed
+    ;; GPL2+ or LGPL3+.
+    (license (list gpl2+ gpl3+ lgpl3+))))

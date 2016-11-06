@@ -1859,14 +1859,14 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
 (define-public sunxi-tools
   (package
     (name "sunxi-tools")
-    (version "1.3")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/linux-sunxi/"
                            "sunxi-tools/archive/v" version ".tar.gz"))
        (sha256
-        (base32 "1iazm28gws1i8sls3gxwc5p108n56ags287zmh1rpvkn2k1az81a"))
+        (base32 "06qd2b4dlzbmzfy4q9n8v5rkkbmgcfdbv4nkkcp4nysi10k7cpfs"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
@@ -1882,19 +1882,16 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
      `(#:tests? #f ; no tests exist
        #:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out"))
-                          "TARGET_TOOLS=sunxi-pio sunxi-meminfo"
-                          "CROSS_COMPILE=")
+                          "CROSS_COMPILE="
+                          "CC=gcc"
+                          "all")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-Makefile
-           (lambda _
-             (substitute* "Makefile"
-               ;; Upstream adds Makefile and config.h as dependencies
-               ;; of all their tools which means $^ would pass them to gcc.
-               ;; gcc won't know what to do with a Makefile.
-               (("-o [$][@] [$]\\^") "-o $@ meminfo.c"))
-             #t))
-         (delete 'configure))))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" "install-all" "install-misc"
+                           make-flags)))))))
     (home-page "https://github.com/linux-sunxi/sunxi-tools")
     (synopsis "Hardware management tools for Allwinner computers")
     (description "This package contains tools for Allwinner devices:
@@ -1910,5 +1907,6 @@ bootloader) parameters.
 @item @command{sunxi-pio}: Sets GPIO parameters and oscillates a GPIO
 in order to be able to find it.
 @item @command{sunxi-meminfo}: Prints memory bus settings.
+@item @command{sunxi-nand-image-builder}: Prepares raw NAND images.
 @end enumerate")
     (license license:gpl2+)))

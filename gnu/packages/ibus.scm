@@ -42,7 +42,7 @@
 (define-public ibus
   (package
    (name "ibus")
-   (version "1.5.11")
+   (version "1.5.14")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/ibus/ibus/"
@@ -50,10 +50,11 @@
                                  version "/ibus-" version ".tar.gz"))
              (sha256
               (base32
-               "1g26llizd26h9sfz4xdq8krhz19hn08pirvfbkk3g89ri8lmm6a9"))))
+               "0g4x02d7j5w1lfn4zvmzsq93h17lajgn9d7hlvr6pws28vz40ax4"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:tests? #f  ; tests fail because there's no connection to dbus
+      #:configure-flags '("--disable-emoji-dict") ; cannot find emoji.json path
       #:make-flags
       (list "CC=gcc"
             (string-append "pyoverridesdir="
@@ -106,6 +107,7 @@
       ("gtk2" ,gtk+-2)
       ("gtk+" ,gtk+)
       ("intltool" ,intltool)
+      ("json-glib" ,json-glib)
       ("libnotify" ,libnotify)
       ("libx11" ,libx11)
       ("setxkbmap" ,setxkbmap)
@@ -127,7 +129,7 @@
     "IBus is an input framework providing a full-featured and user-friendly
 input method user interface.  It comes with multilingual input support.  It
 may also simplify input method development.")
-   (home-page "http://ibus.googlecode.com/")
+   (home-page "https://github.com/ibus/ibus/wiki")
    (license lgpl2.1+)))
 
 (define-public ibus-libpinyin

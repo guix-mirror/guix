@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -358,4 +359,39 @@ from an audio CD.")
      "abcde is a front-end command-line utility (actually, a shell script)
 that grabs tracks off a CD, encodes them to Ogg/Vorbis, MP3, FLAC, Ogg/Speex
 and/or MPP/MP+ (Musepack) format, and tags them, all in one go.")
+    (license gpl2+)))
+
+(define-public geteltorito
+  (package
+    (name "geteltorito")
+    (version "0.6")
+    (home-page
+     "https://userpages.uni-koblenz.de/~krienke/ftp/noarch/geteltorito/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gkbm9ahj2mgqrkrfpibzclsriqgsbsvjh19fr815vpd9f6snkxv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "geteltorito"
+                             (string-append out "/bin"))))))))
+    (inputs `(("perl" ,perl)))
+    (synopsis "Extract the boot image from a CD-ROM")
+    (description
+     "@command{geteltorito} can extract the initial/default boot
+image from CDs (and ISOs) that follow the El Torito specification
+for bootable CD-ROMs.
+
+Image data is written to standard output by default and all other
+information is written to standard error.")
     (license gpl2+)))

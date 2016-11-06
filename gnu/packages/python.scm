@@ -30,6 +30,7 @@
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,6 +81,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages statistics)
@@ -87,6 +89,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
@@ -1604,6 +1607,28 @@ standard library.")
     (arguments
      `(#:python ,python-2
        #:tests? #f)))) ; no setup.py test command
+
+(define-public python-pafy
+  (package
+    (name "python-pafy")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pafy" version))
+       (sha256
+        (base32
+         "1ckvrypyvb7jbqlgwdz0y337ajagjv7dgxyns326nqwypn1wpq0i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     ;; Youtube-dl is a python package which is imported in the file
+     ;; "backend_youtube_dl.py", therefore it needs to be propagated.
+     `(("youtube-dl" ,youtube-dl)))
+    (home-page "https://np1.github.io/pafy/")
+    (synopsis "Retrieve YouTube content and metadata")
+    (description
+     "@code{pafy} is a python library to retrieve YouTube content and metadata.")
+    (license license:lgpl3+)))
 
 (define-public python-py
   (package
@@ -4535,14 +4560,14 @@ standard library.")
 (define-public python-traitlets
   (package
     (name "python-traitlets")
-    (version "4.1.0")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "traitlets" version))
        (sha256
         (base32
-         "0nxgj8jxlm1kqf8cx2x7vjid05zdgbxpqhjbdl46r8njlpgkh3j4"))))
+         "1afy08sa5n9gnkvh3da49c16zkyv598vchv0p1hp7zzjy8895hz4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4568,37 +4593,165 @@ without using the configuration machinery.")
 (define-public python2-traitlets
   (package-with-python2 python-traitlets))
 
-(define-public python-ipython
+(define-public python-jupyter-core
   (package
-    (name "python-ipython")
-    (version "3.2.1")
+    (name "python-jupyter-core")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
-       (patches (search-patches "python-ipython-inputhook-ctype.patch"))
-       (uri (string-append "https://pypi.python.org/packages/source/i/"
-                           "ipython/ipython-" version ".tar.gz"))
+       (uri (string-append (pypi-uri "jupyter_core" version)))
        (sha256
-        (base32 "0xwin0sa9n0cabx4cq1ibf5ldsiw5dyimibla82kicz5gbpas4y9"))))
+        (base32
+         "177d9csqldzhsh6xs1p4nf6lzvhzyg6gklqjf69lxgxyadx87v24"))))
+    (build-system python-build-system)
+    ;; FIXME: not sure how to run the tests
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-traitlets" ,python-traitlets)))
+    (home-page "http://jupyter.org/")
+    (synopsis "Jupyter base package")
+    (description
+     "Jupyter core is the base package on which Jupyter projects rely.")
+    (license license:bsd-3)))
+
+(define-public python2-jupyter-core
+  (package-with-python2 python-jupyter-core))
+
+(define-public python-jupyter-client
+  (package
+    (name "python-jupyter-client")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_client" version))
+       (sha256
+        (base32
+         "1vjjrpjw7k5sh982pbjnslv7byfbfazjw9g92jvs7dz5qbx556n9"))))
+    (build-system python-build-system)
+    ;; Tests fail because of missing native python kernel which I assume is
+    ;; provided by the ipython package, which we cannot use because it would
+    ;; cause a dependency cycle.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-pyzmq" ,python-pyzmq)
+       ("python-traitlets" ,python-traitlets)
+       ("python-jupyter-core" ,python-jupyter-core)))
+    (home-page "http://jupyter.org/")
+    (synopsis "Jupyter protocol implementation and client libraries")
+    (description
+     "The @code{jupyter_client} package contains the reference implementation
+of the Jupyter protocol.  It also provides client and kernel management APIs
+for working with kernels, and the @code{jupyter kernelspec} entrypoint for
+installing @code{kernelspec}s for use with Jupyter frontends.")
+    (license license:bsd-3)))
+
+(define-public python2-jupyter-client
+  (package-with-python2 python-jupyter-client))
+
+(define-public python-ipykernel
+  (package
+    (name "python-ipykernel")
+    (version "4.5.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "ipykernel" version))
+      (sha256
+       (base32 "15c2bp1x3i6s4xb7vz7742h3kmvdfdfn9n2haywm3mwgvf77jni4"))))
+    (build-system python-build-system)
+    ;; The tests load a submodule of IPython.  However, IPython itself depends
+    ;; on ipykernel.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     ;; imported at runtime during connect
+     `(("python-jupyter-client" ,python-jupyter-client)))
+    (home-page "http://ipython.org")
+    (synopsis "IPython Kernel for Jupyter")
+    (description
+     "This package provides the IPython kernel for Jupyter.")
+    (license license:bsd-3)))
+
+(define-public python2-ipykernel
+  (package-with-python2 python-ipykernel))
+
+(define-public python-testpath
+  (package
+    (name "python-testpath")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jupyter/testpath/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04kh3fgvmqz6cfcw79q70qwjz7ib7lxm27cc548iy2rpr33qqf55"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; this package does not even have a setup.py
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'install)
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((dir (string-append
+                                (assoc-ref outputs "out")
+                                "/lib/python"
+                                (string-take (string-take-right
+                                              (assoc-ref inputs "python") 5) 3)
+                                "/site-packages/testpath")))
+                      (mkdir-p dir)
+                      (copy-recursively "testpath" dir))
+                    #t)))))
+    (home-page "https://github.com/takluyver/testpath")
+    (synopsis "Test utilities for code working with files and commands")
+    (description
+     "Testpath is a collection of utilities for Python code working with files
+and commands.  It contains functions to check things on the filesystem, and
+tools for mocking system commands and recording calls to those.")
+    (license license:expat)))
+
+(define-public python2-testpath
+  (package-with-python2 python-testpath))
+
+(define-public python-ipython
+  (package
+    (name "python-ipython")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipython" version ".tar.gz"))
+       (sha256
+        (base32 "1npl8g6bfsff9j938ypx0q5fyzy2l8lp0jl8skjjj2zv0z27dlig"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
      `(("python-pyzmq" ,python-pyzmq)
-       ("python-terminado" ,python-terminado)))
-    (inputs
-     `(("readline" ,readline)
-       ("which" ,which)
+       ("python-terminado" ,python-terminado)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
        ("python-numpydoc" ,python-numpydoc)
        ("python-jinja2" ,python-jinja2)
        ("python-mistune" ,python-mistune)
+       ("python-pexpect" ,python-pexpect)
+       ("python-pickleshare" ,python-pickleshare)
+       ("python-simplegeneric" ,python-simplegeneric)
        ("python-jsonschema" ,python-jsonschema)
-       ("python-pygments" ,python-pygments)
-       ("python-requests" ,python-requests) ;; for tests
-       ("python-nose" ,python-nose)))
+       ("python-traitlets" ,python-traitlets)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-pygments" ,python-pygments)))
+    (inputs
+     `(("readline" ,readline)
+       ("which" ,which)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-requests" ,python-requests) ;; for tests
+       ("python-testpath" ,python-testpath)
+       ("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
        ("texlive" ,texlive)
        ("texinfo" ,texinfo)
@@ -4617,13 +4770,13 @@ without using the configuration machinery.")
                    (examples (string-append doc "/examples")))
               (setenv "LANG" "en_US.utf8")
               (with-directory-excursion "docs"
-                ;; FIXME: html and pdf fail to build
-                ;; (system* "make" "html")
-                ;; (system* "make" "pdf" "PAPER=a4")
+                ;; FIXME: pdf fails to build
+                ;;(system* "make" "pdf" "PAPER=a4")
+                (system* "make" "html")
                 (system* "make" "info"))
               (copy-recursively "docs/man" man1)
               (copy-recursively "examples" examples)
-              ;; (copy-recursively "docs/build/html" html)
+              (copy-recursively "docs/build/html" html)
               ;; (copy-file "docs/build/latex/ipython.pdf"
               ;;            (string-append doc "/ipython.pdf"))
               (mkdir-p info)
@@ -4731,6 +4884,22 @@ and written in Python.")
 
 (define-public python2-html5lib
   (package-with-python2 python-html5lib))
+
+;; Needed for python-bleach, a dependency of python-notebook
+(define-public python-html5lib-0.9
+  (package
+    (inherit python-html5lib)
+    (version "0.999")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "html5lib" version))
+       (sha256
+        (base32
+         "17n4zfsj6ynmbwdwviywmj8r6nzr3xvfx2zs0xhndmvm51z7z263"))))))
+
+(define-public python2-html5lib-0.9
+  (package-with-python2 python-html5lib-0.9))
 
 (define-public python-urwid
   (package
@@ -6617,6 +6786,302 @@ Debian-related files, such as:
 
 (define-public python2-debian
   (package-with-python2 python-debian))
+
+(define-public python-nbformat
+  (package
+    (name "python-nbformat")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbformat" version))
+       (sha256
+        (base32
+         "0mq8iki3d4mnx7wy05phss7x98mds4fqydin8lcagidp1knw1xnv"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; no test target
+    (propagated-inputs
+     `(("python-ipython-genutils" ,python-ipython-genutils)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-jupyter-core" ,python-jupyter-core)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://jupyter.org")
+    (synopsis "Jupyter Notebook format")
+    (description "This package provides the reference implementation of the
+Jupyter Notebook format and Python APIs for working with notebooks.")
+    (license license:bsd-3)))
+
+(define-public python2-nbformat
+  (package-with-python2 python-nbformat))
+
+(define-public python-bleach
+  (package
+    (name "python-bleach")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bleach" version))
+       (sha256
+        (base32
+         "0jvg3jxrvnx7xmm9gj262v60ib452xlnwlb0navyp7jsvcd0d4qj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-html5lib" ,python-html5lib-0.9)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://github.com/jsocol/bleach")
+    (synopsis "Whitelist-based HTML-sanitizing tool")
+    (description "Bleach is an easy whitelist-based HTML-sanitizing tool.")
+    (license license:asl2.0)))
+
+(define-public python2-bleach
+  (package-with-python2 python-bleach))
+
+(define-public python-entrypoints
+  (package
+    (name "python-entrypoints")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/takluyver/entrypoints/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0azqlkh3j0za080lsf5crnhaxx3c93k9dpv5ihkhf5cppgw5sjz5"))))
+    (build-system python-build-system)
+    ;; The package does not come with a setup.py file, so we have to generate
+    ;; one ourselves.
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-setup.py
+           (lambda _
+             (call-with-output-file "setup.py"
+               (lambda (port)
+                 (format port "\
+from setuptools import setup
+setup(name='entrypoints', version='~a', py_modules=['entrypoints'])
+" ,version))))))))
+    (home-page "https://github.com/takluyver/entrypoints")
+    (synopsis "Discover and load entry points from installed Python packages")
+    (description "Entry points are a way for Python packages to advertise
+objects with some common interface.  The most common examples are
+@code{console_scripts} entry points, which define shell commands by
+identifying a Python function to run.  The @code{entrypoints} module contains
+functions to find and load entry points.")
+    (license license:expat)))
+
+(define-public python2-entrypoints
+  (package-with-python2 python-entrypoints))
+
+(define-public python-nbconvert
+  (package
+    (name "python-nbconvert")
+    (version "5.0.0b1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbconvert" version))
+       (sha256
+        (base32
+         "0brclbb18l4nmd5qy3dl9wn05rjdh1fz4rmzdlfqacj12rcdvdgp"))))
+    (build-system python-build-system)
+    ;; The "bdist_egg" target is disabled by default, causing the installation
+    ;; to fail.
+    (arguments `(#:configure-flags (list "bdist_egg")))
+    (propagated-inputs
+     `(("python-bleach" ,python-bleach)
+       ("python-entrypoints" ,python-entrypoints)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jupyter-core" ,python-jupyter-core)
+       ("python-mistune" ,python-mistune)
+       ("python-nbformat" ,python-nbformat)
+       ("python-pygments" ,python-pygments)
+       ("python-setuptools" ,python-setuptools)
+       ("python-traitlets" ,python-traitlets)))
+    (home-page "http://jupyter.org")
+    (synopsis "Converting Jupyter Notebooks")
+    (description "The @code{nbconvert} tool, @{jupyter nbconvert}, converts
+notebooks to various other formats via Jinja templates.  It allows you to
+convert an @code{.ipynb} notebook file into various static formats including:
+
+@enumerate
+@item HTML
+@item LaTeX
+@item PDF
+@item Reveal JS
+@item Markdown (md)
+@item ReStructured Text (rst)
+@item executable script
+@end enumerate\n")
+    (license license:bsd-3)))
+
+(define-public python2-nbconvert
+  (package-with-python2 python-nbconvert))
+
+(define-public python-notebook
+  (package
+    (name "python-notebook")
+    (version "4.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "notebook" version))
+              (sha256
+               (base32
+                "0laq5c2f21frq6xcdckgq7raqhznbjb0qs0357g612z87wyn1a9r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; HOME must be set for tests
+             (setenv "HOME" "/tmp")
+             (zero? (system* "nosetests")))))))
+    (propagated-inputs
+     `(("python-jupyter-core" ,python-jupyter-core)
+       ("python-nbformat" ,python-nbformat)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-ipython" ,python-ipython)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)
+       ("python-requests" ,python-requests)))
+    (home-page "http://jupyter.org/")
+    (synopsis "Web-based notebook environment for interactive computing")
+    (description
+     "The Jupyter HTML notebook is a web-based notebook environment for
+interactive computing.")
+    (license license:bsd-3)))
+
+(define-public python2-notebook
+  (package-with-python2 python-notebook))
+
+(define-public python-widgetsnbextension
+  (package
+    (name "python-widgetsnbextension")
+    (version "1.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "widgetsnbextension" version))
+       (sha256
+        (base32
+         "0lff2mrwrgsa1mxmwx3phl9xvy0jqfpg6khbmxy53jbq56rwy666"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-notebook" ,python-notebook)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://ipython.org")
+    (synopsis "IPython HTML widgets for Jupyter")
+    (description "This package provides interactive HTML widgets for Jupyter
+notebooks.")
+    (license license:bsd-3)))
+
+(define-public python2-widgetsnbextension
+  (package-with-python2 python-widgetsnbextension))
+
+(define-public python-ipywidgets
+  (package
+    (name "python-ipywidgets")
+    (version "5.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipywidgets" version))
+       (sha256
+        (base32
+         "1lk0qrr5l9a0z7qkkn30hv5832whxwxymf1l576fmmad0n7hkxms"))))
+    (build-system python-build-system)
+    ;; FIXME: it's not clear how to run the tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)
+       ("python-setuptools" ,python-setuptools)
+       ("python-traitlets" ,python-traitlets)
+       ("python-widgetsnbextension" ,python-widgetsnbextension)))
+    (home-page "http://ipython.org")
+    (synopsis "IPython HTML widgets for Jupyter")
+    (description "Ipywidgets are interactive HTML widgets for Jupyter
+notebooks and the IPython kernel.  Notebooks come alive when interactive
+widgets are used.  Users gain control of their data and can visualize changes
+in the data.")
+    (license license:bsd-3)))
+
+(define-public python2-ipywidgets
+  (package-with-python2 python-ipywidgets))
+
+(define-public python-jupyter-console
+  (package
+    (name "python-jupyter-console")
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_console" version))
+       (sha256
+        (base32
+         "04acmkwsi99rcg3vb54c6n492zv35s92h2ahabc0w6wj976cipvx"))))
+    (build-system python-build-system)
+    ;; FIXME: it's not clear how to run the tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-pygments" ,python-pygments)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://jupyter.org")
+    (synopsis "Jupyter terminal console")
+    (description "This package provides a terminal-based console frontend for
+Jupyter kernels.  It also allows for console-based interaction with non-Python
+Jupyter kernels such as IJulia and IRKernel.")
+    (license license:bsd-3)))
+
+(define-public python2-jupyter-console
+  (package-with-python2 python-jupyter-console))
+
+(define-public jupyter
+  (package
+    (name "jupyter")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter" version))
+       (sha256
+        (base32
+         "0pwf3pminkzyzgx5kcplvvbvwrrzd3baa7lmh96f647k30rlpp6r"))))
+    (build-system python-build-system)
+    ;; FIXME: it's not clear how to run the tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("python-jupyter-console" ,python-jupyter-console)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-notebook" ,python-notebook)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://jupyter.org")
+    (synopsis "Web application for interactive documents")
+    (description
+     "The Jupyter Notebook is a web application that allows you to create and
+share documents that contain live code, equations, visualizations and
+explanatory text.  Uses include: data cleaning and transformation, numerical
+simulation, statistical modeling, machine learning and much more.")
+    (license license:bsd-3)))
 
 (define-public python-chardet
   (package
@@ -11625,3 +12090,79 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
       (inherit base)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs base))))))
+
+(define-public python-axolotl-curve25519
+  (package
+    (name "python-axolotl-curve25519")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://github.com/tgalal/python-axolotl-curve25519")
+             (commit "e4a9c4de0eae27223200579c58d1f8f6d20637e2")))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "0agap5q0hmvf6cwzjqc05kw53pjgf6942pcivpazksmg1vk400ra"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765
+       #:configure-flags '("--root=/")))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/tgalal/python-axolotl-curve25519")
+    (synopsis "Python wrapper for curve25519 library")
+    (description "This is a python wrapper for the curve25519 library
+with ed25519 signatures.  The C code was pulled from
+libaxolotl-android.  At the moment this wrapper is meant for use by
+python-axolotl.")
+    (license (list license:gpl3    ; Most files
+                   license:bsd-3)))) ; curve/curve25519-donna.c
+
+(define-public python2-axolotl-curve25519
+  (package-with-python2 python-axolotl-curve25519))
+
+(define-public python-axolotl
+  (package
+    (name "python-axolotl")
+    (version "0.1.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tgalal/python-axolotl/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1z8d89p7v40p4bwywjm9h4z28fdvra79ddw06azlkrfjbl7dxmz8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Don't install tests
+         (add-before 'install 'remove-tests
+           (lambda _
+             (for-each delete-file-recursively
+                       '("axolotl/tests" "build/lib/axolotl/tests"))
+             #t)))
+       ;; Prevent creation of the egg. This works around
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765
+       #:configure-flags '("--root=/")))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-axolotl-curve25519" ,python-axolotl-curve25519)
+       ("python-dateutil" ,python-dateutil)
+       ("python-protobuf" ,python-protobuf)
+       ("python-pycrypto" ,python-pycrypto)))
+    (home-page "https://github.com/tgalal/python-axolotl")
+    (synopsis "Python port of libaxolotl-android")
+    (description "This is a python port of libaxolotl-android.  This
+is a ratcheting forward secrecy protocol that works in synchronous and
+asynchronous messaging environments.")
+    (license license:gpl3)))
+
+(define-public python2-axolotl
+  (package-with-python2 python-axolotl))

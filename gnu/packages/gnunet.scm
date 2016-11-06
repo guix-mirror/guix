@@ -163,7 +163,7 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.50.3")
+   (version "7.51.0")
    (source (origin
             (method url-fetch)
             (uri (let ((version-with-underscores
@@ -172,7 +172,7 @@ and support for SSL3 and TLS.")
                                   name "-" version-with-underscores ".tar.bz2")))
             (sha256
              (base32
-              "07ij9mj60kpfrmi0436k14b1d1idsj79nk4w5h3bia69arzp2cnk"))))
+              "1rgl4agrzghvyfz1afk1p5ryq4b9cz28lavx8ikrav6aiv9h00ig"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)

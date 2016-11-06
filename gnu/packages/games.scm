@@ -2518,7 +2518,7 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "1.5.1.1")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2527,7 +2527,7 @@ tactics.")
                     name "-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1qc0hhw9m8sy3n9fips52c7aph3w8a8pdl4n45yaasgxzbvpn9xg"))))
+                "1qb5nk0b3d0ia5zszmg4a3ydf4fiy39fmymb66vwkqn4djajdhzq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no check target
@@ -2563,7 +2563,7 @@ in strikes against the evil corporation.")
 (define-public chromium-bsu
   (package
     (name "chromium-bsu")
-    (version "0.9.15.1")
+    (version "0.9.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name
@@ -2571,18 +2571,11 @@ in strikes against the evil corporation.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01c4mki0rpz6wrqbf18fj4vd7axln5v0xqm80cyksbv63g04s6w6"))))
+                "0jk2w5b6s6nkzri585bbz16cif2fhqcnl5l1mq3rd98r9nil3hd1"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'set-paths 'set-sdl-paths
-                             (lambda* (#:key inputs #:allow-other-keys)
-                               (setenv "CPATH"
-                                       (string-append (assoc-ref inputs "sdl-union")
-                                                      "/include/SDL"))
-                               #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("glu" ,glu)
+    (inputs `(("gettext" ,gnu-gettext)
+              ("glu" ,glu)
               ("quesoglc" ,quesoglc)
               ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
     (home-page "http://chromium-bsu.sourceforge.net/")

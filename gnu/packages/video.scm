@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1684,3 +1685,31 @@ specifications.")
     (description "libaacs is a library which implements the Advanced Access
 Content System specification.")
     (license license:lgpl2.1+)))
+
+(define-public mps-youtube
+  (package
+    (name "mps-youtube")
+    (version "0.2.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mps-youtube/mps-youtube/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s7h35yx6f0szf8mm8612ic913w3v05m2kwphjfcxnpq0ammhyci"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pafy" ,python-pafy)
+       ("python-pygobject" ,python-pygobject))) ; For mpris2 support
+    (home-page "https://github.com/mps-youtube/mps-youtube")
+    (synopsis "Terminal based YouTube player and downloader")
+    (description
+     "@code{mps-youtube} is based on mps, a terminal based program to
+search, stream and download music.  This implementation uses YouTube as
+a source of content and can play and download video as well as audio.
+It can use either mpv or mplayer for playback, and for conversion of
+formats ffmpeg or libav is used.  Users should install one of the
+supported players in addition to this package.")
+    (license license:gpl3+)))

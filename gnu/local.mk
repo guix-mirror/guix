@@ -7,6 +7,7 @@
 # Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 # Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+# Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 #
 # This file is part of GNU Guix.
 #
@@ -640,6 +641,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
+  %D%/packages/patches/libjxr-fix-function-signature.patch	\
+  %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/liboop-mips64-deplibs-fix.patch		\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/liblxqt-include.patch			\
@@ -796,7 +799,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
-  %D%/packages/patches/python-ipython-inputhook-ctype.patch	\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python-rarfile-fix-tests.patch		\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
@@ -882,12 +884,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
   %D%/packages/patches/vtk-mesa-10.patch			\
-  %D%/packages/patches/w3m-libgc.patch				\
-  %D%/packages/patches/w3m-force-ssl_verify_server-on.patch	\
-  %D%/packages/patches/w3m-disable-sslv2-and-sslv3.patch	\
-  %D%/packages/patches/w3m-disable-weak-ciphers.patch		\
   %D%/packages/patches/weechat-python.patch			\
-  %D%/packages/patches/weex-vacopy.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\

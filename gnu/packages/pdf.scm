@@ -9,6 +9,7 @@
 ;;; Coypright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -751,4 +752,29 @@ the PDF pages.")
       "fbida contains a few applications for viewing and editing images on
 the framebuffer.")
 
+    (license license:gpl2+)))
+
+(define-public pdf2svg
+  (package
+    (name "pdf2svg")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dawbarton/pdf2svg/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12pa1pajirnlrkz2il3h4l30lc2prryk1qr132jk6z9y1c3qdcag"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cairo" ,cairo)
+       ("poppler" ,poppler)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.cityinthesky.co.uk/opensource/pdf2svg/")
+    (synopsis "PDF to SVG converter")
+    (description "@command{pdf2svg} is a simple command-line PDF to SVG
+converter using the Poppler and Cairo libraries.")
     (license license:gpl2+)))

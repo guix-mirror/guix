@@ -6171,13 +6171,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.16.0")
+    (version "3.16.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "1qr20j55m35dwzqyzzmla69gk5bzff8v1v2qjh7yd3362wq1ch49"))))
+                "1r6hhwkqp13m022hjajzr1lnjsbai0yjhykwn0kp1f0la990a808"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6235,13 +6235,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.30.0")
+    (version "3.30.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "0d8wp7b7nymawf4czwsg27k4c61i4ij2lhv7phi6cb3hdd8c76yf"))))
+                "04jris7wk2lxksrrvrjsysznsdb2k04lfgrnp18ic49sazva0hfy"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -6398,13 +6398,13 @@ powerful online queries from gene annotation to database mining.")
 (define-public r-biocparallel
   (package
     (name "r-biocparallel")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocParallel" version))
               (sha256
                (base32
-                "0vz23i14f7wjygr5d4y1hp8ki6l6igwcsjscfpr6dcigmknyi55c"))))
+                "123i928rwi4h4sy4fpysv6pinw5nns0sm3myxi2ghqhm34ws8gyl"))))
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
@@ -6554,13 +6554,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.34.0")
+    (version "1.34.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "0mix5k75j70mwplbdipqw71n8qic75ny6y8w2f5jj0pqg1k0327d"))))
+                "0x59k2fd0iaqi93gy6bm58p2j2z90z1b7a6w5b4c098y98n096rc"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -7312,7 +7312,7 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "0.99.6")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/RCAS/archive/v"
@@ -7320,7 +7320,7 @@ paired-end data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ljgl2b4r6w2n0i9i04d9xaphajsvhfkjdj2i2z830nha4m3w8f0"))))
+                "1h7di822ihgkhmmmlfbfz3c2dkjyjxl307i6mx8w0cwjqbna1kp6"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)

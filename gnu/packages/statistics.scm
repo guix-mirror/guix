@@ -506,13 +506,13 @@ panels or collapse high-dimensional arrays to simpler summary statistics.")
 (define-public r-proto
   (package
     (name "r-proto")
-    (version "0.3-10")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "proto" version))
        (sha256
-        (base32 "03mvzi529y6kjcp9bkpk7zlgpcakb3iz73hca6rpjy14pyzl3nfh"))))
+        (base32 "1l843p8vckjckdhgv37ngv47fga5jzy0n00pmipvp05nnaixk54j"))))
     (build-system r-build-system)
     (home-page "http://r-proto.googlecode.com")
     (synopsis "Prototype object-based programming")
@@ -694,20 +694,22 @@ aesthetic attributes.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.0.7")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "1bmnf9d677f2jy8jnb9ymjz1qzm4yrd0qp6k5qrrly06jfffyx7g"))))
+         "1l9d759x9s4ddz51sls8kcjps2i9kwfbc72dnagrdavh82h0al8n"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)))
+    (propagated-inputs
+     `(("r-withr" ,r-withr)))
     (home-page "http://cran.r-project.org/web/packages/gdtools")
     (synopsis "Utilities for graphical rendering")
     (description
@@ -1217,14 +1219,14 @@ database.")
 (define-public r-acepack
   (package
     (name "r-acepack")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "acepack" version))
        (sha256
         (base32
-         "0brivhr0imf2qq1flc9qxibybg1zi5m8pxz8cjn5a8gb42bcv96n"))))
+         "1f98rpfjmhd92rdc3j004plyfpjailz6j0ycysbac0kgj83haxc2"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
@@ -1646,14 +1648,14 @@ R version.")
 (define-public r-checkmate
   (package
     (name "r-checkmate")
-    (version "1.8.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "checkmate" version))
        (sha256
         (base32
-         "1nqyi58jl33af82y8kw8iy9xbna2080y1khhy90kf6lim6q74024"))))
+         "1zqcggl9m7slvc0q6zyhssdypb7jzf3l9byl5vxh1qdwjiw2y64g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)))
@@ -1786,14 +1788,14 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "0rpb3xdzab453yjddr8ryad53ll27zss8abnj30aqa2lzbg4jwyb"))))
+         "1lal8mmcwjhhln10mfi96ipv3d364k0wiviiln220wvhddcpr9pp"))))
     (build-system r-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -2789,6 +2791,75 @@ Fourier transform, fuzzy clustering, support vector machines, shortest path
 computation, bagged clustering, naive Bayes classifier, and more.")
     (license license:gpl2+)))
 
+(define-public r-bigmemory-sri
+  (package
+    (name "r-bigmemory-sri")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bigmemory.sri" version))
+       (sha256
+        (base32 "0mg14ilwdkd64q2ri9jdwnk7mp55dqim7xfifrs65sdsv1934h2m"))))
+    (properties
+     `((upstream-name . "bigmemory.sri")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/bigmemory.sri")
+    (synopsis "Shared resource interface for the bigmemory package")
+    (description "This package provides a shared resource interface for the
+bigmemory and synchronicity packages.")
+    ;; Users can choose either LGPLv3 or ASL2.0.
+    (license (list license:lgpl3 license:asl2.0))))
+
+(define-public r-synchronicity
+  (package
+    (name "r-synchronicity")
+    (version "1.1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "synchronicity" version))
+       (sha256
+        (base32
+         "0d9skpwmsnkn4xb3f2kgyyv8bhdi0r9p1kj3cvi0s92fjjnpi00c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-bigmemory-sri" ,r-bigmemory-sri)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "http://www.bigmemory.org")
+    (synopsis "Boost mutex functionality in R")
+    (description "This package provides support for synchronization
+via mutexes and may eventually support interprocess communication and
+message passing.")
+    ;; Users can choose either LGPLv3 or ASL2.0.
+    (license (list license:lgpl3 license:asl2.0))))
+
+(define-public r-bigmemory
+  (package
+    (name "r-bigmemory")
+    (version "4.5.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bigmemory" version))
+       (sha256
+        (base32
+         "191gbzca557kpk7mdsg716vfyqpr7j5din6qb8hin4g1nkzzwmg6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)
+       ("r-bigmemory-sri" ,r-bigmemory-sri)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "http://www.bigmemory.org")
+    (synopsis "Manage large matrices with shared memory or memory-mapped files")
+    (description "This package provides methods to create, store, access, and
+manipulate large matrices.  Matrices are allocated to shared memory and may use
+memory-mapped files.")
+    ;; Users can choose either LGPLv3 or ASL2.0.
+    (license (list license:lgpl3 license:asl2.0))))
+
 (define-public r-nmf
   (package
     (name "r-nmf")
@@ -2804,6 +2875,8 @@ computation, bagged clustering, naive Bayes classifier, and more.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
+       ("r-bigmemory" ,r-bigmemory)
+       ("r-synchronicity" ,r-synchronicity)
        ("r-colorspace" ,r-colorspace)
        ("r-digest" ,r-digest)
        ("r-doparallel" ,r-doparallel)
@@ -2884,13 +2957,13 @@ want to migrate to S4.")
 (define-public r-r-oo
   (package
     (name "r-r-oo")
-    (version "1.20.0")
+    (version "1.21.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.oo" version))
               (sha256
                (base32
-                "1l1x4r69mdchjyi6sq52p580fz3b3bqv6dpn1706y9n4vq47qx24"))))
+                "0723gxjazgqq7v3lwnl7axw3brzcnizvhbd71ijkkv8mz31fwp34"))))
     (properties `((upstream-name . "R.oo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3232,17 +3305,37 @@ distribution).")
 classification, regression and survival trees.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-survival
+  (package
+    (name "r-survival")
+    (version "2.40-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survival" version))
+       (sha256
+        (base32
+         "10pf0kq0g66k5rgizrvh29mq3r84acljw2jgrv5yp6z38xw23mci"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/therneau/survival")
+    (synopsis "Survival analysis")
+    (description
+     "This package contains the core survival analysis routines, including
+definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
+curves, Cox models, and parametric accelerated failure time models.")
+    (license license:lgpl2.0+)))
+
 (define-public r-hmisc
   (package
     (name "r-hmisc")
-    (version "3.17-4")
+    (version "4.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Hmisc" version))
        (sha256
         (base32
-         "1hr2kycpm0h3li9gnlbx9pl6h13das7g2wqfk6cip1kx6lv00ypw"))))
+         "0azxmg9h9c456biydc0wpi9xhljmd37m8bv0zaadbvc93g7x0l4b"))))
     (properties `((upstream-name . "Hmisc")))
     (build-system r-build-system)
     (native-inputs
@@ -3257,7 +3350,13 @@ classification, regression and survival trees.")
        ("r-gridextra" ,r-gridextra)
        ("r-gtable" ,r-gtable)
        ("r-lattice" ,r-lattice)
+       ;; Hmisc needs survival >= 2.40.1, so it cannot use the survival
+       ;; package that comes with R 3.3.1.
+       ("r-survival" ,r-survival)
        ("r-latticeextra" ,r-latticeextra)
+       ("r-htmltable" ,r-htmltable)
+       ("r-htmltools" ,r-htmltools)
+       ("r-viridis" ,r-viridis)
        ("r-nnet" ,r-nnet)
        ("r-rpart" ,r-rpart)))
     (home-page "http://biostat.mc.vanderbilt.edu/Hmisc")

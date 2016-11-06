@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,6 +129,62 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
                    version ".tar.gz"))
             (sha256 (base32
                      "1cz0dy05mgxqdgjf52p54yxpyy95rgl30cnazdrfmw7hfca9n0h0"))))))
+
+(define-public libjxr
+  (package
+    (name "libjxr")
+    (version "1.1")
+    (source (origin
+              ;; We are using the Debian source because CodePlex does not
+              ;; deliver an easily downloadable tarball.
+              (method url-fetch)
+              (uri (string-append "mirror://debian/pool/main/j/jxrlib/jxrlib_"
+                                  version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "00w3f3cmjsm3fiaxq5mxskmp5rl3mki8psrf9y8s1vqbg237na67"))
+              (patch-flags '("-p1" "--binary"))
+              (patches (search-patches "libjxr-fix-function-signature.patch"
+                                       "libjxr-fix-typos.patch"))))
+    (build-system gnu-build-system)
+    (arguments '(#:make-flags '("CC=gcc")
+                 #:tests? #f ; no check target
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure) ; no configure script
+                   ;; The upstream makefile does not include an install phase.
+                   (replace 'install
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let* ((out (assoc-ref outputs "out"))
+                              (bin (string-append out "/bin"))
+                              (lib (string-append out "/lib"))
+                              (include (string-append out "/include/jxrlib")))
+                         (for-each (lambda (file)
+                                     (install-file file include)
+                                     (delete-file file))
+                                   (append
+                                    '("jxrgluelib/JXRGlue.h"
+                                      "jxrgluelib/JXRMeta.h"
+                                      "jxrtestlib/JXRTest.h"
+                                      "image/sys/windowsmediaphoto.h")
+                                    (find-files "common/include" "\\.h$")))
+                         (for-each (lambda (file)
+                                     (install-file file lib)
+                                     (delete-file file))
+                                   (find-files "." "\\.a$"))
+                         (for-each (lambda (file)
+                                     (install-file file bin)
+                                     (delete-file file))
+                                   '("JxrDecApp" "JxrEncApp")))
+                       #t)))))
+    (synopsis "Implementation of the JPEG XR standard")
+    (description "JPEG XR is an approved ISO/IEC International standard (its
+official designation is ISO/IEC 29199-2). This library is an implementation of that standard.")
+    (license
+     (license:non-copyleft
+      "file://Makefile"
+      "See the header of the Makefile in the distribution."))
+    (home-page "https://jxrlib.codeplex.com/")))
 
 (define-public jpegoptim
   (package
@@ -791,17 +848,15 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "1.900.16")
+    (version "1.900.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "0wgrz6970sf8apyld35vrxamzx46fq15l0ipkvjsjlbwfrhj57rl"))))
+                "0dm3k0wdny3s37zxm9s9riv46p69c14bnn532fv6cv5b6l1b0pwb"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags '("CFLAGS=-std=c99"))) ; 1.900.13 added c++ style comments
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,

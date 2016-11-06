@@ -229,8 +229,8 @@ meaning that audio is compressed in FLAC without any loss in quality.")
    (version "0.4.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://libkate.googlecode.com/files/libkate-"
-                                version ".tar.gz"))
+            (uri (string-append "http://downloads.xiph.org/releases/kate/"
+                                "libkate-" version ".tar.gz"))
             (sha256
              (base32
               "0s3vr2nxfxlf1k75iqpp4l78yf4gil3f0v778kvlngbchvaq23n4"))))
@@ -241,7 +241,7 @@ meaning that audio is compressed in FLAC without any loss in quality.")
    (inputs `(("bison" ,bison)
              ("libogg" ,libogg)
              ("libpng" ,libpng)
-("python" ,python-wrapper)
+             ("python" ,python-wrapper)
              ("zlib" ,zlib)))
    (synopsis "Karaoke and text codec for embedding in ogg")
    (description
@@ -257,7 +257,7 @@ This allows scrolling or fading text to be defined.  This can even be used
 to draw arbitrary shapes, so hand drawing can also be represented by a
 Kate stream.")
    (license license:bsd-3)
-   (home-page "http://code.google.com/p/libkate/")))
+   (home-page "https://wiki.xiph.org/OggKate")))
 
 (define vorbis-tools
   (package
