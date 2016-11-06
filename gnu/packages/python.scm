@@ -4010,7 +4010,19 @@ both of which are installed automatically if you install this library.")
     (synopsis "Various utility functions for SQLAlchemy")
     (description
      "SQLAlchemy-utils provides various utility functions and custom data types
-for SQLAlchemy.  SQLAlchemy is an SQL database abstraction library for Python.")
+for SQLAlchemy.  SQLAlchemy is an SQL database abstraction library for Python.
+
+You might also want to install the following optional dependencies:
+@enumerate
+@item @code{python-passlib}
+@item @code{python-babel}
+@item @code{python-cryptography}
+@item @code{python-pytz}
+@item @code{python-psycopg2}
+@item @code{python-furl}
+@item @code{python-flask-babel}
+@end enumerate
+")
     (properties `((python2-variant . ,(delay python2-sqlalchemy-utils))))
     (license license:bsd-3)))
 
