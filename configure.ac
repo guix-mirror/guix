@@ -52,7 +52,7 @@ AC_MSG_CHECKING([for the store directory])
 AC_MSG_RESULT([$storedir])
 
 AC_ARG_ENABLE([daemon],
-  [AS_HELP_STRING([--disable-daemon], [build the Nix daemon (C++)])],
+  [AS_HELP_STRING([--disable-daemon], [do not build the Nix daemon (C++)])],
   [guix_build_daemon="$enableval"],
   [guix_build_daemon="yes"])
 
