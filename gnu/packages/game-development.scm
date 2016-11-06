@@ -69,20 +69,25 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.82-r2704")
+    (version "2.85.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://bullet.googlecode.com/files/bullet-"
-                                  version ".tgz"))
+              (uri (string-append "https://github.com/bulletphysics/bullet3/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lnfksxa9b1slyfcxys313ymsllvbsnxh9np06azkbgpfvmwkr37"))))
+                "0qpd37ws0xlxwy55dg058a5b4yw2jxiz09yyc3lc0frpa05pq5bf"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f ; no 'test' target
-                 #:configure-flags (list
-                                    (string-append
-                                     "-DCMAKE_CXX_FLAGS=-fPIC "
-                                     (or (getenv "CXXFLAGS") "")))))
+    (arguments
+     '(#:configure-flags (list (string-append
+                                 "-DBUILD_SHARED_LIBS=ON "
+                                 "-DCMAKE_CXX_FLAGS=-fPIC "
+                                 (or (getenv "CXXFLAGS") "")))))
+    (inputs
+     `(("glu" ,glu)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)))
     (home-page "http://bulletphysics.org/")
     (synopsis "3D physics engine library")
     (description
