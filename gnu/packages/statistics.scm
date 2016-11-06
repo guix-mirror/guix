@@ -512,7 +512,7 @@ panels or collapse high-dimensional arrays to simpler summary statistics.")
        (sha256
         (base32 "1l843p8vckjckdhgv37ngv47fga5jzy0n00pmipvp05nnaixk54j"))))
     (build-system r-build-system)
-    (home-page "http://r-proto.googlecode.com")
+    (home-page "https://github.com/hadley/proto")
     (synopsis "Prototype object-based programming")
     (description
      "Proto is an object oriented system using object-based, also called
