@@ -681,7 +681,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ndmhiflmyr144nq8drd5njsdi282ixsm4730q5n0ji2v9dp1bh5"))))
+               "0ndmhiflmyr144nq8drd5njsdi282ixsm4730q5n0ji2v9dp1bh5"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (delete-file-recursively
+                   "examples/multimedia/spectrum/3rdparty")))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
