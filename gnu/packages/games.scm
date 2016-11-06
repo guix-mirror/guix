@@ -233,11 +233,12 @@ that beneath its ruins lay buried an ancient evil.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://pingus.googlecode.com/files/pingus-"
-                           version ".tar.bz2"))
+       (uri (string-append "https://github.com/Pingus/pingus/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0q34d2k6anzqvb0mf67x85q92lfx9jr71ry13dlp47jx0x9i573m"))
+         "0r9v6as5vi7skvvy7b0fcaimhdlzmik64pyy68plgljhsghqkkf4"))
        (patches (search-patches "pingus-sdl-libs-config.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
