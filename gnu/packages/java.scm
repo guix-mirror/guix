@@ -1237,6 +1237,12 @@ private Method[] allMethods = getSortedMethods();")))))
                 (string-append (assoc-ref inputs "java-qdox-1.12")
                                "/share/java/qdox.jar")))
              #t))
+         ;; build.xml searches for .jar files in this directoy, which
+         ;; we remove  from the source archive.
+         (add-before 'build 'create-dummy-directories
+           (lambda _
+             (mkdir-p "lib/integration")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file (string-append "build/hamcrest-core-"
