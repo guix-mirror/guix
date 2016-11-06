@@ -1182,7 +1182,6 @@ an Ant task that extends the built-in @code{jar} task.")
               (method url-fetch)
               (uri (string-append "https://github.com/hamcrest/JavaHamcrest/"
                                   "archive/hamcrest-java-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "11g0s105fmwzijbv08lx8jlb521yravjmxnpgdx08fvg1kjivhva"))
