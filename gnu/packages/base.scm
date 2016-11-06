@@ -743,9 +743,22 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
+;; Below are old libc versions, which we use mostly to build locale data in
+;; the old format (which the new libc cannot cope with.)
+
+(define-public glibc-2.23
+  (package
+    (inherit glibc)
+    (version "2.23")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1s8krs3y2n6pzav7ic59dz41alqalphv7vww4138ag30wh0fpvwl"))))))
+
 (define-public glibc-2.22
-  ;; The old libc, which we use mostly to build locale data in the old format
-  ;; (which the new libc can cope with.)
   (package
     (inherit glibc)
     (version "2.22")
@@ -768,8 +781,6 @@ GLIBC/HURD for a Hurd host"
                   (("/bin/pwd") "pwd"))))))))))
 
 (define-public glibc-2.21
-  ;; The old libc, which we use mostly to build locale data in the old format
-  ;; (which the new libc can cope with.)
   (package
     (inherit glibc-2.22)
     (version "2.21")
