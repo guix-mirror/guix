@@ -85,6 +85,17 @@ languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
 
+(define-public llvm-with-rtti
+  (package (inherit llvm)
+    (name "llvm-with-rtti")
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm)
+       ((#:configure-flags flags)
+        `(append '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+                   "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                   "-DLLVM_REQUIRES_RTTI=1")
+                 ,flags))))))
+
 (define (clang-runtime-from-llvm llvm hash)
   (package
     (name "clang-runtime")
