@@ -372,7 +372,11 @@ in the store."
                        #:hashes
                        (value-from-environment "guix download hashes")
                        #:content-addressed-mirrors
-                       (primitive-load #$%content-addressed-mirror-file))))))
+                       (primitive-load #$%content-addressed-mirror-file)
+
+                       ;; No need to validate certificates since we know the
+                       ;; hash of the expected result.
+                       #:verify-certificate? #f)))))
 
   (let ((uri (and (string? url) (string->uri url))))
     (if (or (and (string? url) (not uri))

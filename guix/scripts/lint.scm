@@ -369,7 +369,8 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
               ;; This can happen if the server returns an invalid HTTP header,
               ;; as is the case with the 'Date' header at sqlite.org.
               (values 'invalid-http-response #f))
-             ((getaddrinfo-error system-error gnutls-error)
+             ((getaddrinfo-error system-error
+               gnutls-error tls-certificate-error)
               (values key args))
              (else
               (apply throw key args))))))
@@ -457,6 +458,15 @@ suspiciously small file (~a bytes)")
                                (cons status argument))))
                      field)
        #f)
+      ((tls-certificate-error)
+       (emit-warning package
+                     (format #f
+                             (_ "TLS certificate error: ~a")
+                             (call-with-output-string
+                               (lambda (port)
+                                 (print-exception port #f
+                                                  'tls-certificate-error
+                                                  argument))))))
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
        #f)

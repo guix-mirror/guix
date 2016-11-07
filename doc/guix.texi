@@ -4768,6 +4768,11 @@ they are not available, an error is raised.  @xref{Guile Preparations,
 how to install the GnuTLS bindings for Guile,, gnutls-guile,
 GnuTLS-Guile}, for more information.
 
+@command{guix download} verifies HTTPS server certificates by loading
+the certificates of X.509 authorities from the directory pointed to by
+the @code{SSL_CERT_DIR} environment variable (@pxref{X.509
+Certificates}).
+
 The following option is available:
 
 @table @code

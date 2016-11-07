@@ -32,6 +32,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:autoload   (ice-9 ftw) (scandir)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (open-socket-for-uri
@@ -273,14 +274,78 @@ out if the connection could not be established in less than TIMEOUT seconds."
 session record port using PORT as its underlying communication port."
   (hashq-set! %tls-ports record-port port))
 
-(define (tls-wrap port server)
+(define %x509-certificate-directory
+  ;; The directory where X.509 authority PEM certificates are stored.
+  (make-parameter (or (getenv "GUIX_TLS_CERTIFICATE_DIRECTORY")
+                      (getenv "SSL_CERT_DIR"))))  ;like OpenSSL
+
+(define (make-credendials-with-ca-trust-files directory)
+  "Return certificate credentials with X.509 authority certificates read from
+DIRECTORY.  Those authority certificates are checked when
+'peer-certificate-status' is later called."
+  (let ((cred  (make-certificate-credentials))
+        (files (or (scandir directory
+                            (lambda (file)
+                              (string-suffix? ".pem" file)))
+                   '())))
+    (for-each (lambda (file)
+                (set-certificate-credentials-x509-trust-file!
+                 cred (string-append directory "/" file)
+                 x509-certificate-format/pem))
+              (or files '()))
+    cred))
+
+(define (peer-certificate session)
+  "Return the certificate of the remote peer in SESSION."
+  (match (session-peer-certificate-chain session)
+    ((first _ ...)
+     (import-x509-certificate first x509-certificate-format/der))))
+
+(define (assert-valid-server-certificate session server)
+  "Return #t if the certificate of the remote peer for SESSION is a valid
+certificate for SERVER, where SERVER is the expected host name of peer."
+  (define cert
+    (peer-certificate session))
+
+  ;; First check whether the server's certificate matches SERVER.
+  (unless (x509-certificate-matches-hostname? cert server)
+    (throw 'tls-certificate-error 'host-mismatch cert server))
+
+  ;; Second check its validity and reachability from the set of authority
+  ;; certificates loaded via 'set-certificate-credentials-x509-trust-file!'.
+  (match (peer-certificate-status session)
+    (()                                           ;certificate is valid
+     #t)
+    ((statuses ...)
+     (throw 'tls-certificate-error 'invalid-certificate cert server
+            statuses))))
+
+(define (print-tls-certificate-error port key args default-printer)
+  "Print the TLS certificate error represented by ARGS in an intelligible
+way."
+  (match args
+    (('host-mismatch cert server)
+     (format port
+             "X.509 server certificate for '~a' does not match: ~a~%"
+             server (x509-certificate-dn cert)))
+    (('invalid-certificate cert server statuses)
+     (format port
+             "X.509 certificate of '~a' could not be verified:~%~{  ~a~%~}"
+             server
+             (map certificate-status->string statuses)))))
+
+(set-exception-printer! 'tls-certificate-error
+                        print-tls-certificate-error)
+
+(define* (tls-wrap port server #:key (verify-certificate? #t))
   "Return PORT wrapped in a TLS connection to SERVER.  SERVER must be a DNS
 host name without trailing dot."
   (define (log level str)
     (format (current-error-port)
             "gnutls: [~a|~a] ~a" (getpid) level str))
 
-  (let ((session (make-session connection-end/client)))
+  (let ((session  (make-session connection-end/client))
+        (ca-certs (%x509-certificate-directory)))
 
     ;; Some servers such as 'cloud.github.com' require the client to support
     ;; the 'SERVER NAME' extension.  However, 'set-session-server-name!' is
@@ -301,13 +366,27 @@ host name without trailing dot."
     ;; <https://tools.ietf.org/html/rfc7568>.
     (set-session-priorities! session "NORMAL:%COMPAT:-VERS-SSL3.0")
 
-    (set-session-credentials! session (make-certificate-credentials))
+    (set-session-credentials! session
+                              (if (and verify-certificate? ca-certs)
+                                  (make-credendials-with-ca-trust-files
+                                   ca-certs)
+                                  (make-certificate-credentials)))
 
     ;; Uncomment the following lines in case of debugging emergency.
     ;;(set-log-level! 10)
     ;;(set-log-procedure! log)
 
     (handshake session)
+
+    ;; Verify the server's certificate if needed.
+    (when verify-certificate?
+      (catch 'tls-certificate-error
+        (lambda ()
+          (assert-valid-server-certificate session server))
+        (lambda args
+          (close-port port)
+          (apply throw args))))
+
     (let ((record (session-record-port session)))
       ;; Since we use `fileno' above, the file descriptor behind PORT would be
       ;; closed when PORT is GC'd.  If we used `port->fdes', it would instead
@@ -374,9 +453,13 @@ ETIMEDOUT error is raised."
               (apply throw args)
               (loop (cdr addresses))))))))
 
-(define* (open-connection-for-uri uri #:key timeout)
+(define* (open-connection-for-uri uri
+                                  #:key
+                                  timeout
+                                  (verify-certificate? #t))
   "Like 'open-socket-for-uri', but also handle HTTPS connections.  The
-resulting port must be closed with 'close-connection'."
+resulting port must be closed with 'close-connection'.  When
+VERIFY-CERTIFICATE? is true, verify HTTPS server certificates."
   (define https?
     (eq? 'https (uri-scheme uri)))
 
@@ -403,7 +486,8 @@ resulting port must be closed with 'close-connection'."
        (setvbuf s _IOFBF %http-receive-buffer-size)
 
        (if https?
-           (tls-wrap s (uri-host uri))
+           (tls-wrap s (uri-host uri)
+                     #:verify-certificate? verify-certificate?)
            s)))))
 
 (define (close-connection port)
@@ -588,10 +672,11 @@ Return the resulting target URI."
                     #:query    (uri-query    ref)
                     #:fragment (uri-fragment ref)))))
 
-(define* (http-fetch uri file #:key timeout)
+(define* (http-fetch uri file #:key timeout (verify-certificate? #t))
   "Fetch data from URI and write it to FILE; when TIMEOUT is true, bail out if
 the connection could not be established in less than TIMEOUT seconds.  Return
-FILE on success."
+FILE on success.  When VERIFY-CERTIFICATE? is true, verify HTTPS
+certificates; otherwise simply ignore them."
 
   (define post-2.0.7?
     (or (> (string->number (major-version)) 2)
@@ -618,7 +703,10 @@ FILE on success."
           (_ '()))))
 
   (let*-values (((connection)
-                 (open-connection-for-uri uri #:timeout timeout))
+                 (open-connection-for-uri uri
+                                          #:timeout timeout
+                                          #:verify-certificate?
+                                          verify-certificate?))
                 ((resp bv-or-port)
                  ;; XXX: `http-get*' was introduced in 2.0.7, and replaced by
                  ;; #:streaming? in 2.0.8.  We know we're using it within the
@@ -659,7 +747,9 @@ FILE on success."
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))
          (close connection)
-         (http-fetch uri file #:timeout timeout)))
+         (http-fetch uri file
+                     #:timeout timeout
+                     #:verify-certificate? verify-certificate?)))
       (else
        (error "download failed" (uri->string uri)
               code (response-reason-phrase resp))))))
@@ -699,7 +789,7 @@ Return a list of URIs."
 
 (define* (url-fetch url file
                     #:key
-                    (timeout 10)
+                    (timeout 10) (verify-certificate? #t)
                     (mirrors '()) (content-addressed-mirrors '())
                     (hashes '()))
   "Fetch FILE from URL; URL may be either a single string, or a list of
@@ -713,7 +803,10 @@ HASHES must be a list of algorithm/hash pairs, where each algorithm is a
 symbol such as 'sha256 and each hash is a bytevector.
 CONTENT-ADDRESSED-MIRRORS must be a list of procedures that, given a hash
 algorithm and a hash, return a URL where the specified data can be retrieved
-or #f."
+or #f.
+
+When VERIFY-CERTIFICATE? is true, validate HTTPS server certificates;
+otherwise simply ignore them."
   (define uri
     (append-map (cut maybe-expand-mirrors <> mirrors)
                 (match url
@@ -725,9 +818,13 @@ or #f."
             file (uri->string uri))
     (case (uri-scheme uri)
       ((http https)
-       (false-if-exception* (http-fetch uri file #:timeout timeout)))
+       (false-if-exception* (http-fetch uri file
+                                        #:verify-certificate?
+                                        verify-certificate?
+                                        #:timeout timeout)))
       ((ftp)
-       (false-if-exception* (ftp-fetch uri file #:timeout timeout)))
+       (false-if-exception* (ftp-fetch uri file
+                                       #:timeout timeout)))
       (else
        (format #t "skipping URI with unsupported scheme: ~s~%"
                uri)
