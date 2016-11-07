@@ -29,7 +29,7 @@
 (define-public nano
   (package
     (name "nano")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
       (method url-fetch)
@@ -37,12 +37,12 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1hzazcrbwjqiw89jjvlj97q0wf385qqkzcm0870pdrixiv7yklax"))))
+        "06715a39hmp2dl0qz0979cyv8brpb91z5hn94q224ymbsc876m41"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gnu-gettext)
        ("ncurses" ,ncurses)))
-    (home-page "http://www.nano-editor.org/")
+    (home-page "https://www.nano-editor.org/")
     (synopsis "Small, user-friendly console text editor")
     (description
      "GNU Nano is a small and simple text editor.  In addition to basic
