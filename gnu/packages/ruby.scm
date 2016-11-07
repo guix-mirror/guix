@@ -3301,14 +3301,14 @@ neither too verbose nor too minimal.")
 (define-public ruby-sqlite3
   (package
     (name "ruby-sqlite3")
-    (version "1.3.11")
+    (version "1.3.12")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sqlite3" version))
        (sha256
         (base32
-         "19r06wglnm6479ffj9dl0fa4p5j2wi6dj7k6k3d0rbx7036cv3ny"))))
+         "0hld87rvwyy31xsxzhicv2lj3g3kmvmwfxj09kw13g6lacdjz4bx"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
