@@ -71,7 +71,7 @@ human.")
 (define-public keepassx
   (package
     (name "keepassx")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
@@ -79,10 +79,11 @@ human.")
                            "/keepassx-" version ".tar.gz"))
        (sha256
         (base32
-         "1f1nlbd669rmpzr52d9dgfgclg4jcaq2jkrby3b8q1vjkksdqjr0"))))
+         "1ia7cqx9ias38mnffsl7da7g1f66bcbjsi23k49sln0c6spb9zr3"))))
     (build-system cmake-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)
+       ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("qt" ,qt-4)))
     (native-inputs
