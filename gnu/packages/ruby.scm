@@ -2115,7 +2115,7 @@ aware transformations between times in different time zones.")
 (define-public ruby-tzinfo-data
   (package
     (name "ruby-tzinfo-data")
-    (version "1.2016.7")
+    (version "1.2016.9")
     (source
      (origin
        (method url-fetch)
@@ -2128,7 +2128,7 @@ aware transformations between times in different time zones.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0vh75hkfmqk4hdjv6nm7acw64izwpnv7slkmh2kj7qlfz133yh9l"))
+         "0i8vz2j7wmcpr4pd066qvlg4if5blscjrgxk2imavfa49nq5lp06"))
        ;; Remove the known test failure.
        ;; https://github.com/tzinfo/tzinfo-data/issues/10
        ;; https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1587128
