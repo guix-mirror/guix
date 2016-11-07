@@ -434,10 +434,12 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                       #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))
-                            #:key (log (current-error-port)) recursive?)
+                            #:key (log (current-error-port)) recursive?
+                            (verify-certificate? #t))
   "Download from URL to STORE, either under NAME or URL's basename if
 omitted.  Write progress reports to LOG.  RECURSIVE? has the same effect as
-the same-named parameter of 'add-to-store'."
+the same-named parameter of 'add-to-store'.  VERIFY-CERTIFICATE? determines
+whether or not to validate HTTPS server certificates."
   (define uri
     (string->uri url))
 
@@ -448,7 +450,10 @@ the same-named parameter of 'add-to-store'."
        (lambda (temp port)
          (let ((result
                 (parameterize ((current-output-port log))
-                  (build:url-fetch url temp #:mirrors %mirrors))))
+                  (build:url-fetch url temp
+                                   #:mirrors %mirrors
+                                   #:verify-certificate?
+                                   verify-certificate?))))
            (close port)
            (and result
                 (add-to-store store name recursive? "sha256" temp)))))))

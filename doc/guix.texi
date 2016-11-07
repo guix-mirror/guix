@@ -4771,15 +4771,23 @@ GnuTLS-Guile}, for more information.
 @command{guix download} verifies HTTPS server certificates by loading
 the certificates of X.509 authorities from the directory pointed to by
 the @code{SSL_CERT_DIR} environment variable (@pxref{X.509
-Certificates}).
+Certificates}), unless @option{--no-check-certificate} is used.
 
-The following option is available:
+The following options are available:
 
 @table @code
 @item --format=@var{fmt}
 @itemx -f @var{fmt}
 Write the hash in the format specified by @var{fmt}.  For more
 information on the valid values for @var{fmt}, @pxref{Invoking guix hash}.
+
+@item --no-check-certificate
+Do not validate the X.509 certificates of HTTPS servers.
+
+When using this option, you have @emph{absolutely no guarantee} that you
+are communicating with the authentic server responsible for the given
+URL, which makes you vulnerable to ``man-in-the-middle'' attacks.
+
 @end table
 
 @node Invoking guix hash

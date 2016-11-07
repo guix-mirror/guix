@@ -41,7 +41,8 @@
 
 (define %default-options
   ;; Alist of default option values.
-  `((format . ,bytevector->nix-base32-string)))
+  `((format . ,bytevector->nix-base32-string)
+    (verify-certificate? . #t)))
 
 (define (show-help)
   (display (_ "Usage: guix download [OPTION] URL
@@ -52,6 +53,9 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
 ('hex' and 'hexadecimal' can be used as well).\n"))
   (format #t (_ "
   -f, --format=FMT       write the hash in the given format"))
+  (format #t (_ "
+      --no-check-certificate
+                         do not validate the certificate of HTTPS servers "))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -77,6 +81,9 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
 
                   (alist-cons 'format fmt-proc
                               (alist-delete 'format result))))
+        (option '("no-check-certificate") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'verify-certificate? #f result)))
 
         (option '(#\h "help") #f #f
                 (lambda args
@@ -120,7 +127,10 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                      (parameterize ((current-terminal-columns
                                      (terminal-columns)))
                        (download-to-store store (uri->string uri)
-                                          (basename (uri-path uri)))))))
+                                          (basename (uri-path uri))
+                                          #:verify-certificate?
+                                          (assoc-ref opts
+                                                     'verify-certificate?))))))
            (hash  (call-with-input-file
                       (or path
                           (leave (_ "~a: download failed~%")
