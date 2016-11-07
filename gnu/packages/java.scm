@@ -1180,16 +1180,16 @@ an Ant task that extends the built-in @code{jar} task.")
     (version "1.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://hamcrest.googlecode.com/files/"
-                                  "hamcrest-" version ".tgz"))
+              (uri (string-append "https://github.com/hamcrest/JavaHamcrest/"
+                                  "archive/hamcrest-java-" version ".tar.gz"))
               (sha256
                (base32
-                "1hi0jv0zrgsf4l25aizxrgvxpsrmdklsmvw0jzwz7zv9s108whn6"))
+                "11g0s105fmwzijbv08lx8jlb521yravjmxnpgdx08fvg1kjivhva"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Delete bundled jar archives.
-                  (for-each delete-file (find-files "." "\\.jar$"))
+                  ;; Delete bundled thirds-party jar archives.
+                  (delete-file-recursively "lib")
                   #t))))
     (build-system ant-build-system)
     (arguments
@@ -1236,6 +1236,12 @@ private Method[] allMethods = getSortedMethods();")))))
                (("lib/generator/qdox-1.12.jar")
                 (string-append (assoc-ref inputs "java-qdox-1.12")
                                "/share/java/qdox.jar")))
+             #t))
+         ;; build.xml searches for .jar files in this directoy, which
+         ;; we remove  from the source archive.
+         (add-before 'build 'create-dummy-directories
+           (lambda _
+             (mkdir-p "lib/integration")
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)

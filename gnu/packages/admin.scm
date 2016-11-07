@@ -1570,14 +1570,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.12")
+    (version "7.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "014vagh9ak10hidwzp9s6g30y5h5fhsh8wykcnc1hnn9hwm0ipv3"))
+                "0hiqb28950kn4bjsmw0ksfyss7j2qdmgrj3xsjf7073pq01lx7yb"))
               (modules '((guix build utils)))
               (snippet
                '(map delete-file-recursively
@@ -1603,6 +1603,12 @@ done with the @code{auditctl} utility.")
      '(#:configure-flags '("--without-zenmap")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'configure 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; Do not attempt to build lua.
+               (("build-dnet build-lua") "build-dnet"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (define (make out . args)

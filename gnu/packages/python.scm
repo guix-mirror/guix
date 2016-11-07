@@ -3922,6 +3922,141 @@ simple and Pythonic domain language.")
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
 
+(define-public python-pycodestyle
+  (package
+    (name "python-pycodestyle")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pycodestyle" version))
+        (sha256
+          (base32
+            "1rz2v8506mdjdyxcnv9ygiw6v0d4dqx8z5sjyjm0w2v32h5l5w1p"))))
+    (build-system python-build-system)
+    (home-page "https://pycodestyle.readthedocs.io/")
+    (synopsis "Python style guide checker")
+    (description "@code{pycodestyle} (formerly pep8) is a tool to check
+Python code against some of the style conventions in
+@url{http://www.python.org/dev/peps/pep-0008/,PEP 8}.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pycodestyle))))))
+
+(define-public python2-pycodestyle
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-pycodestyle))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-orderedmultidict
+  (package
+    (name "python-orderedmultidict")
+    (version "0.7.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "orderedmultidict" version))
+        (sha256
+          (base32
+            "1gvqk0jd432wsn88kq4svad68xz3r012jfpnhh9in7bqrkyxidky"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; The package uses nosetest for running the tests.
+             ;; Adding this initfile allows to run the test suite
+             ;; without requiring nosetest.
+             (zero? (system* "touch" "tests/__init__.py")))))))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/gruns/orderedmultidict")
+    (synopsis "Python Ordered Multivalue Dictionary - omdict")
+    (description "This package contains a library for ordered multivalue
+dictionaries.  A multivalue dictionary is a dictionary that can store
+multiple values for the same key.  An ordered multivalue dictionary is a
+multivalue dictionary that retains the order of insertions and deletions.")
+    (license license:unlicense)
+    (properties `((python2-variant . ,(delay python2-orderedmultidict))))))
+
+(define-public python2-orderedmultidict
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-orderedmultidict))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-furl
+  (package
+    (name "python-furl")
+    (version "0.5.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "furl" version))
+        (sha256
+          (base32
+            "0lzpfpm686hvz3sr1mcrnd1b3lgmnw8v59gb43wfi98r3b671pqc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-orderedmultidict" ,python-orderedmultidict)))
+    (native-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/gruns/furl")
+    (synopsis "URL manipulation in Python")
+    (description "Furl provides an easy-to-use alternative to the
+@code{urllib} and @code{urlparse} modules for manipulating URLs.")
+    (license license:unlicense)
+    (properties `((python2-variant . ,(delay python2-furl))))))
+
+(define-public python2-furl
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-furl))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
+(define-public python-flask-babel
+  (package
+    (name "python-flask-babel")
+    (version "0.11.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-Babel" version))
+        (sha256
+          (base32
+            "16b80cipdba9xj3jlaiaq6wgrgpjb70w3j01jjy9hbp4k71kd6yj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-babel" ,python-babel)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/python-babel/flask-babel")
+    (synopsis "Add i18n/l10n support to Flask applications")
+    (description "This package implements internationalization and localization
+support for Flask.  This is based on the Python babel module as well as pytz -
+both of which are installed automatically if you install this library.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-flask-babel))))))
+
+(define-public python2-flask-babel
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-flask-babel))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
@@ -3934,9 +4069,11 @@ simple and Pythonic domain language.")
          (base32
           "1zbmmh7n8m01ikizn2mj1mfwch26nsr1awv9mvskqry7av0mpy98"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)
        ("python-sqlalchemy" ,python-sqlalchemy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/kvesteri/sqlalchemy-utils")
     (synopsis "Various utility functions for SQLAlchemy")
     (description

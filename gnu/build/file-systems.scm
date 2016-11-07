@@ -139,7 +139,7 @@ if DEVICE does not contain an ext2 file system."
 ;;;
 
 ;; The LUKS header format is described in "LUKS On-Disk Format Specification":
-;; <http://wiki.cryptsetup.googlecode.com/git/LUKS-standard/>.  We follow
+;; <https://gitlab.com/cryptsetup/cryptsetup/wikis/Specification>.  We follow
 ;; version 1.2.1 of this document.
 
 (define-syntax %luks-endianness

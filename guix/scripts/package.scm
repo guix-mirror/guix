@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -782,12 +783,7 @@ processed, #f otherwise."
                                    #:key dry-run?)
   "Switch PROFILE to the generation specified by SPEC."
   (unless dry-run?
-    (let* ((number (string->number spec))
-           (number (and number
-                        (case (string-ref spec 0)
-                          ((#\+ #\-)
-                           (relative-generation profile number))
-                          (else number)))))
+    (let ((number (relative-generation-spec->number profile spec)))
       (if number
           (switch-to-generation* profile number)
           (leave (_ "cannot switch to generation '~a'~%") spec)))))

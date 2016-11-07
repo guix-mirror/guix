@@ -541,7 +541,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1rb27x7i2pmvsck6wax2cg31gqpzaakciy45wm5l3lcl86j48czg"))))
+               "1rb27x7i2pmvsck6wax2cg31gqpzaakciy45wm5l3lcl86j48czg"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (delete-file-recursively "src/3rdparty")))))
     (native-inputs `())
     (inputs
      `(("libmng" ,libmng)
@@ -677,7 +681,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ndmhiflmyr144nq8drd5njsdi282ixsm4730q5n0ji2v9dp1bh5"))))
+               "0ndmhiflmyr144nq8drd5njsdi282ixsm4730q5n0ji2v9dp1bh5"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (delete-file-recursively
+                   "examples/multimedia/spectrum/3rdparty")))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)

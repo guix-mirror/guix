@@ -236,7 +236,7 @@ and UNIX socket support.")
 (define-public jansson
   (package
     (name "jansson")
-    (version "2.7")
+    (version "2.9")
     (source (origin
              (method url-fetch)
              (uri
@@ -244,8 +244,7 @@ and UNIX socket support.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "1mvq9p85khsl818i4vbszyfab0fd45mdrwrxjkzw05mk1xcyc1br"))
-             (patches (search-patches "jansson-CVE-2016-4425.patch"))))
+               "19fjgfwjfj99rqa3kf96x5rssj88siazggksgrikd6h4r9sd1l0a"))))
     (build-system gnu-build-system)
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")

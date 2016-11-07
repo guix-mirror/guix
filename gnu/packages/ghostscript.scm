@@ -200,7 +200,8 @@ file format.  It also includes a C library that implements the graphics
 capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
    (license license:agpl3+)
-   (home-page "http://www.gnu.org/software/ghostscript/")))
+   (home-page "http://www.gnu.org/software/ghostscript/")
+   (properties '((upstream-name . "gnu-ghostscript")))))
 
 (define-public ghostscript/x
   (package (inherit ghostscript)

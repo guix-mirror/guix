@@ -614,7 +614,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
-  %D%/packages/patches/jansson-CVE-2016-4425.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/khmer-use-libraries.patch                \
@@ -690,7 +689,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lua-pkgconfig.patch                      \
   %D%/packages/patches/lua51-liblua-so.patch                    \
   %D%/packages/patches/lua51-pkgconfig.patch                    \
-  %D%/packages/patches/lua52-liblua-so.patch                    \
+  %D%/packages/patches/lua-liblua-so.patch                      \
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luajit-symlinks.patch			\
   %D%/packages/patches/luit-posix.patch				\
