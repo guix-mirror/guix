@@ -3509,14 +3509,14 @@ Suffix List.")
 (define-public ruby-http-cookie
   (package
     (name "ruby-http-cookie")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "http-cookie" version))
        (sha256
         (base32
-         "0cz2fdkngs3jc5w32a6xcl511hy03a7zdiy988jk1sf3bf5v3hdw"))))
+         "004cgs4xg5n6byjs7qld0xhsjq3n6ydfh897myr2mibvh6fjc49g"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
