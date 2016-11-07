@@ -51,6 +51,7 @@
             grub-configuration
             grub-configuration?
             grub-configuration-device
+            grub-configuration-grub
 
             menu-entry
             menu-entry?

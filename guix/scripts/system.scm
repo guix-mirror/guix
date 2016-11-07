@@ -44,7 +44,6 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services herd)
-  #:use-module (gnu packages grub)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -617,7 +616,8 @@ building anything."
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
-       (grub      (package->derivation grub))
+       (grub      (package->derivation (grub-configuration-grub
+                                        (operating-system-bootloader os))))
        (grub.cfg  (if (eq? 'container action)
                       (return #f)
                       (operating-system-grub.cfg os
