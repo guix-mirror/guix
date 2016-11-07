@@ -1,0 +1,17 @@
+The tests currently fail due to use of 'skip' rather than 'pending' to skip a
+test usually not skipped by upstream.  This patch has been proposed upstream
+at https://github.com/lsegal/yard/pull/1033
+
+diff --git a/spec/templates/helpers/html_helper_spec.rb b/spec/templates/helpers/html_helper_spec.rb
+index 84624c3..9c4fc2b 100644
+--- a/spec/templates/helpers/html_helper_spec.rb
++++ b/spec/templates/helpers/html_helper_spec.rb
+@@ -184,7 +184,7 @@ describe YARD::Templates::Helpers::HtmlHelper do
+     it "creates tables (markdown specific)" do
+       log.enter_level(Logger::FATAL) do
+         unless markup_class(:markdown).to_s == "RedcarpetCompat"
+-          skip "This test depends on a markdown engine that supports tables"
++          pending "This test depends on a markdown engine that supports tables"
+         end
+       end
+ 

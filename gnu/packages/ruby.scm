@@ -3047,43 +3047,44 @@ features such as filtering and fine grained logging.")
     (license license:expat)))
 
 (define-public ruby-yard
-  (package
-    (name "ruby-yard")
-    (version "0.8.7.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (rubygems-uri "yard" version))
-       (sha256
-        (base32
-         "1dj6ibc0qqvmb5a5r5kk0vhr04mnrz9b26gnfrs5p8jgp620i89x"))))
-    (build-system ruby-build-system)
-    (arguments
-     `(#:test-target "specs"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'set-HOME-and-disable-failing-test
-           (lambda _
-             ;; $HOME needs to be set to somewhere writeable for tests to run
-             (setenv "HOME" "/tmp")
-             ;; Disable tests which fails on Ruby 2.3.  See
-             ;; https://github.com/lsegal/yard/issues/927
-             (substitute* "spec/parser/ruby/ruby_parser_spec.rb"
-               (("comment.type.should == :comment") "")
-               (("comment.docstring_hash_flag.should be_true") "")
-               (("comment.docstring.strip.should == .*") ""))
-             #t)))))
-    (native-inputs
-     `(("ruby-rspec" ,ruby-rspec-2)
-       ("ruby-rack" ,ruby-rack)))
-    (synopsis "Documentation generation tool for Ruby")
-    (description
-     "YARD is a documentation generation tool for the Ruby programming
+  ;; Use git reference because gem is >100 commits out of date and the tests
+  ;; do not pass with the released gem.
+  (let ((commit "d816482a0d4850506c3bcccc9434550c536c28c6"))
+    (package
+      (name "ruby-yard")
+      (version (string-append "0.9.5-1." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lsegal/yard.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1j16c85x22if7y0fzi3c900p9wzkx2riq1y7vsj92a0zvwsxai4i"))
+         (patches (search-patches "ruby-yard-fix-skip-of-markdown-tests.patch"))))
+      (build-system ruby-build-system)
+      (arguments
+       `(#:test-target "spec"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'set-HOME-and-disable-failing-test
+             (lambda _
+               ;; $HOME needs to be set to somewhere writeable for tests to run
+               (setenv "HOME" "/tmp")
+               #t)))))
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec-2)
+         ("ruby-rack" ,ruby-rack)))
+      (synopsis "Documentation generation tool for Ruby")
+      (description
+       "YARD is a documentation generation tool for the Ruby programming
 language.  It enables the user to generate consistent, usable documentation
 that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
-    (home-page "http://yardoc.org")
-    (license license:expat)))
+      (home-page "http://yardoc.org")
+      (license license:expat))))
 
 (define-public ruby-clap
   (package

@@ -7,6 +7,7 @@
 # Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -841,6 +842,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-symlinkfix.patch                    \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
+  %D%/packages/patches/ruby-yard-fix-skip-of-markdown-tests.patch \
   %D%/packages/patches/sed-hurd-path-max.patch			\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
