@@ -491,7 +491,14 @@ extracting content or merging files.")
         (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
                                  "mupdf-CVE-2016-6265.patch"
                                  "mupdf-CVE-2016-6525.patch"
-                                 "mupdf-CVE-2016-8674.patch"))
+                                 "mupdf-CVE-2016-7504.patch"
+                                 "mupdf-CVE-2016-7505.patch"
+                                 "mupdf-CVE-2016-7506.patch"
+                                 "mupdf-CVE-2016-7563.patch"
+                                 "mupdf-CVE-2016-7564.patch"
+                                 "mupdf-CVE-2016-8674.patch"
+                                 "mupdf-CVE-2016-9017.patch"
+                                 "mupdf-CVE-2016-9136.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Delete all the bundled libraries except for mujs, which is
