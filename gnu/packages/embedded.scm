@@ -38,7 +38,8 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (srfi srfi-1))
 
 ;; We must not use the released GCC sources here, because the cross-compiler
 ;; does not produce working binaries.  Instead we take the very same SVN
@@ -63,7 +64,13 @@
          (sha256
           (base32
            "113r98kygy8rrjfv2pd3z6zlfzbj543pq7xyq8bgh72c608mmsbr"))
-         (patches (origin-patches (package-source xgcc)))))
+
+         ;; Remove the one patch that doesn't apply to this 4.9 snapshot (the
+         ;; patch is for 4.9.4 and later but this svn snapshot is older).
+         (patches (remove (lambda (patch)
+                            (string=? (basename patch)
+                                      "gcc-arm-bug-71399.patch"))
+                          (origin-patches (package-source xgcc))))))
       (native-inputs
        `(("flex" ,flex)
          ,@(package-native-inputs xgcc)))
