@@ -2499,9 +2499,8 @@ version numbers.")
               (base32
                "0hddbqjm4jq63y8jf44nswina1crjs16l9snb6m3vvgyg31klrrn"))))
     (build-system python-build-system)
-    (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-vcversioner" ,python-vcversioner)))
+    (native-inputs
+     `(("python-vcversioner" ,python-vcversioner)))
     (home-page "http://github.com/Julian/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
@@ -2513,9 +2512,11 @@ version numbers.")
   (let ((jsonschema (package-with-python2
                      (strip-python2-variant python-jsonschema))))
     (package (inherit jsonschema)
-      (inputs
-       `(("python2-functools32" ,python2-functools32)
-         ,@(package-inputs jsonschema))))))
+             (native-inputs
+              `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-native-inputs jsonschema)))
+             (propagated-inputs
+              `(("python2-functools32" ,python2-functools32))))))
 
 (define-public python-unidecode
   (package
