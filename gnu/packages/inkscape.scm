@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,13 +81,13 @@
      `(;; Add '-std=c++11', required by recent versions of GLibmm & co.
        ;; Use '-g0' to reduce disk usage during the build.
        #:configure-flags '("CXXFLAGS=-g0 -O2 -fopenmp -std=c++11")
-
-       #:phases (alist-cons-after
-                 'unpack 'fix-test-includes
-                 (lambda _
-                   (substitute* "src/cxxtests.cpp"
-                     (("\\.\\./\\.\\./src") "../src")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-includes
+           (lambda _
+             (substitute* "src/cxxtests.cpp"
+               (("\\.\\./\\.\\./src") "../src"))
+             #t)))))
     (home-page "http://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape
