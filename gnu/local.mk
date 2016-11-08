@@ -360,6 +360,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tmux.scm				\
   %D%/packages/tor.scm				\
   %D%/packages/tv.scm				\
+  %D%/packages/uml.scm				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
   %D%/packages/uucp.scm				\
