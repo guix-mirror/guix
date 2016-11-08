@@ -155,7 +155,8 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ("zlib" ,zlib)))
 
       ;; GCC < 5 is one of the few packages that doesn't ship .info files.
-      (native-inputs `(("texinfo" ,texinfo)))
+      ;; Newer texinfos fail to build the manual, so we use an older one.
+      (native-inputs `(("texinfo" ,texinfo-5)))
 
       (arguments
        `(#:out-of-source? #t
@@ -329,12 +330,7 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
-              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
-
-    ;; Texinfo 6.3 fails to build the manual:
-    ;;   ../../gcc-4.8.5/gcc/doc/gcc.texi:208: no matching `@end tex'
-    ;; Use an older one.
-    (native-inputs `(("texinfo" ,texinfo-5)))))
+              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)
@@ -347,7 +343,8 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
-                                       "gcc-libvtv-runpath.patch"))))))
+                                       "gcc-libvtv-runpath.patch"))))
+    (native-inputs `(("texinfo" ,texinfo)))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
