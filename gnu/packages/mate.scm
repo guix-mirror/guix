@@ -61,23 +61,22 @@
 (define-public mate-themes
   (package
     (name "mate-themes")
-    (version "1.12.2")
+    (version (package-version gtk+))
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pub.mate-desktop.org/releases/"
-                                  (version-major+minor version) "/"
-                                  name "-gtk"
+              (uri (string-append "http://pub.mate-desktop.org/releases/themes/"
                                   (version-major+minor (package-version gtk+))
-                                  "-" version ".tar.xz"))
+                                  "/mate-themes-" (package-version gtk+)
+                                  ".tar.xz"))
               (sha256
                (base32
-                "0kyrlgs5azzj60gnxx2n9qszcligxn959wr42wr0iqnrpiygk5nf"))))
+                "12p6xvqs8smbk9nivi43089fiw1jbb3g9836arr0sksmmziklnvy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
-     `(("gtk+" ,gtk+-2)
+     `(("gtk+" ,gtk+)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gtk-engines" ,gtk-engines)
        ("murrine" ,murrine)))
@@ -86,7 +85,8 @@
      "Official themes for the MATE desktop")
     (description
      "This package includes the standard themes for the MATE desktop, for
-example Menta, TraditionalOk, GreenLaguna or BlackMate.")
+example Menta, TraditionalOk, GreenLaguna or BlackMate.  This package has
+themes for both gtk+-2 and gtk+-3.")
     (license (list license:lgpl2.1+ license:cc-by-sa3.0 license:gpl3+
                    license:gpl2+))))
 
