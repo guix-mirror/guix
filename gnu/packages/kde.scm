@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,40 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt))
+
+(define-public libkomparediff2
+  (package
+    (name "libkomparediff2")
+    (version "16.08.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/KDE/libkomparediff2/archive/v"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1lafifrwfxvn0jwhz67kwv7m38lm4syips3fq77rwcvfhmkiijmh"))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (build-system cmake-build-system)
+    (home-page "https://kde.org")
+    (synopsis "Library to compare files and strings, used in Kompare and KDevelop")
+    (description "Libkomparediff2 is a library to work with diffs and patches,
+used in KDE development tools Kompare and KDevelop.")
+
+    ;; GPL, some files are also licensed under LGPL or BSD, see COPYING in the
+    ;; source archive
+    (license (list license:gpl2+ license:lgpl2.0+ license:bsd-3))))
 
 (define-public qca
   (package
