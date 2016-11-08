@@ -692,6 +692,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libxv-CVE-2016-5407.patch		\
   %D%/packages/patches/libxvmc-CVE-2016-7953.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
+  %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
