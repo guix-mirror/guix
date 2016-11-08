@@ -28,6 +28,29 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt))
 
+(define-public kdevelop-pg-qt
+  (package
+    (name "kdevelop-pg-qt")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/KDE/kdevelop-pg-qt/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1av8plqz7hyhrd07avnmn6ryslqlarmxn0pw7swzvb6ddiqp59j4"))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (build-system cmake-build-system)
+    (home-page "https://kde.org")
+    (synopsis "Parser generator library for KDevplatform")
+    (description "KDevelop-PG-Qt is the parser generator used in KDevplatform
+for some KDevelop language plugins (Ruby, PHP, CSS...).")
+    (license license:lgpl2.0+)))
+
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
