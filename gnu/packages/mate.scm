@@ -37,7 +37,7 @@
 (define-public mate-icon-theme
   (package
     (name "mate-icon-theme")
-    (version "1.12.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -45,7 +45,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d91rvl9rw3xl8hmdcbb6xvi880kfmh2ra5chhrjimrjqgl57qkp"))))
+                "1zldw22p1i76iss8car39pmfagpfxxlfk1fdhvr4x5r6gf36gv7d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
