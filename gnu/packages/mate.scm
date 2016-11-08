@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,7 +126,7 @@ desktop and the mate-about program.")
 (define-public libmateweather
   (package
     (name "libmateweather")
-    (version "1.12.1")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -133,11 +134,12 @@ desktop and the mate-about program.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qrq6z6knybixnxmsvkw58hm033m91inf523mbvzgv2r822fpakl"))))
+                "0w1b8b1ckmkbvwnqi9yh2lwbskzhz99s5yxdkar5xiqylnjrwmm3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       `(,(string-append "--with-zoneinfo-dir="
+       `("--with-gtk=3.0"
+         ,(string-append "--with-zoneinfo-dir="
                          (assoc-ref %build-inputs "tzdata")
                          "/share/zoneinfo"))
        #:phases
@@ -156,16 +158,17 @@ desktop and the mate-about program.")
        ("glib:bin" ,glib "bin")))
     (inputs
      `(("dconf" ,dconf)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+)
        ("tzdata" ,tzdata)))
     (propagated-inputs
-     `(("gtk+" ,gtk+-2)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("libxml2" ,libxml2)
-       ("libsoup" ,libsoup)))
+      ;; both of these are requires.private in mateweather.pc
+     `(("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)))
     (home-page "http://mate-desktop.org/")
     (synopsis "MATE library for weather information from the Internet")
     (description
-     "This library provides acess to weather information from the internet for
+     "This library provides access to weather information from the internet for
 the MATE desktop environment.")
     (license license:lgpl2.1+)))
 
