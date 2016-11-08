@@ -5078,6 +5078,12 @@ are:
 @uref{http://elpa.gnu.org/packages, GNU}, selected by the @code{gnu}
 identifier.  This is the default.
 
+Packages from @code{elpa.gnu.org} are signed with one of the keys
+contained in the GnuPG keyring at
+@file{share/emacs/25.1/etc/package-keyring.gpg} (or similar) in the
+@code{emacs} package (@pxref{Package Installation, ELPA package
+signatures,, emacs, The GNU Emacs Manual}).
+
 @item
 @uref{http://stable.melpa.org/packages, MELPA-Stable}, selected by the
 @code{melpa-stable} identifier.
