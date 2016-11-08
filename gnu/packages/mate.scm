@@ -93,7 +93,7 @@ example Menta, TraditionalOk, GreenLaguna or BlackMate.")
 (define-public mate-desktop
   (package
     (name "mate-desktop")
-    (version "1.12.1")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -101,8 +101,11 @@ example Menta, TraditionalOk, GreenLaguna or BlackMate.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00ssrzm07xyrjra075jhir1f8iy382lla7923fhic29lap26mffr"))))
+                "1pzncfgrzp2mp9407ivk1113hkadpf110blr058h31jkwsk8syjq"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-gtk=3.0"
+                           "--enable-mpaste")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -111,11 +114,12 @@ example Menta, TraditionalOk, GreenLaguna or BlackMate.")
        ("yelp-tools" ,yelp-tools)))
        ;;("gtk-doc" ,gtk-doc))) ; add back in when gtk-doc builds
     (inputs
-     `(("libxrandr" ,libxrandr)))
-    (propagated-inputs
-     `(("dconf" ,dconf)
-       ("gtk+" ,gtk+-2)
+     `(("gtk+" ,gtk+)
+       ("libxrandr" ,libxrandr)
+       ("python2" ,python-2)
        ("startup-notification" ,startup-notification)))
+    (propagated-inputs
+     `(("dconf" ,dconf))) ; mate-desktop-2.0.pc
     (home-page "http://mate-desktop.org/")
     (synopsis "Library with common API for various MATE modules")
     (description
