@@ -6552,14 +6552,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.3.4")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "15h1iz2klnpb4f8djxy7cpbnyn3wbjp7bnj4pz6s7w6plghbq524"))))
+         "1bnd1bricyhxa27rhr0ljk0kacxzvysd3ar2j2hlv13a2k6zw4z5"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -6576,14 +6576,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.3.4")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1a85l548w5vvq3yhz0az7ajg2ijixzp6gagapw6wgrqvq28ghgs2"))))
+         "1raanvkdfw5ai56ymlij6ghc4k126fs7jx948ig7yn4vj6ndv0ng"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -6600,7 +6600,8 @@ responses, rather than doing any computation.")
        ("python-pretend" ,python-pretend)
        ("python-pyasn1" ,python-pyasn1)
        ("python-pyasn1-modules" ,python-pyasn1-modules)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytz" ,python-pytz)
+       ("python-pytest" ,python-pytest-2.9.2)))
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Cryptographic recipes and primitives for Python")
     (description
