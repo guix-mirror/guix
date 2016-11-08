@@ -319,14 +319,14 @@ extensions.")
 (define-public python-tempest-lib
   (package
     (name "python-tempest-lib")
-    (version "0.12.0")
+    (version "1.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "tempest-lib" version))
       (sha256
        (base32
-        "0f15wxk394cb2kw34krpxq8mvy1rxw0lnl5wfiv14cq1s1fm9cjd"))))
+        "1cpp2vwmawpd29hjsklsps181lq2ah91cl412qvpnz228nf9sqn5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -351,7 +351,7 @@ extensions.")
         ("python-os-testr" ,python-os-testr)
         ("python-oslotest" ,python-oslotest)
         ("python-setuptools" ,python-setuptools)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis "OpenStack functional testing library")
     (description
       "Tempest-lib is a functional testing library for OpenStack.  It provides
