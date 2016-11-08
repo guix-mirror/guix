@@ -179,7 +179,7 @@ the MATE desktop environment.")
 (define-public mate-menus
   (package
     (name "mate-menus")
-    (version "1.12.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -187,7 +187,7 @@ the MATE desktop environment.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1i4m3fj0vd85zyhqhm8x9yr0h5i08aa4l99zqvbk59ncj6z3bdxh"))))
+                "0crw07iszwsqk54y8znfqdgfz76rjdz8992v4q9kpwwlrl11xmc5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -200,15 +200,15 @@ the MATE desktop environment.")
                 (("`\\$PKG_CONFIG --variable=girdir gobject-introspection-1.0`")
                  (string-append "\"" out "/share/gir-1.0/\""))
                 (("\\$\\(\\$PKG_CONFIG --variable=typelibdir gobject-introspection-1.0\\)")
-                 (string-append out "/lib/girepository-1.0/")))))))))
+                 (string-append out "/lib/girepository-1.0/")))
+              #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("python" ,python-2)))
-    (propagated-inputs
-     `(("glib" ,glib)))
+     `(("glib" ,glib)
+       ("python" ,python-2)))
     (home-page "http://mate-desktop.org/")
     (synopsis "Freedesktop menu specification implementation for MATE")
     (description
