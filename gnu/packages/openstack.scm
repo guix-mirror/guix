@@ -206,14 +206,14 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-os-testr
   (package
     (name "python-os-testr")
-    (version "0.5.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "os-testr" version))
        (sha256
         (base32
-         "0bv03wnmvxhyi8y08hjh9clxrwqc2251529v4kh5khvca0fsbqdp"))))
+         "0mknd9hlmxmihr755gjkxyjp180380jajq5i3zm34q7y7bi62lss"))))
     (build-system python-build-system)
     (arguments
      ;; os-testr uses itself to run the tests. It seems like pbr writes the
@@ -227,7 +227,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
     (inputs
       `(("python-babel" ,python-babel)
         ("python-setuptools" ,python-setuptools)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis "Testr wrapper to provide functionality for OpenStack projects")
     (description
       "Os-testr provides developers with a testr wrapper and an output filter
