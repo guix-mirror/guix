@@ -260,6 +260,7 @@ compatible to GNU Pth.")
         (add-before 'check 'set-home
           ;; Some tests require write access to $HOME, otherwise leading to
           ;; 'failed to create directory /homeless-shelter/.asy' error.
+          ;; TODO Try removing this phase for GnuPG 2.1.16.
           (lambda _
             (setenv "HOME" "/tmp")
             #t)))))
