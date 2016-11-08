@@ -784,3 +784,52 @@ the framebuffer.")
     (description "@command{pdf2svg} is a simple command-line PDF to SVG
 converter using the Poppler and Cairo libraries.")
     (license license:gpl2+)))
+
+(define-public python-pypdf2
+  (package
+    (name "python-pypdf2")
+    (version "1.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "PyPDF2" version))
+              (sha256
+               (base32
+                "11a3aqljg4sawjijkvzhs3irpw0y67zivqpbjpm065ha5wpr13z2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-test-suite
+          (lambda _
+            ;; The text-file needs to be opened in binary mode for Python 3,
+            ;; so patch in the "b"
+            (substitute* "Tests/tests.py"
+              (("pdftext_file = open\\(.* 'crazyones.txt'\\), 'r" line)
+               (string-append line "b")))
+            #t))
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "unittest" "Tests.tests")))))))
+    (home-page "http://mstamy2.github.com/PyPDF2")
+    (synopsis "Pure Python PDF toolkit")
+    (description "PyPDF2 is a pure Python PDF library capable of:
+
+@enumerate
+@item extracting document information (title, author, …)
+@item splitting documents page by page
+@item merging documents page by page
+@item cropping pages
+@item merging multiple pages into a single page
+@item encrypting and decrypting PDF files
+@end enumerate
+
+By being pure Python, it should run on any Python platform without any
+dependencies on external libraries.  It can also work entirely on
+@code{StringIO} objects rather than file streams, allowing for PDF
+manipulation in memory.  It is therefore a useful tool for websites that
+manage or manipulate PDFs.")
+    (license license:bsd-3)))
+
+(define-public python2-pypdf2
+  (package-with-python2 python-pypdf2))
