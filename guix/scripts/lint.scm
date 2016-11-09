@@ -398,6 +398,13 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
       (_
        (values 'unknown-protocol #f)))))
 
+(define (tls-certificate-error-string args)
+  "Return a string explaining the 'tls-certificate-error' arguments ARGS."
+  (call-with-output-string
+    (lambda (port)
+      (print-exception port #f
+                       'tls-certificate-error args))))
+
 (define (validate-uri uri package field)
   "Return #t if the given URI can be reached, otherwise return #f and emit a
 warning for PACKAGE mentionning the FIELD."
@@ -460,13 +467,8 @@ suspiciously small file (~a bytes)")
        #f)
       ((tls-certificate-error)
        (emit-warning package
-                     (format #f
-                             (_ "TLS certificate error: ~a")
-                             (call-with-output-string
-                               (lambda (port)
-                                 (print-exception port #f
-                                                  'tls-certificate-error
-                                                  argument))))))
+                     (format #f (_ "TLS certificate error: ~a")
+                             (tls-certificate-error-string argument))))
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
        #f)
@@ -682,14 +684,22 @@ from ~s: ~a (~s)~%")
                       (http-get-error-reason c))
              (warning (_ "assuming no CVE vulnerabilities~%"))
              '()))
-    (catch 'getaddrinfo-error
+    (catch #t
       (lambda ()
         (current-vulnerabilities))
-      (lambda (key errcode)
-        (warning (_ "failed to lookup NIST host: ~a~%")
-                 (gai-strerror errcode))
-        (warning (_ "assuming no CVE vulnerabilities~%"))
-        '()))))
+      (match-lambda*
+        (('getaddrinfo-error errcode)
+         (warning (_ "failed to lookup NIST host: ~a~%")
+                  (gai-strerror errcode))
+         (warning (_ "assuming no CVE vulnerabilities~%"))
+         '())
+        (('tls-certificate-error args ...)
+         (warning (_ "TLS certificate error: ~a")
+                  (tls-certificate-error-string args))
+         (warning (_ "assuming no CVE vulnerabilities~%"))
+         '())
+        (args
+         (apply throw args))))))
 
 (define package-vulnerabilities
   (let ((lookup (delay (vulnerabilities->lookup-proc
