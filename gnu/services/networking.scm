@@ -714,7 +714,7 @@ that attempting to keep active network connectivity when available."
   (list (shepherd-service
          (documentation "Run Connman")
          (provision '(networking))
-         (requirement '(user-processes dbus-system loopback))
+         (requirement '(user-processes dbus-system loopback wpa-supplicant))
          (start #~(make-forkexec-constructor
                    (list (string-append #$connman
                                         "/sbin/connmand")
