@@ -727,7 +727,7 @@ MailCore 2.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.14.0")
+    (version "3.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -735,7 +735,7 @@ MailCore 2.")
                     ".tar.xz"))
               (sha256
                (base32
-                "0nfchgga3ir91s8rky0a0vnz8cgj2f6h716wh3cmb466a01xfss6"))))
+                "0df34gj4r5cbb92834hph19gnh7ih9rgmmw47rliyg8b9z01v6mp"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
