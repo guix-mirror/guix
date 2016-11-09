@@ -237,4 +237,4 @@ HID-Class devices.")
     ;; HIDAPI can be used under one of three licenses.
     (license (list gpl3
                    bsd-3
-                   non-copyleft "file://LICENSE-orig.txt"))))
+                   (non-copyleft "file://LICENSE-orig.txt")))))
