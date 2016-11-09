@@ -64,7 +64,8 @@
 
             wicd-service
             network-manager-service
-            connman-service))
+            connman-service
+            wpa-supplicant-service-type))
 
 ;;; Commentary:
 ;;;
@@ -739,5 +740,33 @@ This service adds the @var{connman} package to the global profile, providing
 several the @command{connmanctl} command to interact with the daemon and
 configure networking."
   (service connman-service-type connman))
+
+
+
+;;;
+;;; WPA supplicant
+;;;
+
+
+(define (wpa-supplicant-shepherd-service wpa-supplicant)
+  "Return a shepherd service for wpa_supplicant"
+  (list (shepherd-service
+         (documentation "Run WPA supplicant with dbus interface")
+         (provision '(wpa-supplicant))
+         (requirement '(user-processes dbus-system loopback))
+         (start #~(make-forkexec-constructor
+                   (list (string-append #$wpa-supplicant
+                                        "/sbin/wpa_supplicant")
+                         "-u" "-B" "-P/var/run/wpa_supplicant.pid")
+                   #:pid-file "/var/run/wpa_supplicant.pid"))
+         (stop #~(make-kill-destructor)))))
+
+(define wpa-supplicant-service-type
+  (service-type (name 'wpa-supplicant)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          wpa-supplicant-shepherd-service)
+                       (service-extension dbus-root-service-type list)
+                       (service-extension profile-service-type list)))))
 
 ;;; networking.scm ends here

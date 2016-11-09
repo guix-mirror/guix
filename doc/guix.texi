@@ -8397,6 +8397,15 @@ several the @command{connmanctl} command to interact with the daemon and
 configure networking."
 @end deffn
 
+@cindex WPA Supplicant
+@deffn {Scheme Procedure} wpa-supplicant-service @
+       [#:wpa-supplicant @var{wpa-supplicant}]
+Return a service that runs @url{https://w1.fi/wpa_supplicant/,WPA
+supplicant}, an authentication daemon required to authenticate against
+encrypted WiFi or ethernet networks. Service is started to listen for
+requests on D-Bus.
+@end deffn
+
 @cindex NTP
 @cindex real time clock
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
