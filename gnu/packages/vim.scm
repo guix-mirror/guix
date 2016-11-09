@@ -31,6 +31,7 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
@@ -147,3 +148,62 @@ configuration files.")
        ("ruby" ,ruby)
        ("tcl" ,tcl)
        ,@(package-inputs vim)))))
+
+(define-public vifm
+  (package
+    (name "vifm")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/vifm/vifm/vifm-"
+                            version ".tar.bz2"))
+        (sha256
+         (base32
+          "07r15kq7kjl3a41sd11ncpsii866xxps4f90zh3lv8jqcrv6silb"))))
+    (build-system gnu-build-system)
+    (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-after 'patch-source-shebangs 'patch-test-shebangs
+          (lambda _
+            (substitute* (find-files "tests" "\\.c$")
+              (("/bin/sh") (which "sh")))
+            #t)))))
+    (native-inputs
+     `(("groff" ,groff) ; for the documentation
+       ("perl" ,perl)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("ncurses" ,ncurses)))
+    (home-page "http://vifm.info/")
+    (synopsis "Flexible vi-like file manager using ncurses")
+    (description "Vifm is a file manager providing a @command{vi}-like usage
+experience.  It has similar keybindings and modes (e.g. normal, command line,
+visual).  The interface uses ncurses, thus vifm can be used in text-only
+environments.  It supports a wide range of features, some of which are known
+from the @command{vi}-editor:
+@enumerate
+@item utf8 support
+@item user mappings (almost like in @code{vi})
+@item ranges in command
+@item line commands
+@item user defined commands (with support for ranges)
+@item registers
+@item operation undoing/redoing
+@item fuse file systems support
+@item trash
+@item multiple files renaming
+@item support of filename modifiers
+@item colorschemes support
+@item file name color according to file type
+@item path specific colorscheme customization
+@item bookmarks
+@item operation backgrounding
+@item customizable file viewers
+@item handy @code{less}-like preview mode
+@item filtering out and searching for files using regular expressions
+@item one or two panes view
+@end enumerate
+With the package comes a plugin to use vifm as a vim file selector.")
+    (license license:gpl2+)))
