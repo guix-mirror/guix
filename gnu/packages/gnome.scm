@@ -5570,7 +5570,7 @@ handling the startup notification side.")
 (define-public gnome-calculator
   (package
     (name "gnome-calculator")
-    (version "3.20.2")
+    (version "3.22.2")
     (source
      (origin
        (method url-fetch)
@@ -5579,7 +5579,7 @@ handling the startup notification side.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1yx86kyd54y3k3b6rmdazvmpxzl0zn791zr1q87zjc5228mc3w9a"))))
+         "03il7xl4yr6xbzj6x1lbl16yzlb166c9h9wny1w7mj9dccnz99wr"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
