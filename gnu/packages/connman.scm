@@ -55,6 +55,9 @@
              "--enable-vpnc"
              "--enable-pptp"
              "--enable-l2tp"
+             ;; location for daemon state files and internal configuration
+             ;; needs to be writeable
+             "--localstatedir=/var"
              (string-append
               "--with-dbusconfdir=" (assoc-ref %outputs "out") "/etc")
              (string-append
