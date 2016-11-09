@@ -855,3 +855,35 @@ manage or manipulate PDFs.")
 Note: This module isn't maintained anymore.  For new projects please use
 python-pypdf2 instead.")
     (license license:bsd-3)))
+
+(define-public pdfposter
+  (package
+    (name "pdfposter")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pdftools.pdfposter" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1i9jqawf279va089ykicglcq4zlsnwgcnsdzaa8vnm836lqhywma"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; no test suite, only for visual control
+       #:python ,python-2))
+    (inputs
+     ;; pdfposter 0.6.0 still uses the old pyPdf
+     `(("python2-pypdf" ,python2-pypdf)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://pythonhosted.org/pdftools.pdfposter/")
+    (synopsis "Scale and tile PDF images/pages to print on multiple pages")
+    (description "@command{pdfposter} can be used to create a large poster by
+building it from multple pages and/or printing it on large media.  It expects
+as input a PDF file, normally printing on a single page.  The output is again
+a PDF file, maybe containing multiple pages together building the poster.  The
+input page will be scaled to obtain the desired size.
+
+This is much like @command{poster} does for Postscript files, but working with
+PDF.  Since sometimes @command{poster} does not like your files converted from
+PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
+    (license license:gpl3+)))
