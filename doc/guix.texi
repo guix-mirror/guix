@@ -286,7 +286,7 @@ users (@pxref{Setting Up the Daemon}) and for downloading pre-built
 binaries from authorized sources (@pxref{Substitutes}).
 
 @cindex extensibility of the distribution
-@cindex customization of packages
+@cindex customization, of packages
 Guix includes package definitions for many GNU and non-GNU packages, all
 of which @uref{https://www.gnu.org/philosophy/free-sw.html, respect the
 user's computing freedom}.  It is @emph{extensible}: users can write
@@ -340,6 +340,7 @@ garbage collection of packages (@pxref{Features}).
 @node Installation
 @chapter Installation
 
+@cindex installing Guix
 GNU Guix is available for download from its website at
 @url{http://www.gnu.org/software/guix/}.  This section describes the
 software requirements of Guix, as well as how to install it and get
@@ -369,6 +370,7 @@ system, such as @file{/etc}, are left untouched.
 @node Binary Installation
 @section Binary Installation
 
+@cindex installing Guix from binaries
 This section describes how to install Guix on an arbitrary system from a
 self-contained tarball providing binaries for Guix and for all its
 dependencies.  This is often quicker than installing from source, which
@@ -379,6 +381,7 @@ Installing goes along these lines:
 
 @enumerate
 @item
+@cindex downloading Guix binary
 Download the binary tarball from
 @indicateurl{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
 where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
@@ -494,6 +497,7 @@ Directories,,, texinfo, GNU Texinfo}, for more details on changing the
 Info search path.)
 
 @item
+@cindex substitutes, authorization thereof
 To use substitutes from @code{hydra.gnu.org} or one of its mirrors
 (@pxref{Substitutes}), authorize them:
 
@@ -577,6 +581,7 @@ following packages are also needed:
 C++11 standard.
 @end itemize
 
+@cindex state directory
 When configuring Guix on a system that already has a Guix installation,
 be sure to specify the same state directory as the existing installation
 using the @code{--localstatedir} option of the @command{configure}
@@ -585,6 +590,7 @@ GNU Coding Standards}).  The @command{configure} script protects against
 unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
 
+@cindex Nix, compatibility
 When a working installation of @url{http://nixos.org/nix/, the Nix package
 manager} is available, you
 can instead configure Guix with @code{--disable-daemon}.  In that case,
@@ -603,6 +609,7 @@ your goal is to share the store with Nix.
 @node Running the Test Suite
 @section Running the Test Suite
 
+@cindex test suite
 After a successful @command{configure} and @code{make} run, it is a good
 idea to run the test suite.  It can help catch issues with the setup or
 environment, or bugs in Guix itself---and really, reporting test
@@ -688,6 +695,7 @@ the daemon to download pre-built binaries.
 @node Build Environment Setup
 @subsection Build Environment Setup
 
+@cindex build environment
 In a standard multi-user setup, Guix and its daemon---the
 @command{guix-daemon} program---are installed by the system
 administrator; @file{/gnu/store} is owned by @code{root} and
@@ -1203,6 +1211,7 @@ versions may be incompatible.
 
 @subsection X11 Fonts
 
+@cindex fonts
 The majority of graphical applications use Fontconfig to locate and
 load fonts and perform X11-client-side rendering.  The @code{fontconfig}
 package in Guix looks for fonts in @file{$HOME/.guix-profile}
@@ -1222,6 +1231,7 @@ for Chinese languages:
 guix package -i font-adobe-source-han-sans:cn
 @end example
 
+@cindex @code{xterm}
 Older programs such as @command{xterm} do not use Fontconfig and instead
 rely on server-side font rendering.  Such programs require to specify a
 full name of a font using XLFD (X Logical Font Description), like this:
@@ -1237,11 +1247,13 @@ your Guix profile, you need to extend the font path of the X server:
 xset +fp ~/.guix-profile/share/fonts/truetype
 @end example
 
+@cindex @code{xlsfonts}
 After that, you can run @code{xlsfonts} (from @code{xlsfonts} package)
 to make sure your TrueType fonts are listed there.
 
 @subsection X.509 Certificates
 
+@cindex @code{nss-certs}
 The @code{nss-certs} package provides X.509 certificates, which allow
 programs to authenticate Web servers accessed over HTTPS.
 
@@ -1252,6 +1264,7 @@ information.
 
 @subsection Emacs Packages
 
+@cindex @code{emacs}
 When you install Emacs packages with Guix, the elisp files may be placed
 either in @file{$HOME/.guix-profile/share/emacs/site-lisp/} or in
 sub-directories of
@@ -1275,6 +1288,7 @@ option (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 @node Package Management
 @chapter Package Management
 
+@cindex packages
 The purpose of GNU Guix is to allow users to easily install, upgrade, and
 remove software packages, without having to know about their build
 procedures or dependencies.  Guix also goes beyond this obvious set of
@@ -1322,6 +1336,7 @@ The @command{guix package} command is the central tool to manage
 packages (@pxref{Invoking guix package}).  It operates on the per-user
 profiles, and can be used @emph{with normal user privileges}.
 
+@cindex transactions
 The command provides the obvious install, remove, and upgrade
 operations.  Each invocation is actually a @emph{transaction}: either
 the specified operation succeeds, or nothing happens.  Thus, if the
@@ -1377,6 +1392,10 @@ package into their profile (@pxref{Invoking guix environment}).
 @node Invoking guix package
 @section Invoking @command{guix package}
 
+@cindex installing packages
+@cindex removing packages
+@cindex package installation
+@cindex package removal
 The @command{guix package} command is the tool that allows users to
 install, upgrade, and remove packages, as well as rolling back to
 previous configurations.  It operates only on the user's own profile,
@@ -1386,7 +1405,7 @@ is:
 @example
 guix package @var{options}
 @end example
-
+@cindex transactions
 Primarily, @var{options} specifies the operations to be performed during
 the transaction.  Upon completion, a new profile is created, but
 previous @dfn{generations} of the profile remain available, should the user
@@ -1404,6 +1423,7 @@ whereby the user specifies the exact set of packages to be available and
 passes it @i{via} the @option{--manifest} option
 (@pxref{profile-manifest, @option{--manifest}}).
 
+@cindex profile
 For each user, a symlink to the user's default profile is automatically
 created in @file{$HOME/.guix-profile}.  This symlink always points to the
 current generation of the user's default profile.  Thus, users can add
@@ -1510,6 +1530,7 @@ and/or output name in addition to the package name.  For instance,
 
 @item --upgrade[=@var{regexp} @dots{}]
 @itemx -u [@var{regexp} @dots{}]
+@cindex upgrading packages
 Upgrade all the installed packages.  If one or more @var{regexp}s are
 specified, upgrade only installed packages whose name matches a
 @var{regexp}.  Also see the @code{--do-not-upgrade} option below.
@@ -1558,6 +1579,9 @@ of packages:
 @end example
 
 @item --roll-back
+@cindex rolling back
+@cindex undoing transactions
+@cindex transactions, undoing
 Roll back to the previous @dfn{generation} of the profile---i.e., undo
 the last transaction.
 
@@ -1574,6 +1598,7 @@ generations in a profile is always linear.
 
 @item --switch-generation=@var{pattern}
 @itemx -S @var{pattern}
+@cindex generations
 Switch to a particular generation defined by @var{pattern}.
 
 @var{pattern} may be either a generation number or a number prefixed
@@ -1755,6 +1780,7 @@ Multiple Outputs}), and the source location of its definition.
 
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
+@cindex generations
 Return a list of generations along with their creation dates; for each
 generation, show the installed packages, with the most recently
 installed packages shown last.  Note that the zeroth generation is never
@@ -1856,6 +1882,7 @@ your system has unpatched security vulnerabilities.
 
 @cindex security
 @cindex digital signatures
+@cindex substitutes, authorization thereof
 To allow Guix to download substitutes from @code{hydra.gnu.org} or a
 mirror thereof, you
 must add its public key to the access control list (ACL) of archive
@@ -1965,6 +1992,7 @@ like to discuss this project, join us on @email{guix-devel@@gnu.org}.
 
 @cindex multiple-output packages
 @cindex package outputs
+@cindex outputs
 
 Often, packages defined in Guix have a single @dfn{output}---i.e., the
 source package leads to exactly one directory in the store.  When running
@@ -1987,6 +2015,7 @@ which contains everything but the documentation, one would run:
 guix package -i glib
 @end example
 
+@cindex documentation
 The command to install its documentation is:
 
 @example
@@ -2016,6 +2045,7 @@ guix package}).
 @section Invoking @command{guix gc}
 
 @cindex garbage collector
+@cindex disk space
 Packages that are installed, but not used, may be @dfn{garbage-collected}.
 The @command{guix gc} command allows users to explicitly run the garbage
 collector to reclaim space from the @file{/gnu/store} directory.  It is
@@ -2098,6 +2128,7 @@ In addition, the references among existing store files can be queried:
 
 @item --references
 @itemx --referrers
+@cindex package dependencies
 List the references (respectively, the referrers) of store files given
 as arguments.
 
@@ -2160,6 +2191,9 @@ this option is primarily useful when the daemon was running with
 @node Invoking guix pull
 @section Invoking @command{guix pull}
 
+@cindex upgrading Guix
+@cindex @command{guix pull}
+@cindex pull
 Packages are installed or upgraded to the latest version available in
 the distribution currently available on your local machine.  To update
 that distribution, along with the Guix tools, you must run @command{guix
@@ -2202,11 +2236,14 @@ useful to Guix developers.
 @node Invoking guix archive
 @section Invoking @command{guix archive}
 
+@cindex @command{guix archive}
+@cindex archive
 The @command{guix archive} command allows users to @dfn{export} files
 from the store into a single archive, and to later @dfn{import} them.
 In particular, it allows store files to be transferred from one machine
 to the store on another machine.
 
+@cindex exporting store items
 To export store files as an archive to standard output, run:
 
 @example
@@ -2730,6 +2767,7 @@ A one-line description of the package.
 A more elaborate description of the package.
 
 @item @code{license}
+@cindex license, of packages
 The license of the package; a value from @code{(guix licenses)},
 or a list of such values.
 
@@ -4263,6 +4301,8 @@ the Scheme programming interface of Guix in a convenient way.
 @node Invoking guix build
 @section Invoking @command{guix build}
 
+@cindex package building
+@cindex @command{guix build}
 The @command{guix build} command builds packages or derivations and
 their dependencies, and prints the resulting store paths.  Note that it
 does not modify the user's profile---this is the job of the
@@ -4717,6 +4757,7 @@ You can freely access a huge library of build logs!
 @node Invoking guix edit
 @section Invoking @command{guix edit}
 
+@cindex @command{guix edit}
 @cindex package definition, editing
 So many packages, so many source files!  The @command{guix edit} command
 facilitates the life of users and packagers by pointing their editor at
@@ -4747,6 +4788,8 @@ guix-search-by-name} and similar commands (@pxref{Emacs Commands}).
 @node Invoking guix download
 @section Invoking @command{guix download}
 
+@cindex @command{guix download}
+@cindex downloading package sources
 When writing a package definition, developers typically need to download
 a source tarball, compute its SHA256 hash, and write that
 hash in the package definition (@pxref{Defining Packages}).  The
@@ -4794,6 +4837,7 @@ URL, which makes you vulnerable to ``man-in-the-middle'' attacks.
 @node Invoking guix hash
 @section Invoking @command{guix hash}
 
+@cindex @command{guix hash}
 The @command{guix hash} command computes the SHA256 hash of a file.
 It is primarily a convenience tool for anyone contributing to the
 distribution: it computes the cryptographic hash of a file, which can be
@@ -4858,6 +4902,7 @@ $ guix hash -rx .
 @cindex importing packages
 @cindex package import
 @cindex package conversion
+@cindex Invoking @command{guix import}
 The @command{guix import} command is useful for people who would like to
 add a package to the distribution with as little work as
 possible---a legitimate demand.  The command knows of a few
@@ -5102,6 +5147,7 @@ is welcome here (@pxref{Contributing}).
 @node Invoking guix refresh
 @section Invoking @command{guix refresh}
 
+@cindex @command {guix refresh}
 The primary audience of the @command{guix refresh} command is developers
 of the GNU software distribution.  By default, it reports any packages
 provided by the distribution that are outdated compared to the latest
@@ -5305,6 +5351,9 @@ otherwise.
 
 @node Invoking guix lint
 @section Invoking @command{guix lint}
+
+@cindex @command{guix lint}
+@cindex package, checking for errors
 The @command{guix lint} command is meant to help package developers avoid
 common errors and use a consistent style.  It runs a number of checks on
 a given set of packages in order to find common mistakes in their
@@ -5392,6 +5441,10 @@ names returned by @code{--list-checkers}.
 @node Invoking guix size
 @section Invoking @command{guix size}
 
+@cindex size
+@cindex package size
+@cindex closure
+@cindex @command{guix size}
 The @command{guix size} command helps package developers profile the
 disk usage of packages.  It is easy to overlook the impact of an
 additional dependency added to a package, or the impact of using a
@@ -5495,6 +5548,8 @@ Consider packages for @var{system}---e.g., @code{x86_64-linux}.
 @section Invoking @command{guix graph}
 
 @cindex DAG
+@cindex @command{guix graph}
+@cindex package dependencies
 Packages and their dependencies form a @dfn{graph}, specifically a
 directed acyclic graph (DAG).  It can quickly become difficult to have a
 mental model of the package DAG, so the @command{guix graph} command
@@ -5637,6 +5692,8 @@ guix graph -e '(@@@@ (gnu packages commencement) gnu-make-final)'
 
 @cindex reproducible build environments
 @cindex development environments
+@cindex @command{guix environment}
+@cindex environment, package build environment
 The purpose of @command{guix environment} is to assist hackers in
 creating reproducible development environments without polluting their
 package profile.  The @command{guix environment} tool takes one or more
@@ -5883,6 +5940,7 @@ build} supports (@pxref{Common Build Options}).
 @node Invoking guix publish
 @section Invoking @command{guix publish}
 
+@cindex @command{guix publish}
 The purpose of @command{guix publish} is to enable users to easily share
 their store with others, who can then use it as a substitute server
 (@pxref{Substitutes}).
@@ -5993,7 +6051,8 @@ of the @code{operating-system} declaration (@pxref{guix-publish-service,
 
 @cindex reproducible builds
 @cindex verifiable builds
-
+@cindex @command{guix challenge}
+@cindex challenge
 Do the binaries provided by this server really correspond to the source
 code it claims to build?  Is a package build process deterministic?
 These are the questions the @command{guix challenge} command attempts to
@@ -6118,7 +6177,7 @@ URLs to compare to.
 @node Invoking guix container
 @section Invoking @command{guix container}
 @cindex container
-
+@cindex @command{guix container}
 @quotation Note
 As of version @value{VERSION}, this tool is experimental.  The interface
 is subject to radical change in the future.
@@ -6244,6 +6303,7 @@ to join!  @xref{Contributing}, for information about how you can help.
 @node System Installation
 @section System Installation
 
+@cindex installing GuixSD
 @cindex Guix System Distribution
 This section explains how to install the Guix System Distribution (GuixSD)
 on a machine.  The Guix package manager can
@@ -6487,6 +6547,8 @@ ifconfig @var{interface} up
 @end example
 
 @item Wireless connection
+@cindex wireless
+@cindex WiFi
 To configure wireless networking, you can create a configuration file
 for the @command{wpa_supplicant} configuration tool (its location is not
 important) using one of the available text editors such as
@@ -6519,6 +6581,7 @@ wpa_supplicant -c wpa_supplicant.conf -i @var{interface} -B
 Run @command{man wpa_supplicant} for more information.
 @end table
 
+@cindex DHCP
 At this point, you need to acquire an IP address.  On a network where IP
 addresses are automatically assigned @i{via} DHCP, you can run:
 
@@ -6727,6 +6790,7 @@ that.
 @node Building the Installation Image
 @subsection Building the Installation Image
 
+@cindex installation image
 The installation image described above was built using the @command{guix
 system} command, specifically:
 
@@ -6841,6 +6905,7 @@ version:
 
 @unnumberedsubsubsec System Services
 
+@cindex services
 @vindex %base-services
 The @code{services} field lists @dfn{system services} to be made
 available when the system starts (@pxref{Services}).
@@ -6995,6 +7060,8 @@ the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 The system bootloader configuration object.  @xref{GRUB Configuration}.
 
 @item @code{initrd} (default: @code{base-initrd})
+@cindex initrd
+@cindex initial RAM disk
 A two-argument monadic procedure that returns an initial RAM disk for
 the Linux kernel.  @xref{Initial RAM Disk}.
 
@@ -7386,6 +7453,9 @@ automatically later.
 @node User Accounts
 @subsection User Accounts
 
+@cindex users
+@cindex accounts
+@cindex user accounts
 User accounts and groups are entirely managed through the
 @code{operating-system} declaration.  They are specified with the
 @code{user-account} and @code{user-group} forms:
@@ -7419,6 +7489,7 @@ be specified:
 The name of the user account.
 
 @item @code{group}
+@cindex groups
 This is the name (a string) or identifier (a number) of the user group
 this account belongs to.
 
@@ -7467,6 +7538,7 @@ Manual}, for information on Guile's @code{crypt} procedure.
 @end table
 @end deftp
 
+@cindex groups
 User group declarations are even simpler:
 
 @example
@@ -7754,6 +7826,7 @@ This is the data type representing the configuration of login.
 @table @asis
 
 @item @code{motd}
+@cindex message of the day
 A file-like object containing the ``message of the day''.
 
 @item @code{allow-empty-passwords?} (default: @code{#t})
@@ -7924,6 +7997,8 @@ external name servers do not even need to be queried.
 @end defvr
 
 @anchor{syslog-configuration-type}
+@cindex syslog
+@cindex logging
 @deftp {Data Type} syslog-configuration
 This data type represents the configuration of the syslog daemon.
 
@@ -7938,6 +8013,7 @@ The syslog configuration file to use.
 @end deftp
 
 @anchor{syslog-service}
+@cindex syslog
 @deffn {Scheme Procedure} syslog-service @var{config}
 Return a service that runs a syslog daemon according to @var{config}.
 
@@ -7961,6 +8037,7 @@ Name of the group for build user accounts.
 Number of build user accounts to create.
 
 @item @code{authorize-key?} (default: @code{#t})
+@cindex substitutes, authorization thereof
 Whether to authorize the substitute keys listed in
 @code{authorized-keys}---by default that of @code{hydra.gnu.org}
 (@pxref{Substitutes}).
@@ -8007,6 +8084,8 @@ This is the name of the file where some random bytes are saved by
 It defaults to @file{/var/lib/random-seed}.
 @end defvr
 
+@cindex keymap
+@cindex keyboard
 @deffn {Scheme Procedure} console-keymap-service @var{files} ...
 @cindex keyboard layout
 Return a service to load console keymaps from @var{files} using
@@ -8028,6 +8107,8 @@ See @code{man loadkeys} for details.
 
 @end deffn
 
+@cindex mouse
+@cindex gpm
 @deffn {Scheme Procedure} gpm-service [#:gpm @var{gpm}] @
           [#:options]
 Run @var{gpm}, the general-purpose mouse daemon, with the given
@@ -8089,6 +8170,7 @@ commonly used for real-time audio systems.
 @subsubsection Scheduled Job Execution
 
 @cindex cron
+@cindex mcron
 @cindex scheduling jobs
 The @code{(gnu services mcron)} module provides an interface to
 GNU@tie{}mcron, a daemon to run jobs at scheduled times (@pxref{Top,,,
@@ -8184,6 +8266,7 @@ specifications,, mcron, GNU@tie{}mcron}).
 
 @cindex rottlog
 @cindex log rotation
+@cindex logging
 Log files such as those found in @file{/var/log} tend to grow endlessly,
 so it's a good idea to @dfn{rotate} them once in a while---i.e., archive
 their contents in separate files, possibly compressed.  The @code{(gnu
@@ -8278,6 +8361,8 @@ gateway.
 @end deffn
 
 @cindex wicd
+@cindex wireless
+@cindex WiFi
 @cindex network management
 @deffn {Scheme Procedure} wicd-service [#:wicd @var{wicd}]
 Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
@@ -8307,6 +8392,8 @@ several the @command{connmanctl} command to interact with the daemon and
 configure networking."
 @end deffn
 
+@cindex NTP
+@cindex real time clock
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
   [#:servers @var{%ntp-servers}] @
   [#:allow-large-adjustment? #f]
@@ -8321,6 +8408,7 @@ make an initial adjustment of more than 1,000 seconds.
 List of host names used as the default NTP servers.
 @end defvr
 
+@cindex Tor
 @deffn {Scheme Procedure} tor-service [@var{config-file}] [#:tor @var{tor}]
 Return a service to run the @uref{https://torproject.org, Tor} anonymous
 networking daemon.
@@ -8368,6 +8456,8 @@ configuration file.
 @end deffn
 
 Furthermore, @code{(gnu services ssh)} provides the following services.
+@cindex SSH
+@cindex SSH server
 
 @deffn {Scheme Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
        [#:daemonic? #t] [#:interfaces '()] [#:port-number 22] @
@@ -8405,6 +8495,8 @@ root.
 The other options should be self-descriptive.
 @end deffn
 
+@cindex SSH
+@cindex SSH server
 @deffn {Scheme Variable} openssh-service-type
 This is the type for the @uref{http://www.openssh.org, OpenSSH} secure
 shell daemon, @command{sshd}.  Its value must be an
@@ -8568,6 +8660,8 @@ sockets.
 @node X Window
 @subsubsection X Window
 
+@cindex X11
+@cindex X Window System
 Support for the X Window graphical display system---specifically
 Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
@@ -8665,6 +8759,7 @@ Relogin after logout.
 @end table
 @end deftp
 
+@cindex login manager
 @deffn {Scheme Procedure} sddm-service config
 Return a service that spawns the SDDM graphical login manager for config of
 type @code{<sddm-configuration>}.
@@ -9011,6 +9106,8 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @node Database Services
 @subsubsection Database Services
 
+@cindex database
+@cindex SQL
 The @code{(gnu services databases)} module provides the following services.
 
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
@@ -9047,6 +9144,8 @@ For MariaDB, the root password is empty.
 @node Mail Services
 @subsubsection Mail Services
 
+@cindex mail
+@cindex email
 The @code{(gnu services mail)} module provides Guix service definitions
 for mail services.  Currently the only implemented service is Dovecot,
 an IMAP, POP3, and LMTP server.
@@ -10450,6 +10549,9 @@ Local accounts with lower values will silently fail to authenticate.
 @node Web Services
 @subsubsection Web Services
 
+@cindex web
+@cindex www
+@cindex HTTP
 The @code{(gnu services web)} module provides the following service:
 
 @deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
@@ -10665,6 +10767,7 @@ resolution when the graphical console window resizes.
 @end deffn
 
 @subsubsection Dictionary Services
+@cindex dictionary
 The @code{(gnu services dict)} module provides the following service:
 
 @deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
@@ -10956,8 +11059,8 @@ Reference Manual}).  For example:
 @node Initial RAM Disk
 @subsection Initial RAM Disk
 
-@cindex initial RAM disk (initrd)
-@cindex initrd (initial RAM disk)
+@cindex initrd
+@cindex initial RAM disk
 For bootstrapping purposes, the Linux-Libre kernel is passed an
 @dfn{initial RAM disk}, or @dfn{initrd}.  An initrd contains a temporary
 root file system as well as an initialization script.  The latter is
@@ -11033,6 +11136,8 @@ Now that you know all the features that initial RAM disks produced by
 @code{base-initrd} provide, here is how to use it and customize it
 further.
 
+@cindex initrd
+@cindex initial RAM disk
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
        [#:qemu-networking? #f] [#:virtio? #t] [#:volatile-root? #f] @
        [#:extra-modules '()] [#:mapped-devices '()]
@@ -11235,6 +11340,7 @@ once @command{reconfigure} has completed.
 @end quotation
 
 @item switch-generation
+@cindex generations
 Switch to an existing system generation.  This action atomically
 switches the system profile to the specified system generation.  It also
 rearranges the system's existing GRUB menu entries.  It makes the menu
@@ -11271,6 +11377,7 @@ deactivating services.
 This action will fail if the specified generation does not exist.
 
 @item roll-back
+@cindex rolling back
 Switch to the preceding system generation.  The next time the system
 boots, it will use the preceding system generation.  This is the inverse
 of @command{reconfigure}, and it is exactly the same as invoking
@@ -11490,11 +11597,13 @@ example graph.
 @node Running GuixSD in a VM
 @subsection Running GuixSD in a Virtual Machine
 
+@cindex virtual machine
 One way to run GuixSD in a virtual machine (VM) is to build a GuixSD
 virtual machine image using @command{guix system vm-image}
 (@pxref{Invoking guix system}).  The returned image is in qcow2 format,
 which the @uref{http://qemu.org/, QEMU emulator} can efficiently use.
 
+@cindex QEMU
 To run the image in QEMU, copy it out of the store (@pxref{The Store})
 and give yourself permission to write to the copy.  When invoking QEMU,
 you must choose a system emulator that is suitable for your hardware
@@ -11550,6 +11659,8 @@ network connectivity, like for example @command{curl}.
 
 @subsubsection Connecting Through SSH
 
+@cindex SSH
+@cindex SSH server
 To enable SSH inside a VM you need to add a SSH server like @code{(dropbear-service)}
 or @code{(lsh-service)} to your VM.  The @code{(lsh-service}) doesn't currently
 boot unsupervised.  It requires you to type some characters to initialize the
@@ -11988,6 +12099,7 @@ extend it by passing it lists of packages to add to the system profile.
 @node Shepherd Services
 @subsubsection Shepherd Services
 
+@cindex shepherd services
 @cindex PID 1
 @cindex init system
 The @code{(gnu services shepherd)} module provides a way to define
@@ -12312,6 +12424,7 @@ bootstrap)} module.  For more information on bootstrapping,
 @node Packaging Guidelines
 @section Packaging Guidelines
 
+@cindex packages, creating
 The GNU distribution is nascent and may well lack some of your favorite
 packages.  This section describes how you can help make the distribution
 grow.  @xref{Contributing}, for additional information on how you can
@@ -12389,7 +12502,7 @@ needed is to review and apply the patch.
 @subsection Software Freedom
 
 @c Adapted from http://www.gnu.org/philosophy/philosophy.html.
-
+@cindex free software
 The GNU operating system has been developed so that users can have
 freedom in their computing.  GNU is @dfn{free software}, meaning that
 users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
@@ -12416,6 +12529,7 @@ upstream source.
 @node Package Naming
 @subsection Package Naming
 
+@cindex package name
 A package has actually two names associated with it:
 First, there is the name of the @emph{Scheme variable}, the one following
 @code{define-public}.  By this name, the package can be made known in the
@@ -12440,6 +12554,7 @@ Font package names are handled differently, @pxref{Fonts}.
 @node Version Numbers
 @subsection Version Numbers
 
+@cindex package version
 We usually package only the latest version of a given free software
 project.  But sometimes, for instance for incompatible library versions,
 two (or more) versions of the same package are needed.  These require
@@ -12532,6 +12647,8 @@ definition may look like this:
 @node Synopses and Descriptions
 @subsection Synopses and Descriptions
 
+@cindex package description
+@cindex package synopsis
 As we have seen before, each package in GNU@tie{}Guix includes a
 synopsis and a description (@pxref{Defining Packages}).  Synopses and
 descriptions are important: They are what @command{guix package
@@ -12598,6 +12715,7 @@ for the X11 resize-and-rotate (RandR) extension. @dots{}")
 @node Python Modules
 @subsection Python Modules
 
+@cindex python
 We currently package Python 2 and Python 3, under the Scheme variable names
 @code{python-2} and @code{python} as explained in @ref{Version Numbers}.
 To avoid confusion and naming clashes with other programming languages, it
@@ -12668,6 +12786,7 @@ size}}).
 @node Perl Modules
 @subsection Perl Modules
 
+@cindex perl
 Perl programs standing for themselves are named as any other package,
 using the lowercase upstream name.
 For Perl packages containing a single class, we use the lowercase class name,
@@ -12683,6 +12802,7 @@ prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
 @node Java Packages
 @subsection Java Packages
 
+@cindex java
 Java programs standing for themselves are named as any other package,
 using the lowercase upstream name.
 
@@ -12702,6 +12822,7 @@ dashes and prepend the prefix @code{java-}.  So the class
 @node Fonts
 @subsection Fonts
 
+@cindex fonts
 For fonts that are in general not installed by a user for typesetting
 purposes, or that are distributed as part of a larger software package,
 we rely on the general packaging rules for software; for instance, this
@@ -12875,6 +12996,7 @@ implicitly used by any package that uses @code{gnu-build-system}
 
 @unnumberedsubsec Building the Bootstrap Binaries
 
+@cindex bootstrap binaries
 Because the final tool chain does not depend on the bootstrap binaries,
 those rarely need to be updated.  Nevertheless, it is useful to have an
 automated way to produce them, should an update occur, and this is what
@@ -12970,7 +13092,7 @@ providing artwork and themes, making suggestions, and more---thank you!
 @c *********************************************************************
 @node GNU Free Documentation License
 @appendix GNU Free Documentation License
-
+@cindex license, GNU Free Documentation License
 @include fdl-1.3.texi
 
 @c *********************************************************************
