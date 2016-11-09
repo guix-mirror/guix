@@ -353,14 +353,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.5.4")
+    (version "9.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1l3fqxlpxgl6nrcd4h6lpi2hsiv56yg83n3xrn704rmdch8mfpng"))))
+                "157kf6mdazmxfmd11f0akya2xcz6sfgprn7yqc26dpklps855ih2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -375,7 +375,7 @@ as a drop-in replacement of MySQL.")
     (inputs
      `(("readline" ,readline)
        ("zlib" ,zlib)))
-    (home-page "http://www.postgresql.org/")
+    (home-page "https://www.postgresql.org/")
     (synopsis "Powerful object-relational database system")
     (description
      "PostgreSQL is a powerful object-relational database system.  It is fully
