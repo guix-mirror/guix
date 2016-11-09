@@ -1,0 +1,66 @@
+Make sure that statements such as:
+
+  strcpy (dst, "/gnu/store/…");
+
+do not result in chunked /gnu/store strings that are undetectable by
+Guix's GC and its grafting code.  See <http://bugs.gnu.org/24703>.
+
+--- gcc-5.3.0/gcc/builtins.c	2016-10-18 10:50:46.080616285 +0200
++++ gcc-5.3.0/gcc/builtins.c	2016-11-09 15:26:43.693042737 +0100
+@@ -3192,6 +3192,42 @@ determine_block_size (tree len, rtx len_
+ 			  GET_MODE_MASK (GET_MODE (len_rtx)));
+ }
+ 
++/* Return true if STR contains the string "/gnu/store".  */
++
++static bool
++store_reference_p (tree str)
++{
++  if (TREE_CODE (str) == ADDR_EXPR)
++    str = TREE_OPERAND (str, 0);
++
++  if (TREE_CODE (str) != STRING_CST)
++    return false;
++
++  int len;
++  const char *store;
++
++  store = getenv ("NIX_STORE") ? getenv ("NIX_STORE") : "/gnu/store";
++  len = strlen (store);
++
++  /* Size of the hash part of store file names, including leading slash and
++     trailing hyphen.  */
++  const int hash_len = 34;
++
++  if (TREE_STRING_LENGTH (str) < len + hash_len)
++    return false;
++
++  /* We cannot use 'strstr' because 'TREE_STRING_POINTER' returns a string
++     that is not necessarily NUL-terminated.  */
++
++  for (int i = 0; i < TREE_STRING_LENGTH (str) - (len + hash_len); i++)
++    {
++      if (strncmp (TREE_STRING_POINTER (str) + i, store, len) == 0)
++	return true;
++    }
++
++  return false;
++}
++
+ /* Helper function to do the actual work for expand_builtin_memcpy.  */
+ 
+ static rtx
+@@ -3207,6 +3243,13 @@ expand_builtin_memcpy_args (tree dest, t
+   unsigned HOST_WIDE_INT max_size;
+   unsigned HOST_WIDE_INT probable_max_size;
+ 
++  /* Do not emit block moves, which translate to the 'movabs' instruction on
++     x86_64, when SRC refers to store items.  That way, store references
++     remain visible to the Guix GC and grafting code.  See
++     <http://bugs.gnu.org/24703>.  */
++  if (store_reference_p (src))
++    return NULL_RTX;
++
+   /* If DEST is not a pointer type, call the normal function.  */
+   if (dest_align == 0)
+     return NULL_RTX;

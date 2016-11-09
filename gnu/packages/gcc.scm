@@ -354,7 +354,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1ny4smkp5bzs3cp8ss7pl6lk8yss0d9m4av1mvdp72r1x695akxq"))
-              (patches (search-patches "gcc-5.0-libvtv-runpath.patch"))))))
+              (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))))))
 
 (define-public gcc-6
   (package
@@ -367,7 +368,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1idpf43988v1a6i8lw9ak1r7igcfg1bm5kn011iydlr2qygmhi4r"))
-              (patches (search-patches "gcc-5.0-libvtv-runpath.patch"))))))
+              (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions accordingly.
