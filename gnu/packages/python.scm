@@ -12163,3 +12163,20 @@ asynchronous messaging environments.")
 
 (define-public python2-axolotl
   (package-with-python2 python-axolotl))
+
+(define-public python-termstyle
+  (package
+    (name "python-termstyle")
+    (version "0.1.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "termstyle" version))
+        (sha256
+          (base32
+            "17wzkkcqy5zc0g68xlad3kcv66iw14d2pwqc0h9420gak0vbhx7g"))))
+    (build-system python-build-system)
+    (home-page "http://github.com/gfxmonk/termstyle")
+    (synopsis "Console text coloring for Python")
+    (description "This package provides console text coloring for Python.")
+    (license license:bsd-3)))
