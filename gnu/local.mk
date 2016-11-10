@@ -348,6 +348,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/swig.scm				\
   %D%/packages/sxiv.scm				\
   %D%/packages/synergy.scm			\
+  %D%/packages/syndication.scm			\
   %D%/packages/task-management.scm		\
   %D%/packages/tbb.scm				\
   %D%/packages/tcl.scm				\
