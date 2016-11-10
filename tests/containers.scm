@@ -20,6 +20,7 @@
   #:use-module (guix utils)
   #:use-module (guix build syscalls)
   #:use-module (gnu build linux-container)
+  #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -80,7 +81,10 @@
 (skip-if-unsupported)
 (test-assert "call-with-container, mnt namespace"
   (zero?
-   (call-with-container '(("none" device "/testing" "tmpfs" () #f #f))
+   (call-with-container (list (file-system
+                                (device "none")
+                                (mount-point "/testing")
+                                (type "tmpfs")))
      (lambda ()
        (assert-exit (file-exists? "/testing")))
      #:namespaces '(user mnt))))
@@ -91,8 +95,11 @@
   ;; An exception should be raised; see <http://bugs.gnu.org/23306>.
   (catch 'system-error
     (lambda ()
-      (call-with-container '(("/does-not-exist" device "/foo"
-                              "none" (bind-mount) #f #f))
+      (call-with-container (list (file-system
+                                   (device "/does-not-exist")
+                                   (mount-point "/foo")
+                                   (type "none")
+                                   (flags '(bind-mount))))
         (const #t)
         #:namespaces '(user mnt)))
     (lambda args

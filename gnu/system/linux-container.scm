@@ -94,9 +94,10 @@ that will be shared with the host system."
                                   (gnu build linux-container)))
           #~(begin
               (use-modules (gnu build linux-container)
+                           (gnu system file-systems) ;spec->file-system
                            (guix build utils))
 
-              (call-with-container '#$specs
+              (call-with-container (map spec->file-system '#$specs)
                 (lambda ()
                   (setenv "HOME" "/root")
                   (setenv "TMPDIR" "/tmp")

@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build syscalls)
+  #:use-module (gnu system file-systems)          ;<file-system>
   #:use-module ((gnu build file-systems) #:select (mount-file-system))
   #:export (user-namespace-supported?
             unprivileged-user-namespace-supported?
@@ -72,8 +73,9 @@ exists."
 ;; specification:
 ;; https://raw.githubusercontent.com/docker/libcontainer/master/SPEC.md
 (define* (mount-file-systems root mounts #:key mount-/sys? mount-/proc?)
-  "Mount the essential file systems and the those in the MOUNTS list relative
-to ROOT, then make ROOT the new root directory for the process."
+  "Mount the essential file systems and the those in MOUNTS, a list of
+<file-system> objects, relative to ROOT; then make ROOT the new root directory
+for the process."
   (define (scope dir)
     (string-append root dir))
 
@@ -141,8 +143,9 @@ to ROOT, then make ROOT the new root directory for the process."
   (symlink "/proc/self/fd/2" (scope "/dev/stderr"))
 
   ;; Mount user-specified file systems.
-  (for-each (lambda (spec)
-              (mount-file-system spec #:root root))
+  (for-each (lambda (file-system)
+              (mount-file-system (file-system->spec file-system)
+                                 #:root root))
             mounts)
 
   ;; Jail the process inside the container's root file system.
@@ -197,8 +200,8 @@ corresponds to the symbols in NAMESPACES."
 
 (define (run-container root mounts namespaces host-uids thunk)
   "Run THUNK in a new container process and return its PID.  ROOT specifies
-the root directory for the container.  MOUNTS is a list of file system specs
-that specify the mapping of host file systems into the container.  NAMESPACES
+the root directory for the container.  MOUNTS is a list of <file-system>
+objects that specify file systems to mount inside the container.  NAMESPACES
 is a list of symbols that correspond to the possible Linux namespaces: mnt,
 ipc, uts, user, and net.  HOST-UIDS specifies the number of
 host user identifiers to map into the user namespace."
@@ -256,8 +259,8 @@ host user identifiers to map into the user namespace."
 (define* (call-with-container mounts thunk #:key (namespaces %namespaces)
                               (host-uids 1))
   "Run THUNK in a new container process and return its exit status.
-MOUNTS is a list of file system specs that specify the mapping of host file
-systems into the container.  NAMESPACES is a list of symbols corresponding to
+MOUNTS is a list of <file-system> objects that specify file systems to mount
+inside the container.  NAMESPACES is a list of symbols corresponding to
 the identifiers for Linux namespaces: mnt, ipc, uts, pid, user, and net.  By
 default, all namespaces are used.  HOST-UIDS is the number of host user
 identifiers to map into the container's user namespace, if there is one.  By

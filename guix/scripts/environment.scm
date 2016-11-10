@@ -427,7 +427,7 @@ host file systems to mount inside the container."
             (file-systems (append %container-file-systems
                                   (map mapping->file-system mappings))))
        (exit/status
-        (call-with-container (map file-system->spec file-systems)
+        (call-with-container file-systems
           (lambda ()
             ;; Setup global shell.
             (mkdir-p "/bin")

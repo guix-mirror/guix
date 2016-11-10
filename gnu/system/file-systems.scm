@@ -40,6 +40,7 @@
             file-system-dependencies
 
             file-system->spec
+            spec->file-system
             specification->file-system-mapping
             uuid
 
@@ -106,6 +107,16 @@ initrd code."
   (match fs
     (($ <file-system> device title mount-point type flags options _ _ check?)
      (list device title mount-point type flags options check?))))
+
+(define (spec->file-system sexp)
+  "Deserialize SEXP, a list, to the corresponding <file-system> object."
+  (match sexp
+    ((device title mount-point type flags options check?)
+     (file-system
+       (device device) (title title)
+       (mount-point mount-point) (type type)
+       (flags flags) (options options)
+       (check? check?)))))
 
 (define (specification->file-system-mapping spec writable?)
   "Read the SPEC and return the corresponding <file-system-mapping>.  SPEC is
