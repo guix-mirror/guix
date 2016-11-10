@@ -833,3 +833,25 @@ manage or manipulate PDFs.")
 
 (define-public python2-pypdf2
   (package-with-python2 python-pypdf2))
+
+(define-public python2-pypdf
+  (package
+    (name "python2-pypdf")
+    (version "1.13")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyPdf" version))
+              (sha256
+               (base32
+                "0fqfvamir7k41w84c73rghzkiv891gdr17q5iz4hgbf6r71y9v9s"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; no tests
+       #:python ,python-2))
+    (home-page "http://pybrary.net/pyPdf/")
+    (synopsis "Pure Python PDF toolkit")
+    (description "PyPDF2 is a pure Python PDF toolkit.
+
+Note: This module isn't maintained anymore.  For new projects please use
+python-pypdf2 instead.")
+    (license license:bsd-3)))
