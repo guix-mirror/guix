@@ -12213,3 +12213,34 @@ asynchronous messaging environments.")
     (description "This package provides colored output for the
 @command{nosetests} command of the Python Nose unit test framework.")
     (license license:bsd-3)))
+
+(define-public python-flask-restplus
+  (package
+    (name "python-flask-restplus")
+    (version "0.9.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flask-restplus" version))
+        (sha256
+          (base32
+            "11his6ii5brpkhld0d5bwzjjw4q3vmplpd6fmgzjrvvklsbk0cf4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-aniso8601" ,python-aniso8601)
+        ("python-flask" ,python-flask)
+        ("python-jsonschema" ,python-jsonschema)
+        ("python-pytz" ,python-pytz)
+        ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-tzlocal" ,python-tzlocal)
+       ("python-blinker" ,python-blinker)
+       ("python-nose" ,python-nose)
+       ("python-rednose" ,python-rednose)))
+    (home-page "https://github.com/noirbizarre/flask-restplus")
+    (synopsis "Framework for documented API development with Flask")
+    (description "This package provides a framework for API development with
+the Flask web framework in Python.  It is similar to package
+@code{python-flask-restful} but supports the @code{python-swagger}
+documentation builder.")
+    (license license:expat)))
