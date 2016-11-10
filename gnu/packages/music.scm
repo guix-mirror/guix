@@ -1896,7 +1896,7 @@ of tools for manipulating and accessing your music.")
     (version "0.90.86")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://milkytracker.org/files/"
+              (uri (string-append "http://milkytracker.titandemo.org/files/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
@@ -1916,7 +1916,7 @@ of tools for manipulating and accessing your music.")
 module files.  It attempts to recreate the module replay and user experience of
 the popular DOS program Fasttracker II, with special playback modes available
 for improved Amiga ProTracker 2/3 compatibility.")
-    (home-page "http://milkytracker.org/")
+    (home-page "http://milkytracker.titandemo.org/")
     ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
     (license (list license:bsd-3 license:gpl3+))))
 
