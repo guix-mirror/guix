@@ -2153,20 +2153,6 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
             "1czvkaz1ji3jyj6qrvbswisqs9d05ljqc4vjkfdrf6hygix7azd0"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; See https://github.com/rstudio/rmarkdown/pull/800
-         ;; The resource files are in the store and have mode 444.  After
-         ;; copying the files R fails to remove them again because it doesn't
-         ;; have write access to them.
-         (add-after 'unpack 'copy-files-without-mode
-           (lambda _
-             (substitute* "R/render.R"
-               (("file.copy\\(from = from," prefix)
-                (string-append prefix
-                               " copy.mode = FALSE, ")))
-             #t)))))
     (propagated-inputs
      `(("r-catools" ,r-catools)
        ("r-evaluate" ,r-evaluate)
