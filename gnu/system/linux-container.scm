@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix gexp)
   #:use-module (guix derivations)
   #:use-module (guix monads)
+  #:use-module (guix modules)
   #:use-module (gnu build linux-container)
   #:use-module (gnu services)
   #:use-module (gnu system)
@@ -87,14 +89,9 @@ that will be shared with the host system."
                                   #:container? #t)))
 
       (define script
-        (with-imported-modules '((guix config)
-                                 (guix utils)
-                                 (guix combinators)
-                                 (guix build utils)
-                                 (guix build syscalls)
-                                 (guix build bournish)
-                                 (gnu build file-systems)
-                                 (gnu build linux-container))
+        (with-imported-modules (source-module-closure
+                                '((guix build utils)
+                                  (gnu build linux-container)))
           #~(begin
               (use-modules (gnu build linux-container)
                            (guix build utils))
