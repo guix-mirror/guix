@@ -28,6 +28,7 @@
 (define-module (gnu packages guile)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages gawk)
@@ -1345,6 +1346,42 @@ of the C programming language, to be used on bytevectors.  C's type
 system works on raw memory, and Guile works on bytevectors which are
 an abstraction over raw memory.  It's also more powerful than the C
 type system, elevating types to first-class status.")
+    (license gpl3+)))
+
+(define-public guile-aspell
+  (package
+    (name "guile-aspell")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://lonelycactus.com/tarball/guile_aspell-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1wknn57x2qcsbn7zw6sbn1ma6fjsg8cvpnf78ak47s8jw6k6j75n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list (string-append "--with-guilesitedir="
+                                              (assoc-ref %outputs "out")
+                                              "/share/guile/site/2.0"))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'set-libaspell-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((aspell (assoc-ref inputs "aspell")))
+                        (substitute* "aspell/aspell.scm"
+                          (("\"libaspell\\.so\"")
+                           (string-append "\"" aspell
+                                          "/lib/libaspell\"")))
+                        #t))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0)
+              ("aspell" ,aspell)))
+    (home-page "https://github.com/spk121/guile-aspell")
+    (synopsis "Spell-checking from Guile")
+    (description
+     "guile-aspell is a Guile Scheme library for comparing a string against a
+dictionary and suggesting spelling corrections.")
     (license gpl3+)))
 
 ;;; guile.scm ends here
