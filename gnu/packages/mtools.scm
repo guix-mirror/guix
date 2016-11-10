@@ -49,49 +49,17 @@ FAT-specific file attributes.")
 (define-public exfat-utils
   (package
     (name "exfat-utils")
-    (version "1.1.1")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
-              (uri "https://docs.google.com/uc?export=download&\
-id=0B7CLI-REKbE3UzNtSkRvdHBpdjQ")
+              (uri (string-append
+                    "https://github.com/relan/exfat/releases/download/v"
+                    version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ck2snhlhp965bb9a4y1g2lpl979sw1yznm79wbavyv174458i66"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "04dvrdmwmj9ggad8aq6inbjcq2yi9i62z42nnivhk7bb84k1k9ba"))))
     (build-system gnu-build-system)
-    (native-inputs `(("scons" ,scons)))
-    (arguments
-     '(#:tests? #f                                ;no test suite
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'unpack 'scons-propagate-environment
-                             (lambda _
-                               ;; Modify the SConstruct file to arrange for
-                               ;; environment variables to be propagated.
-                               (substitute* "SConstruct"
-                                 (("^env = Environment\\(")
-                                  "env = Environment(ENV=os.environ, "))))
-                  (replace 'build
-                           (lambda _
-                             (zero? (system* "scons"))))
-                  (replace 'install
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             (let* ((out  (assoc-ref outputs "out"))
-                                    (bin  (string-append out "/bin"))
-                                    (man8 (string-append out
-                                                         "/share/man/man8")))
-                               (mkdir-p bin)
-                               (mkdir-p man8)
-                               (for-each (lambda (file)
-                                           (copy-file
-                                            file
-                                            (string-append man8 "/"
-                                                           (basename file))))
-                                         (find-files "." "\\.8$"))
-                               (zero? (system* "scons" "install"
-                                               (string-append "DESTDIR="
-                                                              bin)))))))))
-    (home-page "https://code.google.com/p/exfat")
+    (home-page "https://github.com/relan/exfat")
     (synopsis "Utilities to manipulate exFAT file systems")
     (description
      "This package provides an implementation of the exFAT file system,
