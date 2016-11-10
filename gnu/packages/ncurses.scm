@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages swig))
 
 (define-public ncurses
   (let ((patch-makefile-phase
@@ -207,3 +209,42 @@ curses widgets, such as dialog boxes.")
      "@code{Curses} is the interface between Perl and the curses library
 of your system.")
     (license (package-license perl))))
+
+(define-public stfl
+  (package
+    (name "stfl")
+    (version "0.24")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://www.clifford.at/stfl/stfl-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1460d5lc780p3q38l3wc9jfr2a7zlyrcra0li65aynj738cam9yl"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no test target
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; there is no configure script
+         ;; in our ncurses, the headers are in /include
+         (add-before 'build 'patch-ncursesw
+           (lambda _
+             (substitute* "stfl_internals.h"
+               (("ncursesw/") ""))
+             #t))
+         (add-after 'install 'install-missing-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               ;; Some programs look for libstfl.so.0.
+               (symlink "libstfl.so" (string-append lib "/libstfl.so.0"))))))))
+    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs `(("swig" ,swig)))
+    (home-page "http://www.clifford.at/stfl/")
+    (synopsis "Structured terminal forms library")
+    (description "Stfl is a library which implements a curses-based widget
+set for text terminals.")
+    (license lgpl3+)))
