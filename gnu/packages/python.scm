@@ -12180,3 +12180,36 @@ asynchronous messaging environments.")
     (synopsis "Console text coloring for Python")
     (description "This package provides console text coloring for Python.")
     (license license:bsd-3)))
+
+(define-public python-rednose
+  (package
+    (name "python-rednose")
+    (version "1.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rednose" version))
+        (sha256
+          (base32
+            "0b0bsna217lr1nykyhl5fgjly15zhdvqd4prg4wy1zrgfv7al6m0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-deps
+           (lambda _
+             ;; See <https://github.com/JBKahn/rednose/issues/12>
+             (substitute* "setup.py"
+               (("python-termstyle") "termstyle"))
+             #t)))))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-termstyle" ,python-termstyle)))
+    (native-inputs
+     `(("python-six" ,python-six)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/JBKahn/rednose")
+    (synopsis "Colored output for Python nosetests")
+    (description "This package provides colored output for the
+@command{nosetests} command of the Python Nose unit test framework.")
+    (license license:bsd-3)))
