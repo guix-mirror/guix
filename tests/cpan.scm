@@ -61,7 +61,9 @@
 (test-assert "cpan->guix-package"
   ;; Replace network resources with sample data.
   (mock ((guix build download) url-fetch
-         (lambda* (url file-name #:key (mirrors '()))
+         (lambda* (url file-name
+                       #:key
+                       (mirrors '()) verify-certificate?)
            (with-output-to-file file-name
              (lambda ()
                (display

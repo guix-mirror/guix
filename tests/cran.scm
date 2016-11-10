@@ -89,7 +89,9 @@ Date/Publication: 2015-07-14 14:15:16
 (test-assert "description->package"
   ;; Replace network resources with sample data.
   (mock ((guix build download) url-fetch
-         (lambda* (url file-name #:key (mirrors '()))
+         (lambda* (url file-name
+                       #:key
+                       (mirrors '()) verify-certificate?)
            (with-output-to-file file-name
              (lambda ()
                (display
