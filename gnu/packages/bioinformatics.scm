@@ -6921,7 +6921,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
 (define-public r-org-dm-eg-db
   (package
     (name "r-org-dm-eg-db")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -6931,7 +6931,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
                                   "org.Dm.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "15kzvw78xwa54yk1d69l6pmgny4726ydpdkk8lic26vr0yiwicla"))))
+                "1vzbphbrh1cf7xi5cksia9xy9a9l42js2z2qsajvjxvddiphrb7j"))))
     (properties
      `((upstream-name . "org.Dm.eg.db")))
     (build-system r-build-system)
