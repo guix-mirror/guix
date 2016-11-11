@@ -199,13 +199,13 @@ announcement.")
 (define-public ruby-rake-compiler
   (package
     (name "ruby-rake-compiler")
-    (version "0.9.5")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rake-compiler" version))
               (sha256
                (base32
-                "1k8im2vzj849xdgjk6wafspkiwwapqwm738majchb4dnhnsk64cx"))))
+                "1lf91nf1fcnmsh54mxz06wyfmjkwh58vljr35zns5cwbg8fwmi20"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; needs cucumber
