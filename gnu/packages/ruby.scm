@@ -710,16 +710,17 @@ interfaces.")
 (define-public ruby-lumberjack
   (package
     (name "ruby-lumberjack")
-    (version "1.0.9")
+    (version "1.0.10")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "lumberjack" version))
               (sha256
                (base32
-                "162frm2bwy58pj8ccsdqa4a6i0csrhb9h5l3inhkl1ivgfc8814l"))))
+                "0ily8j83q959w19zb7qm6m7y53sdj9afxj4x6mn2adl4i7vpdsv4"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-timecop" ,ruby-timecop)))
     (synopsis "Logging utility library for Ruby")
     (description "Lumberjack is a simple logging utility that can be a drop in
 replacement for Logger or ActiveSupport::BufferedLogger.  It provides support
