@@ -6869,7 +6869,7 @@ downloaded from Encode.")
 (define-public r-org-hs-eg-db
   (package
     (name "r-org-hs-eg-db")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -6879,7 +6879,7 @@ downloaded from Encode.")
                                   "org.Hs.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "09zb43yjd82ny210n5a0wsrji4w56l2r6ana6d9lx0nn9mzd7rzp"))))
+                "19mg64pw8zcvb9yxzzyf7caz1kvdrkfsj1hd84bzq7crrh8kc4y6"))))
     (properties
      `((upstream-name . "org.Hs.eg.db")))
     (build-system r-build-system)
