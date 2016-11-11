@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -563,7 +564,8 @@ end-to-end encryption support; XML console.")
        ("lua5.1-expat" ,lua5.1-expat)
        ("lua5.1-socket" ,lua5.1-socket)
        ("lua5.1-filesystem" ,lua5.1-filesystem)
-       ("lua5.1-sec" ,lua5.1-sec)))
+       ;; See <https://prosody.im/doc/depends#luasec>.
+       ("lua5.1-sec" ,lua5.1-sec-0.5)))
     (home-page "https://prosody.im/")
     (synopsis "Jabber (XMPP) server")
     (description "Prosody is a modern XMPP communication server.  It aims to

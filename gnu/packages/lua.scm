@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
+;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -279,6 +280,18 @@ directory structure and file attributes.")
 communication.  It takes an already established TCP connection and creates a
 secure session between the peers.")
     (license (package-license lua-5.1))))
+
+(define-public lua5.1-sec-0.5
+  (package
+    (inherit lua5.1-sec)
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brunoos/luasec/archive/"
+                                  "luasec-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01llf5bcrjmqqy6m65avqkajz7h79rvkka6rd131kwr10n75yp3d"))))))
 
 (define-public lua-lgi
   (package
