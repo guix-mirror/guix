@@ -178,13 +178,13 @@ a focus on simplicity and productivity.")
 (define-public ruby-hoe
   (package
     (name "ruby-hoe")
-    (version "3.13.1")
+    (version "3.15.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "hoe" version))
               (sha256
                (base32
-                "1mac13krdrasn9819dd65xj27kklfy0xdbj3p6s2ij4vlcb46h8q"))) )
+                "1riyf9j9vp7dzgpw5xj9xx1vqkdmg6lr7qiprmn91hcdp81kaszp"))) )
     (build-system ruby-build-system)
     (synopsis "Ruby project management helper")
     (description
