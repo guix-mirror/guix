@@ -262,13 +262,13 @@ an extensible architecture with a swappable backend.")
 (define-public ruby-rspec-core
   (package
     (name "ruby-rspec-core")
-    (version "3.5.1")
+    (version "3.5.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-core" version))
               (sha256
                (base32
-                "0brfq51fwkkh5g6vw7smky5fvip46pryi243jmin0nzn7iwh9j5g"))))
+                "1nacs062qbr98fx6czf1vwppn1js956nv2c8vfwj6i65axdfs46i"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
