@@ -295,6 +295,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
   %D%/packages/photo.scm			\
+  %D%/packages/php.scm				\
   %D%/packages/pkg-config.scm			\
   %D%/packages/plotutils.scm			\
   %D%/packages/polkit.scm			\
@@ -551,8 +552,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gd-CVE-2016-7568.patch			\
   %D%/packages/patches/gd-CVE-2016-8670.patch			\
+  %D%/packages/patches/gd-fix-chunk-size-on-boundaries.patch	\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
+  %D%/packages/patches/gd-fix-truecolor-format-correction.patch	\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghostscript-CVE-2013-5653.patch		\
