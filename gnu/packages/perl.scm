@@ -3506,6 +3506,31 @@ just write a method to handle handles, and methods for handling strings and
 file names are added for you.")
     (license (package-license perl))))
 
+(define-public perl-modern-perl
+  (package
+    (name "perl-modern-perl")
+    (version "1.20150127")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/C/CH/CHROMATIC/Modern-Perl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0iv2crfxl3xh6mq36g1gv9fr8iqq3kpbj8afxy5qi60hh7v3xhcl"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page
+     "http://search.cpan.org/dist/Modern-Perl")
+    (synopsis
+     "Enable all of the features of Modern Perl with one import")
+    (description "@code{Modern::Perl} provides a simple way to enable
+multiple, by now, standard libraries in a Perl program.")
+    (license (package-license perl))))
+
 (define-public perl-module-build-tiny
   (package
     (name "perl-module-build-tiny")
