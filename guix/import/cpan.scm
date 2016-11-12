@@ -128,7 +128,9 @@ META."
         (string-append "perl-" (string-downcase name))))
 
   (define version
-    (assoc-ref meta "version"))
+    (match (assoc-ref meta "version")
+      ((? number? vrs) (number->string vrs))
+      ((? string? vrs) vrs)))
 
   (define core-module?
     (let ((perl-version (package-version perl))
