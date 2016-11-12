@@ -210,10 +210,12 @@ provide."
                  (close-connection port))))
            (begin
              (when (or (not port) (port-closed? port))
-               (set! port (open-connection-for-uri uri))
+               (set! port (open-connection-for-uri uri
+                                                   #:verify-certificate? #f))
                (unless (or buffered? (not (file-port? port)))
                  (setvbuf port _IONBF)))
-             (http-fetch uri #:text? #f #:port port))))))
+             (http-fetch uri #:text? #f #:port port
+                         #:verify-certificate? #f))))))
     (else
      (leave (_ "unsupported substitute URI scheme: ~a~%")
             (uri->string uri)))))
@@ -246,6 +248,7 @@ failure, return #f and #f."
                  #f))
         ((http https)
          (let ((port (open-connection-for-uri uri
+                                              #:verify-certificate? #f
                                               #:timeout %fetch-timeout)))
            (guard (c ((http-get-error? c)
                       (warning (_ "while fetching '~a': ~a (~s)~%")
@@ -256,6 +259,7 @@ failure, return #f and #f."
                       (warning (_ "ignoring substitute server at '~s'~%") url)
                       (values #f #f)))
              (values (read-cache-info (http-fetch uri
+                                                  #:verify-certificate? #f
                                                   #:port port
                                                   #:keep-alive? #t))
                      port))))))
@@ -518,7 +522,7 @@ indicates that PATH is unavailable at CACHE-URL."
     (build-request (string->uri url) #:method 'GET)))
 
 (define* (http-multiple-get base-uri proc seed requests
-                            #:key port)
+                            #:key port (verify-certificate? #t))
   "Send all of REQUESTS to the server at BASE-URI.  Call PROC for each
 response, passing it the request object, the response, a port from which to
 read the response body, and the previous result, starting with SEED, à la
@@ -529,7 +533,9 @@ initial connection on which HTTP requests are sent."
                 (result   seed))
     ;; (format (current-error-port) "connecting (~a requests left)..."
     ;;         (length requests))
-    (let ((p (or port (open-connection-for-uri base-uri))))
+    (let ((p (or port (open-connection-for-uri base-uri
+                                               #:verify-certificate?
+                                               verify-certificate?))))
       ;; For HTTPS, P is not a file port and does not support 'setvbuf'.
       (when (file-port? p)
         (setvbuf p _IOFBF (expt 2 16)))
@@ -627,9 +633,14 @@ if file doesn't exist, and the narinfo otherwise."
       ((http https)
        (let ((requests (map (cut narinfo-request url <>) paths)))
          (update-progress!)
+
+         ;; Note: Do not check HTTPS server certificates to avoid depending on
+         ;; the X.509 PKI.  We can do it because we authenticate narinfos,
+         ;; which provides a much stronger guarantee.
          (let ((result (http-multiple-get uri
                                           handle-narinfo-response '()
                                           requests
+                                          #:verify-certificate? #f
                                           #:port port)))
            (close-connection port)
            (newline (current-error-port))
