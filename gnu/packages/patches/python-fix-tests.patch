@@ -20,21 +20,6 @@ http://bugs.python.org/issue20868 .
      def test_tarfile_root_owner(self):
          tmpdir, tmpdir2, base_name =  self._create_files()
 
---- Lib/test/test_posixpath.py	2014-03-01 05:46:56.984311000 +0100
-+++ Lib/test/test_posixpath.py	2014-03-07 00:59:20.888311000 +0100
-@@ -319,7 +319,11 @@
-                 del env['HOME']
-                 home = pwd.getpwuid(os.getuid()).pw_dir
-                 # $HOME can end with a trailing /, so strip it (see #17809)
--                self.assertEqual(posixpath.expanduser("~"), home.rstrip("/"))
-+                # The Guix builders have '/' as a home directory, so
-+                # home.rstrip("/") will be an empty string and the test will
-+                # fail. Let's just disable it since it does not really make
-+                # sense with such a bizarre setup.
-+                # self.assertEqual(posixpath.expanduser("~"), home.rstrip("/"))
- 
-     def test_normpath(self):
-         self.assertEqual(posixpath.normpath(""), ".")
 --- Lib/test/test_socket.py.orig	2014-03-02 22:14:12.264311000 +0100
 +++ Lib/test/test_socket.py	2014-03-21 03:50:45.660311000 +0100
 @@ -819,6 +819,8 @@

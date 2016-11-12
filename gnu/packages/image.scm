@@ -59,18 +59,18 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.5.26")
+   (version "1.6.25")
    (source (origin
             (method url-fetch)
 
             ;; Note: upstream removes older tarballs.
-            (uri (list (string-append "mirror://sourceforge/libpng/libpng15/"
+            (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
                                       version "/libpng-" version ".tar.xz")
                        (string-append
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src"
                         "/libpng15/libpng-" version ".tar.xz")))
             (sha256
-             (base32 "0kbissyd7d4ahwdpm968nnzl7q15p6hadg44i9x0vrkrzdgdi93v"))))
+             (base32 "04c8inn745hw25wz2dc5vll5n5d2gsndj01i4srwzgz8861qvzh9"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
@@ -102,13 +102,13 @@ library.  It supports almost all PNG features and is extensible.")
 (define-public libjpeg
   (package
    (name "libjpeg")
-   (version "9a")
+   (version "9b")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
-                     "19q5zr4n60sjcvfbyv06n4pcl1mai3ipvnd2akflayciinj3wx9s"))))
+                     "0lnhpahgdwlrkd41lx6cr90r199f8mc6ydlh7jznj5klvacd63r4"))))
    (build-system gnu-build-system)
    (synopsis "Library for handling JPEG files")
    (description
@@ -254,7 +254,14 @@ extracting icontainer icon files.")
             (patches (search-patches
                       "libtiff-oob-accesses-in-decode.patch"
                       "libtiff-oob-write-in-nextdecode.patch"
-                      "libtiff-CVE-2015-8665+CVE-2015-8683.patch"))))
+                      "libtiff-CVE-2015-8665+CVE-2015-8683.patch"
+                      "libtiff-CVE-2016-3623.patch"
+                      "libtiff-CVE-2016-3945.patch"
+                      "libtiff-CVE-2016-3990.patch"
+                      "libtiff-CVE-2016-3991.patch"
+                      "libtiff-CVE-2016-5314.patch"
+                      "libtiff-CVE-2016-5321.patch"
+                      "libtiff-CVE-2016-5323.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation

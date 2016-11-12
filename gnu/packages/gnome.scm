@@ -243,7 +243,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.20.1")
+    (version "3.20.2")
     (source
      (origin
       (method url-fetch)
@@ -252,7 +252,7 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0h6185lmkaf49dr43pb6gsb9yi25rc32n7dq5186hwln38mppb3f"))))
+        "1cp2c6q1ybirfq6rqyfj5lr5vyqdizy730bfg5jqnflcmakjsb29"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -465,7 +465,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.20.0")
+    (version "3.20.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -473,7 +473,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1052lm4i5qq27sgk6ck5xc1cxh0qx4zzhifjhmzjlv38afj5i0yg"))))
+               "0m80s98k4i463dclpyk01fqb91cawbb6vvcz5vq2974k6qqc4ypw"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -481,7 +481,15 @@ forgotten when the session ends.")
        ;; FIXME: Tests fail with:
        ;;   ImportError: No module named gi.repository
        ;; Where should that module come from?
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("libspectre" ,libspectre)
        ("djvulibre" ,djvulibre)
@@ -638,9 +646,14 @@ update-desktop-database: updates the database containing a cache of MIME types
        (base32
         "0fjh9qmmgj34zlgxb09231ld7khys562qxbpsjlaplq2j85p57im"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Don't create 'icon-theme.cache'.
+       (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+              (true      (string-append coreutils "/bin/true")))
+         (list (string-append "GTK_UPDATE_ICON_CACHE=" true)))))
     (native-inputs
-     `(("gtk+" ,gtk+) ; for gtk-update-icon-cache
-       ("icon-naming-utils" ,icon-naming-utils)
+     `(("icon-naming-utils" ,icon-naming-utils)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "http://art.gnome.org/")
@@ -662,7 +675,9 @@ update-desktop-database: updates the database containing a cache of MIME types
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ddfwwqx8s63qbqimmbb015lqsab4s0rvy1j81jdsh7k95rqh2ks"))))))
+                "0ddfwwqx8s63qbqimmbb015lqsab4s0rvy1j81jdsh7k95rqh2ks"))))
+    (native-inputs
+     `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
 
 (define-public shared-mime-info
   (package
@@ -890,7 +905,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.36")
+    (version "1.14.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -898,7 +913,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0h19ssxzz0cmznwga2xy55kjibm24mwxqarnpd0w7xy0hrzm1dvi"))))
+                "1q2i5p9s5zw0y0502risykrzkfma7p24n3mmh244scjy9f4kh1im"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -923,7 +938,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.15")
+    (version "2.40.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -931,7 +946,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1x05vd2llpmskq3prkp7kbpmshmpp9whj4kfl99ybipf4fhw9jnr"))))
+                "0bpz6gsq8xi1pb5k9ax6vinph460v14znch3y5yz167s0dmwz2yl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1115,7 +1130,8 @@ use in GNOME applications, built on top of CORBA.")
     (synopsis "Store application preferences")
     (description "Gconf is a system for storing application preferences.  It
 is intended for user preferences; not arbitrary data storage.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (properties '((upstream-name . "GConf")))))
 
 
 (define-public gnome-mime-data
@@ -1478,14 +1494,14 @@ controls using the Bonobo component framework.")
 (define-public libwnck
   (package
     (name "libwnck")
-    (version "3.14.1")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "1ymya8gkjygvg0i901wr3q6ihfqxx5yf4g4pb6fag2iw8af3qr5v"))))
+               (base32 "0wms3hli6y0b9l3cszq6maqi6fyy6kss9gryvzgmhw27phb3gc0w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1524,14 +1540,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.28")
+    (version "0.10.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "12rsgxrixkfpk420gv026i74pnlgqjzsvm6vffrmih54w46hd3q6"))))
+               (base32 "1hvs5558x98yzm43dc3f93v596x45lfmv1vkp4jjgfagynlpvcq2"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;4.1 MiB of gtk-doc
@@ -1589,7 +1605,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.31")
+    (version "1.12.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1597,7 +1613,7 @@ Hints specification (EWMH).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rvadlgikklwb6rccqc3rlhqv3m9qx27rchm7znxr062fn7fgb68"))))
+                "1s3dxvdwzmppsp2dfg90rccilf4hknhwjdy7lazr9sys58zchyx0"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -1648,7 +1664,7 @@ engineering.")
 (define-public gnome-themes-standard
   (package
     (name "gnome-themes-standard")
-    (version "3.20")
+    (version "3.20.2")
     (source
      (origin
        (method url-fetch)
@@ -1657,8 +1673,14 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1p1vvmzfky1ax3yv9ld10xgqwydhmglxpgq3skrfc4539nrq9phw"))))
+         "05br99z67f82i18nljpxnwssfnaqp7mph61w3hq0i44z5i5rq3cx"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Don't create 'icon-theme.cache'.
+       (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+              (true      (string-append coreutils "/bin/true")))
+         (list (string-append "GTK_UPDATE_ICON_CACHE=" true)))))
     (inputs
      `(("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
@@ -1714,7 +1736,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.32.0")
+    (version "0.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1722,7 +1744,7 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vpvq403vdd25irvgk7zibz3nw4x4i17m0dgnns8j1q4vr7am8h7"))))
+                "1ab1l44abf9fj1wznzq5956431ia136rl5049cggnk5393jlf3fx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1756,7 +1778,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.44.1")
+    (version "0.44.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1764,7 +1786,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kjxzqcwqxky0l7bl8ydn9hl6fm1f0k2pl91wbbhyq4z6d4dabbi"))))
+                "0j899ccrkzh7208w29c835m1yms0cas5cxkck8x6l4xv2i45ksm1"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: fails to compile tests with the default flags.
@@ -1930,7 +1952,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.2.0")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1938,7 +1960,7 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lx7p1c7cl21byvfgw92n8dhm09vi6qxrs0zkx9dg3y096zdzmlr"))
+                "08d6449sgnwfh92x8rhwsm03g8frv0mvp3s4wl3cskw25asql4pa"))
               (modules '((guix build utils)))
               (snippet
                ;; Don't duplicate test names.
@@ -2037,7 +2059,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.48.1")
+    (version "2.48.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -2045,7 +2067,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0jm4pr91kbq7rcyll08840zkagb9vfhhm2ymyrd1q0b0k2mj76fg"))
+                "111spcar6wbp6m0rdxzjscc7vfqx5nawscrfbxlvbf5jsr4hqp4j"))
               (patches
                (search-patches "glib-networking-ssl-cert-file.patch"))))
     (build-system gnu-build-system)
@@ -2237,7 +2259,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.20.0")
+    (version "3.20.1")
     (source
      (origin
        (method url-fetch)
@@ -2246,7 +2268,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "19khp4ckqbdgk6828gprxy52fsg8klf957dnwsin75nskk8whxbp"))))
+         "0frb1r0f55giz7yqxl9920vvzqlirdivz54ygc9d85r8v63fh5aq"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -2274,7 +2296,7 @@ floating in an ocean using only your brain and a little bit of luck.")
 (define-public gnome-sudoku
   (package
     (name "gnome-sudoku")
-    (version "3.20.0")
+    (version "3.20.5")
     (source
      (origin
        (method url-fetch)
@@ -2283,7 +2305,7 @@ floating in an ocean using only your brain and a little bit of luck.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1n8hp3pl56p9s0c5kldk11zg1vg7ykhgn3ndp8nf375h1q49ldh8"))))
+         "166bbv5k50v7pjp3wbl2rmxcmv1adwr14hxg5rw2ws8kams8151k"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2309,7 +2331,7 @@ more fun.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.20.1")
+    (version "3.20.2")
     (source
      (origin
        (method url-fetch)
@@ -2318,7 +2340,7 @@ more fun.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1508nm35znlfq9v1s2j4ypx5x608yq391c565b4hazxk2f5z9dwq"))))
+         "08ssch8h1y85wyhddkyr7ab4v8dnsn17z4ayyc5ff78gfdh30f7m"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -2560,7 +2582,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.20.0")
+    (version "3.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2568,7 +2590,7 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1mmqg7wf0bhk450akyj0x71x75kh1v7j68isyivr75ydky79nqjj"))))
+                "02vcnlchcq3hxsm75x2szzkszg1yp1rg164p1b23vnzm9svcaszv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2577,13 +2599,18 @@ service via the system message bus.")
                          "/share/zoneinfo"))
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'check 'pre-check
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "data/check-timezones.sh"
-              (("/usr/share/zoneinfo/zone.tab")
-               (string-append (assoc-ref inputs "tzdata")
-                              "/share/zoneinfo/zone.tab")))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "data/check-timezones.sh"
+               (("/usr/share/zoneinfo/zone.tab")
+                (string-append (assoc-ref inputs "tzdata")
+                               "/share/zoneinfo/zone.tab")))
+
+             ;; 'Asia/Rangoon' was renamed in tzdata-2016:
+             ;; <https://github.com/eggert/tz/commit/4368251ebf11310a4aadccd1910daeac9080c501>.
+             (substitute* "data/Locations.xml"
+               (("Asia/Rangoon")
+                "Asia/Yangon"))
             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -2701,7 +2728,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2709,7 +2736,7 @@ playlists in a variety of formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1nipky336jj81mhm8wwxp96zilgcrarihf95dnyj3r1pw8kpg7gy"))))
+                "0vhpi7bzm4gbraky1d3ma26rbwnylcqdakav82j67bpqd7f6n0v2"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -3048,7 +3075,7 @@ GNOME Games, but it may be used by others.")
 (define-public gnome-klotski
   (package
     (name "gnome-klotski")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3056,7 +3083,7 @@ GNOME Games, but it may be used by others.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1130v6sk9h74b3xgv0bq43anaw7xs9x8vdab3q7p9db6w0px02wj"))))
+                "14w40a1gjlg4l1vhcy0qcf3scmwm2v3vhxnxj269pfqlv8s7alaw"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -3352,7 +3379,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
 (define-public eog
  (package
    (name "eog")
-   (version "3.20.1")
+   (version "3.20.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3360,7 +3387,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0ll3vz1kyjagiqmrpypk1a4nwjhrjsapiz45bxblsjxjy641j0jg"))))
+              "1qsv3brhi8l8fr22nd3d0fwq5xhwspqw0bammhkkq3ga0z6791wn"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:phases
@@ -3547,7 +3574,7 @@ USB transfers with your high-level application or system daemon.")
        ("gusb" ,gusb)
        ("libsane" ,sane-backends)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
        ("colord" ,colord)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
@@ -3856,7 +3883,8 @@ metadata in photo and video files of various formats.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("itstool" ,itstool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
+       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
        ("itstool" ,itstool)
        ("vala" ,vala)))
     (inputs
@@ -3896,6 +3924,15 @@ share them with others via social networking and more.")
                (base32
                 "1sa46vjx78d670m6bikpibgz39a5zb6ri8yjmj632lmxqvj2sp3b"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* (find-files "data" "^Makefile$")
+               (("gtk-update-icon-cache") (which "true")))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -4051,7 +4088,7 @@ javascript engine and the GObject introspection framework.")
 (define-public gedit
   (package
     (name "gedit")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4059,7 +4096,7 @@ javascript engine and the GObject introspection framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1i0x1jd9x1vpv8lwdlzwf0ml8jxh3b3l6nlg6pbnfjw47w3y6iws"))))
+                "1y330hanqfld3kssf77wfphah2qpfg17pa109spsbm50f5m2g89j"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-spell") ; XXX: gspell not packaged yet
@@ -4122,7 +4159,7 @@ powerful general purpose text editor.")
                 "0j2sy6imwp41l75hy3fwr68n35drvanbwgmr42kc04zqjy9pbs02"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -4138,7 +4175,7 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.20.1")
+    (version "3.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4146,7 +4183,7 @@ to display dialog boxes from the commandline and shell scripts.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0752vkkmaaay8ziczqrf7z3735bq3brx2djw36arqsdhwawh6jba"))))
+                "05pr78vgq52bkkqpbfnp9mxw14ij2wk91l2yfa69dpjbvxqm4b0l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -4188,7 +4225,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.20.1")
+    (version "3.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4196,7 +4233,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14qcih1g136sn2aklzagv83jl82d3qc598rkdm8zac9gw70ynyn3"))))
+                "0ip0q539bik3wqwl867rjc63w2d5rjyvbqzwczkard70yd6c0kq9"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -4226,7 +4263,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.20.1")
+    (version "3.20.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4234,7 +4271,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lsbhzacr2bs90z8sx44vf403r0h2yqsy4l2svrh5hjnassgdyqx"))))
+                "0zmybf63y0d5zn48q3xjgkh2p2c3ka9xvzd6labp96bd6b6qc58d"))))
     (build-system gnu-build-system)
     (arguments
      '(;; XXX: fails with:
@@ -4290,7 +4327,7 @@ Evolution (hence the name), but is now used by other packages as well.")
 (define-public caribou
   (package
     (name "caribou")
-    (version "0.4.20")
+    (version "0.4.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4298,7 +4335,7 @@ Evolution (hence the name), but is now used by other packages as well.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1nahpfs5ap9f9wsvn93kg8isqffk60v785f1q6k64awcd7an8ris"))))
+                "0mfychh1q3dx0b96pjz9a9y112bm9yqyim40yykzxx1hppsdjhww"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -4355,7 +4392,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.2.0")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4363,7 +4400,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "101axwk3bc1pm9m98vwrnxyjna6w0qgzaskgivldq69xz8qcyiz9"))))
+                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -4447,7 +4484,8 @@ devices and connections, attempting to keep active network connectivity when
 available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
 devices, and provides VPN integration with a variety of different VPN
 services.")
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties '((upstream-name . "NetworkManager")))))
 
 (define-public mobile-broadband-provider-info
   (package
@@ -4473,7 +4511,7 @@ services.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.2.0")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4481,9 +4519,12 @@ services.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0dhvk3dvy6djn6blpkv46dn6yfh28wsh6mpl0v53qxfip97j8kwk"))))
+                "16a43sl9aijmvxbb08hbjqyjnlshj8dckycbgi9nm333fr47n6s3"))))
     (build-system glib-or-gtk-build-system)
-    (arguments '(#:configure-flags '("--disable-migration")))
+    ;; TODO: WWAN support supposedly requires an update of glibmm which in turn
+    ;; requires an update of the its dependencies (glib and others).
+    (arguments '(#:configure-flags '("--disable-migration"
+                                     "--without-wwan")))
     (native-inputs
      `(("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)
@@ -4497,7 +4538,8 @@ services.")
      `(("iso-codes" ,iso-codes)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
-       ("libsecret" ,libsecret)))
+       ("libsecret" ,libsecret)
+       ("jansson" ,jansson)))                     ;for team support
     (synopsis "Applet for managing network connections")
     (home-page "http://www.gnome.org/projects/NetworkManager/")
     (description
@@ -4609,7 +4651,7 @@ providing graphical log-ins and managing local and remote displays.")
 (define-public libgtop
   (package
     (name "libgtop")
-    (version "2.34.0")
+    (version "2.34.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4617,7 +4659,7 @@ providing graphical log-ins and managing local and remote displays.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0apfnh9k6vmbdm8ms5wxyhagrrl8r88fv48k7q5qq70df2gf72ld"))))
+                "1qh9srg8pqmrsl12mwnclncs7agmjjvx3q6v5qwqvcb2cskpi6f8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -4636,7 +4678,7 @@ usage and information about running processes.")
 (define-public gnome-bluetooth
   (package
     (name "gnome-bluetooth")
-    (version "3.18.3")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4644,7 +4686,7 @@ usage and information about running processes.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qwc9q7x22sc71zhqv4db78rqzxl6fqfw6d978ydqap54c2bg0g4"))))
+                "0lzbwk2kn7kp39sv5bf4ja92mfkxkc27gxxk8k86i8a8ncbcmcwk"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
@@ -4739,7 +4781,7 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "3.20.1")
+    (version "3.20.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4747,7 +4789,7 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08cgbr15cim3rgcngrv98rm48pkdxwj4nqx5za1lsnv376m4x5bs"))))
+                "0kd9y847pw9v3zl0g52ly7xdcjz0b9v37aqmi19iddfkxjjyn4qc"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -4821,7 +4863,7 @@ like switching to windows and launching applications.")
 (define-public gtk-vnc
   (package
     (name "gtk-vnc")
-    (version "0.5.4")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
@@ -4830,7 +4872,7 @@ like switching to windows and launching applications.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1rwwdh7lb16xdmy76ca6mpqfc3zfl3a4bkcr0qb6hs6ffrxak2j8"))))
+         "0cq42dghjp4bhsxlj9hd2nz5s5rhd53fx7snmq6i6kg60n438ncm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-gtk=3.0")))
@@ -4859,7 +4901,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4867,7 +4909,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1s41bsihacs7cywm60vqgv46m22gmga4b0bwxnki4r02jjwhgagj"))))
+                "1bnalv0ljdjzqzvh3rfyg7r4z8vdbq1gdard5q68riqdi2dnfvld"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -4995,7 +5037,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.20.1")
+    (version "3.20.3")
     (source
      (origin
        (method url-fetch)
@@ -5004,8 +5046,17 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0pfpmvpv57a01nsd1fah3np33avihm5ic43fi6b60dyw6c5z953p"))))
+         "0yf553bd9l030shhs0jkl5gvkzkfxbxxm56xv0l0nmbplaci8wm8"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'.
+             (substitute* "editor/Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
        ("intltool" ,intltool)
@@ -5519,7 +5570,7 @@ handling the startup notification side.")
 (define-public gnome-calculator
   (package
     (name "gnome-calculator")
-    (version "3.20.2")
+    (version "3.22.2")
     (source
      (origin
        (method url-fetch)
@@ -5528,7 +5579,7 @@ handling the startup notification side.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1yx86kyd54y3k3b6rmdazvmpxzl0zn791zr1q87zjc5228mc3w9a"))))
+         "03il7xl4yr6xbzj6x1lbl16yzlb166c9h9wny1w7mj9dccnz99wr"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.

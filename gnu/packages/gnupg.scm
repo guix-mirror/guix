@@ -54,7 +54,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.22")
+    (version "1.24")
     (source
      (origin
       (method url-fetch)
@@ -62,7 +62,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0ywxwswizmkyciy480kzczxn6nhbgzf3z8my4nk43nvv67k4x87j"))))
+        "0h75sf1ngr750c3fjfn4583q7wz40qm63jhg8vjfdrbx936f2s4j"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -78,15 +78,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (replacement libgcrypt-1.7.3)
-    (version "1.7.0")
+    (version "1.7.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14pspxwrqcgfklw3dgmywbxqwdzcym7fznfrqh9rk4vl8jkpxrmh"))))
+               "0wbh6fq5zi9wg2xcfvfpwh7dv52jihivx1vm4h91c2kx0w8n3b6x"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -112,22 +111,9 @@ generation.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
 
-(define libgcrypt-1.7.3
-  (package
-    (inherit libgcrypt)
-    (version "1.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "0wbh6fq5zi9wg2xcfvfpwh7dv52jihivx1vm4h91c2kx0w8n3b6x"))))))
-
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
-    (replacement libgcrypt-1.5.6)
-    (version "1.5.4")
+    (version "1.5.6")
     (source
      (origin
       (method url-fetch)
@@ -135,20 +121,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0czvqxkzd5y872ipy6s010ifwdwv29sqbnqc4pf56sd486gqvy6m"))))))
-
-(define libgcrypt-1.5.6
-  (package
-    (inherit libgcrypt-1.5)
-    (source
-     (let ((version "1.5.6"))
-       (origin
-         (method url-fetch)
-         (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                             version ".tar.bz2"))
-         (sha256
-          (base32
-           "0ydy7bgra5jbq9mxl5x031nif3m6y3balc6ndw2ngj11wnsjc61h")))))))
+        "0ydy7bgra5jbq9mxl5x031nif3m6y3balc6ndw2ngj11wnsjc61h"))))))
 
 (define-public libassuan
   (package
@@ -240,15 +213,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.13")
+    (version "2.1.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
-              (patches (search-patches "gnupg-fix-expired-test.patch"))
               (sha256
                (base32
-                "0xcn46vcb5x5qx0bc803vpzhzhnn6wfhp7x71w9n1ahx4ak877ag"))))
+                "1pgz02gd84ab94w4xdg67p9z8kvkyr9d523bvcxxd2hviwh1m362"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -279,6 +251,18 @@ compatible to GNU Pth.")
               (("\"(libpcsclite\\.so[^\"]*)\"" _ name)
                (string-append "\"" (assoc-ref inputs "pcsc-lite")
                               "/lib/" name "\"")))
+            #t))
+        (add-after 'build 'patch-scheme-tests
+          (lambda _
+            (substitute* (find-files "tests" ".\\.scm$")
+              (("/usr/bin/env gpgscm")
+               (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
+        (add-before 'check 'set-home
+          ;; Some tests require write access to $HOME, otherwise leading to
+          ;; 'failed to create directory /homeless-shelter/.asy' error.
+          ;; TODO Try removing this phase for GnuPG 2.1.16.
+          (lambda _
+            (setenv "HOME" "/tmp")
             #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")

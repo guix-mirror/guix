@@ -89,7 +89,7 @@
     (inputs
      ;; Note: 'tools/packaging/lp-upload-release' and 'tools/weavemerge.sh'
      ;; require Zsh.
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (arguments
      `(#:tests? #f ; no test target
        #:python ,python-2   ; Python 3 apparently not yet supported, see
@@ -123,7 +123,7 @@ as well as the classic centralized workflow.")
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
-      ("gettext" ,gnu-gettext)
+      ("gettext" ,gettext-minimal)
       ("git-manpages"
        ,(origin
           (method url-fetch)
@@ -938,7 +938,7 @@ accessed and migrated on modern systems.")
        ("file" ,file)
        ("libxml2" ,libxml2)
        ("zlib" ,zlib)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("bison" ,bison)
        ("groff" ,groff)

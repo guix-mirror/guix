@@ -45,55 +45,55 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.22.1")
+    (version "5.24.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.cpan.org/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "09wg24w5syyafyv87l6z8pxwz4bjgcdj996bx5844k6m9445sirb"))
+               "00jj8zr8fnihrxxhl8h936ssczv5x86qb618yz1ig40d1rp0qhvy"))
              (patches (search-patches
                        "perl-no-sys-dirs.patch"
                        "perl-autosplit-default-time.patch"
-                       "perl-source-date-epoch.patch"
                        "perl-deterministic-ordering.patch"
-                       "perl-no-build-time.patch"
-                       "perl-CVE-2015-8607.patch"
-                       "perl-CVE-2016-2381.patch"))))
+                       "perl-reproducible-build-date.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
+       #:configure-flags
+       (let ((out  (assoc-ref %outputs "out"))
+             (libc (assoc-ref %build-inputs "libc")))
+         (list
+          (string-append "-Dprefix=" out)
+          (string-append "-Dman1dir=" out "/share/man/man1")
+          (string-append "-Dman3dir=" out "/share/man/man3")
+          "-de" "-Dcc=gcc"
+          "-Uinstallusrbinperl"
+          "-Dinstallstyle=lib/perl5"
+          "-Duseshrplib"
+          (string-append "-Dlocincpth=" libc "/include")
+          (string-append "-Dloclibpth=" libc "/lib")
+          "-Dusethreads"))
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out  (assoc-ref outputs "out"))
-                  (libc (assoc-ref inputs "libc")))
-              ;; Use the right path for `pwd'.
-              (substitute* "dist/PathTools/Cwd.pm"
-                (("/bin/pwd")
-                 (which "pwd")))
+         (add-before 'configure 'setup-configure
+           (lambda _
+             ;; Use the right path for `pwd'.
+             (substitute* "dist/PathTools/Cwd.pm"
+               (("/bin/pwd")
+                (which "pwd")))
 
-              ;; Build in GNU89 mode to tolerate C++-style comment in libc's
-              ;; <bits/string3.h>.
-              (substitute* "cflags.SH"
-                (("-std=c89")
-                 "-std=gnu89"))
-
-              (zero?
-               (system* "./Configure"
-                        (string-append "-Dprefix=" out)
-                        (string-append "-Dman1dir=" out "/share/man/man1")
-                        (string-append "-Dman3dir=" out "/share/man/man3")
-                        "-de" "-Dcc=gcc"
-                        "-Uinstallusrbinperl"
-                        "-Dinstallstyle=lib/perl5"
-                        "-Duseshrplib"
-                        (string-append "-Dlocincpth=" libc "/include")
-                        (string-append "-Dloclibpth=" libc "/lib"))))))
-
+             ;; Build in GNU89 mode to tolerate C++-style comment in libc's
+             ;; <bits/string3.h>.
+             (substitute* "cflags.SH"
+               (("-std=c89")
+                "-std=gnu89"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (format #t "Perl configure flags: ~s~%" configure-flags)
+             (zero? (apply system* "./Configure" configure-flags))))
          (add-before
           'strip 'make-shared-objects-writable
           (lambda* (#:key outputs #:allow-other-keys)
@@ -2143,7 +2143,7 @@ catch, or can simply be recorded.")
 (define-public perl-eval-closure
   (package
     (name "perl-eval-closure")
-    (version "0.12")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -2151,7 +2151,7 @@ catch, or can simply be recorded.")
                            "Eval-Closure-" version ".tar.gz"))
        (sha256
         (base32
-         "0ssvlgx3y1y28wrrp0lmmffzqxfrwb2lb3p60b8cjvxsf1c3jbfv"))))
+         "1bcc47r6zm3hfr6ccsrs72kgwxm3wkk07mgnpsaxi67cypr482ga"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -7062,7 +7062,7 @@ MYMETA.yml.")
 (define-public perl-module-build
   (package
     (name "perl-module-build")
-    (version "0.4211")
+    (version "0.4220")
     (source
      (origin
        (method url-fetch)
@@ -7070,7 +7070,7 @@ MYMETA.yml.")
                            "Module-Build-" version ".tar.gz"))
        (sha256
         (base32
-         "1c5hfhajr963w4mdjivsc7yz4vf4pz1rrfch5a93fbac1x2mr58h"))))
+         "18mm6k7d7cmj9l6na1c50vbc8hc1pwsz38yxi9x6ydlrwz3hf4pv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cpan-meta" ,perl-cpan-meta)))

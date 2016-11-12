@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
 (define-public mate-icon-theme
   (package
     (name "mate-icon-theme")
-    (version "1.12.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -44,7 +45,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d91rvl9rw3xl8hmdcbb6xvi880kfmh2ra5chhrjimrjqgl57qkp"))))
+                "1zldw22p1i76iss8car39pmfagpfxxlfk1fdhvr4x5r6gf36gv7d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -60,23 +61,22 @@
 (define-public mate-themes
   (package
     (name "mate-themes")
-    (version "1.12.2")
+    (version (package-version gtk+))
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pub.mate-desktop.org/releases/"
-                                  (version-major+minor version) "/"
-                                  name "-gtk"
+              (uri (string-append "http://pub.mate-desktop.org/releases/themes/"
                                   (version-major+minor (package-version gtk+))
-                                  "-" version ".tar.xz"))
+                                  "/mate-themes-" (package-version gtk+)
+                                  ".tar.xz"))
               (sha256
                (base32
-                "0kyrlgs5azzj60gnxx2n9qszcligxn959wr42wr0iqnrpiygk5nf"))))
+                "12p6xvqs8smbk9nivi43089fiw1jbb3g9836arr0sksmmziklnvy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
-     `(("gtk+" ,gtk+-2)
+     `(("gtk+" ,gtk+)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gtk-engines" ,gtk-engines)
        ("murrine" ,murrine)))
@@ -85,14 +85,15 @@
      "Official themes for the MATE desktop")
     (description
      "This package includes the standard themes for the MATE desktop, for
-example Menta, TraditionalOk, GreenLaguna or BlackMate.")
+example Menta, TraditionalOk, GreenLaguna or BlackMate.  This package has
+themes for both gtk+-2 and gtk+-3.")
     (license (list license:lgpl2.1+ license:cc-by-sa3.0 license:gpl3+
                    license:gpl2+))))
 
 (define-public mate-desktop
   (package
     (name "mate-desktop")
-    (version "1.12.1")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -100,8 +101,11 @@ example Menta, TraditionalOk, GreenLaguna or BlackMate.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00ssrzm07xyrjra075jhir1f8iy382lla7923fhic29lap26mffr"))))
+                "1pzncfgrzp2mp9407ivk1113hkadpf110blr058h31jkwsk8syjq"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-gtk=3.0"
+                           "--enable-mpaste")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -110,11 +114,12 @@ example Menta, TraditionalOk, GreenLaguna or BlackMate.")
        ("yelp-tools" ,yelp-tools)))
        ;;("gtk-doc" ,gtk-doc))) ; add back in when gtk-doc builds
     (inputs
-     `(("libxrandr" ,libxrandr)))
-    (propagated-inputs
-     `(("dconf" ,dconf)
-       ("gtk+" ,gtk+-2)
+     `(("gtk+" ,gtk+)
+       ("libxrandr" ,libxrandr)
+       ("python2" ,python-2)
        ("startup-notification" ,startup-notification)))
+    (propagated-inputs
+     `(("dconf" ,dconf))) ; mate-desktop-2.0.pc
     (home-page "http://mate-desktop.org/")
     (synopsis "Library with common API for various MATE modules")
     (description
@@ -125,7 +130,7 @@ desktop and the mate-about program.")
 (define-public libmateweather
   (package
     (name "libmateweather")
-    (version "1.12.1")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -133,11 +138,12 @@ desktop and the mate-about program.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qrq6z6knybixnxmsvkw58hm033m91inf523mbvzgv2r822fpakl"))))
+                "0w1b8b1ckmkbvwnqi9yh2lwbskzhz99s5yxdkar5xiqylnjrwmm3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       `(,(string-append "--with-zoneinfo-dir="
+       `("--with-gtk=3.0"
+         ,(string-append "--with-zoneinfo-dir="
                          (assoc-ref %build-inputs "tzdata")
                          "/share/zoneinfo"))
        #:phases
@@ -156,23 +162,24 @@ desktop and the mate-about program.")
        ("glib:bin" ,glib "bin")))
     (inputs
      `(("dconf" ,dconf)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+)
        ("tzdata" ,tzdata)))
     (propagated-inputs
-     `(("gtk+" ,gtk+-2)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("libxml2" ,libxml2)
-       ("libsoup" ,libsoup)))
+      ;; both of these are requires.private in mateweather.pc
+     `(("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)))
     (home-page "http://mate-desktop.org/")
     (synopsis "MATE library for weather information from the Internet")
     (description
-     "This library provides acess to weather information from the internet for
+     "This library provides access to weather information from the internet for
 the MATE desktop environment.")
     (license license:lgpl2.1+)))
 
 (define-public mate-menus
   (package
     (name "mate-menus")
-    (version "1.12.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -180,7 +187,7 @@ the MATE desktop environment.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1i4m3fj0vd85zyhqhm8x9yr0h5i08aa4l99zqvbk59ncj6z3bdxh"))))
+                "0crw07iszwsqk54y8znfqdgfz76rjdz8992v4q9kpwwlrl11xmc5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -193,15 +200,15 @@ the MATE desktop environment.")
                 (("`\\$PKG_CONFIG --variable=girdir gobject-introspection-1.0`")
                  (string-append "\"" out "/share/gir-1.0/\""))
                 (("\\$\\(\\$PKG_CONFIG --variable=typelibdir gobject-introspection-1.0\\)")
-                 (string-append out "/lib/girepository-1.0/")))))))))
+                 (string-append out "/lib/girepository-1.0/")))
+              #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("python" ,python-2)))
-    (propagated-inputs
-     `(("glib" ,glib)))
+     `(("glib" ,glib)
+       ("python" ,python-2)))
     (home-page "http://mate-desktop.org/")
     (synopsis "Freedesktop menu specification implementation for MATE")
     (description

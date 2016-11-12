@@ -318,6 +318,7 @@ standards.")
         "1hk5lwaqm8nkfm43sq521mzyrx0x3iiwvlcy62m7cq7grz9wixp6"))
       (patches
        `(,(search-patch "icecat-avoid-bundled-libraries.patch")
+         ,(search-patch "icecat-binutils.patch")
          ,(mozilla-patch "icecat-CVE-2016-5250.patch"     "6711ccb0184e" "1p0s91rw1j7ib6hy9gh5p0l33rja32rfgygh29jw4wq1hxfql8rk")
          ,(mozilla-patch "icecat-CVE-2016-5257-pt1.patch" "b08f28db372e" "0fmifimavawbff700rzjibsnr16am6902gp965scvi1iy78754ia")
          ,(mozilla-patch "icecat-CVE-2016-5257-pt2.patch" "a49fd7eb57ba" "1dyh0pjdmf64sjbj1x0mdjwfispacx9yny1kx9nzpf85myryr640")
@@ -432,21 +433,7 @@ standards.")
        ("mit-krb5" ,mit-krb5)
        ("nspr" ,nspr)
        ("nss" ,nss)
-
-       ;; XXX Work around the fact that our 'sqlite' package was not built
-       ;;     with -DSQLITE_ENABLE_DBSTAT_VTAB.
-       ("sqlite" ,(package
-                    (inherit sqlite)
-                    (arguments
-                     `(#:configure-flags
-                       ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
-                       ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
-                       ;; to use the system SQLite unless these options are enabled.
-                       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                                            "-DSQLITE_ENABLE_DBSTAT_VTAB"))))))
-       ;;("sqlite" ,sqlite)
-
+       ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
        ("yasm" ,yasm)

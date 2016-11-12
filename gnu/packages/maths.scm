@@ -2057,7 +2057,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.2.15")
+    (version "0.2.19")
     (source
      (origin
        (method url-fetch)
@@ -2066,7 +2066,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1k5f6vjlk54qlplk5m7xkbaw6g2y7dl50lwwdv6xsbcsgsbxfcpy"))))
+         "071zqnmnxhh0c9phzyn3f198yxa0hjxda7016azdbq2056sm70w7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ;no "check" target
@@ -2627,7 +2627,7 @@ evaluates expressions using the standard order of operations.")
                (base32
                 "15cd1cx1dyygw6g2nhjqq3bsfdj8sj8m4va9n75i0f3ryww3x7wq"))))
     (build-system gnu-build-system)
-    (native-inputs `(("gettext" ,gnu-gettext)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (inputs `(("libx11" ,libx11)
               ("zlib" ,zlib)
               ("libpng" ,libpng)

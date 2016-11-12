@@ -609,7 +609,7 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
                 "0a66z325bvdv7g6ysml2bf8559nkjhv2fxwj1ja6vsxkn95d54ff"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("python" ,python)))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))

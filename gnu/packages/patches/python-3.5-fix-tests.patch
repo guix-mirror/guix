@@ -1,0 +1,46 @@
+Additional test fixes which affect Python 3.5 (and presumably later) but not
+prior revisions of Python.
+
+--- Lib/test/test_pathlib.py     2014-03-01 03:02:36.088311000 +0100
++++ Lib/test/test_pathlib.py     2014-03-01 04:56:37.768311000 +0100
+@@ -1986,8 +1986,9 @@
+         expect = set() if not support.fs_is_case_insensitive(BASE) else given
+         self.assertEqual(given, expect)
+         self.assertEqual(set(p.rglob("FILEd*")), set())
+ 
++    @unittest.skipIf(True, "Guix builder home is '/' which causes trouble for these tests")
+     def test_expanduser(self):
+         P = self.cls
+         support.import_module('pwd')
+         import pwd
+--- Lib/test/test_tarfile.py        2016-02-24 19:22:52.597208055 +0000
++++ Lib/test/test_tarfile.py     2016-02-24 20:50:48.941950135 +0000
+@@ -2305,11 +2305,14 @@
+     try:
+         import pwd, grp
+     except ImportError:
+         return False
+-    if pwd.getpwuid(0)[0] != 'root':
+-        return False
+-    if grp.getgrgid(0)[0] != 'root':
++    try:
++        if pwd.getpwuid(0)[0] != 'root':
++            return False
++        if grp.getgrgid(0)[0] != 'root':
++            return False
++    except KeyError:
+         return False
+     return True
+
+
+--- Lib/test/test_asyncio/test_base_events.py
++++ Lib/test/test_asyncio/test_base_events.py
+@@ -142,6 +142,8 @@ class BaseEventTests(test_utils.TestCase):
+             (INET, STREAM, TCP, '', ('1.2.3.4', 1)),
+             base_events._ipaddr_info('1.2.3.4', b'1', INET, STREAM, TCP))
+ 
++    @unittest.skipUnless(support.is_resource_enabled('network'),
++                         'network is not enabled')
+     def test_getaddrinfo_servname(self):
+         INET = socket.AF_INET
+         STREAM = socket.SOCK_STREAM

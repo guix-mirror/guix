@@ -29,37 +29,49 @@
 (define-public gawk
   (package
    (name "gawk")
-   (version "4.1.3")
+   (version "4.1.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.xz"))
             (sha256
-             (base32 "09d6pmx6h3i2glafm0jd1v1iyrs03vcyv2rkz12jisii3vlmbkz3"))
-            (patches (search-patches "gawk-fts-test.patch"))))
+             (base32 "0rn2mmjxm767zliqzd67j7h2ncjn4j0321c60y9fy3grs3i89qak"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel
 
-      #:phases (alist-cons-before
-                'configure 'set-shell-file-name
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Refer to the right shell.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* "io.c"
-                      (("/bin/sh")
-                       (string-append bash "/bin/bash")))
+      #:phases (modify-phases %standard-phases
+                 (add-before 'configure 'set-shell-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Refer to the right shell.
+                     (let ((bash (assoc-ref inputs "bash")))
+                       (substitute* "io.c"
+                         (("/bin/sh")
+                          (string-append bash "/bin/bash")))
 
-                    ;; When cross-compiling, remove dependencies on the
-                    ;; `check-for-shared-lib-support' target, which tries to
-                    ;; run the cross-built `gawk'.
-                    ,@(if (%current-target-system)
-                          '((substitute* "extension/Makefile.in"
-                              (("^.*: check-for-shared-lib-support" match)
-                               (string-append "### " match))))
-                          '())))
+                       ;; When cross-compiling, remove dependencies on the
+                       ;; `check-for-shared-lib-support' target, which tries
+                       ;; to run the cross-built `gawk'.
+                       ,@(if (%current-target-system)
+                             '((substitute* "extension/Makefile.in"
+                                 (("^.*: check-for-shared-lib-support" match)
+                                  (string-append "### " match))))
+                             '()))))
 
-                %standard-phases)))
+                 (add-before 'check 'adjust-test-infrastructure
+                   (lambda _
+                     ;; Remove dependency on 'more' (from util-linux), which
+                     ;; would needlessly complicate bootstrapping.
+                     (substitute* "test/Makefile"
+                       (("\\| more") ""))
+
+                     ;; Adjust the shebang in that file since it is then diff'd
+                     ;; against the actual test output.
+                     (substitute* "test/watchpoint1.ok"
+                       (("#! /usr/bin/gawk")
+                        (string-append "#!" (which "gawk"))))
+                     #t)))))
+
    (inputs `(("libsigsegv" ,libsigsegv)
 
              ,@(if (%current-target-system)

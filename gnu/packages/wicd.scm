@@ -52,7 +52,7 @@
                  "wicd-urwid-1.3.patch"
                  "wicd-wpa2-ttls.patch"))))
     (build-system python-build-system)
-    (native-inputs `(("gettext" ,gnu-gettext)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (inputs `(("dbus-glib" ,dbus-glib)
               ("python2-dbus" ,python2-dbus)
               ("python2-pygtk" ,python2-pygtk)

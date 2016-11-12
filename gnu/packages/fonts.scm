@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -128,7 +129,7 @@ TrueType (TTF) files.")
 (define-public font-dejavu
   (package
     (name "font-dejavu")
-    (version "2.35")
+    (version "2.37")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/dejavu/dejavu/"
@@ -136,7 +137,7 @@ TrueType (TTF) files.")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "122d35y93r820zhi6d7m9xhakdib10z51v63lnlg67qhhrardmzn"))))
+               "1mqpds24wfs5cmfhj57fsfs07mji2z8812i5c4pi5pbi738s977s"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

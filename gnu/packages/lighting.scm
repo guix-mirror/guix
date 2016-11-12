@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -41,6 +42,7 @@
               (uri (string-append
                     "https://github.com/OpenLightingProject/ola/releases/download/"
                     version "/ola-" version ".tar.gz"))
+              (patches (search-patches "ola-readdir-r.patch"))
               (sha256
                (base32
                 "09zx1c8nkj29shfdzkahrh9397m3mwnsy0gj7jrb63f89f3n2vlq"))))

@@ -27,15 +27,18 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages indent)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
@@ -46,7 +49,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 vlist)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 regex))
 
 ;;; Commentary:
 ;;;
@@ -71,17 +75,15 @@
         #:tests? #f                  ; cannot run "make check"
         ,@(substitute-keyword-arguments (package-arguments gnu-make)
             ((#:phases phases)
-             `(alist-replace
-               'build (lambda _
-                        (zero? (system* "./build.sh")))
-               (alist-replace
-                'install (lambda* (#:key outputs #:allow-other-keys)
-                           (let* ((out (assoc-ref outputs "out"))
-                                  (bin (string-append out "/bin")))
-                             (mkdir-p bin)
-                             (copy-file "make"
-                                        (string-append bin "/make"))))
-                ,phases))))))
+             `(modify-phases ,phases
+                (replace 'build
+                  (lambda _
+                    (zero? (system* "./build.sh"))))
+                (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (install-file "make" bin)))))))))
      (native-inputs '())                          ; no need for 'pkg-config'
      (inputs %bootstrap-inputs))))
 
@@ -282,10 +284,52 @@
                            (lambda _
                              (substitute* "Configure"
                                (("^libswanted=(.*)pthread" _ before)
-                                (string-append "libswanted=" before)))))))))))))
+                                (string-append "libswanted=" before)))))))
+                     ;; Do not configure with '-Dusethreads' since pthread
+                     ;; support is missing.
+                     ((#:configure-flags configure-flags)
+                      `(delete "-Dusethreads" ,configure-flags))))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs perl
                                    %boot0-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
+(define bison-boot0
+  ;; This Bison is needed to build MiG so we need it early in the process.
+  ;; It is also needed to rebuild Bash's parser, which is modified by
+  ;; its CVE patches.  Remove it when it's no longer needed.
+  (let* ((m4    (package-with-bootstrap-guile
+                 (package-with-explicit-inputs m4 %boot0-inputs
+                                               (current-source-location)
+                                               #:guile %bootstrap-guile)))
+         (bison (package (inherit bison)
+                  (propagated-inputs `(("m4" ,m4)))
+                  (inputs '())                    ;remove Flex...
+                  (arguments
+                   '(#:tests? #f                  ;... and thus disable tests
+
+                     ;; Zero timestamps in liby.a; this must be done
+                     ;; explicitly here because the bootstrap Binutils don't
+                     ;; do that (default is "cru".)
+                     #:make-flags '("ARFLAGS=crD" "RANLIB=ranlib -D"
+                                    "V=1"))))))
+    (package
+      (inherit (package-with-bootstrap-guile
+                (package-with-explicit-inputs bison %boot0-inputs
+                                              (current-source-location)
+                                              #:guile %bootstrap-guile)))
+      (native-inputs `(("perl" ,perl-boot0))))))
+
+(define flex-boot0
+  ;; This Flex is needed to build MiG.
+  (let* ((flex (package (inherit flex)
+                 (native-inputs `(("bison" ,bison-boot0)))
+                 (propagated-inputs `(("m4" ,m4)))
+                 (inputs `(("indent" ,indent)))
+                 (arguments '(#:tests? #f)))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs flex %boot0-inputs
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
@@ -301,6 +345,63 @@
      (native-inputs
       `(("perl" ,perl-boot0)
         ,@%boot0-inputs)))))
+
+(define gnumach-headers-boot0
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs gnumach-headers
+                                 %boot0-inputs
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
+
+(define mig-boot0
+  (let* ((mig (package (inherit mig)
+                 (native-inputs `(("bison" ,bison-boot0)
+                                  ("flex" ,flex-boot0)))
+                 (inputs `(("flex" ,flex-boot0)))
+                 (arguments
+                  `(#:configure-flags
+                    `(,(string-append "LDFLAGS=-Wl,-rpath="
+                                      (assoc-ref %build-inputs "flex") "/lib/")))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs mig %boot0-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
+(define hurd-headers-boot0
+  (let ((hurd-headers (package (inherit hurd-headers)
+                        (native-inputs `(("mig" ,mig-boot0)))
+                        (inputs '()))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs hurd-headers %boot0-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
+(define hurd-minimal-boot0
+  (let ((hurd-minimal (package (inherit hurd-minimal)
+                        (native-inputs `(("mig" ,mig-boot0)))
+                        (inputs '()))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs hurd-minimal %boot0-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
+(define (hurd-core-headers-boot0)
+  "Return the Hurd and Mach headers as well as initial Hurd libraries for
+the bootstrap environment."
+  (package-with-bootstrap-guile
+   (package (inherit hurd-core-headers)
+            (arguments `(#:guile ,%bootstrap-guile
+                                 ,@(package-arguments hurd-core-headers)))
+            (inputs
+             `(("gnumach-headers" ,gnumach-headers-boot0)
+               ("hurd-headers" ,hurd-headers-boot0)
+               ("hurd-minimal" ,hurd-minimal-boot0)
+               ,@%boot0-inputs)))))
+
+(define* (kernel-headers-boot0 #:optional (system (%current-system)))
+  (match system
+    ("i586-gnu" (hurd-core-headers-boot0))
+    (_ (linux-libre-headers-boot0))))
 
 (define texinfo-boot0
   ;; Texinfo used to build libc's manual.
@@ -320,9 +421,25 @@
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
+(define ld-wrapper-boot0
+  ;; We need this so binaries on Hurd will have libmachuser and libhurduser
+  ;; in their RUNPATH, otherwise validate-runpath will fail.
+  ;;
+  ;; XXX: Work around <http://bugs.gnu.org/24832> by fixing the name and
+  ;; triplet on GNU/Linux.  For GNU/Hurd, use the right triplet.
+  (make-ld-wrapper (string-append "ld-wrapper-" "x86_64-guix-linux-gnu")
+                   #:target (lambda (system)
+                              (if (string-suffix? "-linux" system)
+                                  "x86_64-guix-linux-gnu"
+                                  (boot-triplet system)))
+                   #:binutils binutils-boot0
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref %boot0-inputs "bash"))))
+
 (define %boot1-inputs
   ;; 2nd stage inputs.
   `(("gcc" ,gcc-boot0)
+    ("ld-wrapper-cross" ,ld-wrapper-boot0)
     ("binutils-cross" ,binutils-boot0)
     ,@(alist-delete "binutils" %boot0-inputs)))
 
@@ -356,6 +473,15 @@
                  (setenv "NATIVE_CPATH" (getenv "CPATH"))
                  (unsetenv "CPATH")
 
+                 ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
+                 ,@(if (string-match "i586-gnu" (%current-system))
+                       `((substitute* "libpthread/Makefile"
+                           (("LDLIBS-pthread.so =.*")
+                            (string-append "LDLIBS-pthread.so = "
+                                           (assoc-ref %build-inputs "kernel-headers")
+                                           "/lib/libihash.a\n"))))
+                       '())
+
                  ;; 'rpcgen' needs native libc headers to be built.
                  (substitute* "sunrpc/Makefile"
                    (("sunrpc-CPPFLAGS =.*" all)
@@ -363,7 +489,7 @@
                                    "export CPATH\n"
                                    all "\n"))))
                ,phases)))))
-     (propagated-inputs `(("kernel-headers" ,(linux-libre-headers-boot0))))
+     (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
      (native-inputs
       `(("texinfo" ,texinfo-boot0)
         ("perl" ,perl-boot0)))
@@ -371,6 +497,11 @@
       `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
         ;; it in $CPATH, hence the 'pre-configure' phase above.
         ,@%boot1-inputs
+
+        ;; A native MiG is needed to build Glibc on Hurd.
+        ,@(if (string-match "i586-gnu" (%current-system))
+              `(("mig" ,mig-boot0))
+              '())
 
         ;; A native GCC is needed to build `cross-rpcgen'.
         ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
@@ -430,31 +561,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ("bash" ,bash)))
     (inputs '())))
 
-(define bison-boot1
-  ;; XXX: This Bison is needed to rebuild Bash's parser, which is modified by
-  ;; its CVE patches.  Remove it when it's no longer needed.
-  (let* ((m4    (package-with-bootstrap-guile
-                 (package-with-explicit-inputs m4 %boot0-inputs
-                                               (current-source-location)
-                                               #:guile %bootstrap-guile)))
-         (bison (package (inherit bison)
-                  (propagated-inputs `(("m4" ,m4)))
-                  (inputs '())                    ;remove Flex...
-                  (arguments
-                   '(#:tests? #f                  ;... and thus disable tests
-
-                     ;; Zero timestamps in liby.a; this must be done
-                     ;; explicitly here because the bootstrap Binutils don't
-                     ;; do that (default is "cru".)
-                     #:make-flags '("ARFLAGS=crD" "RANLIB=ranlib -D"
-                                    "V=1"))))))
-    (package
-      (inherit (package-with-bootstrap-guile
-                (package-with-explicit-inputs bison %boot0-inputs
-                                              (current-source-location)
-                                              #:guile %bootstrap-guile)))
-      (native-inputs `(("perl" ,perl-boot0))))))
-
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
   (let* ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
@@ -468,23 +574,21 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    ("libc" ,glibc-final-with-bootstrap-bash)
                    ,@(fold alist-delete %boot1-inputs
                            '("gcc" "libc")))))
-    (package
-      (inherit (package-with-bootstrap-guile
-                (package-with-explicit-inputs bash inputs
-                                              (current-source-location)
-                                              #:guile %bootstrap-guile)))
-      (native-inputs `(("bison" ,bison-boot1))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs bash inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
   (let ((gettext-minimal
-         (package (inherit gnu-gettext)
+         (package (inherit gettext-minimal)
            (name "gettext-boot0")
            (inputs '())                           ;zero dependencies
            (arguments
             (substitute-keyword-arguments
                 `(#:tests? #f
-                  ,@(package-arguments gnu-gettext))
+                  ,@(package-arguments gettext-minimal))
               ((#:phases phases)
                `(modify-phases ,phases
                   ;; Build only the tools.
@@ -527,7 +631,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ;; if 'allowed-references' were per-output.
     (arguments
      `(#:allowed-references
-       ,(cons* `(,gcc-boot0 "lib") (linux-libre-headers-boot0)
+       ,(cons* `(,gcc-boot0 "lib") (kernel-headers-boot0)
                static-bash-for-glibc
                (package-outputs glibc-final-with-bootstrap-bash))
 
@@ -679,13 +783,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
-  (package
-    (inherit (package-with-bootstrap-guile
-              (package-with-explicit-inputs (static-libgcc-package bash)
-                                            %boot3-inputs
-                                            (current-source-location)
-                                            #:guile %bootstrap-guile)))
-    (native-inputs `(("bison" ,bison-boot1)))))
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs (static-libgcc-package bash)
+                                 %boot3-inputs
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
 
 (define %boot4-inputs
   ;; Now use the final Bash.

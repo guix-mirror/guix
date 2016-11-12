@@ -40,7 +40,7 @@
                "037hmfs5pk3g36psm378vap1mbrkk86vv8wsdnv65mzbnph52gv0"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("python" ,python-wrapper)))
     (home-page "https://pkg-isocodes.alioth.debian.org/")

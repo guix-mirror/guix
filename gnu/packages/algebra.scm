@@ -534,14 +534,14 @@ a C program.")
 (define-public fftw
   (package
     (name "fftw")
-    (version "3.3.4")
+    (version "3.3.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
                                  version".tar.gz"))
              (sha256
               (base32
-               "10h9mzjxnwlsjziah4lri85scc05rlajz39nqf3mbh4vja8dw34g"))))
+               "1kwbx92ps0r7s2mqy7lxbxanslxdzj7dp7r7gmdkzv1j8yqf3kwf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-shared" "--enable-openmp")

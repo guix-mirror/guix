@@ -44,7 +44,7 @@
                 "0jibyvyv2jy8dq5ij0j00iq3v74r0y90dcjc3dkspcfbnn37cphn"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("glib" ,glib)
        ("libxslt" ,libxslt)
        ("perl" ,perl)

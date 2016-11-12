@@ -44,7 +44,13 @@
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13by0zimx90v2j8v7n4k9y3xwmh4q9jdc2f4f8yjs3x7f5bzm2pk"))))
+               "13by0zimx90v2j8v7n4k9y3xwmh4q9jdc2f4f8yjs3x7f5bzm2pk"))
+             (snippet
+              ;; Upstream commit 89922fc.
+              '(substitute* "include/dico/markup.h"
+                 (("const char \\*dico_markup_type;")
+                  "extern const char *dico_markup_type;")))
+             (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output

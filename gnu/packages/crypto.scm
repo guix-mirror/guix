@@ -189,7 +189,7 @@ communication.")
                                        #:directories? #t)))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
 
        ;; Test dependencies.
        ("expect" ,expect)

@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
@@ -71,14 +72,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.43.0")
+   (version "0.47.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0mi4zf0pz3x3fx3ir7szz1n57nywgbpd4mp2r7mvf47f4rmf4867"))))
+              "0hnjkcqqk87dw3hlda4gh4l7brkslniax9a79g772jn3iwiffwmq"))))
    (build-system gnu-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -110,19 +111,18 @@
         ;; Saves 8 MiB of .a files.
         "--disable-static")
       #:phases
-      (alist-cons-before
-       'configure 'setenv
-       (lambda _
-         (setenv "CPATH"
-                 (string-append (assoc-ref %build-inputs "openjpeg-1")
-                                "/include/openjpeg-1.5"
-                                ":" (or (getenv "CPATH") ""))))
-        %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'configure 'setenv
+          (lambda _
+            (setenv "CPATH"
+                    (string-append (assoc-ref %build-inputs "openjpeg-1")
+                                   "/include/openjpeg-1.5"
+                                   ":" (or (getenv "CPATH") ""))))))))
    (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)
-   (home-page "http://poppler.freedesktop.org/")))
+   (home-page "https://poppler.freedesktop.org/")))
 
 (define-public poppler-qt4
   (package (inherit poppler)
@@ -409,7 +409,7 @@ by using the poppler rendering engine.")
               (patches (search-patches
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gnu-gettext)))
+                     ("gettext" ,gettext-minimal)))
     (inputs `(("girara" ,girara)
               ("sqlite" ,sqlite)
               ("gtk+" ,gtk+)))
@@ -550,13 +550,14 @@ and examining the file structure (pdfshow).")
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "5.1.3")
+   (version "6.0.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
-            (sha256 (base32
-                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))
+            (sha256
+             (base32
+              "0csj2p2gkxrc0rk8ykymlsdgfas96vzf1dip3y1x7z1q9plwgzd9"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove
@@ -570,17 +571,17 @@ eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
    (build-system gnu-build-system)
    (arguments
     `(#:disallowed-references (,perl)
-      #:phases (alist-cons-before
-                'configure 'patch-paths
-                (lambda _
-                  (substitute* "make/libtool.mk"
-                    (("SHELL=/bin/bash")
-                     (string-append "SHELL=" (which "bash"))))
-                  (substitute* (append
-                                '("qtest/bin/qtest-driver")
-                                (find-files "." "\\.test"))
-                    (("/usr/bin/env") (which "env"))))
-                %standard-phases)))
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'configure 'patch-paths
+          (lambda _
+            (substitute* "make/libtool.mk"
+              (("SHELL=/bin/bash")
+               (string-append "SHELL=" (which "bash"))))
+            (substitute* (append
+                          '("qtest/bin/qtest-driver")
+                          (find-files "." "\\.test"))
+              (("/usr/bin/env") (which "env"))))))))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("perl" ,perl)))

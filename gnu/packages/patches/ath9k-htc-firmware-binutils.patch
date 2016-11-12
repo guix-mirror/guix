@@ -1,6 +1,12 @@
-This Binutils patch is from the ath9k-htc-firmware repository (version 1.3.2).
-Not applying it (apparently) leads to miscompiled firmware, and loading it
-fails with a "Target is unresponsive" message from the 'ath9k_htc' module.
+These Binutils patches are from the ath9k-htc-firmware repository
+(commit f6af791348b68ceadab375e4ed0f7bcda86cb3c0).
+
+Not applying the first patch (apparently) leads to miscompiled firmware,
+and loading it fails with a "Target is unresponsive" message from the
+'ath9k_htc' module.
+
+The final hunk, applied to 'gas/config/tc-xtensa.c', is copied from the
+upstream file 'local/patches/binutils-2.27_fixup.patch'.
 
 From dbca73446265ce01b8e11462c3346b25953e3399 Mon Sep 17 00:00:00 2001
 From: Sujith Manoharan <c_manoha@qca.qualcomm.com>
@@ -28873,16 +28879,6 @@ diff --git a/include/xtensa-config.h b/include/xtensa-config.h
 index 30f4f41..fe9b051 100644
 --- a/include/xtensa-config.h
 +++ b/include/xtensa-config.h
-@@ -1,7 +1,7 @@
- /* Xtensa configuration settings.
--   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2010
-+   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
-    Free Software Foundation, Inc.
--   Contributed by Bob Wilson (bob.wilson@acm.org) at Tensilica.
-+   Contributed by Bob Wilson (bwilson@tensilica.com) at Tensilica.
- 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
 @@ -44,10 +44,7 @@
  #define XCHAL_HAVE_L32R			1
  
@@ -28973,3 +28969,20 @@ index 30f4f41..fe9b051 100644
  #define XCHAL_MAX_INSTRUCTION_SIZE	3
 -- 
 1.8.1
+
+diff --git a/gas/config/tc-xtensa.c b/gas/config/tc-xtensa.c
+index d062044..ca261ae 100644
+--- a/gas/config/tc-xtensa.c
++++ b/gas/config/tc-xtensa.c
+@@ -2228,7 +2228,7 @@ xg_reverse_shift_count (char **cnt_argp)
+   cnt_arg = *cnt_argp;
+ 
+   /* replace the argument with "31-(argument)" */
+-  new_arg = concat ("31-(", cnt_argp, ")", (char *) NULL);
++  new_arg = concat ("31-(", cnt_arg, ")", (char *) NULL);
+ 
+   free (cnt_arg);
+   *cnt_argp = new_arg;
+-- 
+2.10.1
+

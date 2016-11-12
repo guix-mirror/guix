@@ -34,6 +34,14 @@
               (base32
                "1c5lv8qca21mndkx350wxv34qypqh6gb4rhzms4anr642clq3jg2"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
       ;; TODO: Add python-pam
      `(("python-requests" ,python-requests)))

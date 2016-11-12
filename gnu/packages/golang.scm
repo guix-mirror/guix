@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is an addendum GNU Guix.
 ;;;
@@ -113,6 +114,13 @@
                   ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
                   ("os/os_test.go" "(.+)(TestHostname.+)")
                   ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+
+                  ;; Tzdata 2016g changed the name of the time zone used in this
+                  ;; test, and the patch for Go 1.7 does not work for 1.4.3:
+                  ;; https://github.com/golang/go/issues/17545
+                  ;; https://github.com/golang/go/issues/17276
+                  ("time/time_test.go" "(.+)(TestLoadFixed.+)")
+
                   ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
@@ -139,7 +147,9 @@
                (setenv "GOOS" "linux")
                (setenv "GOROOT" (dirname (getcwd)))
                (setenv "GOROOT_FINAL" output)
-               (setenv "CGO_ENABLED" "1")
+               ;; Go 1.4's cgo will not work with binutils >= 2.27:
+               ;; https://github.com/golang/go/issues/16906
+               (setenv "CGO_ENABLED" "0")
                (zero? (system* "sh" "all.bash")))))
 
          (replace 'install
@@ -272,7 +282,18 @@ sequential processes (CSP) concurrent programming features added.")
                     ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
                     ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
                     ("syscall/exec_linux_test.go"
-                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
+                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")
+                    ;; This test broke when tzdata updated to 2016g:
+                    ;; https://github.com/golang/go/issues/17276
+
+                    ;; Applying the upstream patch causes the failure of another
+                    ;; test, because that test requires upstream's mtimes to be
+                    ;; preserved, but applying the patch and re-packing the
+                    ;; tarball causes mtimes to be set to Unix epoch.
+                    ;; https://github.com/golang/go/issues/17535
+
+                    ;; TODO Try re-enabling this test for Go > 1.7.3.
+                    ("time/time_test.go" "(.+)(TestLoadFixed.+)")))
 
                  (substitute* "../misc/cgo/testsanitizers/test.bash"
                    (("(CC=)cc" all var) (string-append var "gcc")))
@@ -306,6 +327,18 @@ sequential processes (CSP) concurrent programming features added.")
                  (setenv "GOGC" "400")
                  (setenv "GO_TEST_TIMEOUT_SCALE" "9999")
                  #t)))
+
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; FIXME: Some of the .a files are not bit-reproducible.
+               (let* ((output (assoc-ref outputs "out")))
+                 (setenv "CC" (which "gcc"))
+                 (setenv "GOOS" "linux")
+                 (setenv "GOROOT" (dirname (getcwd)))
+                 (setenv "GOROOT_FINAL" output)
+                 (setenv "CGO_ENABLED" "1")
+                 (zero? (system* "sh" "all.bash")))))
+
            (replace 'install
              ;; TODO: Most of this could be factorized with Go 1.4.
              (lambda* (#:key outputs #:allow-other-keys)

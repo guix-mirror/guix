@@ -495,6 +495,13 @@ transactions from C or Python.")
                     (lambda _
                       (substitute* "setup.py"
                         (("'python-magic',") ""))))
+                  ;; The test suite assumes we have pytest >= 2.9.0.
+                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=841146
+                  (add-after 'unpack 'disable-failing-test
+                    (lambda _
+                      (substitute* "tests/comparators/utils.py"
+                        (("skip\\(reason\\=\\\"requires \\{\\}\\\"\\.format\\(tool\\)\\)")
+                          "skipif(True, reason=\"Requires pytest >= 2.9\")"))))
                   (add-before 'build 'disable-egg-zipping
                     (lambda _
                       ;; Leave the .egg file uncompressed.

@@ -172,13 +172,17 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (replacement libarchive/fixed)
     (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://libarchive.org/downloads/libarchive-"
                            version ".tar.gz"))
+       (patches (search-patches
+                  "libarchive-7zip-heap-overflow.patch"
+                  "libarchive-fix-symlink-check.patch"
+                  "libarchive-fix-filesystem-attacks.patch"
+                  "libarchive-safe_fprintf-buffer-overflow.patch"))
        (sha256
         (base32
          "1lngng84k1kkljl74q0cdqc3s82vn2kimfm02dgm4d6m7x71mvkj"))))
@@ -227,17 +231,6 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
-
-(define libarchive/fixed
-  (package
-    (inherit libarchive)
-    (source (origin
-              (inherit (package-source libarchive))
-              (patches (search-patches
-                         "libarchive-7zip-heap-overflow.patch"
-                         "libarchive-fix-symlink-check.patch"
-                         "libarchive-fix-filesystem-attacks.patch"
-                         "libarchive-safe_fprintf-buffer-overflow.patch"))))))
 
 (define-public rdup
   (package
@@ -438,7 +431,27 @@ detection, and lossless compression.")
                (setenv "BORG_OPENSSL_PREFIX" openssl)
                (setenv "BORG_LZ4_PREFIX" lz4)
                (setenv "PYTHON_EGG_CACHE" "/tmp")
+               ;; The test 'test_return_codes[python]' fails when
+               ;; HOME=/homeless-shelter.
+               (setenv "HOME" "/tmp")
                #t)))
+         ;; The tests need to be run after Borg is installed.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda _
+             (zero?
+               (system* "py.test" "-v" "--pyargs" "borg.testsuite" "-k"
+                        (string-append
+                          ;; These tests need to write to '/var'.
+                          "not test_get_cache_dir "
+                          "and not test_get_keys_dir "
+                          ;; These tests assume there is a root user in
+                          ;; '/etc/passwd'.
+                          "and not test_access_acl "
+                          "and not test_default_acl "
+                          "and not test_non_ascii_acl "
+                          ;; This test needs the unpackaged pytest-benchmark.
+                          "and not benchmark")))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -457,6 +470,9 @@ detection, and lossless compression.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
+       ;; Borg 1.0.8's test suite uses 'tmpdir_factory', which was introduced in
+       ;; pytest 2.8.
+       ("python-pytest" ,python-pytest-2.9.2)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
@@ -490,7 +506,10 @@ to not fully trusted targets.  Borg is a fork of Attic.")
                 "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(;; The tests assume they are run as root:
+       ;; https://github.com/jborg/attic/issues/7
+       #:tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-before
           'build 'set-openssl-prefix

@@ -569,8 +569,11 @@ use 'plain-file' instead~%")
     ("DBUS_FATAL_WARNINGS" . "0")
 
     ;; XXX: Normally we wouldn't need to do this, but our glibc@2.23 package
-    ;; looks things up in 'PREFIX/lib/locale' instead of
-    ;; '/run/current-system/locale' as was intended.
+    ;; used to look things up in 'PREFIX/lib/locale' instead of
+    ;; '/run/current-system/locale' as was intended.  Keep this hack around so
+    ;; that people who still have glibc@2.23-using packages in their profiles
+    ;; can use them correctly.
+    ;; TODO: Remove when glibc@2.23 is long gone.
     ("GUIX_LOCPATH" . "/run/current-system/locale")))
 
 (define %setuid-programs

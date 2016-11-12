@@ -682,7 +682,18 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
 (define (gtk-icon-themes manifest)
   "Return a derivation that unions all icon themes from manifest entries and
 creates the GTK+ 'icon-theme.cache' file for each theme."
-  (mlet %store-monad ((gtk+ (manifest-lookup-package manifest "gtk+")))
+  (define gtk+  ; lazy reference
+    (module-ref (resolve-interface '(gnu packages gtk)) 'gtk+))
+
+  (mlet %store-monad ((%gtk+ (manifest-lookup-package manifest "gtk+"))
+                      ;; XXX: Can't use gtk-update-icon-cache corresponding
+                      ;; to the gtk+ referenced by 'manifest'.  Because
+                      ;; '%gtk+' can be either a package or store path, and
+                      ;; there's no way to get the "bin" output for the later.
+                      (gtk-update-icon-cache
+                       -> #~(string-append #+gtk+:bin
+                                           "/bin/gtk-update-icon-cache")))
+
     (define build
       (with-imported-modules '((guix build utils)
                                (guix build union)
@@ -699,9 +710,7 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
             (let* ((destdir  (string-append #$output "/share/icons"))
                    (icondirs (filter file-exists?
                                      (map (cut string-append <> "/share/icons")
-                                          '#$(manifest-inputs manifest))))
-                   (update-icon-cache (string-append
-                                       #+gtk+ "/bin/gtk-update-icon-cache")))
+                                          '#$(manifest-inputs manifest)))))
 
               ;; Union all the icons.
               (mkdir-p (string-append #$output "/share"))
@@ -716,11 +725,11 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
                    ;; "abiword_48.png".  Ignore these.
                    (when (file-is-directory? dir)
                      (ensure-writable-directory dir)
-                     (system* update-icon-cache "-t" dir "--quiet"))))
+                     (system* #+gtk-update-icon-cache "-t" dir "--quiet"))))
                (scandir destdir (negate (cut member <> '("." "..")))))))))
 
     ;; Don't run the hook when there's nothing to do.
-    (if gtk+
+    (if %gtk+
         (gexp->derivation "gtk-icon-themes" build
                           #:local-build? #t
                           #:substitutable? #f)

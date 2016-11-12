@@ -41,7 +41,7 @@
         "12rc6zaa7kb60b9744lbrlfkxxfniprm6x0mispv63h4kh75navh"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("gtk+" ,gtk+-2)
        ("libice" ,libice)
        ("libsm" ,libsm)))

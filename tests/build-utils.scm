@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,21 +19,15 @@
 
 (define-module (test-build-utils)
   #:use-module (guix tests)
-  #:use-module (guix store)
-  #:use-module (guix derivations)
   #:use-module (guix build utils)
-  #:use-module (guix packages)
-  #:use-module (guix build-system)
-  #:use-module (guix build-system trivial)
+  #:use-module ((guix utils)
+                #:select (%current-system call-with-temporary-directory))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 popen))
-
-(define %store
-  (open-connection-for-tests))
 
 
 (test-begin "build-utils")
@@ -95,49 +89,37 @@
                           port
                           cons)))))
 
-(test-assert "wrap-program, one input, multiple calls"
-  (let* ((p (package
-              (name "test-wrap-program") (version "0") (source #f)
-              (synopsis #f) (description #f) (license #f) (home-page #f)
-              (build-system trivial-build-system)
-              (arguments
-               `(#:guile ,%bootstrap-guile
-                 #:modules ((guix build utils))
-                 #:builder
-                 (let* ((out  (assoc-ref %outputs "out"))
-                        (bash (assoc-ref %build-inputs "bash"))
-                        (foo  (string-append out "/foo")))
-                   (begin
-                     (use-modules (guix build utils))
-                     (mkdir out)
-                     (call-with-output-file foo
-                       (lambda (p)
-                         (format p
-                                 "#!~a~%echo \"${GUIX_FOO} ${GUIX_BAR}\"~%"
-                                 bash)))
-                     (chmod foo #o777)
-                     ;; wrap-program uses `which' to find bash for the wrapper
-                     ;; shebang, but it can't know about the bootstrap bash in
-                     ;; the store, since it's not named "bash".  Help it out a
-                     ;; bit by providing a symlink it this package's output.
-                     (symlink bash (string-append out "/bash"))
-                     (setenv "PATH" out)
-                     (wrap-program foo `("GUIX_FOO" prefix ("hello")))
-                     (wrap-program foo `("GUIX_BAR" prefix ("world")))
-                     #t))))
-              (inputs `(("bash" ,(search-bootstrap-binary "bash"
-                                                          (%current-system)))))))
-         (d (package-derivation %store p)))
+(test-equal "wrap-program, one input, multiple calls"
+  "hello world\n"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (let ((bash (search-bootstrap-binary "bash" (%current-system)))
+           (foo  (string-append directory "/foo")))
 
-    ;; The bootstrap Bash is linked against an old libc and would abort with
-    ;; an assertion failure when trying to load incompatible locale data.
-    (unsetenv "LOCPATH")
+       (call-with-output-file foo
+         (lambda (p)
+           (format p
+                   "#!~a~%echo \"${GUIX_FOO} ${GUIX_BAR}\"~%"
+                   bash)))
+       (chmod foo #o777)
 
-    (and (build-derivations %store (pk 'drv d (list d)))
-         (let* ((p    (derivation->output-path d))
-                (foo  (string-append p "/foo"))
-                (pipe (open-input-pipe foo))
-                (str  (get-string-all pipe)))
-           (equal? str "hello world\n")))))
+       ;; wrap-program uses `which' to find bash for the wrapper shebang, but
+       ;; it can't know about the bootstrap bash in the store, since it's not
+       ;; named "bash".  Help it out a bit by providing a symlink it this
+       ;; package's output.
+       (setenv "PATH" (dirname bash))
+       (wrap-program foo `("GUIX_FOO" prefix ("hello")))
+       (wrap-program foo `("GUIX_BAR" prefix ("world")))
+
+       ;; The bootstrap Bash is linked against an old libc and would abort with
+       ;; an assertion failure when trying to load incompatible locale data.
+       (unsetenv "LOCPATH")
+
+       (let* ((pipe (open-input-pipe foo))
+              (str  (get-string-all pipe)))
+         (with-directory-excursion directory
+           (for-each delete-file '("foo" ".foo-real")))
+         (and (zero? (close-pipe pipe))
+              str))))))
 
 (test-end)

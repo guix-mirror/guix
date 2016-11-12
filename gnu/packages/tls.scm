@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -50,7 +50,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.8")
+    (version "4.9")
     (source
      (origin
       (method url-fetch)
@@ -58,7 +58,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "04y5m29pqmvkfdbppmsdifyx89v8xclxzklpfc7a1fkr9p4jz07s"))))
+        "0869cp6jx7cajgv6cnddsh3vc7bimmdkdjn80y1jpb4iss7plvsg"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/libtasn1/")
@@ -100,7 +100,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.1")
+    (version "0.23.2")
     (source
      (origin
       (method url-fetch)
@@ -108,7 +108,7 @@ in intelligent transportation networks.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1i3a1wdpagm0p3y1bwaz5x5rjhcpqbcrnhkcp10p259vkxk72wz5"))
+        "1w7szm190phlkg7qx05ychlj2dbvkgkhx9gw6dx4d5rw62l6wwms"))
       (modules '((guix build utils))) ; for substitute*
       (snippet
         '(begin
@@ -138,8 +138,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (replacement gnutls-3.5.4)
-    (version "3.5.2")
+    (version "3.5.4")
     (source (origin
              (method url-fetch)
              (uri
@@ -150,7 +149,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "10l5pv7qc5c850aamih3pdkbqpc4v2a6g164dzd7c7fjpxffji9b"))))
+               "1sx8p7v452s9m854r2c5pvcd1k15a3caiv5h35fhrxz0691h2f2f"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -212,25 +211,10 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define gnutls-3.5.4
-  (package
-    (inherit gnutls)
-    (source
-      (let ((version "3.5.4"))
-        (origin
-          (method url-fetch)
-          (uri (string-append "mirror://gnupg/gnutls/v"
-                              (version-major+minor version)
-                              "/gnutls-" version ".tar.xz"))
-          (sha256
-           (base32
-            "1sx8p7v452s9m854r2c5pvcd1k15a3caiv5h35fhrxz0691h2f2f")))))))
-
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl-1.0.2j)
-   (version "1.0.2h")
+   (version "1.0.2j")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -240,11 +224,9 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
+               "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
              (patches (search-patches "openssl-runpath.patch"
-                                      "openssl-c-rehash-in.patch"
-                                      "openssl-CVE-2016-2177.patch"
-                                      "openssl-CVE-2016-2178.patch"))))
+                                      "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"                               ;1.5MiB of man3 pages
@@ -331,6 +313,7 @@ required structures.")
                                        (string-append target "/"
                                                       (basename file))))
                         (find-files man3))
+              (delete-file-recursively man3)
               #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
@@ -368,29 +351,10 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
-(define openssl-1.0.2j
-  (package
-    (inherit openssl)
-    (name "openssl")
-    (version "1.0.2j")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "ftp://ftp.openssl.org/source/"
-                                        name "-" version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/" name "-" version ".tar.gz")))
-              (sha256
-               (base32
-                "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
-              (patches (search-patches "openssl-runpath.patch"
-                                       "openssl-c-rehash-in.patch"))))))
-
 (define-public openssl-next
   (package
     (inherit openssl)
     (name "openssl")
-    (replacement #f)
     (version "1.1.0b")
     (source (origin
              (method url-fetch)

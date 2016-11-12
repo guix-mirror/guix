@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +40,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 regex))
 
 (define %gcc-infrastructure
@@ -154,7 +155,8 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ("zlib" ,zlib)))
 
       ;; GCC < 5 is one of the few packages that doesn't ship .info files.
-      (native-inputs `(("texinfo" ,texinfo)))
+      ;; Newer texinfos fail to build the manual, so we use an older one.
+      (native-inputs `(("texinfo" ,texinfo-5)))
 
       (arguments
        `(#:out-of-source? #t
@@ -331,29 +333,31 @@ Go.  It also includes runtime support libraries for these languages.")
               (patches (search-patches "gcc-arm-link-spec-fix.patch"))))))
 
 (define-public gcc-4.9
-  (package (inherit gcc-4.8)
-    (version "4.9.3")
+  (package (inherit gcc-4.7)
+    (version "4.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0zmnm00d2a1hsd41g34bhvxzvxisa2l584q3p447bd91lfjv4ci3"))
-              (patches (search-patches "gcc-libvtv-runpath.patch"))))))
+                "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
+              (patches (search-patches "gcc-arm-bug-71399.patch"
+                                       "gcc-libvtv-runpath.patch"))))
+    (native-inputs `(("texinfo" ,texinfo)))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
   ;; them in a VPATH build.
   (package (inherit gcc-4.9)
-    (version "5.3.0")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ny4smkp5bzs3cp8ss7pl6lk8yss0d9m4av1mvdp72r1x695akxq"))
+                "0fihlcy5hnksdxk0sn6bvgnyq8gfrgs8m794b1jxwd1dxinzg3b0"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
@@ -726,7 +730,8 @@ as the 'native-search-paths' field."
                                        name "-" version ".tar.gz")))
              (sha256
               (base32
-               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))))
+               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))
+             (patches (search-patches "isl-0.11.1-aarch64-support.patch"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")

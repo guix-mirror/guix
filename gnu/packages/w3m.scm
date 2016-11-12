@@ -62,7 +62,7 @@
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (home-page "http://w3m.sourceforge.net/")

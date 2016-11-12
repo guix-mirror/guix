@@ -462,7 +462,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
        ("liblo" ,liblo)
        ("ladspa" ,ladspa)
        ("jack" ,jack-1)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
@@ -1043,7 +1043,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
      `(("gperf" ,gperf)
        ("faust" ,faust)
        ("intltool" ,intltool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
@@ -2213,7 +2213,15 @@ conversion.  It may be used, for example, to resample PCM-encoded audio.")
        (uri (string-append "mirror://sourceforge/twolame/twolame/" version
                            "/twolame-" version ".tar.gz"))
        (sha256
-        (base32 "0ahiqqng5pidwhj1wzph4vxxgxxgcfa3gl0gywipzx2ii7s35wwq"))))
+        (base32 "0ahiqqng5pidwhj1wzph4vxxgxxgcfa3gl0gywipzx2ii7s35wwq"))
+       (modules '((guix build utils)))
+       ;; The tests break with Perl 5.24:
+       ;; https://github.com/njh/twolame/issues/21
+       ;; TODO: Remove this snippet when upgrading twolame.
+       (snippet
+        '(begin
+           (substitute* "tests/test.pl" (("\\(@_\\)") "($_[0])"))
+           #t))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))

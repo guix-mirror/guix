@@ -72,7 +72,7 @@
        ("readline" ,readline)
        ("util-linux" ,util-linux)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ;; For the tests.
        ("perl" ,perl)
        ("python" ,python-2)))
@@ -97,7 +97,7 @@ tables.  It includes a library and command-line utility.")
         "04nd7civ561x2lwcmxhsqbprml3178jfc58fy1v7hzqg5k4nbhy3"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("guile" ,guile-1.8)
        ("util-linux" ,util-linux)
        ("parted" ,parted)))
@@ -123,7 +123,7 @@ tables, and it understands a variety of different formats.")
         "1izazbyv5n2d81qdym77i8mg9m870hiydmq4d0s51npx5vp8lk46"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("ncurses" ,ncurses)
        ("popt" ,popt)
        ("util-linux" ,util-linux))) ; libuuid

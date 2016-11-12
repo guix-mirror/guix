@@ -63,8 +63,7 @@
 
        #:parallel-build? #f))
 
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("ghostscript-gs" , ghostscript-gs)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
 
     (inputs `(("guile" ,guile-2.0)
               ("imagemagick" ,imagemagick)

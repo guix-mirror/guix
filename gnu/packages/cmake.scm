@@ -32,12 +32,13 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages xml))
 
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.5.2")
+    (version "3.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.cmake.org/files/v"
@@ -45,7 +46,7 @@
                                  "/cmake-" version ".tar.gz"))
              (sha256
               (base32
-               "0ap6nlmv6nda942db43k9k9mhnm5dm3fsapzvy0vh6wq7l6l3n4j"))
+               "04ggm9c0zklxypm6df1v4klrrd85m6vpv13kasj42za283n9ivi8"))
              (patches (search-patches "cmake-fix-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -97,27 +98,20 @@
                        "--mandir=share/man"
                        ,(string-append
                          "--docdir=share/doc/cmake-"
-                         (version-major+minor version)))))))
-         (add-after 'unpack 'remove-libarchive-version-test
-           ; This test check has been failing consistantly over libarchive 3.2.x
-           ; and cmake 3.4.x and 3.5.x so we disable it for now
-           (lambda _
-               (substitute*
-               "Tests/CMakeOnly/AllFindModules/CMakeLists.txt"
-               (("LibArchive") ""))
-               #t)))))
+                         (version-major+minor version))))))))))
     (inputs
      `(("file"       ,file)
        ("curl"       ,curl)
        ("zlib"       ,zlib)
        ("expat"      ,expat)
        ("bzip2"      ,bzip2)
+       ("ncurses"    ,ncurses) ; required for ccmake
        ("libarchive" ,libarchive)))
     (native-search-paths
      (list (search-path-specification
              (variable "CMAKE_PREFIX_PATH")
              (files '("")))))
-    (home-page "http://www.cmake.org/")
+    (home-page "https://www.cmake.org/")
     (synopsis "Cross-platform build system")
     (description
      "CMake is a family of tools designed to build, test and package software.

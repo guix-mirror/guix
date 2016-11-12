@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,15 @@
              (sha256
               (base32 "01ggvvp0nyn8xczh93icifnji468wsjgqzd1f1bixwsqziaicknv"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("gtk+" ,gtk+)))
     (native-inputs

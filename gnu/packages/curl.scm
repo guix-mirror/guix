@@ -41,14 +41,14 @@
   (package
    (name "curl")
    (replacement curl-7.51.0)
-   (version "7.47.0")
+   (version "7.50.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "1n284wdqzwb4bkmv0fnh36zl6lhlzy3clw2b7pn28kpgdy09ly7p"))))
+              "1spmk0345hq0sgpwxs8d410268lmg3wf1x9v23hxff7wxki5fm4c"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -84,10 +84,6 @@
          (lambda _
            (substitute* "tests/runtests.pl"
              (("/bin/sh") (which "sh")))
-           ;; Test #1135 requires extern-scan.pl, which is not part of the
-           ;; tarball due to a mistake.  It has been fixed upstream.  We can
-           ;; simply disable the test as it is specific to VMS and OS/400.
-           (delete-file "tests/data/test1135")
 
            ;; XXX FIXME: Test #1510 seems to work on some machines and not
            ;; others, possibly based on the kernel version.  It works on GuixSD

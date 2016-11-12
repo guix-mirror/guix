@@ -1,0 +1,75 @@
+On systems without 'setfsuid', use 'setreuid' instead.
+
+The patch originates from the Debian project for GNU/Hurd.
+Authors: Steve Langasek <vorlon@debian.org>
+Upstream status: A ticket was opened to request apply the patch,
+ticket: 'https://fedorahosted.org/linux-pam/ticket/64'.
+
+--- Linux-PAM-1.2.1/libpam/pam_modutil_priv.c	2015-03-24 06:02:32.000000000 -0600
++++ pam_modutil_priv-mod.c	2016-09-20 13:36:53.150663205 -0500
+@@ -14,7 +14,9 @@
+ #include <syslog.h>
+ #include <pwd.h>
+ #include <grp.h>
++#ifdef HAVE_SYS_FSUID_H
+ #include <sys/fsuid.h>
++#endif /* HAVE_SYS_FSUID_H */
+ 
+ /*
+  * Two setfsuid() calls in a row are necessary to check
+@@ -22,17 +24,55 @@
+  */
+ static int change_uid(uid_t uid, uid_t *save)
+ {
++#ifdef HAVE_SYS_FSUID_H
+ 	uid_t tmp = setfsuid(uid);
+ 	if (save)
+ 		*save = tmp;
+ 	return (uid_t) setfsuid(uid) == uid ? 0 : -1;
++#else
++	uid_t euid = geteuid();
++	uid_t ruid = getuid();
++	if (save)
++		*save = ruid;
++	if (ruid == uid && uid != 0)
++		if (setreuid(euid, uid))
++			return -1;
++	else {
++		setreuid(0, -1);
++		if (setreuid(-1, uid)) {
++			setreuid(-1, 0);
++			setreuid(0, -1);
++			if (setreuid(-1, uid))
++				return -1;
++		}
++	}
++#endif
+ }
+ static int change_gid(gid_t gid, gid_t *save)
+ {
++#ifdef HAVE_SYS_FSUID_H
+ 	gid_t tmp = setfsgid(gid);
+ 	if (save)
+ 		*save = tmp;
+ 	return (gid_t) setfsgid(gid) == gid ? 0 : -1;
++#else
++	gid_t egid = getegid();
++	gid_t rgid = getgid();
++	if (save)
++		*save = rgid;
++	if (rgid == gid)
++		if (setregid(egid, gid))
++			return -1;
++	else {
++		setregid(0, -1);
++		if (setregid(-1, gid)) {
++			setregid(-1, 0);
++			setregid(0, -1);
++			if (setregid(-1, gid))
++				return -1;
++		}
++	}
++#endif
+ }
+ 
+ static int cleanup(struct pam_modutil_privs *p)

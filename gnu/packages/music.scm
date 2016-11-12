@@ -493,7 +493,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("python2-pyliblo" ,python2-pyliblo)
        ("python2-pygtk" ,python2-pygtk)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (home-page "http://das.nasophon.de/gtklick/")
     (synopsis "Simple metronome with an easy-to-use graphical interface")
     (description
@@ -555,7 +555,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
        ("font-tex-gyre" ,font-tex-gyre)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("ghostscript" ,ghostscript-gs)
+       ("ghostscript" ,ghostscript)
        ("pango" ,pango)
        ("python" ,python-2)))
     (native-inputs
@@ -564,7 +564,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
        ("flex" ,flex)
        ("fontforge" ,fontforge)
        ("dblatex" ,dblatex)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("imagemagick" ,imagemagick)
        ("netpbm" ,netpbm) ;for pngtopnm
        ("texlive" ,texlive) ;metafont and metapost
@@ -712,7 +712,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
     (inputs
      `(("python" ,python-2)
        ("pygtk" ,python2-pygtk)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("gtk" ,gtk+)
        ("lilypond" ,lilypond)
        ;; players needed at runtime
@@ -1029,7 +1029,7 @@ Laurens Hammond and Don Leslie.")
        ("flac" ,flac)
        ("alsa-lib" ,alsa-lib)
        ("libvorbis" ,libvorbis)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")
@@ -1222,7 +1222,7 @@ export.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("tk" ,tk)

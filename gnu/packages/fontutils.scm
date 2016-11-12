@@ -223,15 +223,14 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (replacement fontconfig/fixed)
-   (version "2.11.94")
+   (version "2.12.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
-                     "1psrl4b4gi4wmbvwwh43lk491wsl8lgvqj146prlcha3vwjc0qyp"))))
+                     "1wy7svvp7df6bjpg1m5vizb3ngd7rhb20vpclv3x3qa71khs6jdl"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)))
@@ -275,13 +274,6 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    (license (license:non-copyleft "file://COPYING"
                        "See COPYING in the distribution."))
    (home-page "http://www.freedesktop.org/wiki/Software/fontconfig")))
-
-(define fontconfig/fixed
-  (package
-    (inherit fontconfig)
-    (source (origin
-              (inherit (package-source fontconfig))
-              (patches (search-patches "fontconfig-CVE-2016-5384.patch"))))))
 
 (define-public t1lib
   (package
@@ -529,7 +521,7 @@ definitions.")
    (inputs `(("cairo"           ,cairo)
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
-             ("gettext"         ,gnu-gettext)
+             ("gettext"         ,gettext-minimal)
              ("glib"            ,glib) ;needed for pango detection
              ("libICE"          ,libice)
              ("libSM"           ,libsm)

@@ -130,7 +130,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
       ("vpnc" ,vpnc)
       ("zlib" ,zlib)))
    (native-inputs
-    `(("gettext" ,gnu-gettext)
+    `(("gettext" ,gettext-minimal)
       ("pkg-config" ,pkg-config)))
    (arguments
     `(#:configure-flags

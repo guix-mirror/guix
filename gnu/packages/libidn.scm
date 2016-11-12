@@ -27,14 +27,14 @@
 (define-public libidn
   (package
    (name "libidn")
-   (replacement libidn-1.33)
-   (version "1.32")
+   (version "1.33")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libidn/libidn-" version
                                 ".tar.gz"))
-            (sha256 (base32
-                     "1xf4hphhahcjm2xwx147lfpsavjwv9l4c2gf6hx71zxywbz5lpds"))))
+            (sha256
+             (base32
+              "068fjg2arlppjqqpzd714n1lf6gxkpac9v5yyvp1qwmv6nvam9s4"))))
    (build-system gnu-build-system)
 ;; FIXME: No Java and C# libraries are currently built.
    (synopsis "Internationalized string processing library")
@@ -47,19 +47,6 @@ Java libraries.")
    ;; the command line tool is gpl3+.
    (license (list gpl2+ gpl3+ lgpl3+ fdl1.3+))
    (home-page "http://www.gnu.org/software/libidn/")))
-
-(define libidn-1.33
-  (package
-    (inherit libidn)
-    (source
-      (let ((version "1.33"))
-        (origin
-          (method url-fetch)
-          (uri (string-append "mirror://gnu/libidn/libidn-" version
-                              ".tar.gz"))
-          (sha256
-           (base32
-            "068fjg2arlppjqqpzd714n1lf6gxkpac9v5yyvp1qwmv6nvam9s4")))))))
 
 (define-public libidn2
   (package

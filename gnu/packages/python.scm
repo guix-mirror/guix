@@ -54,6 +54,7 @@
   #:use-module (gnu packages adns)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
@@ -110,7 +111,7 @@
 (define-public python-2.7
   (package
     (name "python")
-    (version "2.7.11")
+    (version "2.7.12")
     (source
      (origin
       (method url-fetch)
@@ -118,7 +119,7 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0iiz844riiznsyhhyy962710pz228gmhv8qi3yk4w4jhmx2lqawn"))
+        "0y7rl603vmwlxm6ilkhc51rx2mfj14ckcz40xxgs0ljnvlhp30yp"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-source-date-epoch.patch"))
@@ -130,6 +131,7 @@
        '(begin
           (for-each delete-file
                     '("Lib/test/test_compileall.py"
+                      "Lib/test/test_ctypes.py" ; fails on mips64el
                       "Lib/test/test_distutils.py"
                       "Lib/test/test_import.py"
                       "Lib/test/test_shutil.py"
@@ -205,13 +207,6 @@
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
              (setenv "HOME" (getcwd))
-             ,@(if (string-prefix? "mips64el" (%current-system))
-
-                   ;; XXX: The following test fails on mips64el.
-                   '((false-if-exception
-                      (delete-file "Lib/test/test_ctypes.py")))
-
-                   '())
              #t))
           (add-after
            'unpack 'set-source-file-times-to-1980
@@ -293,7 +288,7 @@
      (list (search-path-specification
             (variable "PYTHONPATH")
             (files '("lib/python2.7/site-packages")))))
-    (home-page "http://python.org")
+    (home-page "https://www.python.org")
     (synopsis "High-level, dynamically-typed programming language")
     (description
      "Python is a remarkably powerful dynamic programming language that
@@ -308,23 +303,22 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
-(define-public python-3.4
+(define-public python-3.5
   (package (inherit python-2)
-    (version "3.4.3")
+    (version "3.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-fix-tests.patch"
-                        ;; XXX Try removing this patch for python > 3.4.3
-                        "python-disable-ssl-test.patch"
+                        "python-3.5-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "1f4nm4z08sy0kqwisvv95l02crv6dyysdmx44p1mz3bn6csrdcxm"))))
+                "0h6a5fr7ram2s483lh0pnmc4ncijb8llnpfdxdcl5dxr01hza400"))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
     (native-search-paths
@@ -334,8 +328,25 @@ data types.")
                                         (version-major+minor version)
                                         "/site-packages"))))))))
 
+(define-public python-3.4
+  (package (inherit python-3.5)
+    (version "3.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.python.org/ftp/python/"
+                                  version "/Python-" version ".tar.xz"))
+              (patches (search-patches
+                        "python-fix-tests.patch"
+                        "python-3.4-fix-tests.patch"
+                        "python-3-deterministic-build-info.patch"
+                        "python-3-search-paths.patch"))
+              (patch-flags '("-p0"))
+              (sha256
+               (base32
+                "12l9klp778wklxmckhghniy5hklss8r26995pyd00qbllk4b2r7f"))))))
+
 ;; Current 3.x version.
-(define-public python-3 python-3.4)
+(define-public python-3 python-3.5)
 
 ;; Current major version.
 (define-public python python-3)
@@ -357,14 +368,12 @@ data types.")
   (package (inherit python)
     (name "python-minimal")
     (outputs '("out"))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python)
-       ((#:configure-flags cf)
-        `(append ,cf '("--without-system-ffi")))))
 
+    ;; Build fails due to missing ctypes without libffi.
     ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
     ;; zlib is required by 'zipimport', used by pip.
-    (inputs `(("openssl" ,openssl)
+    (inputs `(("libffi" ,libffi)
+              ("openssl" ,openssl)
               ("zlib" ,zlib)))))
 
 (define* (wrap-python3 python
@@ -375,6 +384,7 @@ data types.")
     (source #f)
     (build-system trivial-build-system)
     (outputs '("out"))
+    (inputs `(("bash" ,bash)))
     (propagated-inputs `(("python" ,python)))
     (arguments
      `(#:modules ((guix build utils))
@@ -388,8 +398,20 @@ data types.")
                   (lambda (old new)
                     (symlink (string-append python old)
                              (string-append bin "/" new)))
-                  '("python3" "pydoc3" "idle3")
-                  '("python"  "pydoc"  "idle"))))))
+                  `("python3" ,"pydoc3" ,"idle3" ,"pip3")
+                  `("python"  ,"pydoc"  ,"idle"  ,"pip"))
+                ;; python-config outputs search paths based upon its location,
+                ;; use a bash wrapper to avoid changing its outputs.
+                (let ((bash (string-append (assoc-ref %build-inputs "bash")
+                                           "/bin/bash"))
+                      (old  (string-append python "python3-config"))
+                      (new  (string-append bin "/python-config")))
+                  (with-output-to-file new
+                    (lambda ()
+                      (format #t "#!~a~%" bash)
+                      (format #t "exec \"~a\" \"$@\"~%" old)
+                      (chmod new #o755)
+                      #t)))))))
     (synopsis "Wrapper for the Python 3 commands")
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
@@ -1389,14 +1411,14 @@ backported for previous versions of Python from 2.4 to 3.3.")
       (uri (pypi-uri "parse" version))
       (sha256
        (base32
-        "0y31i3mwgv35qn0kzzjn9q8jqfdqmbi6sr6yfvn8rq4lqjm5lhvi"))))
+        "0y31i3mwgv35qn0kzzjn9q8jqfdqmbi6sr6yfvn8rq4lqjm5lhvi"))
+      (patches (search-patches "python-parse-too-many-fields.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'check
-        (lambda _ (zero? (system* "python" "test_parse.py")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "python" "test_parse.py")))))))
     (home-page "https://github.com/r1chardj0n3s/parse")
     (synopsis "Parse strings")
     (description
@@ -2778,18 +2800,39 @@ logic-free templating system Mustache.")
 (define-public python-joblib
   (package
     (name "python-joblib")
-    (version "0.9.0b4")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/"
-                                  "j/joblib/joblib-" version ".tar.gz"))
+              (uri (pypi-uri "joblib" version))
               (sha256
                (base32
-                "1dvw3f8jgj6h0fxkghbgyclvdzc7l0ig7n0vis70awb5kczb9bs3"))))
+                "0787k919zlfmgymprz5bzv0v1df5bbirlf3awrghmjgvkrd9dci9"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             ;; This numpydoc tests fails for unknown reasons
+             (delete-file "doc/sphinxext/numpydoc/tests/test_docscrape.py")
+             ;; This numpydoc test depends on matplotlib, which is not a
+             ;; required input.
+             (delete-file "doc/sphinxext/numpydoc/tests/test_plot_directive.py")
+             ;; These tests fail to execute sys.executable
+             (substitute* "joblib/test/test_parallel.py"
+               (("import nose" line)
+                (string-append "from nose.plugins.skip import SkipTest\n" line))
+               (("def test_nested_parallel_warnings" line)
+                (string-append "@SkipTest\n" line))
+               (("def test_parallel_with_interactively_defined_functions" line)
+                (string-append "@SkipTest\n" line)))
+             #t)))))
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
-       ("python-nose"       ,python-nose)))
+       ("python-nose"       ,python-nose)
+       ("python-sphinx"     ,python-sphinx)
+       ("python-docutils"   ,python-docutils)
+       ("python-numpydoc"   ,python-numpydoc)))
     (home-page "http://pythonhosted.org/joblib/")
     (synopsis "Using Python functions as pipeline jobs")
     (description
@@ -6586,6 +6629,20 @@ responses, rather than doing any computation.")
         (base32
          "1raanvkdfw5ai56ymlij6ghc4k126fs7jx948ig7yn4vj6ndv0ng"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-failing-test
+           (lambda _
+             ;; This test is known to fail with OpenSSL >= 1.0.2i and older
+             ;; versions of python-cryptography:
+             ;; https://github.com/pyca/cryptography/issues/3196
+             ;; TODO: Try re-enabling the test when upgrading
+             ;; python-cryptography.
+             (substitute* "tests/hazmat/backends/test_openssl.py"
+               (("def test_numeric_string_x509_name_entry")
+                 "@pytest.mark.xfail\n    def test_numeric_string_x509_name_entry"))
+             #t)))))
     (inputs
      `(("openssl" ,openssl)))
     (propagated-inputs
@@ -6802,9 +6859,14 @@ Python's @code{ctypes} foreign function interface (FFI).")
   (package
     (inherit file)
     (name "python-file")
+    (source (origin
+              (inherit (package-source file))
+              ;; This patch should not be applied to python2-file.
+              (patches (search-patches "python-file-double-encoding-bug.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f                                ;no tests
+       #:configure-flags '("--single-version-externally-managed" "--root=/")
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'change-directory
                     (lambda _
@@ -6822,10 +6884,17 @@ Python's @code{ctypes} foreign function interface (FFI).")
     (synopsis "Python bindings to the libmagic file type guesser.  Note that
 this module and the python-magic module both provide a \"magic.py\" file;
 these two modules, which are different and were developed separately, both
-serve the same purpose: provide Python bindings for libmagic.")))
+serve the same purpose: provide Python bindings for libmagic.")
+    (properties `((python2-variant . ,(delay python2-file))))))
 
 (define-public python2-file
-  (package-with-python2 python-file))
+  (let ((base (package-with-python2 (strip-python2-variant python-file))))
+    (package
+      (inherit base)
+      (source (package-source file))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
 
 (define-public python-debian
   (package
@@ -7741,6 +7810,9 @@ be set via config files and/or environment variables.")
                 (base32
                   "0x32ibixm3vv5m9xfk83xsqm8xcqw4dd0khbh6qbri6rxgymbhg8"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The tests appear to require networking.
+       #:tests? #f))
     (propagated-inputs
      `(("python-pyopenssl" ,python-pyopenssl)))
     (synopsis "HTTPS support for Python's httplib and urllib2")
@@ -7876,6 +7948,10 @@ for atomic file system operations.")
               (base32
                "15q9nrgp85nqlr4kdz1zvj8z2npafi2sr12y7fqgxbkq28j1aci6"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-betamax" ,python-betamax)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-requests" ,python-requests)))
     (synopsis "Extensions to python-requests")
@@ -7964,8 +8040,14 @@ pure Python module that works on virtually all Python versions.")
               (base32
                "1rpk1vyclhg911p3hql0m0nrpq7q7mysxnaaw6vs29cpa6kx8vgn"))))
     (build-system python-build-system)
+    (arguments
+     `(;; 2 failed, 275 passed, 670 skipped, 4 xfailed
+       ;; The two test failures are caused by the lack of an `ssh` executable.
+       ;; The test suite can be run with pytest after the 'install' phase.
+       #:tests? #f))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
      `(("python-apipkg" ,python-apipkg)))
     (synopsis "Rapid multi-Python deployment")
@@ -8069,7 +8151,8 @@ framework which enables you to test server connections locally.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3)))
     (propagated-inputs
      `(("python-httplib2" ,python-httplib2)
        ("python-requests" ,python-requests)))
@@ -8706,6 +8789,17 @@ python-xdo for newer bindings.)")
         (base32
          "0vyl26y9cg409cfyj8rhqxazsdnd0jipgjw06civhrd53yyi1pzz"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-django-test
+           ;; Don't fail the tests when the inputs for the optional tests cannot be found.
+           (lambda _
+             (substitute*
+               "tests/runtests.py"
+               (("'ext_django.tests', 'ext_sqlalchemy', 'ext_dateutil', 'locale_babel'") "")
+               (("sys.stderr.write(\"### Disabled test '%s', dependency not found\n\" % name)") ""))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://wtforms.simplecodes.com/")
@@ -9105,21 +9199,22 @@ alternative when librabbitmq is not available.")
 (define-public python-kombu
   (package
     (name "python-kombu")
-    (version "3.0.33")
+    (version "3.0.37")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kombu" version))
        (sha256
         (base32
-         "16brjx2lgwbj2a37d0pjbfb84nvld6irghmqrs3qfncajp51hgc5"))))
+         "0l16chb314gpq2v7fh94a22c30lcv6w3ylmhsa60bldlcq6a0r70"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-anyjson" ,python-anyjson)
-       ("python-amqp" ,python-amqp)))
+       ("python-amqp" ,python-amqp)
+       ("python-redis" ,python-redis)))
     (home-page "http://kombu.readthedocs.org")
     (synopsis "Message passing library for Python")
     (description "The aim of Kombu is to make messaging in Python as easy as
@@ -9143,14 +9238,14 @@ RabbitMQ messaging server is the most popular implementation.")
 (define-public python-billiard
   (package
     (name "python-billiard")
-    (version "3.3.0.22")
+    (version "3.3.0.23")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "billiard" version))
        (sha256
         (base32
-         "0zp7h6a58alrb3mwdw61jds07395j4j0mj6iqsb8czrihw9ih5nj"))))
+         "02wxsc6bhqvzh8j6w758kvgqbnj14l796mvmrcms8fgfamd2lak9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -9178,15 +9273,24 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python-celery
   (package
     (name "python-celery")
-    (version "3.1.20")
+    (version "3.1.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "celery" version))
        (sha256
         (base32
-         "1md6ywg1s0946qyp8ndnsd677wm0yax933h2sb4m3a4j7lf1jbyh"))))
+         "0yh2prhdnx2dgkb67a5drj12hh2zvzx5f611p7mqqg01ydghif4r"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; These tests break with Python 3.5:
+         ;; https://github.com/celery/celery/issues/2897#issuecomment-253066295
+         (replace 'check
+           (lambda _
+             (zero?
+               (system* "nosetests" "--exclude=^test_safe_to_remove.*")))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (inputs
@@ -9369,6 +9473,9 @@ introspection of @code{zope.interface} instances in code.")
                (base32
                 "1qfnwlx8qwkgr6nf5wvl6ff1r3kll53dh3z6nyp173nmlhhhqccb"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The test suite relies on some non-portable Windows interfaces.
+       #:tests? #f))
     (inputs
      `(("python-dateutil-2" ,python-dateutil-2)
        ("python-pyicu" ,python-pyicu)))
@@ -11642,7 +11749,8 @@ CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
           "0rsaarx2sj4xnw9966rhh4haiqaapm4lm2mfqm48ywd51j5vh1a0"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Tests require the unpackaged pytest-benchmark.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-hardcoded-version
            (lambda _ (substitute*
@@ -11791,6 +11899,38 @@ provide extendible implementations of common aspects of a cloud so that you can
 focus on building massively scalable web applications.")
     (license license:expat)))
 
+(define-public python-betamax
+  (package
+    (name "python-betamax")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "betamax" version))
+        (sha256
+         (base32
+          "18f8v5gng3j773jlbbzx4rg1i4y2zw3m2l1zpmbvp8bh5a2q1i42"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; Many tests fail because they require networking.
+       #:tests? #f))
+    (inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/sigmavirus24/betamax")
+    (synopsis "Record HTTP interactions with python-requests")
+    (description "Betamax will record your test suite's HTTP interactions and
+replay them during future tests.  It is designed to work with python-requests.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-betamax))))))
+
+(define-public python2-betamax
+  (let ((base (package-with-python2 (strip-python2-variant python-betamax))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
+
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
@@ -11802,8 +11942,18 @@ focus on building massively scalable web applications.")
                (base32
                 "1jivjkp3xqif9gzr5fiq28jsskmh50vzzd7ldsb4rbyiw1iyv3hy"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; 7 of the 'integration' tests require network access or login
+             ;; credentials.
+             (zero? (system* "nosetests" "--exclude=integration")))))))
     (native-inputs
-     `(("python-docutils" ,python-docutils)))
+     `(("python-docutils" ,python-docutils)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (inputs
      `(("python-botocore" ,python-botocore)))
     (synopsis "Amazon S3 Transfer Manager")
@@ -12073,6 +12223,10 @@ useful as a validator for JSON data.")
         (base32
           "0qk07k0z4241lkzzjji7z4da04pcvg7bfc4xz1934zlqhwmwdcha"))))
     (build-system python-build-system)
+    (arguments
+     '(;; Test files are not distributed on PyPi:
+       ;; https://github.com/shibukawa/imagesize_py/issues/7
+       #:tests? #f))
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in variaous formats in Python")
     (description

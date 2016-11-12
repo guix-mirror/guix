@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,17 +115,36 @@
          version "-gnu.tar.xz")))
 
 (define-public linux-libre-headers
-  (let* ((version "4.1.18")
-         (build-phase
-          (lambda (arch)
-            `(lambda _
-               (setenv "ARCH" ,(system->linux-architecture arch))
+  (package
+    (name "linux-libre-headers")
+    (version "4.4.18")
+    (source (origin
+             (method url-fetch)
+             (uri (linux-libre-urls version))
+             (sha256
+              (base32
+               "0k8k17in7dkjd9d8zg3i8l1ax466dba6bxw28flxizzyq8znljps"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (let ((arch ,(system->linux-architecture
+                          (or (%current-target-system)
+                              (%current-system)))))
+               (setenv "ARCH" arch)
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
                (and (zero? (system* "make" "defconfig"))
                     (zero? (system* "make" "mrproper" "headers_check"))))))
-         (install-phase
-          `(lambda* (#:key outputs #:allow-other-keys)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (and (zero? (system* "make"
                                     (string-append "INSTALL_HDR_PATH=" out)
@@ -144,33 +164,12 @@
                       (for-each delete-file (find-files out "\\.install"))
 
                       #t))))))
-   (package
-    (name "linux-libre-headers")
-    (version version)
-    (source (origin
-             (method url-fetch)
-             (uri (linux-libre-urls version))
-             (sha256
-              (base32
-               "1bddh2rg645lavhjkk9z75vflba5y0g73z2fjwgbfrj5jb44x9i7"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
-       #:phases (alist-replace
-                 'build ,(build-phase (or (%current-target-system)
-                                          (%current-system)))
-                 (alist-replace
-                  'install ,install-phase
-                  (alist-delete 'configure %standard-phases)))
        #:allowed-references ()
        #:tests? #f))
+    (home-page "http://www.gnu.org/software/linux-libre")
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
-    (license license:gpl2)
-    (home-page "http://www.gnu.org/software/linux-libre/"))))
+    (license license:gpl2)))
 
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
@@ -364,17 +363,18 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
       (method url-fetch)
-      (uri (list (string-append "http://www.linux-pam.org/library/Linux-PAM-"
-                                version ".tar.bz2")
-                 (string-append "mirror://kernel.org/linux/libs/pam/library/Linux-PAM-"
-                                version ".tar.bz2")))
+      (uri (string-append
+            "http://www.linux-pam.org/library/"
+            "Linux-PAM-" version ".tar.bz2"))
       (sha256
        (base32
-        "1n9lnf9gjs72kbj1g354v1xhi2j27aqaah15vykh7cnkq08i4arl"))))
+        "1fyi04d5nsh8ivd0rn2y0z83ylgc0licz7kifbb6xxi2ylgfs6i4"))
+      (patches (search-patches "linux-pam-no-setfsuid.patch"))))
+
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -401,6 +401,21 @@ Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features.")
     (license license:bsd-3)))
+
+(define-public linux-pam-1.2
+  (package
+    (inherit linux-pam)
+    (version "1.2.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "http://www.linux-pam.org/library/"
+            "Linux-PAM-" version ".tar.bz2"))
+      (sha256
+       (base32
+        "1n9lnf9gjs72kbj1g354v1xhi2j27aqaah15vykh7cnkq08i4arl"))
+      (patches (search-patches "linux-pam-no-setfsuid.patch"))))))
 
 
 ;;;
@@ -433,7 +448,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.27")
+    (version "2.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -441,7 +456,7 @@ providing the system administrator with some help in common tasks.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ivdx1bhjbakf77agm9dn3wyxia1wgz9lzxgd61zqxw3xzih9gzw"))
+                "03xnaw3c7pavxvvh1vnimcr44hlhhf25whawiyv8dxsflfj4xkiy"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -516,16 +531,14 @@ block devices, UUIDs, TTYs, and many other tools.")
 (define-public procps
   (package
     (name "procps")
-    (version "3.3.11")
+    (version "3.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/procps-ng/Production/"
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "1va4n0mpsq327ca9dqp4hnrpgs6821rp0f2m0jyc1bfjl9lk2jg9"))
-              (patches
-               (list (search-patch "procps-non-linux.patch")))))
+                "1m57w6jmry84njd5sgk5afycbglql0al80grx027kwqqcfw5mmkf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build utils)
@@ -534,6 +547,15 @@ block devices, UUIDs, TTYs, and many other tools.")
                   (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'disable-strtod-test
+           (lambda _
+             ;; Disable the 'strtod' test, which fails on 32-bit systems.
+             ;; This is what upstream does:
+             ;; <https://gitlab.com/procps-ng/procps/commit/100afbc1491be388f1429021ff65d969f4b1e08f>.
+             (substitute* "Makefile"
+               (("^(TESTS|check_PROGRAMS) = .*$" all)
+                (string-append "# " all "\n")))
+             #t))
          (add-after
           'install 'post-install
           ;; Remove commands and man pages redudant with
@@ -860,7 +882,7 @@ MIDI functionality to the Linux-based operating system.")
        ("ncurses" ,ncurses)
        ("alsa-lib" ,alsa-lib)
        ("xmlto" ,xmlto)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -1051,7 +1073,7 @@ manpages.")
                          (sha256
                           (base32
                            "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p"))))))
-    (native-inputs `(("gettext" ,gnu-gettext)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
 
     (synopsis "Tools for controlling the network subsystem in Linux")
     (description
@@ -1612,7 +1634,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.1.5")
+    (version "3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1620,7 +1642,7 @@ from the module-init-tools project.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0akg9gcc3c2p56xbhlvbybqavcprly5q0bvk655zwl6d62j8an7p"))
+                "099w62ncq78nxpxizf910mx18hc8x4qvzw3azjd00fir89wmyjnq"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2507,7 +2529,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("glib" ,glib)
        ("dbus" ,dbus)
@@ -2847,7 +2869,7 @@ from that to the system kernel's @file{/dev/random} machinery.")
                             "DEBUG=false"
                             "PACKAGE_BUGREPORT=bug-guix@gnu.org"))
        #:tests? #f)) ;no tests
-    (native-inputs `(("gettext" ,gnu-gettext)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (inputs `(("pciutils" ,pciutils)))
     (home-page (package-home-page linux-libre))
     (synopsis "CPU frequency and voltage scaling tools for Linux")

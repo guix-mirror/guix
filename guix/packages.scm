@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -493,9 +494,11 @@ specifies modules in scope when evaluating SNIPPET."
               (format (current-error-port) "applying '~a'...~%" patch)
 
               ;; Use '--force' so that patches that do not apply perfectly are
-              ;; rejected.
+              ;; rejected.  Use '--no-backup-if-mismatch' to prevent making
+              ;; "*.orig" file if a patch is applied with offset.
               (zero? (system* (string-append #+patch "/bin/patch")
-                              "--force" #+@flags "--input" patch)))
+                              "--force" "--no-backup-if-mismatch"
+                              #+@flags "--input" patch)))
 
             (define (first-file directory)
               ;; Return the name of the first file in DIRECTORY.

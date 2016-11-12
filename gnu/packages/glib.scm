@@ -65,7 +65,7 @@
   (package
     (name "dbus")
     (replacement dbus-1.10.12)
-    (version "1.10.8")
+    (version "1.10.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +73,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0560y3hxpgh346w6avcrcz79c8ansmn771y5xpcvvlr6m8mx5wxs"))
+                "0hwsfczhx2djmc9116vj5v230i7gpjihwh3vbljs1ldlk831v3wx"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -150,7 +150,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.48.0")
+   (version "2.48.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -158,7 +158,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0d3w2hblrw7vvpx60l1kbvb830ygn3v8zhwdz65cc5593j9ycjvl"))
+              "1x6kwrk1zyd3csv0ca3pmwc4bnkc33agn95cds15h6nbi4apappj"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -172,7 +172,7 @@ shared NFS home directories.")
       ("zlib" ,zlib)
       ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
    (native-inputs
-    `(("gettext" ,gnu-gettext)
+    `(("gettext" ,gettext-minimal)
       ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
@@ -362,7 +362,7 @@ bindings to call into the C library.")
     (propagated-inputs
      `(;; Propagate gettext because users expect it to be there, and so does
        ;; the `intltool-update' script.
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
 
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl" ,perl)))
@@ -443,7 +443,7 @@ translated.")
 (define dbus-glib
   (package
     (name "dbus-glib")
-    (version "0.104")
+    (version "0.106")
     (source (origin
              (method url-fetch)
              (uri
@@ -451,7 +451,7 @@ translated.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "1xi1v1msz75qs0s4lkyf1psrksdppa3hwkg0mznc6gpw5flg3hdz"))))
+               "0in0i6v68ixcy0ip28i84hdczf10ykq9x682qgcvls6gdmq552dk"))))
     (build-system gnu-build-system)
     (propagated-inputs ; according to dbus-glib-1.pc
      `(("dbus" ,dbus)

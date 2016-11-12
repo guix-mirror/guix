@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -999,7 +999,7 @@ authentication records.")
 (define-public inputproto
   (package
     (name "inputproto")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method url-fetch)
@@ -1009,7 +1009,7 @@ authentication records.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1lf1jlxp0fc8h6fjdffhd084dqab94966l1zm3rwwsis0mifwiss"))))
+            "07gk7v006zqn3dcfh16l06gnccy7xnqywf3vl9c209ikazsnlfl9"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1432,7 +1432,7 @@ treat it as part of their software base when porting.")
             "07041q4k8m4nirzl7lrqn8by2zylx0xvh6n0za301qqs3njszgf5"))))
     (build-system gnu-build-system)
     (inputs
-      `(("gettext" ,gnu-gettext)
+      `(("gettext" ,gettext-minimal)
         ("libxt" ,libxt)
         ("xproto" ,xproto)
         ("libxext" ,libxext)))
@@ -1920,7 +1920,7 @@ generate new versions of their configure scripts with autoconf.")
 (define-public videoproto
   (package
     (name "videoproto")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
       (origin
         (method url-fetch)
@@ -1930,7 +1930,7 @@ generate new versions of their configure scripts with autoconf.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dnlkd9nb0m135lgd6hd61vc29sdyarsyya8aqpx7z10p261dbld"))))
+            "00m7rh3pwmsld4d5fpii3xfk5ciqn17kkk38gfpzrrh8zn4ki067"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -3675,7 +3675,7 @@ alternative implementations like XRandR or TwinView.")
 (define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -3684,8 +3684,8 @@ alternative implementations like XRandR or TwinView.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "0aibcbhhjlwcrxh943xg2dswwx5bz1x0pmhs28b55gzsg0vrgb6g"))))
+         (base32
+          "0gcjy70ppmcl610z8gxc7sydsx93f8cm8pggm4qhihaa1ngdq103"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
@@ -3789,7 +3789,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.17")
+    (version "2.18")
     (source
       (origin
         (method url-fetch)
@@ -3799,10 +3799,10 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "00878f1v3034ki78pjpf2db0bh7jsmszsnxr3bf5qxripm2bxiny"))))
+            "1l6x2w357ja8vm94ns79s7yj9a5dlr01r9dxrjvzwncadiyr27f4"))))
     (build-system gnu-build-system)
     (inputs
-      `(("gettext" ,gnu-gettext)
+      `(("gettext" ,gettext-minimal)
         ("libx11" ,libx11)
         ("xkbcomp-intermediate" ,xkbcomp-intermediate)))
     (native-inputs
@@ -4008,7 +4008,7 @@ Font Description (XLFD) full name for a font.")
        ("libxmu" ,libxmu)
        ("libxrender" ,libxrender)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display all the characters in an X font")
@@ -4602,8 +4602,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
-    (replacement libxrender/fixed)
-    (version "0.9.9")
+    (version "0.9.10")
     (source
       (origin
         (method url-fetch)
@@ -4613,7 +4612,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06myx7044qqdswxndsmd82fpp670klnizkgzdm194h51h1wyabzw"))))
+            "0j89cnb06g8x79wmmnwzykgkkfdhin9j7hjpvsxwlr3fz1wmjvf0"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("renderproto" ,renderproto)))
@@ -4627,20 +4626,10 @@ cannot be adequately worked around on the client side of the wire.")
     (description "Library for the Render Extension to the X11 protocol.")
     (license license:x11)))
 
-(define libxrender/fixed
-  (package
-    (inherit libxrender)
-    (source (origin
-              (inherit (package-source libxrender))
-              (patches (search-patches
-                         "libxrender-CVE-2016-7949.patch"
-                         "libxrender-CVE-2016-7950.patch"))))))
-
 (define-public libxtst
   (package
     (name "libxtst")
-    (replacement libxtst/fixed)
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -4650,7 +4639,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1ngn161nq679ffmbwl81i2hn75jjg5b3ffv6n4jilpvyazypy2pg"))))
+            "012jpyj7xfm653a9jcfqbzxyywdmwb2b5wr1dwylx14f3f54jma6"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("recordproto" ,recordproto)
@@ -4675,19 +4664,10 @@ The RECORD extension supports the recording and reporting of all core X
 protocol and arbitrary X extension protocol.")
     (license license:x11)))
 
-(define libxtst/fixed
-  (package
-    (inherit libxtst)
-    (source (origin
-              (inherit (package-source libxtst))
-              (patches (search-patches
-                         "libxtst-CVE-2016-7951-CVE-2016-7952.patch"))))))
-
 (define-public libxv
   (package
     (name "libxv")
-    (replacement libxv/fixed)
-    (version "1.0.10")
+    (version "1.0.11")
     (source
       (origin
         (method url-fetch)
@@ -4697,7 +4677,7 @@ protocol and arbitrary X extension protocol.")
                ".tar.bz2"))
         (sha256
           (base32
-            "09a5j6bisysiipd0nw6s352565bp0n6gbyhv5hp63s3cd3w95zjm"))))
+            "125hn06bd3d8y97hm2pbf5j55gg4r2hpd3ifad651i4sr7m16v6j"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("videoproto" ,videoproto)))
@@ -4711,14 +4691,6 @@ protocol and arbitrary X extension protocol.")
     (synopsis "Xorg XVideo Extension library")
     (description "Library for the X Video Extension to the X11 protocol.")
     (license license:x11)))
-
-(define libxv/fixed
-  (package
-    (inherit libxv)
-    (source (origin
-              (inherit (package-source libxv))
-              (patches (search-patches
-                         "libxv-CVE-2016-5407.patch"))))))
 
 (define-public mkfontdir
   (package
@@ -4761,7 +4733,7 @@ script around the mkfontscale program.")
 (define-public xproto
   (package
     (name "xproto")
-    (version "7.0.28")
+    (version "7.0.29")
     (source
       (origin
         (method url-fetch)
@@ -4771,7 +4743,7 @@ script around the mkfontscale program.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1jpnvm33vi2dar5y5zgz7jjh0m8fpkcxm0f0lbwfx37ns5l5bs19"))))
+            "12lzpa9mrzkyrhrphzpi1014np3328qg7mdq08wj6wyaj9q4f6kc"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
@@ -4848,8 +4820,7 @@ an X Window System display.")
 (define-public libxfixes
   (package
     (name "libxfixes")
-    (replacement libxfixes/fixed)
-    (version "5.0.1")
+    (version "5.0.3")
     (source
       (origin
         (method url-fetch)
@@ -4859,7 +4830,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0rs7qgzr6dpr62db7sd91c1b47hzhzfr010qwnpcm8sg122w1gk3"))))
+            "1miana3y4hwdqdparsccmygqr3ic3hs5jrqfzp70hvi2zwxd676y"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fixesproto" ,fixesproto)))
@@ -4872,14 +4843,6 @@ an X Window System display.")
     (synopsis "Xorg Fixes Extension library")
     (description "Library for the XFixes Extension to the X11 protocol.")
     (license license:x11)))
-
-(define libxfixes/fixed
-  (package
-    (inherit libxfixes)
-    (source (origin
-              (inherit (package-source libxfixes))
-              (patches (search-patches
-                         "libxfixes-CVE-2016-7944.patch"))))))
 
 (define-public libxfont
   (package
@@ -4921,8 +4884,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (replacement libxi/fixed)
-    (version "1.7.6")
+    (version "1.7.7")
     (source
       (origin
         (method url-fetch)
@@ -4932,7 +4894,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1b5p0l19ynmd6blnqr205wyngh6fagl35nqb4v05dw60rr9aachz"))))
+            "0c70n4aq0ba628wr88ih4740nci9d9f6y3v96sx376vvlm7q6vwr"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)
@@ -4948,19 +4910,10 @@ new API's in libXft, or the legacy API's in libX11.")
     (description "Library for the XInput Extension to the X11 protocol.")
     (license license:x11)))
 
-(define libxi/fixed
-  (package
-    (inherit libxi)
-    (source (origin
-              (inherit (package-source libxi))
-              (patches (search-patches
-                         "libxi-CVE-2016-7945-CVE-2016-7946.patch"))))))
-
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (replacement libxrandr/fixed)
-    (version "1.5.0")
+    (version "1.5.1")
     (source
       (origin
         (method url-fetch)
@@ -4970,7 +4923,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0n6ycs1arf4wb1cal9il6v7vbxbf21qhs9sbfl8xndgwnxclk1kg"))))
+            "06pmphx8lp3iywqnh88fvbfb0d8xgkx0qpvan49akpja1vxfgy8z"))))
     (build-system gnu-build-system)
     (propagated-inputs
       ;; In accordance with xrandr.pc.
@@ -4987,19 +4940,10 @@ new API's in libXft, or the legacy API's in libX11.")
      "Library for the Resize and Rotate Extension to the X11 protocol.")
     (license license:x11)))
 
-(define libxrandr/fixed
-  (package
-    (inherit libxrandr)
-    (source (origin
-              (inherit (package-source libxrandr))
-              (patches (search-patches
-                         "libxrandr-CVE-2016-7947-CVE-2016-7948.patch"))))))
-
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (replacement libxvmc/fixed)
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
@@ -5009,7 +4953,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0mjp1b21dvkaz7r0iq085r92nh5vkpmx99awfgqq9hgzyvgxf0q7"))))
+            "0bpffxr5dal90a8miv2w0rif61byqxq2f5angj4z1bnznmws00g5"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
@@ -5023,14 +4967,6 @@ new API's in libXft, or the legacy API's in libX11.")
     (synopsis "Xorg XvMC library")
     (description "Xorg XvMC library.")
     (license license:x11)))
-
-(define libxvmc/fixed
-  (package
-    (inherit libxvmc)
-    (source (origin
-              (inherit (package-source libxvmc))
-              (patches (search-patches
-                         "libxvmc-CVE-2016-7953.patch"))))))
 
 (define-public libxxf86vm
   (package
@@ -5067,7 +5003,7 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.11")
+    (version "1.11.1")
     (source
       (origin
         (method url-fetch)
@@ -5075,7 +5011,7 @@ protocol.")
                             name "-" version ".tar.bz2"))
         (sha256
           (base32
-            "1xqgc81krx14f2c8yl5chzg5g2l26mhm2rwffy8dx7jv0iq5sqq3"))))
+           "0c4xyvdyx5adh8dzyhnrmvwwz24gri4z1czxmxqm63i0gmngs85p"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)
@@ -5111,7 +5047,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.18.1")
+    (version "1.18.4")
     (source
       (origin
         (method url-fetch)
@@ -5120,7 +5056,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "17bq40als48v12ld81jysc0gj5g572zkjkyzbhlm3ac9xgdmdv45"))))
+          "1j1i3n5xy1wawhk95kxqdc54h34kg7xp4nnramba2q8xqfr5k117"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -5169,7 +5105,13 @@ over Xlib, including:
         ("xkbcomp" ,xkbcomp)
         ("xkeyboard-config" ,xkeyboard-config)
         ("xtrans" ,xtrans)
-        ("zlib" ,zlib)))
+        ("zlib" ,zlib)
+        ;; Inputs for Xephyr
+        ("xcb-util" ,xcb-util)
+        ("xcb-util-image" ,xcb-util-image)
+        ("xcb-util-keysyms" ,xcb-util-keysyms)
+        ("xcb-util-renderutil" ,xcb-util-renderutil)
+        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
        `(("python" ,python-minimal-wrapper)
          ("pkg-config" ,pkg-config)))
@@ -5185,9 +5127,17 @@ over Xlib, including:
              (string-append "--with-xkb-bin-directory="
                             (assoc-ref %build-inputs "xkbcomp")
                             "/bin")
+             ;; By default, it ends up with invalid '${prefix}/...', causes:
+             ;;   _FontTransOpen: Unable to Parse address ${prefix}/share/...
+             ;; It's not used anyway, so set it to empty.
+             "--with-default-font-path="
+
 
              ;; For the log file, etc.
-             "--localstatedir=/var")
+             "--localstatedir=/var"
+             ;; For sddm
+             "--enable-kdrive"
+             "--enable-xephyr")
 
        #:phases (alist-cons-before
                  'configure 'pre-configure
@@ -5238,8 +5188,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (replacement libx11/fixed)
-    (version "1.6.3")
+    (version "1.6.4")
     (source
       (origin
         (method url-fetch)
@@ -5249,7 +5198,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "04c1vj53xq2xgyxx5vhln3wm2d76hh1n95fvs3myhligkz1sfcfg"))))
+            "0hg46i6h92pmb7xp1cis2j43zq3fkdz89p0yv35w4vm17az4iixp"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
@@ -5270,15 +5219,6 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
-
-(define libx11/fixed
-  (package
-    (inherit libx11)
-    (source (origin
-              (inherit (package-source libx11))
-              (patches (search-patches
-                         "libx11-CVE-2016-7942.patch"
-                         "libx11-CVE-2016-7943.patch"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 

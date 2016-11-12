@@ -88,6 +88,20 @@ command-line arguments, multiple languages, and so on.")
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'fix-egrep-and-fgrep
+          ;; Patch 'egrep' and 'fgrep' to execute 'grep' via its
+          ;; absolute file name instead of searching for it in $PATH.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+              (substitute* (list (string-append bin "/egrep")
+                                 (string-append bin "/fgrep"))
+                (("^exec grep")
+                 (string-append "exec " bin "/grep")))
+              #t))))))
    (synopsis "Print lines matching a pattern")
    (description
      "grep is a tool for finding text inside files.  Text is found by
@@ -205,14 +219,14 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.3")
+   (version "3.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1761vymxbp4wb5rzjvabhdkskk95pghnn67464byvzb5mfl8jpm2"))))
+              "0csmqfz8ks23kdjsq0v2ll1acqiz8lva06dj19mwmymrsp69ilys"))))
    (build-system gnu-build-system)
    (synopsis "Comparing and merging files")
    (description
@@ -325,30 +339,30 @@ functionality beyond that which is outlined in the POSIX standard.")
 (define-public gnu-make
   (package
    (name "make")
-   (version "4.2")
+   (version "4.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/make/make-" version
                                 ".tar.bz2"))
             (sha256
              (base32
-              "0pv5rvz5pp4njxiz3syf786d2xp4j7gzddwjvgw5zmz55yvf6p2f"))
+              "12f5zzyq2w56g95nni65hc0g5p7154033y2f3qmjvd016szn5qnn"))
             (patches (search-patches "make-impure-dirs.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))  ; to detect Guile
    (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments
-    '(#:phases (alist-cons-before
-                'build 'set-default-shell
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Change the default shell from /bin/sh.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* "job.c"
-                      (("default_shell =.*$")
-                       (format #f "default_shell = \"~a/bin/bash\";\n"
-                               bash)))))
-                %standard-phases)))
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-before 'build 'set-default-shell
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Change the default shell from /bin/sh.
+            (let ((bash (assoc-ref inputs "bash")))
+              (substitute* "job.c"
+                (("default_shell =.*$")
+                 (format #f "default_shell = \"~a/bin/bash\";\n"
+                         bash)))))))))
    (synopsis "Remake files automatically")
    (description
     "Make is a program that is used to control the production of
@@ -363,16 +377,17 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.25.1")
+   (version "2.27")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "08lzmhidzc16af1zbx34f8cy4z7mzrswpdbhrb8shy3xxpflmcdm"))
+              "125clslv17xh1sab74343fg6v31msavpmaa1c1394zsqa773g5rn"))
             (patches (search-patches "binutils-ld-new-dtags.patch"
-                                     "binutils-loongson-workaround.patch"))))
+                                     "binutils-loongson-workaround.patch"
+                                     "binutils-mips-bash-bug.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
@@ -407,14 +422,22 @@ included.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 
-(define* (make-ld-wrapper name #:key binutils
+(define* (make-ld-wrapper name #:key
+                          (target (const #f))
+                          binutils
                           (guile (canonical-package guile-2.0))
-                          (bash (canonical-package bash)) target
+                          (bash (canonical-package bash))
                           (guile-for-build guile))
   "Return a package called NAME that contains a wrapper for the 'ld' program
-of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  When
-TARGET is not #f, make a wrapper for the cross-linker for TARGET, called
-'TARGET-ld'.  The wrapper uses GUILE and BASH."
+of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  The
+wrapper uses GUILE and BASH.
+
+TARGET must be a one-argument procedure that, given a system type, returns a
+cross-compilation target triplet or #f.  When the result is not #f, make a
+wrapper for the cross-linker for that target, called 'TARGET-ld'."
+  ;; Note: #:system->target-triplet is a procedure so that the evaluation of
+  ;; its result can be delayed until the 'arguments' field is evaluated, thus
+  ;; in a context where '%current-system' is accurate.
   (package
     (name name)
     (version "0")
@@ -426,43 +449,44 @@ TARGET is not #f, make a wrapper for the cross-linker for TARGET, called
               ("wrapper"  ,(search-path %load-path
                                         "gnu/packages/ld-wrapper.in"))))
     (arguments
-     `(#:guile ,guile-for-build
-       #:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (system base compile))
+     (let ((target (target (%current-system))))
+       `(#:guile ,guile-for-build
+         #:modules ((guix build utils))
+         #:builder (begin
+                     (use-modules (guix build utils)
+                                  (system base compile))
 
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (ld  ,(if target
-                                    `(string-append bin "/" ,target "-ld")
-                                    '(string-append bin "/ld")))
-                          (go  (string-append ld ".go")))
+                     (let* ((out (assoc-ref %outputs "out"))
+                            (bin (string-append out "/bin"))
+                            (ld  ,(if target
+                                      `(string-append bin "/" ,target "-ld")
+                                      '(string-append bin "/ld")))
+                            (go  (string-append ld ".go")))
 
-                     (setvbuf (current-output-port) _IOLBF)
-                     (format #t "building ~s/bin/ld wrapper in ~s~%"
-                             (assoc-ref %build-inputs "binutils")
-                             out)
+                       (setvbuf (current-output-port) _IOLBF)
+                       (format #t "building ~s/bin/ld wrapper in ~s~%"
+                               (assoc-ref %build-inputs "binutils")
+                               out)
 
-                     (mkdir-p bin)
-                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
-                     (substitute* ld
-                       (("@SELF@")
-                        ld)
-                       (("@GUILE@")
-                        (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                       (("@BASH@")
-                        (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/bash"))
-                       (("@LD@")
-                        (string-append (assoc-ref %build-inputs "binutils")
-                                       ,(if target
-                                            (string-append "/bin/"
-                                                           target "-ld")
-                                            "/bin/ld"))))
-                     (chmod ld #o555)
-                     (compile-file ld #:output-file go)))))
+                       (mkdir-p bin)
+                       (copy-file (assoc-ref %build-inputs "wrapper") ld)
+                       (substitute* ld
+                         (("@SELF@")
+                          ld)
+                         (("@GUILE@")
+                          (string-append (assoc-ref %build-inputs "guile")
+                                         "/bin/guile"))
+                         (("@BASH@")
+                          (string-append (assoc-ref %build-inputs "bash")
+                                         "/bin/bash"))
+                         (("@LD@")
+                          (string-append (assoc-ref %build-inputs "binutils")
+                                         ,(if target
+                                              (string-append "/bin/"
+                                                             target "-ld")
+                                              "/bin/ld"))))
+                       (chmod ld #o555)
+                       (compile-file ld #:output-file go))))))
     (synopsis "The linker wrapper")
     (description
      "The linker wrapper (or 'ld-wrapper') wraps the linker to add any
@@ -476,14 +500,14 @@ store.")
 (define-public glibc/linux
   (package
    (name "glibc")
-   (version "2.23")
+   (version "2.24")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1s8krs3y2n6pzav7ic59dz41alqalphv7vww4138ag30wh0fpvwl"))
+              "1lxmprg9gm73gvafxd503x70z32phwjzcy74i0adfi6ixzla7m4r"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -511,7 +535,7 @@ store.")
       #:parallel-build? #f
 
       ;; The libraries have an empty RUNPATH, but some, such as the versioned
-      ;; libraries (libdl-2.23.so, etc.) have ld.so marked as NEEDED.  Since
+      ;; libraries (libdl-2.24.so, etc.) have ld.so marked as NEEDED.  Since
       ;; these libraries are always going to be found anyway, just skip
       ;; RUNPATH checks.
       #:validate-runpath? #f
@@ -527,7 +551,7 @@ store.")
             ;; Set the default locale path.  In practice, $LOCPATH may be
             ;; defined to point whatever locales users want.  However, setuid
             ;; binaries don't honor $LOCPATH, so they'll instead look into
-            ;; $libc_cv_localedir; we choose /run/current-system/locale/X.Y,
+            ;; $libc_cv_complocaledir; we choose /run/current-system/locale/X.Y,
             ;; with the idea that it is going to be populated by the sysadmin.
             ;; The "X.Y" sub-directory is because locale data formats are
             ;; incompatible across libc versions; see
@@ -535,8 +559,7 @@ store.")
             ;;
             ;; `--localedir' is not honored, so work around it.
             ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
-            ;; FIXME: This hack no longer works on 2.23!
-            (string-append "libc_cv_localedir=/run/current-system/locale/"
+            (string-append "libc_cv_complocaledir=/run/current-system/locale/"
                            ,version)
 
             (string-append "--with-headers="
@@ -629,7 +652,7 @@ store.")
    ;; install the message catalogs, with 'msgfmt'.
    (native-inputs `(("texinfo" ,texinfo)
                     ("perl" ,perl)
-                    ("gettext" ,gnu-gettext)))
+                    ("gettext" ,gettext-minimal)))
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful
@@ -720,9 +743,22 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
+;; Below are old libc versions, which we use mostly to build locale data in
+;; the old format (which the new libc cannot cope with.)
+
+(define-public glibc-2.23
+  (package
+    (inherit glibc)
+    (version "2.23")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1s8krs3y2n6pzav7ic59dz41alqalphv7vww4138ag30wh0fpvwl"))))))
+
 (define-public glibc-2.22
-  ;; The old libc, which we use mostly to build locale data in the old format
-  ;; (which the new libc can cope with.)
   (package
     (inherit glibc)
     (version "2.22")
@@ -745,8 +781,6 @@ GLIBC/HURD for a Hurd host"
                   (("/bin/pwd") "pwd"))))))))))
 
 (define-public glibc-2.21
-  ;; The old libc, which we use mostly to build locale data in the old format
-  ;; (which the new libc can cope with.)
   (package
     (inherit glibc-2.22)
     (version "2.21")
@@ -905,7 +939,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2015g")
+    (version "2016g")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -913,7 +947,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0qb1awqrn3215zd2jikpqnmkzrxwfjf0d3dw2xmnk4c40yzws8xr"))))
+               "1lgbh49bsbysibzr7imjsh1xa7pqmimphxvvwh6kncj7pjr3fw9w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -936,23 +970,24 @@ command.")
                   (guix build gnu-build-system)
                   (srfi srfi-1))
        #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key source inputs #:allow-other-keys)
-          (and (zero? (system* "tar" "xvf" source))
-               (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode")))))
-        (alist-cons-after
-         'install 'post-install
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Move data in the right place.
-           (let ((out (assoc-ref outputs "out")))
-             (copy-recursively (string-append out "/share/zoneinfo-posix")
-                               (string-append out "/share/zoneinfo/posix"))
-             (copy-recursively (string-append out "/share/zoneinfo-leaps")
-                               (string-append out "/share/zoneinfo/right"))
-             (delete-file-recursively (string-append out "/share/zoneinfo-posix"))
-             (delete-file-recursively (string-append out "/share/zoneinfo-leaps"))))
-         (alist-delete 'configure %standard-phases)))))
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source inputs #:allow-other-keys)
+             (and (zero? (system* "tar" "xvf" source))
+                  (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode"))))))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move data in the right place.
+             (let ((out (assoc-ref outputs "out")))
+               (symlink (string-append out "/share/zoneinfo")
+                        (string-append out "/share/zoneinfo/posix"))
+               (delete-file-recursively
+                (string-append out "/share/zoneinfo-posix"))
+               (copy-recursively (string-append out "/share/zoneinfo-leaps")
+                                 (string-append out "/share/zoneinfo/right"))
+               (delete-file-recursively
+                (string-append out "/share/zoneinfo-leaps")))))
+         (delete 'configure))))
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
                           (uri (string-append
@@ -960,7 +995,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1i3y1kzjiz2j62c7vd4wf85983sqk9x9lg3473njvbdz4kph5r0q"))))))
+                            "0azsz436vd65bkdkdmjgsh7zhh0whnqqfliva45191krmm3hpy8z"))))))
     (home-page "http://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)

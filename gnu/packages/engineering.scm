@@ -238,8 +238,7 @@ optimizer; and it can produce photorealistic and design review images.")
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
-       ("ghostscript" ,ghostscript)
-       ("ghostscript" ,ghostscript-gs)))
+       ("ghostscript" ,ghostscript)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
        #:parallel-build? #f
@@ -449,7 +448,7 @@ ready for production.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("po4a" ,po4a)
        ("pkg-config" ,pkg-config)))
     (inputs

@@ -133,15 +133,15 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0
   (package
    (name "guile")
-   (version "2.0.11")
+   (version "2.0.12")
+   (replacement guile-2.0.13)                 ;CVE-2016-8606 and CVE-2016-8605
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "1qh3j7308qvsjgwf7h94yqgckpbgz2k3yqdkzsyhqcafvfka9l5f"))
-            (patches (search-patches "guile-arm-fixes.patch"))))
+              "1sdpjq0jf1h65w29q0zprj4x6kdp5jskkvbnlwphy9lvdxrqg0fy"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
@@ -186,7 +186,7 @@ without requiring the source code to be rewritten.")
            (files '("share/guile/site/2.0")))
           (search-path-specification
            (variable "GUILE_LOAD_COMPILED_PATH")
-           (files '("lib/guile/2.0/ccache"
+           (files '("lib/guile/2.0/site-ccache"
                     "share/guile/site/2.0")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
@@ -202,12 +202,28 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  guile-2.0)
+  (package
+    (inherit guile-2.0)
+    (properties '((hidden? . #t)))          ;people should install 'guile-2.0'
+    (replacement #f)))
+
+(define guile-2.0.13
+  (package
+    (inherit guile-2.0)
+    (version "2.0.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/guile/guile-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p"))))))
 
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
     (version "2.1.4")
+    (replacement #f)
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
@@ -281,7 +297,7 @@ applicable."
        ("libtool" ,libtool)
        ("flex" ,flex)
        ("texinfo" ,texinfo)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ,@(package-native-inputs guile-next)))
     ;; Same as in guile-2.0
     (native-search-paths
@@ -496,23 +512,33 @@ format is also supported.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1f9n2b5b5r75lzjinyk6zp6g20g60msa0jpfrk5hhg4j8cy0ih4b"))))
+               "0pwdd52vakni1fabaiav8v0ad7xp3bx8x3brijbr1mpgamm9dxqc"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'patch-module-dir
-                 (lambda _
-                   (substitute* "src/Makefile.in"
-                     (("^moddir[[:blank:]]*=[[:blank:]]*([[:graph:]]+)" _ rhs)
-                      (string-append "moddir = " rhs "/2.0\n"))))
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-module-dir
+                    (lambda _
+                      (substitute* "src/Makefile.in"
+                        (("^moddir = ([[:graph:]]+)")
+                         "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
+                        (("^godir = ([[:graph:]]+)")
+                         "godir = \
+$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      ;; Work around a harmless test failure involving
+                      ;; two-spaces-after-period rendering.
+                      (zero? (system* "make" "check" ;"-C" "unit-tests"
+                                      "XFAIL_TESTS=texinfo.serialize.scm")))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)))
     (home-page "http://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")

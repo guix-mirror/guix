@@ -3052,6 +3052,7 @@ RFC 6570.")
               (uri (string-append
                     "mirror://cpan/authors/id/S/SZ/SZBALINT/WWW-Curl-"
                     version".tar.gz"))
+              (patches (search-patches "perl-www-curl-remove-symbol.patch"))
               (sha256
                (base32
                 "1fmp9aib1kaps9vhs4dwxn7b15kgnlz9f714bxvqsd1j1q8spzsj"))))

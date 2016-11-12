@@ -199,7 +199,7 @@ generator library for C++.")
        ("cmake" ,cmake)
        ("doxygen" ,doxygen)
        ("gawk" ,gawk)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("icedtea" ,icedtea) ; needed at build-time only, mandatory
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)

@@ -473,6 +473,7 @@ virtualization library.")
      `(("qemu" ,qemu)))
     (native-inputs
      `(("glib" ,glib "bin")             ; glib-compile-schemas.
+       ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
        ("intltool" ,intltool)))
     (home-page "https://virt-manager.org/")

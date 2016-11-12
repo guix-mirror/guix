@@ -5,6 +5,7 @@
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+# Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -398,6 +399,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/admin.scm			\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
+  %D%/services/cups.scm				\
   %D%/services/databases.scm			\
   %D%/services/dbus.scm				\
   %D%/services/desktop.scm			\
@@ -480,6 +482,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bigloo-gc-shebangs.patch			\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
+  %D%/packages/patches/binutils-mips-bash-bug.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-drop-unrar.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
@@ -520,9 +523,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
-  %D%/packages/patches/expat-CVE-2012-6702-and-CVE-2016-5300.patch	\
-  %D%/packages/patches/expat-CVE-2015-1283-refix.patch		\
-  %D%/packages/patches/expat-CVE-2016-0718.patch		\
   %D%/packages/patches/expat-CVE-2016-0718-fix-regression.patch	\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
@@ -533,15 +533,15 @@ dist_patch_DATA =						\
   %D%/packages/patches/fasthenry-spFactor.patch			\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-test-xargs.patch		\
+  %D%/packages/patches/flex-CVE-2016-6354.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
-  %D%/packages/patches/fontconfig-CVE-2016-5384.patch		\
   %D%/packages/patches/fontforge-svg-modtime.patch		\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
-  %D%/packages/patches/gawk-fts-test.patch			\
   %D%/packages/patches/gawk-shell.patch				\
+  %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
@@ -573,7 +573,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
-  %D%/packages/patches/gnupg-fix-expired-test.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
@@ -612,12 +611,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
+  %D%/packages/patches/icecat-binutils.patch			\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
+  %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/khmer-use-libraries.patch                \
@@ -685,18 +686,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
-  %D%/packages/patches/libx11-CVE-2016-7942.patch		\
-  %D%/packages/patches/libx11-CVE-2016-7943.patch		\
-  %D%/packages/patches/libxfixes-CVE-2016-7944.patch		\
-  %D%/packages/patches/libxi-CVE-2016-7945-CVE-2016-7946.patch	\
-  %D%/packages/patches/libxrandr-CVE-2016-7947-CVE-2016-7948.patch	\
-  %D%/packages/patches/libxrender-CVE-2016-7949.patch		\
-  %D%/packages/patches/libxrender-CVE-2016-7950.patch		\
-  %D%/packages/patches/libxtst-CVE-2016-7951-CVE-2016-7952.patch	\
-  %D%/packages/patches/libxv-CVE-2016-5407.patch		\
-  %D%/packages/patches/libxvmc-CVE-2016-7953.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
+  %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
@@ -718,6 +710,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
+  %D%/packages/patches/mesa-wayland-egl-symbols-check-mips.patch	\
   %D%/packages/patches/metabat-remove-compilation-date.patch	\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
@@ -753,6 +746,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-db4.patch				\
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
+  %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/onionshare-fix-install-paths.patch		\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2015-6581.patch		\
@@ -764,8 +758,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
-  %D%/packages/patches/openssl-CVE-2016-2177.patch		\
-  %D%/packages/patches/openssl-CVE-2016-2178.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
@@ -775,8 +767,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/pcre-CVE-2016-3191.patch			\
   %D%/packages/patches/pcre2-CVE-2016-3191.patch		\
-  %D%/packages/patches/perl-CVE-2015-8607.patch			\
-  %D%/packages/patches/perl-CVE-2016-2381.patch			\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -785,10 +775,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   %D%/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
   %D%/packages/patches/perl-net-dns-resolver-programmable-Fix-broken-interface.patch	\
-  %D%/packages/patches/perl-no-build-time.patch			\
   %D%/packages/patches/perl-no-sys-dirs.patch			\
   %D%/packages/patches/perl-module-pluggable-search.patch	\
-  %D%/packages/patches/perl-source-date-epoch.patch		\
+  %D%/packages/patches/perl-reproducible-build-date.patch	\
+  %D%/packages/patches/perl-www-curl-remove-symbol.patch	\
   %D%/packages/patches/pidgin-add-search-path.patch		\
   %D%/packages/patches/pinball-const-fix.patch			\
   %D%/packages/patches/pinball-cstddef.patch			\
@@ -804,7 +794,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/procmail-ambiguous-getline-debian.patch  \
   %D%/packages/patches/procmail-CVE-2014-3618.patch		\
-  %D%/packages/patches/procps-non-linux.patch			\
   %D%/packages/patches/pt-scotch-build-parallelism.patch	\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
@@ -818,9 +807,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-2.7-source-date-epoch.patch	\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
+  %D%/packages/patches/python-3.4-fix-tests.patch		\
+  %D%/packages/patches/python-3.5-fix-tests.patch		\
   %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
-  %D%/packages/patches/python-disable-ssl-test.patch		\
+  %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
+  %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python-rarfile-fix-tests.patch		\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
@@ -870,6 +862,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tcl-mkindex-deterministic.patch		\
   %D%/packages/patches/tclxml-3.2-install.patch			\
+  %D%/packages/patches/tcsh-do-not-define-BSDWAIT.patch		\
   %D%/packages/patches/tcsh-fix-autotest.patch			\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
   %D%/packages/patches/texi2html-document-encoding.patch	\

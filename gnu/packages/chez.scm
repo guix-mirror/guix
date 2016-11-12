@@ -78,7 +78,7 @@
        ("stex" ,stex)))
     (native-inputs
      `(("texlive" ,texlive)
-       ("ghostscript" ,ghostscript-gs)
+       ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
     (native-search-paths
      (list (search-path-specification

@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,7 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn" ,libidn)
-       ("linux-pam" ,linux-pam)
+       ("linux-pam" ,linux-pam-1.2)
        ("zlib" ,zlib)
        ;; libgcrypt 1.6 fails because of the following test:
        ;;  #include <gcrypt.h>

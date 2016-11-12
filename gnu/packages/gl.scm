@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -22,6 +22,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gl)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
@@ -195,7 +196,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "11.0.9")
+    (version "12.0.1")
     (source
       (origin
         (method url-fetch)
@@ -203,44 +204,59 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "009b3nq8ly5nzy9cxi9cxf4qasrhggjz0v0q87rwq5kaqvqjy9m1"))))
+          "12b3i59xdn2in2hchrkgh4fwij8zhznibx976l3pdj3qkyvlzcms"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
         ;; The following are in the Requires.private field of gl.pc.
         ("libdrm" ,libdrm)
+        ("libvdpau" ,libvdpau)
         ("libx11" ,libx11)
         ("libxdamage" ,libxdamage)
         ("libxfixes" ,libxfixes)
         ("libxshmfence" ,libxshmfence)
         ("libxxf86vm" ,libxxf86vm)))
-    ;; TODO: Add vdpau.
     (inputs
-      `(("udev" ,eudev)
+      `(("expat" ,expat)
         ("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
-        ("presentproto" ,presentproto)
-        ("expat" ,expat)
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
         ("libxvmc" ,libxvmc)
         ("makedepend" ,makedepend)
-        ("s2tc" ,s2tc)))
+        ("presentproto" ,presentproto)
+        ("s2tc" ,s2tc)
+        ("udev" ,eudev)
+        ("wayland" ,wayland)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      `(("pkg-config" ,pkg-config)
+        ("python" ,python-2)
+
+         ;; XXX To prevent a large number of rebuilds on other systems,
+         ;; apply the following patch on MIPS systems only.  In the next
+         ;; core-updates cycle, this patch could be applied on all platforms.
+        ,@(if (string-prefix? "mips" (or (%current-target-system)
+                                         (%current-system)))
+              `(("mips-patch"
+                 ,(search-patch "mesa-wayland-egl-symbols-check-mips.patch")))
+              '())))
     (arguments
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
-         "--with-gallium-drivers=r600,svga,swrast,nouveau"
+         "--with-gallium-drivers=r600,svga,swrast,nouveau,virgl"
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "--with-egl-platforms=x11,drm"
+         "--with-egl-platforms=x11,drm,wayland"
          "--enable-glx-tls"        ;Thread Local Storage, improves performance
          ;; "--enable-opencl"
          ;; "--enable-omx"
          "--enable-osmesa"
          "--enable-xa"
+         ;; features required by wayland
+         "--enable-gles2"
+         "--enable-gbm"
+         "--enable-shared-glapi"
 
          ;; on non-intel systems, drop i915 and i965
          ;; from the default dri drivers
@@ -249,41 +265,54 @@ also known as DXTn or DXTC) for Mesa.")
               '())
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
-       #:phases (alist-cons-after
-                 'unpack 'patch-create_test_cases
-                 (lambda _
-                   (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
-                     (("/usr/bin/env bash") (which "bash"))))
-                 (alist-cons-before
-                  'build 'fix-dlopen-libnames
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((s2tc (assoc-ref inputs "s2tc"))
-                          (udev (assoc-ref inputs "udev"))
-                          (out (assoc-ref outputs "out")))
-                      ;; Remain agnostic to .so.X.Y.Z versions while doing
-                      ;; the substitutions so we're future-safe.
-                      (substitute*
-                          '("src/gallium/auxiliary/util/u_format_s3tc.c"
-                            "src/mesa/main/texcompress_s3tc.c")
-                        (("\"libtxc_dxtn\\.so")
-                         (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
-                      (substitute* "src/loader/loader.c"
-                        (("udev_handle = dlopen\\(name")
-                         (string-append "udev_handle = dlopen(\""
-                                        udev "/lib/libudev.so\"")))
-                      (substitute* "src/glx/dri_common.c"
-                        (("dlopen\\(\"libGL\\.so")
-                         (string-append "dlopen(\"" out "/lib/libGL.so")))
-                      (substitute* "src/egl/drivers/dri2/egl_dri2.c"
-                        (("\"libglapi\\.so")
-                         (string-append "\"" out "/lib/libglapi.so")))
-                      (substitute* "src/gbm/main/backend.c"
-                        ;; No need to patch the gbm_gallium_drm.so reference;
-                        ;; it's never installed since Mesa removed its
-                        ;; egl_gallium support.
-                        (("\"gbm_dri\\.so")
-                         (string-append "\"" out "/lib/dri/gbm_dri.so")))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Add an 'apply-mips-patch' phase conditionally (see above.)
+         ,@(if (string-prefix? "mips" (or (%current-target-system)
+                                          (%current-system)))
+               `((add-after 'unpack 'apply-mips-patch
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((patch (assoc-ref inputs "mips-patch")))
+                       (zero? (system* "patch" "-p1" "--force"
+                                       "--input" patch))))))
+               '())
+
+         (add-after
+           'unpack 'patch-create_test_cases
+           (lambda _
+             (substitute* "src/compiler/glsl/tests/lower_jumps/create_test_cases.py"
+               (("/usr/bin/env bash") (which "bash")))
+             (substitute* "src/intel/genxml/gen_pack_header.py"
+               (("/usr/bin/env python2") (which "python")))))
+         (add-before
+           'build 'fix-dlopen-libnames
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((s2tc (assoc-ref inputs "s2tc"))
+                   (udev (assoc-ref inputs "udev"))
+                   (out (assoc-ref outputs "out")))
+               ;; Remain agnostic to .so.X.Y.Z versions while doing
+               ;; the substitutions so we're future-safe.
+               (substitute*
+                   '("src/gallium/auxiliary/util/u_format_s3tc.c"
+                     "src/mesa/main/texcompress_s3tc.c")
+                 (("\"libtxc_dxtn\\.so")
+                  (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
+               (substitute* "src/loader/loader.c"
+                 (("udev_handle = dlopen\\(name")
+                  (string-append "udev_handle = dlopen(\""
+                                 udev "/lib/libudev.so\"")))
+               (substitute* "src/glx/dri_common.c"
+                 (("dlopen\\(\"libGL\\.so")
+                  (string-append "dlopen(\"" out "/lib/libGL.so")))
+               (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+                 (("\"libglapi\\.so")
+                  (string-append "\"" out "/lib/libglapi.so")))
+               (substitute* "src/gbm/main/backend.c"
+                 ;; No need to patch the gbm_gallium_drm.so reference;
+                 ;; it's never installed since Mesa removed its
+                 ;; egl_gallium support.
+                 (("\"gbm_dri\\.so")
+                  (string-append "\"" out "/lib/dri/gbm_dri.so")))))))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
@@ -459,32 +488,32 @@ OpenGL graphics API.")
                 "1d1brhwfmlzgnphmdwlvn5wbcrxsdyzf1qfcf8nb89xqzznxs037"))))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _
-          (zero? (system* "autoreconf" "-vif")))
-        (alist-cons-before
-         'configure 'patch-paths
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((python (assoc-ref inputs "python"))
-                 (mesa (assoc-ref inputs "mesa")))
-             (substitute* "src/gen_dispatch.py"
-               (("/usr/bin/env python") python))
-             (substitute* (find-files "." "\\.[ch]$")
-               (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
-               (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
+       (modify-phases %standard-phases
+         (add-after
+           'unpack 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif"))))
+         (add-before
+           'configure 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python"))
+                   (mesa (assoc-ref inputs "mesa")))
+               (substitute* "src/gen_dispatch.py"
+                 (("/usr/bin/env python") python))
+               (substitute* (find-files "." "\\.[ch]$")
+                 (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
+                 (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
 
-             ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
-             ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
-             ;; better to make this a normal patch, but for now we do it here
-             ;; to prevent rebuilding on other platforms.
-             ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                             (%current-system)))
-                   '((substitute* '"test/dlwrap.c"
-                       (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
-                   '())
-             #t))
-         %standard-phases))))
+               ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
+               ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
+               ;; better to make this a normal patch, but for now we do it here
+               ;; to prevent rebuilding on other platforms.
+               ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                               (%current-system)))
+                     '((substitute* '"test/dlwrap.c"
+                         (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
+                     '())
+               #t))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

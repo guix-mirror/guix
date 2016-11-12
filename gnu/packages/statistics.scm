@@ -75,7 +75,7 @@
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("gsl" ,gsl)
        ("libxml2" ,libxml2)
        ("pango" ,pango)
@@ -144,6 +144,7 @@ be output in text, PostScript, PDF or HTML.")
           (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
        '("--with-cairo"
+         "--with-blas=-lopenblas"
          "--with-libpng"
          "--with-jpeglib"
          "--with-libtiff"
@@ -179,6 +180,7 @@ be output in text, PostScript, PDF or HTML.")
        ("coreutils" ,coreutils)
        ("curl" ,curl)
        ("tzdata" ,tzdata)
+       ("openblas" ,openblas)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg)

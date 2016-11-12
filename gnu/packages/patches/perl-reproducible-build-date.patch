@@ -1,0 +1,50 @@
+Don't encode the current timestamp.
+
+This affects the output of `perl -V`, specifically the message "Compiled
+at [...]".
+
+The 'cf_time' and 'cf_by' values show up in 'config.h' and
+in 'Config_heavy.pl'.
+
+Use the output of 'uname -s' instead of 'uname -a' to avoid recording
+the kernel version ('uname -o' leads to directory names like
+'x86_64-gnulinux' instead of 'x86_64-linux', which might cause breakage
+down the road.)
+
+diff --git a/perl.c b/perl.c
+index 228a0d8..ed38313 100644
+--- a/perl.c
++++ b/perl.c
+@@ -1825,6 +1825,7 @@ S_Internals_V(pTHX_ CV *cv)
+     PUSHs(Perl_newSVpvn_flags(aTHX_ non_bincompat_options,
+ 			      sizeof(non_bincompat_options) - 1, SVs_TEMP));
+ 
++#define PERL_BUILD_DATE "Jan  1 1970 00:00:00"
+ #ifndef PERL_BUILD_DATE
+ #  ifdef __DATE__
+ #    ifdef __TIME__
+
+--- a/Configure	1970-01-01 01:00:00.000000000 +0100
++++ b/Configure	2016-10-01 14:47:20.017319739 +0200
+@@ -3276,7 +3276,7 @@ $eunicefix tr
+ : Try to determine whether config.sh was made on this system
+ case "$config_sh" in
+ '')
+-myuname=`$uname -a 2>/dev/null`
++myuname=`$uname -s 2>/dev/null`
+ $test -z "$myuname" && myuname=`hostname 2>/dev/null`
+ # Downcase everything to avoid ambiguity.
+ # Remove slashes and single quotes so we can use parts of this in
+@@ -3845,10 +3845,10 @@
+ . ./posthint.sh
+ 
+ : who configured the system
+-cf_time=`LC_ALL=C; LANGUAGE=C; export LC_ALL; export LANGUAGE; $date 2>&1`
++cf_time="1970-01-01"
+ case "$cf_by" in
+ "")
+-	cf_by=`(logname) 2>/dev/null`
++	cf_by="guix"
+ 	case "$cf_by" in
+ 	"")
+ 		cf_by=`(whoami) 2>/dev/null`

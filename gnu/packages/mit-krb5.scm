@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,8 +32,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (replacement mit-krb5-1.14.3)
-    (version "1.14.2")
+    (version "1.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
@@ -40,7 +40,7 @@
                                   "/krb5-" version ".tar.gz"))
               (sha256
                (base32
-                "09wbv969ak4fqlqr1ip5bi62fny1zlp1vwjarvj6a6cdfzkdgjkb"))))
+                "1jgjiyh1sp72lkxvk437lz5hzcibvw99jc4ihzfz03fg43aj0ind"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -84,17 +84,3 @@ cryptography.")
     (license (non-copyleft "file://NOTICE"
                            "See NOTICE in the distribution."))
     (home-page "http://web.mit.edu/kerberos/")))
-
-(define mit-krb5-1.14.3
-  (package
-    (inherit mit-krb5)
-    (source
-      (let ((version "1.14.3"))
-        (origin
-          (method url-fetch)
-          (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
-                              (version-major+minor version)
-                              "/krb5-" version ".tar.gz"))
-          (sha256
-           (base32
-            "1jgjiyh1sp72lkxvk437lz5hzcibvw99jc4ihzfz03fg43aj0ind")))))))

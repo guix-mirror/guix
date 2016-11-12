@@ -91,7 +91,7 @@
        ("python" ,python-2)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("pcre" ,pcre "bin")                       ;for 'pcre-config'
        ("pkg-config" ,pkg-config)))
@@ -405,7 +405,24 @@ pictures, sounds, or video.")
                  #:configure-flags
                  (list (string-append "--with-bash-headers="
                                       (assoc-ref %build-inputs "bash:include")
-                                      "/include/bash"))))
+                                      "/include/bash"))
+
+                 #:phases (modify-phases %standard-phases
+                            (add-before 'build 'set-bash4.4-header-location
+                              (lambda _
+                                (substitute* "bash/Makefile.in"
+                                  ;; Adjust the header search path for Bash
+                                  ;; 4.4 in accordance with 'bash.pc'.
+                                  (("AM_CPPFLAGS = (.*)$" _ rest)
+                                   (string-append "AM_CPPFLAGS = "
+                                                  "-I$(BASH_HEADERS)/include "
+                                                  rest))
+
+                                  ;; Install to PREFIX/lib/bash to match Bash
+                                  ;; 4.4's search path.
+                                  (("^libdir = .*$")
+                                   "libdir = @libdir@/bash\n"))
+                                #t)))))
 
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("bc" ,bc)
@@ -490,7 +507,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.12.2")
+   (version "3.14.1")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -521,15 +538,17 @@ for example from a shell script.")
                    ))
             (sha256
              (base32
-              "1fwss0i2lixv39b27gkqiibdd2syym90wh3qbiaxnfgxk867f07x"))))
+              "19j73j44akqgc6m82wm98yvnmm3mfzmfqr8mp3n7n080d53q4wdw"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
     `(#:configure-flags
-      ;; Add -DSQLITE_SECURE_DELETE and -DSQLITE_ENABLE_UNLOCK_NOTIFY to
-      ;; CFLAGS.  GNU Icecat will refuse to use the system SQLite unless these
-      ;; options are enabled.
-      '("CFLAGS=-O2 -DSQLITE_SECURE_DELETE -DSQLITE_ENABLE_UNLOCK_NOTIFY")))
+      ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
+      ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
+      ;; to use the system SQLite unless these options are enabled.
+      (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+                           "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
+                           "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description

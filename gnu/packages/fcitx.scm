@@ -70,7 +70,7 @@
     (inputs
      `(("dbus"             ,dbus)
        ("enchant"          ,enchant)
-       ("gettext"          ,gnu-gettext)
+       ("gettext"          ,gettext-minimal)
        ("gtk2"             ,gtk+-2)
        ("gtk3"             ,gtk+)
        ("icu4c"            ,icu4c)

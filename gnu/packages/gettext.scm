@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,28 +28,23 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tex)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (guix utils))
 
-;; Use that name to avoid clashes with Guile's 'gettext' procedure.
-;;
-;; We used to resort to #:renamer on the user side, but that prevented
-;; circular dependencies involving (gnu packages gettext).  This is because
-;; 'resolve-interface' (as of Guile 2.0.9) iterates eagerly over the used
-;; module when there's a #:renamer, and that module may be empty at that point
-;; in case or circular dependencies.
-(define-public gnu-gettext
+(define-public gettext-minimal
   (package
-    (name "gettext")
-    (version "0.19.8")
+    (name "gettext-minimal")
+    (version "0.19.8.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gettext/gettext-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "13ylc6n3hsk919c7xl0yyibc3pfddzb53avdykn4hmk8g6yzd91x"))))
+               "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of HTML
@@ -90,14 +86,40 @@
        ;; When tests fail, we want to know the details.
        #:make-flags '("VERBOSE=yes")))
     (home-page "http://www.gnu.org/software/gettext/")
-    (synopsis "Tools and documentation for translation")
+    (synopsis
+     "Tools and documentation for translation (used to build other packages)")
     (description
      "GNU Gettext is a package providing a framework for translating the
 textual output of programs into multiple languages.  It provides translators
-with the means to create message catalogs, as well as an Emacs mode to work
-with them, and a runtime library to load translated messages from the
-catalogs.  Nearly all GNU packages use Gettext.")
+with the means to create message catalogs, and a runtime library to load
+translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
     (license gpl3+)))                             ;some files are under GPLv2+
+
+;; Use that name to avoid clashes with Guile's 'gettext' procedure.
+;;
+;; We used to resort to #:renamer on the user side, but that prevented
+;; circular dependencies involving (gnu packages gettext).  This is because
+;; 'resolve-interface' (as of Guile 2.0.9) iterates eagerly over the used
+;; module when there's a #:renamer, and that module may be empty at that point
+;; in case or circular dependencies.
+(define-public gnu-gettext
+  (package
+    (inherit gettext-minimal)
+    (name "gettext")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gettext-minimal)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'add-emacs-autoloads
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Make 'po-mode' and other things available by default.
+               (with-directory-excursion
+                   (string-append (assoc-ref outputs "out")
+                                  "/share/emacs/site-lisp")
+                 (symlink "start-po.el" "gettext-autoloads.el")
+                 #t)))))))
+    (native-inputs `(("emacs" ,emacs-minimal))) ; for Emacs tools
+    (synopsis "Tools and documentation for translation")))
 
 (define-public po4a
   (package
@@ -140,7 +162,7 @@ catalogs.  Nearly all GNU packages use Gettext.")
                         (find-files bin "\\.*$"))
               #t))))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("perl-module-build" ,perl-module-build)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml) ;for tests

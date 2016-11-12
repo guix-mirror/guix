@@ -357,7 +357,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.20.2")
+   (version "3.20.4")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -365,7 +365,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "03vxirdbjpgjrkl5ph0p9b1saq17xxr4kvhz1ijpg40a9jf3ci4y"))))
+               "009xag7df07ngav2wzs0rdrrx4s2m6ahx93pxzc2p1pkbz4nl3ks"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -486,7 +486,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.20.1")
+   (version "2.20.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -494,7 +494,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0039y6bj1zfzhmfjbj5g830dlczphbpvbgmkcab9mapmh7kmin3f"))))
+              "0hx12snd9as4cq99ka3bn056xdf13f87pd1ilp6177qk8ffxx948"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -594,7 +594,7 @@ is part of the GNOME accessibility project.")
       ("libxrandr" ,libxrandr)))
    (native-inputs
     `(("perl" ,perl)
-      ("gettext" ,gnu-gettext)
+      ("gettext" ,gettext-minimal)
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
@@ -629,7 +629,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.20.3")
+   (version "3.20.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -637,9 +637,10 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "157nh9gg0p2avw765hrnkvr8lsh2w811397yxgjv6q5j4fzz6d1q"))
+              "05xcwvy68p7f4hdhi4bgdm3aycvqqr4pr5kkkr8ba91l5yx0k9l3"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
+   (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -662,7 +663,7 @@ application suites.")
    (native-inputs
     `(("perl" ,perl)
       ("glib" ,glib "bin")
-      ("gettext" ,gnu-gettext)
+      ("gettext" ,gettext-minimal)
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
@@ -684,7 +685,16 @@ application suites.")
             (substitute* "testsuite/Makefile.in"
               (("SUBDIRS = gdk gtk a11y css reftests")
                "SUBDIRS = gdk"))
-            #t)))))
+            #t))
+        (add-after 'install 'move-desktop-files
+          ;; Move desktop files into 'bin' to avoid cycle references.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (bin (assoc-ref outputs "bin")))
+              (mkdir-p (string-append bin "/share"))
+              (rename-file (string-append out "/share/applications")
+                           (string-append bin "/share/applications"))
+              #t))))))
    (native-search-paths
     (list (search-path-specification
            (variable "GUIX_GTK3_PATH")
@@ -928,7 +938,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.40.0")
+    (version "2.40.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -936,7 +946,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "03fpqdjp7plybf4zsgszbm8yhgl28vmajzfpmaqcsmyfvjlszl3x"))))
+               "1bz3gciff23bpw9bqc4v2l3lkq9w7394v3a4jxkvx0ap5lmfwqlp"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -1177,7 +1187,7 @@ write GNOME applications.")
                (base32
                 "03wsxj27hvcbs3x96nah7j3paclifwlfag8kdph4kldl48srp9pb"))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gnu-gettext)))
+                     ("gettext" ,gettext-minimal)))
     (inputs `(("gtk+" ,gtk+)
               ("check" ,check)))
     (arguments
@@ -1241,7 +1251,7 @@ information.")
      `(("pkg-config" ,pkg-config)
        ("itstool" ,itstool)
        ("libxml" ,libxml2)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("bc" ,bc)))
     (inputs
      `(("perl" ,perl)

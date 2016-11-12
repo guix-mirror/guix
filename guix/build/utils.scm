@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -518,8 +518,8 @@ following forms:
   (add-before <old-phase-name> <new-phase-name> <new-phase>)
   (add-after <old-phase-name> <new-phase-name> <new-phase>)
 
-Where every <*-phase-name> is an automatically quoted symbol, and <new-phase>
-an expression evaluating to a procedure."
+Where every <*-phase-name> is an expression evaluating to a symbol, and
+<new-phase> an expression evaluating to a procedure."
   (let* ((phases* phases)
          (phases* (%modify-phases phases* mod-spec))
          ...)
@@ -944,64 +944,76 @@ This is useful for scripts that expect particular programs to be in $PATH, for
 programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
 modules in $GUILE_LOAD_PATH, etc.
 
-If PROG has previously been wrapped by wrap-program the wrapper will point to
-the previous wrapper."
-  (define (wrapper-file-name number)
-    (format #f "~a/.~a-wrap-~2'0d" (dirname prog) (basename prog) number))
-  (define (next-wrapper-number)
-    (let ((wrappers
-           (find-files (dirname prog)
-                       (string-append "\\." (basename prog) "-wrap-.*"))))
-      (if (null? wrappers)
-          0
-          (string->number (string-take-right (last wrappers) 2)))))
-  (define (wrapper-target number)
-    (if (zero? number)
-        (let ((prog-real (string-append (dirname prog) "/."
-                                        (basename prog) "-real")))
-          (rename-file prog prog-real)
-          prog-real)
-        (wrapper-file-name number)))
+If PROG has previously been wrapped by 'wrap-program', the wrapper is extended
+with definitions for VARS."
+  (define wrapped-file
+    (string-append (dirname prog) "/." (basename prog) "-real"))
 
-  (let* ((number   (next-wrapper-number))
-         (target   (wrapper-target number))
-         (wrapper  (wrapper-file-name (1+ number)))
-         (prog-tmp (string-append target "-tmp")))
-    (define (export-variable lst)
-      ;; Return a string that exports an environment variable.
-      (match lst
-        ((var sep '= rest)
-         (format #f "export ~a=\"~a\""
-                 var (string-join rest sep)))
-        ((var sep 'prefix rest)
-         (format #f "export ~a=\"~a${~a~a+~a}$~a\""
-                 var (string-join rest sep) var sep sep var))
-        ((var sep 'suffix rest)
-         (format #f "export ~a=\"$~a${~a~a+~a}~a\""
-                 var var var sep sep (string-join rest sep)))
-        ((var '= rest)
-         (format #f "export ~a=\"~a\""
-                 var (string-join rest ":")))
-        ((var 'prefix rest)
-         (format #f "export ~a=\"~a${~a:+:}$~a\""
-                 var (string-join rest ":") var var))
-        ((var 'suffix rest)
-         (format #f "export ~a=\"$~a${~a:+:}~a\""
-                 var var var (string-join rest ":")))))
+  (define already-wrapped?
+    (file-exists? wrapped-file))
 
-    (with-output-to-file prog-tmp
-      (lambda ()
-        (format #t
-                "#!~a~%~a~%exec -a \"$0\" \"~a\" \"$@\"~%"
-                (which "bash")
-                (string-join (map export-variable vars)
-                             "\n")
-                (canonicalize-path target))))
+  (define (last-line port)
+    ;; Return the last line read from PORT and leave PORT's cursor right
+    ;; before it.
+    (let loop ((previous-line-offset 0)
+               (previous-line "")
+               (position (seek port 0 SEEK_CUR)))
+      (match (read-line port 'concat)
+        ((? eof-object?)
+         (seek port previous-line-offset SEEK_SET)
+         previous-line)
+        ((? string? line)
+         (loop position line (+ (string-length line) position))))))
 
-    (chmod prog-tmp #o755)
-    (rename-file prog-tmp wrapper)
-    (symlink wrapper prog-tmp)
-    (rename-file prog-tmp prog)))
+  (define (export-variable lst)
+    ;; Return a string that exports an environment variable.
+    (match lst
+      ((var sep '= rest)
+       (format #f "export ~a=\"~a\""
+               var (string-join rest sep)))
+      ((var sep 'prefix rest)
+       (format #f "export ~a=\"~a${~a~a+~a}$~a\""
+               var (string-join rest sep) var sep sep var))
+      ((var sep 'suffix rest)
+       (format #f "export ~a=\"$~a${~a~a+~a}~a\""
+               var var var sep sep (string-join rest sep)))
+      ((var '= rest)
+       (format #f "export ~a=\"~a\""
+               var (string-join rest ":")))
+      ((var 'prefix rest)
+       (format #f "export ~a=\"~a${~a:+:}$~a\""
+               var (string-join rest ":") var var))
+      ((var 'suffix rest)
+       (format #f "export ~a=\"$~a${~a:+:}~a\""
+               var var var (string-join rest ":")))))
+
+  (if already-wrapped?
+
+      ;; PROG is already a wrapper: add the new "export VAR=VALUE" lines just
+      ;; before the last line.
+      (let* ((port (open-file prog "r+"))
+             (last (last-line port)))
+        (for-each (lambda (var)
+                    (display (export-variable var) port)
+                    (newline port))
+                  vars)
+        (display last port)
+        (close-port port))
+
+      ;; PROG is not wrapped yet: create a shell script that sets VARS.
+      (let ((prog-tmp (string-append wrapped-file "-tmp")))
+        (link prog wrapped-file)
+
+        (call-with-output-file prog-tmp
+          (lambda (port)
+            (format port
+                    "#!~a~%~a~%exec -a \"$0\" \"~a\" \"$@\"~%"
+                    (which "bash")
+                    (string-join (map export-variable vars) "\n")
+                    (canonicalize-path wrapped-file))))
+
+        (chmod prog-tmp #o755)
+        (rename-file prog-tmp prog))))
 
 
 ;;;

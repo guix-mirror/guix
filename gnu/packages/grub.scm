@@ -128,8 +128,8 @@
                      #t)))))
     (inputs
      `(;; ("lvm2" ,lvm2)
+       ("gettext" ,gettext-minimal)
        ("mdadm" ,mdadm)
-       ("gettext" ,gnu-gettext)
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
        ;; ("fuse" ,fuse)

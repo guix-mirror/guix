@@ -66,14 +66,14 @@
 (define-public blender
   (package
     (name "blender")
-    (version "2.76b")
+    (version "2.78a")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.blender.org/source/"
                                   "blender-" version ".tar.gz"))
               (sha256
                (base32
-                "0pb0mlj4vj0iir528ifqq67nsh3ca1942933d9cwlbpcja2jm1dx"))))
+                "1byf1klrvm8fdw2libx7wldz2i6lblp9nih6y58ydh00paqi8jh1"))))
     (build-system cmake-build-system)
     (arguments
      `(;; Test files are very large and not included in the release tarball.
