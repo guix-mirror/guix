@@ -43,7 +43,7 @@
                 "040rcs9fpv4bslhiy43v7dcrzakz4vwwpyqg4jp8bn24sl95ci7f"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://code.google.com/p/protobuf/")
+    (home-page "https://github.com/google/protobuf")
     (synopsis "Data encoding for remote procedure calls (RPCs)")
     (description
      "Protocol Buffers are a way of encoding structured data in an efficient
