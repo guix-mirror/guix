@@ -510,15 +510,14 @@ UTS#46.")
               (patches (search-patches "tidy-CVE-2015-5522+5523.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'bootstrap
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; configure.in and Makefile.am aren't in the root of the
-                   ;; source tree.
-                   (copy-recursively "build/gnuauto" ".")
-                   (setenv "AUTOMAKE" "automake --foreign")
-                   (zero? (system* "autoreconf" "-vfi")))
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; configure.in and Makefile.am aren't in the root of the
+                      ;; source tree.
+                      (copy-recursively "build/gnuauto" ".")
+                      (setenv "AUTOMAKE" "automake --foreign")
+                      (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
