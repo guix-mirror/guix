@@ -2,6 +2,7 @@
 # Copyright (C) 2016 Free Software Foundation, Inc.
 # This file is distributed under the same license as the guix package.
 # Rémy Chevalier <remychevalier@laposte.net>, 2013, 2014.
+# Frédéric Marchal <fmarchal@perso.be>, 2016
 #
 # Note de Frédéric Marchal: Le nom « shepherd » est le nom d'un démon (voir
 # https://www.gnu.org/software/shepherd/). Je ne l'ai pas traduit dans les
@@ -12,7 +13,7 @@ msgstr ""
 "Project-Id-Version: guix 0.11.0\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2016-07-29 10:16+0200\n"
-"PO-Revision-Date: 2016-11-05 10:20+0200\n"
+"PO-Revision-Date: 2016-11-11 10:43+0100\n"
 "Last-Translator: Frédéric Marchal <fmarchal@perso.be>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -2601,128 +2602,123 @@ msgstr "Ce programme est un démon qui tourne en tâche de fond. Il répond aux 
 
 #: nix/nix-daemon/guix-daemon.cc:87
 msgid "SYSTEM"
-msgstr ""
+msgstr "SYSTÈME"
 
 #: nix/nix-daemon/guix-daemon.cc:88
 msgid "assume SYSTEM as the current system type"
-msgstr ""
+msgstr "suppose que SYSTÈME est le type de système actuel"
 
 #: nix/nix-daemon/guix-daemon.cc:89 nix/nix-daemon/guix-daemon.cc:92
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #: nix/nix-daemon/guix-daemon.cc:90
 msgid "use N CPU cores to build each derivation; 0 means as many as available"
-msgstr ""
+msgstr "utilise N cœurs CPU pour compiler chaque dérivation; 0 signifie autant que disponible"
 
 #: nix/nix-daemon/guix-daemon.cc:93
 msgid "allow at most N build jobs"
-msgstr ""
+msgstr "autorise au plus N tâches de compilation"
 
 #: nix/nix-daemon/guix-daemon.cc:95
 msgid "disable chroot builds"
-msgstr ""
+msgstr "désactive les compilations chroot"
 
 #: nix/nix-daemon/guix-daemon.cc:96
 msgid "DIR"
-msgstr ""
+msgstr "RÉP"
 
 #: nix/nix-daemon/guix-daemon.cc:97
 msgid "add DIR to the build chroot"
-msgstr ""
+msgstr "ajoute RÉP au chroot de compilation"
 
 #: nix/nix-daemon/guix-daemon.cc:98
 msgid "GROUP"
-msgstr ""
+msgstr "GROUPE"
 
 #: nix/nix-daemon/guix-daemon.cc:99
 msgid "perform builds as a user of GROUP"
-msgstr ""
+msgstr "réalise les compilations en tant qu'un utilisateur du GROUPE"
 
 #: nix/nix-daemon/guix-daemon.cc:101
 msgid "do not use substitutes"
-msgstr ""
+msgstr "ne pas utiliser de substituts"
 
 #: nix/nix-daemon/guix-daemon.cc:102
 msgid "URLS"
-msgstr ""
+msgstr "URLS"
 
 #: nix/nix-daemon/guix-daemon.cc:103
 msgid "use URLS as the default list of substitute providers"
-msgstr ""
+msgstr "utilise URLS comme liste par défaut de fournisseurs de substituts"
 
 #: nix/nix-daemon/guix-daemon.cc:105
 msgid "do not use the 'build hook'"
-msgstr ""
+msgstr "n'utilise pas le « build hook »"
 
 #: nix/nix-daemon/guix-daemon.cc:107
 msgid "cache build failures"
-msgstr ""
+msgstr "garde les fonctionnalités de compilation en cache"
 
 #: nix/nix-daemon/guix-daemon.cc:109
 msgid "build each derivation N times in a row"
-msgstr ""
+msgstr "compile chaque dérivation N fois de suite"
 
 #: nix/nix-daemon/guix-daemon.cc:111
 msgid "do not keep build logs"
-msgstr ""
+msgstr "ne conserve pas les journaux de compilation"
 
 #: nix/nix-daemon/guix-daemon.cc:113
 msgid "disable compression of the build logs"
-msgstr ""
+msgstr "désactive la compression des journaux de compilation"
 
 #: nix/nix-daemon/guix-daemon.cc:118
 msgid "disable automatic file \"deduplication\" in the store"
-msgstr ""
+msgstr "désactive la « déduplication » automatique des fichiers dans le stockage"
 
 #: nix/nix-daemon/guix-daemon.cc:128
 msgid "impersonate Linux 2.6"
-msgstr ""
+msgstr "se faire passer pour Linux 2.6"
 
 #: nix/nix-daemon/guix-daemon.cc:132
 msgid "tell whether the GC must keep outputs of live derivations"
-msgstr ""
+msgstr "indique si le GC doit garder les sorties des dérivations en temps réel"
 
 #: nix/nix-daemon/guix-daemon.cc:135
 msgid "tell whether the GC must keep derivations corresponding to live outputs"
-msgstr ""
+msgstr "indique si le GC doit garder les dérivations correspondant aux sorties en temps réel"
 
 #: nix/nix-daemon/guix-daemon.cc:138
 msgid "SOCKET"
-msgstr ""
+msgstr "SOCKET"
 
 #: nix/nix-daemon/guix-daemon.cc:139
 msgid "listen for connections on SOCKET"
-msgstr ""
+msgstr "écoute sur SOCKET pour des connexions"
 
 #: nix/nix-daemon/guix-daemon.cc:141
 msgid "produce debugging output"
-msgstr ""
+msgstr "produit une sortie de déboguage"
 
 #: nix/nix-daemon/guix-daemon.cc:201
 #, c-format
 msgid "error: %s: invalid number of rounds\n"
-msgstr ""
+msgstr "erreur: %s: nombre de tours invalide\n"
 
 #: nix/nix-daemon/guix-daemon.cc:220 nix/nix-daemon/guix-daemon.cc:396
 #, c-format
 msgid "error: %s\n"
-msgstr ""
+msgstr "erreur: %s\n"
 
 #: nix/nix-daemon/guix-daemon.cc:281
 #, c-format
 msgid "error: libgcrypt version mismatch\n"
-msgstr ""
+msgstr "erreur: désaccord de version de libgcrypt\n"
 
 #: nix/nix-daemon/guix-daemon.cc:372
 #, c-format
 msgid "warning: daemon is running as root, so using `--build-users-group' is highly recommended\n"
-msgstr ""
-
-#, fuzzy
-#~| msgid "wrong arguments"
-#~ msgid "too many arguments\n"
-#~ msgstr "arguments non valides"
+msgstr "avertissement: le daemon fonctionne en tant que root, l'utilisation de « --build-users-group » est fortement recommandée\n"
 
 #~ msgid "looking for the latest release of GNU ~a..."
 #~ msgstr "recherche de la dernière version de GNU ~a..."
