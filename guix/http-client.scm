@@ -223,7 +223,7 @@ or if EOF is reached."
                 'shutdown (const #f))
 
 (define* (http-fetch uri #:key port (text? #f) (buffered? #t)
-                     keep-alive?)
+                     keep-alive? (verify-certificate? #t))
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
 textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
@@ -231,11 +231,15 @@ unbuffered port, suitable for use in `filtered-port'.  When KEEP-ALIVE? is
 true, send a 'Connection: keep-alive' HTTP header, in which case PORT may be
 reused for future HTTP requests.
 
+When VERIFY-CERTIFICATE? is true, verify HTTPS server certificates.
+
 Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri (if (string? uri)
                       (string->uri uri)
                       uri)))
-    (let ((port (or port (open-connection-for-uri uri)))
+    (let ((port (or port (open-connection-for-uri uri
+                                                  #:verify-certificate?
+                                                  verify-certificate?)))
           (auth-header (match (uri-userinfo uri)
                          ((? string? str)
                           (list (cons 'Authorization
