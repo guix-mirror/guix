@@ -28,6 +28,7 @@
   #:use-module ((guix store) #:select (add-to-store add-text-to-store))
   #:use-module ((guix derivations) #:select (derivation))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
+  #:use-module ((guix build utils) #:select (elf-file?))
   #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -325,6 +326,13 @@ $out/bin/guile --version~%"
                            (chmod "bin" #o755)
                            (patch-shebang "bin/egrep" path)
                            (patch-shebang "bin/fgrep" path)
+                           ;; Starting with grep@2.25 'egrep' and 'fgrep' are shell files
+                           ;; that call 'grep'.  If the bootstrap 'egrep' and 'fgrep'
+                           ;; are not binaries then patch them to execute 'grep' via its
+                           ;; absolute file name instead of searching for it in $PATH.
+                           (if (not (elf-file? "bin/egrep"))
+                             (substitute* '("bin/egrep" "bin/fgrep")
+                               (("^exec grep") (string-append (getcwd) "/bin/grep"))))
                            (chmod "bin" #o555)
                            #t)))
 
