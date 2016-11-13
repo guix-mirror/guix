@@ -84,6 +84,8 @@ comfortable for anyone.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/readline/readline-"
                                   version ".tar.gz"))
+              (patches (search-patches "readline-6.2-CVE-2014-2524.patch"))
+              (patch-flags '("-p0"))
               (sha256
                (base32
                 "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))))))
