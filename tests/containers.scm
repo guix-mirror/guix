@@ -84,7 +84,8 @@
    (call-with-container (list (file-system
                                 (device "none")
                                 (mount-point "/testing")
-                                (type "tmpfs")))
+                                (type "tmpfs")
+                                (check? #f)))
      (lambda ()
        (assert-exit (file-exists? "/testing")))
      #:namespaces '(user mnt))))
@@ -99,7 +100,8 @@
                                    (device "/does-not-exist")
                                    (mount-point "/foo")
                                    (type "none")
-                                   (flags '(bind-mount))))
+                                   (flags '(bind-mount))
+                                   (check? #f)))
         (const #t)
         #:namespaces '(user mnt)))
     (lambda args
