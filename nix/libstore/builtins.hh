@@ -38,4 +38,7 @@ namespace nix {
     /* Return the built-in builder called BUILDER, or NULL if none was
        found.  */
     derivationBuilder lookupBuiltinBuilder(const std::string &builder);
+
+    /* Return the list of supported built-in builder names.  */
+    std::list<std::string> builtinBuilderNames();
 }

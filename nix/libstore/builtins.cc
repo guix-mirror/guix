@@ -66,4 +66,14 @@ derivationBuilder lookupBuiltinBuilder(const std::string & name)
 	return NULL;
 }
 
+std::list<std::string> builtinBuilderNames()
+{
+    std::list<std::string> result;
+    for(auto&& iter: builtins)
+    {
+	result.push_back(iter.first);
+    }
+    return result;
+}
+
 }
