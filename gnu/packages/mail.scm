@@ -103,34 +103,52 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "2.2")
+    (version "3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0szbqa12zqzldqyw97lxqax3ja2adis83i7brdfsxmrfw68iaf65"))
-             (patches (search-patches "m4-gets-undeclared.patch"))))
+               "0h7cx4cd3niycx7pl0p2358cx2smwm5sb3l9bpb8czkdl6v115c8"))))
     (build-system gnu-build-system)
     (arguments
      '(;; TODO: Add `--with-sql'.
        #:phases (alist-cons-before
                  'build 'pre-build
                  (lambda _
-                   ;; Use Guile 2.0's public API.
-                   (substitute* "libmu_scm/mu_message.c"
-                     (("scm_i_string_length")
-                      "scm_c_string_length"))
-
-                   ;; This file should be generated to use the right
-                   ;; value of $(libdir) et al.
-                   (delete-file "libmu_scm/mailutils.scm")
-
                    ;; Use the right file name for `cat'.
                    (substitute* "testsuite/lib/mailutils.exp"
                      (("/bin/cat")
-                      (which "cat"))))
+                      (which "cat")))
+
+                   ;; Tests try to invoke 'maidag' such that it looks up the
+                   ;; 'root' user, which does not exist in the build
+                   ;; environment.
+                   (substitute* "maidag/tests/testsuite"
+                     (("root <")         "nobody <")
+                     (("spool/root")     "spool/nobody")
+                     (("root@localhost") "nobody@localhost"))
+
+                   ;; The 'pipeact.at' tests generate a shell script; make
+                   ;; sure it uses the right shell.
+                   (substitute* '("sieve/tests/testsuite"
+                                  "mh/tests/testsuite")
+                     (("#! /bin/sh")
+                      (string-append "#!" (which "sh"))))
+
+                   (substitute* "mh/tests/testsuite"
+                     (("moreproc: /bin/cat")
+                      (string-append "moreproc: " (which "cat"))))
+
+                   ;; XXX: The comsatd tests rely on being able to open
+                   ;; /dev/tty, but that gives ENODEV in the build
+                   ;; environment.  Thus, ignore test failures here.
+                   (substitute* "comsat/tests/Makefile.in"
+                     (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
+                      (string-append "-" all)))
+
+                   #t)
                  %standard-phases)
        #:parallel-tests? #f))
     (inputs
