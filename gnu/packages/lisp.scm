@@ -200,7 +200,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
         (base32 "0rp82nqp5362isl9i34rwgg04cidz7izljd9d85pqcw1qr964bxx"))))
     (build-system gnu-build-system)
     (inputs `(("libffcall" ,libffcall)
-              ("readline" ,readline)
+              ("readline" ,readline-6.2)
               ("libsigsegv" ,libsigsegv)))
     (arguments
      '(;; XXX The custom configure script does not cope well when passed
