@@ -715,7 +715,21 @@ with the Linux kernel.")
              ;; Use the right 'pwd'.
              (substitute* "configure"
                (("/bin/pwd") "pwd")))
-          ,original-phases)))
+           (alist-replace
+            'build
+            (lambda _
+              ;; Force mach/hurd/libpthread subdirs to build first in order to avoid
+              ;; linking errors.
+              ;; See <https://lists.gnu.org/archive/html/bug-hurd/2016-11/msg00045.html>
+              (let ((-j (list "-j" (number->string (parallel-job-count)))))
+                (let-syntax ((make (syntax-rules ()
+                                     ((_ target)
+                                      (zero? (apply system* "make" target -j))))))
+                  (and (make "mach/subdir_lib")
+                       (make "hurd/subdir_lib")
+                       (make "libpthread/subdir_lib")
+                       (zero? (apply system* "make" -j))))))
+            ,original-phases))))
         ((#:configure-flags original-configure-flags)
         `(append (list "--host=i586-pc-gnu"
 
