@@ -403,14 +403,14 @@ many readers as needed).")
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
-    (version "2.0")
+    (version "2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0avqa7iiqpw0wgj9ga5ffxka4znrhpx1bv3bb2ah7mnylap91sfw"))))
+               "1h7rnq4g7xlxxybcb3vjq6nscm9zhlmfaxb7258c8ax7him4azg6"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.0)))
@@ -428,8 +428,9 @@ many readers as needed).")
                (substitute* files
                  (("\"libguile-ncurses\"")
                   (format #f "\"~a/lib/guile/2.0/libguile-ncurses\""
-                          out)))))))))
-    (home-page "http://www.gnu.org/software/guile-ncurses/")
+                          out)))
+               #t))))))
+    (home-page "https://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
      "guile-ncurses provides Guile language bindings for the ncurses
