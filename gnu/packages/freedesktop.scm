@@ -95,11 +95,14 @@ freedesktop.org project.")
                 "1n1dispg63z1qiy8c1af3l9c4a9dks8y7xasff8xcywnn0rkkxnl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libudev" ,eudev))) ; required by libinput.pc
     (inputs
-     `(("libevdev" ,libevdev)
+     `(("glib" ,glib)
+       ("libevdev" ,libevdev)
        ("mtdev" ,mtdev)
        ("libwacom" ,libwacom)))
     (home-page "https://www.freedesktop.org/wiki/Software/libinput/")
@@ -112,6 +115,8 @@ other applications that need to directly deal with input devices.")
 (define-public libinput-minimal
   (package (inherit libinput)
     (name "libinput-minimal")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libevdev" ,libevdev)
        ("mtdev" ,mtdev)))
