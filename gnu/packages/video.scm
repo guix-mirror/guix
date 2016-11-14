@@ -866,7 +866,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("libxrandr" ,libxrandr)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxv" ,libxv)
-       ("lua" ,lua)
+       ;; XXX: lua > 5.2 is not currently supported; see
+       ;; waftools/checks/custom.py
+       ("lua" ,lua-5.2)
        ("mesa" ,mesa)
        ("mpg123" ,mpg123)
        ("pulseaudio" ,pulseaudio)
