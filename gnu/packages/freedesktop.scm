@@ -522,14 +522,14 @@ message bus.")
 (define-public accountsservice
   (package
     (name "accountsservice")
-    (version "0.6.40")
+    (version "0.6.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ayb3y3l25dmwxlh9g071h02mphjfbkvi2k5f635bayb01k7akzh"))))
+                "1k6n9079001sgcwlkq0bz6mkn4m8y4dwf6hs1qm85swcld5ajfzd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: tests require DocBook 4.1.2
@@ -542,7 +542,8 @@ message bus.")
           (lambda _
             ;; Don't try to create /var/lib/AccoutsService.
             (substitute* "src/Makefile.in"
-              (("\\$\\(MKDIR_P\\).*/lib/AccountsService.*") "true")))))))
+              (("\\$\\(MKDIR_P\\).*/lib/AccountsService.*") "true"))
+            #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
        ("gobject-introspection" ,gobject-introspection)
