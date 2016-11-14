@@ -218,6 +218,33 @@ and design rule checking.  It also includes an autorouter and a trace
 optimizer; and it can produce photorealistic and design review images.")
     (license license:gpl2+)))
 
+(define-public pcb-rnd
+  (package (inherit pcb)
+    (name "pcb-rnd")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://repo.hu/projects/pcb-rnd/releases/"
+                                  "pcb-rnd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pycynla60b96jkb6fh6f4sx663pqbzjwnixhw5ym8sym2absm09"))))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'cc-is-gcc
+           (lambda _ (setenv "CC" "gcc") #t))
+         (replace 'configure
+           ;; The configure script doesn't tolerate most of our configure flags.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "sh" "configure"
+                             (string-append "--prefix="
+                                            (assoc-ref outputs "out")))))))))
+    (home-page "http://repo.hu/projects/pcb-rnd/")
+    (description "PCB RND is a fork of the GNU PCB circuit board editing tool
+featuring various improvements and bug fixes.")))
+
 (define-public fastcap
   (package
     (name "fastcap")
