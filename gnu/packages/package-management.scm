@@ -123,7 +123,7 @@
                        (("^\\(test-assert \"(clone|setns|pivot-root)\"" all)
                         (string-append "(test-skip 1)\n" all)))
                      (substitute* "tests/containers.scm"
-                       (("^\\(test-assert" all)
+                       (("^\\(test-(assert|equal)" all)
                         (string-append "(test-skip 1)\n" all)))
                      (when (file-exists? "tests/guix-environment-container.sh")
                        (substitute* "tests/guix-environment-container.sh"
