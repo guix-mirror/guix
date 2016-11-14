@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3830,3 +3831,40 @@ runs in a terminal or through your browser.  It provides fast and valuable
 HTTP statistics for system administrators that require a visual server report
 on the fly.")
     (license l:x11)))
+
+(define-public httptunnel
+  (package
+    (name "httptunnel")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.nocrew.org/software/httptunnel/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mn5s6p68n32xzadz6ds5i6bp44dyxzkq68r1yljlv470jr84bql"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove non-free IETF RFC documentation.
+        '(delete-file-recursively "doc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The default configure phase tries to pass environment variables as
+         ;; command-line arguments, which confuses the ./configure script.
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
+    (home-page "http://www.nocrew.org/software/httptunnel.html")
+    (synopsis "Tunnel data connections through HTTP requests")
+    (description "httptunnel creates a bidirectional virtual data connection
+tunnelled through HTTP (HyperText Transfer Protocol) requests.  This can be
+useful for users behind restrictive firewalls.  As long as Web traffic is
+allowed, even through a HTTP-only proxy, httptunnel can be combined with other
+tools like SSH (Secure Shell) to reach the outside world.")
+    (license l:gpl2+)))
