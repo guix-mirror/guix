@@ -85,14 +85,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.4.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "085lcxy111j8r1lwyghsc6zrysqh0vg8xip5axxsdl8r8n3i1vvn"))))
+                "1n1dispg63z1qiy8c1af3l9c4a9dks8y7xasff8xcywnn0rkkxnl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
