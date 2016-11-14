@@ -31,7 +31,7 @@
 (define-public cryptsetup
   (package
    (name "cryptsetup")
-   (version "1.7.2")
+   (version "1.7.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
@@ -39,7 +39,7 @@
                                 "/" name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0hikwkkj692c955k29c4zixj8wp8k3z17jc6ihb4j5qcbyzmvcyv"))))
+              "00nwd96m9yq4k3cayc04i5y7iakkzana35zxky6hpx2w8zl08axg"))))
    (build-system gnu-build-system)
    (inputs
     `(("libgcrypt" ,libgcrypt)
@@ -47,7 +47,7 @@
       ("util-linux" ,util-linux)
       ("popt" ,popt)))
    (native-inputs
-      `(("python" ,python-wrapper)))
+    `(("python" ,python-wrapper)))
    (synopsis "Hard disk encryption tool")
    (description
     "LUKS (Linux Unified Key Setup)/Cryptsetup provides a standard on-disk
