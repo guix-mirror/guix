@@ -2486,26 +2486,29 @@ than Python’s urllib2 library.")
 (define-public python-vcversioner
   (package
     (name "python-vcversioner")
-    (version "2.14.0.0")
+    (version "2.16.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "vcversioner" version))
        (sha256
         (base32
-         "11ivq1bm7v0yb4nsfbv9m7g7lyjn112gbvpjnjz8nv1fx633dm5c"))))
+         "16z10sm78jd7ca3jbkgc3q5i8a8q7y1h21q1li21yy3rlhbhrrns"))))
     (build-system python-build-system)
-    (inputs
-     `(("python-setuptools" ,python-setuptools)))
     (synopsis "Python library for version number discovery")
     (description "Vcversioner is a Python library that inspects tagging
 information in a variety of version control systems in order to discover
 version numbers.")
     (home-page "https://github.com/habnabit/vcversioner")
-    (license license:isc)))
+    (license license:isc)
+    (properties `((python2-variant . ,(delay python2-vcversioner))))))
 
 (define-public python2-vcversioner
-  (package-with-python2 python-vcversioner))
+  (let ((vcversioner (package-with-python2
+                       (strip-python2-variant python-vcversioner))))
+    (package (inherit vcversioner)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                        ,@(package-native-inputs vcversioner))))))
 
 (define-public python-jsonschema
   (package
