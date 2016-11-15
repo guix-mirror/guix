@@ -38,14 +38,14 @@
 (define-public gvpe
   (package
     (name "gvpe")
-    (version "2.25")
+    (version "3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gvpe/gvpe-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1gsipcysvsk80gvyn9jnk9g0xg4ng9yd5zp066jnmpgs52d2vhvk"))))
+                "1v61mj25iyd91z0ir7cmradkkcm1ffbk52c96v293ibsvjs2s2hf"))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/gvpe.html")
     (inputs `(("openssl" ,openssl)
