@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,3 +110,11 @@ and many other languages.")
                             (assoc-ref %outputs "out") "/lib"))
        ;; No 'check' target.
        #:tests? #f))))
+
+(define-public wxwidgets-gtk2
+  (package (inherit wxwidgets)
+           (inputs `(("gtk+" ,gtk+-2)
+                     ,@(alist-delete
+                        "gtk+"
+                        (package-inputs wxwidgets))))
+           (name "wxwidgets-gtk2")))
