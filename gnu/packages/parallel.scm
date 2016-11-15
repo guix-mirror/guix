@@ -45,7 +45,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20160922")
+    (version "20161022")
     (source
      (origin
       (method url-fetch)
@@ -53,7 +53,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "157q17v2vkjwccx9s2pxqip46gvwhfq4v9ar0l1ghgmpxggksvyq"))))
+        "1mz82chm5qav6h64rcckxzabr7w4ma0sjx61xav85x0swgcbjdsr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -70,7 +70,8 @@
                   ;; Patch call to 'ps' and 'perl' commands.
                   ((" ps ") (string-append " " (which "ps") " "))
                   ((" perl -") (string-append " " (which "perl") " -"))))
-              (list "src/parallel" "src/sem"))))
+              (list "src/parallel" "src/sem"))
+             #t))
          (add-after 'install 'post-install-test
            (lambda* (#:key outputs #:allow-other-keys)
              (zero? (system* (string-append
@@ -80,7 +81,7 @@
     (inputs
      `(("perl" ,perl)
        ("procps" ,procps)))
-    (home-page "http://www.gnu.org/software/parallel/")
+    (home-page "https://www.gnu.org/software/parallel/")
     (synopsis "Build and execute command lines in parallel")
     (description
      "GNU Parallel is a tool for executing shell jobs in parallel using one
