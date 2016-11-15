@@ -4784,7 +4784,7 @@ computing.")
       (arguments
        `(#:tests? #f ,@(package-arguments ipython)))
       ;; FIXME: add pyreadline once available.
-      (inputs
+      (native-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-inputs ipython))))))
 
