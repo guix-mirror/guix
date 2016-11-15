@@ -2739,7 +2739,7 @@ estimates transcript expression.")
         (alist-replace
          'install
          (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bi/")))
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
              (for-each (lambda (file)
                          (install-file file bin))
                        (find-files
