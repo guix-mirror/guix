@@ -11310,7 +11310,7 @@ focus on building massively scalable web applications.")
     (arguments
      '(;; Many tests fail because they require networking.
        #:tests? #f))
-    (inputs
+    (progated-inputs
      `(("python-requests" ,python-requests)))
     (home-page "https://github.com/sigmavirus24/betamax")
     (synopsis "Record HTTP interactions with python-requests")
