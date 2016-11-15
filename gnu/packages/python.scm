@@ -8346,7 +8346,7 @@ interface to the Amazon Web Services (AWS) API.")
       ("python-s3transfer" ,python-s3transfer)
       ("python-docutils" ,python-docutils)
       ("python-rsa" ,python-rsa)))
-   (inputs
+   (native-inputs
     `(("python-mock" ,python-mock)
       ("python-nose" ,python-nose)
       ("python-sphinx" ,python-sphinx)
