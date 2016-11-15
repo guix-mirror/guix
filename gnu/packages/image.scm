@@ -291,6 +291,7 @@ collection of tools for doing simple manipulations of TIFF images.")
               (patches (search-patches
                          "libtiff-oob-accesses-in-decode.patch"
                          "libtiff-oob-write-in-nextdecode.patch"
+                         "libtiff-uint32-overflow.patch"
                          "libtiff-CVE-2015-8665+CVE-2015-8683.patch"
                          "libtiff-CVE-2016-3623.patch"
                          "libtiff-CVE-2016-3945.patch"
