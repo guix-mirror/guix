@@ -131,14 +131,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.51")
+   (version "0.9.52")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1ir3ga328zkyynznnw71dj64wsaz7pmbhl82lqp1y1hrl85vn01h"))))
+              "1smgxw6jv81yybg86bzr4c2sn7a31apf8q4zz0kpch9xfrp7yyal"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -158,7 +158,7 @@ IPv6.  It
 also features security features such as basic and digest authentication
 and support for SSL3 and TLS.")
    (license license:lgpl2.1+)
-   (home-page "http://www.gnu.org/software/libmicrohttpd/")))
+   (home-page "https://www.gnu.org/software/libmicrohttpd/")))
 
 (define-public gnurl
   (package
