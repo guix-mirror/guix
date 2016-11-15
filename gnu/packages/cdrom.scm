@@ -80,22 +80,22 @@ caching facility provided by the library.")
 (define-public libcdio
   (package
     (name "libcdio")
-    (version "0.93")
+    (version "0.94")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/libcdio/libcdio-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0xb9km1750ndr7nglgbv1smv03dy8nkcfd9djbzqn3ldzlicswj9"))))
+               "0nh222bnj0hgdic5nvr8l9j194mh5niqy15rypwrdbk6z01wkqln"))))
     (build-system gnu-build-system)
     (inputs
-       `(("ncurses" ,ncurses)
-         ("libcddb" ,libcddb)))
+     `(("ncurses" ,ncurses)
+       ("libcddb" ,libcddb)))
     (native-inputs
      `(("help2man" ,help2man)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/libcdio/")
+    (home-page "https://www.gnu.org/software/libcdio/")
     (synopsis "CD Input and Control library")
     (description
      "The GNU Compact Disc Input and Control Library (libcdio) is a library
