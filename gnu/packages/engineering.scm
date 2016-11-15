@@ -680,3 +680,65 @@ boards and electrical circuits.  The software has a number of programs that
 perform specific functions, for example, pcbnew (Editing PCB), eeschema (editing
 electrical diagrams), gerbview (viewing Gerber files) and others.")
       (license license:gpl3+))))
+
+(define-public kicad-library
+  (let ((version "4.0.4"))
+    (package
+      (name "kicad-library")
+      (version version)
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "http://downloads.kicad-pcb.org/libraries/kicad-library-"
+                      version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1wyda58y39lhxml0xv1ngvddi0nqihx9bnlza46ajzms38ajvh12"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:out-of-source? #t
+         #:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-footprints ; from footprints tarball
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (zero? (system* "tar" "xvf"
+                               (assoc-ref inputs "kicad-footprints")
+                               "-C" (string-append (assoc-ref outputs "out")
+                                                   "/share/kicad/modules")
+                               "--strip-components=1"))))
+           ;; We change the default global footprint file, which is generated if
+           ;; it doesn't exist in user's home directory, from the one using the
+           ;; github plugin, to the one using the KISYSMOD environment path.
+           (add-after 'install-footprints 'use-pretty-footprint-table
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (template-dir (string-append out "/share/kicad/template"))
+                      (fp-lib-table (string-append template-dir "/fp-lib-table")))
+                 (delete-file fp-lib-table)
+                 (copy-file (string-append fp-lib-table ".for-pretty")
+                              fp-lib-table))
+               #t)))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "KISYSMOD") ; footprint path
+              (files '("share/kicad/modules")))
+             (search-path-specification
+              (variable "KISYS3DMOD") ; 3D model path
+              (files '("share/kicad/modules/packages3d")))))
+      ;; Kicad distributes footprints in a separate tarball
+      (native-inputs
+       `(("kicad-footprints"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://downloads.kicad-pcb.org/libraries/kicad-footprints-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0ya4gg6clz3vp2wrb67xwg0bhwh5q8ag39jjmpcp4zjcqs1f48rb"))))))
+      (home-page "http://kicad-pcb.org/")
+      (synopsis "Libraries for kicad")
+      (description "This package provides Kicad component, footprint and 3D
+render model libraries.")
+      (license license:lgpl2.0+))))
