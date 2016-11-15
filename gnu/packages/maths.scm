@@ -891,15 +891,15 @@ can solve two kinds of problems:
 (define-public octave
   (package
     (name "octave")
-    (version "4.0.3")
+    (version "4.2.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/octave/octave-"
-                          version ".tar.xz"))
+                          version ".tar.lz"))
       (sha256
        (base32
-        "11day29k4yfvxh4101x5yf26ld992x5n6qvmhjjk6mzsd26fqayw"))))
+        "19vvliwxgip0af812vny5xy5r8kacyj7v62203mh4z2n3p14b78i"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -918,7 +918,8 @@ can solve two kinds of problems:
        ("glu" ,glu)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gfortran" ,gfortran)
+     `(("lzip" ,lzip)
+       ("gfortran" ,gfortran)
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ;; The following inputs are not actually used in the build process.
@@ -937,7 +938,7 @@ can solve two kinds of problems:
        (list (string-append "--with-shell="
                             (assoc-ref %build-inputs "bash")
                             "/bin/sh"))))
-    (home-page "http://www.gnu.org/software/octave/")
+    (home-page "https://www.gnu.org/software/octave/")
     (synopsis "High-level language for numerical computation")
     (description "GNU Octave is a high-level interpreted language that is
 specialized for numerical computations.  It can be used for both linear and
