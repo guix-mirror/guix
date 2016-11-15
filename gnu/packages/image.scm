@@ -300,7 +300,8 @@ collection of tools for doing simple manipulations of TIFF images.")
                          "libtiff-CVE-2016-5321.patch"
                          "libtiff-CVE-2016-5323.patch"
                          "libtiff-CVE-2016-5652.patch"
-                         "libtiff-CVE-2016-9273.patch"))))))
+                         "libtiff-CVE-2016-9273.patch"
+                         "libtiff-CVE-2016-9297.patch"))))))
 
 (define-public libwmf
   (package
