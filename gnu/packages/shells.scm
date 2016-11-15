@@ -79,14 +79,14 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
 (define-public fish
   (package
     (name "fish")
-    (version "2.3.1")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://fishshell.com/files/"
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "0r46p64lg6da3v6chsa4gisvl04kd3rpy60yih8r870kbp9wm2ij"))
+                "1iggr6ah0siyak073v2w4sx1man19q8jsxns8i09qhv06crb5fq6"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
               (snippet
