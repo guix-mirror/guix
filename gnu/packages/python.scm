@@ -6466,9 +6466,9 @@ library.")
         (base32
          "08cm8d4228fj0qnrysy3qv1a6022zr3dcs25amd14lgxil6vvx26"))))
     (build-system python-build-system)
-    (inputs
-      `(("python-virtualenv" ,python-virtualenv)
-        ;; Tests
+    (native-inputs
+      `(;; Tests
+        ("python-virtualenv" ,python-virtualenv)
         ("python-mock" ,python-mock)
         ("python-pytest" ,python-pytest)
         ("python-scripttest" ,python-scripttest)))
