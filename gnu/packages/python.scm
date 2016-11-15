@@ -8313,7 +8313,7 @@ document.")
     `(("python-dateutil" ,python-dateutil-2)
       ("python-docutils" ,python-docutils)
       ("python-jmespath" ,python-jmespath)))
-   (inputs
+   (native-inputs
     `(("python-mock" ,python-mock)
       ("python-nose" ,python-nose)
       ("behave" ,behave)
