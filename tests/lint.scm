@@ -24,6 +24,7 @@
 
 (define-module (test-lint)
   #:use-module (guix tests)
+  #:use-module (guix tests http)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -33,100 +34,19 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
-  #:use-module (web server)
-  #:use-module (web server http)
-  #:use-module (web response)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 threads)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-64))
 
 ;; Test the linter.
 
-(define %http-server-port
-  ;; TCP port to use for the stub HTTP server.
-  9999)
-
-(define %local-url
-  ;; URL to use for 'home-page' tests.
-  (string-append "http://localhost:" (number->string %http-server-port)
-                 "/foo/bar"))
+;; Avoid collisions with other tests.
+(%http-server-port 9999)
 
 (define %null-sha256
   ;; SHA256 of the empty string.
   (base32
    "0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73"))
-
-(define %http-server-socket
-  ;; Socket used by the Web server.
-  (catch 'system-error
-    (lambda ()
-      (let ((sock (socket PF_INET SOCK_STREAM 0)))
-        (setsockopt sock SOL_SOCKET SO_REUSEADDR 1)
-        (bind sock
-              (make-socket-address AF_INET INADDR_LOOPBACK
-                                   %http-server-port))
-        sock))
-    (lambda args
-      (let ((err (system-error-errno args)))
-        (format (current-error-port)
-                "warning: cannot run Web server for tests: ~a~%"
-                (strerror err))
-        #f))))
-
-(define (http-write server client response body)
-  "Write RESPONSE."
-  (let* ((response (write-response response client))
-         (port     (response-port response)))
-    (cond
-     ((not body))                                 ;pass
-     (else
-      (write-response-body response body)))
-    (close-port port)
-    (quit #t)                                     ;exit the server thread
-    (values)))
-
-;; Mutex and condition variable to synchronize with the HTTP server.
-(define %http-server-lock (make-mutex))
-(define %http-server-ready (make-condition-variable))
-
-(define (http-open . args)
-  "Start listening for HTTP requests and signal %HTTP-SERVER-READY."
-  (with-mutex %http-server-lock
-    (let ((result (apply (@@ (web server http) http-open) args)))
-      (signal-condition-variable %http-server-ready)
-      result)))
-
-(define-server-impl stub-http-server
-  ;; Stripped-down version of Guile's built-in HTTP server.
-  http-open
-  (@@ (web server http) http-read)
-  http-write
-  (@@ (web server http) http-close))
-
-(define (call-with-http-server code data thunk)
-  "Call THUNK with an HTTP server running and returning CODE and DATA (a
-string) on HTTP requests."
-  (define (server-body)
-    (define (handle request body)
-      (values (build-response #:code code
-                              #:reason-phrase "Such is life")
-              data))
-
-    (catch 'quit
-      (lambda ()
-        (run-server handle stub-http-server
-                    `(#:socket ,%http-server-socket)))
-      (const #t)))
-
-  (with-mutex %http-server-lock
-    (let ((server (make-thread server-body)))
-      (wait-condition-variable %http-server-ready %http-server-lock)
-      ;; Normally SERVER exits automatically once it has received a request.
-      (thunk))))
-
-(define-syntax-rule (with-http-server code data body ...)
-  (call-with-http-server code data (lambda () body ...)))
 
 (define %long-string
   (make-string 2000 #\a))
@@ -423,28 +343,28 @@ string) on HTTP requests."
         (check-home-page pkg)))
     "domain not found")))
 
-(test-skip (if %http-server-socket 0 1))
+(test-skip (if (force %http-server-socket) 0 1))
 (test-assert "home-page: Connection refused"
   (->bool
    (string-contains
     (with-warnings
       (let ((pkg (package
                    (inherit (dummy-package "x"))
-                   (home-page %local-url))))
+                   (home-page (%local-url)))))
         (check-home-page pkg)))
     "Connection refused")))
 
-(test-skip (if %http-server-socket 0 1))
+(test-skip (if (force %http-server-socket) 0 1))
 (test-equal "home-page: 200"
   ""
   (with-warnings
    (with-http-server 200 %long-string
      (let ((pkg (package
                   (inherit (dummy-package "x"))
-                  (home-page %local-url))))
+                  (home-page (%local-url)))))
        (check-home-page pkg)))))
 
-(test-skip (if %http-server-socket 0 1))
+(test-skip (if (force %http-server-socket) 0 1))
 (test-assert "home-page: 200 but short length"
   (->bool
    (string-contains
@@ -452,11 +372,11 @@ string) on HTTP requests."
       (with-http-server 200 "This is too small."
         (let ((pkg (package
                      (inherit (dummy-package "x"))
-                     (home-page %local-url))))
+                     (home-page (%local-url)))))
           (check-home-page pkg))))
     "suspiciously small")))
 
-(test-skip (if %http-server-socket 0 1))
+(test-skip (if (force %http-server-socket) 0 1))
 (test-assert "home-page: 404"
   (->bool
    (string-contains
@@ -464,7 +384,7 @@ string) on HTTP requests."
       (with-http-server 404 %long-string
         (let ((pkg (package
                      (inherit (dummy-package "x"))
-                     (home-page %local-url))))
+                     (home-page (%local-url)))))
           (check-home-page pkg))))
     "not reachable: 404")))
 
@@ -545,7 +465,7 @@ string) on HTTP requests."
          (check-source-file-name pkg)))
      "file name should contain the package name"))))
 
-(test-skip (if %http-server-socket 0 1))
+(test-skip (if (force %http-server-socket) 0 1))
 (test-equal "source: 200"
   ""
   (with-warnings
@@ -554,11 +474,11 @@ string) on HTTP requests."
                   (inherit (dummy-package "x"))
                   (source (origin
                             (method url-fetch)
-                            (uri %local-url)
+                            (uri (%local-url))
                             (sha256 %null-sha256))))))
        (check-source pkg)))))
 
-(test-skip (if %http-server-socket 0 1))
+(test-skip (if (force %http-server-socket) 0 1))
 (test-assert "source: 200 but short length"
   (->bool
    (string-contains
@@ -568,12 +488,12 @@ string) on HTTP requests."
                      (inherit (dummy-package "x"))
                      (source (origin
                                (method url-fetch)
-                               (uri %local-url)
+                               (uri (%local-url))
                                (sha256 %null-sha256))))))
           (check-source pkg))))
     "suspiciously small")))
 
-(test-skip (if %http-server-socket 0 1))
+(test-skip (if (force %http-server-socket) 0 1))
 (test-assert "source: 404"
   (->bool
    (string-contains
@@ -583,7 +503,7 @@ string) on HTTP requests."
                      (inherit (dummy-package "x"))
                      (source (origin
                                (method url-fetch)
-                               (uri %local-url)
+                               (uri (%local-url))
                                (sha256 %null-sha256))))))
           (check-source pkg))))
     "not reachable: 404")))
