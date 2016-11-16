@@ -773,10 +773,13 @@ exception if it's already taken."
 
 (define IF_NAMESIZE 16)                           ;maximum interface name size
 
-(define ifconf-struct
-  ;; 'struct ifconf', from <net/if.h>.
-  (list int                                       ;int ifc_len
-        '*))                                      ;struct ifreq *ifc_ifcu
+(define-c-struct %ifconf-struct
+  sizeof-ifconf
+  list
+  read-ifconf
+  write-ifconf!
+  (length  int)                                   ;int ifc_len
+  (request '*))                                   ;struct ifreq *ifc_ifcu
 
 (define ifreq-struct-size
   ;; 'struct ifreq' begins with an array of IF_NAMESIZE bytes containing the
@@ -868,15 +871,18 @@ to interfaces that are currently up."
          (sock   (or sock (socket SOCK_STREAM AF_INET 0)))
          (len    (* ifreq-struct-size 10))
          (reqs   (make-bytevector len))
-         (conf   (make-c-struct ifconf-struct
-                                (list len (bytevector->pointer reqs)))))
+         (conf   (make-bytevector sizeof-ifconf)))
+    (write-ifconf! conf 0
+                   len (bytevector->pointer reqs))
+
     (let-values (((ret err)
-                  (%ioctl (fileno sock) SIOCGIFCONF conf)))
+                  (%ioctl (fileno sock) SIOCGIFCONF
+                          (bytevector->pointer conf))))
       (when close?
         (close-port sock))
       (if (zero? ret)
           (bytevector->string-list reqs ifreq-struct-size
-                                   (match (parse-c-struct conf ifconf-struct)
+                                   (match (read-ifconf conf)
                                      ((len . _) len)))
           (throw 'system-error "network-interface-list"
                  "network-interface-list: ~A"
