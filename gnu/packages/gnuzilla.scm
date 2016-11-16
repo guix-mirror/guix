@@ -358,7 +358,6 @@ standards.")
          ,(mozilla-patch "icecat-CVE-2016-5290-pt10.patch" "7006b275b829" "0sqagm247wx94mf51fyhdkn0vf1a1qy9i829shjnhssd79srxmnn")
          ,(mozilla-patch "icecat-CVE-2016-5290-pt11.patch" "32ce7be98543" "1y2r9i4p1qpqi75mlwmibr51whz5h1vj28c6mh6ik57dxkqxbclb")
          ,(mozilla-patch "icecat-CVE-2016-5291.patch"     "3ff0c89f3b26" "1prn74aglshaj27jfrpd2s2i4slpljw4rbzjxc1qgwjvkq4m6j6f")
-         ,(mozilla-patch "icecat-CVE-2016-5296.patch"     "5e39c1c2fded" "0rjza37gvpzhbqfmpad33kljnpl1yfd9wm8xf7ll6bay3m8cqj6j")
          ,(mozilla-patch "icecat-CVE-2016-5297.patch"     "46b07bdbf8b2" "1n8y1c5l0ms81dra7jsx8mp633ak5qvx105drvlg9hn3m0fwv1lj")
          ,(search-patch  "icecat-CVE-2016-9064.patch") ; adapted for icecat based on:
                                         ;                 "00c2b7baaa0b" "0y02yb7r62656nq9dji9dnwils2lxqasjz5byv62j1xa87r7f9hp"
