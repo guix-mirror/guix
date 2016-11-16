@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
@@ -241,6 +241,7 @@ following the mouse.")
   (package
     (name "pixman")
     (version "0.34.0")
+    (replacement pixman/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -261,6 +262,13 @@ following the mouse.")
 manipulation, providing features such as image compositing and trapezoid
 rasterisation.")
     (license license:x11)))
+
+(define pixman/fixed
+  (package
+    (inherit pixman)
+    (source (origin
+              (inherit (package-source pixman))
+              (patches (search-patches "pixman-CVE-2016-5296.patch"))))))
 
 
 (define-public libdrm
