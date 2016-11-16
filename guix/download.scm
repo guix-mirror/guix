@@ -309,27 +309,61 @@
   (let ((module (resolve-interface '(gnu packages tls))))
     (module-ref module 'gnutls)))
 
-(define* (url-fetch url hash-algo hash
-                    #:optional name
-                    #:key (system (%current-system))
-                    (guile (default-guile)))
-  "Return a fixed-output derivation that fetches URL (a string, or a list of
-strings denoting alternate URLs), which is expected to have hash HASH of type
-HASH-ALGO (a symbol).  By default, the file name is the base name of URL;
-optionally, NAME can specify a different file name.
+(define built-in-builders*
+  (let ((cache (make-weak-key-hash-table)))
+    (lambda ()
+      "Return, as a monadic value, the list of built-in builders supported by
+the daemon."
+      (lambda (store)
+        ;; Memoize the result to avoid repeated RPCs.
+        (values (or (hashq-ref cache store)
+                    (let ((result (built-in-builders store)))
+                      (hashq-set! cache store result)
+                      result))
+                store)))))
 
-When one of the URL starts with mirror://, then its host part is
-interpreted as the name of a mirror scheme, taken from %MIRROR-FILE.
+(define raw-derivation
+  (store-lift derivation))
 
-Alternately, when URL starts with file://, return the corresponding file name
-in the store."
-  (define file-name
-    (match url
-      ((head _ ...)
-       (basename head))
-      (_
-       (basename url))))
+(define* (built-in-download file-name url
+                            #:key system hash-algo hash
+                            mirrors content-addressed-mirrors
+                            (guile 'unused))
+  "Download FILE-NAME from URL using the built-in 'download' builder.
 
+This is an \"out-of-band\" download in that the returned derivation does not
+explicitly depend on Guile, GnuTLS, etc.  Instead, the daemon performs the
+download by itself using its own dependencies."
+  (mlet %store-monad ((mirrors (lower-object mirrors))
+                      (content-addressed-mirrors
+                       (lower-object content-addressed-mirrors)))
+    (raw-derivation file-name "builtin:download" '()
+                    #:system system
+                    #:hash-algo hash-algo
+                    #:hash hash
+                    #:inputs `((,mirrors)
+                               (,content-addressed-mirrors))
+
+                    ;; Honor the user's proxy and locale settings.
+                    #:leaked-env-vars '("http_proxy" "https_proxy"
+                                        "LC_ALL" "LC_MESSAGES" "LANG"
+                                        "COLUMNS")
+
+                    #:env-vars `(("url" . ,(object->string url))
+                                 ("mirrors" . ,mirrors)
+                                 ("content-addressed-mirrors"
+                                  . ,content-addressed-mirrors)))))
+
+(define* (in-band-download file-name url
+                           #:key system hash-algo hash
+                           mirrors content-addressed-mirrors
+                           guile)
+  "Download FILE-NAME from URL using a normal, \"in-band\" fixed-output
+derivation.
+
+This is now deprecated since it has the drawback of causing bootstrapping
+issues: we may need to build GnuTLS just to be able to download the source of
+GnuTLS itself and its dependencies.  See <http://bugs.gnu.org/22774>."
   (define need-gnutls?
     ;; True if any of the URLs need TLS support.
     (let ((https? (cut string-prefix? "https://" <>)))
@@ -366,47 +400,81 @@ in the store."
                                             read))))
             (url-fetch (value-from-environment "guix download url")
                        #$output
-                       #:mirrors (call-with-input-file #$%mirror-file read)
+                       #:mirrors (call-with-input-file #$mirrors read)
 
                        ;; Content-addressed mirrors.
                        #:hashes
                        (value-from-environment "guix download hashes")
                        #:content-addressed-mirrors
-                       (primitive-load #$%content-addressed-mirror-file)
+                       (primitive-load #$content-addressed-mirrors)
 
                        ;; No need to validate certificates since we know the
                        ;; hash of the expected result.
                        #:verify-certificate? #f)))))
+
+  (mlet %store-monad ((guile (package->derivation guile system)))
+    (gexp->derivation file-name builder
+                      #:guile-for-build guile
+                      #:system system
+                      #:hash-algo hash-algo
+                      #:hash hash
+
+                      ;; Use environment variables and a fixed script
+                      ;; name so there's only one script in store for
+                      ;; all the downloads.
+                      #:script-name "download"
+                      #:env-vars
+                      `(("guix download url" . ,(object->string url))
+                        ("guix download hashes"
+                         . ,(object->string `((,hash-algo . ,hash)))))
+
+                      ;; Honor the user's proxy settings.
+                      #:leaked-env-vars '("http_proxy" "https_proxy")
+
+                      ;; In general, offloading downloads is not a good
+                      ;; idea.  Daemons before 0.8.3 would also
+                      ;; interpret this as "do not substitute" (see
+                      ;; <https://bugs.gnu.org/18747>.)
+                      #:local-build? #t)))
+
+(define* (url-fetch url hash-algo hash
+                    #:optional name
+                    #:key (system (%current-system))
+                    (guile (default-guile)))
+  "Return a fixed-output derivation that fetches URL (a string, or a list of
+strings denoting alternate URLs), which is expected to have hash HASH of type
+HASH-ALGO (a symbol).  By default, the file name is the base name of URL;
+optionally, NAME can specify a different file name.
+
+When one of the URL starts with mirror://, then its host part is
+interpreted as the name of a mirror scheme, taken from %MIRROR-FILE.
+
+Alternately, when URL starts with file://, return the corresponding file name
+in the store."
+  (define file-name
+    (match url
+      ((head _ ...)
+       (basename head))
+      (_
+       (basename url))))
 
   (let ((uri (and (string? url) (string->uri url))))
     (if (or (and (string? url) (not uri))
             (and uri (memq (uri-scheme uri) '(#f file))))
         (interned-file (if uri (uri-path uri) url)
                        (or name file-name))
-        (mlet %store-monad ((guile (package->derivation guile system)))
-          (gexp->derivation (or name file-name) builder
-                            #:guile-for-build guile
-                            #:system system
-                            #:hash-algo hash-algo
-                            #:hash hash
-
-                            ;; Use environment variables and a fixed script
-                            ;; name so there's only one script in store for
-                            ;; all the downloads.
-                            #:script-name "download"
-                            #:env-vars
-                            `(("guix download url" . ,(object->string url))
-                              ("guix download hashes"
-                               . ,(object->string `((,hash-algo . ,hash)))))
-
-                            ;; Honor the user's proxy settings.
-                            #:leaked-env-vars '("http_proxy" "https_proxy")
-
-                            ;; In general, offloading downloads is not a good
-                            ;; idea.  Daemons before 0.8.3 would also
-                            ;; interpret this as "do not substitute" (see
-                            ;; <https://bugs.gnu.org/18747>.)
-                            #:local-build? #t)))))
+        (mlet* %store-monad ((builtins (built-in-builders*))
+                             (download -> (if (member "download" builtins)
+                                              built-in-download
+                                              in-band-download)))
+          (download (or name file-name) url
+                    #:guile guile
+                    #:system system
+                    #:hash-algo hash-algo
+                    #:hash hash
+                    #:mirrors %mirror-file
+                    #:content-addressed-mirrors
+                    %content-addressed-mirror-file)))))
 
 (define* (url-fetch/tarbomb url hash-algo hash
                             #:optional name
