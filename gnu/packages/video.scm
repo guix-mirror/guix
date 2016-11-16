@@ -1708,6 +1708,12 @@ Content System specification.")
         (base32
          "1s7h35yx6f0szf8mm8612ic913w3v05m2kwphjfcxnpq0ammhyci"))))
     (build-system python-build-system)
+    (arguments
+     ;; Tests need to be disabled until #556 upstream is fixed. It reads as if the
+     ;; test suite results differ depending on the country and also introduce
+     ;; non-determinism in the tests.
+     ;; https://github.com/mps-youtube/mps-youtube/issues/556
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-pafy" ,python-pafy)
        ("python-pygobject" ,python-pygobject))) ; For mpris2 support
