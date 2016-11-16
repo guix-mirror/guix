@@ -472,7 +472,7 @@ providing the system administrator with some help in common tasks.")
                "static"))      ; >2 MiB of static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
-
+                               "--enable-fs-paths-default=/run/current-system/profile/sbin"
                                ;; Install completions where our
                                ;; bash-completion package expects them.
                                (string-append "--with-bashcompletiondir="
