@@ -202,7 +202,7 @@ result is the alignment of the \"most strictly aligned component\"."
                   types ...))))
 
 (define-syntax write-type
-  (syntax-rules (~ array)
+  (syntax-rules (~ array *)
     ((_ bv offset (type ~ order) value)
      (bytevector-uint-set! bv offset value
                            (endianness order) (sizeof* type)))
@@ -215,6 +215,9 @@ result is the alignment of the \"most strictly aligned component\"."
            ((head . tail)
             (write-type bv o type head)
             (loop (+ 1 i) tail (+ o (sizeof* type))))))))
+    ((_ bv offset '* value)
+     (bytevector-uint-set! bv offset (pointer-address value)
+                           (native-endianness) (sizeof* '*)))
     ((_ bv offset type value)
      (bytevector-uint-set! bv offset value
                            (native-endianness) (sizeof* type)))))
