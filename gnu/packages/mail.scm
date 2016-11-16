@@ -1605,14 +1605,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "5.9.2p1")
+    (version "6.0.2p1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.opensmtpd.org/archives/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07d7f1m5sxyz6mkk228rcm7fsf7350994ayvmhgph333q5rz48im"))))
+                "1b4h64w45hpmfq5721smhg4s0shs64gbcjqjpx3fbiw4hz8bdy9a"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -1626,7 +1626,8 @@ transfer protocols.")
     (arguments
      `(#:configure-flags (list "--with-table-db" "--localstatedir=/var"
                                "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
-                               "--with-group-queue=smtpq")
+                               "--with-group-queue=smtpq"
+                               "--with-path-socket=/var/run")
        #:phases
        (modify-phases %standard-phases
          ;; OpenSMTPD provides a single utility smtpctl to control the daemon and
