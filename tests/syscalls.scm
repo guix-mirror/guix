@@ -326,6 +326,27 @@
         ;; We get EPERM with Linux 3.18ish and EACCES with 2.6.32.
         (memv (system-error-errno args) (list EPERM EACCES))))))
 
+(test-equal "network-interface-netmask lo"
+  (make-socket-address AF_INET (inet-pton AF_INET "255.0.0.0") 0)
+  (let* ((sock (socket AF_INET SOCK_STREAM 0))
+         (addr (network-interface-netmask sock "lo")))
+    (close-port sock)
+    addr))
+
+(test-skip (if (zero? (getuid)) 1 0))
+(test-assert "set-network-interface-netmask"
+  (let ((sock (socket AF_INET SOCK_STREAM 0)))
+    (catch 'system-error
+      (lambda ()
+        (set-network-interface-netmask sock "nonexistent"
+                                       (make-socket-address
+                                        AF_INET
+                                        (inet-pton AF_INET "255.0.0.0")
+                                        0)))
+      (lambda args
+        (close-port sock)
+        (memv (system-error-errno args) (list EPERM EACCES))))))
+
 (test-equal "network-interfaces returns one or more interfaces"
   '(#t #t #t)
   (match (network-interfaces)

@@ -87,10 +87,12 @@
             all-network-interface-names
             network-interface-names
             network-interface-flags
+            network-interface-netmask
             loopback-network-interface?
             network-interface-address
             set-network-interface-flags
             set-network-interface-address
+            set-network-interface-netmask
             set-network-interface-up
             configure-network-interface
 
@@ -764,6 +766,14 @@ exception if it's already taken."
   (if (string-contains %host-type "linux")
       #x8916                                      ;GNU/Linux
       -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCGIFNETMASK
+  (if (string-contains %host-type "linux")
+      #x891b                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCSIFNETMASK
+  (if (string-contains %host-type "linux")
+      #x891c                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
 
 ;; Flags and constants from <net/if.h>.
 
@@ -970,6 +980,22 @@ interface NAME."
                (list name (strerror err))
                (list err))))))
 
+(define (set-network-interface-netmask socket name sockaddr)
+  "Set the network mask of interface NAME to SOCKADDR."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    ;; Set the 'ifr_addr' field.
+    (write-socket-address! sockaddr req IF_NAMESIZE)
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCSIFNETMASK
+                          (bytevector->pointer req))))
+      (unless (zero? ret)
+        (throw 'system-error "set-network-interface-netmask"
+               "set-network-interface-netmask on ~A: ~A"
+               (list name (strerror err))
+               (list err))))))
+
 (define (network-interface-address socket name)
   "Return the address of network interface NAME.  The result is an object of
 the same type as that returned by 'make-socket-address'."
@@ -983,6 +1009,22 @@ the same type as that returned by 'make-socket-address'."
           (read-socket-address req IF_NAMESIZE)
           (throw 'system-error "network-interface-address"
                  "network-interface-address on ~A: ~A"
+                 (list name (strerror err))
+                 (list err))))))
+
+(define (network-interface-netmask socket name)
+  "Return the netmask of network interface NAME.  The result is an object of
+the same type as that returned by 'make-socket-address'."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCGIFNETMASK
+                          (bytevector->pointer req))))
+      (if (zero? ret)
+          (read-socket-address req IF_NAMESIZE)
+          (throw 'system-error "network-interface-netmask"
+                 "network-interface-netmask on ~A: ~A"
                  (list name (strerror err))
                  (list err))))))
 
