@@ -1620,6 +1620,8 @@ standard library.")
         (base32
          "1ckvrypyvb7jbqlgwdz0y337ajagjv7dgxyns326nqwypn1wpq0i"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Currently pafy can not find itself in the tests
     (propagated-inputs
      ;; Youtube-dl is a python package which is imported in the file
      ;; "backend_youtube_dl.py", therefore it needs to be propagated.
