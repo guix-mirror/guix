@@ -1475,8 +1475,8 @@ converts them to maildir format directories.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://downloads.sourceforge.net/mpop/mpop-"
-                           version ".tar.xz"))
+       (uri (string-append "mirror://sourceforge/mpop/mpop/" version
+                           "/mpop-" version ".tar.xz"))
        (sha256
         (base32
          "0p1ix63jh64dibrlccch8q7gxl9nn18wd2qpyr5z1h4gs2fpmv4z"))))
