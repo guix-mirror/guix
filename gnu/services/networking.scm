@@ -112,6 +112,8 @@ fe80::1%lo0 apps.facebook.com\n")
   static-networking?
   (interface static-networking-interface)
   (ip static-networking-ip)
+  (netmask static-networking-netmask
+           (default #f))
   (gateway static-networking-gateway)
   (provision static-networking-provision)
   (name-servers static-networking-name-servers)
@@ -121,7 +123,7 @@ fe80::1%lo0 apps.facebook.com\n")
   (shepherd-service-type
    'static-networking
    (match-lambda
-     (($ <static-networking> interface ip gateway provision
+     (($ <static-networking> interface ip netmask gateway provision
                              name-servers net-tools)
       (let ((loopback? (memq 'loopback provision)))
 
@@ -139,12 +141,18 @@ fe80::1%lo0 apps.facebook.com\n")
          (start #~(lambda _
                     ;; Return #t if successfully started.
                     (let* ((addr     (inet-pton AF_INET #$ip))
-                           (sockaddr (make-socket-address AF_INET addr 0)))
+                           (sockaddr (make-socket-address AF_INET addr 0))
+                           (mask     (and #$netmask
+                                          (inet-pton AF_INET #$netmask)))
+                           (maskaddr (and mask
+                                          (make-socket-address AF_INET
+                                                               mask 0))))
                       (configure-network-interface #$interface sockaddr
                                                    (logior IFF_UP
                                                            #$(if loopback?
                                                                  #~IFF_LOOPBACK
-                                                                 0))))
+                                                                 0))
+                                                   #:netmask maskaddr))
                     #$(if gateway
                           #~(zero? (system* (string-append #$net-tools
                                                            "/sbin/route")
@@ -176,16 +184,16 @@ fe80::1%lo0 apps.facebook.com\n")
 
 (define* (static-networking-service interface ip
                                     #:key
-                                    gateway
+                                    netmask gateway
                                     (provision '(networking))
                                     (name-servers '())
                                     (net-tools net-tools))
   "Return a service that starts @var{interface} with address @var{ip}.  If
-@var{gateway} is true, it must be a string specifying the default network
-gateway."
+@var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
+it must be a string specifying the default network gateway."
   (service static-networking-service-type
            (static-networking (interface interface) (ip ip)
-                              (gateway gateway)
+                              (netmask netmask) (gateway gateway)
                               (provision provision)
                               (name-servers name-servers)
                               (net-tools net-tools))))

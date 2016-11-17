@@ -8363,10 +8363,10 @@ Protocol (DHCP) client, on all the non-loopback network interfaces.
 @end deffn
 
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
-       [#:gateway #f] [#:name-servers @code{'()}]
+       [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If
-@var{gateway} is true, it must be a string specifying the default network
-gateway.
+@var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
+it must be a string specifying the default network gateway.
 @end deffn
 
 @cindex wicd
