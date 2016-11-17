@@ -426,8 +426,7 @@ standards.")
        ("glib" ,glib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+)
-       ("gtk+-2" ,gtk+-2)
+       ("gtk+" ,gtk+-2)
        ("pango" ,pango)
        ("freetype" ,freetype)
        ("hunspell" ,hunspell)
@@ -471,7 +470,7 @@ standards.")
        ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
        #:validate-runpath? #f
 
-       #:configure-flags '("--enable-default-toolkit=cairo-gtk3"
+       #:configure-flags '("--enable-default-toolkit=cairo-gtk2"
                            "--enable-pango"
                            "--enable-gio"
                            "--enable-svg"
