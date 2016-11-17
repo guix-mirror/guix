@@ -1028,15 +1028,19 @@ the same type as that returned by 'make-socket-address'."
                  (list name (strerror err))
                  (list err))))))
 
-(define (configure-network-interface name sockaddr flags)
+(define* (configure-network-interface name sockaddr flags
+                                      #:key netmask)
   "Configure network interface NAME to use SOCKADDR, an address as returned by
-'make-socket-address', and FLAGS, a bitwise-or of IFF_* constants."
+'make-socket-address', and FLAGS, a bitwise-or of IFF_* constants.  If NETMASK
+is true, it must be a socket address to use as the network mask."
   (let ((sock (socket (sockaddr:fam sockaddr) SOCK_STREAM 0)))
     (dynamic-wind
       (const #t)
       (lambda ()
         (set-network-interface-address sock name sockaddr)
-        (set-network-interface-flags sock name flags))
+        (set-network-interface-flags sock name flags)
+        (when netmask
+          (set-network-interface-netmask sock name netmask)))
       (lambda ()
         (close-port sock)))))
 
