@@ -1094,7 +1094,8 @@ DURATION-RELATION with the current time."
           (removed (lset-difference
                     equal-entry? (list-entries old) (list-entries new))))
       (for-each (cut display-entry <> "+") added)
-      (for-each (cut display-entry <> "-") removed)))
+      (for-each (cut display-entry <> "-") removed)
+      (newline)))
 
   (display-diff profile gen1 gen2))
 
