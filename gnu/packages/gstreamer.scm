@@ -419,7 +419,7 @@ compression formats through the use of the libav library.")
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -427,7 +427,7 @@ compression formats through the use of the libav library.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "0hf71m0vqnd5sdj14li935xzzmqxh606qgw744a25w3vwj9v8nfy"))))
+                "04xhh0z0c0s6aq7kvmfs4r6yl1pjnqz0krp05pbjy62ayx5b61ak"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Factorize python-sitedir with python-build-system.
