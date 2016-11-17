@@ -453,7 +453,7 @@ If your host distro uses the systemd init system, this can be achieved
 with these commands:
 
 @example
-# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
+# ln -s ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
         /etc/systemd/system/
 # systemctl start guix-daemon && systemctl enable guix-daemon
 @end example
@@ -461,7 +461,7 @@ with these commands:
 If your host distro uses the Upstart init system:
 
 @example
-# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+# ln -s ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
 # start guix-daemon
 @end example
 
