@@ -265,14 +265,14 @@ developers consider to have good quality code and correct functionality.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kqwh5r4j05f2w9m353grvypn0106hxcr52409f7rvm3w4b9sprx"))))
+                "07cjra4fclrk6lpdm5hrsgp79aqpklx3v3l9scain091zvchwghk"))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
@@ -330,7 +330,7 @@ developers consider to have good quality code and correct functionality.")
        ;("qtx11extras" ,qtx11extras)
        ("soundtouch" ,soundtouch)
        ("x265" ,x265)
-       ;("wayland" ,wayland) ; needs wayland-protocols
+       ;("wayland" ,wayland) ; needs gtk+ built with wayland support
        ))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
