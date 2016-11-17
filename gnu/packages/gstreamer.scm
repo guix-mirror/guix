@@ -145,7 +145,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
       (method url-fetch)
@@ -153,7 +153,7 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0jp9rwv0am8qv32q3dzhdcbyygg5wjm4fg20njyhp6n6vybyzkdz"))))
+        "1jbnr6vbklzli493xdd8y5sflm32r90lifpacxw9vbvs9hlyxkv6"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -187,7 +187,8 @@ This package provides the core library and elements.")
          (add-before 'configure 'patch
            (lambda _
              (substitute* "tests/check/libs/pbutils.c"
-               (("/bin/sh") (which "sh"))))))))
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
