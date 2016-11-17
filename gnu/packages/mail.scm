@@ -1471,7 +1471,7 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
@@ -1479,7 +1479,7 @@ converts them to maildir format directories.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0n0ij258kn8lfa6nyr6l6plc4hf1wvyf1hkwicvdbjqdqrgjnq81"))))
+         "0p1ix63jh64dibrlccch8q7gxl9nn18wd2qpyr5z1h4gs2fpmv4z"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
