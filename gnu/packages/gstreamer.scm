@@ -200,7 +200,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
       (method url-fetch)
@@ -209,7 +209,7 @@ for the GStreamer multimedia library.")
             name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1qhx6x3ax1qqbvm20zhqax3dsas4yzlx7vdjnjqllqzmcfbma0vs"))))
+        "1hkcap9l2603266gyi6jgvx7frbvfmb7xhfhjizbczy1wykjwr57"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)
