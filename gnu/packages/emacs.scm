@@ -1031,6 +1031,29 @@ light user interface.")
 and seeking.")
     (license license:gpl3+)))
 
+(define-public emacs-emms-mode-line-cycle
+  (package
+    (name "emacs-emms-mode-line-cycle")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/momomo5717/emms-mode-line-cycle"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ifszi930pnaxk1x8pcydmvnp06868gc7nfx14q17zbajbx735k6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emms" ,emms)))
+    (home-page "https://github.com/momomo5717/emms-mode-line-cycle")
+    (synopsis "Display the EMMS mode line as a ticker")
+    (description
+     "This is a minor mode for updating the EMMS mode-line string cyclically
+within a specified width.  It is useful for displaying long track titles.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Miscellaneous.
