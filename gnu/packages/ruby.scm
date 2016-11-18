@@ -47,6 +47,7 @@
 (define-public ruby
   (package
     (name "ruby")
+    (replacement ruby-2.3.2)
     (version "2.3.1")
     (source
      (origin
@@ -100,6 +101,25 @@
 a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
+
+(define ruby-2.3.2
+  (package
+    (inherit ruby)
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "031g76zxb2wp6988dmrpbqd98i17xi6l8q1115h83r2w0h8z6y2w"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
+                   #t))))))
 
 (define-public ruby-2.2
   (package (inherit ruby)
