@@ -1622,7 +1622,8 @@ transfer protocols.")
        ("linux-pam" ,linux-pam)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("bison" ,bison)))
+     `(("bison" ,bison)
+       ("groff" ,groff)))
     (arguments
      `(#:configure-flags (list "--with-table-db" "--localstatedir=/var"
                                "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
