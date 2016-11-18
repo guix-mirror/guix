@@ -3259,6 +3259,35 @@ Flx has support for ido (interactively do things) through flx-ido.")
 known loosely as deftheme.  Many mode-specific customizations are included.")
     (license license:gpl3+)))
 
+(define-public emacs-danneskjold-theme
+  (let* ((commit "8733d2fe8743e8a01826ea6d4430ef376c727e57")
+         (revision "1"))
+    (package
+      (name "emacs-danneskjold-theme")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (home-page "https://github.com/rails-to-cosmos/danneskjold-theme")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0s6rbsb0y8i8m5b9xm4gw1p1cxsxdqnqxqqb638pygz9f76mbir1"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'delete-screenshots
+             (lambda _
+               (delete-file-recursively "screenshots") #t)))))
+      (synopsis "High-contrast Emacs theme")
+      (description
+       "@code{danneskjold-theme} is a high-contrast theme for Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-auto-complete
   (package
     (name "emacs-auto-complete")
