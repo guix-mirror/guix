@@ -4747,6 +4747,7 @@ devices using the GNOME desktop.")
        ("cups" ,cups)
        ("dconf" ,dconf)
        ("docbook-xsl" ,docbook-xsl)
+       ("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-online-accounts" ,gnome-online-accounts)
