@@ -834,7 +834,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-puma-ignore-broken-test.patch       \
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
-  %D%/packages/patches/ruby-symlinkfix.patch                    \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/ruby-yard-fix-skip-of-markdown-tests.patch \
   %D%/packages/patches/sed-hurd-path-max.patch			\

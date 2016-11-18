@@ -47,7 +47,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
@@ -56,9 +56,8 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0f3395q7pd2hrl2gv26bib80038sjawxgmhl9zn22fjs9m9va9b7"))
+         "031g76zxb2wp6988dmrpbqd98i17xi6l8q1115h83r2w0h8z6y2w"))
        (modules '((guix build utils)))
-       (patches (search-patches "ruby-symlinkfix.patch"))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
