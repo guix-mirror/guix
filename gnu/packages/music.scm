@@ -943,6 +943,40 @@ oscillators and stereo effects.")
 effects.")
     (license license:gpl2+)))
 
+(define-public samplv1
+  (package
+    (name "samplv1")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/samplv1/samplv1/" version
+                              "/samplv1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0j3hkmd9q0bw9b7nk9cssqywlrishkd1n790a9vq6gh3pdc5sf3r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("liblo" ,liblo)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://samplv1.sourceforge.net")
+    (synopsis "Polyphonic sampler synthesizer with stereo effects")
+    (description
+     "Samplv1 is an old-school polyphonic sampler synthesizer with stereo
+effects.")
+    (license license:gpl2+)))
+
 (define-public amsynth
   (package
     (name "amsynth")
