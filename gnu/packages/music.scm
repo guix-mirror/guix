@@ -909,6 +909,40 @@ users to select LV2 plugins and run them with jalv.")
 oscillators and stereo effects.")
     (license license:gpl2+)))
 
+(define-public drumkv1
+  (package
+    (name "drumkv1")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/drumkv1/drumkv1/" version
+                              "/drumkv1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n2kd468kn71yp2asmamprvblmdlvh0zd8lsh3598dwi4b7aa3ga"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("liblo" ,liblo)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://drumkv1.sourceforge.net")
+    (synopsis "Drum-kit sampler synthesizer with stereo effects")
+    (description
+     "Drumkv1 is an old-school drum-kit sampler synthesizer with stereo
+effects.")
+    (license license:gpl2+)))
+
 (define-public amsynth
   (package
     (name "amsynth")
