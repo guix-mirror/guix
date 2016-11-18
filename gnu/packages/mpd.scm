@@ -301,7 +301,7 @@ interface for the Music Player Daemon.")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t)))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
      `(("python-mpd2" ,python-mpd2)
        ("gtk+" ,gtk+)

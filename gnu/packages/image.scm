@@ -948,7 +948,7 @@ differences in file encoding, image quality, and other small variations.")
               (patches (list (search-patch "steghide-fixes.patch")))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("perl" ,perl)))                 ;for tests
     (inputs

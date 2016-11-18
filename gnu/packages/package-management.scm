@@ -166,7 +166,7 @@
                      ;; guix' always contains them.
                      ("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
-                     ("gettext" ,gnu-gettext)
+                     ("gettext" ,gettext-minimal)
                      ("texinfo" ,texinfo)
                      ("graphviz" ,graphviz)
                      ("help2man" ,help2man)))

@@ -454,7 +454,7 @@ and up to 1 Mbit/s downstream.")
     (inputs
      `(("libidn" ,libidn)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("perl" ,perl)))
     (synopsis "Improved whois client")
     (description "This whois client is intelligent and can

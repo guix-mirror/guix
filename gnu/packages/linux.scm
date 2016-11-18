@@ -3128,7 +3128,7 @@ developers.")
                           (string-append "PREFIX=" %output))
        #:tests? #f))                    ; no tests
     (native-inputs
-     `(("gnu-gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libdrm" ,libdrm)

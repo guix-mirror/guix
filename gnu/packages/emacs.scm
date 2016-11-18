@@ -3350,7 +3350,7 @@ extensibility.")
         (base32 "1w08hnsbknrcjlzp42c99bgwc9hzsnf5m4apdv0dacql2s09zfm2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-charmaps="

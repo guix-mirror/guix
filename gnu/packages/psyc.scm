@@ -212,7 +212,7 @@ including psyced.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("bison" ,bison)
-       ("gnu-gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("help2man" ,help2man)
        ("autoconf" ,autoconf)
        ("automake" ,automake)))
