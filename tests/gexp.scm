@@ -375,7 +375,7 @@
                        (drv    (gexp->file "foo" exp))
                        (out -> (derivation->output-path drv))
                        (done   (built-derivations (list drv)))
-                       (refs   ((store-lift references) out)))
+                       (refs   (references* out)))
     (return (and (equal? sexp (call-with-input-file out read))
                  (equal? (list guile) refs)))))
 
@@ -386,7 +386,7 @@
                        (drv    (gexp->file "foo" exp))
                        (out -> (derivation->output-path drv))
                        (done   (built-derivations (list drv)))
-                       (refs   ((store-lift references) out)))
+                       (refs   (references* out)))
     (return (and (equal? (string-append guile "/bin/guile")
                          (call-with-input-file out read))
                  (equal? (list guile) refs)))))
@@ -407,8 +407,8 @@
                        (out ->  (derivation->output-path drv))
                        (out2 -> (derivation->output-path drv "2nd"))
                        (done    (built-derivations (list drv)))
-                       (refs    ((store-lift references) out))
-                       (refs2   ((store-lift references) out2))
+                       (refs    (references* out))
+                       (refs2   (references* out2))
                        (guile   (package-file %bootstrap-guile "bin/guile")))
     (return (and (string=? (readlink (string-append out "/foo")) guile)
                  (string=? (readlink out2) file)
@@ -481,7 +481,7 @@
                                               (ungexp output))))
                        (xdrv      (gexp->derivation "foo" exp
                                                     #:target target))
-                       (refs      ((store-lift references)
+                       (refs      (references*
                                    (derivation-file-name xdrv)))
                        (xcu       (package->cross-derivation coreutils
                                                              target))
@@ -506,7 +506,7 @@
                                               (ungexp output))))
                        (xdrv      (gexp->derivation "foo" exp
                                                     #:target target))
-                       (refs      ((store-lift references)
+                       (refs      (references*
                                    (derivation-file-name xdrv)))
                        (xglibc    (package->cross-derivation glibc target))
                        (cu        (package->derivation coreutils)))
@@ -808,34 +808,33 @@
                          (out -> (derivation->output-path drv)))
       (mbegin %store-monad
         (built-derivations (list drv))
-        (mlet %store-monad ((refs ((store-lift references) out)))
+        (mlet %store-monad ((refs (references* out)))
           (return (and (equal? refs (list text))
                        (equal? `(list "foo" ,text)
                                (call-with-input-file out read)))))))))
 
 (test-assert "text-file*"
-  (let ((references (store-lift references)))
-    (run-with-store %store
-      (mlet* %store-monad
-          ((drv  (package->derivation %bootstrap-guile))
-           (guile -> (derivation->output-path drv))
-           (file (text-file "bar" "This is bar."))
-           (text (text-file* "foo"
-                             %bootstrap-guile "/bin/guile "
-                             (gexp-input %bootstrap-guile "out") "/bin/guile "
-                             drv "/bin/guile "
-                             file))
-           (done (built-derivations (list text)))
-           (out -> (derivation->output-path text))
-           (refs (references out)))
-        ;; Make sure we get the right references and the right content.
-        (return (and (lset= string=? refs (list guile file))
-                     (equal? (call-with-input-file out get-string-all)
-                             (string-append guile "/bin/guile "
-                                            guile "/bin/guile "
-                                            guile "/bin/guile "
-                                            file)))))
-      #:guile-for-build (package-derivation %store %bootstrap-guile))))
+  (run-with-store %store
+    (mlet* %store-monad
+        ((drv  (package->derivation %bootstrap-guile))
+         (guile -> (derivation->output-path drv))
+         (file (text-file "bar" "This is bar."))
+         (text (text-file* "foo"
+                           %bootstrap-guile "/bin/guile "
+                           (gexp-input %bootstrap-guile "out") "/bin/guile "
+                           drv "/bin/guile "
+                           file))
+         (done (built-derivations (list text)))
+         (out -> (derivation->output-path text))
+         (refs (references* out)))
+      ;; Make sure we get the right references and the right content.
+      (return (and (lset= string=? refs (list guile file))
+                   (equal? (call-with-input-file out get-string-all)
+                           (string-append guile "/bin/guile "
+                                          guile "/bin/guile "
+                                          guile "/bin/guile "
+                                          file)))))
+    #:guile-for-build (package-derivation %store %bootstrap-guile)))
 
 (test-assertm "mixed-text-file"
   (mlet* %store-monad ((file ->   (mixed-text-file "mixed"
@@ -847,7 +846,7 @@
                        (guile ->  (derivation->output-path guile-drv)))
     (mbegin %store-monad
       (built-derivations (list drv))
-      (mlet %store-monad ((refs ((store-lift references) out)))
+      (mlet %store-monad ((refs (references* out)))
         (return (and (string=? (string-append "export PATH=" guile "/bin")
                                (call-with-input-file out get-string-all))
                      (equal? refs (list guile))))))))

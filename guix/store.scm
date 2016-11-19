@@ -98,6 +98,7 @@
             built-in-builders
             references
             references/substitutes
+            references*
             requisites
             referrers
             optimize-store
@@ -1169,6 +1170,9 @@ where FILE is the entry's absolute file name and STAT is the result of
 
 (define set-build-options*
   (store-lift set-build-options))
+
+(define references*
+  (store-lift references))
 
 (define-inlinable (current-system)
   ;; Consult the %CURRENT-SYSTEM fluid at bind time.  This is equivalent to
