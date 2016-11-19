@@ -2217,8 +2217,8 @@ saturation effect."))))
 simulation of the Hyperion Fuzz pedal."))))
 
 (define-public gx-voodoo-fuzz-lv2
-  (let ((commit "d2d6b27bc279f98c2fd11bbd58ffe2fb2c321ec4")
-        (revision "1"))
+  (let ((commit "aec7889b489385e8add06126e7a36ae2e26254b1")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-voodoo-fuzz-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2229,19 +2229,8 @@ simulation of the Hyperion Fuzz pedal."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "1ji915bly588a8xwvwspvsqv0nh8ljgi6rky2mk1d9d6nz96jrbk"))
+                  "0mc41ldlv89069iaysnfiqxy5h5sr8mdi5cxm3ij5q5v4jv3viwx"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxVoodoFuzz.lv2")
       (synopsis "Fuzz effect modelled after the Voodoo Lab SuperFuzz")
       (description "This package provides the LV2 plugin \"GxVoodooFuzz\", a
