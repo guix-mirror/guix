@@ -1625,10 +1625,12 @@ transfer protocols.")
      `(("bison" ,bison)
        ("groff" ,groff)))
     (arguments
-     `(#:configure-flags (list "--with-table-db" "--localstatedir=/var"
-                               "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
-                               "--with-group-queue=smtpq"
-                               "--with-path-socket=/var/run")
+     `(#:configure-flags
+       (list "--with-table-db" "--localstatedir=/var"
+             "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
+             "--with-group-queue=smtpq"
+             "--with-path-socket=/var/run"
+             "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
          ;; OpenSMTPD provides a single utility smtpctl to control the daemon and
