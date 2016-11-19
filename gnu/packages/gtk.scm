@@ -1116,7 +1116,7 @@ extensive documentation, including API reference and a tutorial.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://ftp.gnome.org/pub/GNOME/sources"
+      (uri (string-append "mirror://gnome/sources"
                           "/pygtk/" (version-major+minor version)
                           "/pygtk-" version ".tar.bz2"))
       (sha256

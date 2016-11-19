@@ -45,7 +45,7 @@
 
 (define %gcc-infrastructure
   ;; Base URL for GCC's infrastructure.
-  "ftp://gcc.gnu.org/pub/gcc/infrastructure/")
+  "mirror://gcc/infrastructure/")
 
 (define (gcc-configure-flags-for-triplet target)
   "Return a list of additional GCC `configure' flags for TARGET, a GNU triplet.

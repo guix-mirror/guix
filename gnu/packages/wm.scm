@@ -299,7 +299,7 @@ prompt.")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://hackage.haskell.org/package/xmonad/"
+              (uri (string-append "mirror://hackage/package/xmonad/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -355,7 +355,7 @@ tiled on several screens.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://hackage.haskell.org/package/xmonad-contrib/"
+       (uri (string-append "mirror://hackage/package/xmonad-contrib/"
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32

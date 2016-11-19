@@ -48,7 +48,7 @@
     (version "5.24.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.cpan.org/src/5.0/perl-"
+             (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32

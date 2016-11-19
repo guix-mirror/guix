@@ -946,7 +946,7 @@ Protocol).")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.sourceforge.net/project/extremetuxracer/releases/"
+                    "mirror://sourceforge/extremetuxracer/releases/"
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32

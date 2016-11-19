@@ -3355,9 +3355,8 @@ This package contains the library database.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "http://download.savannah.gnu.org/releases/m17n/m17n-lib-"
-             version ".tar.gz"))
+       (uri (string-append "mirror://savannah/m17n/m17n-lib-"
+                           version ".tar.gz"))
        (sha256
         (base32 "10yv730i25g1rpzv6q49m6xn4p8fjm7jdwvik2h70sn8w3hm7f4f"))))
     (build-system gnu-build-system)
