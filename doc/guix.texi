@@ -6405,7 +6405,9 @@ hardware is not supported on GuixSD.
 One of the main areas where free drivers or firmware are lacking is WiFi
 devices.  WiFi devices known to work include those using Atheros chips
 (AR9271 and AR7010), which corresponds to the @code{ath9k} Linux-libre
-driver, and for which free firmware exists and is available
+driver, and those using Broadcom/AirForce chips (BCM43xx with
+Wireless-Core Revision 5), which corresponds to the @code{b43-open}
+Linux-libre driver.  Free firmware exists for both and is available
 out-of-the-box on GuixSD, as part of @var{%base-firmware}
 (@pxref{operating-system Reference, @code{firmware}}).
 
@@ -7079,9 +7081,10 @@ the Linux kernel.  @xref{Initial RAM Disk}.
 @cindex firmware
 List of firmware packages loadable by the operating system kernel.
 
-The default includes firmware needed for Atheros-based WiFi devices
-(Linux-libre module @code{ath9k}).  @xref{Hardware Considerations}, for
-more info on supported hardware.
+The default includes firmware needed for Atheros- and Broadcom-based
+WiFi devices (Linux-libre modules @code{ath9k} and @code{b43-open},
+respectively).  @xref{Hardware Considerations}, for more info on
+supported hardware.
 
 @item @code{host-name}
 The host name.
