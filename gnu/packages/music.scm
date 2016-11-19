@@ -2177,8 +2177,8 @@ simulation of a push pull transistor fuzz effect with added high octave."))))
 pedal."))))
 
 (define-public gx-saturator-lv2
-  (let ((commit "361399245d234b4d02f11f066d25ac15d90c6bf8")
-        (revision "1"))
+  (let ((commit "0b581ac85c515325b9f16e51937cae6e1bf81a0a")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-saturator-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2189,19 +2189,8 @@ pedal."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "13cf5gxr2wzp5954hdhbl79v98a665ll5434mb3668p4j33sv217"))
+                  "1cl785pzq8zk55m1rnhfd6qsabci6kpf4pf002gwr91vagyq246z"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSaturator.lv2")
       (synopsis "Saturation effect")
       (description "This package provides the LV2 plugin \"GxSaturator\", a
