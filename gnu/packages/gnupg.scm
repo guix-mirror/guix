@@ -352,7 +352,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
       (method url-fetch)
@@ -360,7 +360,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "17892sclz3yg45wbyqqrzzpq3l0icbnfl28f101b3062g8cy97dh"))))
+        "0csx3qnycwm0n90ql6gs65if5xi4gqyzzy21fxs2xqicghjrfq2r"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
@@ -368,7 +368,6 @@ libskba (working with X.509 certificates and CMS data).")
     (inputs
      `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
-    (arguments '(#:make-flags '("GPG=gpg2")))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
     (synopsis "Library providing simplified access to GnuPG functionality")
     (description
