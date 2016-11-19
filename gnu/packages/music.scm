@@ -2261,8 +2261,8 @@ pot, which is usualy in the housing, is exposed as a control parameter.  It
 adjusts the amount of harmonics."))))
 
 (define-public gx-vintage-fuzz-master-lv2
-  (let ((commit "c3ab9a3019a8381a398718b98615940b4a225b9e")
-        (revision "1"))
+  (let ((commit "0fec0bc1e8a8ba909a68e916e036138a3425d7db")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-vintage-fuzz-master-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2273,19 +2273,8 @@ adjusts the amount of harmonics."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "0s1ghysggx6psalyhcpgjnmf38vama6jcqgbldqmxii5c2w2ybsc"))
+                  "06szi6d2iwkygbw5azhwzhcl2as4lmk2gs9hanngsf46a1zbdcp7"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
       (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
       (description "This package provides the LV2 plugin
