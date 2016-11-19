@@ -2239,8 +2239,8 @@ Bosstone circuit, followed by the tone control of the FoxToneMachine in
 parallel with a DarkBooster, followed by a volume control."))))
 
 (define-public gx-super-fuzz-lv2
-  (let ((commit "9800354caeb4082a64ca55b2daa9a9a1f79b8c21")
-        (revision "1"))
+  (let ((commit "f40389575812c909007d140d327ce579930b71f7")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-super-fuzz-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2251,19 +2251,8 @@ parallel with a DarkBooster, followed by a volume control."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "1jclp53p01h94cpx17wm4765r7klbr41g7bvq87l53qwlrgkc7a9"))
+                  "174bibj8qzm8zr6f5h8bcj94iry17zravk8flpdy84n6yg7cixji"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
       (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
       (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
