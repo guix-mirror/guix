@@ -2197,8 +2197,8 @@ pedal."))))
 saturation effect."))))
 
 (define-public gx-hyperion-lv2
-  (let ((commit "7d993bc77f9946b3df0e481632c61b2dcbb6549f")
-        (revision "1"))
+  (let ((commit "6a096a664e553e551e179e85cf390bd1683410fb")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-hyperion-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2209,19 +2209,8 @@ saturation effect."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "12klcyc6l9v93ii3478mqz44jzvh5np1sk8zzdmz42jp0w8qd429"))
+                  "1ksv3wmylhwbf6kjl2lnhr14h9rfl291cfm21471gnb1r68yqfxh"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxHyperion.lv2")
       (synopsis "Simulation of the Hyperion Fuzz pedal")
       (description "This package provides the LV2 plugin \"GxHyperion\", a
