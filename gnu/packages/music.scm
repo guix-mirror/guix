@@ -2281,8 +2281,8 @@ adjusts the amount of harmonics."))))
 \"GxVintageFuzzMaster\", a simulation of the vintage Fuzz Master pedal."))))
 
 (define-public gx-slow-gear-lv2
-  (let ((commit "1071c2b2936ebad859242cb578af2f3415f8900f")
-        (revision "1"))
+  (let ((commit "cb852e0426f4e6fe077e7f1ede73a4da335cfc5e")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-slow-gear-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2293,19 +2293,8 @@ adjusts the amount of harmonics."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "0c6099h5qkv7ilsvxxcrzwy1h6lkld1srh3fvbjxyw9q34kbqsyl"))
+                  "0dp7afi1r3kzciiyn1hrkz6arsq47ys9sx5g4b7xa9k1dv92ishp"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSlowGear.lv2")
       (synopsis "Slow gear audio effect")
       (description "This package provides the LV2 plugin \"GxSlowGear\", a
