@@ -2301,8 +2301,8 @@ adjusts the amount of harmonics."))))
 slow gear audio effect to produce volume swells."))))
 
 (define-public gx-switchless-wah-lv2
-  (let ((commit "1d466240c482b7ce9136aee39044068ab96f1c92")
-        (revision "1"))
+  (let ((commit "7b08691203314612999f0ce2328cdc1161cd6665")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-switchless-wah-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2313,19 +2313,8 @@ slow gear audio effect to produce volume swells."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "0g6njgsm8s76n6yys09a8w77z93pjjgqq9hzhhsrl73hhvyr9qmy"))
+                  "04jqfpncmrrqn34p21w4v9m2x5a5wsqwbm4f3byxvq4vcibwxzk2"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSwitchlessWah.lv2")
       (synopsis "Wah emulation with switchless activation")
       (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
