@@ -322,9 +322,6 @@ the daemon."
                       result))
                 store)))))
 
-(define raw-derivation
-  (store-lift derivation))
-
 (define* (built-in-download file-name url
                             #:key system hash-algo hash
                             mirrors content-addressed-mirrors
