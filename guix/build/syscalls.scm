@@ -95,6 +95,8 @@
             set-network-interface-netmask
             set-network-interface-up
             configure-network-interface
+            add-network-route/gateway
+            delete-network-route
 
             interface?
             interface-name
@@ -805,6 +807,14 @@ exception if it's already taken."
   (if (string-contains %host-type "linux")
       #x891c                                      ;GNU/Linux
       -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCADDRT
+  (if (string-contains %host-type "linux")
+      #x890B                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCDELRT
+  (if (string-contains %host-type "linux")
+      #x890C                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
 
 ;; Flags and constants from <net/if.h>.
 
@@ -1087,6 +1097,106 @@ is true, it must be a socket address to use as the network mask."
                                        (logior flags IFF_UP))))
       (lambda ()
         (close-port sock)))))
+
+
+;;;
+;;; Network routes.
+;;;
+
+(define-c-struct %rtentry                 ;'struct rtentry' from <net/route.h>
+  sizeof-rtentry
+  list
+  read-rtentry
+  write-rtentry!
+  (pad1            unsigned-long)
+  (destination     (array uint8 16))              ;struct sockaddr
+  (gateway         (array uint8 16))              ;struct sockaddr
+  (genmask         (array uint8 16))              ;struct sockaddr
+  (flags           unsigned-short)
+  (pad2            short)
+  (pad3            long)
+  (tos             uint8)
+  (class           uint8)
+  (pad4            (array uint8 (if (= 8 (sizeof* '*)) 3 1)))
+  (metric          short)
+  (device          '*)
+  (mtu             unsigned-long)
+  (window          unsigned-long)
+  (initial-rtt     unsigned-short))
+
+(define RTF_UP #x0001)                     ;'rtentry' flags from <net/route.h>
+(define RTF_GATEWAY #x0002)
+
+(define %sockaddr-any
+  (make-socket-address AF_INET INADDR_ANY 0))
+
+(define add-network-route/gateway
+  ;; To allow field names to be matched as literals, we need to move them out
+  ;; of the lambda's body since the parameters have the same name.  A lot of
+  ;; fuss for very little.
+  (let-syntax ((gateway-offset (identifier-syntax
+                                (c-struct-field-offset %rtentry gateway)))
+               (destination-offset (identifier-syntax
+                                    (c-struct-field-offset %rtentry destination)))
+               (genmask-offset (identifier-syntax
+                                (c-struct-field-offset %rtentry genmask))))
+    (lambda* (socket gateway
+                     #:key (destination %sockaddr-any) (genmask %sockaddr-any))
+      "Add a network route for DESTINATION (a socket address as returned by
+'make-socket-address') that goes through GATEWAY (a socket address).  For
+instance, the call:
+
+  (add-network-route/gateway sock
+                             (make-socket-address
+                               AF_INET
+                               (inet-pton AF_INET \"192.168.0.1\")
+                               0))
+
+is equivalent to this 'net-tools' command:
+
+  route add -net default gw 192.168.0.1
+
+because the default value of DESTINATION is \"0.0.0.0\"."
+      (let ((route (make-bytevector sizeof-rtentry 0)))
+        (write-socket-address! gateway route gateway-offset)
+        (write-socket-address! destination route destination-offset)
+        (write-socket-address! genmask route genmask-offset)
+        (bytevector-u16-native-set! route
+                                    (c-struct-field-offset %rtentry flags)
+                                    (logior RTF_UP RTF_GATEWAY))
+        (let-values (((ret err)
+                      (%ioctl (fileno socket) SIOCADDRT
+                              (bytevector->pointer route))))
+          (unless (zero? ret)
+            (throw 'system-error "add-network-route/gateway"
+                   "add-network-route/gateway: ~A"
+                   (list (strerror err))
+                   (list err))))))))
+
+(define delete-network-route
+  (let-syntax ((destination-offset (identifier-syntax
+                                    (c-struct-field-offset %rtentry destination))))
+    (lambda* (socket destination)
+      "Delete the network route for DESTINATION.  For instance, the call:
+
+  (delete-network-route sock
+                        (make-socket-address AF_INET INADDR_ANY 0))
+
+is equivalent to the 'net-tools' command:
+
+  route del -net default
+"
+
+      (let ((route (make-bytevector sizeof-rtentry 0)))
+        (write-socket-address! destination route destination-offset)
+        (let-values (((ret err)
+                      (%ioctl (fileno socket) SIOCDELRT
+                              (bytevector->pointer route))))
+          (unless (zero? ret)
+            (throw 'system-error "delete-network-route"
+                   "delete-network-route: ~A"
+                   (list (strerror err))
+                   (list err))))))))
 
 
 ;;;
