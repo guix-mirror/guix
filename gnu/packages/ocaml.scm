@@ -454,6 +454,42 @@ assistant to write formal mathematical proofs using a variety of theorem
 provers.")
     (license gpl2+)))
 
+(define-public ocaml-menhir
+  (package
+    (name "ocaml-menhir")
+    (version "20161115")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://gallium.inria.fr/~fpottier/menhir/"
+                    "menhir-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j8nmcj2gq6hyyi16z27amiahplgrnk4ppchpm0v4qy80kwkf47k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ocaml" ,ocaml)))
+    (arguments
+     `(#:parallel-build? #f ; Parallel build causes failure
+       #:tests? #f ; No check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PREFIX" out))
+             #t)))))
+    (home-page "http://gallium.inria.fr/~fpottier/menhir")
+    (synopsis "Parser generator")
+    (description "Menhir is a parser generator.  It turns high-level grammar
+specifications, decorated with semantic actions expressed in the OCaml
+programming language into parsers, again expressed in OCaml. It is based on
+Knuth’s LR(1) parser construction technique.")
+    ;; The file src/standard.mly and all files listed in src/mnehirLib.mlpack
+    ;; that have an *.ml or *.mli extension are GPL licensed. All other files
+    ;; are QPL licensed.
+    (license (list gpl2+ qpl))))
+
 (define-public lablgtk
   (package
     (name "lablgtk")
