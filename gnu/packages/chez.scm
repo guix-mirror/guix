@@ -100,6 +100,10 @@
                  '())))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-processor-detection
+           (lambda _ (substitute* "configure"
+                       (("uname -a") "uname -m"))
+             #t))
          ;; Adapt the custom 'configure' script.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
