@@ -1289,7 +1289,8 @@ can also be used to document application code.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
-    (propagated-inputs
+    (inputs
+     ;; Don't propagate GTK+ to reduce "profile pollution".
      `(("gtk+" ,gtk+-2))) ; required by gtk-engines-2.pc
     (home-page "http://live.gnome.org/GnomeArt")
     (synopsis "Theming engines for GTK+ 2.x")
