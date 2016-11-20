@@ -267,6 +267,29 @@ result is the alignment of the \"most strictly aligned component\"."
                                         (align offset type0)
                                         type0))))))
 
+(define-syntax define-c-struct-macro
+  (syntax-rules ()
+    "Define NAME as a macro that can be queried to get information about the C
+struct it represents.  In particular:
+
+  (NAME field-offset FIELD)
+
+returns the offset in bytes of FIELD within the C struct represented by NAME."
+    ((_ name ((fields types) ...))
+     (define-c-struct-macro name
+       (fields ...) 0 ()
+       ((fields types) ...)))
+    ((_ name (fields ...) offset (clauses ...) ((field type) rest ...))
+     (define-c-struct-macro name
+       (fields ...)
+       (+ (align offset type) (type-size type))
+       (clauses ... ((_ field-offset field) (align offset type)))
+       (rest ...)))
+    ((_ name (fields ...) offset (clauses ...) ())
+     (define-syntax name
+       (syntax-rules (field-offset fields ...)
+         clauses ...)))))
+
 (define-syntax define-c-struct
   (syntax-rules ()
     "Define SIZE as the size in bytes of the C structure made of FIELDS.  READ
@@ -274,12 +297,20 @@ as a deserializer and WRITE! as a serializer for the C structure with the
 given TYPES.  READ uses WRAP-FIELDS to return its value."
     ((_ name size wrap-fields read write! (fields types) ...)
      (begin
+       (define-c-struct-macro name
+         ((fields types) ...))
        (define size
          (struct-size 0 () types ...))
        (define (write! bv offset fields ...)
          (write-types bv offset (types ...) (fields ...)))
        (define* (read bv #:optional (offset 0))
          (read-types wrap-fields bv offset (types ...) ()))))))
+
+(define-syntax-rule (c-struct-field-offset type field)
+  "Return the offset in BYTES of FIELD within TYPE, where TYPE is a C struct
+defined with 'define-c-struct' and FIELD is a field identifier.  An
+expansion-time error is raised if FIELD does not exist in TYPE."
+  (type field-offset field))
 
 
 ;;;
