@@ -1,6 +1,6 @@
 Fix some buffer overflows:
 
-http://seclists.org/oss-sec/2016/q4/
+http://seclists.org/oss-sec/2016/q4/408
 http://bugzilla.maptools.org/show_bug.cgi?id=2592
 
 2016-11-11 Even Rouault <even.rouault at spatialys.com>
