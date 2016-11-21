@@ -70,6 +70,12 @@ struct Settings {
        subgoal of the same goal) fails. */
     bool keepGoing;
 
+    /* User and groud id of the client issuing the build request.  Used to set
+       the owner and group of the kept temporary directories of failed
+       builds. */
+    uid_t clientUid;
+    gid_t clientGid;
+
     /* Whether, if we cannot realise the known closure corresponding
        to a derivation, we should try to normalise the derivation
        instead. */

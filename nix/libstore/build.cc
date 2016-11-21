@@ -2631,6 +2631,21 @@ void DerivationGoal::closeLogFile()
 }
 
 
+static void _chown(const Path & path, uid_t uid, gid_t gid)
+{
+    checkInterrupt();
+
+    if (lchown(path.c_str(), uid, gid) == -1) {
+	throw SysError(format("change owner and group of `%1%'") % path);
+    }
+    struct stat st = lstat(path);
+    if (S_ISDIR(st.st_mode)) {
+        for (auto & i : readDirectory(path))
+            _chown(path + "/" + i.name, uid, gid);
+    }
+}
+
+
 void DerivationGoal::deleteTmpDir(bool force)
 {
     if (tmpDir != "") {
@@ -2639,6 +2654,12 @@ void DerivationGoal::deleteTmpDir(bool force)
                 format("note: keeping build directory `%2%'")
                 % drvPath % tmpDir);
             chmod(tmpDir.c_str(), 0755);
+            // Change the ownership if clientUid is set. Never change the
+            // ownership or the group to "root" for security reasons.
+            if (settings.clientUid != (uid_t) -1 && settings.clientUid != 0) {
+                _chown(tmpDir, settings.clientUid,
+                       settings.clientGid != 0 ? settings.clientGid : -1);
+            }
         }
         else
             deletePath(tmpDir);

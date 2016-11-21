@@ -960,6 +960,18 @@ static void daemonLoop()
                     strncpy(argvSaved[1], processName.c_str(), strlen(argvSaved[1]));
                 }
 
+#if defined(SO_PEERCRED)
+                /* Store the client's user and group for this connection. This
+                   has to be done in the forked process since it is per
+                   connection. */
+                settings.clientUid = cred.uid;
+                settings.clientGid = cred.gid;
+#else
+                /* Setting these to -1 means: do not change */
+                settings.clientUid = (uid_t) -1;
+                settings.clientGid = (gid_t) -1;
+#endif
+
                 /* Handle the connection. */
                 from.fd = remote;
                 to.fd = remote;
