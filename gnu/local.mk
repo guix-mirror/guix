@@ -286,7 +286,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/openstack.scm			\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
-  %D%/packages/owncloud.scm			\
   %D%/packages/package-management.scm		\
   %D%/packages/parallel.scm			\
   %D%/packages/password-utils.scm		\
@@ -351,6 +350,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
   %D%/packages/sxiv.scm				\
+  %D%/packages/sync.scm			\
   %D%/packages/synergy.scm			\
   %D%/packages/syndication.scm			\
   %D%/packages/task-management.scm		\
