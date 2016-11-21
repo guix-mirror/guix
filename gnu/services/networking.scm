@@ -126,9 +126,6 @@ fe80::1%lo0 apps.facebook.com\n")
      (($ <static-networking> interface ip netmask gateway provision
                              name-servers)
       (let ((loopback? (memq 'loopback provision)))
-
-        ;; TODO: Eventually replace 'route' with bindings for the appropriate
-        ;; ioctls.
         (shepherd-service
 
          ;; Unless we're providing the loopback interface, wait for udev to be up
@@ -191,8 +188,7 @@ fe80::1%lo0 apps.facebook.com\n")
                                     #:key
                                     netmask gateway
                                     (provision '(networking))
-                                    (name-servers '())
-                                    (net-tools net-tools))
+                                    (name-servers '()))
   "Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
 it must be a string specifying the default network gateway."
