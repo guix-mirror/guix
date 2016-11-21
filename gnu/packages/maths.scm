@@ -2723,7 +2723,6 @@ set.")
              ;; Custom install because docs/Makefile doesn't honor ${docdir}.
              (let* ((doc (assoc-ref outputs "doc"))
                     (docdir (string-append doc "/share/doc/hypre-" ,version)))
-               (mkdir-p docdir)
                (with-directory-excursion "docs"
                  (for-each (lambda (base)
                              (install-file (string-append base ".pdf") docdir)

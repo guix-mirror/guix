@@ -1216,7 +1216,6 @@ is subjective.")
                     (lib   (string-append share "/java"))
                     (swt   (assoc-ref inputs "java-swt")))
                (mkdir-p bin)
-               (mkdir-p lib)
                ;; install all jars
                (for-each (lambda (file)
                            (install-file file lib))
