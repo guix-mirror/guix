@@ -10075,16 +10075,11 @@ For MariaDB, the root password is empty.
 @cindex mail
 @cindex email
 The @code{(gnu services mail)} module provides Guix service definitions
-for mail services.  Currently the only implemented service is Dovecot,
-an IMAP, POP3, and LMTP server.
+for email services: IMAP, POP3, and LMTP servers, as well as mail
+transport agents (MTAs).  Lots of acronyms!  These services are detailed
+in the subsections below.
 
-Guix does not yet have a mail transfer agent (MTA), although for some
-lightweight purposes the @code{esmtp} relay-only MTA may suffice.  Help
-is needed to properly integrate a full MTA, such as Postfix.  Patches
-welcome!
-
-To add an IMAP/POP3 server to a GuixSD system, add a
-@code{dovecot-service} to the operating system definition:
+@subsubheading Dovecot Service
 
 @deffn {Scheme Procedure} dovecot-service [#:config (dovecot-configuration)]
 Return a service that runs the Dovecot IMAP/POP3/LMTP mail server.
@@ -11440,6 +11435,35 @@ could instantiate a dovecot service like this:
                   (string "")))
 @end example
 
+@subsubheading OpenSMTPD Service
+
+@deffn {Scheme Variable} opensmtpd-service-type
+This is the type of the @uref{https://www.opensmtpd.org, OpenSMTPD}
+service, whose value should be an @code{opensmtpd-configuration} object
+as in this example:
+
+@example
+(service opensmtpd-service-type
+         (opensmtpd-configuration
+           (config-file (local-file "./my-smtpd.conf"))))
+@end example
+@end deffn
+
+@deftp {Data Type} opensmtpd-configuration
+Data type regresenting the configuration of opensmtpd.
+
+@table @asis
+@item @code{package} (default: @var{opensmtpd})
+Package object of the OpenSMTPD SMTP server.
+
+@item @code{config-file} (default: @var{%default-opensmtpd-file})
+File-like object of the OpenSMTPD configuration file to use.  By default
+it listens on the loopback network interface, and allows for mail from
+users and daemons on the local machine, as well as permitting email to
+remote servers.  Run @command{man smtpd.conf} for more information.
+
+@end table
+@end deftp
 
 @node Kerberos Services
 @subsubsection Kerberos Services

@@ -51,7 +51,12 @@
             protocol-configuration
             plugin-configuration
             mailbox-configuration
-            namespace-configuration))
+            namespace-configuration
+
+            opensmtpd-configuration
+            opensmtpd-configuration?
+            opensmtpd-service-type
+            %default-opensmtpd-config-file))
 
 ;;; Commentary:
 ;;;
@@ -1691,3 +1696,78 @@ by @code{dovecot-configuration}.  @var{config} may also be created by
             (format #t "@end deftypevr\n\n")))
         fields))))
   (generate 'dovecot-configuration))
+
+
+;;;
+;;; OpenSMTPD.
+;;;
+
+(define-record-type* <opensmtpd-configuration>
+  opensmtpd-configuration make-opensmtpd-configuration
+  opensmtpd-configuration?
+  (package     opensmtpd-configuration-package
+               (default opensmtpd))
+  (config-file opensmtpd-configuration-config-file
+               (default %default-opensmtpd-config-file)))
+
+(define %default-opensmtpd-config-file
+  (plain-file "smtpd.conf" "
+listen on lo
+accept from any for local deliver to mbox
+accept from local for any relay
+"))
+
+(define opensmtpd-shepherd-service
+  (match-lambda
+    (($ <opensmtpd-configuration> package config-file)
+     (list (shepherd-service
+            (provision '(smtpd))
+            (requirement '(loopback))
+            (documentation "Run the OpenSMTPD daemon.")
+            (start (let ((smtpd (file-append package "/sbin/smtpd")))
+                     #~(make-forkexec-constructor
+                        (list #$smtpd "-f" #$config-file)
+                        #:pid-file "/var/run/smtpd.pid")))
+            (stop #~(make-kill-destructor)))))))
+
+(define %opensmtpd-accounts
+  (list (user-group
+         (name "smtpq")
+         (system? #t))
+        (user-account
+         (name "smtpd")
+         (group "nogroup")
+         (system? #t)
+         (comment "SMTP Daemon")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))
+        (user-account
+         (name "smtpq")
+         (group "smtpq")
+         (system? #t)
+         (comment "SMTPD Queue")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define opensmtpd-activation
+  (match-lambda
+    (($ <opensmtpd-configuration> package config-file)
+     (let ((smtpd (file-append package "/sbin/smtpd")))
+       #~(begin
+           ;; Create mbox and spool directories.
+           (mkdir-p "/var/mail")
+           (mkdir-p "/var/spool/smtpd")
+           (chmod "/var/spool/smtpd" #o711))))))
+
+(define opensmtpd-service-type
+  (service-type
+   (name 'opensmtpd)
+   (extensions
+    (list (service-extension account-service-type
+                             (const %opensmtpd-accounts))
+          (service-extension activation-service-type
+                             opensmtpd-activation)
+          (service-extension profile-service-type
+                             (compose list opensmtpd-configuration-package))
+          (service-extension shepherd-root-service-type
+                             opensmtpd-shepherd-service)))))
