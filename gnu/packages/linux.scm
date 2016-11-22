@@ -1683,7 +1683,8 @@ time.")
                     (("confdir = .*$")
                      "confdir = @sysconfdir@\n")
                     (("DEFAULT_SYS_DIR = @DEFAULT_SYS_DIR@")
-                     "DEFAULT_SYS_DIR = @sysconfdir@"))))))
+                     "DEFAULT_SYS_DIR = @sysconfdir@"))))
+              (patches (search-patches "lvm2-static-link.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1737,6 +1738,22 @@ mapper.  Kernel components are part of Linux-libre.")
     ;; Libraries (liblvm2, libdevmapper) are LGPLv2.1.
     ;; Command-line tools are GPLv2.
     (license (list license:gpl2 license:lgpl2.1))))
+
+(define-public lvm2-static
+  (package
+    (inherit lvm2)
+    (name "lvm2-static")
+
+    ;; Propagate udev because libdevmapper.a depends on libudev.
+    (inputs (alist-delete "udev" (package-inputs lvm2)))
+    (propagated-inputs `(("udev" ,eudev)))
+
+    (arguments
+     (substitute-keyword-arguments (package-arguments lvm2)
+       ((#:configure-flags flags '())
+        ;; LVM2 doesn't use Libtool, hence the custom option.
+        `(cons "--enable-static_link" ,flags))))
+    (synopsis "Logical volume management for Linux (statically linked)")))
 
 (define-public wireless-tools
   (package
