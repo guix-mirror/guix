@@ -568,6 +568,11 @@ invoking @command{notifymuch} from the post-new hook.")
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
                         (("/bin/sh") (which "sh")))
+                      ;; XXX: Some signature verification tests fail with
+                      ;; gnupg-2.1.16, so we skip them. See this thread:
+                      ;; https://notmuchmail.org/pipermail/notmuch/2016/023688.html
+                      (setenv "NOTMUCH_SKIP_TESTS"
+                              "T350-crypto.2 T350-crypto.3 T350-crypto.4 T350-crypto.15")
                       #t)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
