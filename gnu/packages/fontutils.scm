@@ -46,13 +46,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.6.3")
+   (version "2.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "18k3b026762lmyrxfil5xv8qwnvj7hc12gz9bjqzbb12lmx707ip"))))
+                     "0j3xgzn6pchgg1nm294vhx7cdicb7x3x8kwnlcm7v1alnzsm396n"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -69,7 +69,7 @@ It supports both bitmap and scalable formats, including TrueType, OpenType,
 Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
-   (home-page "http://www.freetype.org/")))
+   (home-page "https://www.freetype.org/")))
 
 (define-public ttfautohint
   (package
