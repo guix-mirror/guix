@@ -2328,13 +2328,13 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "0.6.8")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "0k881ffazpf8q1z8862g4bb3pzwpnz9whrci2mf311mvn1qbyqad"))))
+                "1m0fs6897vxfkf7awah5i66i7b7smm5fnywf1w50fpzyfbfhr156"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
