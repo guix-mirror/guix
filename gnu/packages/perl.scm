@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -2053,6 +2053,35 @@ each stack frame.")
     (synopsis "Keyed-Hashing for Message Authentication")
     (description "The Digest::HMAC module follows the common Digest::
 interface for the RFC 2104 HMAC mechanism.")
+    (license (package-license perl))))
+
+(define-public perl-digest-md5
+  (package
+    (name "perl-digest-md5")
+    (version "2.55")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/Digest-MD5-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0g0fklbrm2krswc1xhp4iwn1dhqq71fqh2p5wm8xj9a4s6i9ic83"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'set-permissions
+           (lambda _
+             ;; Make MD5.so read-write so it can be stripped.
+             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)))))))
+    (home-page "http://search.cpan.org/dist/Digest-MD5")
+    (synopsis "Perl interface to the MD-5 algorithm")
+    (description
+     "The @code{Digest::MD5} module allows you to use the MD5 Message Digest
+algorithm from within Perl programs.  The algorithm takes as
+input a message of arbitrary length and produces as output a
+128-bit \"fingerprint\" or \"message digest\" of the input.")
     (license (package-license perl))))
 
 (define-public perl-digest-sha1
