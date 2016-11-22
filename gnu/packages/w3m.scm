@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,14 +49,15 @@
                (base32
                 "142vkkmsk76wj9w6r4y2pa1hmy1kkzmc73an9zchx0ikm2z92x6s"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f  ; no check target
-                 #:phases (alist-cons-before
-                           'configure 'fix-perl
-                           (lambda _
-                             (substitute* '("scripts/w3mmail.cgi.in"
-                                            "scripts/dirlist.cgi.in")
-                               (("@PERL@") (which "perl"))))
-                           %standard-phases)))
+    (arguments
+     '(#:tests? #f  ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-perl
+           (lambda _ (substitute* '("scripts/w3mmail.cgi.in"
+                                    "scripts/dirlist.cgi.in")
+                       (("@PERL@") (which "perl")))
+             #t)))))
     (inputs
      `(("libgc" ,libgc)
        ("ncurses" ,ncurses)
