@@ -127,9 +127,16 @@
                        (("set -e") "exit 77\nset -e"))
                      #t)))))
     (inputs
-     `(;; ("lvm2" ,lvm2)
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
+
+       ;; Depend on LVM2 for libdevmapper, used by 'grub-probe' and
+       ;; 'grub-install' to recognize mapped devices (LUKS, etc.)
+       ("lvm2" ,lvm2)
+
+       ;; Depend on mdadm, which is invoked by 'grub-probe' and 'grub-install'
+       ;; to determine whether the root file system is RAID.
        ("mdadm" ,mdadm)
+
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
        ;; ("fuse" ,fuse)
