@@ -243,7 +243,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
+   (replacement libtiff-4.0.7)
    (version "4.0.6")
    (source (origin
             (method url-fetch)
@@ -283,27 +283,18 @@ collection of tools for doing simple manipulations of TIFF images.")
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.remotesensing.org/libtiff/")))
 
-(define libtiff/fixed
+(define libtiff-4.0.7
   (package
     (inherit libtiff)
+    (version "4.0.7")
     (source (origin
-              (inherit (package-source libtiff))
-              (patches (search-patches
-                         "libtiff-oob-accesses-in-decode.patch"
-                         "libtiff-oob-write-in-nextdecode.patch"
-                         "libtiff-uint32-overflow.patch"
-                         "libtiff-CVE-2015-8665+CVE-2015-8683.patch"
-                         "libtiff-CVE-2016-3623.patch"
-                         "libtiff-CVE-2016-3945.patch"
-                         "libtiff-CVE-2016-3990.patch"
-                         "libtiff-CVE-2016-3991.patch"
-                         "libtiff-CVE-2016-5314.patch"
-                         "libtiff-CVE-2016-5321.patch"
-                         "libtiff-CVE-2016-5323.patch"
-                         "libtiff-CVE-2016-5652.patch"
-                         "libtiff-CVE-2016-9273.patch"
-                         "libtiff-CVE-2016-9297.patch"
-                         "libtiff-CVE-2016-9448.patch"))))))
+              (method url-fetch)
+              (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
+    (home-page "http://www.simplesystems.org/libtiff/")))
 
 (define-public libwmf
   (package
