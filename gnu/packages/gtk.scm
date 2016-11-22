@@ -165,7 +165,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.2.4")
+   (version "1.3.3")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -173,7 +173,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14g4kpph8hgplkm954daxiymxx0vicfq7b7svvdsx54g5bqvv7a4"))))
+               "1jdkdjvci5d6r26vimsz24hz3xqqrk5xq40n693jn4m42mqrh816"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -198,7 +198,7 @@ affine transformation (scale, rotation, shear, etc.).")
     "HarfBuzz is an OpenType text shaping engine.")
    (license (license:x11-style "file://COPYING"
                        "See 'COPYING' in the distribution."))
-   (home-page "http://www.freedesktop.org/wiki/Software/HarfBuzz/")))
+   (home-page "https://www.freedesktop.org/wiki/Software/HarfBuzz/")))
 
 (define-public pango
   (package
