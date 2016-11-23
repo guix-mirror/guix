@@ -36,6 +36,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  ;; To provide gcc@5 and gcc@6, to work around <http://bugs.gnu.org/24703>.
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -243,25 +245,14 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff-4.0.7)
-   (version "4.0.6")
+   (version "4.0.7")
    (source (origin
             (method url-fetch)
-            (uri (string-append "ftp://ftp.remotesensing.org/pub/libtiff/tiff-"
-                   version ".tar.gz"))
-            (sha256 (base32
-                     "136nf1rj9dp5jgv1p7z4dk0xy3wki1w0vfjbk82f645m0w4samsd"))
-            (patches (search-patches
-                      "libtiff-oob-accesses-in-decode.patch"
-                      "libtiff-oob-write-in-nextdecode.patch"
-                      "libtiff-CVE-2015-8665+CVE-2015-8683.patch"
-                      "libtiff-CVE-2016-3623.patch"
-                      "libtiff-CVE-2016-3945.patch"
-                      "libtiff-CVE-2016-3990.patch"
-                      "libtiff-CVE-2016-3991.patch"
-                      "libtiff-CVE-2016-5314.patch"
-                      "libtiff-CVE-2016-5321.patch"
-                      "libtiff-CVE-2016-5323.patch"))))
+            (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -271,6 +262,9 @@ extracting icontainer icon files.")
                                              (assoc-ref %outputs "doc")
                                              "/share/doc/"
                                              ,name "-" ,version))))
+   ;; Build with a patched GCC to work around <http://bugs.gnu.org/24703>.
+   (native-inputs
+    `(("gcc@5" ,gcc-5)))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
@@ -281,20 +275,7 @@ Included are a library, libtiff, for reading and writing TIFF and a small
 collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
-   (home-page "http://www.remotesensing.org/libtiff/")))
-
-(define libtiff-4.0.7
-  (package
-    (inherit libtiff)
-    (version "4.0.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
-    (home-page "http://www.simplesystems.org/libtiff/")))
+   (home-page "http://www.simplesystems.org/libtiff/")))
 
 (define-public libwmf
   (package
