@@ -469,6 +469,27 @@ Standard Book Numbers, including ISBN-10 and ISBN-13.")
 Standard Serial Numbers.")
     (license (package-license perl))))
 
+(define-public perl-business-ismn
+  (package
+    (name "perl-business-ismn")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISMN-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cm1v75axg4gp6cnbyavmnqqjscsxh7nc60vcbw34rqivvf9idc9"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-tie-cycle" ,perl-tie-cycle)))
+    (home-page "http://search.cpan.org/dist/Business-ISMN")
+    (synopsis "Work with International Standard Music Numbers")
+    (description "This modules provides tools to deal with International
+Standard Music Numbers.")
+    (license (package-license perl))))
+
 (define-public perl-cache-cache
   (package
     (name "perl-cache-cache")
