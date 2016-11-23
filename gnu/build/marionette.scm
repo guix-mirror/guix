@@ -27,6 +27,7 @@
             marionette-eval
             marionette-control
             marionette-screen-text
+            wait-for-screen-text
             %qwerty-us-keystrokes
             marionette-type))
 
@@ -203,6 +204,24 @@ this by invoking OCRAD (file name for GNU Ocrad's command)"
           text))
       (lambda ()
         (false-if-exception (delete-file image))))))
+
+(define* (wait-for-screen-text marionette predicate
+                               #:key (timeout 30) (ocrad "ocrad"))
+  "Wait for TIMEOUT seconds or until the screen text on MARIONETTE matches
+PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
+  (define start
+    (car (gettimeofday)))
+
+  (define end
+    (+ start timeout))
+
+  (let loop ()
+    (if (> (car (gettimeofday)) end)
+        (error "'wait-for-screen-text' timeout" predicate)
+        (or (predicate (marionette-screen-text marionette #:ocrad ocrad))
+            (begin
+              (sleep 1)
+              (loop))))))
 
 (define %qwerty-us-keystrokes
   ;; Maps "special" characters to their keystrokes.

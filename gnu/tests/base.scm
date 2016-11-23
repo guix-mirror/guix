@@ -67,10 +67,16 @@
                  %base-user-accounts))))
 
 
-(define* (run-basic-test os command #:optional (name "basic"))
+(define* (run-basic-test os command #:optional (name "basic")
+                         #:key initialization)
   "Return a derivation called NAME that tests basic features of the OS started
 using COMMAND, a gexp that evaluates to a list of strings.  Compare some
-properties of running system to what's declared in OS, an <operating-system>."
+properties of running system to what's declared in OS, an <operating-system>.
+
+When INITIALIZATION is true, it must be a one-argument procedure that is
+passed a gexp denoting the marionette, and it must return gexp that is
+inserted before the first test.  This is used to introduce an extra
+initialization step, such as entering a LUKS passphrase."
   (define test
     (with-imported-modules '((gnu build marionette))
       #~(begin
@@ -87,6 +93,9 @@ properties of running system to what's declared in OS, an <operating-system>."
           (chdir #$output)
 
           (test-begin "basic")
+
+          #$(and initialization
+                 (initialization #~marionette))
 
           (test-assert "uname"
             (match (marionette-eval '(uname) marionette)
