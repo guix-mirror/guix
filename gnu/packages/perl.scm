@@ -2343,6 +2343,25 @@ modules separately and deal with them after the module is done installing.")
 the encoding of data.")
     (license mpl1.1)))
 
+(define-public perl-encode-eucjpascii
+  (package
+    (name "perl-encode-eucjpascii")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
+                           "Encode-EUCJPASCII-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qg8kmi7r9jcf8326b4fyq5sdpqyim2a11h7j77q577xam6x767r"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Encode-EUCJPASCII")
+    (synopsis "ASCII mapping for eucJP encoding")
+    (description "This package provides an ASCII mapping for the eucJP
+encoding.")
+    (license (package-license perl))))
+
 (define-public perl-env-path
   (package
     (name "perl-env-path")
