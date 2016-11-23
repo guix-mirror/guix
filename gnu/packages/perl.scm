@@ -4712,6 +4712,26 @@ own set of Moose-like types.  These custom types can then be used to describe
 fields in Moo-based classes.")
     (license (package-license perl))))
 
+(define-public perl-mozilla-ca
+  (package
+    (name "perl-mozilla-ca")
+    (version "20160104")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AB/ABH/Mozilla-CA-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0aizn08lrdrgjz9vagkjmw2c7sxn46fzz521v9dbcqii4jd0d9r7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Mozilla-CA")
+    (synopsis "Mozilla's CA cert bundle in PEM format")
+    (description "@code{Mozilla::CA} provides a copy of Mozilla's bundle of
+Certificate Authority certificates in a form that can be consumed by modules
+and libraries based on OpenSSL.")
+    (license mpl2.0)))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
