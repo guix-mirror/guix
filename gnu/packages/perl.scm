@@ -266,6 +266,33 @@ manipulate, read, and write Zip archive files.")
 list manipulation routines.")
     (license (package-license perl))))
 
+(define-public perl-autovivification
+  (package
+    (name "perl-autovivification")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/V/VP/VPIT/"
+                           "autovivification-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1422kw9fknv7rbjkgdfflg1q3mb69d3yryszp38dn0bgzkqhwkc1"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/autovivification")
+    (synopsis "Lexically disable autovivification")
+    (description "When an undefined variable is dereferenced, it gets silently
+upgraded to an array or hash reference (depending of the type of the
+dereferencing).  This behaviour is called autovivification and usually does
+what you mean but it may be unnatural or surprising because your variables get
+populated behind your back.  This is especially true when several levels of
+dereferencing are involved, in which case all levels are vivified up to the
+last, or when it happens in intuitively read-only constructs like
+@code{exists}.  The pragma provided by this package lets you disable
+autovivification for some constructs and optionally throws a warning or an
+error when it would have happened.")
+    (license (package-license perl))))
+
 (define-public perl-base
   (package
     (name "perl-base")
