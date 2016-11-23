@@ -23,7 +23,7 @@
   #:use-module (guix modules)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
-  #:autoload   (gnu packages cryptsetup) (cryptsetup)
+  #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
@@ -104,7 +104,9 @@
                      ((gnu build file-systems)
                       #:select (find-partition-by-luks-uuid)))
 
-        (zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
+        ;; Use 'cryptsetup-static', not 'cryptsetup', to avoid pulling the
+        ;; whole world inside the initrd (for when we're in an initrd).
+        (zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
                         "open" "--type" "luks"
 
                         ;; Note: We cannot use the "UUID=source" syntax here
@@ -120,7 +122,7 @@
 
 (define (close-luks-device source target)
   "Return a gexp that closes TARGET, a LUKS device."
-  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
+  #~(zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
                     "close" #$target)))
 
 (define luks-device-mapping
