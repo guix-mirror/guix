@@ -3665,6 +3665,26 @@ version.")
 one: logging, exceptions, and translations.")
     (license (package-license perl))))
 
+(define-public perl-lingua-translit
+  (package
+    (name "perl-lingua-translit")
+    (version "0.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AL/ALINKE/"
+                           "Lingua-Translit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "161589h08kzliga17i2g0hb0yn4cjmb8rdiyadq5bw97974bac14"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-Translit")
+    (synopsis "Transliterate text between writing systems")
+    (description "@code{Lingua::Translit} can be used to convert text from one
+writing system to another, based on national or international transliteration
+tables.  Where possible a reverse transliteration is supported.")
+    (license (package-license perl))))
+
 (define-public perl-list-allutils
   (package
     (name "perl-list-allutils")
