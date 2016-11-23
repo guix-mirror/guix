@@ -199,14 +199,8 @@ info --version")
 
           (test-equal "locale"
             "en_US.utf8"
-            (marionette-eval '(begin
-                                ;; XXX: This 'setenv' call wouldn't be needed
-                                ;; but our glibc@2.23 currently ignores
-                                ;; /run/current-system/locale.
-                                (setenv "GUIX_LOCPATH"
-                                        "/run/current-system/locale")
-                                (let ((before (setlocale LC_ALL "en_US.utf8")))
-                                  (setlocale LC_ALL before)))
+            (marionette-eval '(let ((before (setlocale LC_ALL "en_US.utf8")))
+                                (setlocale LC_ALL before))
                              marionette))
 
           (test-assert "/run/current-system is a GC root"
