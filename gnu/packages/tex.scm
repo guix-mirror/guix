@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (guix git-download)
@@ -381,6 +383,48 @@ that are free software, including support for many languages around the
 world.
 
 This package contains a small working part of the TeX Live distribution.")))
+
+(define-public perl-text-bibtex
+  (package
+    (name "perl-text-bibtex")
+    (version "0.77")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AM/AMBS/Text-BibTeX-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0kkfx8skk763pivz6h2ffy2zdp1lvy6d5sz0kjaj0mdbjffvnnb4"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-output-directory-to-rpath
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "inc/MyBuilder.pm"
+               (("-Lbtparse" line)
+                (string-append "-Wl,-rpath="
+                               (assoc-ref outputs "out") "/lib " line)))
+             #t))
+         (add-after 'unpack 'install-libraries-to-/lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Build.PL"
+               (("lib64") "lib"))
+             #t)))))
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-config-autoconf" ,perl-config-autoconf)
+       ("perl-extutils-libbuilder" ,perl-extutils-libbuilder)
+       ("perl-module-build" ,perl-module-build)))
+    (home-page "http://search.cpan.org/dist/Text-BibTeX")
+    (synopsis "Interface to read and parse BibTeX files")
+    (description "@code{Text::BibTeX} is a Perl library for reading, parsing,
+and processing BibTeX files.  @code{Text::BibTeX} gives you access to the data
+at many different levels: you may work with BibTeX entries as simple field to
+string mappings, or get at the original form of the data as a list of simple
+values (strings, macros, or numbers) pasted together.")
+    (license (package-license perl))))
 
 
 (define-public rubber
