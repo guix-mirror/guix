@@ -6656,6 +6656,25 @@ controlled with command line parameters.  The default parameter settings
 approximately follow the suggestions in the Perl Style Guide.")
     (license gpl2+)))
 
+(define-public perl-tie-cycle
+  (package
+    (name "perl-tie-cycle")
+    (version "1.221")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/Tie-Cycle-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "10g6kirf6jfaldckg98y4pl87vrm7grqlg6ymb7a9vhrznyn7qn6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Tie-Cycle")
+    (synopsis "Cycle through a list of values")
+    (description "You use @code{Tie::Cycle} to go through a list over and over
+again.  Once you get to the end of the list, you go back to the beginning.")
+    (license (package-license perl))))
+
 (define-public perl-tie-ixhash
   (package
   (name "perl-tie-ixhash")
