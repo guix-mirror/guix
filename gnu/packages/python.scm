@@ -453,14 +453,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.6.5")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
         (base32
-         "1z27wdxs5rj5xhhqfzvzn3yg682irkxw6dcs5jj7mcf97psk8gd8"))))
+         "1vdbqsa1a31s98fxkinl052q8nnpvbxnb83qanxfpi2p6c2zdr0b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
