@@ -34,7 +34,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl))
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages perl-web))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -426,6 +427,28 @@ special objects: true and false.")
 These data are generated from the RangeMessage.xml file provided by the ISBN
 Agency.")
     (license (package-license perl))))
+
+(define-public perl-business-isbn
+  (package
+    (name "perl-business-isbn")
+    (version "3.003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISBN-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i2bxzqkki257rqbswa4ryj1grmwa5s47wrxln2ff5mha1ry31gm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-business-isbn-data" ,perl-business-isbn-data)
+       ("perl-mojolicious" ,perl-mojolicious)))
+    (home-page "http://search.cpan.org/dist/Business-ISBN")
+    (synopsis "Work with International Standard Book Numbers")
+    (description "This modules provides tools to deal with International
+Standard Book Numbers, including ISBN-10 and ISBN-13.")
+    (license artistic2.0)))
 
 (define-public perl-cache-cache
   (package
