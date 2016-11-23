@@ -1310,6 +1310,27 @@ functions and data structures for processing and analysing genomic and
 bioinformatics data.")
     (license gpl3+)))
 
+(define-public perl-data-compare
+  (package
+    (name "perl-data-compare")
+    (version "1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DC/DCANTRELL/"
+                           "Data-Compare-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wzasidg9yjcfsi2gdiaw6726ikqda7n24n0v2ngpaazakdkcjqx"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-find-rule" ,perl-file-find-rule)))
+    (home-page "http://search.cpan.org/dist/Data-Compare")
+    (synopsis "Compare Perl data structures")
+    (description "This module compares arbitrary data structures to see if
+they are copies of each other.")
+    (license (package-license perl))))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
