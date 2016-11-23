@@ -407,6 +407,26 @@ library can nevertheless be used stand-alone, without Perl.")
 special objects: true and false.")
     (license (package-license perl))))
 
+(define-public perl-business-isbn-data
+  (package
+    (name "perl-business-isbn-data")
+    (version "20140910.003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISBN-Data-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jc5jrjwkr6pqga7998zkgw0yrxgb5n1y7lzgddawxibkf608mn7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Business-ISBN-Data")
+    (synopsis "Data files for Business::ISBN")
+    (description "This package provides a data pack for @code{Business::ISBN}.
+These data are generated from the RangeMessage.xml file provided by the ISBN
+Agency.")
+    (license (package-license perl))))
+
 (define-public perl-cache-cache
   (package
     (name "perl-cache-cache")
