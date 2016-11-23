@@ -2362,6 +2362,25 @@ the encoding of data.")
 encoding.")
     (license (package-license perl))))
 
+(define-public perl-encode-jis2k
+  (package
+    (name "perl-encode-jis2k")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DANKOGAI/"
+                           "Encode-JIS2K-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k1mdj4rd9m1z4h7qd2dl92ky0r1rk7mmagwsvdb9pirvdr4vj0y"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Encode-JIS2K")
+    (synopsis "JIS X 0212 (aka JIS 2000) encodings")
+    (description "This package provides encodings for JIS X 0212, which is
+also known as JIS 2000.")
+    (license (package-license perl))))
+
 (define-public perl-env-path
   (package
     (name "perl-env-path")
