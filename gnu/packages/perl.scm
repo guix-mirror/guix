@@ -5405,6 +5405,25 @@ designed to be slow or big, neither has it been designed to be fast or
 compact.")
     (license (package-license perl))))
 
+(define-public perl-sort-key
+  (package
+    (name "perl-sort-key")
+    (version "1.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SALVA/Sort-Key-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1kqs10s2plj6c96srk0j8d7xj8dxk1704r7mck8rqk09mg7lqspd"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sort-Key")
+    (synopsis "Sort arrays by one or multiple calculated keys")
+    (description "This Perl module provides various functions to quickly sort
+arrays by one or multiple calculated keys.")
+    (license (package-license perl))))
+
 (define-public perl-spiffy
   (package
     (name "perl-spiffy")
