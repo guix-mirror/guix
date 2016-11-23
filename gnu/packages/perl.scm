@@ -1670,6 +1670,30 @@ combinations.  It represents the Gregorian calendar, extended backwards in
 time before its creation (in 1582).")
     (license artistic2.0)))
 
+(define-public perl-datetime-calendar-julian
+  (package
+    (name "perl-datetime-calendar-julian")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PI/PIJLL/"
+                           "DateTime-Calendar-Julian-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03h0llkwsiw2d2ci1ah5x9sp8xrvnbgd471i5hnpgl5w32nnhndv"))))
+    (build-system perl-build-system)
+    ;; Only needed for tests
+    (native-inputs
+     `(("perl-datetime" ,perl-datetime)))
+    (home-page "http://search.cpan.org/dist/DateTime-Calendar-Julian")
+    (synopsis "Dates in the Julian calendar")
+    (description "This package is a companion module to @code{DateTime.pm}.
+It implements the Julian calendar.  It supports everything that
+@code{DateTime.pm} supports and more: about one day per century more, to be
+precise.")
+    (license (package-license perl))))
+
 (define-public perl-datetime-set
   (package
     (name "perl-datetime-set")
