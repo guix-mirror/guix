@@ -7252,6 +7252,24 @@ else.")
 common serialisation formats such as JSON or CBOR.")
     (license (package-license perl))))
 
+(define-public perl-unicode-normalize
+  (package
+    (name "perl-unicode-normalize")
+    (version "1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KH/KHW/"
+                           "Unicode-Normalize-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v04bcyjfcfap4kfpc8q3ikq3j7s68nym4ckw3iasmmksdskmcq0"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Unicode-Normalize")
+    (synopsis "Unicode normalization forms")
+    (description "This Perl module provides Unicode normalization forms.")
+    (license (package-license perl))))
+
 (define-public perl-unicode-linebreak
   (package
     (name "perl-unicode-linebreak")
