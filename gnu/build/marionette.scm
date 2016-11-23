@@ -45,7 +45,10 @@
   (command    marionette-command)                 ;list of strings
   (pid        marionette-pid)                     ;integer
   (monitor    marionette-monitor)                 ;port
-  (repl       marionette-repl))                   ;port
+  (repl       %marionette-repl))                  ;promise of a port
+
+(define-syntax-rule (marionette-repl marionette)
+  (force (%marionette-repl marionette)))
 
 (define* (wait-for-monitor-prompt port #:key (quiet? #t))
   "Read from PORT until we have seen all of QEMU's monitor prompt.  When
@@ -131,21 +134,29 @@ QEMU monitor and to the guest's backdoor REPL."
           (close-port monitor)
           (wait-for-monitor-prompt monitor-conn)
           (display "read QEMU monitor prompt\n")
-          (match (accept* repl)
-            ((repl-conn . addr)
-             (display "connected to guest REPL\n")
-             (close-port repl)
-             (match (read repl-conn)
-               ('ready
-                (alarm 0)
-                (display "marionette is ready\n")
-                (marionette (append command extra-options) pid
-                            monitor-conn repl-conn)))))))))))
+
+          (marionette (append command extra-options) pid
+                      monitor-conn
+
+                      ;; The following 'accept' call connects immediately, but
+                      ;; we don't know whether the guest has connected until
+                      ;; we actually receive the 'ready' message.
+                      (match (accept* repl)
+                        ((repl-conn . addr)
+                         (display "connected to guest REPL\n")
+                         (close-port repl)
+                         ;; Delay reception of the 'ready' message so that the
+                         ;; caller can already send monitor commands.
+                         (delay
+                           (match (read repl-conn)
+                             ('ready
+                              (display "marionette is ready\n")
+                              repl-conn))))))))))))
 
 (define (marionette-eval exp marionette)
   "Evaluate EXP in MARIONETTE's backdoor REPL.  Return the result."
   (match marionette
-    (($ <marionette> command pid monitor repl)
+    (($ <marionette> command pid monitor (= force repl))
      (write exp repl)
      (newline repl)
      (read repl))))
