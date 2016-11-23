@@ -6861,6 +6861,27 @@ template engine, for when you need speed rather than complex features,
 yet need more features than simple variable substitution.")
     (license (package-license perl))))
 
+(define-public perl-text-roman
+  (package
+    (name "perl-text-roman")
+    (version "3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SY/SYP/Text-Roman-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0sh47svzz0wm993ywfgpn0fvhajl2sj5hcnf5zxjz02in6ihhjnb"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-Roman")
+    (synopsis "Convert between Roman and Arabic algorisms")
+    (description "This package provides functions to convert between Roman and
+Arabic algorisms.  It supports both conventional Roman algorisms (which range
+from 1 to 3999) and Milhar Romans, a variation which uses a bar across the
+algorism to indicate multiplication by 1000.")
+    (license (package-license perl))))
+
 (define-public perl-text-simpletable
   (package
     (name "perl-text-simpletable")
