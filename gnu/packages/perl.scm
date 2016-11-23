@@ -2602,6 +2602,29 @@ it ties together a family of modern toolchain modules.")
 module building modules.")
     (license (package-license perl))))
 
+(define-public perl-extutils-libbuilder
+  (package
+    (name "perl-extutils-libbuilder")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AM/AMBS/"
+                           "ExtUtils-LibBuilder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lmmfcjxvsvhn4f3v2lyylgr8dzcf5j7mnd1pkq3jc75dph724f5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "http://search.cpan.org/dist/ExtUtils-LibBuilder")
+    (synopsis "Tool to build C libraries")
+    (description "Some Perl modules need to ship C libraries together with
+their Perl code.  Although there are mechanisms to compile and link (or glue)
+C code in your Perl programs, there isn't a clear method to compile standard,
+self-contained C libraries.  This module main goal is to help in that task.")
+    (license (package-license perl))))
+
 (define-public perl-file-changenotify
   (package
     (name "perl-file-changenotify")
