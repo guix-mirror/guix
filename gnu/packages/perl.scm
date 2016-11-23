@@ -2381,6 +2381,27 @@ encoding.")
 also known as JIS 2000.")
     (license (package-license perl))))
 
+(define-public perl-encode-hanextra
+  (package
+    (name "perl-encode-hanextra")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AU/AUDREYT/"
+                           "Encode-HanExtra-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fj4vd8iva2i0j6s2fyhwgr9afrvhr6gjlzi7805h257mmnb1m0z"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Encode-HanExtra")
+    (synopsis "Additional Chinese encodings")
+    (description "This Perl module provides Chinese encodings that are not
+part of Perl by default, including \"BIG5-1984\", \"BIG5-2003\", \"BIG5PLUS\",
+\"BIG5EXT\", \"CCCII\", \"EUC-TW\", \"CNS11643-*\", \"GB18030\", and
+\"UNISYS\".")
+    (license expat)))
+
 (define-public perl-env-path
   (package
     (name "perl-env-path")
