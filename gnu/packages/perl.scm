@@ -450,6 +450,25 @@ Agency.")
 Standard Book Numbers, including ISBN-10 and ISBN-13.")
     (license artistic2.0)))
 
+(define-public perl-business-issn
+  (package
+    (name "perl-business-issn")
+    (version "0.91")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISSN-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dfnm7h7lbqj356700ldlmgbr51v6hyjn1qig2bb4ysl1wn1jnzi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Business-ISSN")
+    (synopsis "Work with International Standard Serial Numbers")
+    (description "This modules provides tools to deal with International
+Standard Serial Numbers.")
+    (license (package-license perl))))
+
 (define-public perl-cache-cache
   (package
     (name "perl-cache-cache")
