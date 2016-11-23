@@ -35,7 +35,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define nanopass
   (let ((version "1.9"))
