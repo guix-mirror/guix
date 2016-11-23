@@ -1331,6 +1331,26 @@ bioinformatics data.")
 they are copies of each other.")
     (license (package-license perl))))
 
+(define-public perl-data-uniqid
+  (package
+    (name "perl-data-uniqid")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MW/MWX/Data-Uniqid-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1jsc6acmv97pzsvx1fqywz4qvxxpp7kwmb78ygyqpsczkfj9p4dn"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Data-Uniqid")
+    (synopsis "Perl extension for generating unique identifiers")
+    (description "@code{Data::Uniqid} provides three simple routines for
+generating unique ids.  These ids are coded with a Base62 systen to make them
+short and handy (e.g. to use it as part of a URL).")
+    (license (package-license perl))))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
