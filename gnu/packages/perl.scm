@@ -6768,6 +6768,29 @@ decomposition of comma-separated values.  An instance of the Text::CSV class
 can combine fields into a CSV string and parse a CSV string into fields.")
     (license (package-license perl))))
 
+(define-public perl-text-csv-xs
+  (package
+    (name "perl-text-csv-xs")
+    (version "1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HM/HMBRAND/"
+                           "Text-CSV_XS-" version ".tgz"))
+       (sha256
+        (base32
+         "06zlfbqrwbl0g2g3bhk6046yy5pf2rz80fzcp8aj47rnswz2yx5k"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-CSV_XS")
+    (synopsis "Rountines for manipulating CSV files")
+    (description "@code{Text::CSV_XS} provides facilities for the composition
+and decomposition of comma-separated values.  An instance of the
+@code{Text::CSV_XS} class will combine fields into a CSV string and parse a
+CSV string into fields.  The module accepts either strings or files as input
+and support the use of user-specified characters for delimiters, separators,
+and escapes.")
+    (license (package-license perl))))
+
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
