@@ -7270,6 +7270,29 @@ common serialisation formats such as JSON or CBOR.")
     (description "This Perl module provides Unicode normalization forms.")
     (license (package-license perl))))
 
+(define-public perl-unicode-collate
+  (package
+    (name "perl-unicode-collate")
+    (version "1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SADAHIRO/"
+                           "Unicode-Collate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lq4p3mqqljhhy8wyiyahris33j4m5qfzpi6iacmcqjzw5g4afbm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-unicode-normalize" ,perl-unicode-normalize)))
+    (home-page "http://search.cpan.org/dist/Unicode-Collate")
+    (synopsis "Unicode collation algorithm")
+    (description "This package provides tools for sorting and comparing
+Unicode data.")
+    ;; The file Unicode/Collate/allkeys.txt is released under the Expat
+    ;; license.
+    (license (list (package-license perl) expat))))
+
 (define-public perl-unicode-linebreak
   (package
     (name "perl-unicode-linebreak")
