@@ -1619,6 +1619,28 @@ operations, such as comparing two times, determining a date a given amount of
 time from another, or parsing international times.")
     (license (package-license perl))))
 
+(define-public perl-date-simple
+  (package
+    (name "perl-date-simple")
+    (version "3.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IZ/IZUT/"
+                           "Date-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "016x17r9wi6ffdc4idwirzd1sxqcb4lmq5fn2aiq25nf2iir5899"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Date-Simple")
+    (synopsis "Simple date handling")
+    (description "Dates are complex enough without times and timezones.  This
+module may be used to create simple date objects.  It handles validation,
+interval arithmetic, and day-of-week calculation.  It does not deal with
+hours, minutes, seconds, and time zones.")
+    ;; Can be used with either license.
+    (license (list (package-license perl) gpl2+))))
+
 (define-public perl-datetime
   (package
     (name "perl-datetime")
