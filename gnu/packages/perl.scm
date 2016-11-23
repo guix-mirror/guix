@@ -2074,7 +2074,7 @@ interface for the RFC 2104 HMAC mechanism.")
          (add-after 'build 'set-permissions
            (lambda _
              ;; Make MD5.so read-write so it can be stripped.
-             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)))))))
+             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755))))))
     (home-page "http://search.cpan.org/dist/Digest-MD5")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
