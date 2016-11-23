@@ -7296,14 +7296,14 @@ Unicode data.")
 (define-public perl-unicode-linebreak
   (package
     (name "perl-unicode-linebreak")
-    (version "2015.12")
+    (version "2016.003")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
                                   "Unicode-LineBreak-" version ".tar.gz"))
               (sha256
                (base32
-                "1d0nnc97irfpab4d3b2lvq22hac118k7zbfrj0lnxkbfwx7122cm"))))
+                "096wf5x99swx7l7yd8pm2aw50g596nf50rkq7250zjcc1acjskp6"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-mime-charset" ,perl-mime-charset)))
