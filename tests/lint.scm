@@ -508,6 +508,25 @@
           (check-source pkg))))
     "not reachable: 404")))
 
+(test-assert "mirror-url"
+  (string-null?
+   (with-warnings
+     (let ((source (origin
+                     (method url-fetch)
+                     (uri "http://example.org/foo/bar.tar.gz")
+                     (sha256 %null-sha256))))
+       (check-mirror-url (dummy-package "x" (source source)))))))
+
+(test-assert "mirror-url: one suggestion"
+  (string-contains
+   (with-warnings
+     (let ((source (origin
+                     (method url-fetch)
+                     (uri "http://ftp.gnu.org/pub/gnu/foo/foo.tar.gz")
+                     (sha256 %null-sha256))))
+       (check-mirror-url (dummy-package "x" (source source)))))
+   "mirror://gnu/foo/foo.tar.gz"))
+
 (test-assert "cve"
   (mock ((guix scripts lint) package-vulnerabilities (const '()))
         (string-null?

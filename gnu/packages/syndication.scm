@@ -53,7 +53,7 @@
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("ruby" ,ruby))) ; for tests

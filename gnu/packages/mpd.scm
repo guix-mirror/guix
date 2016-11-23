@@ -183,7 +183,7 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.7.5")
+    (version "0.7.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -191,7 +191,7 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "0zg084m06y7dd8ccy6aq9hx8q7qi2s5kl0br5139hrmk40q68kvy"))))
+                "1vq19m36608pvw1g8nbcaqqb89wsw05v35pi45xwr20z7g4bxg5p"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
@@ -301,7 +301,7 @@ interface for the Music Player Daemon.")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t)))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
      `(("python-mpd2" ,python-mpd2)
        ("gtk+" ,gtk+)

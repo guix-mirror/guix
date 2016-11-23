@@ -93,6 +93,13 @@ QEMU monitor and to the guest's backdoor REPL."
           "-device" "virtio-serial"
           "-device" "virtconsole,chardev=repl"))
 
+  (define (accept* port)
+    (match (select (list port) '() (list port) timeout)
+      (((port) () ())
+       (accept port))
+      (_
+       (error "timeout in 'accept'" port))))
+
   (let ((monitor (socket AF_UNIX SOCK_STREAM 0))
         (repl    (socket AF_UNIX SOCK_STREAM 0)))
     (bind monitor (file->sockaddr "monitor"))
@@ -117,26 +124,20 @@ QEMU monitor and to the guest's backdoor REPL."
            (primitive-exit 1))))
       (pid
        (format #t "QEMU runs as PID ~a~%" pid)
-       (sigaction SIGALRM
-         (lambda (signum)
-           (display "time is up!\n")              ;FIXME: break
-           #t))
-       (alarm timeout)
 
-       (match (accept monitor)
+       (match (accept* monitor)
          ((monitor-conn . _)
           (display "connected to QEMU's monitor\n")
           (close-port monitor)
           (wait-for-monitor-prompt monitor-conn)
           (display "read QEMU monitor prompt\n")
-          (match (accept repl)
+          (match (accept* repl)
             ((repl-conn . addr)
              (display "connected to guest REPL\n")
              (close-port repl)
              (match (read repl-conn)
                ('ready
                 (alarm 0)
-                (sigaction SIGALRM SIG_DFL)
                 (display "marionette is ready\n")
                 (marionette (append command extra-options) pid
                             monitor-conn repl-conn)))))))))))

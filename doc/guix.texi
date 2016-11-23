@@ -5379,9 +5379,11 @@ Identify inputs that should most likely be native inputs.
 
 @item source
 @itemx home-page
+@itemx mirror-url
 @itemx source-file-name
 Probe @code{home-page} and @code{source} URLs and report those that are
-invalid.  Check that the source file name is meaningful, e.g. is not
+invalid.  Suggest a @code{mirror://} URL when applicable.  Check that
+the source file name is meaningful, e.g. is not
 just a version number or ``git-checkout'', without a declared
 @code{file-name} (@pxref{origin Reference}).
 
@@ -6403,7 +6405,9 @@ hardware is not supported on GuixSD.
 One of the main areas where free drivers or firmware are lacking is WiFi
 devices.  WiFi devices known to work include those using Atheros chips
 (AR9271 and AR7010), which corresponds to the @code{ath9k} Linux-libre
-driver, and for which free firmware exists and is available
+driver, and those using Broadcom/AirForce chips (BCM43xx with
+Wireless-Core Revision 5), which corresponds to the @code{b43-open}
+Linux-libre driver.  Free firmware exists for both and is available
 out-of-the-box on GuixSD, as part of @var{%base-firmware}
 (@pxref{operating-system Reference, @code{firmware}}).
 
@@ -7077,9 +7081,10 @@ the Linux kernel.  @xref{Initial RAM Disk}.
 @cindex firmware
 List of firmware packages loadable by the operating system kernel.
 
-The default includes firmware needed for Atheros-based WiFi devices
-(Linux-libre module @code{ath9k}).  @xref{Hardware Considerations}, for
-more info on supported hardware.
+The default includes firmware needed for Atheros- and Broadcom-based
+WiFi devices (Linux-libre modules @code{ath9k} and @code{b43-open},
+respectively).  @xref{Hardware Considerations}, for more info on
+supported hardware.
 
 @item @code{host-name}
 The host name.
@@ -8363,10 +8368,10 @@ Protocol (DHCP) client, on all the non-loopback network interfaces.
 @end deffn
 
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
-       [#:gateway #f] [#:name-servers @code{'()}]
+       [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If
-@var{gateway} is true, it must be a string specifying the default network
-gateway.
+@var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
+it must be a string specifying the default network gateway.
 @end deffn
 
 @cindex wicd
@@ -11670,6 +11675,67 @@ List of strings or gexps representing the arguments for the module handler
 A @code{<dicod-database>} object serving the GNU Collaborative International
 Dictonary of English using the @code{gcide} package.
 @end defvr
+
+@subsubsection Version Control
+
+The @code{(gnu services version-control)} module provides the following services:
+
+@subsubheading Git daemon service
+
+@deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
+
+Return a service that runs @command{git daemon}, a simple TCP server to
+expose repositiories over the Git protocol for annoymous access.
+
+The optional @var{config} argument should be a
+@code{<git-daemon-configuration>} object, by default it allows read-only
+access to exported@footnote{By creating the magic file
+"git-daemon-export-ok" in the repository directory.} repositories under
+@file{/srv/git}.
+
+@end deffn
+
+@deftp {Data Type} git-daemon-configuration
+Data type representing the configuration for @code{git-daemon-service}.
+
+@table @asis
+@item @code{package} (default: @var{git})
+Package object of the Git distributed version control system.
+
+@item @code{export-all?} (default: @var{#f})
+Whether to allow access for all Git repositories, even if they do not
+have the @file{git-daemon-export-ok} file.
+
+@item @code{base-path} (default: @file{/srv/git})
+Whether to remap all the path requests as relative to the given path.
+If you run git daemon with @var{(base-path "/srv/git")} on example.com,
+then if you later try to pull @code{git://example.com/hello.git}, git
+daemon will interpret the path as @code{/srv/git/hello.git}.
+
+@item @code{user-path} (default: @var{#f})
+Whether to allow @code{~user} notation to be used in requests.  When
+specified with empty string, requests to @code{git://host/~alice/foo} is
+taken as a request to access @code{foo} repository in the home directory
+of user @code{alice}.  If @var{(user-path "path")} is specified, the
+same request is taken as a request to access @code{path/foo} repository
+in the home directory of user @code{alice}.
+
+@item @code{listen} (default: @var{'()})
+Whether to listen on specific IP addresses or hostnames, defaults to
+all.
+
+@item @code{port} (default: @var{#f})
+Whether to listen on an alternative port, which defaults to 9418.
+
+@item @code{whitelist} (default: @var{'()})
+If not empty, only allow access to this list of directories.
+
+@item @code{extra-options} (default: @var{'()})
+Extra options will be passed to @code{git daemon}, please run
+@command{man git-daemon} for more information.
+
+@end table
+@end deftp
 
 @node Setuid Programs
 @subsection Setuid Programs

@@ -441,7 +441,6 @@ format.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (mkdir-p bin)
                (install-file "mpc123" bin)))))
        #:tests? #f))
     (native-inputs

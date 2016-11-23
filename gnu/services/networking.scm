@@ -62,6 +62,7 @@
             bitlbee-service
             bitlbee-service-type
 
+            wicd-service-type
             wicd-service
             network-manager-service
             connman-service
@@ -112,21 +113,19 @@ fe80::1%lo0 apps.facebook.com\n")
   static-networking?
   (interface static-networking-interface)
   (ip static-networking-ip)
+  (netmask static-networking-netmask
+           (default #f))
   (gateway static-networking-gateway)
   (provision static-networking-provision)
-  (name-servers static-networking-name-servers)
-  (net-tools static-networking-net-tools))
+  (name-servers static-networking-name-servers))
 
 (define static-networking-service-type
   (shepherd-service-type
    'static-networking
    (match-lambda
-     (($ <static-networking> interface ip gateway provision
-                             name-servers net-tools)
+     (($ <static-networking> interface ip netmask gateway provision
+                             name-servers)
       (let ((loopback? (memq 'loopback provision)))
-
-        ;; TODO: Eventually replace 'route' with bindings for the appropriate
-        ;; ioctls.
         (shepherd-service
 
          ;; Unless we're providing the loopback interface, wait for udev to be up
@@ -139,18 +138,28 @@ fe80::1%lo0 apps.facebook.com\n")
          (start #~(lambda _
                     ;; Return #t if successfully started.
                     (let* ((addr     (inet-pton AF_INET #$ip))
-                           (sockaddr (make-socket-address AF_INET addr 0)))
+                           (sockaddr (make-socket-address AF_INET addr 0))
+                           (mask     (and #$netmask
+                                          (inet-pton AF_INET #$netmask)))
+                           (maskaddr (and mask
+                                          (make-socket-address AF_INET
+                                                               mask 0)))
+                           (gateway  (and #$gateway
+                                          (inet-pton AF_INET #$gateway)))
+                           (gatewayaddr (and gateway
+                                             (make-socket-address AF_INET
+                                                                  gateway 0))))
                       (configure-network-interface #$interface sockaddr
                                                    (logior IFF_UP
                                                            #$(if loopback?
                                                                  #~IFF_LOOPBACK
-                                                                 0))))
-                    #$(if gateway
-                          #~(zero? (system* (string-append #$net-tools
-                                                           "/sbin/route")
-                                            "add" "-net" "default"
-                                            "gw" #$gateway))
-                          #t)
+                                                                 0))
+                                                   #:netmask maskaddr)
+                      (when gateway
+                        (let ((sock (socket AF_INET SOCK_DGRAM 0)))
+                          (add-network-route/gateway sock gatewayaddr)
+                          (close-port sock))))
+
                     #$(if (pair? name-servers)
                           #~(call-with-output-file "/etc/resolv.conf"
                               (lambda (port)
@@ -160,35 +169,34 @@ fe80::1%lo0 apps.facebook.com\n")
                                 (for-each (lambda (server)
                                             (format port "nameserver ~a~%"
                                                     server))
-                                          '#$name-servers)))
+                                          '#$name-servers)
+                                #t))
                           #t)))
          (stop #~(lambda _
                    ;; Return #f is successfully stopped.
                    (let ((sock (socket AF_INET SOCK_STREAM 0)))
+                     (when #$gateway
+                       (delete-network-route sock
+                                             (make-socket-address
+                                              AF_INET INADDR_ANY 0)))
                      (set-network-interface-flags sock #$interface 0)
-                     (close-port sock))
-                   (not #$(if gateway
-                              #~(system* (string-append #$net-tools
-                                                        "/sbin/route")
-                                         "del" "-net" "default")
-                              #t))))
+                     (close-port sock)
+                     #f)))
          (respawn? #f)))))))
 
 (define* (static-networking-service interface ip
                                     #:key
-                                    gateway
+                                    netmask gateway
                                     (provision '(networking))
-                                    (name-servers '())
-                                    (net-tools net-tools))
+                                    (name-servers '()))
   "Return a service that starts @var{interface} with address @var{ip}.  If
-@var{gateway} is true, it must be a string specifying the default network
-gateway."
+@var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
+it must be a string specifying the default network gateway."
   (service static-networking-service-type
            (static-networking (interface interface) (ip ip)
-                              (gateway gateway)
+                              (netmask netmask) (gateway gateway)
                               (provision provision)
-                              (name-servers name-servers)
-                              (net-tools net-tools))))
+                              (name-servers name-servers))))
 
 (define dhcp-client-service-type
   (shepherd-service-type

@@ -87,12 +87,16 @@
             all-network-interface-names
             network-interface-names
             network-interface-flags
+            network-interface-netmask
             loopback-network-interface?
             network-interface-address
             set-network-interface-flags
             set-network-interface-address
+            set-network-interface-netmask
             set-network-interface-up
             configure-network-interface
+            add-network-route/gateway
+            delete-network-route
 
             interface?
             interface-name
@@ -202,7 +206,7 @@ result is the alignment of the \"most strictly aligned component\"."
                   types ...))))
 
 (define-syntax write-type
-  (syntax-rules (~ array)
+  (syntax-rules (~ array *)
     ((_ bv offset (type ~ order) value)
      (bytevector-uint-set! bv offset value
                            (endianness order) (sizeof* type)))
@@ -215,6 +219,9 @@ result is the alignment of the \"most strictly aligned component\"."
            ((head . tail)
             (write-type bv o type head)
             (loop (+ 1 i) tail (+ o (sizeof* type))))))))
+    ((_ bv offset '* value)
+     (bytevector-uint-set! bv offset (pointer-address value)
+                           (native-endianness) (sizeof* '*)))
     ((_ bv offset type value)
      (bytevector-uint-set! bv offset value
                            (native-endianness) (sizeof* type)))))
@@ -262,6 +269,29 @@ result is the alignment of the \"most strictly aligned component\"."
                                         (align offset type0)
                                         type0))))))
 
+(define-syntax define-c-struct-macro
+  (syntax-rules ()
+    "Define NAME as a macro that can be queried to get information about the C
+struct it represents.  In particular:
+
+  (NAME field-offset FIELD)
+
+returns the offset in bytes of FIELD within the C struct represented by NAME."
+    ((_ name ((fields types) ...))
+     (define-c-struct-macro name
+       (fields ...) 0 ()
+       ((fields types) ...)))
+    ((_ name (fields ...) offset (clauses ...) ((field type) rest ...))
+     (define-c-struct-macro name
+       (fields ...)
+       (+ (align offset type) (type-size type))
+       (clauses ... ((_ field-offset field) (align offset type)))
+       (rest ...)))
+    ((_ name (fields ...) offset (clauses ...) ())
+     (define-syntax name
+       (syntax-rules (field-offset fields ...)
+         clauses ...)))))
+
 (define-syntax define-c-struct
   (syntax-rules ()
     "Define SIZE as the size in bytes of the C structure made of FIELDS.  READ
@@ -269,12 +299,20 @@ as a deserializer and WRITE! as a serializer for the C structure with the
 given TYPES.  READ uses WRAP-FIELDS to return its value."
     ((_ name size wrap-fields read write! (fields types) ...)
      (begin
+       (define-c-struct-macro name
+         ((fields types) ...))
        (define size
          (struct-size 0 () types ...))
        (define (write! bv offset fields ...)
          (write-types bv offset (types ...) (fields ...)))
        (define* (read bv #:optional (offset 0))
          (read-types wrap-fields bv offset (types ...) ()))))))
+
+(define-syntax-rule (c-struct-field-offset type field)
+  "Return the offset in BYTES of FIELD within TYPE, where TYPE is a C struct
+defined with 'define-c-struct' and FIELD is a field identifier.  An
+expansion-time error is raised if FIELD does not exist in TYPE."
+  (type field-offset field))
 
 
 ;;;
@@ -761,6 +799,22 @@ exception if it's already taken."
   (if (string-contains %host-type "linux")
       #x8916                                      ;GNU/Linux
       -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCGIFNETMASK
+  (if (string-contains %host-type "linux")
+      #x891b                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCSIFNETMASK
+  (if (string-contains %host-type "linux")
+      #x891c                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCADDRT
+  (if (string-contains %host-type "linux")
+      #x890B                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCDELRT
+  (if (string-contains %host-type "linux")
+      #x890C                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
 
 ;; Flags and constants from <net/if.h>.
 
@@ -770,10 +824,13 @@ exception if it's already taken."
 
 (define IF_NAMESIZE 16)                           ;maximum interface name size
 
-(define ifconf-struct
-  ;; 'struct ifconf', from <net/if.h>.
-  (list int                                       ;int ifc_len
-        '*))                                      ;struct ifreq *ifc_ifcu
+(define-c-struct %ifconf-struct
+  sizeof-ifconf
+  list
+  read-ifconf
+  write-ifconf!
+  (length  int)                                   ;int ifc_len
+  (request '*))                                   ;struct ifreq *ifc_ifcu
 
 (define ifreq-struct-size
   ;; 'struct ifreq' begins with an array of IF_NAMESIZE bytes containing the
@@ -865,15 +922,18 @@ to interfaces that are currently up."
          (sock   (or sock (socket SOCK_STREAM AF_INET 0)))
          (len    (* ifreq-struct-size 10))
          (reqs   (make-bytevector len))
-         (conf   (make-c-struct ifconf-struct
-                                (list len (bytevector->pointer reqs)))))
+         (conf   (make-bytevector sizeof-ifconf)))
+    (write-ifconf! conf 0
+                   len (bytevector->pointer reqs))
+
     (let-values (((ret err)
-                  (%ioctl (fileno sock) SIOCGIFCONF conf)))
+                  (%ioctl (fileno sock) SIOCGIFCONF
+                          (bytevector->pointer conf))))
       (when close?
         (close-port sock))
       (if (zero? ret)
           (bytevector->string-list reqs ifreq-struct-size
-                                   (match (parse-c-struct conf ifconf-struct)
+                                   (match (read-ifconf conf)
                                      ((len . _) len)))
           (throw 'system-error "network-interface-list"
                  "network-interface-list: ~A"
@@ -961,6 +1021,22 @@ interface NAME."
                (list name (strerror err))
                (list err))))))
 
+(define (set-network-interface-netmask socket name sockaddr)
+  "Set the network mask of interface NAME to SOCKADDR."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    ;; Set the 'ifr_addr' field.
+    (write-socket-address! sockaddr req IF_NAMESIZE)
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCSIFNETMASK
+                          (bytevector->pointer req))))
+      (unless (zero? ret)
+        (throw 'system-error "set-network-interface-netmask"
+               "set-network-interface-netmask on ~A: ~A"
+               (list name (strerror err))
+               (list err))))))
+
 (define (network-interface-address socket name)
   "Return the address of network interface NAME.  The result is an object of
 the same type as that returned by 'make-socket-address'."
@@ -977,15 +1053,35 @@ the same type as that returned by 'make-socket-address'."
                  (list name (strerror err))
                  (list err))))))
 
-(define (configure-network-interface name sockaddr flags)
+(define (network-interface-netmask socket name)
+  "Return the netmask of network interface NAME.  The result is an object of
+the same type as that returned by 'make-socket-address'."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    (let-values (((ret err)
+                  (%ioctl (fileno socket) SIOCGIFNETMASK
+                          (bytevector->pointer req))))
+      (if (zero? ret)
+          (read-socket-address req IF_NAMESIZE)
+          (throw 'system-error "network-interface-netmask"
+                 "network-interface-netmask on ~A: ~A"
+                 (list name (strerror err))
+                 (list err))))))
+
+(define* (configure-network-interface name sockaddr flags
+                                      #:key netmask)
   "Configure network interface NAME to use SOCKADDR, an address as returned by
-'make-socket-address', and FLAGS, a bitwise-or of IFF_* constants."
+'make-socket-address', and FLAGS, a bitwise-or of IFF_* constants.  If NETMASK
+is true, it must be a socket address to use as the network mask."
   (let ((sock (socket (sockaddr:fam sockaddr) SOCK_STREAM 0)))
     (dynamic-wind
       (const #t)
       (lambda ()
         (set-network-interface-address sock name sockaddr)
-        (set-network-interface-flags sock name flags))
+        (set-network-interface-flags sock name flags)
+        (when netmask
+          (set-network-interface-netmask sock name netmask)))
       (lambda ()
         (close-port sock)))))
 
@@ -1001,6 +1097,106 @@ the same type as that returned by 'make-socket-address'."
                                        (logior flags IFF_UP))))
       (lambda ()
         (close-port sock)))))
+
+
+;;;
+;;; Network routes.
+;;;
+
+(define-c-struct %rtentry                 ;'struct rtentry' from <net/route.h>
+  sizeof-rtentry
+  list
+  read-rtentry
+  write-rtentry!
+  (pad1            unsigned-long)
+  (destination     (array uint8 16))              ;struct sockaddr
+  (gateway         (array uint8 16))              ;struct sockaddr
+  (genmask         (array uint8 16))              ;struct sockaddr
+  (flags           unsigned-short)
+  (pad2            short)
+  (pad3            long)
+  (tos             uint8)
+  (class           uint8)
+  (pad4            (array uint8 (if (= 8 (sizeof* '*)) 3 1)))
+  (metric          short)
+  (device          '*)
+  (mtu             unsigned-long)
+  (window          unsigned-long)
+  (initial-rtt     unsigned-short))
+
+(define RTF_UP #x0001)                     ;'rtentry' flags from <net/route.h>
+(define RTF_GATEWAY #x0002)
+
+(define %sockaddr-any
+  (make-socket-address AF_INET INADDR_ANY 0))
+
+(define add-network-route/gateway
+  ;; To allow field names to be matched as literals, we need to move them out
+  ;; of the lambda's body since the parameters have the same name.  A lot of
+  ;; fuss for very little.
+  (let-syntax ((gateway-offset (identifier-syntax
+                                (c-struct-field-offset %rtentry gateway)))
+               (destination-offset (identifier-syntax
+                                    (c-struct-field-offset %rtentry destination)))
+               (genmask-offset (identifier-syntax
+                                (c-struct-field-offset %rtentry genmask))))
+    (lambda* (socket gateway
+                     #:key (destination %sockaddr-any) (genmask %sockaddr-any))
+      "Add a network route for DESTINATION (a socket address as returned by
+'make-socket-address') that goes through GATEWAY (a socket address).  For
+instance, the call:
+
+  (add-network-route/gateway sock
+                             (make-socket-address
+                               AF_INET
+                               (inet-pton AF_INET \"192.168.0.1\")
+                               0))
+
+is equivalent to this 'net-tools' command:
+
+  route add -net default gw 192.168.0.1
+
+because the default value of DESTINATION is \"0.0.0.0\"."
+      (let ((route (make-bytevector sizeof-rtentry 0)))
+        (write-socket-address! gateway route gateway-offset)
+        (write-socket-address! destination route destination-offset)
+        (write-socket-address! genmask route genmask-offset)
+        (bytevector-u16-native-set! route
+                                    (c-struct-field-offset %rtentry flags)
+                                    (logior RTF_UP RTF_GATEWAY))
+        (let-values (((ret err)
+                      (%ioctl (fileno socket) SIOCADDRT
+                              (bytevector->pointer route))))
+          (unless (zero? ret)
+            (throw 'system-error "add-network-route/gateway"
+                   "add-network-route/gateway: ~A"
+                   (list (strerror err))
+                   (list err))))))))
+
+(define delete-network-route
+  (let-syntax ((destination-offset (identifier-syntax
+                                    (c-struct-field-offset %rtentry destination))))
+    (lambda* (socket destination)
+      "Delete the network route for DESTINATION.  For instance, the call:
+
+  (delete-network-route sock
+                        (make-socket-address AF_INET INADDR_ANY 0))
+
+is equivalent to the 'net-tools' command:
+
+  route del -net default
+"
+
+      (let ((route (make-bytevector sizeof-rtentry 0)))
+        (write-socket-address! destination route destination-offset)
+        (let-values (((ret err)
+                      (%ioctl (fileno socket) SIOCDELRT
+                              (bytevector->pointer route))))
+          (unless (zero? ret)
+            (throw 'system-error "delete-network-route"
+                   "delete-network-route: ~A"
+                   (list (strerror err))
+                   (list err))))))))
 
 
 ;;;

@@ -329,7 +329,7 @@ no man page, refer to the home page for usage details.")
        ("gnupg" ,gnupg)
        ("cryptsetup" ,cryptsetup)
        ("e2fsprogs" ,e2fsprogs)         ;for mkfs.ext4
-       ("gettext" ,gnu-gettext)         ;used at runtime
+       ("gettext" ,gettext-minimal)     ;used at runtime
        ("mlocate" ,mlocate)
        ("pinentry" ,pinentry)
        ("qrencode" ,qrencode)

@@ -134,9 +134,8 @@ to initiate and control SIP sessions.")
    (version "4.1.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "http://download.savannah.gnu.org/releases/exosip/libeXosip2-"
-                  version ".tar.gz"))
+            (uri (string-append "mirror://savannah/exosip/libeXosip2-"
+                                version ".tar.gz"))
             (sha256 (base32
                      "17cna8kpc8nk1si419vgr6r42k2lda0rdk50vlxrw8rzg0xp2xrw"))))
    (build-system gnu-build-system)

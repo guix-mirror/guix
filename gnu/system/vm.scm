@@ -317,7 +317,6 @@ of the GNU system as described by OS."
               (initrd (lambda (file-systems . rest)
                         (apply base-initrd file-systems
                                #:virtio? #t
-                               #:qemu-networking? #t
                                rest)))
 
               ;; Force our own root file system.
@@ -386,7 +385,6 @@ environment with the store shared with the host.  MAPPINGS is a list of
               (apply base-initrd file-systems
                      #:volatile-root? #t
                      #:virtio? #t
-                     #:qemu-networking? #t
                      rest)))
 
     ;; Disable swap.

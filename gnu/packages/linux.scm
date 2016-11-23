@@ -327,14 +327,14 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.8"
-                    "0gy3i0841yqz1c5441jcvjivy8afx2xf8m3cjbx6wymg8b1bc4c3"
+  (make-linux-libre "4.8.10"
+                    "04kwarmpz5adz64wwy0xpwzxsri7jrjkhbmjlwxsac69x9a26bkl"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.32"
-                    "0xva00ccdx66pd25i88g4j4r7w5i3n12hq5biyapwir8izni58hv"
+  (make-linux-libre "4.4.34"
+                    "04ng40l2av34bcfwjs5vliv15f0m8bl0sfw08imspiplxvajd6ca"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -345,8 +345,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.8")
-(define %linux-libre-hash "0gy3i0841yqz1c5441jcvjivy8afx2xf8m3cjbx6wymg8b1bc4c3")
+(define %linux-libre-version "4.8.10")
+(define %linux-libre-hash "04kwarmpz5adz64wwy0xpwzxsri7jrjkhbmjlwxsac69x9a26bkl")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -1683,7 +1683,8 @@ time.")
                     (("confdir = .*$")
                      "confdir = @sysconfdir@\n")
                     (("DEFAULT_SYS_DIR = @DEFAULT_SYS_DIR@")
-                     "DEFAULT_SYS_DIR = @sysconfdir@"))))))
+                     "DEFAULT_SYS_DIR = @sysconfdir@"))))
+              (patches (search-patches "lvm2-static-link.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1737,6 +1738,22 @@ mapper.  Kernel components are part of Linux-libre.")
     ;; Libraries (liblvm2, libdevmapper) are LGPLv2.1.
     ;; Command-line tools are GPLv2.
     (license (list license:gpl2 license:lgpl2.1))))
+
+(define-public lvm2-static
+  (package
+    (inherit lvm2)
+    (name "lvm2-static")
+
+    ;; Propagate udev because libdevmapper.a depends on libudev.
+    (inputs (alist-delete "udev" (package-inputs lvm2)))
+    (propagated-inputs `(("udev" ,eudev)))
+
+    (arguments
+     (substitute-keyword-arguments (package-arguments lvm2)
+       ((#:configure-flags flags '())
+        ;; LVM2 doesn't use Libtool, hence the custom option.
+        `(cons "--enable-static_link" ,flags))))
+    (synopsis "Logical volume management for Linux (statically linked)")))
 
 (define-public wireless-tools
   (package
@@ -3128,7 +3145,7 @@ developers.")
                           (string-append "PREFIX=" %output))
        #:tests? #f))                    ; no tests
     (native-inputs
-     `(("gnu-gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libdrm" ,libdrm)

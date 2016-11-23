@@ -501,10 +501,6 @@ if not found."
                          #t))))
             items))
 
-    ;; TODO: Factorize.
-    (define references*
-      (store-lift references))
-
     (with-monad %store-monad
       (match (manifest-entry-item entry)
         ((? package? package)

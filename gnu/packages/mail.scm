@@ -537,14 +537,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.23.1")
+    (version "0.23.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "106ijsnilqf8760z4cq99rqzjsvyaw86d0lgnzz7v95gm4d2l0g8"))))
+                "1g4p5hsrqqbqk6s2w756als60wppvjgpyq104smy3w9vshl7bzgd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -568,6 +568,11 @@ invoking @command{notifymuch} from the post-new hook.")
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
                         (("/bin/sh") (which "sh")))
+                      ;; XXX: Some signature verification tests fail with
+                      ;; gnupg-2.1.16, so we skip them. See this thread:
+                      ;; https://notmuchmail.org/pipermail/notmuch/2016/023688.html
+                      (setenv "NOTMUCH_SKIP_TESTS"
+                              "T350-crypto.2 T350-crypto.3 T350-crypto.4 T350-crypto.15")
                       #t)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
@@ -1471,15 +1476,15 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://downloads.sourceforge.net/mpop/mpop-"
-                           version ".tar.xz"))
+       (uri (string-append "mirror://sourceforge/mpop/mpop/" version
+                           "/mpop-" version ".tar.xz"))
        (sha256
         (base32
-         "0n0ij258kn8lfa6nyr6l6plc4hf1wvyf1hkwicvdbjqdqrgjnq81"))))
+         "0p1ix63jh64dibrlccch8q7gxl9nn18wd2qpyr5z1h4gs2fpmv4z"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -1622,12 +1627,15 @@ transfer protocols.")
        ("linux-pam" ,linux-pam)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("bison" ,bison)))
+     `(("bison" ,bison)
+       ("groff" ,groff)))
     (arguments
-     `(#:configure-flags (list "--with-table-db" "--localstatedir=/var"
-                               "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
-                               "--with-group-queue=smtpq"
-                               "--with-path-socket=/var/run")
+     `(#:configure-flags
+       (list "--with-table-db" "--localstatedir=/var"
+             "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
+             "--with-group-queue=smtpq"
+             "--with-path-socket=/var/run"
+             "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
          ;; OpenSMTPD provides a single utility smtpctl to control the daemon and

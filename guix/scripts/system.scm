@@ -77,9 +77,6 @@
 ;;; Installation.
 ;;;
 
-;; TODO: Factorize.
-(define references*
-  (store-lift references))
 (define topologically-sorted*
   (store-lift topologically-sorted))
 

@@ -1,0 +1,102 @@
+This fixes PHP bug #73155: https://bugs.php.net/bug.php?id=73155
+
+Patch adapted from upstream source repository:
+
+https://github.com/libgd/libgd/commit/8067a8ac336dfe0acbe96ec2eb24572209a7f279
+
+(.gitignore change removed)
+
+From 8067a8ac336dfe0acbe96ec2eb24572209a7f279 Mon Sep 17 00:00:00 2001
+From: "Christoph M. Becker" <cmbecker69@gmx.de>
+Date: Fri, 23 Sep 2016 18:29:52 +0200
+Subject: [PATCH] Fix #309: gdImageGd2() writes wrong chunk sizes on boundaries
+
+(cherry picked from commit bb1998a16e30d542ab22eba5501911a9aa066edb)
+---
+ src/gd_gd2.c             |  4 ++--
+ tests/gd2/CMakeLists.txt |  1 +
+ tests/gd2/Makemodule.am  |  1 +
+ tests/gd2/bug00309.c     | 37 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 41 insertions(+), 2 deletions(-)
+ create mode 100644 tests/gd2/bug00309.c
+
+diff --git a/src/gd_gd2.c b/src/gd_gd2.c
+index 75e5e1f..b9b2f93 100644
+--- a/src/gd_gd2.c
++++ b/src/gd_gd2.c
+@@ -938,8 +938,8 @@ _gdImageGd2 (gdImagePtr im, gdIOCtx * out, int cs, int fmt)
+ 	};
+ 
+ 	/* Work out number of chunks. */
+-	ncx = im->sx / cs + 1;
+-	ncy = im->sy / cs + 1;
++	ncx = (im->sx + cs - 1) / cs;
++	ncy = (im->sy + cs - 1) / cs;
+ 
+ 	/* Write the standard header. */
+ 	_gd2PutHeader (im, out, cs, fmt, ncx, ncy);
+diff --git a/tests/gd2/CMakeLists.txt b/tests/gd2/CMakeLists.txt
+index 3b650ad..247b466 100644
+--- a/tests/gd2/CMakeLists.txt
++++ b/tests/gd2/CMakeLists.txt
+@@ -1,5 +1,6 @@
+ SET(TESTS_FILES
+ 	bug_289
++	bug00309
+ 	gd2_empty_file
+ 	gd2_im2im
+ 	gd2_null
+diff --git a/tests/gd2/Makemodule.am b/tests/gd2/Makemodule.am
+index b8ee946..d69aee0 100644
+--- a/tests/gd2/Makemodule.am
++++ b/tests/gd2/Makemodule.am
+@@ -1,5 +1,6 @@
+ libgd_test_programs += \
+ 	gd2/bug_289 \
++	gd2/bug00309 \
+ 	gd2/gd2_empty_file \
+ 	gd2/php_bug_72339 \
+ 	gd2/gd2_read_corrupt
+diff --git a/tests/gd2/bug00309.c b/tests/gd2/bug00309.c
+new file mode 100644
+index 0000000..b649cdc
+--- /dev/null
++++ b/tests/gd2/bug00309.c
+@@ -0,0 +1,37 @@
++/**
++ * Regression test for <https://github.com/libgd/libgd/issues/309>.
++ *
++ * We test that an image with 64x64 pixels reports only a single chunk in the
++ * GD2 image header when the chunk size is 64.
++ */
++
++
++#include "gd.h"
++#include "gdtest.h"
++
++
++int main()
++{
++    gdImagePtr im;
++    unsigned char *buf;
++    int size, word;
++
++    im = gdImageCreate(64, 64);
++    gdImageColorAllocate(im, 0, 0, 0);
++
++    buf = gdImageGd2Ptr(im, 64, 1, &size);
++
++    gdImageDestroy(im);
++
++    word = buf[10] << 8 | buf[11];
++    gdTestAssertMsg(word == 64, "chunk size is %d, but expected 64\n", word);
++    word = buf[14] << 8 | buf[15];
++    gdTestAssertMsg(word == 1, "x chunk count is %d, but expected 1\n", word);
++    word = buf[16] << 8 | buf[17];
++    gdTestAssertMsg(word == 1, "y chunk count is %d, but expected 1\n", word);
++    gdTestAssertMsg(size == 5145, "file size is %d, but expected 5145\n", size);
++
++    gdFree(buf);
++
++    return gdNumFailures();
++}

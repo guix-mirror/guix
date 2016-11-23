@@ -946,7 +946,7 @@ Protocol).")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.sourceforge.net/project/extremetuxracer/releases/"
+                    "mirror://sourceforge/extremetuxracer/releases/"
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
@@ -2575,7 +2575,7 @@ in strikes against the evil corporation.")
                 "0jk2w5b6s6nkzri585bbz16cif2fhqcnl5l1mq3rd98r9nil3hd1"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("gettext" ,gnu-gettext)
+    (inputs `(("gettext" ,gettext-minimal)
               ("glu" ,glu)
               ("quesoglc" ,quesoglc)
               ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))))

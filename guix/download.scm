@@ -322,9 +322,6 @@ the daemon."
                       result))
                 store)))))
 
-(define raw-derivation
-  (store-lift derivation))
-
 (define* (built-in-download file-name url
                             #:key system hash-algo hash
                             mirrors content-addressed-mirrors
@@ -352,7 +349,13 @@ download by itself using its own dependencies."
                     #:env-vars `(("url" . ,(object->string url))
                                  ("mirrors" . ,mirrors)
                                  ("content-addressed-mirrors"
-                                  . ,content-addressed-mirrors)))))
+                                  . ,content-addressed-mirrors))
+
+                    ;; Do not offload this derivation because we cannot be
+                    ;; sure that the remote daemon supports the 'download'
+                    ;; built-in.  We may remove this limitation when support
+                    ;; for that built-in is widespread.
+                    #:local-build? #t)))
 
 (define* (in-band-download file-name url
                            #:key system hash-algo hash

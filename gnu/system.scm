@@ -346,7 +346,8 @@ explicitly appear in OS."
 
 (define %base-firmware
   ;; Firmware usable by default.
-  (list ath9k-htc-firmware))
+  (list ath9k-htc-firmware
+        openfwwf-firmware))
 
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
