@@ -21,10 +21,12 @@
   #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 popen)
   #:export (marionette?
             make-marionette
             marionette-eval
             marionette-control
+            marionette-screen-text
             %qwerty-us-keystrokes
             marionette-type))
 
@@ -170,6 +172,37 @@ pcsys_monitor\")."
      (display command monitor)
      (newline monitor)
      (wait-for-monitor-prompt monitor))))
+
+(define* (marionette-screen-text marionette
+                                 #:key
+                                 (ocrad "ocrad"))
+  "Take a screenshot of MARIONETTE, perform optical character
+recognition (OCR), and return the text read from the screen as a string.  Do
+this by invoking OCRAD (file name for GNU Ocrad's command)"
+  (define (random-file-name)
+    (string-append "/tmp/marionette-screenshot-"
+                   (number->string (random (expt 2 32)) 16)
+                   ".ppm"))
+
+  (let ((image (random-file-name)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (marionette-control (string-append "screendump " image)
+                            marionette)
+
+        ;; Tell Ocrad to invert the image colors (make it black on white) and
+        ;; to scale the image up, which significantly improves the quality of
+        ;; the result.  In spite of this, be aware that OCR confuses "y" and
+        ;; "V" and sometimes erroneously introduces white space.
+        (let* ((pipe (open-pipe* OPEN_READ ocrad
+                                 "-i" "-s" "10" image))
+               (text (get-string-all pipe)))
+          (unless (zero? (close-pipe pipe))
+            (error "'ocrad' failed" ocrad))
+          text))
+      (lambda ()
+        (false-if-exception (delete-file image))))))
 
 (define %qwerty-us-keystrokes
   ;; Maps "special" characters to their keystrokes.

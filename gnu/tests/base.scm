@@ -31,6 +31,8 @@
   #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services networking)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages ocr)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -240,6 +242,20 @@ info --version")
                                                  "/tty1.ppm")
                                   marionette)
               (file-exists? "tty1.ppm")))
+
+          (test-assert "screen text"
+            (let ((text (marionette-screen-text marionette
+                                                #:ocrad
+                                                #$(file-append ocrad
+                                                               "/bin/ocrad"))))
+              ;; Check whether the welcome message and shell prompt are
+              ;; displayed.  Note: OCR confuses "y" and "V" for instance, so
+              ;; we cannot reliably match the whole text.
+              (and (string-contains text "This is the GNU")
+                   (string-contains text
+                                    (string-append
+                                     "root@"
+                                     #$(operating-system-host-name os))))))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
