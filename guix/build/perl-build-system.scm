@@ -42,7 +42,11 @@
                    "--installdirs=site" ,@module-build-flags))
                 ((file-exists? "Makefile.PL")
                  `("Makefile.PL" ,(string-append "PREFIX=" out)
-                   "INSTALLDIRS=site" ,@make-maker-flags))
+                   ;; Prevent installation of 'perllocal.pod' files for
+                   ;; determinism.  These are typically used to build a
+                   ;; catalogue of installed packages, but does not provide
+                   ;; any useful information when installed with a module.
+                   "INSTALLDIRS=site" "NO_PERLLOCAL=1" ,@make-maker-flags))
                 (else (error "no Build.PL or Makefile.PL found")))))
     (format #t "running `perl' with arguments ~s~%" args)
     (zero? (apply system* "perl" args))))
