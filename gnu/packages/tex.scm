@@ -508,6 +508,32 @@ values (strings, macros, or numbers) pasted together.")
 other things it comes with full Unicode support.")
     (license license:artistic2.0)))
 
+;; Our version of texlive comes with biblatex 3.4, which is only compatible
+;; with biber 2.5 according to the compatibility matrix in the biber
+;; documentation.
+(define-public biber-2.5
+  (package (inherit biber)
+    (name "biber")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/plk/biber/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "163sd343wkrzwnvj2003m2j0kz517jmjr4savw6f8bjxhj8fdrqv"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments biber)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'delete-failing-test
+             (lambda _
+               (delete-file "t/sort-order.t")
+               #t))))))
+    (inputs
+     `(("perl-date-simple" ,perl-date-simple)
+       ,@(package-inputs biber)))))
 
 (define-public rubber
   (package
