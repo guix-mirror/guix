@@ -3323,6 +3323,26 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
 pseudo ttys.")
     (license (package-license perl))))
 
+(define-public perl-ipc-cmd
+  (package
+    (name "perl-ipc-cmd")
+    (version "0.96")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/IPC-Cmd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0a2v44x70gj9fd5wa8i08f9z6n14qppj1j49m1hc333wh72mzk6i"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IPC-Cmd")
+    (synopsis "Run interactive command-line programs")
+    (description "@code{IPC::Cmd} allows for the searching and execution of
+any binary on your system.  It adheres to verbosity settings and is able to
+run interactively.  It also has an option to capture output/error buffers.")
+    (license (package-license perl))))
+
 (define-public perl-ipc-run
   (package
     (name "perl-ipc-run")
