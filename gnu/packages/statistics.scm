@@ -3583,6 +3583,28 @@ existing packages provide.")
 Zurich, including many that are related to graphics.")
     (license license:gpl2+)))
 
+(define-public r-gtools
+  (package
+    (name "r-gtools")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gtools" version))
+       (sha256
+        (base32
+         "1xknwk9xlsj027pg0nwiizigcrsc84hdrig0jn0cgcyxj8dabdl6"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/gtools")
+    (synopsis "Various R programming tools")
+    (description
+     "This package contains a collection of various functions to assist in R
+programming, such as tools to assist in developing, updating, and maintaining
+R and R packages, calculating the logit and inverse logit transformations,
+tests for whether a value is missing, empty or contains only @code{NA} and
+@code{NULL} values, and many more.")
+    (license license:gpl2)))
+
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
