@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +56,12 @@
                        (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'install 'qualify-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "external-ip.sh"
+               (("upnpc")
+                (string-append (assoc-ref outputs "out") "/bin/upnpc"))))))))
     (home-page "http://miniupnp.free.fr/")
     (synopsis "Library implementing the client side UPnP protocol")
     (description
