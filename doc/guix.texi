@@ -11412,13 +11412,13 @@ could instantiate a dovecot service like this:
 @subsubsection Kerberos Services
 @cindex Kerberos
 
-The @code{(gnu services Kerberos)} module provides services relating to
+The @code{(gnu services kerberos)} module provides services relating to
 the authentication protocol @dfn{Kerberos}.
 
 @subsubheading PAM krb5 Service
 @cindex pam-krb5
 
-The pam-krb5 service allows for login authentication and password
+The @code{pam-krb5} service allows for login authentication and password
 management via Kerberos.
 You will need this service if you want PAM enabled applications to authenticate
 users using Kerberos.
