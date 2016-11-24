@@ -695,6 +695,7 @@ and @command{wicd-curses} user interfaces."
                  (list (service-extension shepherd-root-service-type
                                           network-manager-shepherd-service)
                        (service-extension dbus-root-service-type list)
+                       (service-extension polkit-service-type list)
                        (service-extension activation-service-type
                                           (const %network-manager-activation))
                        ;; Add network-manager to the system profile.
