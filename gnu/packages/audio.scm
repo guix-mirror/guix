@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1185,11 +1186,10 @@ well suited to all musical instruments and vocals.")
                "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
+     `(#:tests? #f                              ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       ;; no configure script
-       (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))        ; no configure script
     (inputs
      `(("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
