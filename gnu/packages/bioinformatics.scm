@@ -7541,6 +7541,42 @@ characterization and visualization of a wide range of mutational patterns
 in SNV base substitution data.")
     (license license:expat)))
 
+(define-public r-wgcna
+  (package
+    (name "r-wgcna")
+    (version "1.51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "WGCNA" version))
+       (sha256
+        (base32
+         "0hzvnhw76vwg8bl8x368f0c5szpwb8323bmrb3bir93i5bmfjsxx"))))
+    (properties `((upstream-name . "WGCNA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dynamictreecut" ,r-dynamictreecut)
+       ("r-fastcluster" ,r-fastcluster)
+       ("r-foreach" ,r-foreach)
+       ("r-go-db" ,r-go-db)
+       ("r-hmisc" ,r-hmisc)
+       ("r-impute" ,r-impute)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-preprocesscore" ,r-preprocesscore)))
+    (home-page
+     "http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/")
+    (synopsis "Weighted correlation network analysis")
+    (description
+     "This package provides functions necessary to perform Weighted
+Correlation Network Analysis on high-dimensional data.  It includes functions
+for rudimentary data cleaning, construction and summarization of correlation
+networks, module identification and functions for relating both variables and
+modules to sample traits.  It also includes a number of utility functions for
+data manipulation and visualization.")
+    (license license:gpl2+)))
+
 (define-public emboss
   (package
     (name "emboss")
