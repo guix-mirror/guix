@@ -27,7 +27,7 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "1.9")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -35,7 +35,7 @@
              "http://miniupnp.tuxfamily.org/files/miniupnpc-"
              version ".tar.gz"))
        (sha256
-        (base32 "0r24jdqcyf839n30ppimdna0hvybscyziaad7ng99fw0x19y88r9"))))
+        (base32 "0fzrc6fs8vzb2yvk01bd3q5jkarysl7gjlyaqncy3yvfk2wcwd6l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
