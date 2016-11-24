@@ -3497,6 +3497,27 @@ conversion of R objects to LaTeX code, and recoding variables.")
 framework, with additional code inspection and report generation tools.")
     (license license:gpl2+)))
 
+(define-public r-dynamictreecut
+  (package
+    (name "r-dynamictreecut")
+    (version "1.63-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dynamicTreeCut" version))
+       (sha256
+        (base32
+         "1fadbql7g5r2vvlkr89nlrjxwp4yx4xrdqmv077qvmnx9vv0f4w3"))))
+    (properties `((upstream-name . "dynamicTreeCut")))
+    (build-system r-build-system)
+    (home-page
+     "http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/BranchCutting/")
+    (synopsis "Detect clusters in hierarchical clustering dendrograms")
+    (description
+     "This package contains methods for the detection of clusters in
+hierarchical clustering dendrograms.")
+    (license license:gpl2+)))
+
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
