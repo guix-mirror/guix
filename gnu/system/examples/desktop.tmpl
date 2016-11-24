@@ -1,5 +1,6 @@
 ;; This is an operating system configuration template
-;; for a "desktop" setup with GNOME and Xfce.
+;; for a "desktop" setup with GNOME and Xfce where the
+;; root partition is encrypted with LUKS.
 
 (use-modules (gnu) (gnu system nss))
 (use-service-modules desktop)
@@ -13,11 +14,21 @@
   ;; Assuming /dev/sdX is the target hard disk, and "my-root"
   ;; is the label of the target root file system.
   (bootloader (grub-configuration (device "/dev/sdX")))
+
+  ;; Specify a mapped device for the encrypted root partition.
+  ;; The UUID is that returned by 'cryptsetup luksUUID'.
+  (mapped-devices
+   (list (mapped-device
+          (source (uuid "12345678-1234-1234-1234-123456789abc"))
+          (target "the-root-device")
+          (type luks-device-mapping))))
+
   (file-systems (cons (file-system
                         (device "my-root")
                         (title 'label)
                         (mount-point "/")
-                        (type "ext4"))
+                        (type "ext4")
+                        (dependencies mapped-devices))
                       %base-file-systems))
 
   (users (cons (user-account

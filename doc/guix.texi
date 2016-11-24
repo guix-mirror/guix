@@ -6665,27 +6665,26 @@ partition lives at @file{/dev/sda1}, a file system with the label
 mkfs.ext4 -L my-root /dev/sda1
 @end example
 
-@c FIXME: Uncomment this once GRUB fully supports encrypted roots.
-@c A typical command sequence may be:
-@c
-@c @example
-@c # fdisk /dev/sdX
-@c @dots{} Create partitions etc.@dots{}
-@c # cryptsetup luksFormat /dev/sdX1
-@c # cryptsetup open --type luks /dev/sdX1 my-partition
-@c # mkfs.ext4 -L my-root /dev/mapper/my-partition
-@c @end example
-
-In addition to e2fsprogs, the suite of tools to manipulate
-ext2/ext3/ext4 file systems, the installation image includes
-Cryptsetup/LUKS for disk encryption.
-
-Once that is done, mount the target root partition under @file{/mnt}
-with a command like (again, assuming @file{/dev/sda1} is the root
-partition):
+@cindex encrypted disk
+If you are instead planning to encrypt the root partition, you can use
+the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
+@uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
+@code{man cryptsetup}} for more information.)  Assuming you want to
+store the root partition on @file{/dev/sda1}, the command sequence would
+be along these lines:
 
 @example
-mount /dev/sda1 /mnt
+cryptsetup luksFormat /dev/sda1
+cryptsetup open --type luks /dev/sda1 my-partition
+mkfs.ext4 -L my-root /dev/mapper/my-partition
+@end example
+
+Once that is done, mount the target root partition under @file{/mnt}
+with a command like (again, assuming @code{my-root} is the label of the
+root partition):
+
+@example
+mount LABEL=my-root /mnt
 @end example
 
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
@@ -6748,6 +6747,10 @@ Be sure that your partition labels match the value of their respective
 @code{device} fields in your @code{file-system} configuration, assuming
 your @code{file-system} configuration sets the value of @code{title} to
 @code{'label}.
+
+@item
+If there are encrypted or RAID partitions, make sure to add a
+@code{mapped-devices} field to describe them (@pxref{Mapped Devices}).
 @end itemize
 
 Once you are done preparing the configuration file, the new system must
@@ -6992,7 +6995,9 @@ desired configuration.  In particular, notice how we use @code{inherit}
 to create a new configuration which has the same values as the old
 configuration, but with a few modifications.
 
-The configuration for a typical ``desktop'' usage, with the X11 display
+@cindex encrypted disk
+The configuration for a typical ``desktop'' usage, with an encrypted
+root partition, the X11 display
 server, GNOME and Xfce (users can choose which of these desktop
 environments to use at the log-in screen by pressing @kbd{F1}), network
 management, power management, and more, would look like this:
@@ -7317,13 +7322,16 @@ errors before being mounted.
 When true, the mount point is created if it does not exist yet.
 
 @item @code{dependencies} (default: @code{'()})
-This is a list of @code{<file-system>} objects representing file systems
-that must be mounted before (and unmounted after) this one.
+This is a list of @code{<file-system>} or @code{<mapped-device>} objects
+representing file systems that must be mounted or mapped devices that
+must be opened before (and unmounted or closed after) this one.
 
 As an example, consider a hierarchy of mounts: @file{/sys/fs/cgroup} is
 a dependency of @file{/sys/fs/cgroup/cpu} and
 @file{/sys/fs/cgroup/memory}.
 
+Another example is a file system that depends on a mapped device, for
+example for an encrypted partition (@pxref{Mapped Devices}).
 @end table
 @end deftp
 
