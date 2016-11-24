@@ -6055,6 +6055,30 @@ add a call to @code{guix-publish-service} in the @code{services} field
 of the @code{operating-system} declaration (@pxref{guix-publish-service,
 @code{guix-publish-service}}).
 
+If you are instead running Guix on a ``foreign distro'', follow these
+instructions:”
+
+@itemize
+@item
+If your host distro uses the systemd init system:
+
+@example
+# ln -s ~root/.guix-profile/lib/systemd/system/guix-publish.service \
+        /etc/systemd/system/
+# systemctl start guix-publish && systemctl enable guix-publish
+@end example
+
+@item
+If your host distro uses the Upstart init system:
+
+@example
+# ln -s ~root/.guix-profile/lib/upstart/system/guix-publish.conf /etc/init/
+# start guix-publish
+@end example
+
+@item
+Otherwise, proceed similarly with your distro's init system.
+@end itemize
 
 @node Invoking guix challenge
 @section Invoking @command{guix challenge}

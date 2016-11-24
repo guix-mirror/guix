@@ -183,26 +183,26 @@ endif BUILD_DAEMON_OFFLOAD
 nodist_libexec_SCRIPTS =			\
   %D%/scripts/guix-authenticate
 
-# The '.service' file for systemd.
+# The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system
-nodist_systemdservice_DATA = etc/guix-daemon.service
+nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service
 
-etc/guix-daemon.service: etc/guix-daemon.service.in	\
+etc/guix-%.service: etc/guix-%.service.in	\
 			 $(top_builddir)/config.status
 	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";				\
 	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
-	       "$(srcdir)/etc/guix-daemon.service.in" > "$@.tmp";	\
+	       "$(srcdir)/$<" > "$@.tmp";	\
 	mv "$@.tmp" "$@"
 
-# The '.conf' job for Upstart.
+# The '.conf' jobs for Upstart.
 upstartjobdir = $(libdir)/upstart/system
-nodist_upstartjob_DATA = etc/guix-daemon.conf
+nodist_upstartjob_DATA = etc/guix-daemon.conf etc/guix-publish.conf
 
-etc/guix-daemon.conf: etc/guix-daemon.conf.in	\
+etc/guix-%.conf: etc/guix-%.conf.in	\
 			 $(top_builddir)/config.status
 	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";				\
 	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
-	       "$(srcdir)/etc/guix-daemon.conf.in" > "$@.tmp";		\
+	       "$(srcdir)/$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
 EXTRA_DIST +=					\
