@@ -3292,6 +3292,28 @@ matches and captured groups from the match of a regular expression to a
 character vector.")
     (license license:expat)))
 
+(define-public r-cellranger
+  (package
+    (name "r-cellranger")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cellranger" version))
+       (sha256
+        (base32
+         "16fgi3annn34c3cxi0pxf62mmmmxi21hp0zzlv7bkfsjqy4g4f2x"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rematch" ,r-rematch)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/rsheets/cellranger")
+    (synopsis "Translate spreadsheet cell ranges to rows and columns")
+    (description
+     "This package provides helper functions to work with spreadsheets and the
+@code{A1:D10} style of cell range specification.")
+    (license license:expat)))
+
 (define-public r-rpart
   (package
     (name "r-rpart")
