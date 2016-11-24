@@ -7613,6 +7613,36 @@ must be built and this dictionary can be used for determining kernels for DNA
 Sequences.")
       (license license:gpl2+))))
 
+(define-public r-seqgl
+  (package
+    (name "r-seqgl")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ManuSetty/SeqGL/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pnk1p3sci5yipyc8xnb6jbmydpl80fld927xgnbcv104hy8h8yh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-chipkernels" ,r-chipkernels)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-spams" ,r-spams)
+       ("r-wgcna" ,r-wgcna)
+       ("r-fastcluster" ,r-fastcluster)))
+    (home-page "https://github.com/ManuSetty/SeqGL")
+    (synopsis "Group lasso for Dnase/ChIP-seq data")
+    (description "SeqGL is a group lasso based algorithm to extract
+transcription factor sequence signals from ChIP, DNase and ATAC-seq profiles.
+This package presents a method which uses group lasso to discriminate between
+bound and non bound genomic regions to accurately identify transcription
+factors bound at the specific regions.")
+    (license license:gpl2+)))
+
 (define-public emboss
   (package
     (name "emboss")
