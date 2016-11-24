@@ -3539,6 +3539,31 @@ hierarchical clustering dendrograms.")
 routines.")
     (license license:lgpl2.0+)))
 
+(define-public r-fastcluster
+  (package
+    (name "r-fastcluster")
+    (version "1.1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastcluster" version))
+       (sha256
+        (base32
+         "0rlbxhh894znf10x0xgkv9dzpibgq9jw5aqpgviccdnxc2c5hwid"))))
+    (build-system r-build-system)
+    (home-page "http://danifold.net/fastcluster.html")
+    (synopsis "Fast hierarchical clustering routines")
+    (description
+     "This package implements fast hierarchical, agglomerative clustering
+routines.  Part of the functionality is designed as drop-in replacement for
+existing routines: @code{linkage()} in the SciPy package
+@code{scipy.cluster.hierarchy}, @code{hclust()} in R's @code{stats} package,
+and the @code{flashClust} package.  It provides the same functionality with
+the benefit of a much faster implementation.  Moreover, there are
+memory-saving routines for clustering of vector data, which go beyond what the
+existing packages provide.")
+    (license license:bsd-2)))
+
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
