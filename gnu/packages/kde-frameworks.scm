@@ -804,6 +804,57 @@ data being plotted.  KPlotWidget automatically converts everything to screen
 pixel units.")
     (license license:lgpl2.1+)))
 
+(define-public ksyntaxhighlighting
+  (package
+    (name "ksyntaxhighlighting")
+    (version "5.28.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    "syntax-highlighting-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0gf1ldlk4gav6bg5b1231hphaal4simyngirvr1yizcb1rrlygdy"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("perl" ,perl)
+       ;; Optional, for compile-time validation of syntax definition files:
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'unpatch-source-shebang
+           (lambda _
+             ;; revert the patch-shebang phase on scripts which are
+             ;; in fact test data
+             (substitute* '("autotests/input/test.bash"
+                            "autotests/folding/test.bash.fold")
+               (((which "bash")) "/bin/bash"))
+             (substitute* '("autotests/input/highlight.sh"
+                            "autotests/folding/highlight.sh.fold")
+               (((which "sh")) " /bin/sh")) ;; space in front!
+             (substitute* '("autotests/input/highlight.pl"
+                            "autotests/folding/highlight.pl.fold")
+               (((which "perl")) "/usr/bin/perl"))
+             #t))
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug info
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Syntax highlighting engine for Kate syntax definitions")
+    (description "This is a stand-alone implementation of the Kate syntax
+highlighting engine.  It's meant as a building block for text editors as well
+as for simple highlighted text rendering (e.g. as HTML), supporting both
+integration with a custom editor as well as a ready-to-use
+@code{QSyntaxHighlighter} sub-class.")
+    (license license:lgpl2.1+)))
+
 (define-public kwayland
   (package
     (name "kwayland")
