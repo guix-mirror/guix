@@ -1178,9 +1178,15 @@ well suited to all musical instruments and vocals.")
     (version "1.3.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://factorial.hu/system/files/ir.lv2-"
-                   version ".tar.gz"))
+             ;; The original home-page is gone. Download the tarball from an
+             ;; archive mirror instead.
+             (uri (list (string-append
+                         "https://web.archive.org/web/20150803095032/"
+                         "http://factorial.hu/system/files/ir.lv2-"
+                         version ".tar.gz")
+                        (string-append
+                         "https://mirrors.kernel.org/gentoo/distfiles/ir.lv2-"
+                         version ".tar.gz")))
              (sha256
               (base32
                "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
@@ -1203,7 +1209,9 @@ well suited to all musical instruments and vocals.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://factorial.hu/plugins/lv2/ir")
+    ;; Link to an archived copy of the home-page since the original is gone.
+    (home-page (string-append "https://web.archive.org/web/20150803095032/"
+                              "http://factorial.hu/plugins/lv2/ir"))
     (synopsis "LV2 convolution reverb")
     (description
      "IR is a low-latency, real-time, high performance signal convolver
