@@ -76,7 +76,7 @@ and freshness without requiring additional information from the user.")
 (define-public ldc
   (package
     (name "ldc")
-    (version "0.16.1")
+    (version "0.17.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -85,10 +85,9 @@ and freshness without requiring additional information from the user.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jvilxx0rpqmkbja4m69fhd5g09697xq7vyqp2hz4hvxmmmv4j40"))))
+                "0iksl6cvhsiwnlh15b7s9v8f3grxk27jn0vja9n4sad7fvfwmmlc"))))
     (build-system cmake-build-system)
-    ;; LDC currently only supports the x86_64 and i686 architectures.
-    (supported-systems '("x86_64-linux" "i686-linux"))
+    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -127,8 +126,10 @@ and freshness without requiring additional information from the user.")
        ("tzdata" ,tzdata)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("llvm" ,llvm-3.7)
-       ("clang" ,clang-3.7)
+     `(("llvm" ,llvm)
+       ("clang" ,clang)
+       ("python-lit" ,python-lit)
+       ("python-wrapper" ,python-wrapper)
        ("unzip" ,unzip)
        ("phobos-src"
         ,(origin
@@ -138,7 +139,7 @@ and freshness without requiring additional information from the user.")
                  version ".tar.gz"))
            (sha256
             (base32
-             "0sgdj0536c4nb118yiw1f8lqy5d3g3lpg9l99l165lk9xy45l9z4"))
+             "07hh3ic3r755mq9hn9gfr0wlc5y8cr91xz2ydb6gqy4zy8jgp5s9"))
            (patches (search-patches "ldc-disable-tests.patch"))))
        ("druntime-src"
         ,(origin
@@ -148,7 +149,7 @@ and freshness without requiring additional information from the user.")
                  version ".tar.gz"))
            (sha256
             (base32
-             "0z4mkyddx6c4sy1vqgqvavz55083dsxws681qkh93jh1rpby9yg6"))))
+             "1m1dhday9dl3s04njmd29z7ism2xn2ksb9qlrwzykdgz27b3dk6x"))))
        ("dmd-testsuite-src"
         ,(origin
            (method url-fetch)
@@ -157,7 +158,7 @@ and freshness without requiring additional information from the user.")
                  version ".tar.gz"))
            (sha256
             (base32
-             "0yc6miidzgl9k33ygk7xcppmfd6kivqj02cvv4fmkbs3qz4yy3z1"))))))
+             "0n7gvalxwfmia4gag53r9qhcnk2cqrw3n4icj1yri0zkgc27pm60"))))))
     (home-page "http://wiki.dlang.org/LDC")
     (synopsis "LLVM compiler for the D programming language")
     (description
