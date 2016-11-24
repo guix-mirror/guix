@@ -3645,6 +3645,46 @@ including:
 @end itemize\n")
     (license license:gpl2+)))
 
+(define-public r-gplots
+  (package
+    (name "r-gplots")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gplots" version))
+       (sha256
+        (base32
+         "02nb8n3s7c1zxq2s7ycaq2ys72y7mzirxrwj954h6gdc4x1zhg9l"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-catools" ,r-catools)
+       ("r-gdata" ,r-gdata)
+       ("r-gtools" ,r-gtools)
+       ("r-kernsmooth" ,r-kernsmooth)))
+    (home-page "http://cran.r-project.org/web/packages/gplots")
+    (synopsis "Various R programming tools for plotting data")
+    (description
+     "This package provides various R programming tools for plotting data,
+including:
+
+@itemize
+@item calculating and plotting locally smoothed summary function
+@item enhanced versions of standard plots
+@item manipulating colors
+@item calculating and plotting two-dimensional data summaries
+@item enhanced regression diagnostic plots
+@item formula-enabled interface to @code{stats::lowess} function
+@item displaying textual data in plots
+@item baloon plots
+@item plotting \"Venn\" diagrams
+@item displaying Open-Office style plots
+@item plotting multiple data on same region, with separate axes
+@item plotting means and confidence intervals
+@item spacing points in an x-y plot so they don't overlap
+@end itemize\n")
+    (license license:gpl2+)))
+
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
