@@ -507,12 +507,9 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.14.1")
+   (version "3.15.1")
    (source (origin
             (method url-fetch)
-            ;; TODO: Download from sqlite.org once this bug :
-            ;; http://lists.gnu.org/archive/html/bug-guile/2013-01/msg00027.html
-            ;; has been fixed.
             (uri (let ((numeric-version
                         (match (string-split version #\.)
                           ((first-digit other-digits ...)
@@ -522,23 +519,11 @@ for example from a shell script.")
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (list
-                    (string-append
-                     "https://fossies.org/linux/misc/sqlite-autoconf-"
-                     numeric-version ".tar.gz")
-                    (string-append
-                     "http://distfiles.gentoo.org/distfiles/"
-                     "/sqlite-autoconf-" numeric-version ".tar.gz"))
-
-                   ;; XXX: As of 2015-09-08, SourceForge is squatting the URL
-                   ;; below, returning 200 and showing an advertising page.
-                   ;; (string-append
-                   ;;  "mirror://sourceforge/sqlite.mirror/SQLite%20" version
-                   ;;  "/sqlite-autoconf-" numeric-version ".tar.gz")
-                   ))
+                   (string-append "https://sqlite.org/2016/sqlite-autoconf-"
+                                  numeric-version ".tar.gz")))
             (sha256
              (base32
-              "19j73j44akqgc6m82wm98yvnmm3mfzmfqr8mp3n7n080d53q4wdw"))))
+              "1ig2d9jzzixiifmgqsl6kjcvy17jwxby3s24gfnc5qvyd6vqkyjx"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
@@ -549,7 +534,7 @@ for example from a shell script.")
       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
                            "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
-   (home-page "http://www.sqlite.org/")
+   (home-page "https://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
     "SQLite is a software library that implements a self-contained, serverless,
@@ -557,26 +542,6 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license public-domain)))
-
-(define-public sqlite-3.15.1
-  (package (inherit sqlite)
-           (version "3.15.1")
-           (source (origin
-                     (method url-fetch)
-                     (uri (let ((numeric-version
-                                 (match (string-split version #\.)
-                                   ((first-digit other-digits ...)
-                                    (string-append first-digit
-                                                   (string-pad-right
-                                                    (string-concatenate
-                                                     (map (cut string-pad <> 2 #\0)
-                                                          other-digits))
-                                                    6 #\0))))))
-                            (string-append "https://sqlite.org/2016/sqlite-autoconf-"
-                                           numeric-version ".tar.gz")))
-                     (sha256
-                      (base32
-                       "1ig2d9jzzixiifmgqsl6kjcvy17jwxby3s24gfnc5qvyd6vqkyjx"))))))
 
 (define-public tdb
   (package

@@ -309,7 +309,7 @@
        ("pcre" ,pcre)
        ("postgresql" ,postgresql)
        ("readline" ,readline)
-       ("sqlite" ,sqlite-3.15.1)
+       ("sqlite" ,sqlite)
        ("tidy" ,tidy)
        ("zip" ,zip)
        ("zlib" ,zlib)))
