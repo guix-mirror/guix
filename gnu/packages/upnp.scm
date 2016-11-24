@@ -63,12 +63,14 @@
                (("upnpc")
                 (string-append (assoc-ref outputs "out") "/bin/upnpc"))))))))
     (home-page "http://miniupnp.free.fr/")
-    (synopsis "Library implementing the client side UPnP protocol")
+    (synopsis "UPnP protocol client library")
     (description
-     "MiniUPnPc is a library is useful whenever an application needs to listen
-for incoming connections but is run behind a UPnP enabled router or firewall.
-Examples for such applications include: P2P applications, FTP clients for
-active mode, IRC (for DCC) or IM applications, network games, any server
-software.")
+     "The MiniUPnPc client library facilitates access to the services provided
+by any Universal Plug and Play (UPnP) Internet Gateway Device (IGD) present on
+the network.  In UPnP terminology, MiniUPnPc is a UPnP Control Point.  It is
+useful whenever an application needs to listen for incoming connections while
+running behind a UPnP-enabled router or firewall.  Such applications include
+peer-to-peer applications, active-mode FTP clients, DCC file transfers over
+IRC, instant messaging, network games, and most server software.")
     (license
      (x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))
