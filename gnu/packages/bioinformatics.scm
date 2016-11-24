@@ -7577,6 +7577,42 @@ modules to sample traits.  It also includes a number of utility functions for
 data manipulation and visualization.")
     (license license:gpl2+)))
 
+(define-public r-chipkernels
+  (let ((commit "c9cfcacb626b1221094fb3490ea7bac0fd625372")
+        (revision "1"))
+    (package
+      (name "r-chipkernels")
+      (version (string-append "1.1-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ManuSetty/ChIPKernels.git")
+               (commit commit)))
+         (file-name (string-append name "-" version))
+         (sha256
+          (base32
+           "14bj5qhjm1hsm9ay561nfbqi9wxsa7y487df2idsaaf6z10nw4v0"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-iranges" ,r-iranges)
+         ("r-xvector" ,r-xvector)
+         ("r-biostrings" ,r-biostrings)
+         ("r-bsgenome" ,r-bsgenome)
+         ("r-gtools" ,r-gtools)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-sfsmisc" ,r-sfsmisc)
+         ("r-kernlab" ,r-kernlab)
+         ("r-s4vectors" ,r-s4vectors)
+         ("r-biocgenerics" ,r-biocgenerics)))
+      (home-page "https://github.com/ManuSetty/ChIPKernels")
+      (synopsis "Build string kernels for DNA Sequence analysis")
+      (description "ChIPKernels is an R package for building different string
+kernels used for DNA Sequence analysis.  A dictionary of the desired kernel
+must be built and this dictionary can be used for determining kernels for DNA
+Sequences.")
+      (license license:gpl2+))))
+
 (define-public emboss
   (package
     (name "emboss")
