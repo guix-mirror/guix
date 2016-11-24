@@ -37,7 +37,6 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages xfce)
   #:use-module (gnu packages avahi)
-  #:use-module (gnu packages polkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages linux)
@@ -67,11 +66,6 @@
             geoclue-service-type
 
             bluetooth-service
-
-            polkit-configuration
-            polkit-configuration?
-            polkit-service
-            polkit-service-type
 
             elogind-configuration
             elogind-configuration?
@@ -412,93 +406,6 @@ all the Bluetooth devices and provides a number of D-Bus interfaces.
 Users need to be in the @code{lp} group to access the D-Bus service.
 "
   (service bluetooth-service-type bluez))
-
-
-;;;
-;;; Polkit privilege management service.
-;;;
-
-(define-record-type* <polkit-configuration>
-  polkit-configuration make-polkit-configuration
-  polkit-configuration?
-  (polkit   polkit-configuration-polkit           ;<package>
-            (default polkit))
-  (actions  polkit-configuration-actions          ;list of <package>
-            (default '())))
-
-(define %polkit-accounts
-  (list (user-group (name "polkitd") (system? #t))
-        (user-account
-         (name "polkitd")
-         (group "polkitd")
-         (system? #t)
-         (comment "Polkit daemon user")
-         (home-directory "/var/empty")
-         (shell "/run/current-system/profile/sbin/nologin"))))
-
-(define %polkit-pam-services
-  (list (unix-pam-service "polkit-1")))
-
-(define (polkit-directory packages)
-  "Return a directory containing an @file{actions} and possibly a
-@file{rules.d} sub-directory, for use as @file{/etc/polkit-1}."
-  (with-imported-modules '((guix build union))
-    (computed-file "etc-polkit-1"
-                   #~(begin
-                       (use-modules (guix build union) (srfi srfi-26))
-
-                       (union-build #$output
-                                    (map (cut string-append <>
-                                              "/share/polkit-1")
-                                         (list #$@packages)))))))
-
-(define polkit-etc-files
-  (match-lambda
-    (($ <polkit-configuration> polkit packages)
-     `(("polkit-1" ,(polkit-directory (cons polkit packages)))))))
-
-(define polkit-setuid-programs
-  (match-lambda
-    (($ <polkit-configuration> polkit)
-     (list (file-append polkit "/lib/polkit-1/polkit-agent-helper-1")
-           (file-append polkit "/bin/pkexec")))))
-
-(define polkit-service-type
-  (service-type (name 'polkit)
-                (extensions
-                 (list (service-extension account-service-type
-                                          (const %polkit-accounts))
-                       (service-extension pam-root-service-type
-                                          (const %polkit-pam-services))
-                       (service-extension dbus-root-service-type
-                                          (compose
-                                           list
-                                           polkit-configuration-polkit))
-                       (service-extension etc-service-type
-                                          polkit-etc-files)
-                       (service-extension setuid-program-service-type
-                                          polkit-setuid-programs)))
-
-                ;; Extensions are lists of packages that provide polkit rules
-                ;; or actions under share/polkit-1/{actions,rules.d}.
-                (compose concatenate)
-                (extend (lambda (config actions)
-                          (polkit-configuration
-                           (inherit config)
-                           (actions
-                            (append (polkit-configuration-actions config)
-                                    actions)))))))
-
-(define* (polkit-service #:key (polkit polkit))
-  "Return a service that runs the
-@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
-management service}, which allows system administrators to grant access to
-privileged operations in a structured way.  By querying the Polkit service, a
-privileged system component can know when it should grant additional
-capabilities to ordinary users.  For example, an ordinary user can be granted
-the capability to suspend the system if the user is logged in locally."
-  (service polkit-service-type
-           (polkit-configuration (polkit polkit))))
 
 
 ;;;
