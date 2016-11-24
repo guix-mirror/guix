@@ -105,15 +105,17 @@ database {
         (chown rundir (passwd:uid user) (passwd:gid user)))))
 
 (define (dicod-shepherd-service config)
-  (list (shepherd-service
-         (provision '(dicod))
-         (documentation "Run the dicod daemon.")
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$dico "/bin/dicod") "--foreground"
-                         (string-append
-                          "--config=" #$(dicod-configuration-file config)))
-                   #:user "dicod" #:group "dicod"))
-         (stop #~(make-kill-destructor)))))
+  (let ((dicod      (file-append (dicod-configuration-dico config)
+                                 "/bin/dicod"))
+        (dicod.conf (dicod-configuration-file config)))
+    (list (shepherd-service
+           (provision '(dicod))
+           (documentation "Run the dicod daemon.")
+           (start #~(make-forkexec-constructor
+                     (list #$dicod "--foreground"
+                           (string-append "--config=" #$dicod.conf))
+                     #:user "dicod" #:group "dicod"))
+          (stop #~(make-kill-destructor))))))
 
 (define dicod-service-type
   (service-type

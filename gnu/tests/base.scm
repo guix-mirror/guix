@@ -150,14 +150,20 @@ info --version")
               (marionette-type "root\n\nid -un > logged-in\n" marionette)
 
               ;; It can take a while before the shell commands are executed.
-              (let loop ((i 0))
-                (unless (or (file-exists? "/root/logged-in") (> i 15))
-                  (sleep 1)
-                  (loop (+ i 1))))
               (marionette-eval '(use-modules (rnrs io ports)) marionette)
-              (marionette-eval '(call-with-input-file "/root/logged-in"
-                                  get-string-all)
-                               marionette)))
+              (marionette-eval
+               '(let loop ((i 0))
+                  (catch 'system-error
+                    (lambda ()
+                      (call-with-input-file "/root/logged-in"
+                        get-string-all))
+                    (lambda args
+                      (if (and (< i 15) (= ENOENT (system-error-errno args)))
+                          (begin
+                            (sleep 1)
+                            (loop (+ i 1)))
+                          (apply throw args)))))
+               marionette)))
 
           (test-assert "host name resolution"
             (match (marionette-eval

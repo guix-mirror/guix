@@ -217,7 +217,8 @@ without requiring the source code to be rewritten.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p"))))))
+                "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p"))
+              (patches (search-patches "guile-repl-server-test.patch"))))))
 
 (define-public guile-next
   (package (inherit guile-2.0)

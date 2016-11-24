@@ -86,6 +86,7 @@
             derivation-path->output-path
             derivation-path->output-paths
             derivation
+            raw-derivation
 
             map-derivation
 
@@ -1306,3 +1307,6 @@ ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
 
 (define built-derivations
   (store-lift build-derivations))
+
+(define raw-derivation
+  (store-lift derivation))

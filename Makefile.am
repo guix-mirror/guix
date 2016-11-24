@@ -123,6 +123,7 @@ MODULES =					\
   guix/import/elpa.scm   			\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
+  guix/scripts/perform-download.scm		\
   guix/scripts/build.scm			\
   guix/scripts/archive.scm			\
   guix/scripts/import.scm			\
@@ -171,8 +172,8 @@ MODULES +=					\
 
 endif BUILD_DAEMON_OFFLOAD
 
-# Internal module with test suite support.
-dist_noinst_DATA = guix/tests.scm
+# Internal modules with test suite support.
+dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 
 # Linux-Libre configurations.
 KCONFIGS =					\
@@ -189,7 +190,7 @@ EXAMPLES =					\
   gnu/system/examples/desktop.tmpl		\
   gnu/system/examples/lightweight-desktop.tmpl
 
-GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go guix/tests.go
+GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
 nobase_dist_guilemodule_DATA =                  \
   $(MODULES) $(KCONFIGS) $(EXAMPLES)            \
@@ -407,7 +408,7 @@ CLEANFILES =					\
 # the whole thing.  Likewise, set 'XDG_CACHE_HOME' to avoid loading possibly
 # stale files from ~/.cache/guile/ccache.
 %.go: make-go ; @:
-make-go: $(MODULES) guix/config.scm guix/tests.scm
+make-go: $(MODULES) guix/config.scm $(dist_noinst_DATA)
 	$(AM_V_at)echo "Compiling Scheme modules..." ;			\
 	unset GUILE_LOAD_COMPILED_PATH ;				\
 	XDG_CACHE_HOME=/nowhere						\

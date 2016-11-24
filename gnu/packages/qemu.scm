@@ -117,7 +117,6 @@
                  (let ((out (assoc-ref outputs "out")))
                    (and (zero? (system* "make" "info"))
                         (let ((infodir (string-append out "/share/info")))
-                          (mkdir-p infodir)
                           (for-each (lambda (info)
                                       (install-file info infodir))
                                     (find-files "." "\\.info$"))

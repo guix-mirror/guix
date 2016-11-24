@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define nanopass
   (let ((version "1.9"))
@@ -94,12 +96,15 @@
        (list ,(match (or (%current-target-system) (%current-system))
                 ("x86_64-linux" '(list "--machine=ta6le"))
                 ("i686-linux" '(list "--machine=ti3le"))
-                ;; FIXME: Some people succeeded in cross-compiling to
-                ;; ARM. https://github.com/cisco/ChezScheme/issues/13
+                ;; Let autodetection have its attempt on other architectures.
                 (_
                  '())))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-processor-detection
+           (lambda _ (substitute* "configure"
+                       (("uname -a") "uname -m"))
+             #t))
          ;; Adapt the custom 'configure' script.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -187,7 +192,9 @@
                     (find-files lib "scheme.boot"))
                #t))))))
     ;; According to the documentation MIPS is not supported.
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    ;; Cross-compiling for the Raspberry Pi is supported, but not native ARM.
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "armhf-linux")))
     (home-page "http://www.scheme.com")
     (synopsis "R6RS Scheme compiler and run-time")
     (description

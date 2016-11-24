@@ -102,7 +102,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.2
   (package (inherit ruby)
-    (version "2.2.5")
+    (version "2.2.6")
     (source
      (origin
        (method url-fetch)
@@ -111,7 +111,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1mw7bzw76g5w37cwhb57r6gxcl2vn9lfrlyf4h4xms3qlnhflvzq"))))))
+         "0fbk2pyjphynj4kxn27vb5rsq6brr3y85p784jd1rxwws30fq54l"))))))
 
 (define-public ruby-2.1
   (package (inherit ruby)
@@ -4178,3 +4178,25 @@ patterns.")
 libraries for compiling Ruby native extensions.")
     (home-page "https://github.com/ruby-gnome2/pkg-config")
     (license license:lgpl2.0+)))
+
+(define-public ruby-net-http-digest-auth
+  (package
+    (name "ruby-net-http-digest-auth")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "net-http-digest_auth" version))
+       (sha256
+        (base32
+         "14801gr34g0rmqz9pv4rkfa3crfdbyfk6r48vpg5a5407v0sixqi"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "RFC 2617 HTTP digest authentication library")
+    (description
+     "This library implements HTTP's digest authentication scheme based on
+RFC 2617.  This enables the use of the digest authentication scheme instead
+of the more insecure basic authentication scheme.")
+    (home-page "http://github.com/drbrain/net-http-digest_auth")
+    (license license:expat)))

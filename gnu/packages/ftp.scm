@@ -142,7 +142,7 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

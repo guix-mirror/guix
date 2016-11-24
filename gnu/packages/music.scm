@@ -504,7 +504,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.33")
+    (version "2.19.51")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -513,7 +513,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0s4vbbfy4xwq4da4kmlnndalmcyx2jaz7y8praah2146qbnr90xh"))))
+                "1b4jvc0fixbnp8x457fzk5wgb4zd03npwwivp60kc27fmv63w5l1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; out-test/collated-files.html fails
@@ -881,7 +881,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.7.5")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -889,7 +889,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0h5zja78phf9705i9g54zh61iczb24iv7rxhljyms30sjgajig1y"))))
+                "155pfyhr6d35ciw95pbxlqy7751cmij8j5d849rvblqbjzyzb5qx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -907,6 +907,74 @@ users to select LV2 plugins and run them with jalv.")
     (description
      "Synthv1 is an old-school subtractive polyphonic synthesizer with four
 oscillators and stereo effects.")
+    (license license:gpl2+)))
+
+(define-public drumkv1
+  (package
+    (name "drumkv1")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/drumkv1/drumkv1/" version
+                              "/drumkv1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n2kd468kn71yp2asmamprvblmdlvh0zd8lsh3598dwi4b7aa3ga"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("liblo" ,liblo)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://drumkv1.sourceforge.net")
+    (synopsis "Drum-kit sampler synthesizer with stereo effects")
+    (description
+     "Drumkv1 is an old-school drum-kit sampler synthesizer with stereo
+effects.")
+    (license license:gpl2+)))
+
+(define-public samplv1
+  (package
+    (name "samplv1")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/samplv1/samplv1/" version
+                              "/samplv1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0j3hkmd9q0bw9b7nk9cssqywlrishkd1n790a9vq6gh3pdc5sf3r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("liblo" ,liblo)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://samplv1.sourceforge.net")
+    (synopsis "Polyphonic sampler synthesizer with stereo effects")
+    (description
+     "Samplv1 is an old-school polyphonic sampler synthesizer with stereo
+effects.")
     (license license:gpl2+)))
 
 (define-public amsynth
@@ -1148,7 +1216,6 @@ is subjective.")
                     (lib   (string-append share "/java"))
                     (swt   (assoc-ref inputs "java-swt")))
                (mkdir-p bin)
-               (mkdir-p lib)
                ;; install all jars
                (for-each (lambda (file)
                            (install-file file lib))
@@ -1407,7 +1474,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "2.5.4")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1415,7 +1482,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "16llaa2wg2gbgjhwp3632b2vx9jvanj4csv7d41k233ms6d1sjq1"))))
+                "0p640hlw28264nzrnd2lm4bi5snas4fvh80p8lpxvph2hjw3sncl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1433,6 +1500,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
     (inputs
      `(("liblo" ,liblo)
        ("ntk" ,ntk)
+       ("mesa" ,mesa)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
        ("fftw" ,fftw)
@@ -2177,8 +2245,8 @@ simulation of a push pull transistor fuzz effect with added high octave."))))
 pedal."))))
 
 (define-public gx-saturator-lv2
-  (let ((commit "361399245d234b4d02f11f066d25ac15d90c6bf8")
-        (revision "1"))
+  (let ((commit "0b581ac85c515325b9f16e51937cae6e1bf81a0a")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-saturator-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2189,27 +2257,16 @@ pedal."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "13cf5gxr2wzp5954hdhbl79v98a665ll5434mb3668p4j33sv217"))
+                  "1cl785pzq8zk55m1rnhfd6qsabci6kpf4pf002gwr91vagyq246z"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSaturator.lv2")
       (synopsis "Saturation effect")
       (description "This package provides the LV2 plugin \"GxSaturator\", a
 saturation effect."))))
 
 (define-public gx-hyperion-lv2
-  (let ((commit "7d993bc77f9946b3df0e481632c61b2dcbb6549f")
-        (revision "1"))
+  (let ((commit "6a096a664e553e551e179e85cf390bd1683410fb")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-hyperion-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2220,27 +2277,16 @@ saturation effect."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "12klcyc6l9v93ii3478mqz44jzvh5np1sk8zzdmz42jp0w8qd429"))
+                  "1ksv3wmylhwbf6kjl2lnhr14h9rfl291cfm21471gnb1r68yqfxh"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxHyperion.lv2")
       (synopsis "Simulation of the Hyperion Fuzz pedal")
       (description "This package provides the LV2 plugin \"GxHyperion\", a
 simulation of the Hyperion Fuzz pedal."))))
 
 (define-public gx-voodoo-fuzz-lv2
-  (let ((commit "d2d6b27bc279f98c2fd11bbd58ffe2fb2c321ec4")
-        (revision "1"))
+  (let ((commit "aec7889b489385e8add06126e7a36ae2e26254b1")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-voodoo-fuzz-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2251,19 +2297,8 @@ simulation of the Hyperion Fuzz pedal."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "1ji915bly588a8xwvwspvsqv0nh8ljgi6rky2mk1d9d6nz96jrbk"))
+                  "0mc41ldlv89069iaysnfiqxy5h5sr8mdi5cxm3ij5q5v4jv3viwx"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxVoodoFuzz.lv2")
       (synopsis "Fuzz effect modelled after the Voodoo Lab SuperFuzz")
       (description "This package provides the LV2 plugin \"GxVoodooFuzz\", a
@@ -2272,8 +2307,8 @@ Bosstone circuit, followed by the tone control of the FoxToneMachine in
 parallel with a DarkBooster, followed by a volume control."))))
 
 (define-public gx-super-fuzz-lv2
-  (let ((commit "9800354caeb4082a64ca55b2daa9a9a1f79b8c21")
-        (revision "1"))
+  (let ((commit "f40389575812c909007d140d327ce579930b71f7")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-super-fuzz-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2284,19 +2319,8 @@ parallel with a DarkBooster, followed by a volume control."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "1jclp53p01h94cpx17wm4765r7klbr41g7bvq87l53qwlrgkc7a9"))
+                  "174bibj8qzm8zr6f5h8bcj94iry17zravk8flpdy84n6yg7cixji"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
       (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
       (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
@@ -2305,8 +2329,8 @@ pot, which is usualy in the housing, is exposed as a control parameter.  It
 adjusts the amount of harmonics."))))
 
 (define-public gx-vintage-fuzz-master-lv2
-  (let ((commit "c3ab9a3019a8381a398718b98615940b4a225b9e")
-        (revision "1"))
+  (let ((commit "0fec0bc1e8a8ba909a68e916e036138a3425d7db")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-vintage-fuzz-master-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2317,27 +2341,16 @@ adjusts the amount of harmonics."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "0s1ghysggx6psalyhcpgjnmf38vama6jcqgbldqmxii5c2w2ybsc"))
+                  "06szi6d2iwkygbw5azhwzhcl2as4lmk2gs9hanngsf46a1zbdcp7"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
       (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
       (description "This package provides the LV2 plugin
 \"GxVintageFuzzMaster\", a simulation of the vintage Fuzz Master pedal."))))
 
 (define-public gx-slow-gear-lv2
-  (let ((commit "1071c2b2936ebad859242cb578af2f3415f8900f")
-        (revision "1"))
+  (let ((commit "cb852e0426f4e6fe077e7f1ede73a4da335cfc5e")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-slow-gear-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2348,27 +2361,16 @@ adjusts the amount of harmonics."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "0c6099h5qkv7ilsvxxcrzwy1h6lkld1srh3fvbjxyw9q34kbqsyl"))
+                  "0dp7afi1r3kzciiyn1hrkz6arsq47ys9sx5g4b7xa9k1dv92ishp"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSlowGear.lv2")
       (synopsis "Slow gear audio effect")
       (description "This package provides the LV2 plugin \"GxSlowGear\", a
 slow gear audio effect to produce volume swells."))))
 
 (define-public gx-switchless-wah-lv2
-  (let ((commit "1d466240c482b7ce9136aee39044068ab96f1c92")
-        (revision "1"))
+  (let ((commit "7b08691203314612999f0ce2328cdc1161cd6665")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-switchless-wah-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2379,19 +2381,8 @@ slow gear audio effect to produce volume swells."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "0g6njgsm8s76n6yys09a8w77z93pjjgqq9hzhhsrl73hhvyr9qmy"))
+                  "04jqfpncmrrqn34p21w4v9m2x5a5wsqwbm4f3byxvq4vcibwxzk2"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'escape-shell-commands
-               (lambda _
-                 (substitute* "Makefile"
-                   (("cat ") "$(shell cat ")
-                   (("/dev/null") "/dev/null)")
-                   (("SSE_CFLAGS = \"\"") "SSE_CFLAGS ="))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxSwitchlessWah.lv2")
       (synopsis "Wah emulation with switchless activation")
       (description "This package provides the LV2 plugin \"GxSwitchlessWah\",

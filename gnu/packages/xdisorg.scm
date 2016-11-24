@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -241,6 +242,7 @@ following the mouse.")
   (package
     (name "pixman")
     (version "0.34.0")
+    (replacement pixman/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -261,6 +263,13 @@ following the mouse.")
 manipulation, providing features such as image compositing and trapezoid
 rasterisation.")
     (license license:x11)))
+
+(define pixman/fixed
+  (package
+    (inherit pixman)
+    (source (origin
+              (inherit (package-source pixman))
+              (patches (search-patches "pixman-CVE-2016-5296.patch"))))))
 
 
 (define-public libdrm
@@ -1062,3 +1071,43 @@ XCB util-xrm module provides the following libraries:
 
 - xrm: utility functions for the X resource manager.")
     (license license:x11)))
+
+(define-public xcalib
+  (package
+    (name "xcalib")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xcalib/xcalib/" version
+                                  "/xcalib-source-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rh6xb51c5xz926dnn82a2fn643g0sr4a8z66rn6yi7523kjw4ca"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("CC=gcc")
+       #:tests? #f   ; No test suite
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (install-file "xcalib" bin))))
+                  (add-after 'install 'install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((doc (string-append(assoc-ref outputs "out")
+                                               "/share/doc/xcalib")))
+                        (install-file "README" doc)
+                        ;; Avoid unspecified return value.
+                        #t))))))
+    (inputs `(("libx11", libx11)
+              ("libxext", libxext)
+              ("libxxf86vm", libxxf86vm)))
+    (synopsis "Tiny monitor calibration loader for XFree86 (or X.org)")
+    (description "xcalib is a tiny tool to load the content of vcgt-Tags in ICC
+profiles to the video card's gamma ramp.  It does work with most video card
+drivers except the generic VESA driver.  Alter brightness, contrast, RGB, and
+invert colors on a specific display/screen.")
+    (home-page "http://xcalib.sourceforge.net/")
+    (license license:gpl2)))

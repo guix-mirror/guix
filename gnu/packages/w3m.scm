@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
 (define-public w3m
   (package
     (name "w3m")
-    (version "0.5.3+git20161031")
+    (version "0.5.3+git20161120")
     (source (origin
               (method git-fetch)
               ;; Debian's fork of w3m is the only one that is still
@@ -46,16 +47,17 @@
               (file-name (string-append "w3m-" version "-checkout"))
               (sha256
                (base32
-                "142vkkmsk76wj9w6r4y2pa1hmy1kkzmc73an9zchx0ikm2z92x6s"))))
+                "06n5a9jdyihkd4xdjmyci32dpqp1k2l5awia5g9ng0bn256bacdc"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f  ; no check target
-                 #:phases (alist-cons-before
-                           'configure 'fix-perl
-                           (lambda _
-                             (substitute* '("scripts/w3mmail.cgi.in"
-                                            "scripts/dirlist.cgi.in")
-                               (("@PERL@") (which "perl"))))
-                           %standard-phases)))
+    (arguments
+     '(#:tests? #f  ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-perl
+           (lambda _ (substitute* '("scripts/w3mmail.cgi.in"
+                                    "scripts/dirlist.cgi.in")
+                       (("@PERL@") (which "perl")))
+             #t)))))
     (inputs
      `(("libgc" ,libgc)
        ("ncurses" ,ncurses)

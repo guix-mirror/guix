@@ -558,6 +558,26 @@ widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license public-domain)))
 
+(define-public sqlite-3.15.1
+  (package (inherit sqlite)
+           (version "3.15.1")
+           (source (origin
+                     (method url-fetch)
+                     (uri (let ((numeric-version
+                                 (match (string-split version #\.)
+                                   ((first-digit other-digits ...)
+                                    (string-append first-digit
+                                                   (string-pad-right
+                                                    (string-concatenate
+                                                     (map (cut string-pad <> 2 #\0)
+                                                          other-digits))
+                                                    6 #\0))))))
+                            (string-append "https://sqlite.org/2016/sqlite-autoconf-"
+                                           numeric-version ".tar.gz")))
+                     (sha256
+                      (base32
+                       "1ig2d9jzzixiifmgqsl6kjcvy17jwxby3s24gfnc5qvyd6vqkyjx"))))))
+
 (define-public tdb
   (package
     (name "tdb")
@@ -799,15 +819,15 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.037")
+    (version "4.039")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "1z1wxnzhxfr9awjqb1d8pz9hf50shbk9ip2jmsmgdlwfyb78lmyz"))))
+         "0k4p3bjdbmxm2amb0qiiwmn8v83zrjkz5qp84xdjrg8k5v9aj0hn"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))

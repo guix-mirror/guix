@@ -1031,6 +1031,29 @@ light user interface.")
 and seeking.")
     (license license:gpl3+)))
 
+(define-public emacs-emms-mode-line-cycle
+  (package
+    (name "emacs-emms-mode-line-cycle")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/momomo5717/emms-mode-line-cycle"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ifszi930pnaxk1x8pcydmvnp06868gc7nfx14q17zbajbx735k6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emms" ,emms)))
+    (home-page "https://github.com/momomo5717/emms-mode-line-cycle")
+    (synopsis "Display the EMMS mode line as a ticker")
+    (description
+     "This is a minor mode for updating the EMMS mode-line string cyclically
+within a specified width.  It is useful for displaying long track titles.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Miscellaneous.
@@ -3197,14 +3220,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20160912")
+    (version "20161118")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://orgmode.org/elpa/org-"
+              (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "1xawj0pdvqrgzlixxgbfa01gzajfaz47anr5m4aw035rhc6s02r7"))))
+                "1w9g8r08kaiw9f4fjsj0hbffzq85rj734j5lxvbaafbnz7dbklk1"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -3241,7 +3264,7 @@ Flx has support for ido (interactively do things) through flx-ido.")
 (define-public emacs-cyberpunk-theme
   (package
     (name "emacs-cyberpunk-theme")
-    (version "1.17")
+    (version "1.18")
     (source
      (origin
        (method url-fetch)
@@ -3249,7 +3272,7 @@ Flx has support for ido (interactively do things) through flx-ido.")
                            "archive/" version ".tar.gz"))
        (sha256
         (base32
-         "068jcn4g1bvwgpcvyfqygzw6ahill51c1sqzyyvj2paxckbd7h51"))
+         "0pxzbw0qjxgkhhs3gn3k9qy41kl1a4pfzbw83dk24l4b3nxd24wg"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/n3mo/cyberpunk-theme.el")
@@ -3258,6 +3281,35 @@ Flx has support for ido (interactively do things) through flx-ido.")
      "Cyberpunk color theme for the emacs 24+ built-in color theme support
 known loosely as deftheme.  Many mode-specific customizations are included.")
     (license license:gpl3+)))
+
+(define-public emacs-danneskjold-theme
+  (let* ((commit "8733d2fe8743e8a01826ea6d4430ef376c727e57")
+         (revision "1"))
+    (package
+      (name "emacs-danneskjold-theme")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (home-page "https://github.com/rails-to-cosmos/danneskjold-theme")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0s6rbsb0y8i8m5b9xm4gw1p1cxsxdqnqxqqb638pygz9f76mbir1"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'delete-screenshots
+             (lambda _
+               (delete-file-recursively "screenshots") #t)))))
+      (synopsis "High-contrast Emacs theme")
+      (description
+       "@code{danneskjold-theme} is a high-contrast theme for Emacs.")
+      (license license:gpl3+))))
 
 (define-public emacs-auto-complete
   (package
@@ -3298,7 +3350,7 @@ extensibility.")
         (base32 "1w08hnsbknrcjlzp42c99bgwc9hzsnf5m4apdv0dacql2s09zfm2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-charmaps="
@@ -3326,9 +3378,8 @@ This package contains the library database.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "http://download.savannah.gnu.org/releases/m17n/m17n-lib-"
-             version ".tar.gz"))
+       (uri (string-append "mirror://savannah/m17n/m17n-lib-"
+                           version ".tar.gz"))
        (sha256
         (base32 "10yv730i25g1rpzv6q49m6xn4p8fjm7jdwvik2h70sn8w3hm7f4f"))))
     (build-system gnu-build-system)

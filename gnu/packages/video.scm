@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -64,11 +66,14 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ocr)
@@ -85,6 +90,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -827,7 +833,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.21.0")
+    (version "0.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -835,7 +841,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1lwvvhldqrkp44zdm3wbi7qrsln13s8ympwwckqhwl4whp78wpyh"))
+                "1xl2a0nfbkcq00f41m50fmfz9hl7hzpk7cq7j38r38rp1s7sryf0"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1478,7 +1484,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.16.2")
+    (version "0.16.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1486,7 +1492,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0p2grxyaf79hb3nlja23xp7b2vc1w18llvzcyhnjn2lhwfjabcgm"))))
+                "00vwdnf0gnwp029sznsr0s4lcky3brxbmpy0ch7igjpk5sf6mkqp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1702,6 +1708,12 @@ Content System specification.")
         (base32
          "1s7h35yx6f0szf8mm8612ic913w3v05m2kwphjfcxnpq0ammhyci"))))
     (build-system python-build-system)
+    (arguments
+     ;; Tests need to be disabled until #556 upstream is fixed. It reads as if the
+     ;; test suite results differ depending on the country and also introduce
+     ;; non-determinism in the tests.
+     ;; https://github.com/mps-youtube/mps-youtube/issues/556
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-pafy" ,python-pafy)
        ("python-pygobject" ,python-pygobject))) ; For mpris2 support
@@ -1715,3 +1727,106 @@ It can use either mpv or mplayer for playback, and for conversion of
 formats ffmpeg or libav is used.  Users should install one of the
 supported players in addition to this package.")
     (license license:gpl3+)))
+
+(define-public handbrake
+  (package
+    (name "handbrake")
+    (version "0.10.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://handbrake.fr/rotation.php?file="
+                                  "HandBrake-" version ".tar.bz2"))
+              (file-name (string-append "handbrake-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1w720y3bplkz187wgvy4a4xm0vpppg45mlni55l6yi8v2bfk14pv"))
+              (patches (search-patches "handbrake-pkg-config-path.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove bundled libraries and source not necessary for
+               ;; running under a GNU environment.
+               '(begin
+                  (for-each delete-file-recursively '("contrib" "macosx" "win"))
+                  #t))))
+    (build-system  glib-or-gtk-build-system)
+    (native-inputs
+     `(("automake" ,automake)           ;gui subpackage must be bootstrapped
+       ("autoconf" ,autoconf)
+       ("curl" ,curl)                   ;not actually used, but tested for
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))           ;for configuration
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("dbus-glib" ,dbus-glib)
+       ("ffmpeg" ,ffmpeg)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gtk+" ,gtk+)
+       ("lame" ,lame)
+       ("libass" ,libass)
+       ("libbluray" ,libbluray)
+       ("libdvdnav" ,libdvdnav)
+       ("libdvdread" ,libdvdread)
+       ("libgudev" ,libgudev)
+       ("libmpeg2" ,libmpeg2)
+       ("libnotify" ,libnotify)
+       ("libogg" ,libogg)
+       ("libsamplerate" ,libsamplerate)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("libvpx" ,libvpx)
+       ("libxml2" ,libxml2)
+       ("libx264" ,libx264)
+       ("x265" ,x265)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f             ;tests require Ruby and claim to be unsupported
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'patch-source-shebangs 'bootstrap-gtk
+           ;; Run bootstrap ahead of time so that shebangs get patched.
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (setenv "NOCONFIGURE" "1")
+             ;; Patch the Makefile so that it doesn't bootstrap again.
+             (substitute* "gtk/module.rules"
+               ((".*autogen\\.sh.*") ""))
+             (zero? (system* "sh" "./gtk/autogen.sh"))))
+         (add-before 'configure 'disable-contrib
+           (lambda _
+             (substitute* "make/include/main.defs"
+               ;; Disable unconditional inclusion of some "contrib"
+               ;; libraries (ffmpeg, libvpx, libdvdread, libdvdnav,
+               ;; and libbluray), which would lead to fetching and
+               ;; building of these libraries.  Use our own instead.
+               (("MODULES \\+= contrib") "# MODULES += contrib"))
+             #t))
+         (add-before 'configure 'fix-x265-linking
+           (lambda _
+             (substitute* "test/module.defs"
+               ;; Fix missing library during linking error
+               (("TEST.GCC.l =") "TEST.GCC.l = x265"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             ;; 'configure' is not an autoconf-generated script, and
+             ;; errors on unrecognized arguments,
+             ;; e.g. --enable-fast-install
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (apply system* "./configure"
+                             (string-append "--prefix=" out)
+                             (or configure-flags '()))))))
+         (add-after 'configure 'chdir-build
+           (lambda _ (chdir "./build") #t)))))
+    (home-page "https://handbrake.fr")
+    (synopsis "Video transcoder")
+    (description
+     "HandBrake is a tool for converting video from any format to a selection
+of modern, widely supported codecs.")
+    ;; Most under GPL version 2 or later, and portions under BSD 3 Clause
+    (license (list license:gpl2+ license:bsd-3))))
