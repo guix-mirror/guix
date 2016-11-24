@@ -682,7 +682,7 @@ and @command{wicd-curses} user interfaces."
   (list (shepherd-service
          (documentation "Run the NetworkManager.")
          (provision '(networking))
-         (requirement '(user-processes dbus-system loopback))
+         (requirement '(user-processes dbus-system wpa-supplicant loopback))
          (start #~(make-forkexec-constructor
                    (list (string-append #$network-manager
                                         "/sbin/NetworkManager")
