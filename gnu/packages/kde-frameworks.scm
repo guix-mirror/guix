@@ -71,6 +71,11 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-lib-path
+           (lambda _
+             ;; Always install into /lib and not into /lib64.
+             (substitute* "kde-modules/KDEInstallDirs.cmake"
+               (("\"lib64\"") "\"lib\""))))
          ;; install and check phase are swapped to prevent install from failing
          ;; after testsuire has run
          (add-after 'install 'check-post-install
