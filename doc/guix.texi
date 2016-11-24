@@ -8431,13 +8431,22 @@ configure networking."
 @end deffn
 
 @cindex WPA Supplicant
-@deffn {Scheme Procedure} wpa-supplicant-service @
-       [#:wpa-supplicant @var{wpa-supplicant}]
-Return a service that runs @url{https://w1.fi/wpa_supplicant/,WPA
+@defvr {Scheme Variable} wpa-supplicant-service-type
+This is the service type to run @url{https://w1.fi/wpa_supplicant/,WPA
 supplicant}, an authentication daemon required to authenticate against
-encrypted WiFi or ethernet networks. Service is started to listen for
+encrypted WiFi or ethernet networks.  It is configured to listen for
 requests on D-Bus.
-@end deffn
+
+The value of this service is the @code{wpa-supplicant} package to use.
+Thus, it can be instantiated like this:
+
+@lisp
+(use-modules (gnu services networking)
+             (gnu packages admin))
+
+(service wpa-supplicant-type wpa-supplicant)
+@end lisp
+@end defvr
 
 @cindex NTP
 @cindex real time clock
