@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,24 +25,23 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config))
 
-(define-public libgc-7.2
+(define-public libgc
   (package
    (name "libgc")
-   (version "7.2g")
+   (version "7.6.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0bvw6cc555qg5b7dgcqy3ryiw0wir79dqy0glff3hjmyy7i2jkjq"))))
+              "143x7g0d0k6250ai6m2x3l4y352mzizi4wbgrmahxscv2aqjhjm1"))))
    (build-system gnu-build-system)
    (arguments
-    ;; Make it so that we don't rely on /proc.  This is especially useful in
-    ;; an initrd run before /proc is mounted.
-    '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES"
-                          ;; Install gc_cpp.h et al.
+    '(#:configure-flags '(;; Install gc_cpp.h et al.
                           "--enable-cplusplus")))
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("libatomic-ops" ,libatomic-ops)))
    (outputs '("out" "debug"))
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
@@ -88,21 +88,3 @@ lock-free code, experiment with thread programming paradigms, etc.")
 
     ;; Some source files are X11-style, others are GPLv2+.
     (license gpl2+)))
-
-(define-public libgc
-  (package (inherit libgc-7.2)
-    (version "7.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "143x7g0d0k6250ai6m2x3l4y352mzizi4wbgrmahxscv2aqjhjm1"))))
-
-    ;; New dependencies.
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libatomic-ops" ,libatomic-ops)))
-
-    ;; 'USE_LIBC_PRIVATES' is now the default.
-    (arguments '(#:configure-flags '("--enable-cplusplus")))))
