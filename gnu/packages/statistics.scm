@@ -3605,6 +3605,46 @@ tests for whether a value is missing, empty or contains only @code{NA} and
 @code{NULL} values, and many more.")
     (license license:gpl2)))
 
+(define-public r-gdata
+  (package
+    (name "r-gdata")
+    (version "2.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gdata" version))
+       (sha256
+        (base32
+         "0kiy3jbcszlpmarg311spdsfi5pn89wgy742dxsbzxk8907fr5w0"))))
+    (build-system r-build-system)
+    (inputs
+     `(("perl" ,perl)))
+    (propagated-inputs
+     `(("r-gtools" ,r-gtools)))
+    (home-page "http://cran.r-project.org/web/packages/gdata")
+    (synopsis "Various R programming tools for data manipulation")
+    (description
+     "This package provides various R programming tools for data manipulation,
+including:
+
+@itemize
+@item medical unit conversions
+@item combining objects
+@item character vector operations
+@item factor manipulation
+@item obtaining information about R objects
+@item manipulating MS-Excel formatted files
+@item generating fixed-width format files
+@item extricating components of date and time objects
+@item operations on columns of data frames
+@item matrix operations
+@item operations on vectors and data frames
+@item value of last evaluated expression
+@item wrapper for @code{sample} that ensures consistent behavior for
+  both scalar and vector arguments
+@end itemize\n")
+    (license license:gpl2+)))
+
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
