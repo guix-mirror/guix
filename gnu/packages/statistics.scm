@@ -3342,6 +3342,58 @@ character vector.")
 from within R.")
     (license license:expat)))
 
+(define-public r-spams
+  (package
+    (name "r-spams")
+    (version "2.5-svn2014-07-04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gforge.inria.fr/frs/download.php/33815/"
+                           "spams-R-v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k459jg9a334slkw31w63l4d39xszjzsng7dv5j1mp78zifz7hvx"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "spams") #t))
+         ;; Since R 3.3.0 including R headers inside of an extern "C" block
+         ;; causes C headers to be included, which results in a lot of
+         ;; duplicate definitions.  This can be avoided by defining
+         ;; NO_C_HEADERS before including the R headers.
+         (add-after 'chdir 'patch-use-of-R-headers
+           (lambda _
+             (substitute* "src/spams.cpp"
+               (("#include <R.h>" line)
+                (string-append "#define NO_C_HEADERS\n" line)))
+             #t))
+         ;; This looks like a syntax error.
+         (add-after 'chdir 'patch-isnan
+           (lambda _
+             (substitute* '"src/spams/linalg/linalg.h"
+               (("if isnan\\(lambda\\) \\{")
+                "if (isnan(lambda)) {"))
+             #t)))))
+    (home-page "http://spams-devel.gforge.inria.fr")
+    (synopsis "Toolbox for solving sparse estimation problems")
+    (description "SPAMS (SPArse Modeling Software) is an optimization toolbox
+for solving various sparse estimation problems.  It includes tools for the
+following problems:
+
+@enumerate
+@item Dictionary learning and matrix factorization (NMF, sparse @dfn{principle
+ component analysis} (PCA), ...)
+@item Solving sparse decomposition problems with LARS, coordinate descent,
+ OMP, SOMP, proximal methods
+@item Solving structured sparse decomposition problems (l1/l2, l1/linf, sparse
+ group lasso, tree-structured regularization, structured sparsity with
+ overlapping groups,...).
+@end enumerate\n")
+    (license license:gpl3+)))
+
 (define-public r-rpart
   (package
     (name "r-rpart")
