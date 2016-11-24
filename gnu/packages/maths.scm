@@ -563,7 +563,10 @@ incompatible with HDF5.")
     (inputs
      `(("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(;; Some of the users, notably Flann, need the C++ interface.
+       #:configure-flags '("--enable-cxx")
+
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-configure
            (lambda _
