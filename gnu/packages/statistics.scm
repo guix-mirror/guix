@@ -3314,6 +3314,34 @@ character vector.")
 @code{A1:D10} style of cell range specification.")
     (license license:expat)))
 
+(define-public r-googlesheets
+  (package
+    (name "r-googlesheets")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "googlesheets" version))
+       (sha256
+        (base32
+         "0ps13h1cv7fj5dh8s4nvwi64wnnyqdsadcaa4iizq1c5s615cwk3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cellranger" ,r-cellranger)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-purrr" ,r-purrr)
+       ("r-readr" ,r-readr)
+       ("r-stringr" ,r-stringr)
+       ("r-tidyr" ,r-tidyr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/jennybc/googlesheets")
+    (synopsis "Manage Google spreadsheets from R")
+    (description "This package provides tools to interact with Google Sheets
+from within R.")
+    (license license:expat)))
+
 (define-public r-rpart
   (package
     (name "r-rpart")
