@@ -3685,6 +3685,36 @@ including:
 @end itemize\n")
     (license license:gpl2+)))
 
+(define-public r-rocr
+  (package
+    (name "r-rocr")
+    (version "1.0-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ROCR" version))
+       (sha256
+        (base32
+         "1jay8cm7lgq56i967vm5c2hgaxqkphfpip0gn941li3yhh7p3vz7"))))
+    (properties `((upstream-name . "ROCR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gplots" ,r-gplots)))
+    (home-page "http://rocr.bioinf.mpi-sb.mpg.de/")
+    (synopsis "Visualizing the performance of scoring classifiers")
+    (description
+     "ROCR is a flexible tool for creating cutoff-parameterized 2D performance
+curves by freely combining two from over 25 performance measures (new
+performance measures can be added using a standard interface).  Curves from
+different cross-validation or bootstrapping runs can be averaged by different
+methods, and standard deviations, standard errors or box plots can be used to
+visualize the variability across the runs.  The parameterization can be
+visualized by printing cutoff values at the corresponding curve positions, or
+by coloring the curve according to cutoff.  All components of a performance
+plot can be quickly adjusted using a flexible parameter dispatching
+mechanism.")
+    (license license:gpl2+)))
+
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
