@@ -54,7 +54,8 @@
         (string-append "LDFLAGS=-Wl,-rpath="
                        (assoc-ref %outputs "out") "/lib"))
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (home-page "http://miniupnp.free.fr/")
     (synopsis "Library implementing the client side UPnP protocol")
     (description
