@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -207,6 +208,10 @@ for the GStreamer multimedia library.")
       (uri (string-append
             "https://gstreamer.freedesktop.org/src/" name "/"
             name "-" version ".tar.xz"))
+      (patches (search-patches "gst-plugins-good-flic-bounds-check.patch"
+                               "gst-plugins-good-fix-signedness.patch"
+                               "gst-plugins-good-fix-invalid-read.patch"
+                               "gst-plugins-good-fix-crashes.patch"))
       (sha256
        (base32
         "1hkcap9l2603266gyi6jgvx7frbvfmb7xhfhjizbczy1wykjwr57"))))
