@@ -576,6 +576,22 @@ cosine/ sine transforms or DCT/DST).")
      (string-append (package-description fftw)
                     "  Single-precision version."))))
 
+;; FIXME: These packages are used temporarily by packages like Ardour until
+;; "--enable-flags" is added to the fftw and fftwf packages.
+(define-public fftw-with-threads
+  (package (inherit fftw)
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw)
+       ((#:configure-flags flags)
+        `(cons "--enable-threads" ,flags))))))
+
+(define-public fftwf-with-threads
+  (package (inherit fftwf)
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftwf)
+       ((#:configure-flags flags)
+        `(cons "--enable-threads" ,flags))))))
+
 (define-public fftw-openmpi
   (package (inherit fftw)
     (name "fftw-openmpi")
