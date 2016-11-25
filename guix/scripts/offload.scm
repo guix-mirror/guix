@@ -249,26 +249,6 @@ an SSH session.  Return a <nix-server> object."
                              (object->string redirect)))))
     (open-connection #:port channel)))
 
-(define* (remote-pipe session command
-                      #:key (quote? #t))
-  "Run COMMAND (a list) on SESSION, and return an open input/output port,
-which is also an SSH channel.  When QUOTE? is true, perform shell-quotation of
-all the elements of COMMAND."
-  (define (shell-quote str)
-    ;; Sort-of shell-quote STR so it can be passed as an argument to the
-    ;; shell.
-    (with-output-to-string
-      (lambda ()
-        (write str))))
-
-  (let* ((channel (make-channel session)))
-    (channel-open-session channel)
-    (channel-request-exec channel
-                          (string-join (if quote?
-                                           (map shell-quote command)
-                                           command)))
-    channel))
-
 
 ;;;
 ;;; Synchronization.
@@ -511,7 +491,8 @@ be read."
   "Return the load of MACHINE, divided by the number of parallel builds
 allowed on MACHINE."
   (let* ((session (open-ssh-session machine))
-         (pipe    (remote-pipe session '("cat" "/proc/loadavg")))
+         (pipe    (open-remote-pipe* session OPEN_READ
+                                     "cat" "/proc/loadavg"))
          (line    (read-line pipe)))
     (close-port pipe)
 
