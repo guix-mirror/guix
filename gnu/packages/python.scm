@@ -31,6 +31,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1426,6 +1427,31 @@ backported for previous versions of Python from 2.4 to 3.3.")
 syntax.")
     (license license:x11)))
 
+(define-public python-polib
+  (package
+    (name "python-polib")
+    (version "1.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "polib" version))
+               (sha256
+                (base32
+                  "1pq2hbm3m2q0cjdszk8mc4qa1vl3wcblh5nfyirlfnzb2pcy7zss"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/izi/polib/wiki/Home")
+    (synopsis "Manipulate, create and modify gettext files")
+    (description "Polib can manipulate any gettext format (po, pot and mo)
+files.  It can be used to create po files from scratch or to modify
+existing ones.")
+    (license license:expat)))
+
+(define-public python2-polib
+  (let ((base (package-with-python2 (strip-python2-variant python-polib))))
+    (package
+      (inherit base)
+      (arguments `(,@(package-arguments base)
+                   ;; Tests don't work with python2.
+                   #:tests? #f)))))
 
 (define-public scons
   (package
