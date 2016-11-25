@@ -453,14 +453,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.6.5")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
         (base32
-         "1z27wdxs5rj5xhhqfzvzn3yg682irkxw6dcs5jj7mcf97psk8gd8"))))
+         "1vdbqsa1a31s98fxkinl052q8nnpvbxnb83qanxfpi2p6c2zdr0b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -1570,6 +1570,8 @@ standard library.")
         (base32
          "1ckvrypyvb7jbqlgwdz0y337ajagjv7dgxyns326nqwypn1wpq0i"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Currently pafy can not find itself in the tests
     (propagated-inputs
      ;; Youtube-dl is a python package which is imported in the file
      ;; "backend_youtube_dl.py", therefore it needs to be propagated.
@@ -2194,13 +2196,13 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "0.6.8")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "0k881ffazpf8q1z8862g4bb3pzwpnz9whrci2mf311mvn1qbyqad"))))
+                "1m0fs6897vxfkf7awah5i66i7b7smm5fnywf1w50fpzyfbfhr156"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no tests
     (home-page "http://github.com/digitalbazaar/pyld")
@@ -7877,13 +7879,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.10")
+    (version "3.11")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "01amnk3621s7fagfla86npd25knbqirchg7h1jpqxqp103d02bs7"))))
+               "01v2f3swd5s72x65cdihw83dx1z799b4i49a6ncg7vqmcm20wapd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil-2" ,python-dateutil-2)

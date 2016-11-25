@@ -295,6 +295,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
   %D%/packages/photo.scm			\
+  %D%/packages/php.scm				\
   %D%/packages/pkg-config.scm			\
   %D%/packages/plotutils.scm			\
   %D%/packages/polkit.scm			\
@@ -415,6 +416,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/sddm.scm				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
+  %D%/services/version-control.scm              \
   %D%/services/web.scm				\
   %D%/services/xorg.scm				\
 						\
@@ -551,8 +553,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gd-CVE-2016-7568.patch			\
   %D%/packages/patches/gd-CVE-2016-8670.patch			\
+  %D%/packages/patches/gd-fix-chunk-size-on-boundaries.patch	\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
+  %D%/packages/patches/gd-fix-truecolor-format-correction.patch	\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghostscript-CVE-2013-5653.patch		\
@@ -587,6 +591,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
+  %D%/packages/patches/guile-repl-server-test.patch		\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
@@ -594,6 +599,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
+  %D%/packages/patches/handbrake-pkg-config-path.patch		\
   %D%/packages/patches/hdf4-architectures.patch 		\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
   %D%/packages/patches/hdf4-shared-fortran.patch 		\
@@ -612,6 +618,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hypre-ldflags.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-binutils.patch			\
+  %D%/packages/patches/icecat-CVE-2016-9064.patch		\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
@@ -665,8 +672,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-CVE-2016-5314.patch		\
   %D%/packages/patches/libtiff-CVE-2016-5321.patch		\
   %D%/packages/patches/libtiff-CVE-2016-5323.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-5652.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-9273.patch		\
   %D%/packages/patches/libtiff-oob-accesses-in-decode.patch	\
   %D%/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
@@ -700,6 +705,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luajit-symlinks.patch			\
   %D%/packages/patches/luit-posix.patch				\
+  %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
@@ -785,6 +791,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pinball-src-deps.patch			\
   %D%/packages/patches/pinball-system-ltdl.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\
+  %D%/packages/patches/pixman-CVE-2016-5296.patch		\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\

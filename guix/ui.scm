@@ -1094,7 +1094,8 @@ DURATION-RELATION with the current time."
           (removed (lset-difference
                     equal-entry? (list-entries old) (list-entries new))))
       (for-each (cut display-entry <> "+") added)
-      (for-each (cut display-entry <> "-") removed)))
+      (for-each (cut display-entry <> "-") removed)
+      (newline)))
 
   (display-diff profile gen1 gen2))
 
@@ -1184,7 +1185,8 @@ optionally contain a version number and an output name, as in these examples:
 
 (define (show-guix-help)
   (define (internal? command)
-    (member command '("substitute" "authenticate" "offload")))
+    (member command '("substitute" "authenticate" "offload"
+                      "perform-download")))
 
   (format #t (_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))

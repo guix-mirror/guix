@@ -3868,7 +3868,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.25.0")
+    (version "0.25.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3876,7 +3876,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0f3ly7nxy3kqwgs40avsqkxcz98bfmlhlk30n0d7j7ndk67zz57h"))))
+                "19h0ckrgv0c6sj85m6ankyqkmy453ph9kq6zhf7ys2k5xsrrd776"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -4747,6 +4747,7 @@ devices using the GNOME desktop.")
        ("cups" ,cups)
        ("dconf" ,dconf)
        ("docbook-xsl" ,docbook-xsl)
+       ("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-online-accounts" ,gnome-online-accounts)

@@ -37,20 +37,14 @@
 (define-public dico
   (package
     (name "dico")
-    (version "2.3")
+    (version "2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/dico/dico-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13by0zimx90v2j8v7n4k9y3xwmh4q9jdc2f4f8yjs3x7f5bzm2pk"))
-             (snippet
-              ;; Upstream commit 89922fc.
-              '(substitute* "include/dico/markup.h"
-                 (("const char \\*dico_markup_type;")
-                  "extern const char *dico_markup_type;")))
-             (modules '((guix build utils)))))
+               "13m7vahfbdj7hb38bjgd4cmfswavvxrcpppj9n4m4rar3wyzg52g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output

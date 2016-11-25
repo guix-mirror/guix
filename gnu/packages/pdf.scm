@@ -692,7 +692,6 @@ vector formats.")
                             (,(string-append sdl "/lib")))
                           `("PATH" ":" prefix     ;for pdftoppm
                             (,(string-append xpdf "/bin"))))
-                        (mkdir-p man1)
                         (install-file "impressive.1" man1)
                         #t))))))
     (home-page "http://impressive.sourceforge.net")

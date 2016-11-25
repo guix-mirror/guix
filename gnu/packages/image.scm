@@ -243,7 +243,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
+   (replacement libtiff-4.0.7)
    (version "4.0.6")
    (source (origin
             (method url-fetch)
@@ -283,24 +283,18 @@ collection of tools for doing simple manipulations of TIFF images.")
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.remotesensing.org/libtiff/")))
 
-(define libtiff/fixed
+(define libtiff-4.0.7
   (package
     (inherit libtiff)
+    (version "4.0.7")
     (source (origin
-              (inherit (package-source libtiff))
-              (patches (search-patches
-                         "libtiff-oob-accesses-in-decode.patch"
-                         "libtiff-oob-write-in-nextdecode.patch"
-                         "libtiff-CVE-2015-8665+CVE-2015-8683.patch"
-                         "libtiff-CVE-2016-3623.patch"
-                         "libtiff-CVE-2016-3945.patch"
-                         "libtiff-CVE-2016-3990.patch"
-                         "libtiff-CVE-2016-3991.patch"
-                         "libtiff-CVE-2016-5314.patch"
-                         "libtiff-CVE-2016-5321.patch"
-                         "libtiff-CVE-2016-5323.patch"
-                         "libtiff-CVE-2016-5652.patch"
-                         "libtiff-CVE-2016-9273.patch"))))))
+              (method url-fetch)
+              (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
+    (home-page "http://www.simplesystems.org/libtiff/")))
 
 (define-public libwmf
   (package
@@ -849,15 +843,16 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "1.900.19")
+    (version "1.900.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "0dm3k0wdny3s37zxm9s9riv46p69c14bnn532fv6cv5b6l1b0pwb"))))
+                "1h1575wdzq1p7y2xvy1gbiypai1iils5awhy4gadr78qpb9ykrra"))))
     (build-system gnu-build-system)
+    (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
@@ -944,7 +939,7 @@ differences in file encoding, image quality, and other small variations.")
               (patches (list (search-patch "steghide-fixes.patch")))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("perl" ,perl)))                 ;for tests
     (inputs

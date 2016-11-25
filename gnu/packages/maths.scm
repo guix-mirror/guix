@@ -563,7 +563,10 @@ incompatible with HDF5.")
     (inputs
      `(("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(;; Some of the users, notably Flann, need the C++ interface.
+       #:configure-flags '("--enable-cxx")
+
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-configure
            (lambda _
@@ -2723,7 +2726,6 @@ set.")
              ;; Custom install because docs/Makefile doesn't honor ${docdir}.
              (let* ((doc (assoc-ref outputs "doc"))
                     (docdir (string-append doc "/share/doc/hypre-" ,version)))
-               (mkdir-p docdir)
                (with-directory-excursion "docs"
                  (for-each (lambda (base)
                              (install-file (string-append base ".pdf") docdir)

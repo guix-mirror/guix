@@ -21,7 +21,9 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system pam)
   #:use-module ((gnu packages glib) #:select (dbus))
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages admin)
   #:use-module (guix gexp)
   #:use-module (guix records)
@@ -30,7 +32,10 @@
   #:export (dbus-configuration
             dbus-configuration?
             dbus-root-service-type
-            dbus-service))
+            dbus-service
+
+            polkit-service-type
+            polkit-service))
 
 ;;;
 ;;; D-Bus.
@@ -217,5 +222,92 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
   (service dbus-root-service-type
            (dbus-configuration (dbus dbus)
                                (services services))))
+
+
+;;;
+;;; Polkit privilege management service.
+;;;
+
+(define-record-type* <polkit-configuration>
+  polkit-configuration make-polkit-configuration
+  polkit-configuration?
+  (polkit   polkit-configuration-polkit           ;<package>
+            (default polkit))
+  (actions  polkit-configuration-actions          ;list of <package>
+            (default '())))
+
+(define %polkit-accounts
+  (list (user-group (name "polkitd") (system? #t))
+        (user-account
+         (name "polkitd")
+         (group "polkitd")
+         (system? #t)
+         (comment "Polkit daemon user")
+         (home-directory "/var/empty")
+         (shell "/run/current-system/profile/sbin/nologin"))))
+
+(define %polkit-pam-services
+  (list (unix-pam-service "polkit-1")))
+
+(define (polkit-directory packages)
+  "Return a directory containing an @file{actions} and possibly a
+@file{rules.d} sub-directory, for use as @file{/etc/polkit-1}."
+  (with-imported-modules '((guix build union))
+    (computed-file "etc-polkit-1"
+                   #~(begin
+                       (use-modules (guix build union) (srfi srfi-26))
+
+                       (union-build #$output
+                                    (map (cut string-append <>
+                                              "/share/polkit-1")
+                                         (list #$@packages)))))))
+
+(define polkit-etc-files
+  (match-lambda
+    (($ <polkit-configuration> polkit packages)
+     `(("polkit-1" ,(polkit-directory (cons polkit packages)))))))
+
+(define polkit-setuid-programs
+  (match-lambda
+    (($ <polkit-configuration> polkit)
+     (list (file-append polkit "/lib/polkit-1/polkit-agent-helper-1")
+           (file-append polkit "/bin/pkexec")))))
+
+(define polkit-service-type
+  (service-type (name 'polkit)
+                (extensions
+                 (list (service-extension account-service-type
+                                          (const %polkit-accounts))
+                       (service-extension pam-root-service-type
+                                          (const %polkit-pam-services))
+                       (service-extension dbus-root-service-type
+                                          (compose
+                                           list
+                                           polkit-configuration-polkit))
+                       (service-extension etc-service-type
+                                          polkit-etc-files)
+                       (service-extension setuid-program-service-type
+                                          polkit-setuid-programs)))
+
+                ;; Extensions are lists of packages that provide polkit rules
+                ;; or actions under share/polkit-1/{actions,rules.d}.
+                (compose concatenate)
+                (extend (lambda (config actions)
+                          (polkit-configuration
+                           (inherit config)
+                           (actions
+                            (append (polkit-configuration-actions config)
+                                    actions)))))))
+
+(define* (polkit-service #:key (polkit polkit))
+  "Return a service that runs the
+@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
+management service}, which allows system administrators to grant access to
+privileged operations in a structured way.  By querying the Polkit service, a
+privileged system component can know when it should grant additional
+capabilities to ordinary users.  For example, an ordinary user can be granted
+the capability to suspend the system if the user is logged in locally."
+  (service polkit-service-type
+           (polkit-configuration (polkit polkit))))
 
 ;;; dbus.scm ends here

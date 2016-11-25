@@ -326,6 +326,27 @@
         ;; We get EPERM with Linux 3.18ish and EACCES with 2.6.32.
         (memv (system-error-errno args) (list EPERM EACCES))))))
 
+(test-equal "network-interface-netmask lo"
+  (make-socket-address AF_INET (inet-pton AF_INET "255.0.0.0") 0)
+  (let* ((sock (socket AF_INET SOCK_STREAM 0))
+         (addr (network-interface-netmask sock "lo")))
+    (close-port sock)
+    addr))
+
+(test-skip (if (zero? (getuid)) 1 0))
+(test-assert "set-network-interface-netmask"
+  (let ((sock (socket AF_INET SOCK_STREAM 0)))
+    (catch 'system-error
+      (lambda ()
+        (set-network-interface-netmask sock "nonexistent"
+                                       (make-socket-address
+                                        AF_INET
+                                        (inet-pton AF_INET "255.0.0.0")
+                                        0)))
+      (lambda args
+        (close-port sock)
+        (memv (system-error-errno args) (list EPERM EACCES))))))
+
 (test-equal "network-interfaces returns one or more interfaces"
   '(#t #t #t)
   (match (network-interfaces)
@@ -352,6 +373,30 @@
                         loopbacks)
              (#f #f)
              (lo (interface-address lo)))))))
+
+(test-skip (if (zero? (getuid)) 1 0))
+(test-assert "add-network-route/gateway"
+  (let ((sock    (socket AF_INET SOCK_STREAM 0))
+        (gateway (make-socket-address AF_INET
+                                      (inet-pton AF_INET "192.168.0.1")
+                                      0)))
+    (catch 'system-error
+      (lambda ()
+        (add-network-route/gateway sock gateway))
+      (lambda args
+        (close-port sock)
+        (memv (system-error-errno args) (list EPERM EACCES))))))
+
+(test-skip (if (zero? (getuid)) 1 0))
+(test-assert "delete-network-route"
+  (let ((sock        (socket AF_INET SOCK_STREAM 0))
+        (destination (make-socket-address AF_INET INADDR_ANY 0)))
+    (catch 'system-error
+      (lambda ()
+        (delete-network-route sock destination))
+      (lambda args
+        (close-port sock)
+        (memv (system-error-errno args) (list EPERM EACCES))))))
 
 (test-equal "tcgetattr ENOTTY"
   ENOTTY

@@ -50,6 +50,8 @@
 /emacs/guix-helper.scm
 /etc/guix-daemon.conf
 /etc/guix-daemon.service
+/etc/guix-publish.conf
+/etc/guix-publish.service
 /guix-daemon
 /guix-register
 /guix/config.scm
@@ -125,3 +127,4 @@ config.cache
 stamp-h[0-9]
 tmp
 /doc/os-config-lightweight-desktop.texi
+/nix/scripts/download

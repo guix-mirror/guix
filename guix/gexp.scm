@@ -453,9 +453,6 @@ whether this should be considered a \"native\" input or not."
                           '()))
                        (gexp-references gexp)))))
 
-(define raw-derivation
-  (store-lift derivation))
-
 (define* (lower-inputs inputs
                        #:key system target)
   "Turn any package from INPUTS into a derivation for SYSTEM; return the

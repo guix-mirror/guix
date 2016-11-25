@@ -67,6 +67,7 @@
             check-home-page
             check-source
             check-source-file-name
+            check-mirror-url
             check-license
             check-vulnerabilities
             check-formatting
@@ -600,6 +601,14 @@ descriptions maintained upstream."
                  (location->string loc) (package-full-name package)
                  (fill-paragraph (escape-quotes upstream) 77 7)))))))
 
+(define (origin-uris origin)
+  "Return the list of URIs (strings) for ORIGIN."
+  (match (origin-uri origin)
+    ((? string? uri)
+     (list uri))
+    ((uris ...)
+     uris)))
+
 (define (check-source package)
   "Emit a warning if PACKAGE has an invalid 'source' field, or if that
 'source' is not reachable."
@@ -616,10 +625,7 @@ descriptions maintained upstream."
   (let ((origin (package-source package)))
     (when (and origin
                (eqv? (origin-method origin) url-fetch))
-      (let* ((strings (origin-uri origin))
-             (uris (if (list? strings)
-                       (map string->uri strings)
-                       (list (string->uri strings)))))
+      (let ((uris (map string->uri (origin-uris origin))))
 
         ;; Just make sure that at least one of the URIs is valid.
         (call-with-values
@@ -658,6 +664,31 @@ descriptions maintained upstream."
       (emit-warning package
                     (_ "the source file name should contain the package name")
                     'source))))
+
+(define (check-mirror-url package)
+  "Check whether PACKAGE uses source URLs that should be 'mirror://'."
+  (define (check-mirror-uri uri)                  ;XXX: could be optimized
+    (let loop ((mirrors %mirrors))
+      (match mirrors
+        (()
+         #t)
+        (((mirror-id mirror-urls ...) rest ...)
+         (match (find (cut string-prefix? <> uri) mirror-urls)
+           (#f
+            (loop rest))
+           (prefix
+            (emit-warning package
+                          (format #f (_ "URL should be \
+'mirror://~a/~a'")
+                                  mirror-id
+                                  (string-drop uri (string-length prefix)))
+                          'source)))))))
+
+  (let ((origin (package-source package)))
+    (when (and (origin? origin)
+               (eqv? (origin-method origin) url-fetch))
+      (let ((uris (origin-uris origin)))
+        (for-each check-mirror-uri uris)))))
 
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
@@ -900,6 +931,10 @@ or a list thereof")
      (name        'source)
      (description "Validate source URLs")
      (check       check-source))
+   (lint-checker
+     (name        'mirror-url)
+     (description "Suggest 'mirror://' URLs")
+     (check       check-mirror-url))
    (lint-checker
      (name        'source-file-name)
      (description "Validate file names of sources")

@@ -453,7 +453,7 @@ If your host distro uses the systemd init system, this can be achieved
 with these commands:
 
 @example
-# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
+# ln -s ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
         /etc/systemd/system/
 # systemctl start guix-daemon && systemctl enable guix-daemon
 @end example
@@ -461,7 +461,7 @@ with these commands:
 If your host distro uses the Upstart init system:
 
 @example
-# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+# ln -s ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
 # start guix-daemon
 @end example
 
@@ -4841,6 +4841,10 @@ When using this option, you have @emph{absolutely no guarantee} that you
 are communicating with the authentic server responsible for the given
 URL, which makes you vulnerable to ``man-in-the-middle'' attacks.
 
+@item --output=@var{file}
+@itemx -o @var{file}
+Save the downloaded file to @var{file} instead of adding it to the
+store.
 @end table
 
 @node Invoking guix hash
@@ -5380,9 +5384,11 @@ Identify inputs that should most likely be native inputs.
 
 @item source
 @itemx home-page
+@itemx mirror-url
 @itemx source-file-name
 Probe @code{home-page} and @code{source} URLs and report those that are
-invalid.  Check that the source file name is meaningful, e.g. is not
+invalid.  Suggest a @code{mirror://} URL when applicable.  Check that
+the source file name is meaningful, e.g. is not
 just a version number or ``git-checkout'', without a declared
 @code{file-name} (@pxref{origin Reference}).
 
@@ -6054,6 +6060,30 @@ add a call to @code{guix-publish-service} in the @code{services} field
 of the @code{operating-system} declaration (@pxref{guix-publish-service,
 @code{guix-publish-service}}).
 
+If you are instead running Guix on a ``foreign distro'', follow these
+instructions:”
+
+@itemize
+@item
+If your host distro uses the systemd init system:
+
+@example
+# ln -s ~root/.guix-profile/lib/systemd/system/guix-publish.service \
+        /etc/systemd/system/
+# systemctl start guix-publish && systemctl enable guix-publish
+@end example
+
+@item
+If your host distro uses the Upstart init system:
+
+@example
+# ln -s ~root/.guix-profile/lib/upstart/system/guix-publish.conf /etc/init/
+# start guix-publish
+@end example
+
+@item
+Otherwise, proceed similarly with your distro's init system.
+@end itemize
 
 @node Invoking guix challenge
 @section Invoking @command{guix challenge}
@@ -6404,7 +6434,9 @@ hardware is not supported on GuixSD.
 One of the main areas where free drivers or firmware are lacking is WiFi
 devices.  WiFi devices known to work include those using Atheros chips
 (AR9271 and AR7010), which corresponds to the @code{ath9k} Linux-libre
-driver, and for which free firmware exists and is available
+driver, and those using Broadcom/AirForce chips (BCM43xx with
+Wireless-Core Revision 5), which corresponds to the @code{b43-open}
+Linux-libre driver.  Free firmware exists for both and is available
 out-of-the-box on GuixSD, as part of @var{%base-firmware}
 (@pxref{operating-system Reference, @code{firmware}}).
 
@@ -6638,27 +6670,26 @@ partition lives at @file{/dev/sda1}, a file system with the label
 mkfs.ext4 -L my-root /dev/sda1
 @end example
 
-@c FIXME: Uncomment this once GRUB fully supports encrypted roots.
-@c A typical command sequence may be:
-@c
-@c @example
-@c # fdisk /dev/sdX
-@c @dots{} Create partitions etc.@dots{}
-@c # cryptsetup luksFormat /dev/sdX1
-@c # cryptsetup open --type luks /dev/sdX1 my-partition
-@c # mkfs.ext4 -L my-root /dev/mapper/my-partition
-@c @end example
-
-In addition to e2fsprogs, the suite of tools to manipulate
-ext2/ext3/ext4 file systems, the installation image includes
-Cryptsetup/LUKS for disk encryption.
-
-Once that is done, mount the target root partition under @file{/mnt}
-with a command like (again, assuming @file{/dev/sda1} is the root
-partition):
+@cindex encrypted disk
+If you are instead planning to encrypt the root partition, you can use
+the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
+@uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
+@code{man cryptsetup}} for more information.)  Assuming you want to
+store the root partition on @file{/dev/sda1}, the command sequence would
+be along these lines:
 
 @example
-mount /dev/sda1 /mnt
+cryptsetup luksFormat /dev/sda1
+cryptsetup open --type luks /dev/sda1 my-partition
+mkfs.ext4 -L my-root /dev/mapper/my-partition
+@end example
+
+Once that is done, mount the target root partition under @file{/mnt}
+with a command like (again, assuming @code{my-root} is the label of the
+root partition):
+
+@example
+mount LABEL=my-root /mnt
 @end example
 
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
@@ -6721,6 +6752,10 @@ Be sure that your partition labels match the value of their respective
 @code{device} fields in your @code{file-system} configuration, assuming
 your @code{file-system} configuration sets the value of @code{title} to
 @code{'label}.
+
+@item
+If there are encrypted or RAID partitions, make sure to add a
+@code{mapped-devices} field to describe them (@pxref{Mapped Devices}).
 @end itemize
 
 Once you are done preparing the configuration file, the new system must
@@ -6965,7 +7000,9 @@ desired configuration.  In particular, notice how we use @code{inherit}
 to create a new configuration which has the same values as the old
 configuration, but with a few modifications.
 
-The configuration for a typical ``desktop'' usage, with the X11 display
+@cindex encrypted disk
+The configuration for a typical ``desktop'' usage, with an encrypted
+root partition, the X11 display
 server, GNOME and Xfce (users can choose which of these desktop
 environments to use at the log-in screen by pressing @kbd{F1}), network
 management, power management, and more, would look like this:
@@ -7078,9 +7115,10 @@ the Linux kernel.  @xref{Initial RAM Disk}.
 @cindex firmware
 List of firmware packages loadable by the operating system kernel.
 
-The default includes firmware needed for Atheros-based WiFi devices
-(Linux-libre module @code{ath9k}).  @xref{Hardware Considerations}, for
-more info on supported hardware.
+The default includes firmware needed for Atheros- and Broadcom-based
+WiFi devices (Linux-libre modules @code{ath9k} and @code{b43-open},
+respectively).  @xref{Hardware Considerations}, for more info on
+supported hardware.
 
 @item @code{host-name}
 The host name.
@@ -7289,13 +7327,16 @@ errors before being mounted.
 When true, the mount point is created if it does not exist yet.
 
 @item @code{dependencies} (default: @code{'()})
-This is a list of @code{<file-system>} objects representing file systems
-that must be mounted before (and unmounted after) this one.
+This is a list of @code{<file-system>} or @code{<mapped-device>} objects
+representing file systems that must be mounted or mapped devices that
+must be opened before (and unmounted or closed after) this one.
 
 As an example, consider a hierarchy of mounts: @file{/sys/fs/cgroup} is
 a dependency of @file{/sys/fs/cgroup/cpu} and
 @file{/sys/fs/cgroup/memory}.
 
+Another example is a file system that depends on a mapped device, for
+example for an encrypted partition (@pxref{Mapped Devices}).
 @end table
 @end deftp
 
@@ -8364,10 +8405,10 @@ Protocol (DHCP) client, on all the non-loopback network interfaces.
 @end deffn
 
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
-       [#:gateway #f] [#:name-servers @code{'()}]
+       [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If
-@var{gateway} is true, it must be a string specifying the default network
-gateway.
+@var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
+it must be a string specifying the default network gateway.
 @end deffn
 
 @cindex wicd
@@ -8403,13 +8444,22 @@ configure networking."
 @end deffn
 
 @cindex WPA Supplicant
-@deffn {Scheme Procedure} wpa-supplicant-service @
-       [#:wpa-supplicant @var{wpa-supplicant}]
-Return a service that runs @url{https://w1.fi/wpa_supplicant/,WPA
+@defvr {Scheme Variable} wpa-supplicant-service-type
+This is the service type to run @url{https://w1.fi/wpa_supplicant/,WPA
 supplicant}, an authentication daemon required to authenticate against
-encrypted WiFi or ethernet networks. Service is started to listen for
+encrypted WiFi or ethernet networks.  It is configured to listen for
 requests on D-Bus.
-@end deffn
+
+The value of this service is the @code{wpa-supplicant} package to use.
+Thus, it can be instantiated like this:
+
+@lisp
+(use-modules (gnu services networking)
+             (gnu packages admin))
+
+(service wpa-supplicant-type wpa-supplicant)
+@end lisp
+@end defvr
 
 @cindex NTP
 @cindex real time clock
@@ -11367,13 +11417,13 @@ could instantiate a dovecot service like this:
 @subsubsection Kerberos Services
 @cindex Kerberos
 
-The @code{(gnu services Kerberos)} module provides services relating to
+The @code{(gnu services kerberos)} module provides services relating to
 the authentication protocol @dfn{Kerberos}.
 
 @subsubheading PAM krb5 Service
 @cindex pam-krb5
 
-The pam-krb5 service allows for login authentication and password
+The @code{pam-krb5} service allows for login authentication and password
 management via Kerberos.
 You will need this service if you want PAM enabled applications to authenticate
 users using Kerberos.
@@ -11671,6 +11721,67 @@ List of strings or gexps representing the arguments for the module handler
 A @code{<dicod-database>} object serving the GNU Collaborative International
 Dictonary of English using the @code{gcide} package.
 @end defvr
+
+@subsubsection Version Control
+
+The @code{(gnu services version-control)} module provides the following services:
+
+@subsubheading Git daemon service
+
+@deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
+
+Return a service that runs @command{git daemon}, a simple TCP server to
+expose repositiories over the Git protocol for annoymous access.
+
+The optional @var{config} argument should be a
+@code{<git-daemon-configuration>} object, by default it allows read-only
+access to exported@footnote{By creating the magic file
+"git-daemon-export-ok" in the repository directory.} repositories under
+@file{/srv/git}.
+
+@end deffn
+
+@deftp {Data Type} git-daemon-configuration
+Data type representing the configuration for @code{git-daemon-service}.
+
+@table @asis
+@item @code{package} (default: @var{git})
+Package object of the Git distributed version control system.
+
+@item @code{export-all?} (default: @var{#f})
+Whether to allow access for all Git repositories, even if they do not
+have the @file{git-daemon-export-ok} file.
+
+@item @code{base-path} (default: @file{/srv/git})
+Whether to remap all the path requests as relative to the given path.
+If you run git daemon with @var{(base-path "/srv/git")} on example.com,
+then if you later try to pull @code{git://example.com/hello.git}, git
+daemon will interpret the path as @code{/srv/git/hello.git}.
+
+@item @code{user-path} (default: @var{#f})
+Whether to allow @code{~user} notation to be used in requests.  When
+specified with empty string, requests to @code{git://host/~alice/foo} is
+taken as a request to access @code{foo} repository in the home directory
+of user @code{alice}.  If @var{(user-path "path")} is specified, the
+same request is taken as a request to access @code{path/foo} repository
+in the home directory of user @code{alice}.
+
+@item @code{listen} (default: @var{'()})
+Whether to listen on specific IP addresses or hostnames, defaults to
+all.
+
+@item @code{port} (default: @var{#f})
+Whether to listen on an alternative port, which defaults to 9418.
+
+@item @code{whitelist} (default: @var{'()})
+If not empty, only allow access to this list of directories.
+
+@item @code{extra-options} (default: @var{'()})
+Extra options will be passed to @code{git daemon}, please run
+@command{man git-daemon} for more information.
+
+@end table
+@end deftp
 
 @node Setuid Programs
 @subsection Setuid Programs

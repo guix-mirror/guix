@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -342,6 +343,57 @@ tools (analyzer, mono/stereo tools, crossovers).")
     ;; calfjackhost is released under GPLv2+
     ;; The plugins are released under LGPLv2.1+
     (license (list license:lgpl2.1+ license:gpl2+))))
+
+(define-public espeak
+  (package
+    (name "espeak")
+    (version "1.48.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/espeak/espeak/"
+                                  "espeak-" (version-major+minor version)
+                                  "/espeak-" version "-source.zip"))
+              (sha256
+               (base32
+                "0n86gwh9pw0jqqpdz7mxggllfr8k0r7pc67ayy7w5z6z79kig6mz"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; remove prebuilt binaries
+               '(delete-file-recursively "linux_32bit"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          (string-append "DATADIR="
+                                         (assoc-ref %outputs "out")
+                                         "/share/espeak-data")
+                          (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib")
+                          "AUDIO=pulseaudio")
+       #:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "src")
+             ;; We use version 19 of the PortAudio library, so we must copy the
+             ;; corresponding file to be sure that espeak compiles correctly.
+             (copy-file "portaudio19.h" "portaudio.h")
+             (substitute* "Makefile"
+               (("/bin/ln") "ln"))
+             #t)))))
+       (inputs
+        `(("portaudio" ,portaudio)
+          ("pulseaudio" ,pulseaudio)))
+       (native-inputs `(("unzip" ,unzip)))
+       (home-page "http://espeak.sourceforge.net/")
+       (synopsis "Software speech synthesizer")
+       (description "eSpeak is a software speech synthesizer for English and
+other languages.  eSpeak uses a \"formant synthesis\" method.  This allows many
+languages to be provided in a small size.  The speech is clear, and can be used
+at high speeds, but is not as natural or smooth as larger synthesizers which are
+based on human speech recordings.")
+       (license license:gpl3+)))
 
 (define-public infamous-plugins
   (package
@@ -1126,19 +1178,24 @@ well suited to all musical instruments and vocals.")
     (version "1.3.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://factorial.hu/system/files/ir.lv2-"
-                   version ".tar.gz"))
+             ;; The original home-page is gone. Download the tarball from an
+             ;; archive mirror instead.
+             (uri (list (string-append
+                         "https://web.archive.org/web/20150803095032/"
+                         "http://factorial.hu/system/files/ir.lv2-"
+                         version ".tar.gz")
+                        (string-append
+                         "https://mirrors.kernel.org/gentoo/distfiles/ir.lv2-"
+                         version ".tar.gz")))
              (sha256
               (base32
                "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
+     `(#:tests? #f                              ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       ;; no configure script
-       (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))        ; no configure script
     (inputs
      `(("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
@@ -1152,7 +1209,9 @@ well suited to all musical instruments and vocals.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://factorial.hu/plugins/lv2/ir")
+    ;; Link to an archived copy of the home-page since the original is gone.
+    (home-page (string-append "https://web.archive.org/web/20150803095032/"
+                              "http://factorial.hu/plugins/lv2/ir"))
     (synopsis "LV2 convolution reverb")
     (description
      "IR is a low-latency, real-time, high performance signal convolver
@@ -2282,21 +2341,22 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.4.1")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
                            "/qsynth-" version ".tar.gz"))
        (sha256
-        (base32 "034p6mbwrjnxd9b6h20cidxi4ilkk3cgpjp154j0jzjs1ipf7x2h"))))
+        (base32 "1j5hm99fjrnaw8wbmlh4qixkv3rw5dl429mp1ag7js2ydrx0j9yy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" phase
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (native-inputs
-     `(("qttools" ,qttools)))
+     `(("qttools" ,qttools)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("fluidsynth" ,fluidsynth)
        ("qtbase" ,qtbase)

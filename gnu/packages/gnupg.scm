@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Nils Gillmann <ng0@libertad.pw>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;;
@@ -213,14 +213,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.15")
+    (version "2.1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1pgz02gd84ab94w4xdg67p9z8kvkyr9d523bvcxxd2hviwh1m362"))))
+                "0i483m9q032a0s50f1izb213g4h5i7pcgn395m6hvl3sg2kadfa9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -245,8 +245,6 @@ compatible to GNU Pth.")
       (modify-phases %standard-phases
         (add-before 'configure 'patch-paths
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "tests/openpgp/defs.inc"
-              (("/bin/pwd") (which "pwd")))
             (substitute* "scd/scdaemon.c"
               (("\"(libpcsclite\\.so[^\"]*)\"" _ name)
                (string-append "\"" (assoc-ref inputs "pcsc-lite")
@@ -256,13 +254,12 @@ compatible to GNU Pth.")
           (lambda _
             (substitute* (find-files "tests" ".\\.scm$")
               (("/usr/bin/env gpgscm")
-               (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
-        (add-before 'check 'set-home
-          ;; Some tests require write access to $HOME, otherwise leading to
-          ;; 'failed to create directory /homeless-shelter/.asy' error.
-          ;; TODO Try removing this phase for GnuPG 2.1.16.
+               (string-append (getcwd) "/tests/gpgscm/gpgscm")))
+            #t))
+        ;; If this variable is undefined, /bin/pwd is invoked.
+        (add-before 'check 'set-gnupg-home
           (lambda _
-            (setenv "HOME" "/tmp")
+            (setenv "GNUPGHOME" (getcwd))
             #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")

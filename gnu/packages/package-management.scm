@@ -166,7 +166,7 @@
                      ;; guix' always contains them.
                      ("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
-                     ("gettext" ,gnu-gettext)
+                     ("gettext" ,gettext-minimal)
                      ("texinfo" ,texinfo)
                      ("graphviz" ,graphviz)
                      ("help2man" ,help2man)))
@@ -222,9 +222,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "7ca37da855fd921fa3925bb62f8015f770b7e784"))
+  (let ((commit "1f410017ff91458feda8c5788223d17696b71e36"))
     (package (inherit guix-0.11.0)
-      (version (string-append "0.11.0-3." (string-take commit 4)))
+      (version (string-append "0.11.0-4." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -234,7 +234,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0bw5y9rgy2jq81lrd0g5c3gqpmlrjlgv0ynn7kz8v08lxkidaw8s"))
+                  "1mgzcbf1mry39wvvjflj76zggsshsip2pngxpaf2479yr3ri6v50"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.11.0)

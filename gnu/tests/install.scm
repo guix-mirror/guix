@@ -24,6 +24,7 @@
   #:use-module (gnu system install)
   #:use-module (gnu system vm)
   #:use-module ((gnu build vm) #:select (qemu-command))
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages package-management)
   #:use-module (guix store)
@@ -398,17 +399,20 @@ by 'mdadm'.")
     (locale "en_US.UTF-8")
 
     (bootloader (grub-configuration (device "/dev/vdb")))
-    (kernel-arguments '("console=ttyS0"))
+
+    ;; Note: Do not pass "console=ttyS0" so we can use our passphrase prompt
+    ;; detection logic in 'enter-luks-passphrase'.
+
+    (mapped-devices (list (mapped-device
+                           (source (uuid "12345678-1234-1234-1234-123456789abc"))
+                           (target "the-root-device")
+                           (type luks-device-mapping))))
     (file-systems (cons (file-system
                           (device "/dev/mapper/the-root-device")
                           (title 'device)
                           (mount-point "/")
                           (type "ext4"))
                         %base-file-systems))
-    (mapped-devices (list (mapped-device
-                           (source "REPLACE-WITH-LUKS-UUID")
-                           (target "the-root-device")
-                           (type luks-device-mapping))))
     (users (cons (user-account
                   (name "charlie")
                   (group "users")
@@ -435,7 +439,8 @@ parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 3M 1G \\
   set 1 boot on \\
   set 1 bios_grub on
-echo -n thepassphrase | cryptsetup luksFormat -q /dev/vdb2 -
+echo -n thepassphrase | \\
+  cryptsetup luksFormat --uuid=12345678-1234-1234-1234-123456789abc -q /dev/vdb2 -
 echo -n thepassphrase | \\
   cryptsetup open --type luks --key-file - /dev/vdb2 the-root-device
 mkfs.ext4 -L my-root /dev/mapper/the-root-device
@@ -443,14 +448,52 @@ mount LABEL=my-root /mnt
 herd start cow-store /mnt
 mkdir /mnt/etc
 cp /etc/target-config.scm /mnt/etc/config.scm
-cat /mnt/etc/config
-luks_uuid=`cryptsetup luksUUID /dev/vdb2`
-sed -i /mnt/etc/config.scm \\
-    -e \"s/\\\"REPLACE-WITH-LUKS-UUID\\\"/(uuid \\\"$luks_uuid\\\")/g\"
 guix system build /mnt/etc/config.scm
 guix system init /mnt/etc/config.scm /mnt --no-substitutes
 sync
 reboot\n")
+
+(define (enter-luks-passphrase marionette)
+  "Return a gexp to be inserted in the basic system test running on MARIONETTE
+to enter the LUKS passphrase."
+  (let ((ocrad (file-append ocrad "/bin/ocrad")))
+    #~(begin
+        (define (passphrase-prompt? text)
+          (string-contains (pk 'screen-text text) "Enter pass"))
+
+        (define (bios-boot-screen? text)
+          ;; Return true if TEXT corresponds to the boot screen, before GRUB's
+          ;; menu.
+          (string-prefix? "SeaBIOS" text))
+
+        (test-assert "enter LUKS passphrase for GRUB"
+          (begin
+            ;; At this point we have no choice but to use OCR to determine
+            ;; when the passphrase should be entered.
+            (wait-for-screen-text #$marionette passphrase-prompt?
+                                  #:ocrad #$ocrad)
+            (marionette-type "thepassphrase\n" #$marionette)
+
+            ;; Now wait until we leave the boot screen.  This is necessary so
+            ;; we can then be sure we match the "Enter passphrase" prompt from
+            ;; 'cryptsetup', in the initrd.
+            (wait-for-screen-text #$marionette (negate bios-boot-screen?)
+                                  #:ocrad #$ocrad
+                                  #:timeout 20)))
+
+        (test-assert "enter LUKS passphrase for the initrd"
+          (begin
+            ;; XXX: Here we use OCR as well but we could instead use QEMU
+            ;; '-serial stdio' and run it in an input pipe,
+            (wait-for-screen-text #$marionette passphrase-prompt?
+                                  #:ocrad #$ocrad
+                                  #:timeout 60)
+            (marionette-type "thepassphrase\n" #$marionette)
+
+            ;; Take a screenshot for debugging purposes.
+            (marionette-control (string-append "screendump " #$output
+                                               "/post-initrd-passphrase.ppm")
+                                #$marionette))))))
 
 (define %test-encrypted-os
   (system-test
@@ -465,6 +508,7 @@ build (current-guix) and then store a couple of full system images.")
                                                #:script
                                                %encrypted-root-installation-script))
                          (command (qemu-command/writable-image image)))
-      (run-basic-test %encrypted-root-os command "encrypted-root-os")))))
+      (run-basic-test %encrypted-root-os command "encrypted-root-os"
+                      #:initialization enter-luks-passphrase)))))
 
 ;;; install.scm ends here

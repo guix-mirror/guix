@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,3 +59,67 @@ setup information in the partition header, enabling the users to transport
 or migrate their data seamlessly.")
    (license license:gpl2)
    (home-page "https://gitlab.com/cryptsetup/cryptsetup")))
+
+(define (static-library library)
+  "Return a variant of package LIBRARY that provides static libraries ('.a'
+files).  This assumes LIBRARY uses Libtool."
+  (package
+    (inherit library)
+    (name (string-append (package-name library) "-static"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments library)
+       ((#:configure-flags flags ''())
+        `(append '("--disable-shared" "--enable-static")
+                 ,flags))))))
+
+(define-public cryptsetup-static
+  ;; Stripped-down statically-linked 'cryptsetup' command for use in initrds.
+  (package
+    (inherit cryptsetup)
+    (name "cryptsetup-static")
+    (arguments
+     '(#:configure-flags '("--disable-shared"
+                           "--enable-static-cryptsetup"
+
+                           ;; 'libdevmapper.a' pulls in libpthread and libudev.
+                           "LIBS=-ludev -pthread")
+
+       #:allowed-references ()                  ;this should be self-contained
+
+       #:modules ((ice-9 ftw)
+                  (ice-9 match)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'remove-cruft
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Remove everything except the 'cryptsetup' command and
+                      ;; its friend.
+                      (let ((out (assoc-ref outputs "out")))
+                        (with-directory-excursion out
+                          (let ((dirs (scandir "."
+                                               (match-lambda
+                                                 ((or "." "..") #f)
+                                                 (_ #t)))))
+                            (for-each delete-file-recursively
+                                      (delete "sbin" dirs))
+                            (for-each (lambda (file)
+                                        (rename-file (string-append file
+                                                                    ".static")
+                                                     file)
+                                        (remove-store-references file))
+                                      '("sbin/cryptsetup" "sbin/veritysetup"))
+                            #t))))))))
+    (inputs
+     (let ((libgcrypt-static
+            (package
+              (inherit (static-library libgcrypt))
+              (propagated-inputs
+               `(("libgpg-error-host" ,(static-library libgpg-error)))))))
+       `(("libgcrypt" ,libgcrypt-static)
+         ("lvm2" ,lvm2-static)
+         ("util-linux" ,util-linux "static")
+         ("util-linux" ,util-linux)
+         ("popt" ,popt))))
+    (synopsis "Hard disk encryption tool (statically linked)")))

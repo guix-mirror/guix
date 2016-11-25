@@ -1252,9 +1252,6 @@ splice junctions between exons.")
                       (assoc-ref outputs "out") "/share/doc/bwa"))
                 (man (string-append
                       (assoc-ref outputs "out") "/share/man/man1")))
-            (mkdir-p bin)
-            (mkdir-p doc)
-            (mkdir-p man)
             (install-file "bwa" bin)
             (install-file "README.md" doc)
             (install-file "bwa.1" man)))
@@ -2018,7 +2015,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.26")
+    (version "0.8.27")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2027,7 +2024,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17s38pgjih6yc2z81040pircbv60c9wr33mbcyki2rfpv8rbxlh0"))))
+                "0g0zdyfnri9v7nfbh8f7zqs4af1xydqkiw8m0cx4jc2ql4chpf6a"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2125,7 +2122,6 @@ of nucleic acid binding proteins.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin  (string-append out "/bin")))
-                 (mkdir-p bin)
                  (for-each (lambda (file)
                              (install-file file bin))
                            (find-files "../bin" ".*"))
@@ -2708,7 +2704,7 @@ estimates transcript expression.")
         (alist-replace
          'install
          (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bi/")))
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
              (for-each (lambda (file)
                          (install-file file bin))
                        (find-files
@@ -4770,7 +4766,6 @@ optionally compressed by gzip.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (mkdir-p bin)
                (install-file "snap-aligner" bin)
                (install-file "SNAPCommand" bin)
                #t))))))
@@ -5630,7 +5625,6 @@ Needleman-Wunsch).")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (mkdir-p bin)
                (install-file "ParDRe" bin)
                #t))))))
     (inputs
@@ -7508,7 +7502,6 @@ intervals (e.g. genes, sequence alignments).")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin")))
-                 (mkdir-p bin)
                  (for-each (lambda (file)
                              (install-file file bin))
                            (find-files "bin" ".*")))
