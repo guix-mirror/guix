@@ -234,7 +234,7 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "0.9.6.1")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -242,7 +242,7 @@ many input formats and provides a customisable Vi-style user interface.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0vxnaqfmcv7hhk0cj67imdcqngspnck7f0wfmvhfgfqa7x1xznll"))))
+                "1dy2jfkdw0nchars4xi4isrz66fqn53a9qk13bqza7lhmsg3s3qy"))))
     (build-system cmake-build-system)
     (arguments
     `(#:test-target "tests"))
