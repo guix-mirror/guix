@@ -204,24 +204,24 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.10.1")
+    (version "0.10.2")
+    (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
               ;; exists, but the server appears to be too slow and unreliable.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/artyom-poptsov/libguile-ssh.git")
-                    (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              ;; Also, using this URL allows the GitHub updater to work.
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ky77kr7rnkhbq938bir61mlr8b86lfjcjjb1bxx1y1fhimsiz72"))))
+                "0pkiq3fm15pr4w1r420rrwwfmi4jz492r6l6vzjk6v73xlyfyfl3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (chmod "doc/version.texi" #o777) ;make it writable
                       (zero? (system* "autoreconf" "-vfi"))))
                   (add-before 'build 'fix-libguile-ssh-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -255,7 +255,6 @@ Additionally, various channel-specific options can be negotiated.")
      "Guile-SSH is a library that provides access to the SSH protocol for
 programs written in GNU Guile interpreter.  It is a wrapper to the underlying
 libssh library.")
-    (home-page "https://github.com/artyom-poptsov/libguile-ssh")
     (license license:gpl3+)))
 
 (define-public corkscrew
