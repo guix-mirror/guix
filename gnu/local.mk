@@ -447,6 +447,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests.scm					\
   %D%/tests/base.scm				\
   %D%/tests/install.scm				\
+  %D%/tests/mail.scm				\
   %D%/tests/ssh.scm
 
 
