@@ -980,7 +980,7 @@ including psyced.")
     (synopsis "PSYC library in C")
     (license license:agpl3+)))
 
-;; This commit removes the historic bundled pcre, not released as a tarball so far.
+;; This commit removes the historic bundled pcre and makes psyclpc reproducible.
 (define-public psyclpc
   (let* ((commit "61cf9aa81297085e5c40170fd01221c752f8deba")
          (revision "2"))
