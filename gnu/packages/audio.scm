@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1177,19 +1178,24 @@ well suited to all musical instruments and vocals.")
     (version "1.3.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://factorial.hu/system/files/ir.lv2-"
-                   version ".tar.gz"))
+             ;; The original home-page is gone. Download the tarball from an
+             ;; archive mirror instead.
+             (uri (list (string-append
+                         "https://web.archive.org/web/20150803095032/"
+                         "http://factorial.hu/system/files/ir.lv2-"
+                         version ".tar.gz")
+                        (string-append
+                         "https://mirrors.kernel.org/gentoo/distfiles/ir.lv2-"
+                         version ".tar.gz")))
              (sha256
               (base32
                "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
+     `(#:tests? #f                              ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       ;; no configure script
-       (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))        ; no configure script
     (inputs
      `(("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
@@ -1203,7 +1209,9 @@ well suited to all musical instruments and vocals.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://factorial.hu/plugins/lv2/ir")
+    ;; Link to an archived copy of the home-page since the original is gone.
+    (home-page (string-append "https://web.archive.org/web/20150803095032/"
+                              "http://factorial.hu/plugins/lv2/ir"))
     (synopsis "LV2 convolution reverb")
     (description
      "IR is a low-latency, real-time, high performance signal convolver

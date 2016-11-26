@@ -171,6 +171,24 @@ AC_DEFUN([GUIX_CHECK_UNBUFFERED_CBIP], [
      fi])
 ])
 
+dnl GUIX_CHECK_GUILE_SSH
+dnl
+dnl Check whether a recent-enough Guile-SSH is available.
+AC_DEFUN([GUIX_CHECK_GUILE_SSH], [
+  dnl Check whether 'channel-send-eof' (introduced in 0.10.2) is present.
+  AC_CACHE_CHECK([whether Guile-SSH is available and recent enough],
+    [guix_cv_have_recent_guile_ssh],
+    [GUILE_CHECK([retval],
+      [(and (@ (ssh channel) channel-send-eof)
+            (@ (ssh popen) open-remote-pipe)
+	    (@ (ssh dist node) node-eval))])
+     if test "$retval" = 0; then
+       guix_cv_have_recent_guile_ssh="yes"
+     else
+       guix_cv_have_recent_guile_ssh="no"
+     fi])
+])
+
 dnl GUIX_TEST_ROOT_DIRECTORY
 AC_DEFUN([GUIX_TEST_ROOT_DIRECTORY], [
   AC_CACHE_CHECK([for unit test root directory],

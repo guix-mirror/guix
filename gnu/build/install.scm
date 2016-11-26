@@ -46,6 +46,11 @@ Note that the caller must make sure that GRUB.CFG is registered as a GC root
 so that the fonts, background images, etc. referred to by GRUB.CFG are not
 GC'd."
   (install-grub-config grub.cfg mount-point)
+
+  ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or root
+  ;; partition.
+  (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+
   (unless (zero? (system* "grub-install" "--no-floppy"
                           "--boot-directory"
                           (string-append mount-point "/boot")

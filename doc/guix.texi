@@ -453,7 +453,7 @@ If your host distro uses the systemd init system, this can be achieved
 with these commands:
 
 @example
-# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
+# ln -s ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
         /etc/systemd/system/
 # systemctl start guix-daemon && systemctl enable guix-daemon
 @end example
@@ -461,7 +461,7 @@ with these commands:
 If your host distro uses the Upstart init system:
 
 @example
-# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+# ln -s ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
 # start guix-daemon
 @end example
 
@@ -565,6 +565,12 @@ Installing
 allow you to use the @command{guix import pypi} command (@pxref{Invoking
 guix import}).  It is of
 interest primarily for developers and not for casual users.
+
+@item
+@c Note: We need at least 0.10.2 for 'channel-send-eof'.
+Support for build offloading (@pxref{Daemon Offload Setup}) depends on
+@uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH},
+version 0.10.2 or later.
 
 @item
 When @url{http://zlib.net, zlib} is available, @command{guix publish}
@@ -814,9 +820,11 @@ available on the system---making it much harder to view them as
 
 @cindex offloading
 @cindex build hook
-When desired, the build daemon can @dfn{offload}
-derivation builds to other machines
-running Guix, using the @code{offload} @dfn{build hook}.  When that
+When desired, the build daemon can @dfn{offload} derivation builds to
+other machines running Guix, using the @code{offload} @dfn{build
+hook}@footnote{This feature is available only when
+@uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH} is
+present.}.  When that
 feature is enabled, a list of user-specified build machines is read from
 @file{/etc/guix/machines.scm}; every time a build is requested, for
 instance via @code{guix build}, the daemon attempts to offload it to one
@@ -832,16 +840,18 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
 (list (build-machine
         (name "eightysix.example.org")
         (system "x86_64-linux")
+        (host-key "ssh-ed25519 AAAAC3Nza@dots{}")
         (user "bob")
-        (speed 2.))    ; incredibly fast!
+        (speed 2.))     ;incredibly fast!
 
       (build-machine
         (name "meeps.example.org")
         (system "mips64el-linux")
+        (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
         (private-key
          (string-append (getenv "HOME")
-                        "/.lsh/identity-for-guix"))))
+                        "/.ssh/identity-for-guix"))))
 @end example
 
 @noindent
@@ -875,31 +885,54 @@ The user account to use when connecting to the remote machine over SSH.
 Note that the SSH key pair must @emph{not} be passphrase-protected, to
 allow non-interactive logins.
 
+@item host-key
+This must be the machine's SSH @dfn{public host key} in OpenSSH format.
+This is used to authenticate the machine when we connect to it.  It is a
+long string that looks like this:
+
+@example
+ssh-ed25519 AAAAC3NzaC@dots{}mde+UhL hint@@example.org
+@end example
+
+If the machine is running the OpenSSH daemon, @command{sshd}, the host
+key can be found in a file such as
+@file{/etc/ssh/ssh_host_ed25519_key.pub}.
+
+If the machine is running the SSH daemon of GNU@tie{}lsh,
+@command{lshd}, the host key is in @file{/etc/lsh/host-key.pub} or a
+similar file.  It can be converted to the OpenSSH format using
+@command{lsh-export-key} (@pxref{Converting keys,,, lsh, LSH Manual}):
+
+@example
+$ lsh-export-key --openssh < /etc/lsh/host-key.pub 
+ssh-rsa AAAAB3NzaC1yc2EAAAAEOp8FoQAAAQEAs1eB46LV@dots{}
+@end example
+
 @end table
 
 A number of optional fields may be specified:
 
-@table @code
+@table @asis
 
-@item port
-Port number of SSH server on the machine (default: 22).
+@item @code{port} (default: @code{22})
+Port number of SSH server on the machine.
 
-@item private-key
-The SSH private key file to use when connecting to the machine.
+@item @code{private-key} (default: @file{~/.ssh/id_rsa})
+The SSH private key file to use when connecting to the machine, in
+OpenSSH format.
 
-Currently offloading uses GNU@tie{}lsh as its SSH client
-(@pxref{Invoking lsh,,, GNU lsh Manual}).  Thus, the key file here must
-be an lsh key file.  This may change in the future, though.
+@item @code{daemon-socket} (default: @code{"/var/guix/daemon-socket/socket"})
+File name of the Unix-domain socket @command{guix-daemon} is listening
+to on that machine.
 
-@item parallel-builds
-The number of builds that may run in parallel on the machine (1 by
-default.)
+@item @code{parallel-builds} (default: @code{1})
+The number of builds that may run in parallel on the machine.
 
-@item speed
+@item @code{speed} (default: @code{1.0})
 A ``relative speed factor''.  The offload scheduler will tend to prefer
 machines with a higher speed factor.
 
-@item features
+@item @code{features} (default: @code{'()})
 A list of strings denoting specific features supported by the machine.
 An example is @code{"kvm"} for machines that have the KVM Linux modules
 and corresponding hardware support.  Derivations can request features by
@@ -915,7 +948,7 @@ machines, since offloading works by invoking the @code{guix archive} and
 this is the case by running:
 
 @example
-lsh build-machine guile -c "'(use-modules (guix config))'"
+ssh build-machine guile -c "'(use-modules (guix config))'"
 @end example
 
 There is one last thing to do once @file{machines.scm} is in place.  As
@@ -6055,6 +6088,30 @@ add a call to @code{guix-publish-service} in the @code{services} field
 of the @code{operating-system} declaration (@pxref{guix-publish-service,
 @code{guix-publish-service}}).
 
+If you are instead running Guix on a ``foreign distro'', follow these
+instructions:”
+
+@itemize
+@item
+If your host distro uses the systemd init system:
+
+@example
+# ln -s ~root/.guix-profile/lib/systemd/system/guix-publish.service \
+        /etc/systemd/system/
+# systemctl start guix-publish && systemctl enable guix-publish
+@end example
+
+@item
+If your host distro uses the Upstart init system:
+
+@example
+# ln -s ~root/.guix-profile/lib/upstart/system/guix-publish.conf /etc/init/
+# start guix-publish
+@end example
+
+@item
+Otherwise, proceed similarly with your distro's init system.
+@end itemize
 
 @node Invoking guix challenge
 @section Invoking @command{guix challenge}
@@ -6641,27 +6698,26 @@ partition lives at @file{/dev/sda1}, a file system with the label
 mkfs.ext4 -L my-root /dev/sda1
 @end example
 
-@c FIXME: Uncomment this once GRUB fully supports encrypted roots.
-@c A typical command sequence may be:
-@c
-@c @example
-@c # fdisk /dev/sdX
-@c @dots{} Create partitions etc.@dots{}
-@c # cryptsetup luksFormat /dev/sdX1
-@c # cryptsetup open --type luks /dev/sdX1 my-partition
-@c # mkfs.ext4 -L my-root /dev/mapper/my-partition
-@c @end example
-
-In addition to e2fsprogs, the suite of tools to manipulate
-ext2/ext3/ext4 file systems, the installation image includes
-Cryptsetup/LUKS for disk encryption.
-
-Once that is done, mount the target root partition under @file{/mnt}
-with a command like (again, assuming @file{/dev/sda1} is the root
-partition):
+@cindex encrypted disk
+If you are instead planning to encrypt the root partition, you can use
+the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
+@uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
+@code{man cryptsetup}} for more information.)  Assuming you want to
+store the root partition on @file{/dev/sda1}, the command sequence would
+be along these lines:
 
 @example
-mount /dev/sda1 /mnt
+cryptsetup luksFormat /dev/sda1
+cryptsetup open --type luks /dev/sda1 my-partition
+mkfs.ext4 -L my-root /dev/mapper/my-partition
+@end example
+
+Once that is done, mount the target root partition under @file{/mnt}
+with a command like (again, assuming @code{my-root} is the label of the
+root partition):
+
+@example
+mount LABEL=my-root /mnt
 @end example
 
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
@@ -6724,6 +6780,10 @@ Be sure that your partition labels match the value of their respective
 @code{device} fields in your @code{file-system} configuration, assuming
 your @code{file-system} configuration sets the value of @code{title} to
 @code{'label}.
+
+@item
+If there are encrypted or RAID partitions, make sure to add a
+@code{mapped-devices} field to describe them (@pxref{Mapped Devices}).
 @end itemize
 
 Once you are done preparing the configuration file, the new system must
@@ -6968,7 +7028,9 @@ desired configuration.  In particular, notice how we use @code{inherit}
 to create a new configuration which has the same values as the old
 configuration, but with a few modifications.
 
-The configuration for a typical ``desktop'' usage, with the X11 display
+@cindex encrypted disk
+The configuration for a typical ``desktop'' usage, with an encrypted
+root partition, the X11 display
 server, GNOME and Xfce (users can choose which of these desktop
 environments to use at the log-in screen by pressing @kbd{F1}), network
 management, power management, and more, would look like this:
@@ -7293,13 +7355,16 @@ errors before being mounted.
 When true, the mount point is created if it does not exist yet.
 
 @item @code{dependencies} (default: @code{'()})
-This is a list of @code{<file-system>} objects representing file systems
-that must be mounted before (and unmounted after) this one.
+This is a list of @code{<file-system>} or @code{<mapped-device>} objects
+representing file systems that must be mounted or mapped devices that
+must be opened before (and unmounted or closed after) this one.
 
 As an example, consider a hierarchy of mounts: @file{/sys/fs/cgroup} is
 a dependency of @file{/sys/fs/cgroup/cpu} and
 @file{/sys/fs/cgroup/memory}.
 
+Another example is a file system that depends on a mapped device, for
+example for an encrypted partition (@pxref{Mapped Devices}).
 @end table
 @end deftp
 
@@ -8407,13 +8472,22 @@ configure networking."
 @end deffn
 
 @cindex WPA Supplicant
-@deffn {Scheme Procedure} wpa-supplicant-service @
-       [#:wpa-supplicant @var{wpa-supplicant}]
-Return a service that runs @url{https://w1.fi/wpa_supplicant/,WPA
+@defvr {Scheme Variable} wpa-supplicant-service-type
+This is the service type to run @url{https://w1.fi/wpa_supplicant/,WPA
 supplicant}, an authentication daemon required to authenticate against
-encrypted WiFi or ethernet networks. Service is started to listen for
+encrypted WiFi or ethernet networks.  It is configured to listen for
 requests on D-Bus.
-@end deffn
+
+The value of this service is the @code{wpa-supplicant} package to use.
+Thus, it can be instantiated like this:
+
+@lisp
+(use-modules (gnu services networking)
+             (gnu packages admin))
+
+(service wpa-supplicant-type wpa-supplicant)
+@end lisp
+@end defvr
 
 @cindex NTP
 @cindex real time clock
@@ -9979,7 +10053,7 @@ Return a service that runs @command{mysqld}, the MySQL or MariaDB
 database server.
 
 The optional @var{config} argument specifies the configuration for
-@command{mysqld}, which should be a @code{<mysql-configuraiton>} object.
+@command{mysqld}, which should be a @code{<mysql-configuration>} object.
 @end deffn
 
 @deftp {Data Type} mysql-configuration
@@ -10001,16 +10075,11 @@ For MariaDB, the root password is empty.
 @cindex mail
 @cindex email
 The @code{(gnu services mail)} module provides Guix service definitions
-for mail services.  Currently the only implemented service is Dovecot,
-an IMAP, POP3, and LMTP server.
+for email services: IMAP, POP3, and LMTP servers, as well as mail
+transport agents (MTAs).  Lots of acronyms!  These services are detailed
+in the subsections below.
 
-Guix does not yet have a mail transfer agent (MTA), although for some
-lightweight purposes the @code{esmtp} relay-only MTA may suffice.  Help
-is needed to properly integrate a full MTA, such as Postfix.  Patches
-welcome!
-
-To add an IMAP/POP3 server to a GuixSD system, add a
-@code{dovecot-service} to the operating system definition:
+@subsubheading Dovecot Service
 
 @deffn {Scheme Procedure} dovecot-service [#:config (dovecot-configuration)]
 Return a service that runs the Dovecot IMAP/POP3/LMTP mail server.
@@ -11366,18 +11435,47 @@ could instantiate a dovecot service like this:
                   (string "")))
 @end example
 
+@subsubheading OpenSMTPD Service
+
+@deffn {Scheme Variable} opensmtpd-service-type
+This is the type of the @uref{https://www.opensmtpd.org, OpenSMTPD}
+service, whose value should be an @code{opensmtpd-configuration} object
+as in this example:
+
+@example
+(service opensmtpd-service-type
+         (opensmtpd-configuration
+           (config-file (local-file "./my-smtpd.conf"))))
+@end example
+@end deffn
+
+@deftp {Data Type} opensmtpd-configuration
+Data type regresenting the configuration of opensmtpd.
+
+@table @asis
+@item @code{package} (default: @var{opensmtpd})
+Package object of the OpenSMTPD SMTP server.
+
+@item @code{config-file} (default: @var{%default-opensmtpd-file})
+File-like object of the OpenSMTPD configuration file to use.  By default
+it listens on the loopback network interface, and allows for mail from
+users and daemons on the local machine, as well as permitting email to
+remote servers.  Run @command{man smtpd.conf} for more information.
+
+@end table
+@end deftp
 
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos
 
-The @code{(gnu services Kerberos)} module provides services relating to
+The @code{(gnu services kerberos)} module provides services relating to
 the authentication protocol @dfn{Kerberos}.
 
 @subsubheading PAM krb5 Service
 @cindex pam-krb5
 
-The pam-krb5 service allows for login authentication and password
+The @code{pam-krb5} service allows for login authentication and password
 management via Kerberos.
 You will need this service if you want PAM enabled applications to authenticate
 users using Kerberos.

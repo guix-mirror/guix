@@ -3693,6 +3693,58 @@ for sequences to be aligned and then, simultaneously with the alignment,
 predicts the locations of structural units in the sequences.")
     (license license:gpl2+)))
 
+(define-public proteinortho
+  (package
+    (name "proteinortho")
+    (version "5.15")
+    (source
+     (origin
+      (method url-fetch)
+      (uri
+       (string-append
+        "http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v"
+        version "_src.tar.gz"))
+      (sha256
+       (base32
+        "05wacnnbx56avpcwhzlcf6b7s77swcpv3qnwz5sh1z54i51gg2ki"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; There is no configure script, so we modify the Makefile directly.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("INSTALLDIR=.*")
+                (string-append
+                 "INSTALLDIR=" (assoc-ref outputs "out") "/bin\n")))
+             #t))
+         (add-before 'install 'make-install-directory
+           ;; The install directory is not created during 'make install'.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((path (getenv "PATH"))
+                    (out (assoc-ref outputs "out"))
+                    (binary (string-append out "/bin/proteinortho5.pl")))
+               (wrap-program binary `("PATH" ":" prefix (,path))))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("python" ,python-2)
+       ("blast+" ,blast+)))
+    (home-page "http://www.bioinf.uni-leipzig.de/Software/proteinortho")
+    (synopsis "Detect orthologous genes across species")
+    (description
+     "Proteinortho is a tool to detect orthologous genes across different
+species.  For doing so, it compares similarities of given gene sequences and
+clusters them to find significant groups.  The algorithm was designed to handle
+large-scale data and can be applied to hundreds of species at once.")
+    (license license:gpl2+)))
+
 (define-public pyicoteo
   (package
     (name "pyicoteo")
@@ -3765,7 +3817,7 @@ partial genes, and identifies translation initiation sites.")
 (define-public roary
   (package
     (name "roary")
-    (version "3.6.8")
+    (version "3.7.0")
     (source
      (origin
        (method url-fetch)
@@ -3774,7 +3826,7 @@ partial genes, and identifies translation initiation sites.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0g0pzcv8y7n2w8q7c9q0a7s2ghkwci6w8smg9mjw4agad5cd7yaw"))))
+         "0x2hpb3nfsc6x2nq1788w0fhqfzc7cn2dp4xwyva9m3k6xlz0m43"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases

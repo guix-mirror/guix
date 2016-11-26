@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright ©2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -155,3 +156,10 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "0ffb87yjsh211hllpc4b9khqqrblial4pzi1h9r3v465z1yhn3j4")))
+
+(define-public aspell-dict-he
+  (aspell-dictionary "he" "Hebrew"
+                     #:version "1.0-0"
+                     #:sha256
+                     (base32
+                      "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))

@@ -21,6 +21,7 @@
 (define-module (gnu services mail)
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
@@ -30,13 +31,8 @@
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix gexp)
-  #:use-module (srfi srfi-34)
-  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
-  #:export (&dovecot-configuation-error
-            dovecot-configuration-error?
-
-            dovecot-service
+  #:export (dovecot-service
             dovecot-service-type
             dovecot-configuration
             opaque-dovecot-configuration
@@ -51,7 +47,12 @@
             protocol-configuration
             plugin-configuration
             mailbox-configuration
-            namespace-configuration))
+            namespace-configuration
+
+            opensmtpd-configuration
+            opensmtpd-configuration?
+            opensmtpd-service-type
+            %default-opensmtpd-config-file))
 
 ;;; Commentary:
 ;;;
@@ -60,112 +61,6 @@
 ;;;
 ;;; Code:
 
-(define-condition-type &dovecot-configuration-error &error
-  dovecot-configuration-error?)
-
-(define (dovecot-error message)
-  (raise (condition (&message (message message))
-                    (&dovecot-configuration-error))))
-(define (dovecot-configuration-field-error field val)
-  (dovecot-error
-   (format #f "Invalid value for field ~a: ~s" field val)))
-(define (dovecot-configuration-missing-field kind field)
-  (dovecot-error
-   (format #f "~a configuration missing required field ~a" kind field)))
-
-(define-record-type* <configuration-field>
-  configuration-field make-configuration-field configuration-field?
-  (name configuration-field-name)
-  (type configuration-field-type)
-  (getter configuration-field-getter)
-  (predicate configuration-field-predicate)
-  (serializer configuration-field-serializer)
-  (default-value-thunk configuration-field-default-value-thunk)
-  (documentation configuration-field-documentation))
-
-(define-syntax define-configuration
-  (lambda (stx)
-    (define (id ctx part . parts)
-      (let ((part (syntax->datum part)))
-        (datum->syntax
-         ctx
-         (match parts
-           (() part)
-           (parts (symbol-append part
-                                 (syntax->datum (apply id ctx parts))))))))
-    (syntax-case stx ()
-      ((_ stem (field (field-type def) doc) ...)
-       (with-syntax (((field-getter ...)
-                      (map (lambda (field)
-                             (id #'stem #'stem #'- field))
-                           #'(field ...)))
-                     ((field-predicate ...)
-                      (map (lambda (type)
-                             (id #'stem type #'?))
-                           #'(field-type ...)))
-                     ((field-serializer ...)
-                      (map (lambda (type)
-                             (id #'stem #'serialize- type))
-                           #'(field-type ...))))
-           #`(begin
-               (define-record-type* #,(id #'stem #'< #'stem #'>)
-                 stem #,(id #'stem #'make- #'stem) #,(id #'stem #'stem #'?)
-                 (field field-getter (default def))
-                 ...)
-               (define #,(id #'stem #'stem #'-fields)
-                 (list (configuration-field
-                        (name 'field)
-                        (type 'field-type)
-                        (getter field-getter)
-                        (predicate field-predicate)
-                        (serializer field-serializer)
-                        (default-value-thunk (lambda () def))
-                        (documentation doc))
-                       ...))))))))
-
-(define (serialize-configuration config fields)
-  (for-each (lambda (field)
-              ((configuration-field-serializer field)
-               (configuration-field-name field)
-               ((configuration-field-getter field) config)))
-            fields))
-
-(define (validate-configuration config fields)
-  (for-each (lambda (field)
-              (let ((val ((configuration-field-getter field) config)))
-                (unless ((configuration-field-predicate field) val)
-                  (dovecot-configuration-field-error
-                   (configuration-field-name field) val))))
-            fields))
-
-(define (validate-package field-name package)
-  (unless (package? package)
-    (dovecot-configuration-field-error field-name package)))
-
-(define (uglify-field-name field-name)
-  (let ((str (symbol->string field-name)))
-    (string-join (string-split (if (string-suffix? "?" str)
-                                   (substring str 0 (1- (string-length str)))
-                                   str)
-                               #\-)
-                 "_")))
-
-(define (serialize-package field-name val)
-  #f)
-
-(define (serialize-field field-name val)
-  (format #t "~a=~a\n" (uglify-field-name field-name) val))
-
-(define (serialize-string field-name val)
-  (serialize-field field-name val))
-
-(define (space-separated-string-list? val)
-  (and (list? val)
-       (and-map (lambda (x)
-                  (and (string? x) (not (string-index x #\space))))
-                val)))
-(define (serialize-space-separated-string-list field-name val)
-  (serialize-field field-name (string-join val " ")))
 
 (define (comma-separated-string-list? val)
   (and (list? val)
@@ -175,21 +70,12 @@
 (define (serialize-comma-separated-string-list field-name val)
   (serialize-field field-name (string-join val ",")))
 
-(define (file-name? val)
-  (and (string? val)
-       (string-prefix? "/" val)))
-(define (serialize-file-name field-name val)
-  (serialize-string field-name val))
-
 (define (colon-separated-file-name-list? val)
   (and (list? val)
        ;; Trailing slashes not needed and not
        (and-map file-name? val)))
 (define (serialize-colon-separated-file-name-list field-name val)
   (serialize-field field-name (string-join val ":")))
-
-(define (serialize-boolean field-name val)
-  (serialize-string field-name (if val "yes" "no")))
 
 (define (non-negative-integer? val)
   (and (exact-integer? val) (not (negative? val))))
@@ -271,7 +157,7 @@
 
 (define-configuration unix-listener-configuration
   (path
-   (file-name (dovecot-configuration-missing-field 'unix-listener 'path))
+   (file-name (configuration-missing-field 'unix-listener 'path))
    "The file name on which to listen.")
   (mode
    (string "0600")
@@ -290,7 +176,7 @@
 
 (define-configuration fifo-listener-configuration
   (path
-   (file-name (dovecot-configuration-missing-field 'fifo-listener 'path))
+   (file-name (configuration-missing-field 'fifo-listener 'path))
    "The file name on which to listen.")
   (mode
    (string "0600")
@@ -309,14 +195,14 @@
 
 (define-configuration inet-listener-configuration
   (protocol
-   (string (dovecot-configuration-missing-field 'inet-listener 'protocol))
+   (string (configuration-missing-field 'inet-listener 'protocol))
    "The protocol to listen for.")
   (address
    (string "")
    "The address on which to listen, or empty for all addresses.")
   (port
    (non-negative-integer
-    (dovecot-configuration-missing-field 'inet-listener 'port))
+    (configuration-missing-field 'inet-listener 'port))
    "The port on which to listen.")
   (ssl?
    (boolean #t)
@@ -340,7 +226,7 @@
     (serialize-fifo-listener-configuration field-name val))
    ((inet-listener-configuration? val)
     (serialize-inet-listener-configuration field-name val))
-   (else (dovecot-configuration-field-error field-name val))))
+   (else (configuration-field-error field-name val))))
 (define (listener-configuration-list? val)
   (and (list? val) (and-map listener-configuration? val)))
 (define (serialize-listener-configuration-list field-name val)
@@ -350,7 +236,7 @@
 
 (define-configuration service-configuration
   (kind
-   (string (dovecot-configuration-missing-field 'service 'kind))
+   (string (configuration-missing-field 'service 'kind))
    "The service kind.  Valid values include @code{director},
 @code{imap-login}, @code{pop3-login}, @code{lmtp}, @code{imap},
 @code{pop3}, @code{auth}, @code{auth-worker}, @code{dict},
@@ -388,7 +274,7 @@ this."))
 
 (define-configuration protocol-configuration
   (name
-   (string (dovecot-configuration-missing-field 'protocol 'name))
+   (string (configuration-missing-field 'protocol 'name))
    "The name of the protocol.")
   (auth-socket-path
    (string "/var/run/dovecot/auth-userdb")
@@ -1492,8 +1378,8 @@ greyed out, instead of only later giving \"not selectable\" popup error.
    "The dovecot package.")
 
   (string
-   (string (dovecot-configuration-missing-field 'opaque-dovecot-configuration
-                                                'string))
+   (string (configuration-missing-field 'opaque-dovecot-configuration
+                                        'string))
    "The contents of the @code{dovecot.conf} to use."))
 
 (define %dovecot-accounts
@@ -1629,8 +1515,8 @@ by @code{dovecot-configuration}.  @var{config} may also be created by
   (service dovecot-service-type config))
 
 ;; A little helper to make it easier to document all those fields.
-(define (generate-documentation)
-  (define documentation
+(define (generate-dovecot-documentation)
+  (generate-documentation
     `((dovecot-configuration
        ,dovecot-configuration-fields
        (dict dict-configuration)
@@ -1655,39 +1541,80 @@ by @code{dovecot-configuration}.  @var{config} may also be created by
        ,service-configuration-fields
        (listeners unix-listener-configuration fifo-listener-configuration
                   inet-listener-configuration))
-      (protocol-configuration ,protocol-configuration-fields)))
-  (define (generate configuration-name)
-    (match (assq-ref documentation configuration-name)
-      ((fields . sub-documentation)
-       (format #t "\nAvailable @code{~a} fields are:\n\n" configuration-name)
-       (for-each
-        (lambda (f)
-          (let ((field-name (configuration-field-name f))
-                (field-type (configuration-field-type f))
-                (field-docs (string-trim-both
-                             (configuration-field-documentation f)))
-                (default (catch #t
-                           (configuration-field-default-value-thunk f)
-                           (lambda _ 'nope))))
-            (define (escape-chars str chars escape)
-              (with-output-to-string
-                (lambda ()
-                  (string-for-each (lambda (c)
-                                     (when (char-set-contains? chars c)
-                                       (display escape))
-                                     (display c))
-                                   str))))
-            (define (show-default? val)
-              (or (string? default) (number? default) (boolean? default)
-                  (and (list? val) (and-map show-default? val))))
-            (format #t "@deftypevr {@code{~a} parameter} ~a ~a\n~a\n"
-                    configuration-name field-type field-name field-docs)
-            (when (show-default? default)
-              (format #t "Defaults to @samp{~a}.\n"
-                      (escape-chars (format #f "~s" default)
-                                    (char-set #\@ #\{ #\})
-                                    #\@)))
-            (for-each generate (or (assq-ref sub-documentation field-name) '()))
-            (format #t "@end deftypevr\n\n")))
-        fields))))
-  (generate 'dovecot-configuration))
+      (protocol-configuration ,protocol-configuration-fields))
+  'dovecot-configuration))
+
+
+;;;
+;;; OpenSMTPD.
+;;;
+
+(define-record-type* <opensmtpd-configuration>
+  opensmtpd-configuration make-opensmtpd-configuration
+  opensmtpd-configuration?
+  (package     opensmtpd-configuration-package
+               (default opensmtpd))
+  (config-file opensmtpd-configuration-config-file
+               (default %default-opensmtpd-config-file)))
+
+(define %default-opensmtpd-config-file
+  (plain-file "smtpd.conf" "
+listen on lo
+accept from any for local deliver to mbox
+accept from local for any relay
+"))
+
+(define opensmtpd-shepherd-service
+  (match-lambda
+    (($ <opensmtpd-configuration> package config-file)
+     (list (shepherd-service
+            (provision '(smtpd))
+            (requirement '(loopback))
+            (documentation "Run the OpenSMTPD daemon.")
+            (start (let ((smtpd (file-append package "/sbin/smtpd")))
+                     #~(make-forkexec-constructor
+                        (list #$smtpd "-f" #$config-file)
+                        #:pid-file "/var/run/smtpd.pid")))
+            (stop #~(make-kill-destructor)))))))
+
+(define %opensmtpd-accounts
+  (list (user-group
+         (name "smtpq")
+         (system? #t))
+        (user-account
+         (name "smtpd")
+         (group "nogroup")
+         (system? #t)
+         (comment "SMTP Daemon")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))
+        (user-account
+         (name "smtpq")
+         (group "smtpq")
+         (system? #t)
+         (comment "SMTPD Queue")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define opensmtpd-activation
+  (match-lambda
+    (($ <opensmtpd-configuration> package config-file)
+     (let ((smtpd (file-append package "/sbin/smtpd")))
+       #~(begin
+           ;; Create mbox and spool directories.
+           (mkdir-p "/var/mail")
+           (mkdir-p "/var/spool/smtpd")
+           (chmod "/var/spool/smtpd" #o711))))))
+
+(define opensmtpd-service-type
+  (service-type
+   (name 'opensmtpd)
+   (extensions
+    (list (service-extension account-service-type
+                             (const %opensmtpd-accounts))
+          (service-extension activation-service-type
+                             opensmtpd-activation)
+          (service-extension profile-service-type
+                             (compose list opensmtpd-configuration-package))
+          (service-extension shepherd-root-service-type
+                             opensmtpd-shepherd-service)))))

@@ -31,6 +31,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -453,14 +454,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.6.5")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
         (base32
-         "1z27wdxs5rj5xhhqfzvzn3yg682irkxw6dcs5jj7mcf97psk8gd8"))))
+         "1vdbqsa1a31s98fxkinl052q8nnpvbxnb83qanxfpi2p6c2zdr0b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -1180,14 +1181,14 @@ after Andy Lester’s Perl module WWW::Mechanize.")
 (define-public python-simplejson
   (package
     (name "python-simplejson")
-    (version "3.8.2")
+    (version "3.10.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "simplejson" version))
       (sha256
        (base32
-        "0zylrnax8b6r0ndgni4w9c599fi6wm9vx5g6k3ddqfj3932kk16m"))))
+        "1qhwsykjlb85igb4cfl6v6gkprzbbg8gyqdd7zscc8w3x0ifcfwm"))))
     (build-system python-build-system)
     (home-page "http://simplejson.readthedocs.org/en/latest/")
     (synopsis
@@ -1426,6 +1427,31 @@ backported for previous versions of Python from 2.4 to 3.3.")
 syntax.")
     (license license:x11)))
 
+(define-public python-polib
+  (package
+    (name "python-polib")
+    (version "1.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "polib" version))
+               (sha256
+                (base32
+                  "1pq2hbm3m2q0cjdszk8mc4qa1vl3wcblh5nfyirlfnzb2pcy7zss"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/izi/polib/wiki/Home")
+    (synopsis "Manipulate, create and modify gettext files")
+    (description "Polib can manipulate any gettext format (po, pot and mo)
+files.  It can be used to create po files from scratch or to modify
+existing ones.")
+    (license license:expat)))
+
+(define-public python2-polib
+  (let ((base (package-with-python2 (strip-python2-variant python-polib))))
+    (package
+      (inherit base)
+      (arguments `(,@(package-arguments base)
+                   ;; Tests don't work with python2.
+                   #:tests? #f)))))
 
 (define-public scons
   (package
@@ -6697,14 +6723,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "16.1.0")
+    (version "16.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0prm06zz7hl6bk5s2lqzw25lq6smayfv2fgiliw2rbqxlyiavxw8"))))
+         "0vji4yrfshs15xpczbhzhasnjrwcarsqg87n98ixnyafnyxs6ybp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
@@ -9532,18 +9558,20 @@ useful for solving the Assignment Problem.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "0.10.1")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask" version))
               (sha256
                (base32
-                "0wrkavjdjndknhp8ya8j850jq7a1cli4g5a93mg8nh1xz2gq50sc"))))
+                "03kbfll4sj3v5z7r31c7bhfpi11r1np076d4p1k2kg4yzcmkywdl"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-itsdangerous" ,python-itsdangerous)
        ("python-jinja2" ,python-jinja2)
        ("python-werkzeug" ,python-werkzeug)))
+    (native-inputs
+     `(("python-click" ,python-click)))
     (home-page "https://github.com/mitsuhiko/flask/")
     (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
     (description "Flask is a micro web framework based on the Werkzeug toolkit

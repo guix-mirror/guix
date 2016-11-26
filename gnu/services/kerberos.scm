@@ -38,15 +38,17 @@
   "Return a PAM service for Kerberos authentication."
   (lambda (pam)
     (define pam-krb5-module
-      #~(string-append #$(pam-krb5-configuration-pam-krb5 config) "/lib/security/pam_krb5.so"))
+      #~(string-append #$(pam-krb5-configuration-pam-krb5 config)
+                       "/lib/security/pam_krb5.so"))
 
     (let ((pam-krb5-sufficient
            (pam-entry
             (control "sufficient")
             (module pam-krb5-module)
-            (arguments (list
-                        (format #f "minimum_uid=~a"
-                                (pam-krb5-configuration-minimum-uid config)))))))
+            (arguments
+             (list
+              (format #f "minimum_uid=~a"
+                      (pam-krb5-configuration-minimum-uid config)))))))
       (pam-service
        (inherit pam)
        (auth (cons* pam-krb5-sufficient

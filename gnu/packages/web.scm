@@ -123,14 +123,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.11.4")
+    (version "1.11.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fvb09ycxz3xnyynav6ybj6miwh9kv8jcb2vzrmvqhzn8cgiq8h6"))))
+                "1gc5phrzm2hbpvryaya6rlvasa00vjips4hv5q1rqbcfa6xsnlri"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -150,7 +150,6 @@ and its related documentation.")
                     (list (string-append "--prefix=" (assoc-ref outputs "out"))
                           "--with-http_ssl_module"
                           "--with-pcre-jit"
-                          "--with-ipv6"
                           "--with-debug"
                           ;; Even when not cross-building, we pass the
                           ;; --crossbuild option to avoid customizing for the

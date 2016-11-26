@@ -603,24 +603,24 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "131")
+    (version "1.7.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/Cyan4973/lz4/archive/"
-                           "r" version ".tar.gz"))
+                           "v" version ".tar.gz"))
        (sha256
-        (base32 "1vfg305zvj50hwscad24wan9jar6nqj14gdk2hqyr7bb9mhh0kcx"))
+        (base32 "0l39bymif15rmmfz7h6wvrr853rix4wj8wbqq8z8fm49xa7gx9fb"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (native-inputs `(("valgrind" ,valgrind)))
+    (native-inputs `(("valgrind" ,valgrind)))   ; for tests
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f ; tests fail if run in parallel
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure))))        ; no configure script
     (home-page "https://github.com/Cyan4973/lz4")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
