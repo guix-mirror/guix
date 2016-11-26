@@ -9558,18 +9558,20 @@ useful for solving the Assignment Problem.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "0.10.1")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask" version))
               (sha256
                (base32
-                "0wrkavjdjndknhp8ya8j850jq7a1cli4g5a93mg8nh1xz2gq50sc"))))
+                "03kbfll4sj3v5z7r31c7bhfpi11r1np076d4p1k2kg4yzcmkywdl"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-itsdangerous" ,python-itsdangerous)
        ("python-jinja2" ,python-jinja2)
        ("python-werkzeug" ,python-werkzeug)))
+    (native-inputs
+     `(("python-click" ,python-click)))
     (home-page "https://github.com/mitsuhiko/flask/")
     (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
     (description "Flask is a micro web framework based on the Werkzeug toolkit
