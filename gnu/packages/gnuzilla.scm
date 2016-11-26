@@ -403,6 +403,7 @@ standards.")
                       "modules/zlib"
                       "modules/libbz2"
                       "ipc/chromium/src/third_party/libevent"
+                      "media/libjpeg"
                       "media/libvpx"
                       "security/nss"
                       "gfx/cairo"
@@ -432,6 +433,7 @@ standards.")
        ("hunspell" ,hunspell)
        ("libcanberra" ,libcanberra)
        ("libgnome" ,libgnome)
+       ("libjpeg-turbo" ,libjpeg-turbo)
        ("libxft" ,libxft)
        ("libevent" ,libevent)
        ("libxinerama" ,libxinerama)
@@ -497,6 +499,7 @@ standards.")
                            ;; Avoid bundled libraries.
                            "--with-system-zlib"
                            "--with-system-bz2"
+                           "--with-system-jpeg"        ; must be libjpeg-turbo
                            "--with-system-libevent"
                            "--with-system-libvpx"
                            "--with-system-icu"
@@ -517,16 +520,6 @@ standards.")
                            ;; Network Graphics (PNG) format";
                            ;; we probably do not wish to support it.
                            ;; "--with-system-png"
-
-                           ;; Fails with "libjpeg-turbo JCS_EXTENSIONS
-                           ;; required".
-                           ;; According to
-                           ;; http://sourceforge.net/projects/libjpeg-turbo/ ,
-                           ;; "libjpeg-turbo is a derivative of libjpeg that
-                           ;; uses MMX, SSE, SSE2, and NEON SIMD instructions
-                           ;; to accelerate baseline JPEG compression/
-                           ;; decompression", so we had better not use it
-                           ;; "--with-system-jpeg"
                            )
 
        #:modules ((ice-9 ftw)
