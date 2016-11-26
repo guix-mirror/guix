@@ -10053,7 +10053,7 @@ Return a service that runs @command{mysqld}, the MySQL or MariaDB
 database server.
 
 The optional @var{config} argument specifies the configuration for
-@command{mysqld}, which should be a @code{<mysql-configuraiton>} object.
+@command{mysqld}, which should be a @code{<mysql-configuration>} object.
 @end deffn
 
 @deftp {Data Type} mysql-configuration
