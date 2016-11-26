@@ -117,7 +117,7 @@ For synthesis, the compiler generates netlists in the desired format.")
 (define-public yosys
   (package
     (name "yosys")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -125,7 +125,7 @@ For synthesis, the compiler generates netlists in the desired format.")
                               name "-" version ".tar.gz"))
               (sha256
                 (base32
-                   "02j0c0m9dfyjccynalf0aggj6gy20k7iphpkg5cn6sdirlkv8gmx"))
+                   "0vkfdn4phvkjqlnpqlr6q5f97bgjc3312vj5jf0vf85zqv88dy9x"))
               (file-name (string-append name "-" version "-checkout.tar.gz"))
               (modules '((guix build utils)))
               (snippet
