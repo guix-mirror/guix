@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,9 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -133,6 +136,47 @@ high-volume and high-reliability applications. The name BIND stands for
 1980s at the University of California at Berkeley.")
     (home-page "https://www.isc.org/downloads/bind")
     (license (list license:isc))))
+
+(define-public dnscrypt-wrapper
+  (package
+    (name "dnscrypt-wrapper")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cofyc/dnscrypt-wrapper/releases"
+                    "/download/v" version "/" name "-v" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1vhg4g0r687f51wcdn7z9w1hxapazx6vyh5rsr8wa48sljzd583g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       ;; TODO: Tests require ruby-cucumber and ruby-aruba.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'create-configure
+           (lambda _
+             (zero? (system* "make" "configure")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))
+    (inputs
+     `(("libevent" ,libevent)
+       ("libsodium" ,libsodium)))
+    (home-page "https://github.com/Cofyc/dnscrypt-wrapper")
+    (synopsis "Server-side dnscrypt proxy")
+    (description
+     "@command{dnscrypt-wrapper} is a tool to expose a name server over
+the @code{dnscrypt} protocol.  It can be used as an endpoint for the
+@command{dnscrypt-proxy} client to securely tunnel DNS requests between
+the two.")
+    (license (list license:isc
+                   ;; Bundled argparse is MIT. TODO: package and unbundle.
+                   license:expat
+                   ;; dns-protocol.h and rfc1035.{c,h} is gpl2 or gpl3 (either).
+                   license:gpl2
+                   license:gpl3))))
 
 (define-public libasr
   (package
