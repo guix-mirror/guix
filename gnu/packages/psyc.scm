@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -155,8 +155,8 @@ including psyced.")
 
 ;; This commit removes the historic bundled pcre, not released as a tarball so far.
 (define-public psyclpc
-  (let* ((commit "8bd51f2a4847860ba8b82dc79348ab37d516011e")
-         (revision "1"))
+  (let* ((commit "61cf9aa81297085e5c40170fd01221c752f8deba")
+         (revision "2"))
   (package
     (name "psyclpc")
     (version (string-append "20160821-" revision "." (string-take commit 7)))
@@ -168,7 +168,7 @@ including psyced.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "10w4kx9ygcv1lcmd7j4knvjiy8dac1y3hjfv3lhp67jpv6w3iagz"))))
+                "1viwqymbhn3cwvx0zl58rlzl5gw47zxn0ldg2nbi55ghm5zxl1z5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests/checks.
