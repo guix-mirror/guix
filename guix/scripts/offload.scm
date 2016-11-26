@@ -490,6 +490,7 @@ be read."
 (define (machine-load machine)
   "Return the load of MACHINE, divided by the number of parallel builds
 allowed on MACHINE."
+  ;; Note: This procedure is costly since it creates a new SSH session.
   (let* ((session (open-ssh-session machine))
          (pipe    (open-remote-pipe* session OPEN_READ
                                      "cat" "/proc/loadavg"))
@@ -509,17 +510,6 @@ allowed on MACHINE."
              normalized))
           (_
            +inf.0)))))           ;something's fishy about MACHINE, so avoid it
-
-(define (machine-power-factor m)
-  "Return a factor that aggregates the speed and load of M.  The higher the
-better."
-  (/ (build-machine-speed m)
-     (+ 1 (machine-load m))))
-
-(define (machine-less-loaded-or-faster? m1 m2)
-  "Return #t if M1 is either less loaded or faster than M2.  (This relation
-defines a total order on machines.)"
-  (> (machine-power-factor m1) (machine-power-factor m2)))
 
 (define (machine-lock-file machine hint)
   "Return the name of MACHINE's lock file for HINT."
@@ -548,29 +538,39 @@ defines a total order on machines.)"
   ;;   5. Release the global machine-choice lock.
 
   (with-file-lock (machine-choice-lock-file)
-    (define machines+slots
+    (define machines+slots+loads
       (filter-map (lambda (machine)
+                    ;; Call 'machine-load' from here to make sure it is called
+                    ;; only once per machine (it is expensive).
                     (let ((slot (acquire-build-slot machine)))
-                      (and slot (list machine slot))))
+                      (and slot
+                           (list machine slot (machine-load machine)))))
                   machines))
 
     (define (undecorate pred)
       (lambda (a b)
         (match a
-          ((machine1 slot1)
+          ((machine1 slot1 load1)
            (match b
-             ((machine2 slot2)
-              (pred machine1 machine2)))))))
+             ((machine2 slot2 load2)
+              (pred machine1 load1 machine2 load2)))))))
 
-    (let loop ((machines+slots
-                (sort machines+slots
+    (define (machine-less-loaded-or-faster? m1 l1 m2 l2)
+      ;; Return #t if M1 is either less loaded or faster than M2, with L1
+      ;; being the load of M1 and L2 the load of M2.  (This relation defines a
+      ;; total order on machines.)
+      (> (/ (build-machine-speed m1) (+ 1 l1))
+         (/ (build-machine-speed m2) (+ 1 l2))))
+
+    (let loop ((machines+slots+loads
+                (sort machines+slots+loads
                       (undecorate machine-less-loaded-or-faster?))))
-      (match machines+slots
-        (((best slot) others ...)
+      (match machines+slots+loads
+        (((best slot load) others ...)
          ;; Return the best machine unless it's already overloaded.
-         (if (< (machine-load best) 2.)
+         (if (< load 2.)
              (match others
-               (((machines slots) ...)
+               (((machines slots loads) ...)
                 ;; Release slots from the uninteresting machines.
                 (for-each release-build-slot slots)
 
