@@ -522,15 +522,9 @@ as the 'native-search-paths' field."
   (package (inherit gcc)
     (name "gcj")
     (version (package-version gcc))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gcc/gcc-"
-                                  version "/gcc-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0zmnm00d2a1hsd41g34bhvxzvxisa2l584q3p447bd91lfjv4ci3"))
-              (patches (cons (search-patch "gcj-arm-mode.patch")
-                             (origin-patches (package-source gcc))))))
+    (source (origin (inherit (package-source gcc))
+                    (patches (cons (search-patch "gcj-arm-mode.patch")
+                                   (origin-patches (package-source gcc))))))
     (inputs
      `(("fastjar" ,fastjar)
        ("perl" ,perl)
