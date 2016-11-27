@@ -9535,13 +9535,13 @@ way.")
 (define-public python-munkres
   (package
     (name "python-munkres")
-    (version "1.0.7")
+    (version "1.0.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "munkres" version))
               (sha256
                (base32
-                "1i6nf45i0kkzdx6k70giybsqxz4dxsjbrkrfqgjd7znfkf25sjik"))))
+                "0mbspx4zv8id4x6pim6ybsa1xh96qwpbqj7skbqz4c9c9nf1lpqq"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
