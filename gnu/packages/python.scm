@@ -9581,9 +9581,11 @@ presume or force a developer to use a particular tool or library.")
     (properties `((python2-variant . ,(delay python2-flask))))))
 
 (define-public python2-flask
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-flask)))
-    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+  (let ((base (package-with-python2 (strip-python2-variant python-flask))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-cookies
   (package
