@@ -1805,6 +1805,23 @@ and ALSA.")
 aimed at audio/musical applications.")
     (license license:gpl2+)))
 
+(define-public raul-devel
+  (let ((commit "f8bf77d3c3b77830aedafb9ebb5cdadfea7ed07a")
+        (revision "1"))
+    (package (inherit raul)
+      (name "raul")
+      (version (string-append "0.8.4-" revision "."
+                              (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://git.drobilla.net/raul.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1lby508fb0n8ks6iz959sh18fc37br39d6pbapwvbcw5nckdrxwj")))))))
+
 (define-public rubberband
   (package
     (name "rubberband")
