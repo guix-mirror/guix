@@ -2427,3 +2427,37 @@ a simulation of an analog Wah pedal with switchless activation."))))
 filters, crossovers, simple gain plugins without zipper noise, switch box
 plugins, a switch trigger, a toggle switch, and a peakmeter.")
       (license license:gpl2+))))
+
+(define-public python-discogs-client
+  (package
+    (name "python-discogs-client")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "discogs-client" version))
+              (sha256
+               (base32
+                "053ld2psh0yj3z0kg6z5bn4y3cr562m727494n0ayhgzbkjbacly"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-oauthlib" ,python-oauthlib)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/discogs/discogs_client")
+    (synopsis "Official Python client for the Discogs API")
+    (description "This is the official Discogs API client for Python. It enables
+you to query the Discogs database for information on artists, releases, labels,
+users, Marketplace listings, and more.  It also supports OAuth 1.0a
+authorization, which allows you to change user data such as profile information,
+collections and wantlists, inventory, and orders.")
+    (license license:bsd-2)
+    (properties `((python2-variant . ,(delay python2-discogs-client))))))
+
+(define-public python2-discogs-client
+  (let ((base (package-with-python2
+               (strip-python2-variant python-discogs-client))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
