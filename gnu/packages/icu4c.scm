@@ -53,10 +53,9 @@
               '("--with-data-packaging=archive")
               '()))
       #:phases
-      (alist-cons-after
-       'unpack 'chdir-to-source
-       (lambda _ (chdir "source"))
-        %standard-phases)))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'chdir-to-source
+          (lambda _ (chdir "source") #t)))))
    (synopsis "International Components for Unicode")
    (description
     "ICU is a set of C/C++ and Java libraries providing Unicode and
