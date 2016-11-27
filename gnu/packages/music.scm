@@ -1918,16 +1918,20 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.3.19")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "1vi1dh3fr554bnm8y9pjy09hblw18v6cl2jppzwlp72afri1w93b"))))
+                "14yn88xrcinpdg3ic285ar0wmwldzyjfd3ll6clmp3z3r4iqffip"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2 is supported
+     `(;; Python 3 support is still "alpha", and the upstream maintainers ask
+       ;; packagers not to use it yet:
+       ;; https://github.com/beetbox/beets/releases/tag/v1.4.1
+       ;; TODO Check this again for the next release.
+       #:python ,python-2
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
@@ -1949,7 +1953,8 @@ websites such as Libre.fm.")
        ("python2-responses" ,python2-responses)))
     ;; TODO: Install optional plugins and dependencies.
     (inputs
-     `(("python2-enum34" ,python2-enum34)
+     `(("python2-discogs-client" ,python2-discogs-client)
+       ("python2-enum34" ,python2-enum34)
        ("python2-jellyfish" ,python2-jellyfish)
        ("python2-munkres" ,python2-munkres)
        ("python2-musicbrainzngs" ,python2-musicbrainzngs)
