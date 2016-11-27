@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashenr <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,7 @@
 
 (define (patch-url seqno)
   "Return the URL of Bash patch number SEQNO."
-  (format #f "mirror://gnu/bash/bash-4.3-patches/bash43-~3,'0d" seqno))
+  (format #f "mirror://gnu/bash/bash-4.4-patches/bash44-~3,'0d" seqno))
 
 (define (bash-patch seqno sha256)
   "Return the origin of Bash patch SEQNO, with expected hash SHA256"
@@ -54,7 +55,12 @@
 (define %patch-series-4.4
   ;; This is the current patches series for 4.4, generated using
   ;; 'download-patches' below.
-  (patch-series))
+  (patch-series
+   (1 "03vzy7qwjdd5qvl3ydg99naazas2qmyd0yhnrflgjbbm64axja1y")
+   (2 "0lrwq6vyqism3yqv9s7kzaf3dsl4q5w9r5svcqz279qp7qca083h")
+   (3 "1chqww2rj6g42b8s60q5zlzy0jzp684jkpsbrbfy1vzxja8mmpsi")
+   (4 "1cy8abf96hkrjhw921ndr0shlcnc52bg45rn6xri4v5clhq0l25d")
+   (5 "0a8515kyk4zsgmvlqvlganjfr7pq0j6kzpr4d6xx02kpbdr4n7i2")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
