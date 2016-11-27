@@ -119,14 +119,14 @@ from digital cameras.")
 (define-public gphoto2
   (package
     (name "gphoto2")
-    (version "2.5.2")
+    (version "2.5.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/gphoto/" version
                                   "/gphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "16c8k1cxfypg7v5h8xi87grclw7a5ayaamn548ys3zkj727r5fcf"))))
+                "1436i2chc1xzq1bng48yx52kgqjqbaashij52sifbdslbm9jzk36"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
