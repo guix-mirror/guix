@@ -1883,13 +1883,13 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "1.5.1")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "10znd9xr1vs2ix519jkz3ccm90zciaddcdr2w2wrrh2jyy3bc59a"))))
+                "0bml11gfkxqd3i2jxkn5k2xllc4rvxjcyhs8an05gcyy1zp2bwvb"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
