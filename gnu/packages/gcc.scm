@@ -529,7 +529,7 @@ as the 'native-search-paths' field."
               (sha256
                (base32
                 "0zmnm00d2a1hsd41g34bhvxzvxisa2l584q3p447bd91lfjv4ci3"))
-              (patches (cons (search-patch "gcj-arm-mode.diff")
+              (patches (cons (search-patch "gcj-arm-mode.patch")
                              (origin-patches (package-source gcc))))))
     (inputs
      `(("fastjar" ,fastjar)
