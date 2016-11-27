@@ -9761,13 +9761,13 @@ ambiguities (forward vs. backward slashes, etc.).
 (define-public python-jellyfish
   (package
     (name "python-jellyfish")
-    (version "0.5.3")
+    (version "0.5.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "jellyfish" version))
               (sha256
                (base32
-                "12bxh8cy9xmvyrjz7aw159nd5pyvb645rkvw4r6bvm4xbvs8gd07"))))
+                "1j9rplb16ba2prjj6mip46z0w9pnhnqpwgiwi0x93vnas14rlyl8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
