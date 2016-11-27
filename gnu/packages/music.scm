@@ -2481,6 +2481,91 @@ filters, crossovers, simple gain plugins without zipper noise, switch box
 plugins, a switch trigger, a toggle switch, and a peakmeter.")
       (license license:gpl2+))))
 
+(define-public ingen
+  (let ((commit "fd147d0b888090bfb897505852c1f25dbdf77e18")
+        (revision "1"))
+    (package
+      (name "ingen")
+      (version (string-append "0.0.0-" revision "."
+                              (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.drobilla.net/ingen.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1qmg79962my82c43vyrv5sxbqci9c7gc2s9bwaaqd0fcf08xcz1z"))))
+      (build-system waf-build-system)
+      (arguments
+       `(#:tests? #f ; no "check" target
+         #:configure-flags (list "--no-webkit")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-wscript
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "wscript"
+                   ;; FIXME: Our version of lv2specgen.py does not behave as
+                   ;; expected.  Maybe this requires a development version of
+                   ;; LV2.
+                   (("lv2specgen.py") "touch ingen.lv2/ingen.html; echo")
+                   ;; Add libraries to RUNPATH.
+                   (("^(.+)target.*= 'src/ingen/ingen'," line prefix)
+                    (string-append prefix
+                                   "linkflags=[\"-Wl,-rpath="
+                                   out "/lib" "\"]," line)))
+                 (substitute* '("src/wscript"
+                                "src/server/wscript")
+                   ;; Add libraries to RUNPATH.
+                   (("bld.env.PTHREAD_LINKFLAGS" line)
+                    (string-append line
+                                   " + [\"-Wl,-rpath=" out "/lib" "\"]")))
+                 (substitute* "src/client/wscript"
+                   ;; Add libraries to RUNPATH.
+                   (("^(.+)target.*= 'ingen_client'," line prefix)
+                    (string-append prefix
+                                   "linkflags=[\"-Wl,-rpath="
+                                   out "/lib" "\"]," line)))
+                 (substitute* "src/gui/wscript"
+                   ;; Add libraries to RUNPATH.
+                   (("^(.+)target.* = 'ingen_gui.*" line prefix)
+                    (string-append prefix
+                                   "linkflags=[\"-Wl,-rpath="
+                                   out "/lib" "\"]," line))))
+               #t)))))
+      (inputs
+       `(("boost" ,boost)
+         ("python-rdflib" ,python-rdflib)
+         ("python" ,python)
+         ("jack" ,jack-1)
+         ("lv2" ,lv2)
+         ("lilv" ,lilv)
+         ("raul" ,raul-devel)
+         ("ganv" ,ganv-devel)
+         ("suil" ,suil)
+         ("serd" ,serd)
+         ("sord" ,sord)
+         ("sratom" ,sratom)
+         ("gtkmm" ,gtkmm-2)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("python-pygments" ,python-pygments)))
+      (home-page "http://drobilla.net/software/ingen")
+      (synopsis "Modular audio processing system")
+      (description "Ingen is a modular audio processing system for JACK and
+LV2 based systems.  Ingen is built around LV2 technology and a strict
+separation of engine from user interface.  The engine is controlled
+exclusively through a protocol, and can execute as a headless process, with an
+in-process GUI, or as an LV2 plugin.  The GUI can run as a program which
+communicates over a Unix or TCP/IP socket, or as an embeddable LV2 GUI which
+communicates via LV2 ports.  Any saved Ingen graph can be loaded as an LV2
+plugin on any system where Ingen is installed.  This allows users to visually
+develop custom plugins for use in other applications without programming.")
+      (license license:agpl3+))))
+
 (define-public python-discogs-client
   (package
     (name "python-discogs-client")
