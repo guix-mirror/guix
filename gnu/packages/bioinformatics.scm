@@ -50,6 +50,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
@@ -3471,6 +3472,45 @@ that a read originated from a particular isoform.")
 program for nucleotide and protein sequences.")
     ;; License information found in 'muscle -h' and usage.cpp.
     (license license:public-domain)))
+
+(define-public newick-utils
+  ;; There are no recent releases so we package from git.
+  (let ((commit "da121155a977197cab9fbb15953ca1b40b11eb87"))
+    (package
+      (name "newick-utils")
+      (version (string-append "1.6-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tjunier/newick_utils.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1hkw21rq1mwf7xp0rmbb2gqc0i6p11108m69i7mr7xcjl268pxnb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+    (inputs
+     ;; XXX: TODO: Enable Lua and Guile bindings.
+     ;; https://github.com/tjunier/newick_utils/issues/13
+     `(("libxml2" ,libxml2)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "Programs for working with newick format phylogenetic trees")
+    (description
+     "Newick-utils is a suite of utilities for processing phylogenetic trees
+in Newick format.  Functions include re-rooting, extracting subtrees,
+trimming, pruning, condensing, drawing (ASCII graphics or SVG).")
+    (home-page "https://github.com/tjunier/newick_utils")
+    (license license:bsd-3))))
 
 (define-public orfm
   (package
