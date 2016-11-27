@@ -1823,14 +1823,18 @@ streams on an individual packet/page level.")
 (define-public python-musicbrainzngs
   (package
     (name "python-musicbrainzngs")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "musicbrainzngs" version))
               (sha256
                (base32
-                "12f48llmdf5rkiqxcb70k2k1dmhm8byq0ifazvlrca8dfnmqh4r8"))))
+                "1dddarpjawryll2wss65xq3v9q8ln8dan7984l5dxzqx88d2dvr8"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The tests fail suffer from race conditions:
+       ;; https://github.com/alastair/python-musicbrainzngs/issues/211
+       #:tests? #f))
     (home-page "https://python-musicbrainzngs.readthedocs.org/")
     (synopsis "Python bindings for MusicBrainz NGS webservice")
     (description "Musicbrainzngs implements Python bindings of the MusicBrainz
