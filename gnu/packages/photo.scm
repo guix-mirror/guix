@@ -102,7 +102,8 @@ data as produced by digital cameras.")
     (inputs
      `(;; ("libjpeg-turbo" ,libjpeg-turbo)
        ("libltdl" ,libltdl)
-       ("libusb" ,libusb)))
+       ("libusb" ,libusb)
+       ("libxml2" ,libxml2)))
     (propagated-inputs
      `(;; The .pc refers to libexif.
        ("libexif" ,libexif)))
