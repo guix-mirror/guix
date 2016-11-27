@@ -451,14 +451,14 @@ Analysis and Reporting Technology) functionality.")
 (define-public udisks
   (package
     (name "udisks")
-    (version "2.1.7")
+    (version "2.1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://udisks.freedesktop.org/releases/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "119pr2zbff8vkwlhghim7d7ir24c1dil9hp4q49wm4f6pnrjpbmb"))))
+                "1nkxhnqh39c9pzvm4zfj50rgv6apqawdx09bv3sfaxrah4a6jhfs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.3) ; to build the manpages
@@ -526,7 +526,7 @@ Analysis and Reporting Technology) functionality.")
                     "/run/current-system/profile/bin"
                     "/run/current-system/profile/sbin")))
                #t))))))
-    (home-page "http://www.freedesktop.org/wiki/Software/udisks/")
+    (home-page "https://www.freedesktop.org/wiki/Software/udisks/")
     (synopsis "Disk manager service")
     (description
      "UDisks provides interfaces to enumerate and perform operations on disks
