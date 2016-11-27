@@ -131,16 +131,17 @@ including, for example, recursive directory searching.")
    (arguments
     (if (%current-target-system)
         '()
-        `(#:phases (alist-cons-before
-                    'patch-source-shebangs 'patch-test-suite
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((bash (assoc-ref inputs "bash")))
-                        (patch-makefile-SHELL "testsuite/Makefile.tests")
-                        (substitute* '("testsuite/bsd.sh"
-                                       "testsuite/bug-regex9.c")
-                          (("/bin/sh")
-                           (string-append bash "/bin/bash")))))
-                    %standard-phases))))
+        `(#:phases
+          (modify-phases %standard-phases
+            (add-before 'patch-source-shebangs 'patch-test-suite
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((bash (assoc-ref inputs "bash")))
+                  (patch-makefile-SHELL "testsuite/Makefile.tests")
+                  (substitute* '("testsuite/bsd.sh"
+                                 "testsuite/bug-regex9.c")
+                    (("/bin/sh")
+                     (string-append bash "/bin/bash")))
+                  #t)))))))
    (description
     "Sed is a non-interactive, text stream editor.  It receives a text
 input from a file or from standard input and it then applies a series of text
