@@ -9816,15 +9816,13 @@ module, adding support for Unicode strings.")
 (define-public python-rarfile
   (package
     (name "python-rarfile")
-    (version "2.7")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "rarfile" version))
               (sha256
                (base32
-                "0d8n1dlpiz7av8dmbp0vclrwl9cnxizr4f2c9xvj1h5nvn480527"))
-              ;; https://github.com/markokr/rarfile/pull/17/
-              (patches (search-patches "python-rarfile-fix-tests.patch"))))
+                "0qfad483kcbga0bn4qmcz953xjk16r52fahiy46zzn56v80y89ra"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
