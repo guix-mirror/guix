@@ -84,7 +84,7 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
       (("@GZIP@") (string-append gzip "/bin/gzip"))
       (("@BZIP2@") (string-append bzip2 "/bin/bzip2"))
       (("@XZ@") (string-append xz "/bin/xz"))
-      (("@NIX_INSTANTIATE@") ""))                 ;remnants from the past
+      (("@NIX_INSTANTIATE@") "nix-instantiate"))  ;for (guix import nix)
 
     ;; Augment the search path so Scheme code can be compiled.
     (set! %load-path (cons out %load-path))
