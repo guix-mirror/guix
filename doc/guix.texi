@@ -1242,6 +1242,56 @@ data in the right format.
 This is important because the locale data format used by different libc
 versions may be incompatible.
 
+@subsection Name Service Switch
+
+@cindex name service switch, glibc
+@cindex NSS (name service switch), glibc
+@cindex nscd (name service caching daemon)
+@cindex name service caching daemon (nscd)
+When using Guix on a foreign distro, we @emph{strongly recommend} that
+the system run the GNU C library's @dfn{name service cache daemon},
+@command{nscd}, which should be listening on the
+@file{/var/run/nscd/socket} socket.  Failing to do that, applications
+installed with Guix may fail to look up host names or user accounts, or
+may even crash.  The next paragraphs explain why.
+
+@cindex @file{nsswitch.conf}
+The GNU C library implements a @dfn{name service switch} (NSS), which is
+an extensible mechanism for ``name lookups'' in general: host name
+resolution, user accounts, and more (@pxref{Name Service Switch,,, libc,
+The GNU C Library Reference Manual}).
+
+@cindex Network information service (NIS)
+@cindex NIS (Network information service)
+Being extensible, the NSS supports @dfn{plugins}, which provide new name
+lookup implementations: for example, the @code{nss-mdns} plugin allow
+resolution of @code{.local} host names, the @code{nis} plugin allows
+user account lookup using the Network information service (NIS), and so
+on.  These extra ``lookup services'' are configured system-wide in
+@file{/etc/nsswitch.conf}, and all the programs running on the system
+honor those settings (@pxref{NSS Configuration File,,, libc, The GNU C
+Reference Manual}).
+
+When they perform a name lookup---for instance by calling the
+@code{getaddrinfo} function in C---applications first try to connect to
+the nscd; on success, nscd performs name lookups on their behalf.  If
+the nscd is not running, then they perform the name lookup by
+themselves, by loading the name lookup services into their own address
+space and running it.  These name lookup services---the
+@file{libnss_*.so} files---are @code{dlopen}'d, but they may come from
+the host system's C library, rather than from the C library the
+application is linked against (the C library coming from Guix).
+
+And this is where the problem is: if your application is linked against
+Guix's C library (say, glibc 2.24) and tries to load NSS plugins from
+another C library (say, @code{libnss_mdns.so} for glibc 2.22), it will
+likely crash or have its name lookups fail unexpectedly.
+
+Running @command{nscd} on the system, among other advantages, eliminates
+this binary incompatibility problem because those @code{libnss_*.so}
+files are loaded in the @command{nscd} process, not in applications
+themselves.
+
 @subsection X11 Fonts
 
 @cindex fonts
