@@ -40,32 +40,33 @@
   (package
    (name "ntp")
    (version "4.2.8p8")
-   (source (origin
-	    (method url-fetch)
-	    (uri (list (string-append
-                         "http://archive.ntp.org/ntp4/ntp-"
-                         (version-major+minor version)
-                         "/ntp-" version ".tar.gz")
-                       (string-append
-                         "https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-"
-                         (version-major+minor version)
-                         "/ntp-" version ".tar.gz")))
-	    (sha256
-	     (base32
-              "1vlpgd0dk2wkpmmf869sfxi8f46sfnmjgk51vl8n6vj5y2sx1cra"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                ;; Remove the bundled copy of libevent, but we must keep
-                ;; sntp/libevent/build-aux since configure.ac contains
-                ;; AC_CONFIG_AUX_DIR([sntp/libevent/build-aux])
-                (rename-file "sntp/libevent/build-aux"
-                             "sntp/libevent:build-aux")
-                (delete-file-recursively "sntp/libevent")
-                (mkdir "sntp/libevent")
-                (rename-file "sntp/libevent:build-aux"
-                             "sntp/libevent/build-aux")
-                #t))))
+   (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append
+                    "http://archive.ntp.org/ntp4/ntp-"
+                    (version-major+minor version)
+                    "/ntp-" version ".tar.gz")
+                  (string-append
+                    "https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-"
+                    (version-major+minor version)
+                    "/ntp-" version ".tar.gz")))
+       (sha256
+        (base32
+         "1vlpgd0dk2wkpmmf869sfxi8f46sfnmjgk51vl8n6vj5y2sx1cra"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove the bundled copy of libevent, but we must keep
+           ;; sntp/libevent/build-aux since configure.ac contains
+           ;; AC_CONFIG_AUX_DIR([sntp/libevent/build-aux])
+           (rename-file "sntp/libevent/build-aux"
+                        "sntp/libevent:build-aux")
+           (delete-file-recursively "sntp/libevent")
+           (mkdir "sntp/libevent")
+           (rename-file "sntp/libevent:build-aux"
+                        "sntp/libevent/build-aux")
+           #t))))
    (native-inputs `(("which" ,which)
                     ("pkg-config" ,pkg-config)))
    (inputs
