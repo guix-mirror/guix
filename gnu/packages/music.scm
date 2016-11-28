@@ -588,11 +588,12 @@ Guile.")
 
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
-  ;; system, so we take the last commit affecting the "sequencer" directory.
-  (let ((commit "1d9bd576f6bf7ea240af5f7a60260592750af0dd"))
+  ;; system, so we take the last commit.
+  (let ((commit "a22f33f486a5c6f75b60e36f66504c036c0f6f8c")
+        (revision "2"))
     (package
       (name "non-sequencer")
-      (version (string-append "1.9.5-" (string-take commit 7)))
+      (version (string-append "1.9.5-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -600,7 +601,7 @@ Guile.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0pkkw8q6d55j38xm7r4rwpdv1wy00a44h8c4wrn7vbgpq9nij46y"))
+                  "09q5x8i4f8mqnl8w6xnsq5zriy4bzdl4x2vq9n34a433rfrk84bg"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system waf-build-system)
       (arguments
