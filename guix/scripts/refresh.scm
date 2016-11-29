@@ -208,7 +208,7 @@ unavailable optional dependencies such as Guile-JSON."
                  ((guix import gem) => %gem-updater)
                  ((guix import github) => %github-updater)))
 
-(define (lookup-updater name)
+(define (lookup-updater-by-name name)
   "Return the updater called NAME."
   (or (find (lambda (updater)
               (eq? name (upstream-updater-name updater)))
@@ -225,31 +225,60 @@ unavailable optional dependencies such as Guile-JSON."
             %updaters)
   (exit 0))
 
+(define (warn-no-updater package)
+  (format (current-error-port)
+          (_ "~a: warning: no updater for ~a~%")
+          (location->string (package-location package))
+          (package-name package)))
+
 (define* (update-package store package updaters
-                         #:key (key-download 'interactive))
+                         #:key (key-download 'interactive) warn?)
   "Update the source file that defines PACKAGE with the new version.
 KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
-values: 'interactive' (default), 'always', and 'never'."
-  (let-values (((version tarball)
-                (package-update store package updaters
-                                #:key-download key-download))
-               ((loc)
-                (or (package-field-location package 'version)
-                    (package-location package))))
-    (when version
-      (if (and=> tarball file-exists?)
-          (begin
-            (format (current-error-port)
-                    (_ "~a: ~a: updating from version ~a to version ~a...~%")
-                    (location->string loc)
-                    (package-name package)
-                    (package-version package) version)
-            (let ((hash (call-with-input-file tarball
-                          port-sha256)))
-              (update-package-source package version hash)))
-          (warning (_ "~a: version ~a could not be \
+values: 'interactive' (default), 'always', and 'never'.  When WARN? is true,
+warn about packages that have no matching updater."
+  (if (lookup-updater package updaters)
+      (let-values (((version tarball)
+                    (package-update store package updaters
+                                    #:key-download key-download))
+                   ((loc)
+                    (or (package-field-location package 'version)
+                        (package-location package))))
+        (when version
+          (if (and=> tarball file-exists?)
+              (begin
+                (format (current-error-port)
+                        (_ "~a: ~a: updating from version ~a to version ~a...~%")
+                        (location->string loc)
+                        (package-name package)
+                        (package-version package) version)
+                (let ((hash (call-with-input-file tarball
+                              port-sha256)))
+                  (update-package-source package version hash)))
+              (warning (_ "~a: version ~a could not be \
 downloaded and authenticated; not updating~%")
-                   (package-name package) version)))))
+                       (package-name package) version))))
+      (when warn?
+        (warn-no-updater package))))
+
+(define* (check-for-package-update package #:key warn?)
+  "Check whether an update is available for PACKAGE and print a message.  When
+WARN? is true and no updater exists for PACKAGE, print a warning."
+  (match (package-latest-release package %updaters)
+    ((? upstream-source? source)
+     (when (version>? (upstream-source-version source)
+                      (package-version package))
+       (let ((loc (or (package-field-location package 'version)
+                      (package-location package))))
+         (format (current-error-port)
+                 (_ "~a: ~a would be upgraded from ~a to ~a~%")
+                 (location->string loc)
+                 (package-name package) (package-version package)
+                 (upstream-source-version source)))))
+    (#f
+     (when warn?
+       (warn-no-updater package)))))
+
 
 
 ;;;
@@ -312,7 +341,7 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
     ;; Return the list of updaters to use.
     (match (filter-map (match-lambda
                          (('updaters . names)
-                          (map lookup-updater names))
+                          (map lookup-updater-by-name names))
                          (_ #f))
                        opts)
       (()
@@ -360,6 +389,12 @@ update would trigger a complete rebuild."
          (updaters        (options->updaters opts))
          (list-dependent? (assoc-ref opts 'list-dependent?))
          (key-download    (assoc-ref opts 'key-download))
+
+         ;; Warn about missing updaters when a package is explicitly given on
+         ;; the command line.
+         (warn?           (or (assoc-ref opts 'argument)
+                              (assoc-ref opts 'expression)))
+
          (packages
           (match (filter-map (match-lambda
                                (('argument . spec)
@@ -397,22 +432,13 @@ update would trigger a complete rebuild."
                                 (%gpg-command))))
               (for-each
                (cut update-package store <> updaters
-                    #:key-download key-download)
+                    #:key-download key-download
+                    #:warn? warn?)
                packages)
               (with-monad %store-monad
                 (return #t))))
            (else
-            (for-each (lambda (package)
-                        (match (package-update-path package updaters)
-                          ((? upstream-source? source)
-                           (let ((loc (or (package-field-location package 'version)
-                                          (package-location package))))
-                             (format (current-error-port)
-                                     (_ "~a: ~a would be upgraded from ~a to ~a~%")
-                                     (location->string loc)
-                                     (package-name package) (package-version package)
-                                     (upstream-source-version source))))
-                          (#f #f)))
+            (for-each (cut check-for-package-update <> #:warn? warn?)
                       packages)
             (with-monad %store-monad
               (return #t)))))))))

@@ -49,8 +49,11 @@
             upstream-updater-predicate
             upstream-updater-latest
 
+            lookup-updater
+
             download-tarball
-            package-update-path
+            package-latest-release
+            package-latest-release*
             package-update
             update-package-source))
 
@@ -127,17 +130,24 @@ them matches."
           (and (pred package) latest)))
        updaters))
 
-(define (package-update-path package updaters)
+(define (package-latest-release package updaters)
   "Return an upstream source to update PACKAGE, a <package> object, or #f if
-no update is needed or known."
+none of UPDATERS matches PACKAGE.  It is the caller's responsibility to ensure
+that the returned source is newer than the current one."
   (match (lookup-updater package updaters)
     ((? procedure? latest-release)
-     (match (latest-release package)
-       ((and source ($ <upstream-source> name version))
-        (and (version>? version (package-version package))
-             source))
-       (_ #f)))
-    (#f #f)))
+     (latest-release package))
+    (_ #f)))
+
+(define (package-latest-release* package updaters)
+  "Like 'package-latest-release', but ensure that the return source is newer
+than that of PACKAGE."
+  (match (package-latest-release package updaters)
+    ((and source ($ <upstream-source> name version))
+     (and (version>? version (package-version package))
+          source))
+    (_
+     #f)))
 
 (define* (download-tarball store url signature-url
                            #:key (key-download 'interactive))
@@ -179,7 +189,7 @@ values: the item from LST1 and the item from LST2 that match PRED."
 PACKAGE, or #f and #f when PACKAGE is up-to-date.  KEY-DOWNLOAD specifies a
 download policy for missing OpenPGP keys; allowed values: 'always', 'never',
 and 'interactive' (default)."
-  (match (package-update-path package updaters)
+  (match (package-latest-release* package updaters)
     (($ <upstream-source> _ version urls signature-urls)
      (let*-values (((name)
                     (package-name package))

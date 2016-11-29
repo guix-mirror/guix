@@ -5250,10 +5250,19 @@ gnu/packages/gettext.scm:29:13: gettext would be upgraded from 0.18.1.1 to 0.18.
 gnu/packages/glib.scm:77:12: glib would be upgraded from 2.34.3 to 2.37.0
 @end example
 
-It does so by browsing the FTP directory of each package and determining
-the highest version number of the source tarballs therein.  The command
+Alternately, one can specify packages to consider, in which case a
+warning is emitted for packages that lack an updater:
+
+@example
+$ guix refresh coreutils guile guile-ssh
+gnu/packages/ssh.scm:205:2: warning: no updater for guile-ssh
+gnu/packages/guile.scm:136:12: guile would be upgraded from 2.0.12 to 2.0.13
+@end example
+
+@command{guix refresh} browses the upstream repository of each package and determines
+the highest version number of the releases therein.  The command
 knows how to update specific types of packages: GNU packages, ELPA
-packages, etc.---see the documentation for @option{--type} below.  The
+packages, etc.---see the documentation for @option{--type} below.  There
 are many packages, though, for which it lacks a method to determine
 whether a new upstream release is available.  However, the mechanism is
 extensible, so feel free to get in touch with us to add a new method!
@@ -5293,7 +5302,7 @@ usually run from a checkout of the Guix source tree (@pxref{Running
 Guix Before It Is Installed}):
 
 @example
-$ ./pre-inst-env guix refresh -s non-core
+$ ./pre-inst-env guix refresh -s non-core -u
 @end example
 
 @xref{Defining Packages}, for more information on package definitions.
@@ -5359,7 +5368,7 @@ In addition, @command{guix refresh} can be passed one or more package
 names, as in this example:
 
 @example
-$ ./pre-inst-env guix refresh -u emacs idutils gcc-4.8.4
+$ ./pre-inst-env guix refresh -u emacs idutils gcc@@4.8
 @end example
 
 @noindent
