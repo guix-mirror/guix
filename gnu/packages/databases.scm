@@ -636,7 +636,7 @@ extremely small.")
 (define-public perl-dbix-class
   (package
     (name "perl-dbix-class")
-    (version "0.082810")
+    (version "0.082840")
     (source
      (origin
        (method url-fetch)
@@ -644,7 +644,7 @@ extremely small.")
                            "DBIx-Class-" version ".tar.gz"))
        (sha256
         (base32
-         "1zlsswk8j2k024gwhdhia8ksrmb8065n98dahkk8c0r69wv85n04"))))
+         "1vw1f756g8m5hq11nqf5dk2cw2y4mqq91ca5p75fn5g3fp8syja0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
