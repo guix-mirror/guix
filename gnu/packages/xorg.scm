@@ -4884,7 +4884,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.7")
+    (version "1.7.8")
     (source
       (origin
         (method url-fetch)
@@ -4894,7 +4894,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0c70n4aq0ba628wr88ih4740nci9d9f6y3v96sx376vvlm7q6vwr"))))
+            "1fr7mi4nbcxsa88qin9g2ipmzh595ydxy9qnabzl270laf6zmwnq"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)
