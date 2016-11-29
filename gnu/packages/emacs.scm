@@ -897,14 +897,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.1")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ay6631p3dr6xnhkm7skwn0gp317r1mxbip28m126w4zqf05cbh3"))
+                "1xa9y64g5z8gfnxk1c2rf3plfjhqn4r6j8dpiygnfs6w4giysn22"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -974,22 +974,19 @@ provides an optional IDE-like error list.")
                     (string-append "\"" mp3info "/bin/mp3info\"")))))))
          (add-before 'install 'pre-install
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The 'install' rule expects the target directory to exist.
+             ;; The 'install' rule expects the target directories to exist.
              (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
                     (man1 (string-append out "/share/man/man1")))
+               (mkdir-p bin)
                (mkdir-p man1)
                #t)))
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (target (string-append
-                             out "/bin/emms-print-metadata")))
+             (let ((out (assoc-ref outputs "out")))
                (symlink "emms-auto.el"
                         (string-append out "/share/emacs/site-lisp/"
-                                       "emms-autoloads.el"))
-               (mkdir-p (dirname target))
-               (copy-file "src/emms-print-metadata" target)
-               (chmod target #o555)))))
+                                       "emms-autoloads.el"))))))
        #:tests? #f))
     (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
