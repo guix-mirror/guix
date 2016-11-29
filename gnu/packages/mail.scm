@@ -1031,7 +1031,7 @@ write simple, representation-independent mail handling code.")
 (define-public perl-email-address
   (package
     (name "perl-email-address")
-    (version "1.907")
+    (version "1.908")
     (source
      (origin
        (method url-fetch)
@@ -1039,7 +1039,7 @@ write simple, representation-independent mail handling code.")
                            "Email-Address-" version ".tar.gz"))
        (sha256
         (base32
-         "1ai4r149pzjv9dc2vddir8zylj0z1pii93rm4g591lx7avim71hx"))))
+         "0i6ljdvpy279hpbqf6lgv4figr376rb2sh4yphj86xkdzsyn1y75"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Email-Address")
     (synopsis "Email address parsing and creation")
