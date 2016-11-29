@@ -1,5 +1,5 @@
 Fixes this buffer overflow:
-https://github.com/libarchive/libarchive/commit/e37b620fe8f14535d737e89a4dcabaed4517bf1a
+https://github.com/libarchive/libarchive/issues/767
 
 Patch copied from upstream source repository:
 https://github.com/libarchive/libarchive/commit/e37b620fe8f14535d737e89a4dcabaed4517bf1a
