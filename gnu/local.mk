@@ -647,10 +647,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
-  %D%/packages/patches/libarchive-7zip-heap-overflow.patch	\
-  %D%/packages/patches/libarchive-fix-symlink-check.patch	\
-  %D%/packages/patches/libarchive-fix-filesystem-attacks.patch	\
-  %D%/packages/patches/libarchive-safe_fprintf-buffer-overflow.patch	\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libcmis-fix-test-onedrive.patch		\
