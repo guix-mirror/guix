@@ -184,8 +184,7 @@ and many other languages.")
              #t)))))
     (native-inputs
      `(("mesa" ,mesa) ; for glcanvas
-       ("pkg-config" ,pkg-config)
-       ("python2-setuptools" ,python2-setuptools)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+-2) ; for wxPython/src/helpers.cpp
        ("wxwidgets" ,wxwidgets-gtk2)))
