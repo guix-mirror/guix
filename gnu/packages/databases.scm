@@ -715,7 +715,7 @@ built-in caching support.")
 (define-public perl-dbix-class-introspectablem2m
   (package
     (name "perl-dbix-class-introspectablem2m")
-    (version "0.001001")
+    (version "0.001002")
     (source
      (origin
        (method url-fetch)
@@ -723,7 +723,7 @@ built-in caching support.")
                            "DBIx-Class-IntrospectableM2M-" version ".tar.gz"))
        (sha256
         (base32
-         "0p9zx1yc1f6jg583l206wilsni2v8mlngc2vf2q8yn10pmy4y6wm"))))
+         "1w47rh2241iy5x3a9bqsyd5kdp9sk43dksr99frzv4qn4jsazfn6"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
