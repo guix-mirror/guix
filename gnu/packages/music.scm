@@ -2471,13 +2471,7 @@ you to query the Discogs database for information on artists, releases, labels,
 users, Marketplace listings, and more.  It also supports OAuth 1.0a
 authorization, which allows you to change user data such as profile information,
 collections and wantlists, inventory, and orders.")
-    (license license:bsd-2)
-    (properties `((python2-variant . ,(delay python2-discogs-client))))))
+    (license license:bsd-2)))
 
 (define-public python2-discogs-client
-  (let ((base (package-with-python2
-               (strip-python2-variant python-discogs-client))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs base))))))
+  (package-with-python2 python-discogs-client))
