@@ -690,7 +690,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
 (define-public perl-dbix-class-cursor-cached
   (package
     (name "perl-dbix-class-cursor-cached")
-    (version "1.001002")
+    (version "1.001004")
     (source
      (origin
        (method url-fetch)
@@ -698,7 +698,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
                            "DBIx-Class-Cursor-Cached-" version ".tar.gz"))
        (sha256
         (base32
-         "19r7jr6pknxiirrybq0cd0lnr76xiw05arnfqgk9nrhp6c7vvil0"))))
+         "09b2jahn2x12qm4f7qm1jzsxbz7qn1czp6a3fnl5l2i3l4r5421p"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cache-cache" ,perl-cache-cache)
