@@ -1428,6 +1428,7 @@ using a system-independent interface.")
                (base32
                 "1rnk8i8dlshzx16n2qxcsqcs7kywgyazzyzw2vy4vp2gsm9vs9ml"))))
     (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; no tests included
     (inputs
      `(("lilypond" ,lilypond)
        ("portmidi" ,portmidi)
