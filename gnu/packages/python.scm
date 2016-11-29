@@ -6771,26 +6771,21 @@ library.")
 (define-public python-pip
   (package
     (name "python-pip")
-    (version "8.0.2")
+    (version "9.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pip" version))
        (sha256
         (base32
-         "08cm8d4228fj0qnrysy3qv1a6022zr3dcs25amd14lgxil6vvx26"))))
+         "03clr9c1dih5n9c00c592zzvf6r1ffimywkaq9agcqdllzhl7wh9"))))
     (build-system python-build-system)
-    (native-inputs
-      `(;; Tests
-        ("python-virtualenv" ,python-virtualenv)
-        ("python-mock" ,python-mock)
-        ("python-pytest" ,python-pytest)
-        ("python-scripttest" ,python-scripttest)))
+    (arguments
+     '(#:tests? #f))          ; there are no tests in the pypi archive.
     (home-page "https://pip.pypa.io/")
-    (synopsis
-      "Package manager for Python software")
+    (synopsis "Package manager for Python software")
     (description
-      "Pip is a package manager for Python software, that finds packages on the
+     "Pip is a package manager for Python software, that finds packages on the
 Python Package Index (PyPI).")
     (license license:expat)))
 
