@@ -1030,7 +1030,8 @@ which are used in DBus communication.")
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Oxygen provides the standard icon theme for the KDE desktop")
     (description "Oxygen icon theme for the KDE desktop")
-    (license license:lgpl3+)))
+    (license license:lgpl3+)
+    (properties '((upstream-name . "oxygen-icons5")))))
 
 (define-public solid
   (package
