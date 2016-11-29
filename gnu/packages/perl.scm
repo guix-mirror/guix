@@ -4756,7 +4756,7 @@ Perl (back to 5.6.0).")
 (define-public perl-namespace-autoclean
   (package
     (name "perl-namespace-autoclean")
-    (version "0.24")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
@@ -4764,7 +4764,7 @@ Perl (back to 5.6.0).")
                            "namespace-autoclean-" version ".tar.gz"))
        (sha256
         (base32
-         "0msggbg2zbixxjq1fda19h0yygavxndfzc4j4pq11nfghmawjsb0"))))
+         "0fbcq99yaix1aa99jl3v811dbw24il9jxnh5i2i23mddh4b0lhfd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
