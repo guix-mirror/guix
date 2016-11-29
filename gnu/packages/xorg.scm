@@ -4886,7 +4886,7 @@ an X Window System display.")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.5.1")
+    (version "1.5.2")
     (source
       (origin
         (method url-fetch)
@@ -4896,7 +4896,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1630v3sfvwwlimb2ja10c84ql6v1mw9bdfhvan7pbybkgi99h25p"))))
+            "0w8d07bkmjiarkx09579bl8zsq903mn8javc7qpi0ix4ink5x502"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)
