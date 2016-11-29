@@ -946,7 +946,7 @@ write accessor methods for your objects that perform standard tasks.")
 (define-public perl-class-method-modifiers
   (package
     (name "perl-class-method-modifiers")
-    (version "2.11")
+    (version "2.12")
     (source
      (origin
        (method url-fetch)
@@ -954,7 +954,7 @@ write accessor methods for your objects that perform standard tasks.")
                            "Class-Method-Modifiers-" version ".tar.gz"))
        (sha256
         (base32
-         "14nk2gin9cjwpysakli7f0gs4q1w220sn73xzv35rhlspngrggyy"))))
+         "1j3swa212wh14dq5r6zjarm2lzpx6mrdfplpjy65px8b09ri0k74"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
