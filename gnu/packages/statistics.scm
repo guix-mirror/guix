@@ -1394,13 +1394,7 @@ and fast file reading.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "nosetests" "-v"))))
-         (add-after 'unpack 'prevent-generation-of-egg-archive
-          (lambda _
-            (substitute* "setup.py"
-              (("from setuptools import setup")
-               "from distutils.core import setup"))
-            #t)))))
+         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
@@ -1416,15 +1410,10 @@ building design matrices.")
     ;; The majority of the code is distributed under BSD-2.  The module
     ;; patsy.compat contains code derived from the Python standard library,
     ;; and is covered by the PSFL.
-    (license (list license:bsd-2 license:psfl))
-    (properties `((python2-variant . ,(delay python2-patsy))))))
+    (license (list license:bsd-2 license:psfl))))
 
 (define-public python2-patsy
-  (let ((patsy (package-with-python2 (strip-python2-variant python-patsy))))
-    (package (inherit patsy)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs patsy))))))
+  (package-with-python2 python-patsy))
 
 (define-public python-statsmodels
   (package
@@ -1455,11 +1444,13 @@ building design matrices.")
                               line)))
             #t))
          (add-after 'install 'check
-          (lambda _
-            (with-directory-excursion "/tmp"
-              (zero? (system* "nosetests"
-                              "--stop"
-                              "-v" "statsmodels"))))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make installed package available for running the tests
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "/tmp"
+               (zero? (system* "nosetests"
+                               "--stop"
+                               "-v" "statsmodels"))))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
@@ -1487,10 +1478,7 @@ inference for statistical models.")
          ("python2-scipy" ,python2-scipy)
          ("python2-pandas" ,python2-pandas)
          ("python2-patsy" ,python2-patsy)
-         ("python2-matplotlib" ,python2-matplotlib)))
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs stats))))))
+         ("python2-matplotlib" ,python2-matplotlib))))))
 
 (define-public r-coda
   (package

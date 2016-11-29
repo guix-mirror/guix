@@ -1376,8 +1376,6 @@ maintained.")
               (let* ((out (assoc-ref outputs "out"))
                      (doc (string-append out "/share/doc/khard")))
                 (copy-recursively "misc/khard" doc)))))))
-    (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)))
     (propagated-inputs
      `(("python2-vobject" ,python2-vobject)
        ("python2-pyyaml" ,python2-pyyaml)
@@ -1748,7 +1746,7 @@ for OpenSMTPD to extend its functionality.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Requires mailman running
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)
        ("python-httplib2" ,python-httplib2)))
     (home-page "https://launchpad.net/mailman.client")
@@ -1756,12 +1754,7 @@ for OpenSMTPD to extend its functionality.")
     (description
      "The mailmanclient library provides official Python bindings for
 the GNU Mailman 3 REST API.")
-    (properties `((python2-variant . ,(delay python2-mailmanclient))))
     (license lgpl3+)))
 
 (define-public python2-mailmanclient
-  (let ((base (package-with-python2
-               (strip-python2-variant python-mailmanclient))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools))))))
+  (package-with-python2 python-mailmanclient))

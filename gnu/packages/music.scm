@@ -1113,7 +1113,6 @@ Laurens Hammond and Don Leslie.")
      `(("rapicorn" ,rapicorn)
        ("guile" ,guile-1.8)
        ("python" ,python-2)
-       ("cython" ,python2-cython)
        ("libgnomecanvas" ,libgnomecanvas)
        ("libogg" ,libogg)
        ("libmad" ,libmad)
@@ -1124,6 +1123,7 @@ Laurens Hammond and Don Leslie.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")
+       ("cython" ,python2-cython)
        ("perl" ,perl)
        ("perl-xml-parser" ,perl-xml-parser)))
     (home-page "https://testbit.eu/wiki/Beast_Home")
@@ -1405,10 +1405,10 @@ using a system-independent interface.")
              #t)))))
     (inputs
      `(("portmidi" ,portmidi)
-       ("alsa-lib" ,alsa-lib)
-       ("python-cython" ,python-cython)))
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("python-cython" ,python-cython)
+       ("unzip" ,unzip)))
     (home-page "http://portmedia.sourceforge.net/portmidi/")
     (synopsis "Python bindings to PortMidi")
     (description
@@ -1884,7 +1884,6 @@ MusicBrainz database.")
      `(;; Python 3 is not supported:
        ;; https://github.com/echonest/pyechonest/issues/42
        #:python ,python-2))
-    (native-inputs `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://github.com/echonest/pyechonest")
     (synopsis "Python interface to The Echo Nest APIs")
     (description "Pyechonest is a Python library for the Echo Nest API.  With
@@ -1927,16 +1926,10 @@ detailed track info including timbre, pitch, rhythm and loudness information.
     (synopsis "Python interface to Last.fm and Libre.fm")
     (description "A Python interface to Last.fm and other API-compatible
 websites such as Libre.fm.")
-    (license license:asl2.0)
-    (properties `((python2-variant . ,(delay python2-pylast))))))
+    (license license:asl2.0)))
 
 (define-public python2-pylast
-  (let ((pylast (package-with-python2
-                 (strip-python2-variant python-pylast))))
-    (package (inherit pylast)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs pylast))))))
+  (package-with-python2 python-pylast))
 
 (define-public beets
   (package
@@ -1964,7 +1957,6 @@ websites such as Libre.fm.")
     (native-inputs
      `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
        ("python2-flask" ,python2-flask)
-       ("python2-setuptools" ,python2-setuptools)
        ("python2-mock" ,python2-mock)
        ("python2-mpd2" ,python2-mpd2)
        ("python2-nose" ,python2-nose)
@@ -2479,13 +2471,7 @@ you to query the Discogs database for information on artists, releases, labels,
 users, Marketplace listings, and more.  It also supports OAuth 1.0a
 authorization, which allows you to change user data such as profile information,
 collections and wantlists, inventory, and orders.")
-    (license license:bsd-2)
-    (properties `((python2-variant . ,(delay python2-discogs-client))))))
+    (license license:bsd-2)))
 
 (define-public python2-discogs-client
-  (let ((base (package-with-python2
-               (strip-python2-variant python-discogs-client))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs base))))))
+  (package-with-python2 python-discogs-client))

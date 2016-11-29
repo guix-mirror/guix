@@ -250,8 +250,7 @@ random passwords that pass the checks.")
     (native-inputs
      `(("help2man" ,help2man)))
     (inputs
-     `(("python-setuptools" ,python2-setuptools)
-       ("python2-xdo" ,python2-xdo)
+     `(("python2-xdo" ,python2-xdo)
        ("python2-pygpgme" ,python2-pygpgme)
        ("python2-pygtk" ,python2-pygtk)))
     (propagated-inputs
@@ -362,7 +361,7 @@ winner of the 2015 Password Hashing Competition.")
     (native-inputs
      `(("python-pycparser" ,python-pycparser)
        ("python-pytest" ,python-pytest)))
-    (inputs
+    (propagated-inputs
      `(("python-cffi" ,python-cffi)
        ("python-six" ,python-six)))
     (home-page "https://github.com/pyca/bcrypt/")
@@ -376,8 +375,4 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
     (license license:asl2.0)))
 
 (define-public python2-bcrypt
-  (let ((bcrypt (package-with-python2 python-bcrypt)))
-    (package (inherit bcrypt)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs bcrypt))))))
+  (package-with-python2 python-bcrypt))

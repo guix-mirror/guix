@@ -649,11 +649,6 @@ using a stylus.")
                (base32
                 "0rz2pg04wnzjjm2f5a8ik9v8s54mv4xrjhv5liqjijqv6awh12gl"))))
     (build-system python-build-system)
-    (arguments
-     ;; Prevent creation of the egg. Without this flag, various artifacts
-     ;; from the build inputs end up in the final python3 output. It also
-     ;; works around https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765 .
-     `(#:configure-flags '("--single-version-externally-managed" "--root=/")))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
     (home-page "http://www.reportlab.com")
@@ -661,14 +656,10 @@ using a stylus.")
     (description "This is the ReportLab PDF Toolkit.  It allows rapid creation
 of rich PDF documents, and also creation of charts in a variety of bitmap and
 vector formats.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-reportlab))))))
+    (license license:bsd-3)))
 
 (define-public python2-reportlab
-  (package
-    (inherit (package-with-python2
-              (strip-python2-variant python-reportlab)))
-    (native-inputs `(("python2-pip" ,python2-pip)))))
+  (package-with-python2 python-reportlab))
 
 (define-public impressive
   (package
@@ -884,8 +875,6 @@ python-pypdf2 instead.")
     (inputs
      ;; pdfposter 0.6.0 still uses the old pyPdf
      `(("python2-pypdf" ,python2-pypdf)))
-    (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://pythonhosted.org/pdftools.pdfposter/")
     (synopsis "Scale and tile PDF images/pages to print on multiple pages")
     (description "@command{pdfposter} can be used to create a large poster by
