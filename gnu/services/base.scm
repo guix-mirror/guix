@@ -252,6 +252,8 @@ FILE-SYSTEM."
         (device  (file-system-device file-system))
         (type    (file-system-type file-system))
         (title   (file-system-title file-system))
+        (flags   (file-system-flags file-system))
+        (options (file-system-options file-system))
         (check?  (file-system-check? file-system))
         (create? (file-system-create-mount-point? file-system))
         (dependencies (file-system-dependencies file-system)))
@@ -264,34 +266,12 @@ FILE-SYSTEM."
                            ,@(map dependency->shepherd-service-name dependencies)))
             (documentation "Check, mount, and unmount the given file system.")
             (start #~(lambda args
-                       ;; FIXME: Use or factorize with 'mount-file-system'.
-                       (let ((device (canonicalize-device-spec #$device '#$title))
-                             (flags  #$(mount-flags->bit-mask
-                                        (file-system-flags file-system))))
-                         #$(if create?
-                               #~(mkdir-p #$target)
-                               #~#t)
-                         #$(if check?
-                               #~(begin
-                                   ;; Make sure fsck.ext2 & co. can be found.
-                                   (setenv "PATH"
-                                           (string-append
-                                            #$e2fsprogs "/sbin:"
-                                            "/run/current-system/profile/sbin:"
-                                            (getenv "PATH")))
-                                   (check-file-system device #$type))
-                               #~#t)
-
-                         (mount device #$target #$type flags
-                                #$(file-system-options file-system))
-
-                         ;; For read-only bind mounts, an extra remount is
-                         ;; needed, as per <http://lwn.net/Articles/281157/>,
-                         ;; which still applies to Linux 4.0.
-                         (when (and (= MS_BIND (logand flags MS_BIND))
-                                    (= MS_RDONLY (logand flags MS_RDONLY)))
-                           (mount device #$target #$type
-                                  (logior MS_BIND MS_REMOUNT MS_RDONLY))))
+		       #$(if create?
+                             #~(mkdir-p #$target)
+                             #t)
+		       (mount-file-system
+			`(#$device #$title #$target #$type #$flags #$options
+				   #$check?) #:root "/")
                        #t))
             (stop #~(lambda args
                       ;; Normally there are no processes left at this point, so
@@ -305,7 +285,7 @@ FILE-SYSTEM."
 
             ;; We need an additional module.
             (modules `(((gnu build file-systems)
-                        #:select (check-file-system canonicalize-device-spec))
+                        #:select (mount-file-system))
                        ,@%default-modules)))))))
 
 (define file-system-service-type
