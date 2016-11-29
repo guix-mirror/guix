@@ -933,7 +933,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.25")
+    (version "2.2.26.0")
     (source
      (origin
        (method url-fetch)
@@ -941,7 +941,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "0rwn5wc5b8j9fzqcjggdgpzmb77myrf4ra294z1gg5v3hhng7nfq"))))
+                "01bgj8b2whi35ghbxb19nmr3xvx2zgjzxxw1crgx2v73kprs34pn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -963,6 +963,15 @@ facilities for checking incoming mail.")
                                     "doc/example-config/Makefile.in")
                        (("pkgsysconfdir = .*")
                         "pkgsysconfdir = /tmp/etc"))
+                     #t))
+                  (add-after
+                   'unpack 'patch-other-shebangs
+                   (lambda _
+                     (substitute*
+                       "src/lib-program-client/test-program-client-local.c"
+                       (("/bin/echo") (which "echo"))
+                       (("/bin/cat") (which "cat"))
+                       (("/bin/false") (which "false")))
                      #t)))))
     (home-page "http://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
