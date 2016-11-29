@@ -1070,7 +1070,7 @@ objects found.  Alternatively you may construct objects manually.")
 (define-public perl-email-messageid
   (package
     (name "perl-email-messageid")
-    (version "1.405")
+    (version "1.406")
     (source
      (origin
        (method url-fetch)
@@ -1078,7 +1078,7 @@ objects found.  Alternatively you may construct objects manually.")
                            "Email-MessageID-" version ".tar.gz"))
        (sha256
         (base32
-         "09216naz21x99ff33wdm3j3zq1zhdbxhrsmx8bvavjrw3gjsvrq3"))))
+         "1f22sdnfq169qw1l0lg7y74pmiam7j9v95bggjnf3q4mygdmshpc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Email-MessageID")
     (synopsis "Generate world unique message-ids")
