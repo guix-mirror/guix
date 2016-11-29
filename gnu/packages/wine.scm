@@ -118,18 +118,18 @@
        (list "SHELL=bash")
 
        #:phases
-       (alist-cons-after
-        'configure 'patch-dlopen-paths
-        ;; Hardcode dlopened sonames to absolute paths.
-        (lambda _
-          (let* ((library-path (search-path-as-string->list
-                                (getenv "LIBRARY_PATH")))
-                 (find-so (lambda (soname)
-                            (search-path library-path soname))))
-            (substitute* "include/config.h"
-              (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
-               (format #f "~a\"~a\"" defso (find-so soname))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-dlopen-paths
+           ;; Hardcode dlopened sonames to absolute paths.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path library-path soname))))
+               (substitute* "include/config.h"
+                 (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
+                  (format #f "~a\"~a\"" defso (find-so soname))))
+               #t))))))
     (home-page "https://www.winehq.org/")
     (synopsis "Implementation of the Windows API")
     (description
