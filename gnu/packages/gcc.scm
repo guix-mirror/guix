@@ -522,9 +522,6 @@ as the 'native-search-paths' field."
   (package (inherit gcc)
     (name "gcj")
     (version (package-version gcc))
-    (source (origin (inherit (package-source gcc))
-                    (patches (cons (search-patch "gcj-arm-mode.patch")
-                                   (origin-patches (package-source gcc))))))
     (inputs
      `(("fastjar" ,fastjar)
        ("perl" ,perl)
@@ -533,6 +530,15 @@ as the 'native-search-paths' field."
        ,@(package-inputs gcc)))
     (native-inputs
      `(("dejagnu" ,dejagnu)
+       ,@(if (string-prefix? "armhf" (or (%current-system)
+                                         (%current-target-system)))
+             `(("arm-patch" ,(origin
+                               (method url-fetch)
+                               (uri (search-patch "gcj-arm-mode.patch"))
+                               (sha256
+                                (base32
+                                 "1z15xs5yx6qinnb572swzxrn9f668sw7ga5280q3gznj1jyrynfn")))))
+             '())
        ,@(package-native-inputs gcc)))
     (native-search-paths %generic-search-paths)
 
@@ -560,6 +566,14 @@ as the 'native-search-paths' field."
                        ,flags))))
        ((#:phases phases)
         `(modify-phases ,phases
+           ;; Conditionally add phase to apply patch
+           ,@(if (string-prefix? "armhf" (or (%current-system)
+                                             (%current-target-system)))
+                 `((add-after 'unpack 'apply-arm-patch
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (zero? (system* "patch" "-p1"
+                                       "-i" (assoc-ref inputs "arm-patch"))))))
+                 '())
            (add-after
             'unpack 'add-lib-output-to-rpath
             (lambda _
