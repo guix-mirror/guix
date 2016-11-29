@@ -187,6 +187,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/icu4c.scm			\
   %D%/packages/idutils.scm			\
   %D%/packages/image.scm			\
+  %D%/packages/image-viewers.scm	\
   %D%/packages/imagemagick.scm			\
   %D%/packages/indent.scm			\
   %D%/packages/inklingreader.scm		\
@@ -294,6 +295,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pdf.scm				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
+  %D%/packages/perl-web.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/php.scm				\
   %D%/packages/pkg-config.scm			\
@@ -305,7 +307,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pumpio.scm			\
   %D%/packages/pretty-print.scm			\
   %D%/packages/protobuf.scm			\
-  %D%/packages/psyc.scm                         \
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/qemu.scm				\
@@ -400,6 +401,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/admin.scm			\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
+  %D%/services/configuration.scm		\
   %D%/services/cups.scm				\
   %D%/services/databases.scm			\
   %D%/services/dbus.scm				\
@@ -447,6 +449,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests.scm					\
   %D%/tests/base.scm				\
   %D%/tests/install.scm				\
+  %D%/tests/mail.scm				\
   %D%/tests/ssh.scm
 
 
@@ -486,6 +489,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/binutils-mips-bash-bug.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
+  %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-drop-unrar.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
@@ -506,6 +510,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cssc-missing-include.patch               \
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cursynth-wave-rand.patch			\
+  %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/devil-CVE-2009-3994.patch		\
   %D%/packages/patches/devil-fix-libpng.patch			\
@@ -551,6 +556,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
   %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
+  %D%/packages/patches/gcj-arm-mode.patch			\
   %D%/packages/patches/gd-CVE-2016-7568.patch			\
   %D%/packages/patches/gd-CVE-2016-8670.patch			\
   %D%/packages/patches/gd-fix-chunk-size-on-boundaries.patch	\
@@ -585,6 +591,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-gets-undeclared.patch		\
   %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
+  %D%/packages/patches/gst-plugins-good-fix-crashes.patch	\
+  %D%/packages/patches/gst-plugins-good-fix-invalid-read.patch	\
+  %D%/packages/patches/gst-plugins-good-fix-signedness.patch	\
+  %D%/packages/patches/gst-plugins-good-flic-bounds-check.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
@@ -820,7 +830,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
-  %D%/packages/patches/python-rarfile-fix-tests.patch		\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\

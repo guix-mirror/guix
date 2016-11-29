@@ -234,7 +234,7 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "0.9.6.1")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -242,7 +242,7 @@ many input formats and provides a customisable Vi-style user interface.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0vxnaqfmcv7hhk0cj67imdcqngspnck7f0wfmvhfgfqa7x1xznll"))))
+                "1dy2jfkdw0nchars4xi4isrz66fqn53a9qk13bqza7lhmsg3s3qy"))))
     (build-system cmake-build-system)
     (arguments
     `(#:test-target "tests"))
@@ -588,11 +588,12 @@ Guile.")
 
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
-  ;; system, so we take the last commit affecting the "sequencer" directory.
-  (let ((commit "1d9bd576f6bf7ea240af5f7a60260592750af0dd"))
+  ;; system, so we take the last commit.
+  (let ((commit "a22f33f486a5c6f75b60e36f66504c036c0f6f8c")
+        (revision "2"))
     (package
       (name "non-sequencer")
-      (version (string-append "1.9.5-" (string-take commit 7)))
+      (version (string-append "1.9.5-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -600,7 +601,7 @@ Guile.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0pkkw8q6d55j38xm7r4rwpdv1wy00a44h8c4wrn7vbgpq9nij46y"))
+                  "09q5x8i4f8mqnl8w6xnsq5zriy4bzdl4x2vq9n34a433rfrk84bg"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system waf-build-system)
       (arguments
@@ -637,6 +638,28 @@ MIDI I/O and the NTK GUI toolkit for its user interface.  Everything in Non
 Sequencer happens on-line, in real-time.  Music can be composed live, while the
 transport is rolling.")
       (license license:gpl2+))))
+
+(define-public non-session-manager
+  (package (inherit non-sequencer)
+    (name "non-session-manager")
+    (arguments
+     (substitute-keyword-arguments (package-arguments non-sequencer)
+       ((#:configure-flags flags)
+        `(cons "--project=session-manager"
+               (delete "--project=sequencer" ,flags)))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("ntk" ,ntk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://non.tuxfamily.org/nsm/")
+    (synopsis "Audio session management")
+    (description
+     "The Non Session Manager is an API and an implementation for audio
+session management.  NSM clients use a well-specified OSC protocol to
+communicate with the session management daemon.")
+    (license license:gpl2+)))
 
 (define-public solfege
   (package
@@ -1744,8 +1767,8 @@ analogue-like user interface.")
                #t)))))
       (inputs
        `(("lilv" ,lilv)
-         ("fftw" ,fftw)
-         ("fftwf" ,fftwf)
+         ("fftw" ,fftw-with-threads)
+         ("fftwf" ,fftwf-with-threads)
          ("lv2" ,lv2)
          ("jack" ,jack-1)
          ("readline" ,readline)))
@@ -1796,14 +1819,16 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public python-mutagen
   (package
     (name "python-mutagen")
-    (version "1.31")
+    (version "1.35.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mutagen" version))
               (sha256
                (base32
-                "16fnnhspniac2i7qswxafawsh2x2a803hmc6bn9k1zl5fxq1380a"))))
+                "0klk68c1n3285vvm2xzk8ii7mlqp1dxii04askan0gi1wlpagka9"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://bitbucket.org/lazka/mutagen")
     (synopsis "Read and write audio tags")
     (description "Mutagen is a Python module to handle audio metadata.  It
@@ -1821,14 +1846,18 @@ streams on an individual packet/page level.")
 (define-public python-musicbrainzngs
   (package
     (name "python-musicbrainzngs")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "musicbrainzngs" version))
               (sha256
                (base32
-                "12f48llmdf5rkiqxcb70k2k1dmhm8byq0ifazvlrca8dfnmqh4r8"))))
+                "1dddarpjawryll2wss65xq3v9q8ln8dan7984l5dxzqx88d2dvr8"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The tests fail suffer from race conditions:
+       ;; https://github.com/alastair/python-musicbrainzngs/issues/211
+       #:tests? #f))
     (home-page "https://python-musicbrainzngs.readthedocs.org/")
     (synopsis "Python bindings for MusicBrainz NGS webservice")
     (description "Musicbrainzngs implements Python bindings of the MusicBrainz
@@ -1876,13 +1905,13 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "1.5.1")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "10znd9xr1vs2ix519jkz3ccm90zciaddcdr2w2wrrh2jyy3bc59a"))))
+                "0bml11gfkxqd3i2jxkn5k2xllc4rvxjcyhs8an05gcyy1zp2bwvb"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
@@ -1905,16 +1934,20 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.3.19")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "1vi1dh3fr554bnm8y9pjy09hblw18v6cl2jppzwlp72afri1w93b"))))
+                "14yn88xrcinpdg3ic285ar0wmwldzyjfd3ll6clmp3z3r4iqffip"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2 is supported
+     `(;; Python 3 support is still "alpha", and the upstream maintainers ask
+       ;; packagers not to use it yet:
+       ;; https://github.com/beetbox/beets/releases/tag/v1.4.1
+       ;; TODO Check this again for the next release.
+       #:python ,python-2
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
@@ -1935,7 +1968,8 @@ websites such as Libre.fm.")
        ("python2-responses" ,python2-responses)))
     ;; TODO: Install optional plugins and dependencies.
     (inputs
-     `(("python2-enum34" ,python2-enum34)
+     `(("python2-discogs-client" ,python2-discogs-client)
+       ("python2-enum34" ,python2-enum34)
        ("python2-jellyfish" ,python2-jellyfish)
        ("python2-munkres" ,python2-munkres)
        ("python2-musicbrainzngs" ,python2-musicbrainzngs)
@@ -2413,3 +2447,37 @@ a simulation of an analog Wah pedal with switchless activation."))))
 filters, crossovers, simple gain plugins without zipper noise, switch box
 plugins, a switch trigger, a toggle switch, and a peakmeter.")
       (license license:gpl2+))))
+
+(define-public python-discogs-client
+  (package
+    (name "python-discogs-client")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "discogs-client" version))
+              (sha256
+               (base32
+                "053ld2psh0yj3z0kg6z5bn4y3cr562m727494n0ayhgzbkjbacly"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-oauthlib" ,python-oauthlib)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/discogs/discogs_client")
+    (synopsis "Official Python client for the Discogs API")
+    (description "This is the official Discogs API client for Python. It enables
+you to query the Discogs database for information on artists, releases, labels,
+users, Marketplace listings, and more.  It also supports OAuth 1.0a
+authorization, which allows you to change user data such as profile information,
+collections and wantlists, inventory, and orders.")
+    (license license:bsd-2)
+    (properties `((python2-variant . ,(delay python2-discogs-client))))))
+
+(define-public python2-discogs-client
+  (let ((base (package-with-python2
+               (strip-python2-variant python-discogs-client))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))

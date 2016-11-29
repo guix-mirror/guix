@@ -1,0 +1,37 @@
+Fixes upstream bug #774897 (flxdec: Unreferences itself one time too many on
+invalid files):
+
+https://bugzilla.gnome.org/show_bug.cgi?id=774897
+
+Patch copied from upstream source repository:
+
+https://cgit.freedesktop.org/gstreamer/gst-plugins-good/commit/?id=b31c504645a814c59d91d49e4fe218acaf93f4ca
+
+From b31c504645a814c59d91d49e4fe218acaf93f4ca Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Sebastian=20Dr=C3=B6ge?= <sebastian@centricular.com>
+Date: Wed, 23 Nov 2016 11:20:49 +0200
+Subject: [PATCH] flxdec: Don't unref() parent in the chain function
+
+We don't own the reference here, it is owned by the caller and given to
+us for the scope of this function. Leftover mistake from 0.10 porting.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=774897
+---
+ gst/flx/gstflxdec.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/gst/flx/gstflxdec.c b/gst/flx/gstflxdec.c
+index e675c99..a237976 100644
+--- a/gst/flx/gstflxdec.c
++++ b/gst/flx/gstflxdec.c
+@@ -677,7 +677,6 @@ wrong_type:
+   {
+     GST_ELEMENT_ERROR (flxdec, STREAM, WRONG_TYPE, (NULL),
+         ("not a flx file (type %x)", flxh->type));
+-    gst_object_unref (flxdec);
+     return GST_FLOW_ERROR;
+   }
+ }
+-- 
+2.10.2
+

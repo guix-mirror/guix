@@ -525,7 +525,8 @@ elpa.gnu.org, and all the GNOME packages."
   (let ((uri (string->uri (origin-uri (package-source package)))))
     (false-if-ftp-error
      (latest-ftp-release
-      (package-name package)
+      (or (assoc-ref (package-properties package) 'upstream-name)
+          (package-name package))
       #:server "mirrors.mit.edu"
       #:directory
       (string-append "/kde" (dirname (dirname (uri-path uri))))

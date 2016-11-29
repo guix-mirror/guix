@@ -1,0 +1,36 @@
+Taken from
+https://sources.debian.net/data/main/g/gcc-4.9/4.9.2-10/debian/patches/gcj-arm-mode.diff
+
+# DP: For armhf, force arm mode instead of thumb mode
+
+--- a/libjava/configure.host
++++ b/libjava/configure.host
+@@ -66,6 +66,9 @@
+     ;;
+ esac
+ 
++# on armhf force arm mode
++libgcj_flags="${libgcj_flags} -marm"
++
+ AM_RUNTESTFLAGS= 
+ 
+ # Set any host dependent compiler flags.
+--- a/gcc/java/lang-specs.h
++++ b/gcc/java/lang-specs.h
+@@ -47,7 +47,7 @@
+     %{.class|.zip|.jar|!fsyntax-only:jc1				\
+       %{.java|fsaw-java-file:%U.jar -fsource-filename=%i %<ffilelist-file} \
+       %{.class|.zip|.jar|ffilelist-file|fcompile-resource*:%i}		\
+-      %(jc1) %(cc1_options) %{I*} %{!findirect-dispatch:-faux-classpath %U.zip} \
++      %(jc1) %(cc1_options) -marm %{I*} %{!findirect-dispatch:-faux-classpath %U.zip} \
+       %{MD:-MD_} %{MMD:-MMD_} %{M} %{MM} %{MA} %{MT*} %{MF*}\
+       %(invoke_as)}",
+       0, 0, 0},
+--- a/libjava/libgcj.spec.in
++++ b/libjava/libgcj.spec.in
+@@ -9,4 +9,4 @@
+ %rename lib liborig
+ *lib: @LD_START_STATIC_SPEC@ @LIBGCJ_SPEC@ @LD_FINISH_STATIC_SPEC@ @LIBMATHSPEC@ @LDLIBICONV@ @GCSPEC@ @THREADSPEC@ @ZLIBSPEC@ @SYSTEMSPEC@ %(libgcc) @LIBSTDCXXSPEC@ %(liborig)
+ 
+-*jc1: @HASH_SYNC_SPEC@ @DIVIDESPEC@ @CHECKREFSPEC@ @JC1GCSPEC@ @EXCEPTIONSPEC@ @BACKTRACESPEC@ @IEEESPEC@ @ATOMICSPEC@ @LIBGCJ_BC_SPEC@ -fkeep-inline-functions
++*jc1: @HASH_SYNC_SPEC@ @DIVIDESPEC@ @CHECKREFSPEC@ @JC1GCSPEC@ @EXCEPTIONSPEC@ @BACKTRACESPEC@ @IEEESPEC@ @ATOMICSPEC@ @LIBGCJ_BC_SPEC@ -fkeep-inline-functions -marm

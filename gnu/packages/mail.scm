@@ -329,7 +329,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.9")
+    (version "7.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -337,7 +337,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04kapx0ddz7ccwhcjshkml2y916wcan3rl28mpmq25p4gywlkhxf"))))
+                "0h8mgmwkvwh8x3yam32ipqkzcz4g1dmkbni3v1755lkm0z132m3j"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -537,14 +537,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.23.2")
+    (version "0.23.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1g4p5hsrqqbqk6s2w756als60wppvjgpyq104smy3w9vshl7bzgd"))))
+                "10hqjnl5aavf9clfmx3y832jyz58fplmc3f58pip9dq30b7sap8g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -568,11 +568,6 @@ invoking @command{notifymuch} from the post-new hook.")
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
                         (("/bin/sh") (which "sh")))
-                      ;; XXX: Some signature verification tests fail with
-                      ;; gnupg-2.1.16, so we skip them. See this thread:
-                      ;; https://notmuchmail.org/pipermail/notmuch/2016/023688.html
-                      (setenv "NOTMUCH_SKIP_TESTS"
-                              "T350-crypto.2 T350-crypto.3 T350-crypto.4 T350-crypto.15")
                       #t)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)

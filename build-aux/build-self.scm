@@ -61,6 +61,8 @@
 (define guile-json
   (first (find-best-packages-by-name "guile-json" #f)))
 
+(define guile-ssh
+  (first (find-best-packages-by-name "guile-ssh" #f)))
 
 
 ;; The actual build procedure.
@@ -103,8 +105,21 @@ files."
         (use-modules (guix build pull))
 
         (let ((json (string-append #$guile-json "/share/guile/site/2.0")))
-          (set! %load-path (cons json %load-path))
-          (set! %load-compiled-path (cons json %load-compiled-path)))
+          (set! %load-path
+                (cons* json
+                       (string-append #$guile-ssh "/share/guile/site/2.0")
+                       %load-path))
+          (set! %load-compiled-path
+                (cons* json
+                       (string-append #$guile-ssh "/lib/guile/2.0/site-ccache")
+                       %load-compiled-path)))
+
+        ;; XXX: The 'guile-ssh' package prior to Guix commit 92b7258 was
+        ;; broken: libguile-ssh could not be found.  Work around that.
+        ;; FIXME: We want Guile-SSH 0.10.2 or later anyway.
+        #$(if (string-prefix? "0.9." (package-version guile-ssh))
+              #~(setenv "LTDL_LIBRARY_PATH" (string-append #$guile-ssh "/lib"))
+              #t)
 
         (build-guix #$output #$source
 

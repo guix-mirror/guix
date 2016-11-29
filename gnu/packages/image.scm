@@ -843,15 +843,15 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "1.900.29")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "1h1575wdzq1p7y2xvy1gbiypai1iils5awhy4gadr78qpb9ykrra"))))
-    (build-system gnu-build-system)
+                "1kg5yrdwgazhbczybyx4548m0ijssabcp8hl5l87w78z833vikks"))))
+    (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference

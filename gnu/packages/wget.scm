@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,3 +61,36 @@ HTTPS and FTP protocols.  It can resume interrupted downloads, use file name
 wild cards, supports proxies and cookies, and it can convert absolute links
 in downloaded documents to relative links.")
     (license gpl3+))) ; some files are under GPLv2+
+
+(define-public wgetpaste
+  (package
+    (name "wgetpaste")
+    (version "2.28")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://wgetpaste.zlin.dk/wgetpaste-"
+                            version ".tar.bz2"))
+        (sha256
+         (base32
+          "1hh9svyypqcvdg5mjxyyfzpdzhylhf7s7xq5dzglnm4injx3i3ak"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (zsh (string-append out "/share/zsh/site-functions")))
+               (install-file "wgetpaste" bin)
+               (install-file "_wgetpaste" zsh)))))
+       #:tests? #f)) ; no test target
+    (home-page "http://wgetpaste.zlin.dk/")
+    (synopsis "Script that automates pasting to a number of pastebin services")
+    (description
+     "@code{wgetpaste} is an extremely simple command-line interface to various
+online pastebin services.")
+    (license public-domain)))

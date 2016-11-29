@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,13 +25,20 @@
 (define-module (gnu packages telephony)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages speech)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -287,3 +295,107 @@ lists.  All you need to join an existing conference is the host name or IP
 address of one of the participants.")
     (home-page "http://holdenc.altervista.org/seren/")
     (license license:gpl3+)))
+
+(define-public mumble
+  (package
+    (name "mumble")
+    (version "1.2.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://mumble.info/snapshot/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "176br3b0pv5sz3zvgzsz9rxr3n79irlm902h7n1wh4f6vbph2dhw"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Remove bundled software.
+                  (for-each delete-file-recursively '("3rdparty"
+                                                      "speex"
+                                                      "speexbuild"
+                                                      "opus-build"
+                                                      "opus-src"
+                                                      "sbcelt-helper-build"
+                                                      "sbcelt-lib-build"
+                                                      "sbcelt-src"))
+                  ;; TODO: Celt is still bundled. It has been merged into Opus
+                  ;; and will be removed after 1.3.0.
+                  ;; https://github.com/mumble-voip/mumble/issues/1999
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "qmake" "main.pro" "-recursive"
+                             (string-append "CONFIG+="
+                                            (string-join
+                                             (list "no-update"
+                                                   "no-server"
+                                                   "no-embed-qt-translations"
+                                                   "no-bundled-speex"
+                                                   "pch"
+                                                   "no-bundled-opus"
+                                                   "no-celt"
+                                                   "no-alsa"
+                                                   "no-oss"
+                                                   "no-portaudio"
+                                                   "speechd"
+                                                   "no-g15"
+                                                   "no-bonjour"
+                                                   "release")))
+                             (string-append "DEFINES+="
+                                            "PLUGIN_PATH="
+                                            (assoc-ref outputs "out")
+                                            "/lib/mumble")))))
+         (add-before 'configure 'fix-libspeechd-include
+           (lambda _
+             (substitute* "src/mumble/TextToSpeech_unix.cpp"
+               (("libspeechd.h") "speech-dispatcher/libspeechd.h"))))
+         (replace 'install ; install phase does not exist
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (services (string-append out "/share/services"))
+                    (applications (string-append out "/share/applications"))
+                    (icons (string-append out "/share/icons/hicolor/scalable/apps"))
+                    (man (string-append out "/share/man/man1"))
+                    (lib (string-append out "/lib/mumble")))
+               (install-file "release/mumble" bin)
+               (install-file "scripts/mumble-overlay" bin)
+               (install-file "scripts/mumble.protocol" services)
+               (install-file "scripts/mumble.desktop" applications)
+               (install-file "icons/mumble.svg" icons)
+               (install-file "man/mumble-overlay.1" man)
+               (install-file "man/mumble.1" man)
+               (for-each (lambda (file) (install-file file lib))
+                         (find-files "." "\\.so\\."))
+               (for-each (lambda (file) (install-file file lib))
+                         (find-files "release/plugins" "\\.so$"))))))))
+    (inputs
+     `(("avahi" ,avahi)
+       ("protobuf" ,protobuf)
+       ("openssl" ,openssl)
+       ("libsndfile" ,libsndfile)
+       ("boost" ,boost)
+       ("opus" ,opus)
+       ("speex" ,speex)
+       ("speech-dispatcher" ,speech-dispatcher)
+       ("libx11" ,libx11)
+       ("libxi" ,libxi)
+       ("qt-4" ,qt-4)
+       ("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Low-latency, high quality voice chat software")
+    (description
+     "Mumble is an low-latency, high quality voice chat
+software primarily intended for use while gaming.")
+    (home-page "https://wiki.mumble.info/wiki/Main_Page")
+    (license (list license:bsd-3
+                   ;; The bundled celt is bsd-2. Remove after 1.3.0.
+                   license:bsd-2))))

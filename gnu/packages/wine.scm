@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "1.9.15")
+    (version "1.9.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -60,7 +61,7 @@
                                   "/wine-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nmd65knzyh8b0yhxlqqvzai5rpnmhhm0c46n789zr5hj74jm6fg"))))
+                "0qb07vfxwz41wj71lb0ss3apf22m4ch06382rqfksf7gg34pswnb"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -117,19 +118,19 @@
        (list "SHELL=bash")
 
        #:phases
-       (alist-cons-after
-        'configure 'patch-dlopen-paths
-        ;; Hardcode dlopened sonames to absolute paths.
-        (lambda _
-          (let* ((library-path (search-path-as-string->list
-                                (getenv "LIBRARY_PATH")))
-                 (find-so (lambda (soname)
-                            (search-path library-path soname))))
-            (substitute* "include/config.h"
-              (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
-               (format #f "~a\"~a\"" defso (find-so soname))))))
-        %standard-phases)))
-    (home-page "http://www.winehq.org/")
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-dlopen-paths
+           ;; Hardcode dlopened sonames to absolute paths.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path library-path soname))))
+               (substitute* "include/config.h"
+                 (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
+                  (format #f "~a\"~a\"" defso (find-so soname))))
+               #t))))))
+    (home-page "https://www.winehq.org/")
     (synopsis "Implementation of the Windows API")
     (description
      "Wine (originally an acronym for \"Wine Is Not an Emulator\") is a

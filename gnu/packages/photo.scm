@@ -89,20 +89,21 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.2")
+    (version "2.5.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0f1818l1vs5fbmrihzyv3qasddbqi3r01jik5crrxddwalsi2bd3"))))
+                "1ap070zz6l4kn2mbyxb1yj4x5ar8hpdbmf2pvjxgnly1ss319dkz"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(;; ("libjpeg-turbo" ,libjpeg-turbo)
        ("libltdl" ,libltdl)
-       ("libusb" ,libusb)))
+       ("libusb" ,libusb)
+       ("libxml2" ,libxml2)))
     (propagated-inputs
      `(;; The .pc refers to libexif.
        ("libexif" ,libexif)))
@@ -119,14 +120,14 @@ from digital cameras.")
 (define-public gphoto2
   (package
     (name "gphoto2")
-    (version "2.5.2")
+    (version "2.5.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/gphoto/" version
                                   "/gphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "16c8k1cxfypg7v5h8xi87grclw7a5ayaamn548ys3zkj727r5fcf"))))
+                "1sgr6rsvzzagcwhc8fxbnvz3k02wr2hab0vrbvcb04k5l3b48a1r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
