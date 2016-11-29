@@ -149,6 +149,9 @@ and many other languages.")
     (arguments
      `(#:python ,python-2
        #:tests? #f ; tests fail
+       ;; wxPython directly extends distutils command classes,
+       ;; we can't easily make setup.py use setuptools.
+       #:use-setuptools? #f
        #:configure-flags (list "WXPORT=gtk2"
                                "UNICODE=1")
        #:phases
