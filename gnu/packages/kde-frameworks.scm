@@ -1203,6 +1203,17 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cmake-install-directories
+           (lambda _
+             ;; Make packages using kauth put their policy files and helpers
+             ;; into their own prefix.
+             (substitute* "KF5AuthConfig.cmake.in"
+               (("@KAUTH_POLICY_FILES_INSTALL_DIR@")
+                "${KDE_INSTALL_DATADIR}/polkit-1/actions")
+               (("@KAUTH_HELPER_INSTALL_DIR@")
+                "${KDE_INSTALL_LIBEXECDIR}")
+               (("@KAUTH_HELPER_INSTALL_ABSOLUTE_DIR@")
+                "${KDE_INSTALL_LIBEXECDIR}"))))
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
