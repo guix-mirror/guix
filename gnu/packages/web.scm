@@ -1545,7 +1545,7 @@ stash data in JSON format.")
 (define-public perl-catalyst-view-tt
   (package
     (name "perl-catalyst-view-tt")
-    (version "0.42")
+    (version "0.44")
     (source
      (origin
        (method url-fetch)
@@ -1553,11 +1553,12 @@ stash data in JSON format.")
                            "Catalyst-View-TT-" version ".tar.gz"))
      (sha256
       (base32
-       "18ciik9fqaqjfasa9wicbjrsl3gjhjc15xzaj3rif57an25cl178"))))
+       "06d1zg4nbb6kcyjbnyxrkf8z4zlscxr8650d94f7187jygfl8rvh"))))
   (build-system perl-build-system)
   (propagated-inputs
    `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
      ("perl-class-accessor" ,perl-class-accessor)
+     ("perl-data-dump" ,perl-data-dump)
      ("perl-mro-compat" ,perl-mro-compat)
      ("perl-path-class" ,perl-path-class)
      ("perl-template-timer" ,perl-template-timer)
