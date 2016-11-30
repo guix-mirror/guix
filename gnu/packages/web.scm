@@ -226,6 +226,41 @@ APIs.")
     ;; the Expat license, incompatible with the GPL.
     (license (l:non-copyleft "file://LICENSE.TERMS"))))
 
+(define-public fcgiwrap
+  (package
+    (name "fcgiwrap")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gnosek/fcgiwrap/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07y6s4mm86cv7p1ljz94sxnqa89y9amn3vzwsnbq5hrl4vdy0zac"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fcgi" ,fcgi)))
+    (home-page "https://nginx.localdomain.pl/wiki/FcgiWrap")
+    (synopsis "Simple server for running CGI applications over FastCGI")
+    (description "Fcgiwrap is a simple server for running CGI applications
+over FastCGI.  It hopes to provide clean CGI support to Nginx (and other web
+servers that may need it).")
+    (license l:expat)))
+
 (define-public starman
   (package
     (name "starman")
