@@ -902,26 +902,29 @@ action, which will forward to the first available view.")
 (define-public perl-catalyst-action-rest
   (package
     (name "perl-catalyst-action-rest")
-    (version "1.17")
+    (version "1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
                                   "Catalyst-Action-REST-" version ".tar.gz"))
               (sha256
                (base32
-                "1rnxmsd9dsqz4xc0g9ynafxi934jwp0nixbg92q3bc2h46xcccy8"))))
+                "1mpa64p61f3dp24xnhdraswch4sqj5vyv1iivcvvh5h0xi0haiy0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-config-general" ,perl-config-general)
+       ("perl-cpanel-json-xs" ,perl-cpanel-json-xs)
        ("perl-libwww" ,perl-libwww)
        ("perl-moose" ,perl-moose)
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-params-validate" ,perl-params-validate)
-       ("perl-uri-find" ,perl-uri-find)))
+       ("perl-uri-find" ,perl-uri-find)
+       ("perl-xml-simple" ,perl-xml-simple)))
     (home-page "http://search.cpan.org/dist/Catalyst-Action-REST")
     (synopsis "Automated REST Method Dispatching")
     (description "This Action handles doing automatic method dispatching for
