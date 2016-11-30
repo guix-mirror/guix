@@ -261,10 +261,10 @@ downloaded and authenticated; not updating~%")
       (when warn?
         (warn-no-updater package))))
 
-(define* (check-for-package-update package #:key warn?)
+(define* (check-for-package-update package updaters #:key warn?)
   "Check whether an update is available for PACKAGE and print a message.  When
 WARN? is true and no updater exists for PACKAGE, print a warning."
-  (match (package-latest-release package %updaters)
+  (match (package-latest-release package updaters)
     ((? upstream-source? source)
      (when (version>? (upstream-source-version source)
                       (package-version package))
@@ -438,7 +438,8 @@ update would trigger a complete rebuild."
               (with-monad %store-monad
                 (return #t))))
            (else
-            (for-each (cut check-for-package-update <> #:warn? warn?)
+            (for-each (cut check-for-package-update <> updaters
+                           #:warn? warn?)
                       packages)
             (with-monad %store-monad
               (return #t)))))))))
