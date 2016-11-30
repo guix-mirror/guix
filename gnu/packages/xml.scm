@@ -514,7 +514,7 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
 (define-public perl-xml-dom
   (package
     (name "perl-xml-dom")
-    (version "1.44")
+    (version "1.46")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -522,11 +522,12 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1r0ampc88ni3sjpzr583k86076qg399arfm9xirv3cw49k3k5bzn"))))
+               "0phpkc4li43m2g44hdcvyxzy9pymqwlqhh5hwp2xc0cv8l5lp8lb"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-libwww" ,perl-libwww)
        ("perl-libxml" ,perl-libxml)
+       ("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-regexp" ,perl-xml-regexp)))
     (license (package-license perl))
     (synopsis
