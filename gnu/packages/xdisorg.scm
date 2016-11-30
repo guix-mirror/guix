@@ -241,7 +241,6 @@ following the mouse.")
   (package
     (name "pixman")
     (version "0.34.0")
-    (replacement pixman/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -249,7 +248,8 @@ following the mouse.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "13m842m9ffac3m9r0b4lvwjhwzg3w4353djkjpf00s0wnm4v5di1"))))
+                "13m842m9ffac3m9r0b4lvwjhwzg3w4353djkjpf00s0wnm4v5di1"))
+              (patches (search-patches "pixman-CVE-2016-5296.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("libpng" ,libpng)
@@ -262,14 +262,6 @@ following the mouse.")
 manipulation, providing features such as image compositing and trapezoid
 rasterisation.")
     (license license:x11)))
-
-(define pixman/fixed
-  (package
-    (inherit pixman)
-    (source (origin
-              (inherit (package-source pixman))
-              (patches (search-patches "pixman-CVE-2016-5296.patch"))))))
-
 
 (define-public libdrm
   (package
