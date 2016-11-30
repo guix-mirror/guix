@@ -72,7 +72,7 @@
 (define (config-domain-strings names)
  "Return a string denoting the nginx config representation of NAMES, a list
 of domain names."
- (string-concatenate
+ (string-join
   (map (match-lambda
         ('default "_")
         ((? string? str) str))
@@ -81,7 +81,7 @@ of domain names."
 (define (config-index-strings names)
  "Return a string denoting the nginx config representation of NAMES, a list
 of index files."
- (string-concatenate
+ (string-join
   (map (match-lambda
         ((? string? str) str))
        names)))
