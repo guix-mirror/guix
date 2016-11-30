@@ -2355,7 +2355,7 @@ http-based UI to your existing tools.")
 (define-public perl-http-tiny
   (package
     (name "perl-http-tiny")
-    (version "0.053")
+    (version "0.070")
     (source
      (origin
        (method url-fetch)
@@ -2363,12 +2363,13 @@ http-based UI to your existing tools.")
                            "HTTP-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "1bwy31xrcz5zfx1n3vc50vj1aqvzn5ccr7lgacl8wmi03a6w2af2"))))
+         "0cvp5yqrni6qydpsa8fpkbm82zfwmy9js8jsvyj8gs3dx78qbwvl"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-http-cookiejar" ,perl-http-cookiejar)
        ("perl-io-socket-ip" ,perl-io-socket-ip)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-net-ssleay" ,perl-net-ssleay)))
     (home-page "http://search.cpan.org/dist/HTTP-Tiny")
     (synopsis "HTTP/1.1 client")
