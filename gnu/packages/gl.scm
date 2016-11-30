@@ -196,7 +196,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "12.0.1")
+    (version "13.0.2")
     (source
       (origin
         (method url-fetch)
@@ -204,7 +204,9 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "12b3i59xdn2in2hchrkgh4fwij8zhznibx976l3pdj3qkyvlzcms"))))
+          "1m8n8kd8kcs5ddyvldiw09wvpi5wwpfmmxlb87d63vgl8lk65vd6"))
+        (patches
+         (search-patches "mesa-wayland-egl-symbols-check-mips.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
@@ -227,20 +229,10 @@ also known as DXTn or DXTC) for Mesa.")
         ("makedepend" ,makedepend)
         ("presentproto" ,presentproto)
         ("s2tc" ,s2tc)
-        ("udev" ,eudev)
         ("wayland" ,wayland)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("python" ,python-2)
-
-         ;; XXX To prevent a large number of rebuilds on other systems,
-         ;; apply the following patch on MIPS systems only.  In the next
-         ;; core-updates cycle, this patch could be applied on all platforms.
-        ,@(if (string-prefix? "mips" (or (%current-target-system)
-                                         (%current-system)))
-              `(("mips-patch"
-                 ,(search-patch "mesa-wayland-egl-symbols-check-mips.patch")))
-              '())))
+        ("python" ,python-2)))
     (arguments
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
@@ -267,16 +259,6 @@ also known as DXTn or DXTC) for Mesa.")
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
        #:phases
        (modify-phases %standard-phases
-         ;; Add an 'apply-mips-patch' phase conditionally (see above.)
-         ,@(if (string-prefix? "mips" (or (%current-target-system)
-                                          (%current-system)))
-               `((add-after 'unpack 'apply-mips-patch
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((patch (assoc-ref inputs "mips-patch")))
-                       (zero? (system* "patch" "-p1" "--force"
-                                       "--input" patch))))))
-               '())
-
          (add-after
            'unpack 'patch-create_test_cases
            (lambda _
@@ -288,7 +270,6 @@ also known as DXTn or DXTC) for Mesa.")
            'build 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((s2tc (assoc-ref inputs "s2tc"))
-                   (udev (assoc-ref inputs "udev"))
                    (out (assoc-ref outputs "out")))
                ;; Remain agnostic to .so.X.Y.Z versions while doing
                ;; the substitutions so we're future-safe.
@@ -297,10 +278,6 @@ also known as DXTn or DXTC) for Mesa.")
                      "src/mesa/main/texcompress_s3tc.c")
                  (("\"libtxc_dxtn\\.so")
                   (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
-               (substitute* "src/loader/loader.c"
-                 (("udev_handle = dlopen\\(name")
-                  (string-append "udev_handle = dlopen(\""
-                                 udev "/lib/libudev.so\"")))
                (substitute* "src/glx/dri_common.c"
                  (("dlopen\\(\"libGL\\.so")
                   (string-append "dlopen(\"" out "/lib/libGL.so")))
