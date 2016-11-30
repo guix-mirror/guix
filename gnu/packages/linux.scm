@@ -2746,6 +2746,36 @@ easy administration.")
     ;; GPL2: Everything else.
     (license (list license:gpl2 license:gpl2+))))
 
+(define-public btrfs-progs/static
+  (package
+    (name "btrfs-progs-static")
+    (version (package-version btrfs-progs))
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs
+     `(("btrfs-progs:static" ,btrfs-progs "static")))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+
+         (let* ((btrfs  (assoc-ref %build-inputs "btrfs-progs:static"))
+                (out    (assoc-ref %outputs "out"))
+                (source (string-append btrfs "/bin/btrfs.static"))
+                (target (string-append out "/bin/btrfs")))
+           (mkdir-p (dirname target))
+           (copy-file source target)
+           (remove-store-references target)
+           (chmod target #o555)))))
+    (home-page (package-home-page btrfs-progs))
+    (synopsis "Statically-linked btrfs command from btrfsprogs")
+    (description "This package provides statically-linked command of btrfs taken
+from the btrfsprogs package.  It is meant to be used in initrds.")
+    (license (package-license btrfs-progs))))
+
 (define-public freefall
   (package
     (name "freefall")
