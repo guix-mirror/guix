@@ -2213,7 +2213,7 @@ used by the HTTP protocol (and then some more).")
 (define-public perl-http-message
   (package
     (name "perl-http-message")
-    (version "6.06")
+    (version "6.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2221,10 +2221,11 @@ used by the HTTP protocol (and then some more).")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0qxdrcak97azjvqyx1anpb2ky6vp6vc37x0wcfjdqfajkh09fzh8"))))
+               "06yq6cjx4vzl4if4ykap77xsrrd8aa7ish90k7cqi8g6g83nicz7"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-date" ,perl-http-date)
+     `(("perl-encode-locale" ,perl-encode-locale)
+       ("perl-http-date" ,perl-http-date)
        ("perl-io-html" ,perl-io-html)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
        ("perl-uri" ,perl-uri)))
