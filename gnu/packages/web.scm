@@ -1113,7 +1113,7 @@ Models.")
 (define-public perl-catalyst-plugin-accesslog
   (package
     (name "perl-catalyst-plugin-accesslog")
-    (version "1.05")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -1121,14 +1121,13 @@ Models.")
                            "Catalyst-Plugin-AccessLog-" version ".tar.gz"))
        (sha256
         (base32
-         "0hqvckaw91q5yc25a33bp0d4qqxlgkp7rxlvi8n8svxd1406r55s"))))
+         "0811rj45q4v2y8wka3wb9d5m4vbyhcmkvddf2wz4x69awzjbhgc7"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-datetime" ,perl-datetime)
        ("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (arguments `(#:tests? #f))          ;Unexpected http responses
     (home-page "http://search.cpan.org/dist/Catalyst-Plugin-AccessLog")
     (synopsis "Request logging from within Catalyst")
     (description "This Catalyst plugin enables you to create \"access logs\"
