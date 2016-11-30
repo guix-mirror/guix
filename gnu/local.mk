@@ -540,6 +540,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/fasthenry-spUtils.patch			\
   %D%/packages/patches/fasthenry-spSolve.patch			\
   %D%/packages/patches/fasthenry-spFactor.patch			\
+  %D%/packages/patches/fcgi-2.4.0-gcc44-fixes.patch		\
+  %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flex-CVE-2016-6354.patch			\

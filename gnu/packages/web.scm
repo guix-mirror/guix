@@ -201,6 +201,31 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;     except for two source files which are bsd-4 licensed.
     (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
 
+(define-public fcgi
+  (package
+    (name "fcgi")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Upstream has disappeared
+       (uri (string-append "https://sources.archlinux.org/other/packages/fcgi/"
+                           "fcgi-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f857wnl1d6jfrgfgfpz3zdaj8fch3vr13mnpcpvy8bang34bz36"))
+       (patches (search-patches "fcgi-2.4.0-poll.patch"
+                                "fcgi-2.4.0-gcc44-fixes.patch"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.fastcgi.com")
+    (synopsis "Language-independent, high-performant extension to CGI")
+    (description "FastCGI is a language independent, scalable extension to CGI
+that provides high performance without the limitations of server specific
+APIs.")
+    ;; This package is released under the Open Market License, a variant of
+    ;; the Expat license, incompatible with the GPL.
+    (license (l:non-copyleft "file://LICENSE.TERMS"))))
+
 (define-public starman
   (package
     (name "starman")
