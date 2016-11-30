@@ -448,21 +448,26 @@ elpa.gnu.org, and all the GNOME packages."
        (not (gnome-package? package))
        (gnu-package? package)))
 
-(define (gnome-package? package)
-  "Return true if PACKAGE is a GNOME package, hosted on gnome.org."
-  (define gnome-uri?
-    (match-lambda
-      ((? string? uri)
-       (string-prefix? "mirror://gnome/" uri))
-      (_
-       #f)))
+(define (url-prefix-predicate prefix)
+  "Return a predicate that returns true when passed a package where one of its
+source URLs starts with PREFIX."
+  (lambda (package)
+    (define matching-uri?
+      (match-lambda
+        ((? string? uri)
+         (string-prefix? prefix uri))
+        (_
+         #f)))
 
-  (match (package-source package)
-    ((? origin? origin)
-     (match (origin-uri origin)
-       ((? gnome-uri?) #t)
-       (_              #f)))
-    (_ #f)))
+    (match (package-source package)
+      ((? origin? origin)
+       (match (origin-uri origin)
+         ((? matching-uri?) #t)
+         (_                 #f)))
+      (_ #f))))
+
+(define gnome-package?
+  (url-prefix-predicate "mirror://gnome/"))
 
 (define (latest-gnome-release package)
   "Return the latest release of PACKAGE, the name of a GNOME package."
@@ -504,21 +509,6 @@ elpa.gnu.org, and all the GNOME packages."
                        ;; checksums.
                        #:file->signature (const #f))))
 
-(define (kde-package? package)
-  "Return true if PACKAGE is a KDE package, developed by KDE.org."
-  (define kde-uri?
-    (match-lambda
-      ((? string? uri)
-       (string-prefix? "mirror://kde/" uri))
-      (_
-       #f)))
-
-  (match (package-source package)
-    ((? origin? origin)
-     (match (origin-uri origin)
-      ((? kde-uri?) #t)
-      (_             #f)))
-    (_ #f)))
 
 (define (latest-kde-release package)
   "Return the latest release of PACKAGE, the name of an KDE.org package."
@@ -531,22 +521,6 @@ elpa.gnu.org, and all the GNOME packages."
       #:directory
       (string-append "/kde" (dirname (dirname (uri-path uri))))
       #:file->signature (const #f)))))
-
-(define (xorg-package? package)
-  "Return true if PACKAGE is an X.org package, developed by X.org."
-  (define xorg-uri?
-    (match-lambda
-      ((? string? uri)
-       (string-prefix? "mirror://xorg/" uri))
-      (_
-       #f)))
-
-  (match (package-source package)
-    ((? origin? origin)
-     (match (origin-uri origin)
-       ((? xorg-uri?) #t)
-       (_              #f)))
-    (_ #f)))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE, the name of an X.org package."
@@ -576,14 +550,14 @@ elpa.gnu.org, and all the GNOME packages."
   (upstream-updater
     (name 'kde)
     (description "Updater for KDE packages")
-    (pred kde-package?)
+    (pred (url-prefix-predicate "mirror://kde/"))
     (latest latest-kde-release)))
 
 (define %xorg-updater
   (upstream-updater
    (name 'xorg)
    (description "Updater for X.org packages")
-   (pred xorg-package?)
+   (pred (url-prefix-predicate "mirror://xorg/"))
    (latest latest-xorg-release)))
 
 ;;; gnu-maintenance.scm ends here
