@@ -1772,7 +1772,7 @@ for files and urls.")
 (define-public perl-encode-locale
   (package
     (name "perl-encode-locale")
-    (version "1.03")
+    (version "1.05")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1780,7 +1780,7 @@ for files and urls.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0m9d1vdphlyzybgmdanipwd9ndfvyjgk3hzw250r299jjgh3fqzp"))))
+               "1h8fvcdg3n20c2yp7107yhdkkx78534s9hnvn7ps8hpmf4ks0vqp"))))
     (build-system perl-build-system)
     (license (package-license perl))
     (synopsis "Perl locale encoding determination")
