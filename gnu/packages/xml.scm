@@ -167,7 +167,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
 (define-public perl-graph-readwrite
   (package
     (name "perl-graph-readwrite")
-    (version "2.08")
+    (version "2.09")
     (source
      (origin
        (method url-fetch)
@@ -177,7 +177,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
              ".tar.gz"))
        (sha256
         (base32
-         "1wjni212nfz9irp19nx9if1lj3w9cybpdbzhii4g8macpryjj7ci"))))
+         "0jlsg64pmy6ka5q5gy851nnyfgjzvhyxc576bhns3vi2x5ng07mh"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-graph" ,perl-graph)
