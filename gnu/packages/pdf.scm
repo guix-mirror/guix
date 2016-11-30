@@ -95,17 +95,6 @@
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
              ;; GLib.  But of course, that Cairo must not depend on Poppler.
              ("cairo" ,(package (inherit cairo)
-                         (replacement
-                           (package
-                             (inherit cairo)
-                             (replacement #f)
-                             (source
-                               (origin
-                                 (inherit (package-source cairo))
-                                 (patches (search-patches
-                                            "cairo-CVE-2016-9082.patch"))))
-                             (inputs (alist-delete "poppler"
-                                                   (package-inputs cairo)))))
                          (inputs (alist-delete "poppler"
                                                (package-inputs cairo)))))
              ("glib" ,glib)))
