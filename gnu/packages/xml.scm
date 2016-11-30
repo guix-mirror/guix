@@ -614,14 +614,14 @@ a schema.")
 (define-public perl-xml-compile-soap
   (package
     (name "perl-xml-compile-soap")
-    (version "3.13")
+    (version "3.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-SOAP-" version ".tar.gz"))
               (sha256
                (base32
-                "08qw63l78040nh37xzapbqp43g6s5l67bvskf3dyyizlarjx5mi4"))))
+                "0qplb77qr97pc9yis51jmphl9gbq9xyf8abldpxkwvdn6iqlbgx5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
