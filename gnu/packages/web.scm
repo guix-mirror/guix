@@ -2023,7 +2023,7 @@ representing, creating, and extracting information from HTML syntax trees.")
 (define-public perl-html-parser
   (package
     (name "perl-html-parser")
-    (version "3.71")
+    (version "3.72")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2031,10 +2031,11 @@ representing, creating, and extracting information from HTML syntax trees.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "00nqzdgl7c3jilx7mil19k5jwcw3as14pvkjgxi97zyk94vqp4dy"))))
+               "12v05ywlnsi9lc17z32k9jxx3sj1viy7y1wpl7n4az76v7hwfa7c"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-html-tagset" ,perl-html-tagset)))
+     `(("perl-html-tagset" ,perl-html-tagset)
+       ("perl-http-message" ,perl-http-message)))
     (license (package-license perl))
     (synopsis "Perl HTML parser class")
     (description
