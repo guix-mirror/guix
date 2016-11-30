@@ -1253,7 +1253,7 @@ formats.")
 (define-public perl-catalyst-plugin-session
   (package
     (name "perl-catalyst-plugin-session")
-    (version "0.39")
+    (version "0.40")
     (source
      (origin
        (method url-fetch)
@@ -1261,7 +1261,7 @@ formats.")
                            "Catalyst-Plugin-Session-" version ".tar.gz"))
        (sha256
         (base32
-         "0m4a003qgz7848iyckwbigg2vw3kmfxggh1razrnzxrbz3n6x5gi"))))
+         "171vi9xcl775scjaw4fcfdmqvz0rb1nr0xxg2gb3ng6bjzpslhgv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -1271,6 +1271,7 @@ formats.")
        ("perl-moose" ,perl-moose)
        ("perl-moosex-emulate-class-accessor-fast"
         ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-mro-compat" ,perl-mro-compat)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-object-signature" ,perl-object-signature)
        ("perl-test-www-mechanize-psgi" ,perl-test-www-mechanize-psgi)))
