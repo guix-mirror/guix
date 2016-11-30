@@ -1520,7 +1520,7 @@ table based report in a variety of formats (CSV, HTML, etc.).")
 (define-public perl-catalyst-view-json
   (package
     (name "perl-catalyst-view-json")
-    (version "0.35")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
@@ -1528,7 +1528,7 @@ table based report in a variety of formats (CSV, HTML, etc.).")
                            "Catalyst-View-JSON-" version ".tar.gz"))
        (sha256
         (base32
-         "184pyghlrkl7p387bnyvswi2d9myvdg4v3lax6xrd59shskvpmkm"))))
+         "0x943j1n2r0zqanyzdrs1xsnn8ayn2wqskn7h144xcqa6v6gcisl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-yaml" ,perl-yaml)))
