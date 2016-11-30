@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (web server)
+  #:use-module (web server http)
+  #:use-module (web response)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-64))
@@ -273,6 +278,38 @@
                      (inputs `(("glib" ,glib "bin"))))))
           (check-inputs-should-be-native pkg)))
           "'glib:bin' should probably be a native input")))
+
+(test-assert
+    "inputs: python-setuptools should not be an input at all (input)"
+  (->bool
+   (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (inputs `(("python-setuptools" ,python-setuptools))))))
+         (check-inputs-should-not-be-an-input-at-all pkg)))
+         "'python-setuptools' should probably not be an input at all")))
+
+(test-assert
+    "inputs: python-setuptools should not be an input at all (native-input)"
+  (->bool
+   (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (native-inputs
+                     `(("python-setuptools" ,python-setuptools))))))
+         (check-inputs-should-not-be-an-input-at-all pkg)))
+         "'python-setuptools' should probably not be an input at all")))
+
+(test-assert
+    "inputs: python-setuptools should not be an input at all (propagated-input)"
+  (->bool
+   (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (propagated-inputs
+                     `(("python-setuptools" ,python-setuptools))))))
+         (check-inputs-should-not-be-an-input-at-all pkg)))
+         "'python-setuptools' should probably not be an input at all")))
 
 (test-assert "patches: file names"
   (->bool

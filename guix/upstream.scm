@@ -26,6 +26,11 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix base32)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module ((guix derivations)
+                #:select (built-derivations derivation->output-path))
+  #:use-module (guix monads)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
@@ -49,8 +54,11 @@
             upstream-updater-predicate
             upstream-updater-latest
 
+            lookup-updater
+
             download-tarball
-            package-update-path
+            package-latest-release
+            package-latest-release*
             package-update
             update-package-source))
 
@@ -127,17 +135,50 @@ them matches."
           (and (pred package) latest)))
        updaters))
 
-(define (package-update-path package updaters)
+(define (package-latest-release package updaters)
   "Return an upstream source to update PACKAGE, a <package> object, or #f if
-no update is needed or known."
+none of UPDATERS matches PACKAGE.  It is the caller's responsibility to ensure
+that the returned source is newer than the current one."
   (match (lookup-updater package updaters)
     ((? procedure? latest-release)
-     (match (latest-release package)
-       ((and source ($ <upstream-source> name version))
-        (and (version>? version (package-version package))
-             source))
-       (_ #f)))
-    (#f #f)))
+     (latest-release package))
+    (_ #f)))
+
+(define (package-latest-release* package updaters)
+  "Like 'package-latest-release', but ensure that the return source is newer
+than that of PACKAGE."
+  (match (package-latest-release package updaters)
+    ((and source ($ <upstream-source> name version))
+     (and (version>? version (package-version package))
+          source))
+    (_
+     #f)))
+
+(define (uncompressed-tarball name tarball)
+  "Return a derivation that decompresses TARBALL."
+  (define (ref package)
+    (module-ref (resolve-interface '(gnu packages compression))
+                package))
+
+  (define compressor
+    (cond ((or (string-suffix? ".gz" tarball)
+               (string-suffix? ".tgz" tarball))
+           (file-append (ref 'gzip) "/bin/gzip"))
+          ((string-suffix? ".bz2" tarball)
+           (file-append (ref 'bzip2) "/bin/bzip2"))
+          ((string-suffix? ".xz" tarball)
+           (file-append (ref 'xz) "/bin/xz"))
+          ((string-suffix? ".lz" tarball)
+           (file-append (ref 'lzip) "/bin/lzip"))
+          (else
+           (error "unknown archive type" tarball))))
+
+  (gexp->derivation (file-sans-extension name)
+                    #~(begin
+                        (copy-file #+tarball #+name)
+                        (and (zero? (system* #+compressor "-d" #+name))
+                             (copy-file #+(file-sans-extension name)
+                                        #$output)))))
 
 (define* (download-tarball store url signature-url
                            #:key (key-download 'interactive))
@@ -149,8 +190,22 @@ values: 'interactive' (default), 'always', and 'never'."
   (let ((tarball (download-to-store store url)))
     (if (not signature-url)
         tarball
-        (let* ((sig (download-to-store store signature-url))
-               (ret (gnupg-verify* sig tarball #:key-download key-download)))
+        (let* ((sig  (download-to-store store signature-url))
+
+               ;; Sometimes we get a signature over the uncompressed tarball.
+               ;; In that case, decompress the tarball in the store so that we
+               ;; can check the signature.
+               (data (if (string-prefix? (basename url)
+                                         (basename signature-url))
+                         tarball
+                         (run-with-store store
+                           (mlet %store-monad ((drv (uncompressed-tarball
+                                                     (basename url) tarball)))
+                             (mbegin %store-monad
+                               (built-derivations (list drv))
+                               (return (derivation->output-path drv)))))))
+
+               (ret  (gnupg-verify* sig data #:key-download key-download)))
           (if ret
               tarball
               (begin
@@ -179,7 +234,7 @@ values: the item from LST1 and the item from LST2 that match PRED."
 PACKAGE, or #f and #f when PACKAGE is up-to-date.  KEY-DOWNLOAD specifies a
 download policy for missing OpenPGP keys; allowed values: 'always', 'never',
 and 'interactive' (default)."
-  (match (package-update-path package updaters)
+  (match (package-latest-release* package updaters)
     (($ <upstream-source> _ version urls signature-urls)
      (let*-values (((name)
                     (package-name package))

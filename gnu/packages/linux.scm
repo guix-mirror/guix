@@ -1198,7 +1198,7 @@ configuration and monitoring interfaces.")
 (define-public iw
   (package
     (name "iw")
-    (version "4.3")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1206,7 +1206,7 @@ configuration and monitoring interfaces.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "085jyvrxzarvn5jl0fk618jjxy50nqx7ifngszc4jxk6a4ddibd6"))))
+                "1klpvv98bnx1zm6aqalnri2vd7w80scmdaxr2qnblb6mz82whk1j"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libnl" ,libnl)))
@@ -2664,7 +2664,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.8.3")
+    (version "4.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2672,7 +2672,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1wlflrygnpndppil9g12pk184f75g9qx1lkr0x1gijigglqhr9n1"))))
+                "1ib1ybpjhcymcycjiraz1vk01qlyvpwcg7mwfhmacdy3cvbfl9mz"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)

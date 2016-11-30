@@ -437,15 +437,6 @@ security, and applying best practice development processes.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'install 'disable-egg-compression
-           (lambda _
-             ;; Do not compress the egg.
-             ;; See <http://bugs.gnu.org/20765>.
-             (let ((port (open-file "setup.cfg" "a")))
-               (display "\n[easy_install]\nzip_ok = 0\n"
-                        port)
-               (close-port port)
-               #t)))
          (add-after 'install 'docs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -462,7 +453,6 @@ security, and applying best practice development processes.")
        ("python-sphinx" ,python-sphinx)
        ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("python-setuptools" ,python-setuptools)
        ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("python-ndg-httpsclient" ,python-ndg-httpsclient)

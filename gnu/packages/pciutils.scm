@@ -30,7 +30,7 @@
 (define-public pciutils
   (package
     (name "pciutils")
-    (version "3.5.1")
+    (version "3.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -38,7 +38,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0byl2f897w5lhs4bvr6p7qwcz9bllj2zyfv7nywbcbsnb9ha9wrb"))))
+                "1z2y4f3cyvm7a0dyan0n6jpb3p9pvh35lrim0058slj0kwd1969s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

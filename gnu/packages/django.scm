@@ -54,10 +54,6 @@
                      (string-append ".:" (getenv "PYTHONPATH")))
              (zero? (system* "python" "tests/runtests.py")))))))
     ;; TODO: Install extras/django_bash_completion.
-    (propagated-inputs
-     ;; Django uses 'pkg_resources' (part of setuptools) to locate templates
-     ;; at run-time.
-     `(("python-setuptools" ,python-setuptools)))
     (native-inputs
      `(("tzdata", tzdata)
        ;; bcrypt and argon2-cffi are extra requirements not yet in guix
@@ -112,8 +108,6 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-django" ,python-django)))
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/alsoicode/django-simple-math-captcha")
     (synopsis "Easy-to-use math field/widget captcha for Django forms")
     (description
@@ -147,23 +141,16 @@ with arguments to the field constructor.")
     (native-inputs
      `(("python-django" ,python-django)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (inputs
-     `(("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://pytest-django.readthedocs.org/")
     (synopsis "Django plugin for py.test")
     (description "Pytest-django is a plugin for py.test that provides a set of
 useful tools for testing Django applications and projects.")
-    (properties `((python2-variant . ,(delay python2-pytest-django))))
     (license license:bsd-3)))
 
 (define-public python2-pytest-django
-  (let ((base (package-with-python2
-                (strip-python2-variant python-pytest-django))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs base))))))
+  (package-with-python2 python-pytest-django))
 
 (define-public python-django-filter
   (package
@@ -186,13 +173,7 @@ useful tools for testing Django applications and projects.")
 some of the more mundane bits of view code.  Specifically, it allows users to
 filter down a queryset based on a model’s fields, displaying the form to let
 them do this.")
-    (properties `((python2-variant . ,(delay python2-django-filter))))
     (license license:bsd-3)))
 
 (define-public python2-django-filter
-  (let ((base (package-with-python2
-                (strip-python2-variant python-django-filter))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs base))))))
+  (package-with-python2 python-django-filter))

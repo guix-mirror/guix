@@ -314,3 +314,25 @@ no race conditions.")
       ;; and patched GNU Make is under its own license.
       (license (list (non-copyleft "COPYING.md")
                      (package-license gnu-make))))))
+
+(define-public zzuf
+  (package
+    (name "zzuf")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/samhocevar/zzuf/releases/download/v"
+             version "/" name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mpzjaksc2qg2hzqflf39pl06p53qam2dn3hkhkcv6p00d2n4kx3"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/samhocevar/zzuf")
+    (synopsis "Transparent application input fuzzer")
+    (description "Zzuf is a transparent application input fuzzer.  It works by
+intercepting file operations and changing random bits in the program's
+input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
+    (license (non-copyleft "http://www.wtfpl.net/txt/copying/"))))

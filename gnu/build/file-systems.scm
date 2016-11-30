@@ -464,6 +464,27 @@ form:
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
 FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
 run a file system check."
+
+  (define (mount-nfs source mount-point type flags options)
+    (let* ((idx (string-rindex source #\:))
+           (host-part (string-take source idx))
+           ;; Strip [] from around host if present
+           (host (match (string-split host-part (string->char-set "[]"))
+                 (("" h "") h)
+                 ((h) h)))
+           (aa (match (getaddrinfo host "nfs") ((x . _) x)))
+           (sa (addrinfo:addr aa))
+           (inet-addr (inet-ntop (sockaddr:fam sa)
+                                 (sockaddr:addr sa))))
+
+      ;; Mounting an NFS file system requires passing the address
+      ;; of the server in the addr= option
+      (mount source mount-point type flags
+             (string-append "addr="
+                            inet-addr
+                            (if options
+                                (string-append "," options)
+                                "")))))
   (match spec
     ((source title mount-point type (flags ...) options check?)
      (let ((source      (canonicalize-device-spec source title))
@@ -481,7 +502,11 @@ run a file system check."
              (call-with-output-file mount-point (const #t)))
            (mkdir-p mount-point))
 
-       (mount source mount-point type flags options)
+       (cond
+        ((string-prefix? "nfs" type)
+         (mount-nfs source mount-point type flags options))
+        (else
+         (mount source mount-point type flags options)))
 
        ;; For read-only bind mounts, an extra remount is needed, as per
        ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.

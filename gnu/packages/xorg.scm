@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -333,6 +334,44 @@ the Present extension, a complete direct rendering solution for OpenGL is
 provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
+
+
+(define-public editres
+  (package
+    (name "editres")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/app/" name "-"
+               version
+               ".tar.bz2"))
+        (sha256
+         (base32
+          "1w2d5hb5pw9ii2jlf4yjlp899402zfwc8hdkpdr3i1fy1cjd2riv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output "/lib/X11/app-defaults"))))
+    (inputs
+     `(("libxaw" ,libxaw)
+       ("libxmu" ,libxmu)
+       ("libxt" ,libxt)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Tool to browse and edit X Toolkit resource specifications")
+    (description
+     "Editres is a tool that allows users and application developers to view
+the full widget hierarchy of any X Toolkit application that speaks the Editres
+protocol.  In addition, editres will help the user construct resource
+specifications, allow the user to apply the resource to the application and
+view the results dynamically.  Once the user is happy with a resource
+specification editres will append the resource string to the user's X
+Resources file.")
+    (license license:x11)))
 
 
 (define-public encodings
@@ -4847,7 +4886,7 @@ an X Window System display.")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.5.1")
+    (version "1.5.2")
     (source
       (origin
         (method url-fetch)
@@ -4857,7 +4896,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1630v3sfvwwlimb2ja10c84ql6v1mw9bdfhvan7pbybkgi99h25p"))))
+            "0w8d07bkmjiarkx09579bl8zsq903mn8javc7qpi0ix4ink5x502"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)

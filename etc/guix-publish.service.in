@@ -1,0 +1,19 @@
+# This is a "service unit file" for the systemd init system to launch
+# 'guix publish'.  Drop it in /etc/systemd/system or similar to have
+# 'guix publish' automatically started.
+
+[Unit]
+Description=Publish the GNU Guix store
+
+[Service]
+ExecStart=@bindir@/guix publish --user=nobody --port=8181
+Environment=GUIX_LOCPATH=/root/.guix-profile/lib/locale
+RemainAfterExit=yes
+StandardOutput=syslog
+StandardError=syslog
+
+# See <https://lists.gnu.org/archive/html/guix-devel/2016-04/msg00608.html>.
+TasksMax=1024
+
+[Install]
+WantedBy=multi-user.target

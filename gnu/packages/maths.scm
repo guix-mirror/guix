@@ -549,21 +549,29 @@ incompatible with HDF5.")
 (define-public hdf5
   (package
     (name "hdf5")
-    (version "1.8.17")
+    (version "1.8.18")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-"
-                          version "/src/hdf5-"
-                          version ".tar.bz2"))
+      (uri (list (string-append "http://www.hdfgroup.org/ftp/HDF5/releases/"
+                                "hdf5-" version "/src/hdf5-"
+                                version ".tar.bz2")
+                 (string-append "https://support.hdfgroup.org/ftp/HDF5/"
+                                "current"
+                                (apply string-append
+                                       (take (string-split version #\.) 2))
+                                "/src/hdf5-" version ".tar.bz2")))
       (sha256
-       (base32 "0sj8x0gfs5fb28gipnynb9wpkz113h8wq9sva9mxx66kv27xsdgw"))
+       (base32 "13542vrnl1p35n8vbq0wzk40vddmm33q5nh04j98c7r1yjnxxih1"))
       (patches (list (search-patch "hdf5-config-date.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(;; Some of the users, notably Flann, need the C++ interface.
+       #:configure-flags '("--enable-cxx")
+
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-configure
            (lambda _

@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
@@ -39,6 +41,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
@@ -55,9 +58,14 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
 (define-public librecad
@@ -588,3 +596,149 @@ fundamental, primitive shapes are represented as code in the user-level
 language.")
       (license (list license:lgpl2.1+             ;library
                      license:gpl2+)))))           ;Guile bindings
+
+;; We use kicad from a git commit, because support for boost 1.61.0 has been
+;; recently added.
+(define-public kicad
+  (let ((commit "4ee344e150bfaf3a6f3f7bf935fb96ae07c423fa")
+        (revision "1"))
+    (package
+      (name "kicad")
+      (version (string-append "4.0-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.launchpad.net/kicad")
+               (commit commit)))
+         (sha256
+          (base32 "0kf6r92nps0658i9n3p9vp5dzbssmc22lvjv5flyvnlf83l63s4n"))
+         (file-name (string-append name "-" version "-checkout"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:out-of-source? #t
+         #:tests? #f ; no tests
+         #:configure-flags
+         (list "-DKICAD_STABLE_VERSION=ON"
+               "-DKICAD_REPO_NAME=stable"
+               ,(string-append "-DKICAD_BUILD_VERSION=4.0-"
+                               (string-take commit 7))
+               "-DCMAKE_BUILD_TYPE=Release"
+               "-DKICAD_SKIP_BOOST=ON"; Use our system's boost library.
+               "-DKICAD_SCRIPTING=ON"
+               "-DKICAD_SCRIPTING_MODULES=ON"
+               "-DKICAD_SCRIPTING_WXPYTHON=ON"
+               ;; Has to be set explicitely, as we don't have the wxPython
+               ;; headers in the wxwidgets store item, but in wxPython.
+               (string-append "-DCMAKE_CXX_FLAGS=-I"
+                              (assoc-ref %build-inputs "wxpython")
+                              "/include/wx-3.0")
+               "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
+               ;; TODO: Enable this when CA certs are working with curl.
+               "-DBUILD_GITHUB_PLUGIN=OFF")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-program
+             ;; Ensure correct Python at runtime.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (python (assoc-ref inputs "python"))
+                      (file (string-append out "/bin/kicad"))
+                      (path (string-append
+                             out
+                             "/lib/python2.7/site-packages:"
+                             (getenv "PYTHONPATH"))))
+                 (wrap-program file
+                   `("PYTHONPATH" ":" prefix (,path))
+                   `("PATH" ":" prefix
+                     (,(string-append python "/bin:")))))
+               #t)))))
+      (native-inputs
+       `(("boost" ,boost)
+         ("gettext" ,gnu-gettext)
+         ("pkg-config" ,pkg-config)
+         ("swig" ,swig)
+         ("zlib" ,zlib)))
+      (inputs
+       `(("cairo" ,cairo)
+         ("curl" ,curl)
+         ("desktop-file-utils" ,desktop-file-utils)
+         ("glew" ,glew)
+         ("glm" ,glm)
+         ("hicolor-icon-theme" ,hicolor-icon-theme)
+         ("libsm" ,libsm)
+         ("mesa" ,mesa)
+         ("openssl" ,openssl)
+         ("python" ,python-2)
+         ("wxwidgets" ,wxwidgets-gtk2)
+         ("wxpython" ,python2-wxpython)))
+      (home-page "http://kicad-pcb.org/")
+      (synopsis "Electronics Design Automation Suite")
+      (description "Kicad is a program for the formation of printed circuit
+boards and electrical circuits.  The software has a number of programs that
+perform specific functions, for example, pcbnew (Editing PCB), eeschema (editing
+electrical diagrams), gerbview (viewing Gerber files) and others.")
+      (license license:gpl3+))))
+
+(define-public kicad-library
+  (let ((version "4.0.4"))
+    (package
+      (name "kicad-library")
+      (version version)
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "http://downloads.kicad-pcb.org/libraries/kicad-library-"
+                      version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1wyda58y39lhxml0xv1ngvddi0nqihx9bnlza46ajzms38ajvh12"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:out-of-source? #t
+         #:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-footprints ; from footprints tarball
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (zero? (system* "tar" "xvf"
+                               (assoc-ref inputs "kicad-footprints")
+                               "-C" (string-append (assoc-ref outputs "out")
+                                                   "/share/kicad/modules")
+                               "--strip-components=1"))))
+           ;; We change the default global footprint file, which is generated if
+           ;; it doesn't exist in user's home directory, from the one using the
+           ;; github plugin, to the one using the KISYSMOD environment path.
+           (add-after 'install-footprints 'use-pretty-footprint-table
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (template-dir (string-append out "/share/kicad/template"))
+                      (fp-lib-table (string-append template-dir "/fp-lib-table")))
+                 (delete-file fp-lib-table)
+                 (copy-file (string-append fp-lib-table ".for-pretty")
+                              fp-lib-table))
+               #t)))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "KISYSMOD") ; footprint path
+              (files '("share/kicad/modules")))
+             (search-path-specification
+              (variable "KISYS3DMOD") ; 3D model path
+              (files '("share/kicad/modules/packages3d")))))
+      ;; Kicad distributes footprints in a separate tarball
+      (native-inputs
+       `(("kicad-footprints"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://downloads.kicad-pcb.org/libraries/kicad-footprints-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0ya4gg6clz3vp2wrb67xwg0bhwh5q8ag39jjmpcp4zjcqs1f48rb"))))))
+      (home-page "http://kicad-pcb.org/")
+      (synopsis "Libraries for kicad")
+      (description "This package provides Kicad component, footprint and 3D
+render model libraries.")
+      (license license:lgpl2.0+))))

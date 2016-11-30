@@ -19,6 +19,7 @@
 (define-module (gnu services cups)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services configuration)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages cups)
@@ -26,16 +27,9 @@
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix gexp)
-  #:use-module (texinfo)
-  #:use-module (texinfo serialize)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (append-map))
-  #:use-module (srfi srfi-34)
-  #:use-module (srfi srfi-35)
-  #:export (&cups-configuation-error
-            cups-configuration-error?
-
-            cups-service-type
+  #:export (cups-service-type
             cups-configuration
             opaque-cups-configuration
 
@@ -51,91 +45,6 @@
 ;;;
 ;;; Code:
 
-(define-condition-type &cups-configuration-error &error
-  cups-configuration-error?)
-
-(define (cups-error message)
-  (raise (condition (&message (message message))
-                    (&cups-configuration-error))))
-(define (cups-configuration-field-error field val)
-  (cups-error
-   (format #f "Invalid value for field ~a: ~s" field val)))
-(define (cups-configuration-missing-field kind field)
-  (cups-error
-   (format #f "~a configuration missing required field ~a" kind field)))
-
-(define-record-type* <configuration-field>
-  configuration-field make-configuration-field configuration-field?
-  (name configuration-field-name)
-  (type configuration-field-type)
-  (getter configuration-field-getter)
-  (predicate configuration-field-predicate)
-  (serializer configuration-field-serializer)
-  (default-value-thunk configuration-field-default-value-thunk)
-  (documentation configuration-field-documentation))
-
-(define (serialize-configuration config fields)
-  (for-each (lambda (field)
-              ((configuration-field-serializer field)
-               (configuration-field-name field)
-               ((configuration-field-getter field) config)))
-            fields))
-
-(define (validate-configuration config fields)
-  (for-each (lambda (field)
-              (let ((val ((configuration-field-getter field) config)))
-                (unless ((configuration-field-predicate field) val)
-                  (cups-configuration-field-error
-                   (configuration-field-name field) val))))
-            fields))
-
-(define-syntax define-configuration
-  (lambda (stx)
-    (define (id ctx part . parts)
-      (let ((part (syntax->datum part)))
-        (datum->syntax
-         ctx
-         (match parts
-           (() part)
-           (parts (symbol-append part
-                                 (syntax->datum (apply id ctx parts))))))))
-    (syntax-case stx ()
-      ((_ stem (field (field-type def) doc) ...)
-       (with-syntax (((field-getter ...)
-                      (map (lambda (field)
-                             (id #'stem #'stem #'- field))
-                           #'(field ...)))
-                     ((field-predicate ...)
-                      (map (lambda (type)
-                             (id #'stem type #'?))
-                           #'(field-type ...)))
-                     ((field-serializer ...)
-                      (map (lambda (type)
-                             (id #'stem #'serialize- type))
-                           #'(field-type ...))))
-           #`(begin
-               (define-record-type* #,(id #'stem #'< #'stem #'>)
-                 #,(id #'stem #'% #'stem)
-                 #,(id #'stem #'make- #'stem)
-                 #,(id #'stem #'stem #'?)
-                 (field field-getter (default def))
-                 ...)
-               (define #,(id #'stem #'stem #'-fields)
-                 (list (configuration-field
-                        (name 'field)
-                        (type 'field-type)
-                        (getter field-getter)
-                        (predicate field-predicate)
-                        (serializer field-serializer)
-                        (default-value-thunk (lambda () def))
-                        (documentation doc))
-                       ...))
-               (define-syntax-rule (stem arg (... ...))
-                 (let ((conf (#,(id #'stem #'% #'stem) arg (... ...))))
-                   (validate-configuration conf
-                                           #,(id #'stem #'stem #'-fields))
-                   conf))))))))
-
 (define %cups-accounts
   (list (user-group (name "lp") (system? #t))
         (user-group (name "lpadmin") (system? #t))
@@ -147,24 +56,6 @@
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
-(define (uglify-field-name field-name)
-  (let ((str (symbol->string field-name)))
-    (string-concatenate
-     (map string-titlecase
-          (string-split (if (string-suffix? "?" str)
-                            (substring str 0 (1- (string-length str)))
-                            str)
-                        #\-)))))
-
-(define (serialize-field field-name val)
-  (format #t "~a ~a\n" (uglify-field-name field-name) val))
-
-(define (serialize-package field-name val)
-  #f)
-
-(define (serialize-string field-name val)
-  (serialize-field field-name val))
-
 (define (multiline-string-list? val)
   (and (list? val)
        (and-map (lambda (x)
@@ -173,27 +64,10 @@
 (define (serialize-multiline-string-list field-name val)
   (for-each (lambda (str) (serialize-field field-name str)) val))
 
-(define (space-separated-string-list? val)
-  (and (list? val)
-       (and-map (lambda (x)
-                  (and (string? x) (not (string-index x #\space))))
-                val)))
-(define (serialize-space-separated-string-list field-name val)
-  (serialize-field field-name (string-join val " ")))
-
 (define (space-separated-symbol-list? val)
   (and (list? val) (and-map symbol? val)))
 (define (serialize-space-separated-symbol-list field-name val)
   (serialize-field field-name (string-join (map symbol->string val) " ")))
-
-(define (file-name? val)
-  (and (string? val)
-       (string-prefix? "/" val)))
-(define (serialize-file-name field-name val)
-  (serialize-string field-name val))
-
-(define (serialize-boolean field-name val)
-  (serialize-string field-name (if val "yes" "no")))
 
 (define (non-negative-integer? val)
   (and (exact-integer? val) (not (negative? val))))
@@ -333,7 +207,7 @@ methods.  Otherwise apply to only the listed methods.")
 
 (define-configuration location-access-control
   (path
-   (file-name (cups-configuration-missing-field 'location-access-control 'path))
+   (file-name (configuration-missing-field 'location-access-control 'path))
    "Specifies the URI path to which the access control applies.")
   (access-controls
    (access-control-list '())
@@ -359,7 +233,7 @@ methods.  Otherwise apply to only the listed methods.")
 
 (define-configuration policy-configuration
   (name
-   (string (cups-configuration-missing-field 'policy-configuration 'name))
+   (string (configuration-missing-field 'policy-configuration 'name))
    "Name of the policy.")
   (job-private-access
    (string "@OWNER @SYSTEM")
@@ -925,12 +799,12 @@ IPP specifications.")
    (package-list '())
    "Drivers and other extensions to the CUPS package.")
   (cupsd.conf
-   (string (cups-configuration-missing-field 'opaque-cups-configuration
-                                             'cupsd.conf))
+   (string (configuration-missing-field 'opaque-cups-configuration
+                                        'cupsd.conf))
    "The contents of the @code{cupsd.conf} to use.")
   (cups-files.conf
-   (string (cups-configuration-missing-field 'opaque-cups-configuration
-                                             'cups-files.conf))
+   (string (configuration-missing-field 'opaque-cups-configuration
+                                        'cups-files.conf))
    "The contents of the @code{cups-files.conf} to use."))
 
 (define %cups-activation
@@ -1117,8 +991,8 @@ extensions that it uses."
                                extensions)))))))))
 
 ;; A little helper to make it easier to document all those fields.
-(define (generate-documentation)
-  (define documentation
+(define (generate-cups-documentation)
+  (generate-documentation
     `((cups-configuration
        ,cups-configuration-fields
        (files-configuration files-configuration)
@@ -1132,35 +1006,5 @@ extensions that it uses."
        ,location-access-control-fields
        (method-access-controls method-access-controls))
       (operation-access-controls ,operation-access-control-fields)
-      (method-access-controls ,method-access-control-fields)))
-  (define (str x) (object->string x))
-  (define (generate configuration-name)
-    (match (assq-ref documentation configuration-name)
-      ((fields . sub-documentation)
-       `((para "Available " (code ,(str configuration-name)) " fields are:")
-         ,@(map
-            (lambda (f)
-              (let ((field-name (configuration-field-name f))
-                    (field-type (configuration-field-type f))
-                    (field-docs (cdr (texi-fragment->stexi
-                                      (configuration-field-documentation f))))
-                    (default (catch #t
-                               (configuration-field-default-value-thunk f)
-                               (lambda _ '%invalid))))
-                (define (show-default? val)
-                  (or (string? default) (number? default) (boolean? default)
-                      (and (symbol? val) (not (eq? val '%invalid)))
-                      (and (list? val) (and-map show-default? val))))
-                `(deftypevr (% (category
-                                (code ,(str configuration-name)) " parameter")
-                               (data-type ,(str field-type))
-                               (name ,(str field-name)))
-                   ,@field-docs
-                   ,@(if (show-default? default)
-                         `((para "Defaults to " (samp ,(str default)) "."))
-                         '())
-                   ,@(append-map
-                      generate
-                      (or (assq-ref sub-documentation field-name) '())))))
-            fields)))))
-  (stexi->texi `(*fragment* . ,(generate 'cups-configuration))))
+      (method-access-controls ,method-access-control-fields))
+    'cups-configuration))

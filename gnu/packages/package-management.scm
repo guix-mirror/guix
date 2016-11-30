@@ -51,6 +51,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages ssh)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 popen)
@@ -143,9 +144,11 @@
                      ;; Guile-JSON automatically.
                      (let* ((out    (assoc-ref outputs "out"))
                             (json   (assoc-ref inputs "guile-json"))
+                            (ssh    (assoc-ref inputs "guile-ssh"))
                             (gnutls (assoc-ref inputs "gnutls"))
                             (path   (string-append
                                      json "/share/guile/site/2.0:"
+                                     ssh "/share/guile/site/2.0:"
                                      gnutls "/share/guile/site/2.0")))
 
                        ;; Ignore user settings so that a bogus
@@ -203,6 +206,7 @@
     (propagated-inputs
      `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
        ("guile-json" ,guile-json)
+       ("guile-ssh" ,guile-ssh)
        ("geiser" ,geiser)                         ;for guix.el
        ("emacs-magit-popup" ,emacs-magit-popup))) ;for "M-x guix" command
 

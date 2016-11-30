@@ -49,9 +49,8 @@
         ("python-pyyaml" ,python-pyyaml)
         ("python-six" ,python-six)
         ("python-stevedore" ,python-stevedore)))
-    (inputs
+    (native-inputs
       `(("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
         ;; Tests
         ("python-fixtures" ,python-fixtures)
         ("python-mock" ,python-mock)
@@ -85,10 +84,9 @@ all the files it generates a report.")
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))
-    (inputs
+    (native-inputs
       `(("python-babel" ,python-babel)
         ("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
         ;; Tests.
         ("python-oslotest" ,python-oslotest)))
     (home-page "http://www.openstack.org/")
@@ -122,9 +120,8 @@ manner.")
         ("python-pep8-1.5.7" ,python-pep8-1.5.7)
         ("python-pyflakes-0.8.1" ,python-pyflakes-0.8.1)
         ("python-six" ,python-six)))
-    (inputs
-      `(("python-setuptools" ,python-setuptools)
-        ;; Tests
+    (native-inputs
+      `(;; Tests
         ("python-testscenarios" ,python-testscenarios)))
     (home-page "http://github.com/openstack-dev/hacking")
     (synopsis "OpenStack hacking guideline enforcement")
@@ -152,8 +149,6 @@ guidelines}.")
     (native-inputs
       `(("python-fixtures" ,python-fixtures)
         ("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
-        ("python-six" ,python-six)
         ("python-testtools" ,python-testtools)))
     (home-page "http://www.openstack.org/")
     (synopsis "Mock object framework for Python")
@@ -181,14 +176,14 @@ tested on Python version 3.2, 2.7 and 2.6.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;; Circular dependency with python-oslotest
-    (inputs
+    (propagated-inputs
       `(("python-appdirs" ,python-appdirs)
+        ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+      `(("python-pbr" ,python-pbr)
         ("python-fixtures" ,python-fixtures)
         ("python-mimeparse" ,python-mimeparse)
-        ("python-pbr" ,python-pbr)
-        ("python-pyyaml" ,python-pyyaml)
         ("python-testrepository" ,python-testrepository)
-        ("python-setuptools" ,python-setuptools)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
     (home-page "http://www.openstack.org/")
@@ -221,12 +216,11 @@ tested on Python version 3.2, 2.7 and 2.6.")
      ;; when building the package. Skip the tests for now.
      `(#:tests? #f))
     (propagated-inputs
+     `(("python-subunit" ,python-subunit)))
+    (native-inputs
      `(("python-pbr" ,python-pbr)
-       ("python-subunit" ,python-subunit)
-       ("python-testtools" ,python-testtools)))
-    (inputs
-      `(("python-babel" ,python-babel)
-        ("python-setuptools" ,python-setuptools)))
+       ("python-testtools" ,python-testtools)
+       ("python-babel" ,python-babel)))
     (home-page "https://www.openstack.org/")
     (synopsis "Testr wrapper to provide functionality for OpenStack projects")
     (description
@@ -252,10 +246,9 @@ tested on Python version 3.2, 2.7 and 2.6.")
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-six" ,python-six)))
-    (inputs
-     `(("python-pbr" ,python-pbr)))
     (native-inputs
-     `(("python-discover" ,python-discover)
+     `(("python-pbr" ,python-pbr)
+       ("python-discover" ,python-discover)
        ("python-docutils" ,python-docutils)
        ("python-fixtures" ,python-fixtures)
        ("python-mock" ,python-mock)
@@ -267,16 +260,10 @@ tested on Python version 3.2, 2.7 and 2.6.")
     (description
       "This module provides a building block to stub out the HTTP requests
 portions of your testing code.")
-    (license asl2.0)
-    (properties `((python2-variant . ,(delay python2-requests-mock))))))
+    (license asl2.0)))
 
 (define-public python2-requests-mock
-  (let ((base (package-with-python2
-                (strip-python2-variant python-requests-mock))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs base))))))
+  (package-with-python2 python-requests-mock))
 
 (define-public python-stevedore
   (package
@@ -292,10 +279,8 @@ portions of your testing code.")
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six)))
-    (inputs
-      `(("python-pbr" ,python-pbr)))
     (native-inputs
-      `(("python-setuptools" ,python-setuptools)
+      `(("python-pbr" ,python-pbr)
         ;; Tests
         ("python-docutils" ,python-docutils)
         ("python-mock" ,python-mock)
@@ -346,12 +331,11 @@ extensions.")
         ("python-paramiko" ,python-paramiko)
         ("python-pbr" ,python-pbr)
         ("python-six" ,python-six)))
-    (inputs
+    (native-inputs
       `(("python-babel" ,python-babel)
         ("python-mock" ,python-mock)
         ("python-os-testr" ,python-os-testr)
-        ("python-oslotest" ,python-oslotest)
-        ("python-setuptools" ,python-setuptools)))
+        ("python-oslotest" ,python-oslotest)))
     (home-page "https://www.openstack.org/")
     (synopsis "OpenStack functional testing library")
     (description
@@ -382,9 +366,8 @@ common features used in Tempest.")
       `(("python-netaddr" ,python-netaddr)
         ("python-six" ,python-six)
         ("python-stevedore" ,python-stevedore)))
-    (inputs
+    (native-inputs
       `(("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
         ;; Tests
         ("python-oslo.i18n" ,python-oslo.i18n)
         ("python-mock" ,python-mock)
@@ -412,10 +395,9 @@ common features used in Tempest.")
         (base32
          "0kvha0rs9295njyl2z6n6zm5dapi5mrl5zwjm0m6ldqrvccyf8c3"))))
     (build-system python-build-system)
-    (inputs
+    (native-inputs
       `(("python-babel" ,python-babel)
         ("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
         ;; Tests.
         ("python-oslotest" ,python-oslotest)))
     (home-page "http://launchpad.net/oslo")
@@ -444,9 +426,8 @@ pipeline and used by various modules such as logging.")
     (propagated-inputs
       `(("python-babel" ,python-babel)
         ("python-six" ,python-six)))
-    (inputs
+    (native-inputs
       `(("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
         ;; Tests
         ("python-mock" ,python-mock)
         ("python-mox3" ,python-mox3)
@@ -486,13 +467,12 @@ in an application or library.")
      ("python-oslo.utils" ,python-oslo.utils)
      ("python-oslo.serialization" ,python-oslo.serialization)
      ("python-six" ,python-six)))
-  (inputs
+  (native-inputs
     `(("python-babel" ,python-babel)
       ("python-iso8601" ,python-iso8601)
       ("python-mock" ,python-mock)
       ("python-oslotest" ,python-oslotest)
-      ("python-pbr" ,python-pbr)
-      ("python-setuptools" ,python-setuptools)))
+      ("python-pbr" ,python-pbr)))
   (home-page "http://launchpad.net/oslo")
   (synopsis "Python logging library of the Oslo project")
   (description
@@ -523,10 +503,9 @@ handlers and support for context specific logging (like resource id’s etc).")
         ("python-simplejson" ,python-simplejson)
         ("python-six" ,python-six)
         ("python-pytz" ,python-pytz)))
-    (inputs
+    (native-inputs
       `(("python-babel" ,python-babel)
         ("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
         ;; Tests.
         ("python-mock" ,python-mock)
         ("python-oslo.i18n" ,python-oslo.i18n)
@@ -555,11 +534,10 @@ in transmittable and storable formats, such as JSON and MessagePack.")
     (build-system python-build-system)
     (propagated-inputs
       `(("python-requests" ,python-requests)))
-    (inputs
+    (native-inputs
       `(("python-pbr" ,python-pbr)
         ("python-docutils" ,python-docutils)
         ("python-hacking" ,python-hacking)
-        ("python-setuptools" ,python-setuptools)
         ("python-sphinx" ,python-sphinx)))
     (home-page "http://www.openstack.org/")
     (synopsis "OpenStack sphinx extensions and theme")
@@ -591,10 +569,9 @@ from the OpenStack project.")
         ("python-mock" ,python-mock)
         ("python-mox3" ,python-mox3)
         ("python-six" ,python-six)))
-    (inputs
+    (native-inputs
       `(("python-pbr" ,python-pbr)
         ("python-os-client-config" ,python-os-client-config)
-        ("python-setuptools" ,python-setuptools)
         ("python-subunit" ,python-subunit)
         ("python-testrepository" ,python-testrepository)
         ("python-testscenarios" ,python-testscenarios)
@@ -635,10 +612,9 @@ and better support for mocking results.")
         ("python-netifaces" ,python-netifaces)
         ("python-pytz" ,python-pytz)
         ("python-six" ,python-six)))
-    (inputs
+    (native-inputs
       `(("python-babel" ,python-babel)
         ("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
         ;; Tests.
         ("python-oslotest" ,python-oslotest)
         ("python-mock" ,python-mock)
@@ -668,8 +644,7 @@ handling.")
           "1w4csvkah67rfpxylxnvs2s3594i0f9isy8pf4gnsqs5zirvjaa4"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-sphinx" ,python-sphinx)
+     `(("python-sphinx" ,python-sphinx)
        ;; and some packages for the tests
        ("openssl" ,openssl)
        ("python-coverage" ,python-coverage)
@@ -744,7 +719,6 @@ LDAP.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pbr" ,python-pbr)
-       ("python-setuptools" ,python-setuptools)
        ("python-sphinx" ,python-sphinx)
        ;; The folloing packages are needed for the tests.
        ("python-coverage" ,python-coverage)
@@ -814,9 +788,10 @@ permanence.")
                          (list git openssh))))))))))
     (native-inputs
      `(("python-pbr" ,python-pbr)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
     (inputs
-     `(("python-requests" ,python-requests)
-       ("git" ,git)
+     `(("git" ,git)
        ("openssh" ,openssh)))
     (home-page "http://docs.openstack.org/infra/git-review/")
     (synopsis "Command-line tool for Gerrit")
@@ -826,8 +801,4 @@ Gerrit for review, or fetching existing ones.")
     (license asl2.0)))
 
 (define-public python2-git-review
-  (let ((base (package-with-python2 (strip-python2-variant python-git-review))))
-    (package (inherit base)
-             (native-inputs
-              `(("python2-setuptools" ,python2-setuptools)
-                ,@(package-native-inputs base))))))
+  (package-with-python2 python-git-review))

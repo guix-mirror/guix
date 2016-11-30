@@ -1332,8 +1332,6 @@ specified directories.")
                 (("/usr") out)
                 (("distro_ver = .*") "distro_ver = ''"))
               #t))))))
-   (inputs
-    `(("python-setuptools" ,python2-setuptools)))
    (home-page "https://github.com/shawn-sterling/graphios")
    (synopsis "Emit Nagios metrics to Graphite, Statsd, and Librato")
    (description
@@ -1356,8 +1354,7 @@ of supported upstream metrics systems simultaneously.")
          "1bfc2xiplpad6f2nwi48y0kps7xqnsll85dlz63cy8k5bysl6d20"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)
-       ("python2-pycrypto" ,python2-pycrypto)
+     `(("python2-pycrypto" ,python2-pycrypto)
        ("python2-httplib2" ,python2-httplib2)
        ("python2-passlib" ,python2-passlib)
        ("python2-nose" ,python2-nose)
@@ -1699,13 +1696,15 @@ throughput (in the same interval).")
                (base32
                 "04q2cn8c83f6z6wn1scla1ilrpi5ssjc64987hvmwfvwvb82bvkp"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
        ("python-psutil" ,python-psutil)
        ("python-six" ,python-six)))
+    (inputs
+     ;; Requires setuptools >= 17.1 due to some features used, while our
+     ;; python currently only includes 12.0. TODO: Remove this input.
+     `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/nvbn/thefuck")
     (synopsis "Correct mistyped console command")
     (description

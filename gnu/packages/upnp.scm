@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "1.9")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -35,7 +36,7 @@
              "http://miniupnp.tuxfamily.org/files/miniupnpc-"
              version ".tar.gz"))
        (sha256
-        (base32 "0r24jdqcyf839n30ppimdna0hvybscyziaad7ng99fw0x19y88r9"))))
+        (base32 "0fzrc6fs8vzb2yvk01bd3q5jkarysl7gjlyaqncy3yvfk2wcwd6l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -54,14 +55,22 @@
         (string-append "LDFLAGS=-Wl,-rpath="
                        (assoc-ref %outputs "out") "/lib"))
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'qualify-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "external-ip.sh"
+               (("upnpc")
+                (string-append (assoc-ref outputs "out") "/bin/upnpc"))))))))
     (home-page "http://miniupnp.free.fr/")
-    (synopsis "Library implementing the client side UPnP protocol")
+    (synopsis "UPnP protocol client library")
     (description
-     "MiniUPnPc is a library is useful whenever an application needs to listen
-for incoming connections but is run behind a UPnP enabled router or firewall.
-Examples for such applications include: P2P applications, FTP clients for
-active mode, IRC (for DCC) or IM applications, network games, any server
-software.")
+     "The MiniUPnPc client library facilitates access to the services provided
+by any Universal Plug and Play (UPnP) Internet Gateway Device (IGD) present on
+the network.  In UPnP terminology, MiniUPnPc is a UPnP Control Point.  It is
+useful whenever an application needs to listen for incoming connections while
+running behind a UPnP-enabled router or firewall.  Such applications include
+peer-to-peer applications, active-mode FTP clients, DCC file transfers over
+IRC, instant messaging, network games, and most server software.")
     (license
      (x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))

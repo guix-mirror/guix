@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 (define-public cyrus-sasl
   (package
    (name "cyrus-sasl")
+   (replacement cyrus-sasl/fixed)
    (version "2.1.26")
    (source (origin
             (method url-fetch)
@@ -64,3 +66,10 @@ server writers.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "http://cyrusimap.web.cmu.edu")))
+
+(define cyrus-sasl/fixed
+  (package
+    (inherit cyrus-sasl)
+    (source (origin
+              (inherit (package-source cyrus-sasl))
+              (patches (search-patches "cyrus-sasl-CVE-2013-4122.patch"))))))

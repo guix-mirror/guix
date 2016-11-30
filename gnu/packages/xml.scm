@@ -329,6 +329,29 @@ XML parser and the high performance DOM implementation.")
 @code{XML::LibXML}.")
     (license (package-license perl))))
 
+(define-public perl-xml-libxslt
+  (package
+    (name "perl-xml-libxslt")
+    (version "1.95")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                           "XML-LibXSLT-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dggycql18kfxzkb1kw3yc7gslxlrrgyyn2r2ygsylycb89j3jpi"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("libxslt" ,libxslt)))
+    (propagated-inputs
+     `(("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "http://search.cpan.org/dist/XML-LibXSLT")
+    (synopsis "Perl bindings to GNOME libxslt library")
+    (description "This Perl module is an interface to the GNOME project's
+libxslt library.")
+    (license (package-license perl))))
+
 (define-public perl-xml-namespacesupport
   (package
     (name "perl-xml-namespacesupport")

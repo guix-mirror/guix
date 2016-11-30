@@ -34,7 +34,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl))
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages perl-web))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -266,6 +267,33 @@ manipulate, read, and write Zip archive files.")
 list manipulation routines.")
     (license (package-license perl))))
 
+(define-public perl-autovivification
+  (package
+    (name "perl-autovivification")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/V/VP/VPIT/"
+                           "autovivification-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1422kw9fknv7rbjkgdfflg1q3mb69d3yryszp38dn0bgzkqhwkc1"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/autovivification")
+    (synopsis "Lexically disable autovivification")
+    (description "When an undefined variable is dereferenced, it gets silently
+upgraded to an array or hash reference (depending of the type of the
+dereferencing).  This behaviour is called autovivification and usually does
+what you mean but it may be unnatural or surprising because your variables get
+populated behind your back.  This is especially true when several levels of
+dereferencing are involved, in which case all levels are vivified up to the
+last, or when it happens in intuitively read-only constructs like
+@code{exists}.  The pragma provided by this package lets you disable
+autovivification for some constructs and optionally throws a warning or an
+error when it would have happened.")
+    (license (package-license perl))))
+
 (define-public perl-base
   (package
     (name "perl-base")
@@ -378,6 +406,88 @@ library can nevertheless be used stand-alone, without Perl.")
     (synopsis "Boolean support for Perl")
     (description "This module provides basic Boolean support, by defining two
 special objects: true and false.")
+    (license (package-license perl))))
+
+(define-public perl-business-isbn-data
+  (package
+    (name "perl-business-isbn-data")
+    (version "20140910.003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISBN-Data-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jc5jrjwkr6pqga7998zkgw0yrxgb5n1y7lzgddawxibkf608mn7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Business-ISBN-Data")
+    (synopsis "Data files for Business::ISBN")
+    (description "This package provides a data pack for @code{Business::ISBN}.
+These data are generated from the RangeMessage.xml file provided by the ISBN
+Agency.")
+    (license (package-license perl))))
+
+(define-public perl-business-isbn
+  (package
+    (name "perl-business-isbn")
+    (version "3.003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISBN-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i2bxzqkki257rqbswa4ryj1grmwa5s47wrxln2ff5mha1ry31gm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-business-isbn-data" ,perl-business-isbn-data)
+       ("perl-mojolicious" ,perl-mojolicious)))
+    (home-page "http://search.cpan.org/dist/Business-ISBN")
+    (synopsis "Work with International Standard Book Numbers")
+    (description "This modules provides tools to deal with International
+Standard Book Numbers, including ISBN-10 and ISBN-13.")
+    (license artistic2.0)))
+
+(define-public perl-business-issn
+  (package
+    (name "perl-business-issn")
+    (version "0.91")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISSN-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dfnm7h7lbqj356700ldlmgbr51v6hyjn1qig2bb4ysl1wn1jnzi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Business-ISSN")
+    (synopsis "Work with International Standard Serial Numbers")
+    (description "This modules provides tools to deal with International
+Standard Serial Numbers.")
+    (license (package-license perl))))
+
+(define-public perl-business-ismn
+  (package
+    (name "perl-business-ismn")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "Business-ISMN-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cm1v75axg4gp6cnbyavmnqqjscsxh7nc60vcbw34rqivvf9idc9"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-tie-cycle" ,perl-tie-cycle)))
+    (home-page "http://search.cpan.org/dist/Business-ISMN")
+    (synopsis "Work with International Standard Music Numbers")
+    (description "This modules provides tools to deal with International
+Standard Music Numbers.")
     (license (package-license perl))))
 
 (define-public perl-cache-cache
@@ -1200,6 +1310,47 @@ functions and data structures for processing and analysing genomic and
 bioinformatics data.")
     (license gpl3+)))
 
+(define-public perl-data-compare
+  (package
+    (name "perl-data-compare")
+    (version "1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DC/DCANTRELL/"
+                           "Data-Compare-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wzasidg9yjcfsi2gdiaw6726ikqda7n24n0v2ngpaazakdkcjqx"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-find-rule" ,perl-file-find-rule)))
+    (home-page "http://search.cpan.org/dist/Data-Compare")
+    (synopsis "Compare Perl data structures")
+    (description "This module compares arbitrary data structures to see if
+they are copies of each other.")
+    (license (package-license perl))))
+
+(define-public perl-data-uniqid
+  (package
+    (name "perl-data-uniqid")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MW/MWX/Data-Uniqid-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1jsc6acmv97pzsvx1fqywz4qvxxpp7kwmb78ygyqpsczkfj9p4dn"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Data-Uniqid")
+    (synopsis "Perl extension for generating unique identifiers")
+    (description "@code{Data::Uniqid} provides three simple routines for
+generating unique ids.  These ids are coded with a Base62 systen to make them
+short and handy (e.g. to use it as part of a URL).")
+    (license (package-license perl))))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
@@ -1468,6 +1619,28 @@ operations, such as comparing two times, determining a date a given amount of
 time from another, or parsing international times.")
     (license (package-license perl))))
 
+(define-public perl-date-simple
+  (package
+    (name "perl-date-simple")
+    (version "3.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IZ/IZUT/"
+                           "Date-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "016x17r9wi6ffdc4idwirzd1sxqcb4lmq5fn2aiq25nf2iir5899"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Date-Simple")
+    (synopsis "Simple date handling")
+    (description "Dates are complex enough without times and timezones.  This
+module may be used to create simple date objects.  It handles validation,
+interval arithmetic, and day-of-week calculation.  It does not deal with
+hours, minutes, seconds, and time zones.")
+    ;; Can be used with either license.
+    (license (list (package-license perl) gpl2+))))
+
 (define-public perl-datetime
   (package
     (name "perl-datetime")
@@ -1496,6 +1669,30 @@ time from another, or parsing international times.")
 combinations.  It represents the Gregorian calendar, extended backwards in
 time before its creation (in 1582).")
     (license artistic2.0)))
+
+(define-public perl-datetime-calendar-julian
+  (package
+    (name "perl-datetime-calendar-julian")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PI/PIJLL/"
+                           "DateTime-Calendar-Julian-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03h0llkwsiw2d2ci1ah5x9sp8xrvnbgd471i5hnpgl5w32nnhndv"))))
+    (build-system perl-build-system)
+    ;; Only needed for tests
+    (native-inputs
+     `(("perl-datetime" ,perl-datetime)))
+    (home-page "http://search.cpan.org/dist/DateTime-Calendar-Julian")
+    (synopsis "Dates in the Julian calendar")
+    (description "This package is a companion module to @code{DateTime.pm}.
+It implements the Julian calendar.  It supports everything that
+@code{DateTime.pm} supports and more: about one day per century more, to be
+precise.")
+    (license (package-license perl))))
 
 (define-public perl-datetime-set
   (package
@@ -2125,6 +2322,86 @@ SHA-1 message digest algorithm for use by Perl programs.")
 modules separately and deal with them after the module is done installing.")
     (license (package-license perl))))
 
+(define-public perl-encode-detect
+  (package
+    (name "perl-encode-detect")
+    (version "1.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JG/JGMYERS/"
+                           "Encode-Detect-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wdv9ffgs4xyfh5dnh09dqkmmlbf5m1hxgdgb3qy6v6vlwx8jkc3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "http://search.cpan.org/dist/Encode-Detect")
+    (synopsis "Detect the encoding of data")
+    (description "This package provides a class @code{Encode::Detect} to detect
+the encoding of data.")
+    (license mpl1.1)))
+
+(define-public perl-encode-eucjpascii
+  (package
+    (name "perl-encode-eucjpascii")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
+                           "Encode-EUCJPASCII-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qg8kmi7r9jcf8326b4fyq5sdpqyim2a11h7j77q577xam6x767r"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Encode-EUCJPASCII")
+    (synopsis "ASCII mapping for eucJP encoding")
+    (description "This package provides an ASCII mapping for the eucJP
+encoding.")
+    (license (package-license perl))))
+
+(define-public perl-encode-jis2k
+  (package
+    (name "perl-encode-jis2k")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DANKOGAI/"
+                           "Encode-JIS2K-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k1mdj4rd9m1z4h7qd2dl92ky0r1rk7mmagwsvdb9pirvdr4vj0y"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Encode-JIS2K")
+    (synopsis "JIS X 0212 (aka JIS 2000) encodings")
+    (description "This package provides encodings for JIS X 0212, which is
+also known as JIS 2000.")
+    (license (package-license perl))))
+
+(define-public perl-encode-hanextra
+  (package
+    (name "perl-encode-hanextra")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AU/AUDREYT/"
+                           "Encode-HanExtra-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fj4vd8iva2i0j6s2fyhwgr9afrvhr6gjlzi7805h257mmnb1m0z"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Encode-HanExtra")
+    (synopsis "Additional Chinese encodings")
+    (description "This Perl module provides Chinese encodings that are not
+part of Perl by default, including \"BIG5-1984\", \"BIG5-2003\", \"BIG5PLUS\",
+\"BIG5EXT\", \"CCCII\", \"EUC-TW\", \"CNS11643-*\", \"GB18030\", and
+\"UNISYS\".")
+    (license expat)))
+
 (define-public perl-env-path
   (package
     (name "perl-env-path")
@@ -2323,6 +2600,29 @@ it ties together a family of modern toolchain modules.")
     (synopsis "Various portability utilities for module builders")
     (description "This module provides various portable helper functions for
 module building modules.")
+    (license (package-license perl))))
+
+(define-public perl-extutils-libbuilder
+  (package
+    (name "perl-extutils-libbuilder")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AM/AMBS/"
+                           "ExtUtils-LibBuilder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lmmfcjxvsvhn4f3v2lyylgr8dzcf5j7mnd1pkq3jc75dph724f5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "http://search.cpan.org/dist/ExtUtils-LibBuilder")
+    (synopsis "Tool to build C libraries")
+    (description "Some Perl modules need to ship C libraries together with
+their Perl code.  Although there are mechanisms to compile and link (or glue)
+C code in your Perl programs, there isn't a clear method to compile standard,
+self-contained C libraries.  This module main goal is to help in that task.")
     (license (package-license perl))))
 
 (define-public perl-file-changenotify
@@ -3023,6 +3323,26 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
 pseudo ttys.")
     (license (package-license perl))))
 
+(define-public perl-ipc-cmd
+  (package
+    (name "perl-ipc-cmd")
+    (version "0.96")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/IPC-Cmd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0a2v44x70gj9fd5wa8i08f9z6n14qppj1j49m1hc333wh72mzk6i"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IPC-Cmd")
+    (synopsis "Run interactive command-line programs")
+    (description "@code{IPC::Cmd} allows for the searching and execution of
+any binary on your system.  It adheres to verbosity settings and is able to
+run interactively.  It also has an option to capture output/error buffers.")
+    (license (package-license perl))))
+
 (define-public perl-ipc-run
   (package
     (name "perl-ipc-run")
@@ -3343,6 +3663,26 @@ version.")
     (description
      "@code{Log::Report} combines three tasks which are closely related in
 one: logging, exceptions, and translations.")
+    (license (package-license perl))))
+
+(define-public perl-lingua-translit
+  (package
+    (name "perl-lingua-translit")
+    (version "0.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AL/ALINKE/"
+                           "Lingua-Translit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "161589h08kzliga17i2g0hb0yn4cjmb8rdiyadq5bw97974bac14"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-Translit")
+    (synopsis "Transliterate text between writing systems")
+    (description "@code{Lingua::Translit} can be used to convert text from one
+writing system to another, based on national or international transliteration
+tables.  Where possible a reverse transliteration is supported.")
     (license (package-license perl))))
 
 (define-public perl-list-allutils
@@ -4372,6 +4712,26 @@ own set of Moose-like types.  These custom types can then be used to describe
 fields in Moo-based classes.")
     (license (package-license perl))))
 
+(define-public perl-mozilla-ca
+  (package
+    (name "perl-mozilla-ca")
+    (version "20160104")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AB/ABH/Mozilla-CA-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0aizn08lrdrgjz9vagkjmw2c7sxn46fzz521v9dbcqii4jd0d9r7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Mozilla-CA")
+    (synopsis "Mozilla's CA cert bundle in PEM format")
+    (description "@code{Mozilla::CA} provides a copy of Mozilla's bundle of
+Certificate Authority certificates in a form that can be consumed by modules
+and libraries based on OpenSSL.")
+    (license mpl2.0)))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
@@ -5043,6 +5403,25 @@ of Perl objects without duplicates for scalars and references.")
 interface to sets (as in: unordered collections of Perl scalars).  While not
 designed to be slow or big, neither has it been designed to be fast or
 compact.")
+    (license (package-license perl))))
+
+(define-public perl-sort-key
+  (package
+    (name "perl-sort-key")
+    (version "1.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SALVA/Sort-Key-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1kqs10s2plj6c96srk0j8d7xj8dxk1704r7mck8rqk09mg7lqspd"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sort-Key")
+    (synopsis "Sort arrays by one or multiple calculated keys")
+    (description "This Perl module provides various functions to quickly sort
+arrays by one or multiple calculated keys.")
     (license (package-license perl))))
 
 (define-public perl-spiffy
@@ -6389,6 +6768,29 @@ decomposition of comma-separated values.  An instance of the Text::CSV class
 can combine fields into a CSV string and parse a CSV string into fields.")
     (license (package-license perl))))
 
+(define-public perl-text-csv-xs
+  (package
+    (name "perl-text-csv-xs")
+    (version "1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HM/HMBRAND/"
+                           "Text-CSV_XS-" version ".tgz"))
+       (sha256
+        (base32
+         "06zlfbqrwbl0g2g3bhk6046yy5pf2rz80fzcp8aj47rnswz2yx5k"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-CSV_XS")
+    (synopsis "Rountines for manipulating CSV files")
+    (description "@code{Text::CSV_XS} provides facilities for the composition
+and decomposition of comma-separated values.  An instance of the
+@code{Text::CSV_XS} class will combine fields into a CSV string and parse a
+CSV string into fields.  The module accepts either strings or files as input
+and support the use of user-specified characters for delimiters, separators,
+and escapes.")
+    (license (package-license perl))))
+
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
@@ -6457,6 +6859,27 @@ you want to do full file globbing use the File::Glob module instead.")
      "Text::NeatTemplate provides a simple, middleweight but fast
 template engine, for when you need speed rather than complex features,
 yet need more features than simple variable substitution.")
+    (license (package-license perl))))
+
+(define-public perl-text-roman
+  (package
+    (name "perl-text-roman")
+    (version "3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SY/SYP/Text-Roman-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0sh47svzz0wm993ywfgpn0fvhajl2sj5hcnf5zxjz02in6ihhjnb"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-Roman")
+    (synopsis "Convert between Roman and Arabic algorisms")
+    (description "This package provides functions to convert between Roman and
+Arabic algorisms.  It supports both conventional Roman algorisms (which range
+from 1 to 3999) and Milhar Romans, a variation which uses a bar across the
+algorism to indicate multiplication by 1000.")
     (license (package-license perl))))
 
 (define-public perl-text-simpletable
@@ -6566,6 +6989,25 @@ reformats Perl scripts to make them easier to read.   The formatting can be
 controlled with command line parameters.  The default parameter settings
 approximately follow the suggestions in the Perl Style Guide.")
     (license gpl2+)))
+
+(define-public perl-tie-cycle
+  (package
+    (name "perl-tie-cycle")
+    (version "1.221")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/Tie-Cycle-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "10g6kirf6jfaldckg98y4pl87vrm7grqlg6ymb7a9vhrznyn7qn6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Tie-Cycle")
+    (synopsis "Cycle through a list of values")
+    (description "You use @code{Tie::Cycle} to go through a list over and over
+again.  Once you get to the end of the list, you go back to the beginning.")
+    (license (package-license perl))))
 
 (define-public perl-tie-ixhash
   (package
@@ -6810,17 +7252,58 @@ else.")
 common serialisation formats such as JSON or CBOR.")
     (license (package-license perl))))
 
+(define-public perl-unicode-normalize
+  (package
+    (name "perl-unicode-normalize")
+    (version "1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KH/KHW/"
+                           "Unicode-Normalize-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v04bcyjfcfap4kfpc8q3ikq3j7s68nym4ckw3iasmmksdskmcq0"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Unicode-Normalize")
+    (synopsis "Unicode normalization forms")
+    (description "This Perl module provides Unicode normalization forms.")
+    (license (package-license perl))))
+
+(define-public perl-unicode-collate
+  (package
+    (name "perl-unicode-collate")
+    (version "1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SADAHIRO/"
+                           "Unicode-Collate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lq4p3mqqljhhy8wyiyahris33j4m5qfzpi6iacmcqjzw5g4afbm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-unicode-normalize" ,perl-unicode-normalize)))
+    (home-page "http://search.cpan.org/dist/Unicode-Collate")
+    (synopsis "Unicode collation algorithm")
+    (description "This package provides tools for sorting and comparing
+Unicode data.")
+    ;; The file Unicode/Collate/allkeys.txt is released under the Expat
+    ;; license.
+    (license (list (package-license perl) expat))))
+
 (define-public perl-unicode-linebreak
   (package
     (name "perl-unicode-linebreak")
-    (version "2015.12")
+    (version "2016.003")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
                                   "Unicode-LineBreak-" version ".tar.gz"))
               (sha256
                (base32
-                "1d0nnc97irfpab4d3b2lvq22hac118k7zbfrj0lnxkbfwx7122cm"))))
+                "096wf5x99swx7l7yd8pm2aw50g596nf50rkq7250zjcc1acjskp6"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-mime-charset" ,perl-mime-charset)))
@@ -7268,27 +7751,3 @@ interface to File::Find::Object.")
   (description "Test::TrailingSpace tests for trailing spaces
 in Perl source files.")
   (license x11)))
-
-(define-public perl-encode-detect
- (package
-  (name "perl-encode-detect")
-  (version "1.01")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/J/JG/JGMYERS/Encode-Detect-"
-             version
-             ".tar.gz"))
-      (sha256
-        (base32
-          "1wdv9ffgs4xyfh5dnh09dqkmmlbf5m1hxgdgb3qy6v6vlwx8jkc3"))))
-  (build-system perl-build-system)
-  (inputs
-    `(("perl-module-build" ,perl-module-build)))
-  (home-page
-    "http://search.cpan.org/dist/Encode-Detect")
-  (synopsis
-    "Perl Encode::Encoding subclass that detects the encoding of data")
-  (description "Encode::Detect detects the encoding of data for Perl.")
-  (license mpl1.1)))

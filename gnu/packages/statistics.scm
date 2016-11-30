@@ -1394,13 +1394,7 @@ and fast file reading.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "nosetests" "-v"))))
-         (add-after 'unpack 'prevent-generation-of-egg-archive
-          (lambda _
-            (substitute* "setup.py"
-              (("from setuptools import setup")
-               "from distutils.core import setup"))
-            #t)))))
+         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
@@ -1416,15 +1410,10 @@ building design matrices.")
     ;; The majority of the code is distributed under BSD-2.  The module
     ;; patsy.compat contains code derived from the Python standard library,
     ;; and is covered by the PSFL.
-    (license (list license:bsd-2 license:psfl))
-    (properties `((python2-variant . ,(delay python2-patsy))))))
+    (license (list license:bsd-2 license:psfl))))
 
 (define-public python2-patsy
-  (let ((patsy (package-with-python2 (strip-python2-variant python-patsy))))
-    (package (inherit patsy)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs patsy))))))
+  (package-with-python2 python-patsy))
 
 (define-public python-statsmodels
   (package
@@ -1455,11 +1444,13 @@ building design matrices.")
                               line)))
             #t))
          (add-after 'install 'check
-          (lambda _
-            (with-directory-excursion "/tmp"
-              (zero? (system* "nosetests"
-                              "--stop"
-                              "-v" "statsmodels"))))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make installed package available for running the tests
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "/tmp"
+               (zero? (system* "nosetests"
+                               "--stop"
+                               "-v" "statsmodels"))))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
@@ -1487,10 +1478,7 @@ inference for statistical models.")
          ("python2-scipy" ,python2-scipy)
          ("python2-pandas" ,python2-pandas)
          ("python2-patsy" ,python2-patsy)
-         ("python2-matplotlib" ,python2-matplotlib)))
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs stats))))))
+         ("python2-matplotlib" ,python2-matplotlib))))))
 
 (define-public r-coda
   (package
@@ -3272,6 +3260,128 @@ noncentral hypergeometric distribution (also called extended hypergeometric
 distribution).")
    (license license:gpl3+)))
 
+(define-public r-rematch
+  (package
+    (name "r-rematch")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rematch" version))
+       (sha256
+        (base32
+         "0y3mshvpvz9csmq8hk8jbabx4nxlv5sckvfzvm6920ndg34xw2d4"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/MangoTheCat/rematch")
+    (synopsis "Match regular expressions with a nicer API")
+    (description
+     "This package provides a small wrapper on @code{regexpr} to extract the
+matches and captured groups from the match of a regular expression to a
+character vector.")
+    (license license:expat)))
+
+(define-public r-cellranger
+  (package
+    (name "r-cellranger")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cellranger" version))
+       (sha256
+        (base32
+         "16fgi3annn34c3cxi0pxf62mmmmxi21hp0zzlv7bkfsjqy4g4f2x"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rematch" ,r-rematch)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/rsheets/cellranger")
+    (synopsis "Translate spreadsheet cell ranges to rows and columns")
+    (description
+     "This package provides helper functions to work with spreadsheets and the
+@code{A1:D10} style of cell range specification.")
+    (license license:expat)))
+
+(define-public r-googlesheets
+  (package
+    (name "r-googlesheets")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "googlesheets" version))
+       (sha256
+        (base32
+         "0ps13h1cv7fj5dh8s4nvwi64wnnyqdsadcaa4iizq1c5s615cwk3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cellranger" ,r-cellranger)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-purrr" ,r-purrr)
+       ("r-readr" ,r-readr)
+       ("r-stringr" ,r-stringr)
+       ("r-tidyr" ,r-tidyr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/jennybc/googlesheets")
+    (synopsis "Manage Google spreadsheets from R")
+    (description "This package provides tools to interact with Google Sheets
+from within R.")
+    (license license:expat)))
+
+(define-public r-spams
+  (package
+    (name "r-spams")
+    (version "2.5-svn2014-07-04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gforge.inria.fr/frs/download.php/33815/"
+                           "spams-R-v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k459jg9a334slkw31w63l4d39xszjzsng7dv5j1mp78zifz7hvx"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "spams") #t))
+         ;; Since R 3.3.0 including R headers inside of an extern "C" block
+         ;; causes C headers to be included, which results in a lot of
+         ;; duplicate definitions.  This can be avoided by defining
+         ;; NO_C_HEADERS before including the R headers.
+         (add-after 'chdir 'patch-use-of-R-headers
+           (lambda _
+             (substitute* "src/spams.cpp"
+               (("#include <R.h>" line)
+                (string-append "#define NO_C_HEADERS\n" line)))
+             #t))
+         ;; This looks like a syntax error.
+         (add-after 'chdir 'patch-isnan
+           (lambda _
+             (substitute* '"src/spams/linalg/linalg.h"
+               (("if isnan\\(lambda\\) \\{")
+                "if (isnan(lambda)) {"))
+             #t)))))
+    (home-page "http://spams-devel.gforge.inria.fr")
+    (synopsis "Toolbox for solving sparse estimation problems")
+    (description "SPAMS (SPArse Modeling Software) is an optimization toolbox
+for solving various sparse estimation problems.  It includes tools for the
+following problems:
+
+@enumerate
+@item Dictionary learning and matrix factorization (NMF, sparse @dfn{principle
+ component analysis} (PCA), ...)
+@item Solving sparse decomposition problems with LARS, coordinate descent,
+ OMP, SOMP, proximal methods
+@item Solving structured sparse decomposition problems (l1/l2, l1/linf, sparse
+ group lasso, tree-structured regularization, structured sparsity with
+ overlapping groups,...).
+@end enumerate\n")
+    (license license:gpl3+)))
+
 (define-public r-rpart
   (package
     (name "r-rpart")
@@ -3373,6 +3483,224 @@ conversion of R objects to LaTeX code, and recoding variables.")
     (description
      "This package provides R functions implementing a standard unit testing
 framework, with additional code inspection and report generation tools.")
+    (license license:gpl2+)))
+
+(define-public r-dynamictreecut
+  (package
+    (name "r-dynamictreecut")
+    (version "1.63-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dynamicTreeCut" version))
+       (sha256
+        (base32
+         "1fadbql7g5r2vvlkr89nlrjxwp4yx4xrdqmv077qvmnx9vv0f4w3"))))
+    (properties `((upstream-name . "dynamicTreeCut")))
+    (build-system r-build-system)
+    (home-page
+     "http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/BranchCutting/")
+    (synopsis "Detect clusters in hierarchical clustering dendrograms")
+    (description
+     "This package contains methods for the detection of clusters in
+hierarchical clustering dendrograms.")
+    (license license:gpl2+)))
+
+(define-public r-preprocesscore
+  (package
+    (name "r-preprocesscore")
+    (version "1.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "preprocessCore" version))
+       (sha256
+        (base32
+         "1n8y12q7145f385gm2k3c6y3vwvin7jlb47la4mnl7mar6pq9kmp"))))
+    (properties
+     `((upstream-name . "preprocessCore")))
+    (build-system r-build-system)
+    (home-page "https://github.com/bmbolstad/preprocessCore")
+    (synopsis "Collection of pre-processing functions")
+    (description
+     "This package provides a library of core pre-processing and normalization
+routines.")
+    (license license:lgpl2.0+)))
+
+(define-public r-fastcluster
+  (package
+    (name "r-fastcluster")
+    (version "1.1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastcluster" version))
+       (sha256
+        (base32
+         "0rlbxhh894znf10x0xgkv9dzpibgq9jw5aqpgviccdnxc2c5hwid"))))
+    (build-system r-build-system)
+    (home-page "http://danifold.net/fastcluster.html")
+    (synopsis "Fast hierarchical clustering routines")
+    (description
+     "This package implements fast hierarchical, agglomerative clustering
+routines.  Part of the functionality is designed as drop-in replacement for
+existing routines: @code{linkage()} in the SciPy package
+@code{scipy.cluster.hierarchy}, @code{hclust()} in R's @code{stats} package,
+and the @code{flashClust} package.  It provides the same functionality with
+the benefit of a much faster implementation.  Moreover, there are
+memory-saving routines for clustering of vector data, which go beyond what the
+existing packages provide.")
+    (license license:bsd-2)))
+
+(define-public r-sfsmisc
+  (package
+    (name "r-sfsmisc")
+    (version "1.1-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sfsmisc" version))
+       (sha256
+        (base32
+         "0580piv4n1nispl3pa8nfjjfnb8iwaqky2dzdy0aqnxrxgrhqhvz"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/sfsmisc")
+    (synopsis "Utilities from \"Seminar fuer Statistik\" ETH Zurich")
+    (description
+     "This package provides useful utilities from Seminar fuer Statistik ETH
+Zurich, including many that are related to graphics.")
+    (license license:gpl2+)))
+
+(define-public r-gtools
+  (package
+    (name "r-gtools")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gtools" version))
+       (sha256
+        (base32
+         "1xknwk9xlsj027pg0nwiizigcrsc84hdrig0jn0cgcyxj8dabdl6"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/gtools")
+    (synopsis "Various R programming tools")
+    (description
+     "This package contains a collection of various functions to assist in R
+programming, such as tools to assist in developing, updating, and maintaining
+R and R packages, calculating the logit and inverse logit transformations,
+tests for whether a value is missing, empty or contains only @code{NA} and
+@code{NULL} values, and many more.")
+    (license license:gpl2)))
+
+(define-public r-gdata
+  (package
+    (name "r-gdata")
+    (version "2.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gdata" version))
+       (sha256
+        (base32
+         "0kiy3jbcszlpmarg311spdsfi5pn89wgy742dxsbzxk8907fr5w0"))))
+    (build-system r-build-system)
+    (inputs
+     `(("perl" ,perl)))
+    (propagated-inputs
+     `(("r-gtools" ,r-gtools)))
+    (home-page "http://cran.r-project.org/web/packages/gdata")
+    (synopsis "Various R programming tools for data manipulation")
+    (description
+     "This package provides various R programming tools for data manipulation,
+including:
+
+@itemize
+@item medical unit conversions
+@item combining objects
+@item character vector operations
+@item factor manipulation
+@item obtaining information about R objects
+@item manipulating MS-Excel formatted files
+@item generating fixed-width format files
+@item extricating components of date and time objects
+@item operations on columns of data frames
+@item matrix operations
+@item operations on vectors and data frames
+@item value of last evaluated expression
+@item wrapper for @code{sample} that ensures consistent behavior for
+  both scalar and vector arguments
+@end itemize\n")
+    (license license:gpl2+)))
+
+(define-public r-gplots
+  (package
+    (name "r-gplots")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gplots" version))
+       (sha256
+        (base32
+         "02nb8n3s7c1zxq2s7ycaq2ys72y7mzirxrwj954h6gdc4x1zhg9l"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-catools" ,r-catools)
+       ("r-gdata" ,r-gdata)
+       ("r-gtools" ,r-gtools)
+       ("r-kernsmooth" ,r-kernsmooth)))
+    (home-page "http://cran.r-project.org/web/packages/gplots")
+    (synopsis "Various R programming tools for plotting data")
+    (description
+     "This package provides various R programming tools for plotting data,
+including:
+
+@itemize
+@item calculating and plotting locally smoothed summary function
+@item enhanced versions of standard plots
+@item manipulating colors
+@item calculating and plotting two-dimensional data summaries
+@item enhanced regression diagnostic plots
+@item formula-enabled interface to @code{stats::lowess} function
+@item displaying textual data in plots
+@item baloon plots
+@item plotting \"Venn\" diagrams
+@item displaying Open-Office style plots
+@item plotting multiple data on same region, with separate axes
+@item plotting means and confidence intervals
+@item spacing points in an x-y plot so they don't overlap
+@end itemize\n")
+    (license license:gpl2+)))
+
+(define-public r-rocr
+  (package
+    (name "r-rocr")
+    (version "1.0-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ROCR" version))
+       (sha256
+        (base32
+         "1jay8cm7lgq56i967vm5c2hgaxqkphfpip0gn941li3yhh7p3vz7"))))
+    (properties `((upstream-name . "ROCR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gplots" ,r-gplots)))
+    (home-page "http://rocr.bioinf.mpi-sb.mpg.de/")
+    (synopsis "Visualizing the performance of scoring classifiers")
+    (description
+     "ROCR is a flexible tool for creating cutoff-parameterized 2D performance
+curves by freely combining two from over 25 performance measures (new
+performance measures can be added using a standard interface).  Curves from
+different cross-validation or bootstrapping runs can be averaged by different
+methods, and standard deviations, standard errors or box plots can be used to
+visualize the variability across the runs.  The parameterization can be
+visualized by printing cutoff values at the corresponding curve positions, or
+by coloring the curve according to cutoff.  All components of a performance
+plot can be quickly adjusted using a flexible parameter dispatching
+mechanism.")
     (license license:gpl2+)))
 
 (define-public r-kernsmooth

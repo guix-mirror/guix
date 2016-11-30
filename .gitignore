@@ -50,6 +50,8 @@
 /emacs/guix-helper.scm
 /etc/guix-daemon.conf
 /etc/guix-daemon.service
+/etc/guix-publish.conf
+/etc/guix-publish.service
 /guix-daemon
 /guix-register
 /guix/config.scm

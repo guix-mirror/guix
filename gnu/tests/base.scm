@@ -31,6 +31,8 @@
   #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services networking)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages ocr)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -65,10 +67,16 @@
                  %base-user-accounts))))
 
 
-(define* (run-basic-test os command #:optional (name "basic"))
+(define* (run-basic-test os command #:optional (name "basic")
+                         #:key initialization)
   "Return a derivation called NAME that tests basic features of the OS started
 using COMMAND, a gexp that evaluates to a list of strings.  Compare some
-properties of running system to what's declared in OS, an <operating-system>."
+properties of running system to what's declared in OS, an <operating-system>.
+
+When INITIALIZATION is true, it must be a one-argument procedure that is
+passed a gexp denoting the marionette, and it must return gexp that is
+inserted before the first test.  This is used to introduce an extra
+initialization step, such as entering a LUKS passphrase."
   (define test
     (with-imported-modules '((gnu build marionette))
       #~(begin
@@ -85,6 +93,9 @@ properties of running system to what's declared in OS, an <operating-system>."
           (chdir #$output)
 
           (test-begin "basic")
+
+          #$(and initialization
+                 (initialization #~marionette))
 
           (test-assert "uname"
             (match (marionette-eval '(uname) marionette)
@@ -188,14 +199,8 @@ info --version")
 
           (test-equal "locale"
             "en_US.utf8"
-            (marionette-eval '(begin
-                                ;; XXX: This 'setenv' call wouldn't be needed
-                                ;; but our glibc@2.23 currently ignores
-                                ;; /run/current-system/locale.
-                                (setenv "GUIX_LOCPATH"
-                                        "/run/current-system/locale")
-                                (let ((before (setlocale LC_ALL "en_US.utf8")))
-                                  (setlocale LC_ALL before)))
+            (marionette-eval '(let ((before (setlocale LC_ALL "en_US.utf8")))
+                                (setlocale LC_ALL before))
                              marionette))
 
           (test-assert "/run/current-system is a GC root"
@@ -240,6 +245,20 @@ info --version")
                                                  "/tty1.ppm")
                                   marionette)
               (file-exists? "tty1.ppm")))
+
+          (test-assert "screen text"
+            (let ((text (marionette-screen-text marionette
+                                                #:ocrad
+                                                #$(file-append ocrad
+                                                               "/bin/ocrad"))))
+              ;; Check whether the welcome message and shell prompt are
+              ;; displayed.  Note: OCR confuses "y" and "V" for instance, so
+              ;; we cannot reliably match the whole text.
+              (and (string-contains text "This is the GNU")
+                   (string-contains text
+                                    (string-append
+                                     "root@"
+                                     #$(operating-system-host-name os))))))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))

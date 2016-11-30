@@ -21,10 +21,13 @@
   #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 popen)
   #:export (marionette?
             make-marionette
             marionette-eval
             marionette-control
+            marionette-screen-text
+            wait-for-screen-text
             %qwerty-us-keystrokes
             marionette-type))
 
@@ -45,7 +48,10 @@
   (command    marionette-command)                 ;list of strings
   (pid        marionette-pid)                     ;integer
   (monitor    marionette-monitor)                 ;port
-  (repl       marionette-repl))                   ;port
+  (repl       %marionette-repl))                  ;promise of a port
+
+(define-syntax-rule (marionette-repl marionette)
+  (force (%marionette-repl marionette)))
 
 (define* (wait-for-monitor-prompt port #:key (quiet? #t))
   "Read from PORT until we have seen all of QEMU's monitor prompt.  When
@@ -131,21 +137,29 @@ QEMU monitor and to the guest's backdoor REPL."
           (close-port monitor)
           (wait-for-monitor-prompt monitor-conn)
           (display "read QEMU monitor prompt\n")
-          (match (accept* repl)
-            ((repl-conn . addr)
-             (display "connected to guest REPL\n")
-             (close-port repl)
-             (match (read repl-conn)
-               ('ready
-                (alarm 0)
-                (display "marionette is ready\n")
-                (marionette (append command extra-options) pid
-                            monitor-conn repl-conn)))))))))))
+
+          (marionette (append command extra-options) pid
+                      monitor-conn
+
+                      ;; The following 'accept' call connects immediately, but
+                      ;; we don't know whether the guest has connected until
+                      ;; we actually receive the 'ready' message.
+                      (match (accept* repl)
+                        ((repl-conn . addr)
+                         (display "connected to guest REPL\n")
+                         (close-port repl)
+                         ;; Delay reception of the 'ready' message so that the
+                         ;; caller can already send monitor commands.
+                         (delay
+                           (match (read repl-conn)
+                             ('ready
+                              (display "marionette is ready\n")
+                              repl-conn))))))))))))
 
 (define (marionette-eval exp marionette)
   "Evaluate EXP in MARIONETTE's backdoor REPL.  Return the result."
   (match marionette
-    (($ <marionette> command pid monitor repl)
+    (($ <marionette> command pid monitor (= force repl))
      (write exp repl)
      (newline repl)
      (read repl))))
@@ -159,6 +173,55 @@ pcsys_monitor\")."
      (display command monitor)
      (newline monitor)
      (wait-for-monitor-prompt monitor))))
+
+(define* (marionette-screen-text marionette
+                                 #:key
+                                 (ocrad "ocrad"))
+  "Take a screenshot of MARIONETTE, perform optical character
+recognition (OCR), and return the text read from the screen as a string.  Do
+this by invoking OCRAD (file name for GNU Ocrad's command)"
+  (define (random-file-name)
+    (string-append "/tmp/marionette-screenshot-"
+                   (number->string (random (expt 2 32)) 16)
+                   ".ppm"))
+
+  (let ((image (random-file-name)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (marionette-control (string-append "screendump " image)
+                            marionette)
+
+        ;; Tell Ocrad to invert the image colors (make it black on white) and
+        ;; to scale the image up, which significantly improves the quality of
+        ;; the result.  In spite of this, be aware that OCR confuses "y" and
+        ;; "V" and sometimes erroneously introduces white space.
+        (let* ((pipe (open-pipe* OPEN_READ ocrad
+                                 "-i" "-s" "10" image))
+               (text (get-string-all pipe)))
+          (unless (zero? (close-pipe pipe))
+            (error "'ocrad' failed" ocrad))
+          text))
+      (lambda ()
+        (false-if-exception (delete-file image))))))
+
+(define* (wait-for-screen-text marionette predicate
+                               #:key (timeout 30) (ocrad "ocrad"))
+  "Wait for TIMEOUT seconds or until the screen text on MARIONETTE matches
+PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
+  (define start
+    (car (gettimeofday)))
+
+  (define end
+    (+ start timeout))
+
+  (let loop ()
+    (if (> (car (gettimeofday)) end)
+        (error "'wait-for-screen-text' timeout" predicate)
+        (or (predicate (marionette-screen-text marionette #:ocrad ocrad))
+            (begin
+              (sleep 1)
+              (loop))))))
 
 (define %qwerty-us-keystrokes
   ;; Maps "special" characters to their keystrokes.

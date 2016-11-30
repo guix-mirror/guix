@@ -119,7 +119,7 @@
                         (let ((infodir (string-append out "/share/info")))
                           (for-each (lambda (info)
                                       (install-file info infodir))
-                                    (find-files "." "\\.info$"))
+                                    (find-files "." "\\.info"))
                           #t))))))
          (add-before 'check 'make-gtester-verbose
            (lambda _
@@ -394,8 +394,9 @@ three libraries:
                                (which "nosetests") "\"")))
              #t)))))
     (inputs
-     `(("libvirt" ,libvirt)
-       ("python-lxml" ,python-lxml)))
+     `(("libvirt" ,libvirt)))
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-nose" ,python-nose)))

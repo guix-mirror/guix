@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -237,8 +238,8 @@ namespace ARDOUR { const char* revision = \"5.4\" ; }"))))
        ("lv2" ,lv2)
        ("vamp" ,vamp)
        ("curl" ,curl)
-       ("fftw" ,fftw)
-       ("fftwf" ,fftwf)
+       ("fftw" ,fftw-with-threads)
+       ("fftwf" ,fftwf-with-threads)
        ("jack" ,jack-1)
        ("serd" ,serd)
        ("sord" ,sord)
@@ -1177,19 +1178,24 @@ well suited to all musical instruments and vocals.")
     (version "1.3.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://factorial.hu/system/files/ir.lv2-"
-                   version ".tar.gz"))
+             ;; The original home-page is gone. Download the tarball from an
+             ;; archive mirror instead.
+             (uri (list (string-append
+                         "https://web.archive.org/web/20150803095032/"
+                         "http://factorial.hu/system/files/ir.lv2-"
+                         version ".tar.gz")
+                        (string-append
+                         "https://mirrors.kernel.org/gentoo/distfiles/ir.lv2-"
+                         version ".tar.gz")))
              (sha256
               (base32
                "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
+     `(#:tests? #f                              ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       ;; no configure script
-       (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))        ; no configure script
     (inputs
      `(("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
@@ -1203,7 +1209,9 @@ well suited to all musical instruments and vocals.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://factorial.hu/plugins/lv2/ir")
+    ;; Link to an archived copy of the home-page since the original is gone.
+    (home-page (string-append "https://web.archive.org/web/20150803095032/"
+                              "http://factorial.hu/plugins/lv2/ir"))
     (synopsis "LV2 convolution reverb")
     (description
      "IR is a low-latency, real-time, high performance signal convolver
@@ -1485,9 +1493,10 @@ implementation of the Open Sound Control (OSC) protocol.")
                "13vry6xhxm7adnbyj28w1kpwrh0kf7nw83cz1yq74wl21faz2rzw"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ;no tests
+    (native-inputs
+     `(("python-cython" ,python-cython)))
     (inputs
-     `(("python-cython" ,python-cython)
-       ("liblo" ,liblo)))
+     `(("liblo" ,liblo)))
     (home-page "http://das.nasophon.de/pyliblo/")
     (synopsis "Python bindings for liblo")
     (description
@@ -1543,15 +1552,14 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.12.0")
+    (version "1.14.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://lv2plug.in/spec/lv2-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "1saq0vwqy5zjdkgc5ahs8kcabxfmff2mmg68fiqrkv8hiw9m6jks"))))
+               "0chxwys3vnn3nxc9x2vchm74s9sx0vfra6y893byy12ci61jc1dq"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target

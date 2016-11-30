@@ -31,6 +31,7 @@
 (define-module (gnu packages image)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -824,15 +825,15 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "1.900.29")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "1h1575wdzq1p7y2xvy1gbiypai1iils5awhy4gadr78qpb9ykrra"))))
-    (build-system gnu-build-system)
+                "1kg5yrdwgazhbczybyx4548m0ijssabcp8hl5l87w78z833vikks"))))
+    (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
@@ -997,3 +998,33 @@ also converts external formats (BMP, GIF, PNM and TIFF) to optimized
 PNG, and performs PNG integrity checks and corrections.")
     (home-page "http://optipng.sourceforge.net/")
     (license license:zlib)))
+
+(define-public libjpeg-turbo
+  (package
+    (name "libjpeg-turbo")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v365hm6z6lddcqagjj15wflk66rqyw75m73cqzl65rh4lyrshj1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("nasm" ,nasm)))
+    (arguments
+     `(#:test-target "test"))
+    (home-page "http://www.libjpeg-turbo.org/")
+    (synopsis "SIMD-accelerated JPEG image handling library")
+    (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
+JPEG compression and decompression using SIMD instructions: MMX on x86, SSE2 on
+x86-64, NEON on ARM, and AltiVec on PowerPC processors.  Even on other systems,
+its highly-optimized Huffman coding routines allow it to outperform libjpeg by
+a significant amount.
+libjpeg-turbo implements both the traditional libjpeg API and the less powerful
+but more straightforward TurboJPEG API, and provides a full-featured Java
+interface.  It supports color space extensions that allow it to compress from
+and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
+    (license (list license:bsd-3        ; jsimd*.[ch] and most of simd/
+                   license:ijg))))      ; the rest

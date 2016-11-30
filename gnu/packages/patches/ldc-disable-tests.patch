@@ -4,19 +4,9 @@ two others use networking.  Not bad out of almost 700 tests!
 
 by Pjotr Prins <pjotr.guix@thebird.nl>
 
-diff --git a/std/datetime.d b/std/datetime.d
-index 8e4ed3b..6c15bc5 100644
---- a/std/datetime.d
-+++ b/std/datetime.d
-@@ -28018,6 +28018,7 @@ public:
-             The default directory where the TZ Database files are. It's empty
-             for Windows, since Windows doesn't have them.
-           +/
-+          
-         enum defaultTZDatabaseDir = "/usr/share/zoneinfo/";
-     }
-     else version(Windows)
-@@ -28069,14 +28070,13 @@ assert(tz.dstName == "PDT");
+--- a/std/datetime.d.orig	2016-11-24 01:13:52.584495545 +0100
++++ b/std/datetime.d	2016-11-24 01:17:09.655306728 +0100
+@@ -28081,22 +28081,24 @@
          import std.range : retro;
          import std.format : format;
  
@@ -25,9 +15,20 @@ index 8e4ed3b..6c15bc5 100644
          enforce(tzDatabaseDir.exists(), new DateTimeException(format("Directory %s does not exist.", tzDatabaseDir)));
          enforce(tzDatabaseDir.isDir, new DateTimeException(format("%s is not a directory.", tzDatabaseDir)));
  
--        immutable file = buildNormalizedPath(tzDatabaseDir, name);
-+        auto filename = "./" ~ strip(name); // make sure the prefix is not stripped
-+        immutable file = buildNormalizedPath(tzDatabaseDir, filename);
+         version(Android)
+         {
++            name = strip(name);
+             auto tzfileOffset = name in tzdataIndex(tzDatabaseDir);
+             enforce(tzfileOffset, new DateTimeException(format("The time zone %s is not listed.", name)));
+             string tzFilename = separate_index ? "zoneinfo.dat" : "tzdata";
+             immutable file = buildNormalizedPath(tzDatabaseDir, tzFilename);
+         }
+         else
+-            immutable file = buildNormalizedPath(tzDatabaseDir, name);
++        {
++            auto filename = "./" ~ strip(name); // make sure the prefix is not stripped
++            immutable file = buildNormalizedPath(tzDatabaseDir, filename);
++        }
  
 -        enforce(file.exists(), new DateTimeException(format("File %s does not exist.", file)));
 +        enforce(file.exists(), new DateTimeException(format("File %s does not exist in %s.", file, tzDatabaseDir)));
@@ -54,23 +55,6 @@ diff --git a/std/socket.d b/std/socket.d
 index b85d1c9..7fbf346 100644
 --- a/std/socket.d
 +++ b/std/socket.d
-@@ -517,6 +517,8 @@ class Protocol
- 
- unittest
- {
-+    pragma(msg, "test disabled on GNU Guix");
-+/*
-     // getprotobyname,number are unimplemented on Android
-     softUnittest({
-         Protocol proto = new Protocol;
-@@ -530,6 +532,7 @@ unittest
-         assert(proto.name == "tcp");
-         assert(proto.aliases.length == 1 && proto.aliases[0] == "TCP");
-     });
-+*/
- }
- 
- 
 @@ -859,6 +862,8 @@ class InternetHost
  
  unittest

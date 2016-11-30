@@ -49,7 +49,7 @@
 (define-public transmission
   (package
     (name "transmission")
-    (version "2.84")
+    (version "2.92")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -57,7 +57,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1sxr1magqb5s26yvr5yhs1f7bmir8gl09niafg64lhgfnhv1kz59"))))
+                "0pykmhi7pdmzq47glbj8i2im6iarp4wnj4l1pyvsrnba61f0939s"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
@@ -84,6 +84,7 @@
      `(("inotify-tools" ,inotify-tools)
        ("libevent" ,libevent)
        ("curl" ,curl)
+       ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
        ("file" ,file)
        ("zlib" ,zlib)

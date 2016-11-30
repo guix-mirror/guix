@@ -50,6 +50,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
@@ -215,8 +216,7 @@ structure of the predicted RNA.")
        ("libtool" ,libtool)
        ("zlib" ,zlib)
        ("python-nose" ,python2-nose)
-       ("python-pysam" ,python2-pysam)
-       ("python-setuptools" ,python2-setuptools)))
+       ("python-pysam" ,python2-pysam)))
     (inputs
      `(("htslib" ,htslib)
        ("samtools" ,samtools)
@@ -523,15 +523,14 @@ intended to behave exactly the same as the original BWK awk.")
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; no Python 3 support
     (inputs
-     `(("python-cython" ,python2-cython)
-       ("python-matplotlib" ,python2-matplotlib)))
+     `(("python-matplotlib" ,python2-matplotlib)))
     (propagated-inputs
      `(("bedtools" ,bedtools)
        ("samtools" ,samtools)))
     (native-inputs
-     `(("python-pyyaml" ,python2-pyyaml)
-       ("python-nose" ,python2-nose)
-       ("python-setuptools" ,python2-setuptools)))
+     `(("python-cython" ,python2-cython)
+       ("python-pyyaml" ,python2-pyyaml)
+       ("python-nose" ,python2-nose)))
     (home-page "https://pythonhosted.org/pybedtools/")
     (synopsis "Python wrapper for BEDtools programs")
     (description
@@ -586,9 +585,7 @@ e.g. microbiome samples, genomes, metagenomes.")
                (substitute* "setup.py"
                  (("install_requires.append\\(\"pyqi\"\\)") "pass"))
                #t)))
-         ,@(package-arguments base)))
-      (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ,@(package-native-inputs base))))))
+         ,@(package-arguments base))))))
 
 (define-public bioperl-minimal
   (let* ((inputs `(("perl-module-build" ,perl-module-build)
@@ -673,7 +670,7 @@ provide a coordinated and extensible framework to do computational biology.")
          (add-before 'check 'set-home
            ;; Some tests require a home directory to be set.
            (lambda _ (setenv "HOME" "/tmp") #t)))))
-    (inputs
+    (propagated-inputs
      `(("python-numpy" ,python-numpy)))
     (home-page "http://biopython.org/")
     (synopsis "Tools for biological computation in Python")
@@ -684,15 +681,10 @@ bioinformatics programs; a standard sequence class and tools for performing
 common operations on them; code to perform data classification; code for
 dealing with alignments; code making it easy to split up parallelizable tasks
 into separate processes; and more.")
-    (license (license:non-copyleft "http://www.biopython.org/DIST/LICENSE"))
-    (properties `((python2-variant . ,(delay python2-biopython))))))
+    (license (license:non-copyleft "http://www.biopython.org/DIST/LICENSE"))))
 
 (define-public python2-biopython
-  (let ((base (package-with-python2 (strip-python2-variant python-biopython))))
-    (package
-      (inherit base)
-      (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ,@(package-native-inputs base))))))
+  (package-with-python2 python-biopython))
 
 ;; An outdated version of biopython is required for seqmagick, see
 ;; https://github.com/fhcrc/seqmagick/issues/59
@@ -1339,8 +1331,7 @@ well as many of the command line options.")
      `(("python-numpy" ,python2-numpy)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python-nose" ,python2-nose)
-       ("python-setuptools" ,python2-setuptools)))
+     `(("python-nose" ,python2-nose)))
     (home-page "http://bitbucket.org/james_taylor/bx-python/")
     (synopsis "Tools for manipulating biological data")
     (description
@@ -1404,7 +1395,6 @@ multiple sequence alignments.")
        ("zlib"              ,zlib)))
     (native-inputs
      `(("python-cython"     ,python-cython)
-       ("python-setuptools" ,python-setuptools)
        ;; Dependencies below are are for tests only.
        ("samtools"          ,samtools)
        ("bcftools"          ,bcftools)
@@ -1430,7 +1420,6 @@ also includes an interface for tabix.")
               (sha256
                (base32
                 "1q8wnj2kga9nz1lwc4w7qv52smfm536hp6mc8w6s53lhyj0mpi22"))))
-    (properties `((python2-variant . ,(delay python2-twobitreader))))
     (build-system python-build-system)
     (arguments
      '(;; Tests are not distributed in the PyPi release.
@@ -1447,11 +1436,7 @@ UCSC genome browser.")
     (license license:artistic2.0)))
 
 (define-public python2-twobitreader
-  (let ((base (package-with-python2 (strip-python2-variant python-twobitreader))))
-    (package
-      (inherit base)
-      (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ,@(package-native-inputs base))))))
+  (package-with-python2 python-twobitreader))
 
 (define-public python-plastid
   (package
@@ -1463,7 +1448,6 @@ UCSC genome browser.")
               (sha256
                (base32
                 "1sqkz5d3b9kf688mp7k771c87ins42j7j0whmkb49cb3fsg8s8lj"))))
-    (properties `((python2-variant . ,(delay python2-plastid))))
     (build-system python-build-system)
     (arguments
      ;; Some test files are not included.
@@ -1488,12 +1472,7 @@ high-throughput sequencing data – with an emphasis on simplicity.")
     (license license:bsd-3)))
 
 (define-public python2-plastid
-  (let ((base (package-with-python2 (strip-python2-variant python-plastid))))
-    (package
-      (inherit base)
-      ;; setuptools is required at runtime
-      (propagated-inputs `(("python2-setuptools" ,python2-setuptools)
-                           ,@(package-propagated-inputs base))))))
+  (package-with-python2 python-plastid))
 
 (define-public cd-hit
   (package
@@ -1580,9 +1559,8 @@ databases.")
        ("python-numpy" ,python2-numpy)
        ("python-scipy" ,python2-scipy)))
     (native-inputs
-     `(("python-mock" ,python2-mock) ; for tests
-       ("python-pytz" ,python2-pytz) ; for tests
-       ("python-setuptools" ,python2-setuptools)))
+     `(("python-mock" ,python2-mock)   ; for tests
+       ("python-pytz" ,python2-pytz))) ; for tests
     (home-page "https://github.com/YeoLab/clipper")
     (synopsis "CLIP peak enrichment recognition")
     (description
@@ -1755,8 +1733,7 @@ time.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("python-cython" ,python2-cython)
-       ("python-nose" ,python2-nose)
-       ("python-setuptools" ,python2-setuptools)))
+       ("python-nose" ,python2-nose)))
     (home-page "http://crossmap.sourceforge.net/")
     (synopsis "Convert genome coordinates between assemblies")
     (description
@@ -1854,8 +1831,7 @@ preparation protocols.")
                  (alist-delete 'check %standard-phases))))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-nose" ,python-nose)))
     (home-page "https://code.google.com/p/cutadapt/")
     (synopsis "Remove adapter sequences from nucleotide sequencing reads")
     (description
@@ -1945,10 +1921,7 @@ accessing bigWig files.")
     (license license:expat)))
 
 (define-public python2-pybigwig
-  (let ((pybigwig (package-with-python2 python-pybigwig)))
-    (package (inherit pybigwig)
-      (native-inputs
-       `(("python-setuptools" ,python2-setuptools))))))
+  (package-with-python2 python-pybigwig))
 
 (define-public python-dendropy
   (package
@@ -1997,8 +1970,7 @@ trees (phylogenies) and characters.")
                ;; There is currently a test failure that only happens on some
                ;; systems, and only using "setup.py test"
                (lambda _ (zero? (system* "nosetests")))))))
-      (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ("python2-nose" ,python2-nose)
+      (native-inputs `(("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
 
 
@@ -2026,9 +1998,8 @@ trees (phylogenies) and characters.")
        ("python-pysam" ,python2-pysam)
        ("python-pybigwig" ,python2-pybigwig)))
     (native-inputs
-     `(("python-mock" ,python2-mock) ;for tests
-       ("python-pytz" ,python2-pytz) ;for tests
-       ("python-setuptools" ,python2-setuptools)))
+     `(("python-mock" ,python2-mock)   ;for tests
+       ("python-pytz" ,python2-pytz))) ;for tests
     (home-page "https://github.com/fidelram/deepTools")
     (synopsis "Tools for normalizing and visualizing deep-sequencing data")
     (description
@@ -2683,8 +2654,7 @@ comment or quality sections.")
        ("python-pysam" ,python2-pysam)
        ("python-networkx" ,python2-networkx)))
     (native-inputs
-     `(("python-cython" ,python2-cython)
-       ("python-setuptools" ,python2-setuptools)))
+     `(("python-cython" ,python2-cython)))
     (home-page "http://grit-bio.org")
     (synopsis "Tool for integrative analysis of RNA-seq type assays")
     (description
@@ -2810,8 +2780,6 @@ HMMs).")
      `(("python-numpy" ,python2-numpy)))
     (inputs
      `(("python-pysam" ,python2-pysam)))
-    (native-inputs
-     `(("python-setuptools" ,python2-setuptools)))
     (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
     (synopsis "Analysing high-throughput sequencing data with Python")
     (description
@@ -2932,8 +2900,7 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
        ("python-numpy" ,python-numpy)
        ("python-matplotlib" ,python-matplotlib)))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-cython" ,python-cython)))
     (home-page "https://github.com/nboley/idr")
     (synopsis "Tool to measure the irreproducible discovery rate (IDR)")
     (description
@@ -3090,8 +3057,6 @@ data.")
        #:tests? #f)) ; no test target
     (inputs
      `(("python-numpy" ,python2-numpy)))
-    (native-inputs
-     `(("python-setuptools" ,python2-setuptools)))
     (home-page "http://github.com/taoliu/MACS/")
     (synopsis "Model based analysis for ChIP-Seq data")
     (description
@@ -3423,9 +3388,8 @@ linker_so='gcc -shared'); defines")))))
        ("python-scipy" ,python2-scipy)
        ("python-matplotlib" ,python2-matplotlib)))
     (native-inputs
-     `(("python-mock" ,python2-mock) ;for tests
-       ("python-pytz" ,python2-pytz) ;for tests
-       ("python-setuptools" ,python2-setuptools)))
+     `(("python-mock" ,python2-mock)   ;for tests
+       ("python-pytz" ,python2-pytz))) ;for tests
     (home-page "http://genes.mit.edu/burgelab/miso/index.html")
     (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
     (description
@@ -3472,6 +3436,45 @@ program for nucleotide and protein sequences.")
     ;; License information found in 'muscle -h' and usage.cpp.
     (license license:public-domain)))
 
+(define-public newick-utils
+  ;; There are no recent releases so we package from git.
+  (let ((commit "da121155a977197cab9fbb15953ca1b40b11eb87"))
+    (package
+      (name "newick-utils")
+      (version (string-append "1.6-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tjunier/newick_utils.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1hkw21rq1mwf7xp0rmbb2gqc0i6p11108m69i7mr7xcjl268pxnb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+    (inputs
+     ;; XXX: TODO: Enable Lua and Guile bindings.
+     ;; https://github.com/tjunier/newick_utils/issues/13
+     `(("libxml2" ,libxml2)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "Programs for working with newick format phylogenetic trees")
+    (description
+     "Newick-utils is a suite of utilities for processing phylogenetic trees
+in Newick format.  Functions include re-rooting, extracting subtrees,
+trimming, pruning, condensing, drawing (ASCII graphics or SVG).")
+    (home-page "https://github.com/tjunier/newick_utils")
+    (license license:bsd-3))))
+
 (define-public orfm
   (package
     (name "orfm")
@@ -3509,18 +3512,15 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
                 "1kjmv891d6qbpp4shhhvkl02ff4q5xlpnls2513sm2cjcrs52f1i"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; pbcore requires Python 2.7
-    (inputs
+    (propagated-inputs
      `(("python-cython" ,python2-cython)
        ("python-numpy" ,python2-numpy)
        ("python-pysam" ,python2-pysam)
        ("python-h5py" ,python2-h5py)))
     (native-inputs
-     `(("python-docutils" ,python2-docutils)
-       ("python-nose" ,python2-nose)
-       ("python-setuptools" ,python2-setuptools)
-       ("python-sphinx" ,python2-sphinx)))
-    (propagated-inputs
-     `(("python-pyxb" ,python2-pyxb)))
+     `(("python-nose" ,python2-nose)
+       ("python-sphinx" ,python2-sphinx)
+       ("python-pyxb" ,python2-pyxb)))
     (home-page "http://pacificbiosciences.github.io/pbcore/")
     (synopsis "Library for reading and writing PacBio data files")
     (description
@@ -3543,18 +3543,7 @@ files and writing bioinformatics applications.")
          "1agfz6zqa8nc6cw47yh0s3y14gkpa9wqazwcj7mwwj3ffnw39p3j"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2  ; requires Python 2.7
-       #:phases
-       (modify-phases %standard-phases
-         (add-after
-          'install 'remove-bin-directory
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; The "bin" directory only contains wrappers for running
-            ;; the module tests.  They are not needed after the
-            ;; "check" phase.
-            (delete-file-recursively
-             (string-append (assoc-ref outputs "out") "/bin"))
-            #t)))))
+     `(#:python ,python-2))  ; requires Python 2.7
     (propagated-inputs
      `(("python-scipy" ,python2-scipy)
        ("python-numpy" ,python2-numpy)
@@ -3563,8 +3552,7 @@ files and writing bioinformatics applications.")
        ("python-pandas" ,python2-pandas)
        ("python-pysnptools" ,python2-pysnptools)))
     (native-inputs
-     `(("python-setuptools" ,python2-setuptools)
-       ("python-mock" ,python2-mock)
+     `(("python-mock" ,python2-mock)
        ("python-nose" ,python2-nose)
        ("unzip" ,unzip)))
     (home-page "https://github.com/PMBio/warpedLMM")
@@ -3598,11 +3586,6 @@ the phenotype as it models the data.")
       (build-system python-build-system)
       (arguments
        `(#:python ,python-2
-         ;; With standard flags, the install phase attempts to create a zip'd
-         ;; egg file, and fails with an error: 'ZIP does not support timestamps
-         ;; before 1980'
-         #:configure-flags '("--single-version-externally-managed"
-                             "--record=pbtranscript-tofu.txt")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'enter-directory
@@ -3626,8 +3609,7 @@ the phenotype as it models the data.")
          ("python-h5py" ,python2-h5py)))
       (native-inputs
        `(("python-cython" ,python2-cython)
-         ("python-nose" ,python2-nose)
-         ("python-setuptools" ,python2-setuptools)))
+         ("python-nose" ,python2-nose)))
       (home-page "https://github.com/PacificBiosciences/cDNA_primer")
       (synopsis "Analyze transcriptome data generated with the Iso-Seq protocol")
       (description
@@ -3691,6 +3673,58 @@ in phylogenetics and correctly takes into account the evolutionary distances
 between sequences.  Lastly, PRANK allows for defining a potential structure
 for sequences to be aligned and then, simultaneously with the alignment,
 predicts the locations of structural units in the sequences.")
+    (license license:gpl2+)))
+
+(define-public proteinortho
+  (package
+    (name "proteinortho")
+    (version "5.15")
+    (source
+     (origin
+      (method url-fetch)
+      (uri
+       (string-append
+        "http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v"
+        version "_src.tar.gz"))
+      (sha256
+       (base32
+        "05wacnnbx56avpcwhzlcf6b7s77swcpv3qnwz5sh1z54i51gg2ki"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; There is no configure script, so we modify the Makefile directly.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("INSTALLDIR=.*")
+                (string-append
+                 "INSTALLDIR=" (assoc-ref outputs "out") "/bin\n")))
+             #t))
+         (add-before 'install 'make-install-directory
+           ;; The install directory is not created during 'make install'.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((path (getenv "PATH"))
+                    (out (assoc-ref outputs "out"))
+                    (binary (string-append out "/bin/proteinortho5.pl")))
+               (wrap-program binary `("PATH" ":" prefix (,path))))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("python" ,python-2)
+       ("blast+" ,blast+)))
+    (home-page "http://www.bioinf.uni-leipzig.de/Software/proteinortho")
+    (synopsis "Detect orthologous genes across species")
+    (description
+     "Proteinortho is a tool to detect orthologous genes across different
+species.  For doing so, it compares similarities of given gene sequences and
+clusters them to find significant groups.  The algorithm was designed to handle
+large-scale data and can be applied to hundreds of species at once.")
     (license license:gpl2+)))
 
 (define-public pyicoteo
@@ -3765,7 +3799,7 @@ partial genes, and identifies translation initiation sites.")
 (define-public roary
   (package
     (name "roary")
-    (version "3.6.8")
+    (version "3.7.0")
     (source
      (origin
        (method url-fetch)
@@ -3774,7 +3808,7 @@ partial genes, and identifies translation initiation sites.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0g0pzcv8y7n2w8q7c9q0a7s2ghkwci6w8smg9mjw4agad5cd7yaw"))))
+         "0x2hpb3nfsc6x2nq1788w0fhqfzc7cn2dp4xwyva9m3k6xlz0m43"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4024,7 +4058,6 @@ BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
      `(("python-cython" ,python2-cython)
        ("python-pysam" ,python2-pysam)
        ("python-numpy" ,python2-numpy)
-       ("python-setuptools" ,python2-setuptools)
        ("zlib" ,zlib)))
     (native-inputs
      `(("python-nose" ,python2-nose)))
@@ -4586,11 +4619,7 @@ sequence itself can be retrieved from these databases.")
     (license license:bsd-3)))
 
 (define-public python2-screed
-  (let ((base (package-with-python2 (strip-python2-variant python-screed))))
-    (package
-      (inherit base)
-      (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ,@(package-native-inputs base))))))
+  (package-with-python2 python-screed))
 
 (define-public sra-tools
   (package
@@ -4752,8 +4781,7 @@ bioinformatics file formats, sequence alignment, and more.")
      ;; should be removed.
      `(("python-biopython" ,python2-biopython-1.66)))
     (native-inputs
-     `(("python-setuptools" ,python2-setuptools)
-       ("python-nose" ,python2-nose)))
+     `(("python-nose" ,python2-nose)))
     (home-page "http://github.com/fhcrc/seqmagick")
     (synopsis "Tools for converting and modifying sequence files")
     (description
@@ -7246,6 +7274,29 @@ two-dimensional genome scans.")
 libraries for systems that do not have these available via other means.")
     (license license:artistic2.0)))
 
+(define-public r-r4rna
+  (package
+    (name "r-r4rna")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.e-rna.org/r-chie/files/R4RNA_"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1p0i78wh76jfgmn9jphbwwaz6yy6pipzfg08xs54cxavxg2j81p5"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-optparse" ,r-optparse)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "http://www.e-rna.org/r-chie/index.cgi")
+    (synopsis "Analysis framework for RNA secondary structure")
+    (description
+     "The R4RNA package aims to be a general framework for the analysis of RNA
+secondary structure and comparative analysis in R.")
+    (license license:gpl3+)))
+
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
@@ -7425,6 +7476,141 @@ library implementing most of the pipeline's features.")
 characterization and visualization of a wide range of mutational patterns
 in SNV base substitution data.")
     (license license:expat)))
+
+(define-public r-wgcna
+  (package
+    (name "r-wgcna")
+    (version "1.51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "WGCNA" version))
+       (sha256
+        (base32
+         "0hzvnhw76vwg8bl8x368f0c5szpwb8323bmrb3bir93i5bmfjsxx"))))
+    (properties `((upstream-name . "WGCNA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dynamictreecut" ,r-dynamictreecut)
+       ("r-fastcluster" ,r-fastcluster)
+       ("r-foreach" ,r-foreach)
+       ("r-go-db" ,r-go-db)
+       ("r-hmisc" ,r-hmisc)
+       ("r-impute" ,r-impute)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-preprocesscore" ,r-preprocesscore)))
+    (home-page
+     "http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/")
+    (synopsis "Weighted correlation network analysis")
+    (description
+     "This package provides functions necessary to perform Weighted
+Correlation Network Analysis on high-dimensional data.  It includes functions
+for rudimentary data cleaning, construction and summarization of correlation
+networks, module identification and functions for relating both variables and
+modules to sample traits.  It also includes a number of utility functions for
+data manipulation and visualization.")
+    (license license:gpl2+)))
+
+(define-public r-chipkernels
+  (let ((commit "c9cfcacb626b1221094fb3490ea7bac0fd625372")
+        (revision "1"))
+    (package
+      (name "r-chipkernels")
+      (version (string-append "1.1-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ManuSetty/ChIPKernels.git")
+               (commit commit)))
+         (file-name (string-append name "-" version))
+         (sha256
+          (base32
+           "14bj5qhjm1hsm9ay561nfbqi9wxsa7y487df2idsaaf6z10nw4v0"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-iranges" ,r-iranges)
+         ("r-xvector" ,r-xvector)
+         ("r-biostrings" ,r-biostrings)
+         ("r-bsgenome" ,r-bsgenome)
+         ("r-gtools" ,r-gtools)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-sfsmisc" ,r-sfsmisc)
+         ("r-kernlab" ,r-kernlab)
+         ("r-s4vectors" ,r-s4vectors)
+         ("r-biocgenerics" ,r-biocgenerics)))
+      (home-page "https://github.com/ManuSetty/ChIPKernels")
+      (synopsis "Build string kernels for DNA Sequence analysis")
+      (description "ChIPKernels is an R package for building different string
+kernels used for DNA Sequence analysis.  A dictionary of the desired kernel
+must be built and this dictionary can be used for determining kernels for DNA
+Sequences.")
+      (license license:gpl2+))))
+
+(define-public r-seqgl
+  (package
+    (name "r-seqgl")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ManuSetty/SeqGL/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pnk1p3sci5yipyc8xnb6jbmydpl80fld927xgnbcv104hy8h8yh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-chipkernels" ,r-chipkernels)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-spams" ,r-spams)
+       ("r-wgcna" ,r-wgcna)
+       ("r-fastcluster" ,r-fastcluster)))
+    (home-page "https://github.com/ManuSetty/SeqGL")
+    (synopsis "Group lasso for Dnase/ChIP-seq data")
+    (description "SeqGL is a group lasso based algorithm to extract
+transcription factor sequence signals from ChIP, DNase and ATAC-seq profiles.
+This package presents a method which uses group lasso to discriminate between
+bound and non bound genomic regions to accurately identify transcription
+factors bound at the specific regions.")
+    (license license:gpl2+)))
+
+(define-public r-gkmsvm
+  (package
+    (name "r-gkmsvm")
+    (version "0.71.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gkmSVM" version))
+       (sha256
+        (base32
+         "1zpxgxmf2nd5j5wn00ps6kfxr8wxh7d1swr1rr4spq7sj5z5z0k0"))))
+    (properties `((upstream-name . "gkmSVM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-kernlab" ,r-kernlab)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rocr" ,r-rocr)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-seqinr" ,r-seqinr)))
+    (home-page "http://cran.r-project.org/web/packages/gkmSVM")
+    (synopsis "Gapped-kmer support vector machine")
+    (description
+     "This R package provides tools for training gapped-kmer SVM classifiers
+for DNA and protein sequences.  This package supports several sequence
+kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
+    (license license:gpl2+)))
 
 (define-public emboss
   (package
@@ -7615,19 +7801,7 @@ may optionally be provided to further inform the peak-calling process.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; python2 only
-       #:tests? #f ; no tests included
-       #:phases
-       (modify-phases %standard-phases
-         ;; When setuptools is used a ".egg" archive is generated and
-         ;; installed.  This makes it hard to actually run PePr.  This issue
-         ;; has been reported upstream:
-         ;; https://github.com/shawnzhangyx/PePr/issues/9
-         (add-after 'unpack 'disable-egg-generation
-           (lambda _
-             (substitute* "setup.py"
-               (("from setuptools import setup")
-                "from distutils.core import setup"))
-             #t)))))
+       #:tests? #f)) ; no tests included
     (propagated-inputs
      `(("python2-numpy" ,python2-numpy)
        ("python2-scipy" ,python2-scipy)
@@ -7689,8 +7863,6 @@ replacement for strverscmp.")
        ("python-click" ,python-click)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)))
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (home-page "http://multiqc.info")
     (synopsis "Aggregate bioinformatics analysis reports")
     (description
