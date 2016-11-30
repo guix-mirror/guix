@@ -1847,7 +1847,7 @@ which can be used to parse directory listings.")
 (define-public perl-finance-quote
   (package
    (name "perl-finance-quote")
-   (version "1.37")
+   (version "1.38")
    (source
     (origin
       (method url-fetch)
@@ -1855,7 +1855,7 @@ which can be used to parse directory listings.")
                           "Finance-Quote-" version ".tar.gz"))
       (sha256
        (base32
-        "1b6pbh7f76fb5sa4f0lhx085xy55pprz5v7z7li7pqiyw7i4f4bf"))
+        "0zhqb27y4vdxn476s2kwm9zl2f970yjcyyybnjm9b406krr2fm59"))
       (patches (search-patches
                 "perl-finance-quote-unuse-mozilla-ca.patch"))))
    (build-system perl-build-system)
