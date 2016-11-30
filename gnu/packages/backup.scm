@@ -435,7 +435,9 @@ detection, and lossless compression.")
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
-           (lambda _
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed package available for the test suite.
+             (add-installed-pythonpath inputs outputs)
              (zero?
                (system* "py.test" "-v" "--pyargs" "borg.testsuite" "-k"
                         (string-append
@@ -448,7 +450,13 @@ detection, and lossless compression.")
                           "and not test_default_acl "
                           "and not test_non_ascii_acl "
                           ;; This test needs the unpackaged pytest-benchmark.
-                          "and not benchmark")))))
+                          "and not benchmark "
+                          ;; These tests assume the kernel supports FUSE. They
+                          ;; were skipped using the "old" Python build system,
+                          ;; before commit
+                          ;; 7db40bce58e149ecb541d295e01cfbfe953d39a3.
+                          "and not test_fuse "
+                          "and not test_fuse_allow_damaged_files")))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
