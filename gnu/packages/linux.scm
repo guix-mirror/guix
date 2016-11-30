@@ -1198,7 +1198,7 @@ configuration and monitoring interfaces.")
 (define-public iw
   (package
     (name "iw")
-    (version "4.3")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1206,7 +1206,7 @@ configuration and monitoring interfaces.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "085jyvrxzarvn5jl0fk618jjxy50nqx7ifngszc4jxk6a4ddibd6"))))
+                "1klpvv98bnx1zm6aqalnri2vd7w80scmdaxr2qnblb6mz82whk1j"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libnl" ,libnl)))
