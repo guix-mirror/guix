@@ -36,7 +36,8 @@
   #:export (%test-installed-os
             %test-separate-store-os
             %test-raid-root-os
-            %test-encrypted-os))
+            %test-encrypted-os
+            %test-btrfs-root-os))
 
 ;;; Commentary:
 ;;;
@@ -517,5 +518,79 @@ build (current-guix) and then store a couple of full system images.")
                          (command (qemu-command/writable-image image)))
       (run-basic-test %encrypted-root-os command "encrypted-root-os"
                       #:initialization enter-luks-passphrase)))))
+
+
+;;;
+;;; Btrfs root file system.
+;;;
+
+(define-os-with-source (%btrfs-root-os %btrfs-root-os-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.UTF-8")
+
+    (bootloader (grub-configuration (device "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons (file-system
+                          (device "my-root")
+                          (title 'label)
+                          (mount-point "/")
+                          (type "btrfs"))
+                        %base-file-systems))
+    (users (cons (user-account
+                  (name "charlie")
+                  (group "users")
+                  (home-directory "/home/charlie")
+                  (supplementary-groups '("wheel" "audio" "video")))
+                 %base-user-accounts))
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %btrfs-root-installation-script
+  ;; Shell script of a simple installation.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+ls -l /run/current-system/gc-roots
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 1G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+mkfs.btrfs -L my-root /dev/vdb2
+mount /dev/vdb2 /mnt
+btrfs subvolume create /mnt/home
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system build /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-btrfs-root-os
+  (system-test
+   (name "btrfs-root-os")
+   (description
+    "Test basic functionality of an OS installed like one would do by hand.
+This test is expensive in terms of CPU and storage usage since we need to
+build (current-guix) and then store a couple of full system images.")
+   (value
+    (mlet* %store-monad ((image   (run-install %btrfs-root-os
+                                               %btrfs-root-os-source
+                                               #:script
+                                               %btrfs-root-installation-script))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %btrfs-root-os command "btrfs-root-os")))))
 
 ;;; install.scm ends here

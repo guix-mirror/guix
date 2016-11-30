@@ -6919,9 +6919,9 @@ cfdisk
 
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
-GuixSD pretty much assumes an ext4 file system.  In particular, code
-that reads partition UUIDs and labels only works with ext4.  This will
-be fixed in the future.}.
+GuixSD only supports ext4 and btrfs file systems.  In particular, code
+that reads partition UUIDs and labels only works for these file system
+types.}.
 
 Preferably, assign partitions a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File

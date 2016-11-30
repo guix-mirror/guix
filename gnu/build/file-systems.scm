@@ -146,6 +146,43 @@ if DEVICE does not contain an ext2 file system."
 
 
 ;;;
+;;; Btrfs file systems.
+;;;
+
+;; <https://btrfs.wiki.kernel.org/index.php/On-disk_Format#Superblock>.
+
+(define-syntax %btrfs-endianness
+  ;; Endianness of btrfs file systems.
+  (identifier-syntax (endianness little)))
+
+(define (btrfs-superblock? sblock)
+  "Return #t when SBLOCK is a btrfs superblock."
+  (bytevector=? (sub-bytevector sblock 64 8)
+                (string->utf8 "_BHRfS_M")))
+
+(define (read-btrfs-superblock device)
+  "Return the raw contents of DEVICE's btrfs superblock as a bytevector, or #f
+if DEVICE does not contain a btrfs file system."
+  (read-superblock device 65536 4096 btrfs-superblock?))
+
+(define (btrfs-superblock-uuid sblock)
+  "Return the UUID of a btrfs superblock SBLOCK as a 16-byte bytevector."
+  (sub-bytevector sblock 32 16))
+
+(define (btrfs-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 256 characters, or
+#f if SBLOCK has no volume name."
+  (null-terminated-latin1->string (sub-bytevector sblock 299 256)))
+
+(define (check-btrfs-file-system device)
+  "Return the health of a btrfs file system on DEVICE."
+  (match (status:exit-val
+          (system* "btrfs" "device" "scan"))
+    (0 'pass)
+    (_ 'fatal-error)))
+
+
+;;;
 ;;; LUKS encrypted devices.
 ;;;
 
@@ -257,11 +294,15 @@ partition field reader that returned a value."
 
 (define %partition-label-readers
   (list (partition-field-reader read-ext2-superblock
-                                ext2-superblock-volume-name)))
+                                ext2-superblock-volume-name)
+        (partition-field-reader read-btrfs-superblock
+                                btrfs-superblock-volume-name)))
 
 (define %partition-uuid-readers
   (list (partition-field-reader read-ext2-superblock
-                                ext2-superblock-uuid)))
+                                ext2-superblock-uuid)
+        (partition-field-reader read-btrfs-superblock
+                                btrfs-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -428,6 +469,7 @@ the following:
   (define check-procedure
     (cond
      ((string-prefix? "ext" type) check-ext2-file-system)
+     ((string-prefix? "btrfs" type) check-btrfs-file-system)
      (else #f)))
 
   (if check-procedure
