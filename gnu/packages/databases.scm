@@ -843,7 +843,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.42")
+    (version "1.52")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -851,7 +851,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "14x9cjsc8dz8ad1nad0bqiq9cbk1rjfb8h5y0rpk3pdl38y6afxb"))))
+                "0kimb2qr1rh07yylbbfybwcizpmy61ck667amypn4clmkfg0knm6"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
