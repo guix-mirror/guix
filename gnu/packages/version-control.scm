@@ -112,14 +112,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.10.2")
+   (version "2.11.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0wc64dzcxrzgi6kwcljz6y3cwm3ajdgf6aws7g58azbhvl1jk04l"))))
+              "02zx368id8rys0bh2sjrxz0ln2l2wm5nf1vhp1rj72clsilqszky"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -132,7 +132,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0vxaz23vf3ki0q5zgn6mxr9x1hjryqn1hsmgyrgdk6h3yqbs7c43"))))))
+            "1n18jnpi0z3skwc1ckrm7zdld6i3zvn0g95cg9r9pdn0564fglxk"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
