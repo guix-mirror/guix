@@ -2119,7 +2119,7 @@ and multipart/form-data.")
 (define-public perl-http-cookiejar
   (package
     (name "perl-http-cookiejar")
-    (version "0.006")
+    (version "0.008")
     (source
      (origin
        (method url-fetch)
@@ -2127,12 +2127,13 @@ and multipart/form-data.")
                            "HTTP-CookieJar-" version ".tar.gz"))
        (sha256
         (base32
-         "0c7l29ak6ba2j006ca00vnkxpyc1fvpikydjvsb24s50zf1mv7b2"))))
+         "0rfw6avcralggs7bf7n86flvhaahxjnqzvpwszp0sk4z4wwy01wm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
        ("perl-test-requires" ,perl-test-requires)
-       ("perl-time-mock" ,perl-time-mock)))
+       ("perl-time-mock" ,perl-time-mock)
+       ("perl-uri" ,perl-uri)))
     (inputs
      `(("perl-time-local" ,perl-time-local)
        ("perl-http-date" ,perl-http-date)))
