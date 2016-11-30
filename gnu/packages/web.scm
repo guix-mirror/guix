@@ -2447,7 +2447,7 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.13")
+    (version "6.15")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2455,7 +2455,7 @@ select or poll.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1cpqjl59viw50bnbdyn8xzrwzg7g54b2rszw0fifacqrppp17gaz"))))
+               "08l3mpgcvm4ipn1zggymqgk402apf35xyds43i8c07hvq92rsd3g"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-encode-locale" ,perl-encode-locale)
@@ -2463,8 +2463,11 @@ select or poll.")
        ("perl-html-parser" ,perl-html-parser)
        ("perl-http-cookies" ,perl-http-cookies)
        ("perl-http-daemon" ,perl-http-daemon)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
        ("perl-http-negotiate" ,perl-http-negotiate)
        ("perl-net-http" ,perl-net-http)
+       ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)))
     (license (package-license perl))
     (synopsis "Perl modules for the WWW")
