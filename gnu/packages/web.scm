@@ -2329,7 +2329,7 @@ environment from an HTTP::Request.")
 (define-public perl-http-server-simple
   (package
     (name "perl-http-server-simple")
-    (version "0.44")
+    (version "0.51")
     (source
      (origin
        (method url-fetch)
@@ -2337,7 +2337,7 @@ environment from an HTTP::Request.")
                            "HTTP-Server-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "05klpfkss2a6i5ihmvcm27fyar0f2v4ispg2f49agab3va1gix6g"))))
+         "1yvd2g57z2kq00q5i3zzfi15k98qgbif3vghjsda6v612agmrp5r"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cgi" ,perl-cgi)))
