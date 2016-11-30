@@ -707,14 +707,14 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
 (define-public perl-xml-xpath
   (package
     (name "perl-xml-xpath")
-    (version "1.37")
+    (version "1.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                                   "XML-XPath-" version ".tar.gz"))
               (sha256
                (base32
-                "0997l8vjgq8p7d1irvp6amqyrv24x7f8hybjm4l4ayag32b13bmq"))))
+                "07pa0bl42jka8mj7jshjynx8vpfh8b4cdyiv4zlkqvkqz98nzxib"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-path-tiny" ,perl-path-tiny)))
