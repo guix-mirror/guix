@@ -5394,6 +5394,9 @@ be used when passing @command{guix refresh} one or more package names:
 @itemx -L
 List available updaters and exit (see @option{--type} above.)
 
+For each updater, display the fraction of packages it covers; at the
+end, display the fraction of packages covered by all these updaters.
+
 @item --list-dependent
 @itemx -l
 List top-level dependent packages that would need to be rebuilt as a

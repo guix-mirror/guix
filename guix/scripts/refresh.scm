@@ -220,11 +220,28 @@ unavailable optional dependencies such as Guile-JSON."
 (define (list-updaters-and-exit)
   "Display available updaters and exit."
   (format #t (_ "Available updaters:~%"))
-  (for-each (lambda (updater)
-              (format #t "- ~a: ~a~%"
-                      (upstream-updater-name updater)
-                      (_ (upstream-updater-description updater))))
-            %updaters)
+  (newline)
+
+  (let* ((packages (fold-packages cons '()))
+         (total    (length packages)))
+    (define covered
+      (fold (lambda (updater covered)
+              (let ((matches (count (upstream-updater-predicate updater)
+                                    packages)))
+                ;; TRANSLATORS: The parenthetical expression here is rendered
+                ;; like "(42% coverage)" and denotes the fraction of packages
+                ;; covered by the given updater.
+                (format #t (_ "  - ~a: ~a (~2,1f% coverage)~%")
+                        (upstream-updater-name updater)
+                        (_ (upstream-updater-description updater))
+                        (* 100. (/ matches total)))
+                (+ covered matches)))
+            0
+            %updaters))
+
+    (newline)
+    (format #t (_ "~2,1f% of the packages are covered by these updaters.~%")
+            (* 100. (/ covered total))))
   (exit 0))
 
 (define (warn-no-updater package)
