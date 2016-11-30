@@ -60,7 +60,8 @@
             %gnu-updater
             %gnome-updater
             %kde-updater
-            %xorg-updater))
+            %xorg-updater
+            %kernel.org-updater))
 
 ;;; Commentary:
 ;;;
@@ -532,6 +533,22 @@ source URLs starts with PREFIX."
       #:directory
       (string-append "/pub/xorg/" (dirname (uri-path uri)))))))
 
+(define (latest-kernel.org-release package)
+  "Return the latest release of PACKAGE, the name of a kernel.org package."
+  (let ((uri (string->uri (origin-uri (package-source package)))))
+    (false-if-ftp-error
+     (latest-ftp-release
+      (package-name package)
+      #:server "ftp.free.fr"                      ;a mirror reachable over FTP
+      #:directory (string-append "/mirrors/ftp.kernel.org"
+                                 (dirname (uri-path uri)))
+
+      ;; kernel.org provides "foo-x.y.tar.sign" files, which are signatures of
+      ;; the uncompressed tarball.
+      #:file->signature (lambda (tarball)
+                          (string-append (file-sans-extension tarball)
+                                         ".sign"))))))
+
 (define %gnu-updater
   (upstream-updater
    (name 'gnu)
@@ -559,5 +576,12 @@ source URLs starts with PREFIX."
    (description "Updater for X.org packages")
    (pred (url-prefix-predicate "mirror://xorg/"))
    (latest latest-xorg-release)))
+
+(define %kernel.org-updater
+  (upstream-updater
+   (name 'kernel.org)
+   (description "Updater for packages hosted on kernel.org")
+   (pred (url-prefix-predicate "mirror://kernel.org/"))
+   (latest latest-kernel.org-release)))
 
 ;;; gnu-maintenance.scm ends here

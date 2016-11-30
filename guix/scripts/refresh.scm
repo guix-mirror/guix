@@ -35,7 +35,8 @@
                 #:select (%gnu-updater
                           %gnome-updater
                           %kde-updater
-                          %xorg-updater))
+                          %xorg-updater
+                          %kernel.org-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
   #:use-module (guix import hackage)
@@ -200,6 +201,7 @@ unavailable optional dependencies such as Guile-JSON."
                  %gnome-updater
                  %kde-updater
                  %xorg-updater
+                 %kernel.org-updater
                  %elpa-updater
                  %cran-updater
                  %bioconductor-updater

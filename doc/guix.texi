@@ -5342,6 +5342,8 @@ the updater for GNOME packages;
 the updater for KDE packages;
 @item xorg
 the updater for X.org packages;
+@item kernel.org
+the updater for packages hosted on kernel.org;
 @item elpa
 the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran
