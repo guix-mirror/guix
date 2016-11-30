@@ -591,14 +591,14 @@ a schema.")
 (define-public perl-xml-compile-cache
   (package
     (name "perl-xml-compile-cache")
-    (version "1.04")
+    (version "1.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-Cache-" version ".tar.gz"))
               (sha256
                (base32
-                "1689dm54n7wb0n0cl9n77vk0kvg0mcckn2hz9ahigjhvazah8740"))))
+                "0xbwlszhi9hg8sxm5ylglm2qvnb689i595p913awrj2g4mp9yfsw"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
