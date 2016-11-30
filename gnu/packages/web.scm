@@ -2094,7 +2094,7 @@ you to separate design from the data.")
 (define-public perl-http-body
   (package
     (name "perl-http-body")
-    (version "1.19")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
@@ -2102,7 +2102,7 @@ you to separate design from the data.")
                            "HTTP-Body-" version ".tar.gz"))
        (sha256
         (base32
-         "0ahhksj0zg6wq6glpjkxdr3byd5riwvq2f5aw21n1jcsl71nll01"))))
+         "15vj488i62mdp4ps9k77h39prj70i7anb6b0j8nm7l9vbdc2q3gw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)))
