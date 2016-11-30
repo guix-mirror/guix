@@ -254,6 +254,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/microcom.scm			\
   %D%/packages/mit-krb5.scm			\
   %D%/packages/moe.scm				\
+  %D%/packages/monitoring.scm			\
   %D%/packages/mono.scm				\
   %D%/packages/moreutils.scm			\
   %D%/packages/mpd.scm				\
