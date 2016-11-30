@@ -566,14 +566,14 @@ This module provide functions which simplify writing tests for
 (define-public perl-xml-compile
   (package
     (name "perl-xml-compile")
-    (version "1.51")
+    (version "1.54")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-" version ".tar.gz"))
               (sha256
                (base32
-                "06fj4zf0yh4kf3kx4bhwrmrjr6al40nasasbgfhn8f1zxwkmm8f2"))))
+                "1hp41960bpqxvv1samv9hc0ghhmvs3i16r4rfl9yp54lp6jhsr2c"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
