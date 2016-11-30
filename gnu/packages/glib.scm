@@ -64,8 +64,7 @@
 (define dbus
   (package
     (name "dbus")
-    (replacement dbus-1.10.12)
-    (version "1.10.10")
+    (version "1.10.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +72,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0hwsfczhx2djmc9116vj5v230i7gpjihwh3vbljs1ldlk831v3wx"))
+                "0pa71vf5c0d7k3gni06iascmplj0j5g70wbc833ayvi71d1pj2i1"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -131,21 +130,6 @@ daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
-
-(define dbus-1.10.12
-  (package
-    (inherit dbus)
-    (name "dbus")
-    (source
-      (let ((version "1.10.12"))
-        (origin
-          (inherit (package-source dbus))
-          (uri (string-append
-                "https://dbus.freedesktop.org/releases/dbus/dbus-"
-                version ".tar.gz"))
-          (sha256
-           (base32
-            "0pa71vf5c0d7k3gni06iascmplj0j5g70wbc833ayvi71d1pj2i1")))))))
 
 (define glib
   (package
