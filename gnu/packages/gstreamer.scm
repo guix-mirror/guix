@@ -201,20 +201,16 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.10.1")
+    (version "1.10.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append
             "https://gstreamer.freedesktop.org/src/" name "/"
             name "-" version ".tar.xz"))
-      (patches (search-patches "gst-plugins-good-flic-bounds-check.patch"
-                               "gst-plugins-good-fix-signedness.patch"
-                               "gst-plugins-good-fix-invalid-read.patch"
-                               "gst-plugins-good-fix-crashes.patch"))
       (sha256
        (base32
-        "1hkcap9l2603266gyi6jgvx7frbvfmb7xhfhjizbczy1wykjwr57"))))
+        "04rksbhjj2yz32g523cfabwqn2s3byd94dpbxghxr0p9ridk53qr"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)

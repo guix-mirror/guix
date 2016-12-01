@@ -593,10 +593,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-gets-undeclared.patch		\
   %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
-  %D%/packages/patches/gst-plugins-good-fix-crashes.patch	\
-  %D%/packages/patches/gst-plugins-good-fix-invalid-read.patch	\
-  %D%/packages/patches/gst-plugins-good-fix-signedness.patch	\
-  %D%/packages/patches/gst-plugins-good-flic-bounds-check.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
