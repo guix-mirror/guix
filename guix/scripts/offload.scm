@@ -429,10 +429,8 @@ be read."
 (define (send-files files remote)
   "Send the subset of FILES that's missing to REMOTE, a remote store."
   (with-store store
-    ;; Compute the subset of FILES missing on SESSION, and send them in
-    ;; topologically sorted order so that they can actually be imported.
-    (let* ((sorted  (topologically-sorted store files))
-           (session (channel-get-session (nix-server-socket remote)))
+    ;; Compute the subset of FILES missing on SESSION and send them.
+    (let* ((session (channel-get-session (nix-server-socket remote)))
            (node    (make-node session))
            (missing (node-eval node
                                `(begin
@@ -441,11 +439,12 @@ be read."
 
                                   (with-store store
                                     (remove (cut valid-path? store <>)
-                                            ',sorted)))))
+                                            ',files)))))
            (port    (store-import-channel session)))
       (format #t (_ "sending ~a store files to '~a'...~%")
               (length missing) (session-get session 'host))
 
+      ;; Send MISSING in topological order.
       (export-paths store missing port)
 
       ;; Tell the remote process that we're done.  (In theory the
