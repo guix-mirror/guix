@@ -2333,7 +2333,7 @@ environment from an HTTP::Request.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JE/JESSE/"
+       (uri (string-append "mirror://cpan/authors/id/B/BP/BPS/"
                            "HTTP-Server-Simple-" version ".tar.gz"))
        (sha256
         (base32
