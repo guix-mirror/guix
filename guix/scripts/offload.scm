@@ -177,31 +177,35 @@ private key from '~a': ~a")
                                ;; exchanging full archives.
                                #:compression "zlib"
                                #:compression-level 3)))
-    (connect! session)
-
-    ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
-    ;; ed25519 keys and 'get-key-type' returns #f in that case.
-    (let-values (((server)   (get-server-public-key session))
-                 ((type key) (host-key->type+key
-                              (build-machine-host-key machine))))
-      (unless (and (or (not (get-key-type server))
-                       (eq? (get-key-type server) type))
-                   (string=? (public-key->string server) key))
-        ;; Key mismatch: something's wrong.  XXX: It could be that the server
-        ;; provided its Ed25519 key when we where expecting its RSA key.
-        (leave (_ "server at '~a' returned host key '~a' of type '~a' \
+    (match (connect! session)
+      ('ok
+       ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
+       ;; ed25519 keys and 'get-key-type' returns #f in that case.
+       (let-values (((server)   (get-server-public-key session))
+                    ((type key) (host-key->type+key
+                                 (build-machine-host-key machine))))
+         (unless (and (or (not (get-key-type server))
+                          (eq? (get-key-type server) type))
+                      (string=? (public-key->string server) key))
+           ;; Key mismatch: something's wrong.  XXX: It could be that the server
+           ;; provided its Ed25519 key when we where expecting its RSA key.
+           (leave (_ "server at '~a' returned host key '~a' of type '~a' \
 instead of '~a' of type '~a'~%")
-               (build-machine-name machine)
-               (public-key->string server) (get-key-type server)
-               key type)))
+                  (build-machine-name machine)
+                  (public-key->string server) (get-key-type server)
+                  key type)))
 
-    (let ((auth (userauth-public-key! session private)))
-      (unless (eq? 'success auth)
-        (disconnect! session)
-        (leave (_ "SSH public key authentication failed for '~a': ~a~%")
-               (build-machine-name machine) (get-error session))))
+       (let ((auth (userauth-public-key! session private)))
+         (unless (eq? 'success auth)
+           (disconnect! session)
+           (leave (_ "SSH public key authentication failed for '~a': ~a~%")
+                  (build-machine-name machine) (get-error session))))
 
-    session))
+       session)
+      (x
+       ;; Connection failed or timeout expired.
+       (leave (_ "failed to connect to '~a': ~a~%")
+              (build-machine-name machine) (get-error session))))))
 
 (define* (connect-to-remote-daemon session
                                    #:optional
