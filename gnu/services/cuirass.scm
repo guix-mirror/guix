@@ -52,8 +52,8 @@
                     (default 60))
   (database         cuirass-configuration-database ;string (file-name)
                     (default "/var/run/cuirass/cuirass.db"))
-  (specifications   cuirass-configuration-specifications ;string (file-name)
-                    (default ""))
+  (specifications   cuirass-configuration-specifications ;specification-alist
+                    (default '()))
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
                     (default #f))
   (one-shot?        cuirass-configuration-one-shot? ;boolean
@@ -66,7 +66,7 @@
    (let ((cache-directory  (cuirass-configuration-cache-directory config))
          (interval         (cuirass-configuration-interval config))
          (database         (cuirass-configuration-database config))
-         (specifications   (cuirass-configuration-specifications config))
+         (specs            (cuirass-configuration-specifications config))
          (use-substitutes? (cuirass-configuration-use-substitutes? config))
          (one-shot?        (cuirass-configuration-one-shot? config)))
      (list (shepherd-service
@@ -78,9 +78,11 @@
                             #$@(if (string=? "" cache-directory)
                                    '()
                                    (list "--cache-directory" cache-directory))
-                            #$@(if (string=? "" specifications)
+                            #$@(if (null? specs)
                                    '()
-                                   (list "--specifications" specifications))
+                                   (let ((str (format #f "'~S" specs)))
+                                     (list "--specifications"
+                                           (plain-file "specs.scm" str))))
                             "--database" #$database
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
