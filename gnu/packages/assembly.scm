@@ -41,17 +41,25 @@
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12bl6vc5sjp9nnhf0iwy6l27vq783y0rxrjpp8sy84h5cb7a3fwx"))
-              (patches (search-patches "nasm-no-ps-pdf.patch"))))
+                "12bl6vc5sjp9nnhf0iwy6l27vq783y0rxrjpp8sy84h5cb7a3fwx"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)  ;for doc and test target
                      ("texinfo" ,texinfo)))
     (arguments
      `(#:test-target "test"
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'install-info
-                    (lambda _
-                      (zero? (system* "make" "install_doc")))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'dont-build-ps-pdf-outputs
+           (lambda _
+             (substitute* "doc/Makefile.in"
+               (("info html nasmdoc.txt nasmdoc.ps nasmdoc.pdf")
+                "info html nasmdoc.txt")
+               (("nasmdoc.ps nasmdoc.pdf nasmdoc.txt \\$\\(INSTALLROOT\\)\\$\\(docdir\\)")
+                "nasmdoc.txt $(INSTALLROOT)$(docdir)"))
+             #t))
+         (add-after 'install 'install-info
+           (lambda _
+             (zero? (system* "make" "install_doc")))))))
     (home-page "http://www.nasm.us/")
     (synopsis "80x86 and x86-64 assembler")
     (description
