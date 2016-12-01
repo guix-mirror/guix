@@ -1549,7 +1549,7 @@ stash data in JSON format.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Catalyst-View-TT-" version ".tar.gz"))
      (sha256
       (base32
