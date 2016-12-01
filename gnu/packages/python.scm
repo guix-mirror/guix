@@ -32,6 +32,7 @@
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11874,3 +11875,27 @@ specs from your Flask-Restful projects.")
 
 (define-public python2-flask-restful-swagger
   (package-with-python2 python-flask-restful-swagger))
+
+(define-public python-argcomplete
+  (package
+    (name "python-argcomplete")
+    (version "1.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "argcomplete" version))
+        (sha256
+          (base32
+            "11bwiw6j0nilgz81xnw6f1npyga3prp8asjqrm87cdr3ria5l03x"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/kislyuk/argcomplete")
+    (synopsis "Shell tab completion for Python argparse")
+    (description "argcomplete provides extensible command line tab completion
+of arguments and options for Python scripts using @code{argparse}.  It's
+particularly useful for programs with many options or sub-parsers that can
+dynamically suggest completions; for example, when browsing resources over the
+network.")
+    (license license:asl2.0)))
+
+(define-public python2-argcomplete
+  (package-with-python2 python-argcomplete))
