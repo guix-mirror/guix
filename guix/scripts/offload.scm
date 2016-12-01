@@ -493,27 +493,30 @@ be read."
 
 (define (machine-load machine)
   "Return the load of MACHINE, divided by the number of parallel builds
-allowed on MACHINE."
+allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
   ;; Note: This procedure is costly since it creates a new SSH session.
-  (let* ((session (open-ssh-session machine))
-         (pipe    (open-remote-pipe* session OPEN_READ
+  (match (false-if-exception (open-ssh-session machine))
+    ((? session? session)
+     (let* ((pipe (open-remote-pipe* session OPEN_READ
                                      "cat" "/proc/loadavg"))
-         (line    (read-line pipe)))
-    (close-port pipe)
+            (line (read-line pipe)))
+       (close-port pipe)
 
-    (if (eof-object? line)
-        +inf.0    ;MACHINE does not respond, so assume it is infinitely loaded
-        (match (string-tokenize line)
-          ((one five fifteen . _)
-           (let* ((raw        (string->number five))
-                  (jobs       (build-machine-parallel-builds machine))
-                  (normalized (/ raw jobs)))
-             (format (current-error-port) "load on machine '~a' is ~s\
+       (if (eof-object? line)
+           +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
+           (match (string-tokenize line)
+             ((one five fifteen . _)
+              (let* ((raw        (string->number five))
+                     (jobs       (build-machine-parallel-builds machine))
+                     (normalized (/ raw jobs)))
+                (format (current-error-port) "load on machine '~a' is ~s\
  (normalized: ~s)~%"
-                     (build-machine-name machine) raw normalized)
-             normalized))
-          (_
-           +inf.0)))))           ;something's fishy about MACHINE, so avoid it
+                        (build-machine-name machine) raw normalized)
+                normalized))
+             (_
+              +inf.0)))))        ;something's fishy about MACHINE, so avoid it
+    (_
+     +inf.0)))                      ;failed to connect to MACHINE, so avoid it
 
 (define (machine-lock-file machine hint)
   "Return the name of MACHINE's lock file for HINT."
