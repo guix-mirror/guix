@@ -470,7 +470,8 @@ encoding conversion errors."
            ;; Write a byte stream to USER-PORT.
            (let* ((len (read-int p))
                   (m   (modulo len 8)))
-             (dump-port p user-port len)
+             (dump-port p user-port len
+                        #:buffer-size (if (<= len 16384) 16384 65536))
              (unless (zero? m)
                ;; Consume padding, as for strings.
                (get-bytevector-n p (- 8 m))))
