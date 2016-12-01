@@ -905,7 +905,7 @@ action, which will forward to the first available view.")
     (version "1.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+              (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                                   "Catalyst-Action-REST-" version ".tar.gz"))
               (sha256
                (base32
