@@ -203,11 +203,11 @@ static void stopWork(bool success = true, const string & msg = "", unsigned int 
 }
 
 
-struct TunnelSink : Sink
+struct TunnelSink : BufferedSink
 {
     Sink & to;
-    TunnelSink(Sink & to) : to(to) { }
-    virtual void operator () (const unsigned char * data, size_t len)
+    TunnelSink(Sink & to) : BufferedSink(64 * 1024), to(to) { }
+    virtual void write(const unsigned char * data, size_t len)
     {
         writeInt(STDERR_WRITE, to);
         writeString(data, len, to);
@@ -433,6 +433,7 @@ static void performOp(bool trusted, unsigned int clientVersion,
         startWork();
         TunnelSink sink(to);
         store->exportPath(path, sign, sink);
+        sink.flush();
         stopWork();
         writeInt(1, to);
         break;
