@@ -2217,7 +2217,7 @@ used by the HTTP protocol (and then some more).")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Message-"
+                   "mirror://cpan/authors/id/E/ET/ETHER/HTTP-Message-"
                    version ".tar.gz"))
              (sha256
               (base32
@@ -2233,7 +2233,7 @@ used by the HTTP protocol (and then some more).")
     (synopsis "Perl HTTP style message")
     (description
      "An HTTP::Message object contains some headers and a content body.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Message/")))
+    (home-page "http://search.cpan.org/~ether/HTTP-Message/")))
 
 (define-public perl-http-negotiate
   (package
