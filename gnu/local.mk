@@ -745,7 +745,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
-  %D%/packages/patches/netcdf-config-date.patch			\
+  %D%/packages/patches/netcdf-date-time.patch			\
+  %D%/packages/patches/netcdf-tst_h_par.patch			\
   %D%/packages/patches/netsurf-about.patch			\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\

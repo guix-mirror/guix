@@ -714,7 +714,7 @@ HDF5 file is encoded according to the HDF File Format Specification.")
 (define-public netcdf
   (package
     (name "netcdf")
-    (version "4.4.0")
+    (version "4.4.1.1")
     (source
      (origin
        (method url-fetch)
@@ -722,8 +722,9 @@ HDF5 file is encoded according to the HDF File Format Specification.")
                            "netcdf-" version ".tar.gz"))
        (sha256
         (base32
-         "0y6gdcplarwqqnrav2xg1xd6ih732rzzbmdw78v3rl5b8mwcnh0d"))
-       (patches (list (search-patch "netcdf-config-date.patch")))))
+         "1blc7ik5yin7i0ls2kag0a9xjk12m0dzx6v1x88az3ras3scci2d"))
+       (patches (search-patches "netcdf-date-time.patch"
+                                "netcdf-tst_h_par.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)
