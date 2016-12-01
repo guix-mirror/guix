@@ -266,14 +266,14 @@ developers consider to have good quality code and correct functionality.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.10.1")
+    (version "1.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "07cjra4fclrk6lpdm5hrsgp79aqpklx3v3l9scain091zvchwghk"))))
+                "0fisnnfpp3s8pbm6hjrfi4wjpq2da8c6w3ns9pjcg7590f9wm587"))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
