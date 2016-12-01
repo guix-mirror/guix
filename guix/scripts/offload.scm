@@ -24,6 +24,7 @@
   #:use-module (ssh popen)
   #:use-module (ssh dist)
   #:use-module (ssh dist node)
+  #:use-module (ssh version)
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module (guix store)
@@ -633,6 +634,12 @@ allowed on MACHINE."
   ;; seed file, and fails if it's owned by someone else.
   (and=> (passwd:dir (getpw (getuid)))
          (cut setenv "HOME" <>))
+
+  ;; We rely on protocol-level compression from libssh to optimize large data
+  ;; transfers.  Warn if it's missing.
+  (unless (zlib-support?)
+    (warning (_ "Guile-SSH lacks zlib support"))
+    (warning (_ "data transfers will *not* be compressed!")))
 
   (match args
     ((system max-silent-time print-build-trace? build-timeout)
