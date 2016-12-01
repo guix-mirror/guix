@@ -186,7 +186,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.4")
+    (version "5.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -196,14 +196,14 @@ streams from live audio.")
                ;; Ardour expects this file to exist at build time.  The revision
                ;; is the output of
                ;;    git describe HEAD | sed 's/^[A-Za-z]*+//'
-               '(call-with-output-file
+               `(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
-                    (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"5.4\" ; }"))))
+                    (format port ,(string-append "#include \"ardour/revision.h\"
+namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
               (sha256
                (base32
-                "1yrg0d86k9fqw7lmzjglilbadb4cjqxqkf6ii4bjs6rihj6b0qrf"))
+                "1a3whv2dhl073pkd803hcp53rdmm31adjwn40qi06lkjb7rgwrlh"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
