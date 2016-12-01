@@ -234,3 +234,31 @@ proxying.  This makes it faster and more reliable than SSH's own tunneling and
 port forwarding features.  It can forward both TCP and UDP traffic, including
 DNS domain name queries.")
     (license license:lgpl2.0))) ; incorrectly identified as GPL in ‘setup.py’
+
+(define-public sshoot
+  (package
+    (name "sshoot")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "0a92lk8790dpp9j64vb6p4sazax0x3nby01lnfll7mxs1hx6n27q"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-argcomplete" ,python-argcomplete)
+       ("python-prettytable" ,python-prettytable)
+       ("python-pyyaml" ,python-pyyaml)))
+    ;; For tests only.
+    (native-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-pbr" ,python-pbr)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://bitbucket.org/ack/sshoot")
+    (synopsis "sshuttle VPN session manager")
+    (description "sshoot provides a command-line interface to manage multiple
+@command{sshuttle} virtual private networks.  It supports flexible profiles
+with configuration options for most of @command{sshuttle}’s features.")
+    (license license:gpl3+)))
