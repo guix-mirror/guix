@@ -12787,8 +12787,7 @@ host.
 @item -net user
 Enable the unprivileged user-mode network stack.  The guest OS can
 access the host but not vice versa.  This is the simplest way to get the
-guest OS online.  If you do not choose a network stack, the boot will
-fail.
+guest OS online.
 
 @item -net nic,model=virtio
 You must create a network interface of a given model.  If you do not
