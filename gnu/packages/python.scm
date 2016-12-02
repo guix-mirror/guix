@@ -4814,7 +4814,7 @@ computing.")
       ;; FIXME: add pyreadline once available.
       (native-inputs
        `(("python2-mock" ,python2-mock)
-         ,@(package-inputs ipython))))))
+         ,@(package-native-inputs ipython))))))
 
 (define-public python-isodate
   (package
