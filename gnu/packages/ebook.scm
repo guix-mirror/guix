@@ -126,6 +126,9 @@
      `(#:python ,python-2
        #:test-target "check"
        #:tests? #f ; FIXME: enable once flake8 is packaged
+       ;; Calibre is using setuptools by itself, but the setup.py is not
+       ;; compatible with the shim wrapper (taken from pip) we are using.
+       #:use-setuptools? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'configure
