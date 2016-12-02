@@ -3261,11 +3261,12 @@ association studies (GWAS) on extremely large data sets.")
     (name "python-numpy")
     (outputs '("out" "doc"))
     (inputs
-     `(("which" ,which)))
+     `(("which" ,which)
+       ,@(package-inputs python-numpy-bootstrap)))
     (propagated-inputs
      `(("python-matplotlib" ,python-matplotlib)
        ("python-pyparsing" ,python-pyparsing)
-       ,@(package-inputs python-numpy-bootstrap)))
+       ,@(package-propagated-inputs python-numpy-bootstrap)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
