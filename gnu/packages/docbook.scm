@@ -192,9 +192,13 @@ by no means limited to these applications.)  This package provides XML DTDs.")
        ("libxslt" ,libxslt)))           ;for xsltproc
     (arguments
      `(#:python ,python-2               ;'print' syntax
-       ;; XXX: Disable usage of setuptools, even though it is supported.
-       ;; This causes an invalid "package_base" in out/bin/.dblatex-real
-       ;; due to a missing leading '/'. See this thread for details:
+       ;; Using setuptools causes an invalid "package_base" path in
+       ;; out/bin/.dblatex-real due to a missing leading '/'.  This is caused
+       ;; by dblatex's setup.py stripping the root path when creating the
+       ;; script.  (dblatex's setup.py still uses distutils and thus has to
+       ;; create the script by itself. The feature for creating scripts is one
+       ;; of setuptools' features.)
+       ;; See this thread for details:
        ;; https://lists.gnu.org/archive/html/guix-devel/2016-12/msg00030.html
        #:use-setuptools? #f
        #:tests? #f                      ;no 'test' command
