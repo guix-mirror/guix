@@ -3390,7 +3390,7 @@ that client code uses to construct the grammar directly in Python code.")
            (substitute* "numpydoc/tests/test_plot_directive.py"
              (("3") "2"))))))
     (build-system python-build-system)
-    (native-inputs
+    (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
     (native-inputs
      `(("python-nose" ,python-nose)))
