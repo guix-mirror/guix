@@ -31,39 +31,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml))
 
-(define-public exiv2                              ; XXX: move elsewhere?
-  (package
-    (name "exiv2")
-    (version "0.25")
-    (source (origin
-             (method url-fetch)
-             (uri (list (string-append "http://www.exiv2.org/exiv2-"
-                                       version ".tar.gz")
-                        (string-append "https://fossies.org/linux/misc/exiv2-"
-                                       version ".tar.gz")))
-             (sha256
-              (base32
-               "197g6vgcpyf9p2cwn5p5hb1r714xsk1v4p96f5pv1z8mi9vzq2y8"))))
-    (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no `check' target
-    (propagated-inputs
-     `(("expat" ,expat)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("intltool" ,intltool)))
-    (home-page "http://www.exiv2.org/")
-    (synopsis "Library and command-line utility to manage image metadata")
-    (description
-     "Exiv2 is a C++ library and a command line utility to manage image
-metadata.  It provides fast and easy read and write access to the Exif, IPTC
-and XMP metadata of images in various formats.")
-
-    ;; Files under `xmpsdk' are a copy of Adobe's XMP SDK, licensed under the
-    ;; 3-clause BSD license: <http://www.adobe.com/devnet/xmp/sdk/eula.html>.
-    ;; The core is GPLv2+:
-    ;;   <https://launchpad.net/ubuntu/precise/+source/exiv2/+copyright>.
-    (license l:gpl2+)))
-
 (define-public geeqie
   (package
     (name "geeqie")

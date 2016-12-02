@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
@@ -40,6 +41,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
@@ -787,6 +789,39 @@ channels.")
     (description
      "Libmng is the MNG (Multiple-image Network Graphics) reference library.")
     (license license:bsd-3)))
+
+(define-public exiv2
+  (package
+    (name "exiv2")
+    (version "0.25")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append "http://www.exiv2.org/exiv2-"
+                                       version ".tar.gz")
+                        (string-append "https://fossies.org/linux/misc/exiv2-"
+                                       version ".tar.gz")))
+             (sha256
+              (base32
+               "197g6vgcpyf9p2cwn5p5hb1r714xsk1v4p96f5pv1z8mi9vzq2y8"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))                    ; no `check' target
+    (propagated-inputs
+     `(("expat" ,expat)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "http://www.exiv2.org/")
+    (synopsis "Library and command-line utility to manage image metadata")
+    (description
+     "Exiv2 is a C++ library and a command line utility to manage image
+metadata.  It provides fast and easy read and write access to the Exif, IPTC
+and XMP metadata of images in various formats.")
+
+    ;; Files under `xmpsdk' are a copy of Adobe's XMP SDK, licensed under the
+    ;; 3-clause BSD license: <http://www.adobe.com/devnet/xmp/sdk/eula.html>.
+    ;; The core is GPLv2+:
+    ;;   <https://launchpad.net/ubuntu/precise/+source/exiv2/+copyright>.
+    (license license:gpl2+)))
 
 (define-public devil
   (package

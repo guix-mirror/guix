@@ -20,10 +20,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages geeqie)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config))
 
 (define-public viewnior
