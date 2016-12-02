@@ -123,7 +123,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/entr.scm				\
   %D%/packages/erlang.scm			\
   %D%/packages/fcitx.scm			\
-  %D%/packages/feh.scm                          \
   %D%/packages/figlet.scm			\
   %D%/packages/file.scm				\
   %D%/packages/finance.scm			\
@@ -147,7 +146,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gd.scm				\
   %D%/packages/gdb.scm				\
   %D%/packages/geo.scm				\
-  %D%/packages/geeqie.scm			\
   %D%/packages/gettext.scm			\
   %D%/packages/gforth.scm			\
   %D%/packages/ghostscript.scm			\
@@ -349,7 +347,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/statistics.scm			\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
-  %D%/packages/sxiv.scm				\
   %D%/packages/sync.scm			\
   %D%/packages/synergy.scm			\
   %D%/packages/syndication.scm			\
