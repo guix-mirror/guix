@@ -7174,7 +7174,15 @@ modifying or deleting previous generations.  Old system generations get
 an entry in the GRUB boot menu, allowing you to boot them in case
 something went wrong with the latest generation.  Reassuring, no?  The
 @command{guix system list-generations} command lists the system
-generations available on disk.
+generations available on disk.  It is also possible to roll back the
+system via the commands @command{guix system roll-back} and
+@command{guix system switch-generation}.
+
+Although the command @command{guix system reconfigure} will not modify
+previous generations, must take care when the current generation is not
+the latest (e.g., after invoking @command{guix system roll-back}), since
+the operation might overwrite a later generation (@pxref{Invoking guix
+system}).
 
 @unnumberedsubsubsec The Programming Interface
 
@@ -12598,6 +12606,12 @@ The command starts system services specified in @var{file} that are not
 currently running; if a service is currently running, it does not
 attempt to upgrade it since this would not be possible without stopping it
 first.
+
+This command creates a new generation whose number is one greater than
+the current generation (as reported by @command{guix system
+list-generations}).  If that generation already exists, it will be
+overwritten.  This behavior mirrors that of @command{guix package}
+(@pxref{Invoking guix package}).
 
 It also adds a GRUB menu entry for the new OS configuration, and moves
 entries for older configurations to a submenu---unless

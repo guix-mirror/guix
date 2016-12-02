@@ -326,7 +326,7 @@ it atomically, and then run OS's activation script."
     (let* ((system     (derivation->output-path drv))
            (number     (+ 1 (generation-number profile)))
            (generation (generation-file-name profile number)))
-      (symlink system generation)
+      (switch-symlinks generation system)
       (switch-symlinks profile generation)
 
       (format #t (_ "activating system...~%"))
