@@ -6372,14 +6372,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.5.3")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1bnd1bricyhxa27rhr0ljk0kacxzvysd3ar2j2hlv13a2k6zw4z5"))))
+         "0xgn3yvlmv5rs92wgjj39qscr6s7mwbbsx7j683sfa6ijmyb1k01"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -6394,14 +6394,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.5.3")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1raanvkdfw5ai56ymlij6ghc4k126fs7jx948ig7yn4vj6ndv0ng"))))
+         "0gwvmz6w5ml0bjbgmdiscsv5i948lrjd381z7h9qkz6kr398c3ad"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
