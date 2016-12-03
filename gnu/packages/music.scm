@@ -1697,6 +1697,38 @@ JACK for audio and ALSA sequencer for MIDI as multimedia infrastructures and
 follows a traditional multi-track tape recorder control paradigm.")
     (license license:gpl2+)))
 
+(define-public ams-lv2
+  (package
+    (name "ams-lv2")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/blablack/ams-lv2/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1392spswkhfd38fggf584wb3m8aqpg7csfrs9zxnzyvhgmp0fgqk"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no tests
+    (inputs
+     `(("lv2" ,lv2)
+       ("lvtk" ,lvtk)
+       ("gtkmm" ,gtkmm-2)
+       ("gtk" ,gtk+-2)
+       ("cairo" ,cairo)
+       ("fftw" ,fftw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://objectivewave.wordpress.com/ams-lv2/")
+    (synopsis "Port of Alsa Modular Synth internal modules into LV2")
+    (description "This set of LV2 plugins is a port of the internal modules
+found in Alsa Modular Synth.  These plugins are used to create modular
+synthesizers and contain: VCO, VCF, VCA, LFO, slew limiter, envelopes, sample
+and hold, etc.")
+    (license license:gpl2)))
+
 (define-public gxtuner
   (package
     (name "gxtuner")
