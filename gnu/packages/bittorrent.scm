@@ -283,7 +283,8 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
        ("libnotify" ,libnotify)
        ("openssl" ,openssl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://ugetdm.com/")
     (synopsis "Universal download manager with GTK+ interface")
     (description
