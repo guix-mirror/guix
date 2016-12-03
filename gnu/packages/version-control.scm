@@ -141,6 +141,9 @@ as well as the classic centralized workflow.")
       ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
       ("zlib" ,zlib)
 
+      ;; For 'gitweb.cgi'
+      ("perl-cgi" ,perl-cgi)
+
       ;; For 'git-svn'.
       ("subversion" ,subversion)
       ("perl-term-readkey" ,perl-term-readkey)
@@ -256,6 +259,17 @@ as well as the classic centralized workflow.")
                                  '("perl-authen-sasl"
                                    "perl-net-smtp-ssl"
                                    "perl-io-socket-ssl")))))))
+
+              ;; Tell 'gitweb.cgi' where perl modules are.
+              (wrap-program (string-append out "/share/gitweb/gitweb.cgi")
+                `("PERL5LIB" ":" prefix
+                  ,(map (lambda (o) (string-append o "/lib/perl5/site_perl"))
+                        (list
+                         ,@(transitive-input-references
+                            'inputs
+                            (map (lambda (l)
+                                   (assoc l (inputs)))
+                                 '("perl-cgi")))))))
 
               ;; Tell 'git-submodule' where Perl is.
               (wrap-program git-sm
