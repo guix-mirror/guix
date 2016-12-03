@@ -7142,7 +7142,7 @@ entry (@pxref{Invoking guix system}).
 
 The normal way to change the system configuration is by updating this
 file and re-running @command{guix system reconfigure}.  One should never
-have to touch files in @command{/etc} or to run commands that modify the
+have to touch files in @file{/etc} or to run commands that modify the
 system state such as @command{useradd} or @command{grub-install}.  In
 fact, you must avoid that since that would not only void your warranty
 but also prevent you from rolling back to previous versions of your
@@ -10654,7 +10654,7 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string auth-krb5-keytab
 Kerberos keytab to use for the GSSAPI mechanism.  Will use the
-system default (usually /etc/krb5.keytab) if not specified.  You may
+system default (usually @file{/etc/krb5.keytab}) if not specified.  You may
 need to change the auth service to run as root to be able to read this
 file.
 Defaults to @samp{""}.
