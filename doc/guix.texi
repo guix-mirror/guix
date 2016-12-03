@@ -11542,6 +11542,99 @@ remote servers.  Run @command{man smtpd.conf} for more information.
 The @code{(gnu services kerberos)} module provides services relating to
 the authentication protocol @dfn{Kerberos}.
 
+@subsubheading Krb5 Service
+
+Programs using a Kerberos client library normally
+expect a configuration file in @file{/etc/krb5.conf}.
+This service generates such a file from a definition provided in the
+operating system declaration.
+It does not cause any daemon to be started.
+
+No ``keytab'' files are provided by this service---you must explicitly create them.
+This service is known to work with the MIT client library, @code{mit-krb5}.
+Other implementations have not been tested.
+
+@defvr {Scheme Variable} krb5-service-type
+A service type for Kerberos 5 clients.
+@end defvr
+
+@noindent
+Here is an example of its use:
+@lisp
+(service krb5-service-type
+         (krb5-configuration
+          (default-realm "EXAMPLE.COM")
+          (allow-weak-crypto? #t)
+          (realms (list
+                   (krb5-realm
+                    (name "EXAMPLE.COM")
+                    (admin-server "groucho.example.com")
+                    (kdc "karl.example.com"))
+                   (krb5-realm
+                    (name "ARGRX.EDU")
+                    (admin-server "kerb-admin.argrx.edu")
+                    (kdc "keys.argrx.edu"))))))
+@end lisp
+
+@noindent
+This example provides a Kerberos@tie{}5 client configuration which:
+@itemize
+@item Recognizes two realms, @i{viz:} ``EXAMPLE.COM'' and ``ARGRX.EDU'', both
+of which have distinct administration servers and key distribution centers;
+@item Will default to the realm ``EXAMPLE.COM'' if the realm is not explicitly
+specified by clients;
+@item Accepts services which only support encryption types known to be weak.
+@end itemize
+
+The @code{krb5-realm} and @code{krb5-configuration} types have many fields.
+Only the most commonly used ones are described here.
+For a full list, and more detailed explanation of each, see the MIT
+@uref{http://web.mit.edu/kerberos/krb5-devel/doc/admin/conf_files/krb5_conf.html,,krb5.conf}
+documentation.
+
+
+@deftp {Data Type} krb5-realm
+@cindex realm, kerberos
+@table @asis
+@item @code{name}
+This field is a string identifying the name of the realm.
+A common convention is to use the fully qualified DNS name of your organization,
+converted to upper case.
+
+@item @code{admin-server}
+This field is a string identifying the host where the administration server is
+running.
+
+@item @code{kdc}
+This field is a string identifying the key distribution center
+for the realm.
+@end table
+@end deftp
+
+@deftp {Data Type} krb5-configuration
+
+@table @asis
+@item @code{allow-weak-crypto?} (default: @code{#f})
+If this flag is @code{#t} then services which only offer encryption algorithms
+known to be weak will be accepted.
+
+@item @code{default-realm} (default: @code{#f})
+This field should be a string identifying the default Kerberos
+realm for the client.
+You should set this field to the name of your Kerberos realm.
+If this value is @code{#f}
+then a realm must be specified with every Kerberos principal when invoking programs
+such as @command{kinit}.
+
+@item @code{realms}
+This should be a non-empty list of @code{krb5-realm} objects, which clients may
+access.
+Normally, one of them will have a @code{name} field matching the @code{default-realm}
+field.
+@end table
+@end deftp
+
+
 @subsubheading PAM krb5 Service
 @cindex pam-krb5
 
