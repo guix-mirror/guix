@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,11 +122,16 @@ anywhere.")
                        ;; XXX: heimdal not packaged.
                        "--bundled-libraries=com_err"
                        (string-append "--prefix=" out)
+		       "--sysconfdir=/etc"
                        ;; Install public and private libraries into
                        ;; a single directory to avoid RPATH issues.
                        (string-append "--libdir=" libdir)
-                       (string-append "--with-privatelibdir=" libdir)))))))
-
+                       (string-append "--with-privatelibdir=" libdir))))))
+	 (add-before 'install 'disable-etc-samba-directory-creation
+           (lambda _
+             (substitute* "dynconfig/wscript"
+               (("bld\\.INSTALL_DIRS\\(\"\",[[:blank:]]{1,}\"\\$\\{CONFIGDIR\\}[[:blank:]]{1,}")
+                "bld.INSTALL_DIRS(\"\", \"")))))
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
        ;; So disable tests until there's a workaround.
