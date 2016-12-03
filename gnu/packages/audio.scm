@@ -1653,9 +1653,16 @@ software.")
                      (setenv "LDFLAGS"
                              (string-append
                               "-L" (assoc-ref inputs "boost") "/lib "
-                              "-lboost_system")))))))
+                              "-lboost_system"))
+                     ;; Needed for gtkmm
+                     (substitute* '("src/wscript_build"
+                                    "examples/wscript_build")
+                       (("cxxflags.*= \\[" line)
+                        (string-append line "\"-std=c++11\", ")))
+                     #t)))))
     (inputs
      `(("boost" ,boost)
+       ("gtkmm" ,gtkmm-2)
        ("lv2" ,lv2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
