@@ -719,16 +719,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
-  %D%/packages/patches/mupdf-CVE-2016-6265.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-6525.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7504.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7505.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7506.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7563.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7564.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-8674.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-9017.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-9136.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
