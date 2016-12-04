@@ -1015,13 +1015,19 @@ module provides support functions to the automatically generated code.")
                         "."))
                     (lib (string-append out "/lib/python"
                                         python-major+minor
-                                        "/site-packages")))
+                                        "/site-packages"))
+                    (stubs (string-append lib "/PyQt5")))
                (zero? (system* "python" "configure.py"
                                "--confirm-license"
                                "--bindir" bin
                                "--destdir" lib
                                "--designer-plugindir" designer
                                "--qml-plugindir" qml
+                               ; Where to install the PEP 484 Type Hints stub
+                               ; files. Without this the stubs are tried to be
+                               ; installed into the python package's
+                               ; site-package directory, which is read-only.
+                               "--stubsdir" stubs
                                "--sipdir" sip))))))))
     (home-page "https://www.riverbankcomputing.com/software/pyqt/intro")
     (synopsis "Python bindings for Qt")
