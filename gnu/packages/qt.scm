@@ -1115,7 +1115,7 @@ contain over 620 classes.")
 
 (define-public python2-pyqt-4
   (package (inherit python-pyqt-4)
-           (name "python2-pyqt-4")
+           (name "python2-pyqt")
            (native-inputs
             `(("python-sip" ,python2-sip)
               ("qt" ,qt-4)))
