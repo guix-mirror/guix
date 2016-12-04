@@ -162,27 +162,49 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.12")
+    (version "4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1d3q3lgpjbkmcwzjhp0dfr0jq847silcfg087slcnj95ikh1r7p1"))))
+                "12ngz32swh9n85xy0cz1lq16aqi9ys5hq19v589q9a97wn1k3hcl"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))
-       #:tests? #f)) ; no test suite
+     `(#:make-flags
+       (let* ((docbook-xsl-name-version ,(string-append
+                                          (package-name docbook-xsl) "-"
+                                          (package-version  docbook-xsl)))
+              (docbook-xsl-catalog-file (string-append
+                                         (assoc-ref %build-inputs "docbook-xsl")
+                                         "/xml/xsl/"
+                                         docbook-xsl-name-version
+                                         "/catalog.xml"))
+              (docbook-xml-catalog-file (string-append
+                                         (assoc-ref %build-inputs "docbook-xml")
+                                         "/xml/dtd/docbook/catalog.xml")))
+         ;; Reference the catalog files required to build the manpages.
+         (list (string-append "XML_CATALOG_FILES=" docbook-xsl-catalog-file " "
+                              docbook-xml-catalog-file)
+              "CC=gcc"
+              (string-append "PREFIX=" %output)
+              ;; This works around the following error:
+              ;; 'error: ‘for’ loop initial declarations are only allowed in C99
+              ;; or C11 mode'
+              "CFLAGS=-std=c11"))
+       ;; The build system tries to build in a separate directory, but that
+       ;; seems to be unnecessary.
+       #:configure-flags '("--disable-builddir")
+       ;; The test suite appears to require the unpackaged Perl module AnyEvent.
+       #:tests? #f))
     (inputs
      `(("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
        ("xcb-util-cursor" ,xcb-util-cursor)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)
+       ("xcb-util-xrm" ,xcb-util-xrm)
        ("libxkbcommon" ,libxkbcommon)
        ("libev" ,libev)
        ("libyajl" ,libyajl)
@@ -198,7 +220,9 @@ commands would.")
     (native-inputs
      `(("which" ,which)
        ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ;; For building the documentation.
+       ("docbook-xsl" ,docbook-xsl)))
     (home-page "https://i3wm.org/")
     (synopsis "Improved tiling window manager")
     (description "A tiling window manager, completely written
