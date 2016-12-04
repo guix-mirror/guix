@@ -2566,6 +2566,38 @@ plugin on any system where Ingen is installed.  This allows users to visually
 develop custom plugins for use in other applications without programming.")
       (license license:agpl3+))))
 
+(define-public qmidiarp
+  (package
+    (name "qmidiarp")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/qmidiarp/qmidiarp/"
+                                  version "/qmidiarp-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1gkfv8ajgf86kbn6j5ilfc1zlz17gdi9yxzywqd6jwff4xlm75hx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-qt5"
+             "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("lv2" ,lv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://qmidiarp.sourceforge.net/")
+    (synopsis "MIDI arpeggiator")
+    (description "QMidiArp is an advanced MIDI arpeggiator, programmable step
+sequencer and LFO.  It can hold any number of arpeggiator, sequencer, or LFO
+modules running in parallel.")
+    (license license:gpl2+)))
+
 (define-public python-discogs-client
   (package
     (name "python-discogs-client")
