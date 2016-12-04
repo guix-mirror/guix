@@ -946,7 +946,7 @@ write accessor methods for your objects that perform standard tasks.")
 (define-public perl-class-method-modifiers
   (package
     (name "perl-class-method-modifiers")
-    (version "2.11")
+    (version "2.12")
     (source
      (origin
        (method url-fetch)
@@ -954,7 +954,7 @@ write accessor methods for your objects that perform standard tasks.")
                            "Class-Method-Modifiers-" version ".tar.gz"))
        (sha256
         (base32
-         "14nk2gin9cjwpysakli7f0gs4q1w220sn73xzv35rhlspngrggyy"))))
+         "1j3swa212wh14dq5r6zjarm2lzpx6mrdfplpjy65px8b09ri0k74"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -4756,7 +4756,7 @@ Perl (back to 5.6.0).")
 (define-public perl-namespace-autoclean
   (package
     (name "perl-namespace-autoclean")
-    (version "0.24")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
@@ -4764,7 +4764,7 @@ Perl (back to 5.6.0).")
                            "namespace-autoclean-" version ".tar.gz"))
        (sha256
         (base32
-         "0msggbg2zbixxjq1fda19h0yygavxndfzc4j4pq11nfghmawjsb0"))))
+         "0fbcq99yaix1aa99jl3v811dbw24il9jxnh5i2i23mddh4b0lhfd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)

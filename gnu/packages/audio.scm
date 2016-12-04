@@ -186,7 +186,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.4")
+    (version "5.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -196,14 +196,14 @@ streams from live audio.")
                ;; Ardour expects this file to exist at build time.  The revision
                ;; is the output of
                ;;    git describe HEAD | sed 's/^[A-Za-z]*+//'
-               '(call-with-output-file
+               `(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
-                    (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"5.4\" ; }"))))
+                    (format port ,(string-append "#include \"ardour/revision.h\"
+namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
               (sha256
                (base32
-                "1yrg0d86k9fqw7lmzjglilbadb4cjqxqkf6ii4bjs6rihj6b0qrf"))
+                "1a3whv2dhl073pkd803hcp53rdmm31adjwn40qi06lkjb7rgwrlh"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
@@ -1653,9 +1653,16 @@ software.")
                      (setenv "LDFLAGS"
                              (string-append
                               "-L" (assoc-ref inputs "boost") "/lib "
-                              "-lboost_system")))))))
+                              "-lboost_system"))
+                     ;; Needed for gtkmm
+                     (substitute* '("src/wscript_build"
+                                    "examples/wscript_build")
+                       (("cxxflags.*= \\[" line)
+                        (string-append line "\"-std=c++11\", ")))
+                     #t)))))
     (inputs
      `(("boost" ,boost)
+       ("gtkmm" ,gtkmm-2)
        ("lv2" ,lv2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1797,6 +1804,23 @@ and ALSA.")
      "Raul (Real-time Audio Utility Library) is a C++ utility library primarily
 aimed at audio/musical applications.")
     (license license:gpl2+)))
+
+(define-public raul-devel
+  (let ((commit "f8bf77d3c3b77830aedafb9ebb5cdadfea7ed07a")
+        (revision "1"))
+    (package (inherit raul)
+      (name "raul")
+      (version (string-append "0.8.4-" revision "."
+                              (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://git.drobilla.net/raul.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1lby508fb0n8ks6iz959sh18fc37br39d6pbapwvbcw5nckdrxwj")))))))
 
 (define-public rubberband
   (package

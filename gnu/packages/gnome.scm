@@ -97,7 +97,6 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages tex)

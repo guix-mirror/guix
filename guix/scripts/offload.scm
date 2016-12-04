@@ -24,6 +24,7 @@
   #:use-module (ssh popen)
   #:use-module (ssh dist)
   #:use-module (ssh dist node)
+  #:use-module (ssh version)
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module (guix store)
@@ -176,31 +177,35 @@ private key from '~a': ~a")
                                ;; exchanging full archives.
                                #:compression "zlib"
                                #:compression-level 3)))
-    (connect! session)
-
-    ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
-    ;; ed25519 keys and 'get-key-type' returns #f in that case.
-    (let-values (((server)   (get-server-public-key session))
-                 ((type key) (host-key->type+key
-                              (build-machine-host-key machine))))
-      (unless (and (or (not (get-key-type server))
-                       (eq? (get-key-type server) type))
-                   (string=? (public-key->string server) key))
-        ;; Key mismatch: something's wrong.  XXX: It could be that the server
-        ;; provided its Ed25519 key when we where expecting its RSA key.
-        (leave (_ "server at '~a' returned host key '~a' of type '~a' \
+    (match (connect! session)
+      ('ok
+       ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
+       ;; ed25519 keys and 'get-key-type' returns #f in that case.
+       (let-values (((server)   (get-server-public-key session))
+                    ((type key) (host-key->type+key
+                                 (build-machine-host-key machine))))
+         (unless (and (or (not (get-key-type server))
+                          (eq? (get-key-type server) type))
+                      (string=? (public-key->string server) key))
+           ;; Key mismatch: something's wrong.  XXX: It could be that the server
+           ;; provided its Ed25519 key when we where expecting its RSA key.
+           (leave (_ "server at '~a' returned host key '~a' of type '~a' \
 instead of '~a' of type '~a'~%")
-               (build-machine-name machine)
-               (public-key->string server) (get-key-type server)
-               key type)))
+                  (build-machine-name machine)
+                  (public-key->string server) (get-key-type server)
+                  key type)))
 
-    (let ((auth (userauth-public-key! session private)))
-      (unless (eq? 'success auth)
-        (disconnect! session)
-        (leave (_ "SSH public key authentication failed for '~a': ~a~%")
-               (build-machine-name machine) (get-error session))))
+       (let ((auth (userauth-public-key! session private)))
+         (unless (eq? 'success auth)
+           (disconnect! session)
+           (leave (_ "SSH public key authentication failed for '~a': ~a~%")
+                  (build-machine-name machine) (get-error session))))
 
-    session))
+       session)
+      (x
+       ;; Connection failed or timeout expired.
+       (leave (_ "failed to connect to '~a': ~a~%")
+              (build-machine-name machine) (get-error session))))))
 
 (define* (connect-to-remote-daemon session
                                    #:optional
@@ -429,10 +434,8 @@ be read."
 (define (send-files files remote)
   "Send the subset of FILES that's missing to REMOTE, a remote store."
   (with-store store
-    ;; Compute the subset of FILES missing on SESSION, and send them in
-    ;; topologically sorted order so that they can actually be imported.
-    (let* ((sorted  (topologically-sorted store files))
-           (session (channel-get-session (nix-server-socket remote)))
+    ;; Compute the subset of FILES missing on SESSION and send them.
+    (let* ((session (channel-get-session (nix-server-socket remote)))
            (node    (make-node session))
            (missing (node-eval node
                                `(begin
@@ -441,11 +444,12 @@ be read."
 
                                   (with-store store
                                     (remove (cut valid-path? store <>)
-                                            ',sorted)))))
+                                            ',files)))))
            (port    (store-import-channel session)))
       (format #t (_ "sending ~a store files to '~a'...~%")
               (length missing) (session-get session 'host))
 
+      ;; Send MISSING in topological order.
       (export-paths store missing port)
 
       ;; Tell the remote process that we're done.  (In theory the
@@ -489,27 +493,30 @@ be read."
 
 (define (machine-load machine)
   "Return the load of MACHINE, divided by the number of parallel builds
-allowed on MACHINE."
+allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
   ;; Note: This procedure is costly since it creates a new SSH session.
-  (let* ((session (open-ssh-session machine))
-         (pipe    (open-remote-pipe* session OPEN_READ
+  (match (false-if-exception (open-ssh-session machine))
+    ((? session? session)
+     (let* ((pipe (open-remote-pipe* session OPEN_READ
                                      "cat" "/proc/loadavg"))
-         (line    (read-line pipe)))
-    (close-port pipe)
+            (line (read-line pipe)))
+       (close-port pipe)
 
-    (if (eof-object? line)
-        +inf.0    ;MACHINE does not respond, so assume it is infinitely loaded
-        (match (string-tokenize line)
-          ((one five fifteen . _)
-           (let* ((raw        (string->number five))
-                  (jobs       (build-machine-parallel-builds machine))
-                  (normalized (/ raw jobs)))
-             (format (current-error-port) "load on machine '~a' is ~s\
+       (if (eof-object? line)
+           +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
+           (match (string-tokenize line)
+             ((one five fifteen . _)
+              (let* ((raw        (string->number five))
+                     (jobs       (build-machine-parallel-builds machine))
+                     (normalized (/ raw jobs)))
+                (format (current-error-port) "load on machine '~a' is ~s\
  (normalized: ~s)~%"
-                     (build-machine-name machine) raw normalized)
-             normalized))
-          (_
-           +inf.0)))))           ;something's fishy about MACHINE, so avoid it
+                        (build-machine-name machine) raw normalized)
+                normalized))
+             (_
+              +inf.0)))))        ;something's fishy about MACHINE, so avoid it
+    (_
+     +inf.0)))                      ;failed to connect to MACHINE, so avoid it
 
 (define (machine-lock-file machine hint)
   "Return the name of MACHINE's lock file for HINT."
@@ -634,6 +641,12 @@ allowed on MACHINE."
   ;; seed file, and fails if it's owned by someone else.
   (and=> (passwd:dir (getpw (getuid)))
          (cut setenv "HOME" <>))
+
+  ;; We rely on protocol-level compression from libssh to optimize large data
+  ;; transfers.  Warn if it's missing.
+  (unless (zlib-support?)
+    (warning (_ "Guile-SSH lacks zlib support"))
+    (warning (_ "data transfers will *not* be compressed!")))
 
   (match args
     ((system max-silent-time print-build-trace? build-timeout)

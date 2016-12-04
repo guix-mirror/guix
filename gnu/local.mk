@@ -123,7 +123,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/entr.scm				\
   %D%/packages/erlang.scm			\
   %D%/packages/fcitx.scm			\
-  %D%/packages/feh.scm                          \
   %D%/packages/figlet.scm			\
   %D%/packages/file.scm				\
   %D%/packages/finance.scm			\
@@ -147,7 +146,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gd.scm				\
   %D%/packages/gdb.scm				\
   %D%/packages/geo.scm				\
-  %D%/packages/geeqie.scm			\
   %D%/packages/gettext.scm			\
   %D%/packages/gforth.scm			\
   %D%/packages/ghostscript.scm			\
@@ -254,6 +252,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/microcom.scm			\
   %D%/packages/mit-krb5.scm			\
   %D%/packages/moe.scm				\
+  %D%/packages/monitoring.scm			\
   %D%/packages/mono.scm				\
   %D%/packages/moreutils.scm			\
   %D%/packages/mpd.scm				\
@@ -285,7 +284,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/openstack.scm			\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
-  %D%/packages/owncloud.scm			\
   %D%/packages/package-management.scm		\
   %D%/packages/parallel.scm			\
   %D%/packages/password-utils.scm		\
@@ -349,7 +347,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/statistics.scm			\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
-  %D%/packages/sxiv.scm				\
+  %D%/packages/sync.scm			\
   %D%/packages/synergy.scm			\
   %D%/packages/syndication.scm			\
   %D%/packages/task-management.scm		\
@@ -539,6 +537,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/fasthenry-spUtils.patch			\
   %D%/packages/patches/fasthenry-spSolve.patch			\
   %D%/packages/patches/fasthenry-spFactor.patch			\
+  %D%/packages/patches/fcgi-2.4.0-gcc44-fixes.patch		\
+  %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flex-CVE-2016-6354.patch			\
@@ -592,10 +592,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-gets-undeclared.patch		\
   %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
-  %D%/packages/patches/gst-plugins-good-fix-crashes.patch	\
-  %D%/packages/patches/gst-plugins-good-fix-invalid-read.patch	\
-  %D%/packages/patches/gst-plugins-good-fix-signedness.patch	\
-  %D%/packages/patches/gst-plugins-good-flic-bounds-check.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
@@ -629,7 +625,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hypre-ldflags.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-binutils.patch			\
-  %D%/packages/patches/icecat-CVE-2016-9064.patch		\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
@@ -737,9 +732,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
-  %D%/packages/patches/nasm-no-ps-pdf.patch			\
   %D%/packages/patches/net-tools-bitrot.patch			\
-  %D%/packages/patches/netcdf-config-date.patch			\
+  %D%/packages/patches/netcdf-date-time.patch			\
+  %D%/packages/patches/netcdf-tst_h_par.patch			\
   %D%/packages/patches/netsurf-about.patch			\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
@@ -904,7 +899,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/vpnc-script.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
-  %D%/packages/patches/vtk-mesa-10.patch			\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\

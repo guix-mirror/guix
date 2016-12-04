@@ -167,7 +167,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
 (define-public perl-graph-readwrite
   (package
     (name "perl-graph-readwrite")
-    (version "2.08")
+    (version "2.09")
     (source
      (origin
        (method url-fetch)
@@ -177,7 +177,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
              ".tar.gz"))
        (sha256
         (base32
-         "1wjni212nfz9irp19nx9if1lj3w9cybpdbzhii4g8macpryjj7ci"))))
+         "0jlsg64pmy6ka5q5gy851nnyfgjzvhyxc576bhns3vi2x5ng07mh"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-graph" ,perl-graph)
@@ -310,14 +310,14 @@ XML parser and the high performance DOM implementation.")
 (define-public perl-xml-libxml-simple
   (package
     (name "perl-xml-libxml-simple")
-    (version "0.95")
+    (version "0.97")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-LibXML-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "0qqfqj5bgqmh1j4iv8dwl3g00nsmcvf2b7w1d09k9d77rrb249xi"))))
+                "1g8nlk3zdz2cclxf7azvsb3jfxmvy6ml8wmj774k4qjqcsqmzk0w"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
@@ -514,7 +514,7 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
 (define-public perl-xml-dom
   (package
     (name "perl-xml-dom")
-    (version "1.44")
+    (version "1.46")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -522,11 +522,12 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1r0ampc88ni3sjpzr583k86076qg399arfm9xirv3cw49k3k5bzn"))))
+               "0phpkc4li43m2g44hdcvyxzy9pymqwlqhh5hwp2xc0cv8l5lp8lb"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-libwww" ,perl-libwww)
        ("perl-libxml" ,perl-libxml)
+       ("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-regexp" ,perl-xml-regexp)))
     (license (package-license perl))
     (synopsis
@@ -565,14 +566,14 @@ This module provide functions which simplify writing tests for
 (define-public perl-xml-compile
   (package
     (name "perl-xml-compile")
-    (version "1.51")
+    (version "1.54")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-" version ".tar.gz"))
               (sha256
                (base32
-                "06fj4zf0yh4kf3kx4bhwrmrjr6al40nasasbgfhn8f1zxwkmm8f2"))))
+                "1hp41960bpqxvv1samv9hc0ghhmvs3i16r4rfl9yp54lp6jhsr2c"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -590,14 +591,14 @@ a schema.")
 (define-public perl-xml-compile-cache
   (package
     (name "perl-xml-compile-cache")
-    (version "1.04")
+    (version "1.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-Cache-" version ".tar.gz"))
               (sha256
                (base32
-                "1689dm54n7wb0n0cl9n77vk0kvg0mcckn2hz9ahigjhvazah8740"))))
+                "0xbwlszhi9hg8sxm5ylglm2qvnb689i595p913awrj2g4mp9yfsw"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -613,14 +614,14 @@ a schema.")
 (define-public perl-xml-compile-soap
   (package
     (name "perl-xml-compile-soap")
-    (version "3.13")
+    (version "3.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-SOAP-" version ".tar.gz"))
               (sha256
                (base32
-                "08qw63l78040nh37xzapbqp43g6s5l67bvskf3dyyizlarjx5mi4"))))
+                "0qplb77qr97pc9yis51jmphl9gbq9xyf8abldpxkwvdn6iqlbgx5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
@@ -641,14 +642,14 @@ used.")
 (define-public perl-xml-compile-wsdl11
   (package
     (name "perl-xml-compile-wsdl11")
-    (version "3.04")
+    (version "3.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-WSDL11-" version ".tar.gz"))
               (sha256
                (base32
-                "0pyikwnfwpangvnkf5dbdagy4z93ag9824f1ax5qaibc3ghca8kv"))))
+                "1a50in1qrbzx3924wvrhgfm5fcxz5cd95f3z9z2xgln27q1zssc4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -706,14 +707,14 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
 (define-public perl-xml-xpath
   (package
     (name "perl-xml-xpath")
-    (version "1.37")
+    (version "1.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                                   "XML-XPath-" version ".tar.gz"))
               (sha256
                (base32
-                "0997l8vjgq8p7d1irvp6amqyrv24x7f8hybjm4l4ayag32b13bmq"))))
+                "07pa0bl42jka8mj7jshjynx8vpfh8b4cdyiv4zlkqvkqz98nzxib"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-path-tiny" ,perl-path-tiny)))

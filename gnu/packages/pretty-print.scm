@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,9 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gperf)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config))
 
 (define-public a2ps
   (package
@@ -196,6 +199,47 @@ output to ANSI color escape sequences, so that highlighted source code can be
 seen in a terminal.")
     (license gpl3+)
     (properties '((ftp-directory . "/gnu/src-highlite")))))
+
+(define-public highlight
+  (package
+    (name "highlight")
+    (version "3.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.andre-simon.de/zip/highlight-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0g2whi6pxl640795vymikm82a1my841jmh7fiqzbrjpc9wsk1db4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (let ((confdir (string-append %output "/share/highlight/config/")))
+         (list (string-append "PREFIX=" %output)
+               (string-append "HL_CONFIG_DIR=" confdir)
+               (string-append "conf_dir=" confdir)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-search-for-lua
+           (lambda _
+             (substitute* "src/makefile"
+               (("(pkg-config.*)lua" _ prefix)
+                (string-append prefix "lua-5.3")))
+             #t)))))
+    (inputs
+     `(("lua" ,lua)
+       ("boost" ,boost)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.andre-simon.de/doku/highlight/en/highlight.php")
+    (synopsis "Convert code to documents with syntax highlighting")
+    (description "Highlight converts source code to HTML, XHTML, RTF, LaTeX,
+TeX, SVG, BBCode and terminal escape sequences with colored syntax
+highlighting.  Language definitions and color themes are customizable.")
+    (license gpl3+)))
 
 (define-public astyle
   (package

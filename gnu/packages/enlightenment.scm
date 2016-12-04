@@ -31,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
@@ -298,3 +299,33 @@ that tries to lower the barrier to getting involved in Enlightenment development
 and in creating applications based on the Enlightenment Foundation Library suite.")
     (license (list license:public-domain ; data/extra/skeleton
                    license:gpl2))))      ; edi
+
+(define-public lekha
+  (package
+    (name "lekha")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Lekha" version))
+              (sha256
+               (base32
+                "0zr6i74ik58pbzrd7r9l7sawqbdv0r2c1a9927qkqzwga27x8j15"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no test target
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-data-location
+           (lambda _ (substitute* "setup.py"
+                       (("'/usr/")"'"))
+             #t)))))
+    (propagated-inputs
+     `(("python2-efl" ,python2-efl)
+       ("python2-pypdf2" ,python2-pypdf2)
+       ("python2-pyxdg" ,python2-pyxdg)))
+    (synopsis "Simple PDF viewer")
+    (description
+     "Simple PDF viewer based on the Enlightenment Foundation Libraries.")
+    (home-page "https://github.com/kaihu/lekha")
+    (license license:gpl3+)))

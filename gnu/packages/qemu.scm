@@ -424,6 +424,7 @@ virtualization library.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
+       #:use-setuptools? #f ; Uses custom distutils 'install' command.
        ;; Some of the tests seem to require network access to install virtual
        ;; machines.
        #:tests? #f

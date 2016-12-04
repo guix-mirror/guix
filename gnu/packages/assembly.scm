@@ -34,24 +34,32 @@
 (define-public nasm
   (package
     (name "nasm")
-    (version "2.12.01")
+    (version "2.12.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.nasm.us/pub/nasm/releasebuilds/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12bl6vc5sjp9nnhf0iwy6l27vq783y0rxrjpp8sy84h5cb7a3fwx"))
-              (patches (search-patches "nasm-no-ps-pdf.patch"))))
+                "08a3ah791cl7xdyrlz33mwv4xzs08rxh0p902p3ypi5iq1h6p1jc"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)  ;for doc and test target
                      ("texinfo" ,texinfo)))
     (arguments
      `(#:test-target "test"
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'install-info
-                    (lambda _
-                      (zero? (system* "make" "install_doc")))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'dont-build-ps-pdf-outputs
+           (lambda _
+             (substitute* "doc/Makefile.in"
+               (("info html nasmdoc.txt nasmdoc.ps nasmdoc.pdf")
+                "info html nasmdoc.txt")
+               (("nasmdoc.ps nasmdoc.pdf nasmdoc.txt \\$\\(INSTALLROOT\\)\\$\\(docdir\\)")
+                "nasmdoc.txt $(INSTALLROOT)$(docdir)"))
+             #t))
+         (add-after 'install 'install-info
+           (lambda _
+             (zero? (system* "make" "install_doc")))))))
     (home-page "http://www.nasm.us/")
     (synopsis "80x86 and x86-64 assembler")
     (description
@@ -62,7 +70,6 @@ Windows32 and Windows64.  It will also output plain binary files.  Its syntax
 is designed to be simple and easy to understand, similar to Intel's but less
 complex.  It supports all currently known x86 architectural extensions, and
 has strong support for macros.")
-    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:bsd-3)))
 
 (define-public yasm

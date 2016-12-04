@@ -426,7 +426,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.6")
+    (version "2.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -435,7 +435,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "14vypqj3wqym5yd0nggfm1xdgq5hv1kwxkg6i8ymlpxcdfxj45w7"))))
+                "1dghd0m5zwayv553g4cr990s4ig5lyh0b52qfdv5rbqnndpj3cjn"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -897,14 +897,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.1")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ay6631p3dr6xnhkm7skwn0gp317r1mxbip28m126w4zqf05cbh3"))
+                "1xa9y64g5z8gfnxk1c2rf3plfjhqn4r6j8dpiygnfs6w4giysn22"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -974,22 +974,19 @@ provides an optional IDE-like error list.")
                     (string-append "\"" mp3info "/bin/mp3info\"")))))))
          (add-before 'install 'pre-install
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The 'install' rule expects the target directory to exist.
+             ;; The 'install' rule expects the target directories to exist.
              (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
                     (man1 (string-append out "/share/man/man1")))
+               (mkdir-p bin)
                (mkdir-p man1)
                #t)))
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (target (string-append
-                             out "/bin/emms-print-metadata")))
+             (let ((out (assoc-ref outputs "out")))
                (symlink "emms-auto.el"
                         (string-append out "/share/emacs/site-lisp/"
-                                       "emms-autoloads.el"))
-               (mkdir-p (dirname target))
-               (copy-file "src/emms-print-metadata" target)
-               (chmod target #o555)))))
+                                       "emms-autoloads.el"))))))
        #:tests? #f))
     (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
@@ -2286,7 +2283,7 @@ well as completely new features.")
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
-    (version "1.7.1")
+    (version "1.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2295,7 +2292,7 @@ well as completely new features.")
               (file-name (string-append "hl-todo-" version ".el"))
               (sha256
                (base32
-                "0flhz9vy8w1vvwwji92pi5k4659hl368bakj2qf2zfd26z8x583h"))))
+                "016ivl4s0ysrm1xbfi86j5xcs759fcb0mkspxw81x8mpi3yb46ya"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/hl-todo")
     (synopsis "Emacs mode to highlight TODO and similar keywords")

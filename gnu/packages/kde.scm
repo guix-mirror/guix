@@ -23,6 +23,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
@@ -84,6 +86,60 @@ used in KDE development tools Kompare and KDevelop.")
     ;; GPL, some files are also licensed under LGPL or BSD, see COPYING in the
     ;; source archive
     (license (list license:gpl2+ license:lgpl2.0+ license:bsd-3))))
+
+(define-public libksysguard
+  (package
+    (name "libksysguard")
+    (version "5.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde//stable/plasma/" version
+                           "/libksysguard-" version ".tar.xz"))
+       (sha256
+        (base32
+         "158n30wbpsgbw3axhhsc58hnwhwdd02j3zc9hhcybmnbkfl5c96l"))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kconfigwidgets" ,kconfigwidgets)
+       ("kiconthemes" ,kiconthemes)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdoctools" ,kdoctools)
+       ("kinit" ,kinit)
+       ("knewstuff" ,knewstuff)
+       ("knotifications" ,knotifications)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kio" ,kio)
+       ("ki18n" ,ki18n)
+       ("kservice" ,kservice)
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)
+       ("qtwebkit" ,qtwebkit)
+       ("qtx11extras" ,qtx11extras)
+       ("plasma" ,plasma-framework)
+       ("zlib" ,zlib)))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       `(,(string-append "-DKDE_INSTALL_DATADIR="
+                         (assoc-ref %outputs "out") "/share"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-cmakelists
+           (lambda _
+             (substitute* "processcore/CMakeLists.txt"
+               (("KAUTH_HELPER_INSTALL_DIR") "KDE_INSTALL_LIBEXECDIR"))))
+         (replace 'check
+           (lambda _         ;other tests require a display and therefore fail
+             (zero? (system* "ctest" "-R" "chronotest")))))))
+    (home-page "https://www.kde.org/info/plasma-5.8.2.php")
+    (synopsis "Network enabled task and system monitoring")
+    (description "KSysGuard can obtain information on system load and
+manage running processes.  It obtains this information by interacting
+with a ksysguardd daemon, which may also run on a remote system.")
+    (license license:gpl3+)))
 
 (define-public qca
   (package

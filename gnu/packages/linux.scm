@@ -327,26 +327,26 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.10"
-                    "04kwarmpz5adz64wwy0xpwzxsri7jrjkhbmjlwxsac69x9a26bkl"
+  (make-linux-libre "4.8.12"
+                    "1vhqpi5r219a9y1drc3pdzwjif8r974hbc0x9dk4w25c8bsr3cm1"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.34"
-                    "04ng40l2av34bcfwjs5vliv15f0m8bl0sfw08imspiplxvajd6ca"
+  (make-linux-libre "4.4.36"
+                    "0cvax02jj9zyk818gi6fjgacxa5z89y03kxwclb8l7cr8mcbwcdf"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.35"
-                    "05zvrld1digqwf9kqf5pxx0mxqmwpr5kamhnks6y4yfy7x7jynyk"
+  (make-linux-libre "4.1.36"
+                    "0wy7xpqjwn1aprbzrbqgjskcg8qj2mczkv3rcisxf8gcdifz61qh"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.10")
-(define %linux-libre-hash "04kwarmpz5adz64wwy0xpwzxsri7jrjkhbmjlwxsac69x9a26bkl")
+(define %linux-libre-version "4.8.12")
+(define %linux-libre-hash "1vhqpi5r219a9y1drc3pdzwjif8r974hbc0x9dk4w25c8bsr3cm1")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -2664,7 +2664,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.8.4")
+    (version "4.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2672,7 +2672,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1ib1ybpjhcymcycjiraz1vk01qlyvpwcg7mwfhmacdy3cvbfl9mz"))))
+                "1vq83a8sz8dnshbyaghacqvcwv2n1kh53yjv87rxx9dc4b0b2iyj"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)

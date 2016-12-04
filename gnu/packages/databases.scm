@@ -636,7 +636,7 @@ extremely small.")
 (define-public perl-dbix-class
   (package
     (name "perl-dbix-class")
-    (version "0.082810")
+    (version "0.082840")
     (source
      (origin
        (method url-fetch)
@@ -644,7 +644,7 @@ extremely small.")
                            "DBIx-Class-" version ".tar.gz"))
        (sha256
         (base32
-         "1zlsswk8j2k024gwhdhia8ksrmb8065n98dahkk8c0r69wv85n04"))))
+         "1vw1f756g8m5hq11nqf5dk2cw2y4mqq91ca5p75fn5g3fp8syja0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
@@ -690,7 +690,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
 (define-public perl-dbix-class-cursor-cached
   (package
     (name "perl-dbix-class-cursor-cached")
-    (version "1.001002")
+    (version "1.001004")
     (source
      (origin
        (method url-fetch)
@@ -698,7 +698,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
                            "DBIx-Class-Cursor-Cached-" version ".tar.gz"))
        (sha256
         (base32
-         "19r7jr6pknxiirrybq0cd0lnr76xiw05arnfqgk9nrhp6c7vvil0"))))
+         "09b2jahn2x12qm4f7qm1jzsxbz7qn1czp6a3fnl5l2i3l4r5421p"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cache-cache" ,perl-cache-cache)
@@ -715,7 +715,7 @@ built-in caching support.")
 (define-public perl-dbix-class-introspectablem2m
   (package
     (name "perl-dbix-class-introspectablem2m")
-    (version "0.001001")
+    (version "0.001002")
     (source
      (origin
        (method url-fetch)
@@ -723,7 +723,7 @@ built-in caching support.")
                            "DBIx-Class-IntrospectableM2M-" version ".tar.gz"))
        (sha256
         (base32
-         "0p9zx1yc1f6jg583l206wilsni2v8mlngc2vf2q8yn10pmy4y6wm"))))
+         "1w47rh2241iy5x3a9bqsyd5kdp9sk43dksr99frzv4qn4jsazfn6"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
@@ -740,7 +740,7 @@ introspected and examined.")
 (define-public perl-dbix-class-schema-loader
   (package
     (name "perl-dbix-class-schema-loader")
-    (version "0.07042")
+    (version "0.07046")
     (source
      (origin
        (method url-fetch)
@@ -748,7 +748,7 @@ introspected and examined.")
                            "DBIx-Class-Schema-Loader-" version ".tar.gz"))
        (sha256
         (base32
-         "0sb48as7azmj6s4acxh98wcvcik7lxm7dcjz1c3wdrkrbmbbz0jf"))))
+         "08cgn0dx42y9xsxas9np7s55a7qmy4kf6sfmx0jmk4hryvbapml3"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-config-any" ,perl-config-any)
@@ -843,7 +843,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.42")
+    (version "1.52")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -851,7 +851,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "14x9cjsc8dz8ad1nad0bqiq9cbk1rjfb8h5y0rpk3pdl38y6afxb"))))
+                "0kimb2qr1rh07yylbbfybwcizpmy61ck667amypn4clmkfg0knm6"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))

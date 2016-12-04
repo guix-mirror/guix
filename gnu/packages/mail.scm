@@ -329,7 +329,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.10")
+    (version "7.0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -337,7 +337,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0h8mgmwkvwh8x3yam32ipqkzcz4g1dmkbni3v1755lkm0z132m3j"))))
+                "1m1lp7wxnra8k7lsqc8xlm5giy3i89wvmp35jjb1gf4yslpddnkz"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -1031,7 +1031,7 @@ write simple, representation-independent mail handling code.")
 (define-public perl-email-address
   (package
     (name "perl-email-address")
-    (version "1.907")
+    (version "1.908")
     (source
      (origin
        (method url-fetch)
@@ -1039,7 +1039,7 @@ write simple, representation-independent mail handling code.")
                            "Email-Address-" version ".tar.gz"))
        (sha256
         (base32
-         "1ai4r149pzjv9dc2vddir8zylj0z1pii93rm4g591lx7avim71hx"))))
+         "0i6ljdvpy279hpbqf6lgv4figr376rb2sh4yphj86xkdzsyn1y75"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Email-Address")
     (synopsis "Email address parsing and creation")
@@ -1070,7 +1070,7 @@ objects found.  Alternatively you may construct objects manually.")
 (define-public perl-email-messageid
   (package
     (name "perl-email-messageid")
-    (version "1.405")
+    (version "1.406")
     (source
      (origin
        (method url-fetch)
@@ -1078,7 +1078,7 @@ objects found.  Alternatively you may construct objects manually.")
                            "Email-MessageID-" version ".tar.gz"))
        (sha256
         (base32
-         "09216naz21x99ff33wdm3j3zq1zhdbxhrsmx8bvavjrw3gjsvrq3"))))
+         "1f22sdnfq169qw1l0lg7y74pmiam7j9v95bggjnf3q4mygdmshpc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Email-MessageID")
     (synopsis "Generate world unique message-ids")
@@ -1089,7 +1089,7 @@ identify a message uniquely.")
 (define-public perl-email-mime
   (package
     (name "perl-email-mime")
-    (version "1.929")
+    (version "1.937")
     (source
      (origin
        (method url-fetch)
@@ -1097,7 +1097,7 @@ identify a message uniquely.")
                            "Email-MIME-" version ".tar.gz"))
        (sha256
         (base32
-         "1sf7dldg4dvicyw6dl1vx6s1gjq3fcppi0103ikl0vi6v5xjdjdh"))))
+         "0s50i3nxi9dr81p4rn017nrarc40yrwz0qcw34q8k3pvdf46fr9n"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-address" ,perl-email-address)
@@ -1117,7 +1117,7 @@ message.  Headers are decoded from MIME encoding.")
 (define-public perl-email-mime-contenttype
   (package
     (name "perl-email-mime-contenttype")
-    (version "1.017")
+    (version "1.018")
     (source
      (origin
        (method url-fetch)
@@ -1125,7 +1125,7 @@ message.  Headers are decoded from MIME encoding.")
                            "Email-MIME-ContentType-" version ".tar.gz"))
        (sha256
         (base32
-         "1cl1l97lg690dh7i704hqi7yhxalq1chy7ylld5yc5v38jqa6gcn"))))
+         "1y8hpwm7p5a9y2azy0cgvlv2i2d0nj66ajfa0fj51wdq4w9cs23m"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -1158,7 +1158,7 @@ header.")
 (define-public perl-email-sender
   (package
     (name "perl-email-sender")
-    (version "1.300016")
+    (version "1.300028")
     (source
      (origin
        (method url-fetch)
@@ -1166,7 +1166,7 @@ header.")
                            "Email-Sender-" version ".tar.gz"))
        (sha256
         (base32
-         "18x26fjh399q3s2g8dajb9r10633c46jrnbvycpnpclgnzhjs100"))))
+         "0c5dv1x9856nryj5mcbgb67a4irmadz80g0qnf4van3bd8wbj72a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -1190,7 +1190,7 @@ Email::Send library.")
 (define-public perl-email-simple
   (package
     (name "perl-email-simple")
-    (version "2.206")
+    (version "2.211")
     (source
      (origin
        (method url-fetch)
@@ -1198,7 +1198,7 @@ Email::Send library.")
                            "Email-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "19dpy3j5na2k9qw1jcpc8ia25038068r9j1bn34f9yyrisz7s522"))))
+         "1if4a2wh4iwlcycqrd2fhkx04ngmd75q444gh43w0r9p15ym5f8w"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-date-format" ,perl-email-date-format)))

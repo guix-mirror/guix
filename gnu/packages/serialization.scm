@@ -166,6 +166,8 @@ serialization.")
                 "15wg14480lrbrhc2myk9rwpwb2gzix9bk80p4y7gxg3zrzml0xh8"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/open-source-parsers/jsoncpp")
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")))
     (synopsis "C++ library for interacting with JSON")
     (description "JsonCpp is a C++ library that allows manipulating JSON values,
 including serialization and deserialization to and from strings.  It can also

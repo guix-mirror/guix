@@ -27,7 +27,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages geeqie)              ;exiv2
+  #:use-module (gnu packages image)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages qt))

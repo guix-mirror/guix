@@ -35,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
@@ -58,6 +59,38 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml))
+
+(define-public grantlee
+  (package
+    (name "grantlee")
+    (version "5.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/steveire/grantlee/archive/v"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "1lf9rkv0i0kd7fvpgg5l8jb87zw8dzcwd1liv6hji7g4wlpmfdiq"))))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "ctest" ;; exclude 2 tests which require a display
+                                    "-E" "htmlbuildertest|plainmarkupbuildertest")))))))
+    (home-page "https://github.com/steveire/grantlee")
+    (synopsis "Libraries for text templating with Qt")
+    (description "Grantlee Templates can be used for theming and generation of
+other text such as code.  The syntax uses the syntax of the Django template
+system, and the core design of Django is reused in Grantlee.")
+    (license license:lgpl2.0+)))
 
 (define-public qt
   (package

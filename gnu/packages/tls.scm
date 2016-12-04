@@ -671,7 +671,7 @@ number generator")
 (define-public acme-client
   (package
     (name "acme-client")
-    (version "0.1.14")
+    (version "0.1.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://kristaps.bsd.lv/" name "/"
@@ -679,7 +679,7 @@ number generator")
                                   version ".tgz"))
               (sha256
                (base32
-                "1qq4xk41pn65m3v7nnvkmxg96pr06vz6hzdrm0vcmlp3clzpbahl"))))
+                "07p723391whrswl4rir0l1k03l457sjscnj0cfaxr8mfnkx4y3wi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no test suite
@@ -689,6 +689,8 @@ number generator")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; no './configure' script
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libbsd" ,libbsd)
        ("libressl" ,libressl)))

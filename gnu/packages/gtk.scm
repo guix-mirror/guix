@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Coypright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
@@ -34,6 +35,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
@@ -298,6 +300,23 @@ functions which were removed.")
 graph-like environments, e.g. modular synths or finite state machine
 diagrams.")
     (license license:gpl3+)))
+
+(define-public ganv-devel
+  (let ((commit "31685d283e9b811b61014f820c42807f4effa071")
+        (revision "1"))
+    (package
+      (inherit ganv)
+      (name "ganv")
+      (version (string-append "1.4.2-" revision "."
+                              (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://git.drobilla.net/ganv.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0xmbykdl42jn9cgzrqrys5lng67d26nk5xq10wkkvjqldiwdck56")))))))
 
 (define-public gtksourceview-2
   (package

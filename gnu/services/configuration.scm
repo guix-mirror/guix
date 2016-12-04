@@ -30,6 +30,8 @@
             configuration-field-name
             configuration-missing-field
             configuration-field-error
+            configuration-field-serializer
+            configuration-field-getter
             serialize-configuration
             define-configuration
             validate-configuration

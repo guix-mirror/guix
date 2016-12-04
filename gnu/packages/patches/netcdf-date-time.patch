@@ -1,0 +1,11 @@
+--- a/libdispatch/derror.c
++++ b/libdispatch/derror.c
+@@ -13,7 +13,7 @@
+ #endif
+ 
+ /* Tell the user the version of netCDF. */
+-static const char nc_libvers[] = PACKAGE_VERSION " of "__DATE__" "__TIME__" $";
++static const char nc_libvers[] = PACKAGE_VERSION" $";
+ 
+ /**
+ \defgroup lib_version Library Version
