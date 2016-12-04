@@ -12,7 +12,6 @@ gnu/packages/compression.scm
 gnu/packages/databases.scm
 gnu/packages/debug.scm
 gnu/packages/dejagnu.scm
-gnu/packages/feh.scm
 gnu/packages/games.scm
 gnu/packages/gcc.scm
 gnu/packages/geeqie.scm
@@ -24,6 +23,7 @@ gnu/packages/gtk.scm
 gnu/packages/guile.scm
 gnu/packages/imagemagick.scm
 gnu/packages/image.scm
+gnu/packages/image-viewers.scm
 gnu/packages/inkscape.scm
 gnu/packages/jemalloc.scm
 gnu/packages/key-mon.scm
