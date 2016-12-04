@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
-;;; This file is an addendum GNU Guix.
+;;; This file is part of GNU Guix.
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
