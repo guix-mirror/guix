@@ -5408,8 +5408,9 @@ The XCB util module provides the following libraries:
      `(("m4" ,m4)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-util-renderutil" ,xcb-util-renderutil)
+     `(("libxcb" ,libxcb)))
+    (propagated-inputs
+     `(("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-image" ,xcb-util-image)))
     (home-page "https://cgit.freedesktop.org/xcb/util-cursor/")
     (synopsis "Port of libxcursor")
