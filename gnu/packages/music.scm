@@ -2598,6 +2598,36 @@ sequencer and LFO.  It can hold any number of arpeggiator, sequencer, or LFO
 modules running in parallel.")
     (license license:gpl2+)))
 
+(define-public seq24
+  (package
+    (name "seq24")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/seq24/trunk/"
+                                  version "/+download/seq24-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "12dphdhnvfk1k0vmagi1v2lhyxjyj1j3cz6ksjw0ydcvid1x8ap2"))
+              (patches (search-patches "seq24-rename-mutex.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("gtkmm" ,gtkmm-2)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("lash" ,lash)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://edge.launchpad.net/seq24/")
+    (synopsis "Real-time MIDI sequencer")
+    (description "Seq24 is a real-time MIDI sequencer.  It was created to
+provide a very simple interface for editing and playing MIDI loops.")
+    (license license:gpl2+)))
+
 (define-public python-discogs-client
   (package
     (name "python-discogs-client")

@@ -1,0 +1,124 @@
+The custom mutex definition in Seq24 clashes with the mutex defined in gtkmm.
+This patch renames the custom definition.
+
+See https://bugs.launchpad.net/seq24/+bug/1647614 for upstream bug report.
+
+diff --git a/src/midibus.h b/src/midibus.h
+index 2cdf8e8..1bb02bd 100644
+--- a/src/midibus.h
++++ b/src/midibus.h
+@@ -90,7 +90,7 @@ class midibus
+ 
+ 
+     /* locking */
+-    mutex m_mutex;
++    seq24mutex m_mutex;
+ 
+     /* mutex */
+     void lock();
+@@ -208,7 +208,7 @@ class mastermidibus
+     sequence *m_seq;
+ 
+     /* locking */
+-    mutex m_mutex;
++    seq24mutex m_mutex;
+ 
+     /* mutex */
+     void lock();
+diff --git a/src/midibus_portmidi.h b/src/midibus_portmidi.h
+index 0119e9c..8c6a27a 100644
+--- a/src/midibus_portmidi.h
++++ b/src/midibus_portmidi.h
+@@ -65,7 +65,7 @@ class midibus
+     long m_lasttick;
+ 
+     /* locking */
+-    mutex m_mutex;
++    seq24mutex m_mutex;
+ 
+     /* mutex */
+     void lock();
+@@ -164,7 +164,7 @@ class mastermidibus
+     sequence *m_seq;
+ 
+     /* locking */
+-    mutex m_mutex;
++    seq24mutex m_mutex;
+ 
+     /* mutex */
+     void lock();
+diff --git a/src/mutex.cpp b/src/mutex.cpp
+index b3f23fd..914114f 100644
+--- a/src/mutex.cpp
++++ b/src/mutex.cpp
+@@ -20,23 +20,23 @@
+ 
+ #include "mutex.h"
+ 
+-const pthread_mutex_t mutex::recmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
++const pthread_mutex_t seq24mutex::recmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+ const pthread_cond_t condition_var::cond  = PTHREAD_COND_INITIALIZER;
+ 
+-mutex::mutex( )
++seq24mutex::seq24mutex( )
+ {
+     m_mutex_lock = recmutex;
+ }
+ 
+ void
+-mutex::lock( )
++seq24mutex::lock( )
+ {
+     pthread_mutex_lock( &m_mutex_lock );
+ }
+ 
+ 
+ void
+-mutex::unlock( )
++seq24mutex::unlock( )
+ {
+     pthread_mutex_unlock( &m_mutex_lock );
+ }
+diff --git a/src/mutex.h b/src/mutex.h
+index 399f8a3..4f1b867 100644
+--- a/src/mutex.h
++++ b/src/mutex.h
+@@ -24,7 +24,7 @@
+ 
+ #include <pthread.h>
+ 
+-class mutex {
++class seq24mutex {
+ 
+ private:
+ 
+@@ -37,14 +37,14 @@ protected:
+ 
+ public:
+ 
+-    mutex();
++    seq24mutex();
+ 
+     void lock();
+     void unlock();
+ 
+ };
+ 
+-class condition_var : public mutex {
++class condition_var : public seq24mutex {
+ 
+ private:
+ 
+diff --git a/src/sequence.h b/src/sequence.h
+index 2943946..9da8700 100644
+--- a/src/sequence.h
++++ b/src/sequence.h
+@@ -153,7 +153,7 @@ class sequence
+     long m_rec_vol;
+ 
+     /* locking */
+-    mutex m_mutex;
++    seq24mutex m_mutex;
+ 
+     /* used to idenfity which events are ours in the out queue */
+     //unsigned char m_tag;
