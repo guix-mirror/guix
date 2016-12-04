@@ -456,7 +456,6 @@ GCC that does not target a libc; otherwise, target that libc."
       (name (string-append (package-name hurd-headers)
                            "-cross-" target))
 
-      (propagated-inputs `(("cross-mig" ,xmig)))
       (native-inputs `(("cross-gcc" ,xgcc)
                        ("cross-binutils" ,xbinutils)
                        ("cross-mig" ,xmig)
