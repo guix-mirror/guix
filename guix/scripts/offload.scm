@@ -390,7 +390,8 @@ MACHINE."
              ;; Use exit code 100 for a permanent build failure.  The daemon
              ;; interprets other non-zero codes as transient build failures.
              (primitive-exit 100)))
-    (build-derivations store (list drv)))
+    (parameterize ((current-build-output-port (build-log-port)))
+      (build-derivations store (list drv))))
 
   (retrieve-files outputs store)
   (format (current-error-port) "done with offloaded '~a'~%"
