@@ -14,7 +14,6 @@ gnu/packages/debug.scm
 gnu/packages/dejagnu.scm
 gnu/packages/games.scm
 gnu/packages/gcc.scm
-gnu/packages/geeqie.scm
 gnu/packages/gettext.scm
 gnu/packages/gimp.scm
 gnu/packages/gnome.scm
