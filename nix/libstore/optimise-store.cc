@@ -5,6 +5,7 @@
 #include "globals.hh"
 
 #include <cstdlib>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -159,7 +160,8 @@ void LocalStore::optimisePath_(OptimiseStats & stats, const Path & path, InodeHa
 	    /* On ext4, that probably means the directory index is full.  When
 	       that happens, it's fine to ignore it: we just effectively
 	       disable deduplication of this file.  */
-	    printMsg(lvlInfo, format("cannot link `%1%' to `%2%': %m") % linkPath % path);
+	    printMsg(lvlInfo, format("cannot link `%1%' to `%2%': %3%")
+		     % linkPath % path % strerror(ENOSPC));
 	    return;
 
 	default:
