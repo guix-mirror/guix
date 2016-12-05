@@ -4520,6 +4520,7 @@ standard library.")
   (package-with-python2 python-simplegeneric))
 
 (define-public python-ipython-genutils
+  ;; TODO: This package is retired, check if can be removed, see description.
   (package
     (name "python-ipython-genutils")
     (version "0.1.0")
@@ -4536,7 +4537,13 @@ standard library.")
     (home-page "http://ipython.org")
     (synopsis "Vestigial utilities from IPython")
     (description
-     "This package provides retired utilities from IPython.")
+     "This package provides retired utilities from IPython.  No packages
+outside IPython/Jupyter should depend on it.
+
+This package shouldn't exist.  It contains some common utilities shared by
+Jupyter and IPython projects during The Big Split.  As soon as possible, those
+packages will remove their dependency on this, and this package will go
+away.")
     (license license:bsd-3)))
 
 (define-public python2-ipython-genutils
