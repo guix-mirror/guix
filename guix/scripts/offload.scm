@@ -75,6 +75,10 @@
   (private-key     build-machine-private-key      ; file name
                    (default (user-openssh-private-key)))
   (host-key        build-machine-host-key)        ; string
+  (compression     build-machine-compression  ; string
+                   (default "zlib@openssh.com,zlib"))
+  (compression-level build-machine-compression-level ;integer
+                     (default 3))
   (daemon-socket   build-machine-daemon-socket    ; string
                    (default "/var/guix/daemon-socket/socket"))
   (parallel-builds build-machine-parallel-builds  ; number
@@ -175,8 +179,10 @@ private key from '~a': ~a")
 
                                ;; We need lightweight compression when
                                ;; exchanging full archives.
-                               #:compression "zlib"
-                               #:compression-level 3)))
+                               #:compression
+                               (build-machine-compression machine)
+                               #:compression-level
+                               (build-machine-compression-level machine))))
     (match (connect! session)
       ('ok
        ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about

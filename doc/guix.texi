@@ -921,6 +921,13 @@ Port number of SSH server on the machine.
 The SSH private key file to use when connecting to the machine, in
 OpenSSH format.
 
+@item @code{compression} (default: @code{"zlib@@openssh.com,zlib"})
+@itemx @code{compression-level} (default: @code{3})
+The SSH-level compression methods and compression level requested.
+
+Note that offloading relies on SSH compression to reduce bandwidth usage
+when transferring files to and from build machines.
+
 @item @code{daemon-socket} (default: @code{"/var/guix/daemon-socket/socket"})
 File name of the Unix-domain socket @command{guix-daemon} is listening
 to on that machine.
