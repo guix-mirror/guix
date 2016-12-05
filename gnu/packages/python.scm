@@ -9153,9 +9153,8 @@ useful for solving the Assignment Problem.")
     (propagated-inputs
      `(("python-itsdangerous" ,python-itsdangerous)
        ("python-jinja2" ,python-jinja2)
+       ("python-click" ,python-click)
        ("python-werkzeug" ,python-werkzeug)))
-    (native-inputs
-     `(("python-click" ,python-click)))
     (home-page "https://github.com/mitsuhiko/flask/")
     (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
     (description "Flask is a micro web framework based on the Werkzeug toolkit
