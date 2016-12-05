@@ -4705,13 +4705,13 @@ tools for mocking system commands and recording calls to those.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "4.0.0")
+    (version "4.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "1npl8g6bfsff9j938ypx0q5fyzy2l8lp0jl8skjjj2zv0z27dlig"))))
+        (base32 "1h2gp1p06sww9rzfkfzqy489bh47gj3910y2b1wdk3dcx1cqz4is"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
