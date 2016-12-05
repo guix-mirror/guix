@@ -269,10 +269,24 @@ FILE-SYSTEM."
 		       #$(if create?
                              #~(mkdir-p #$target)
                              #t)
-		       (mount-file-system
-			`(#$device #$title #$target #$type #$flags #$options
-				   #$check?) #:root "/")
-                       #t))
+
+                       (let (($PATH (getenv "PATH")))
+                         ;; Make sure fsck.ext2 & co. can be found.
+                         (dynamic-wind
+                           (lambda ()
+                             (setenv "PATH"
+                                     (string-append
+                                      #$e2fsprogs "/sbin:"
+                                      "/run/current-system/profile/sbin:"
+                                      $PATH)))
+                           (lambda ()
+                             (mount-file-system
+                              `(#$device #$title #$target #$type #$flags
+                                         #$options #$check?)
+                              #:root "/"))
+                           (lambda ()
+                             (setenv "PATH" $PATH)))
+                         #t)))
             (stop #~(lambda args
                       ;; Normally there are no processes left at this point, so
                       ;; TARGET can be safely unmounted.
