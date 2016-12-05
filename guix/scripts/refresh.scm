@@ -119,7 +119,7 @@
                   (show-version-and-exit "guix refresh")))))
 
 (define (show-help)
-  (display (_ "Usage: guix refresh [OPTION]... PACKAGE...
+  (display (_ "Usage: guix refresh [OPTION]... [PACKAGE]...
 Update package definitions to match the latest upstream version.
 
 When PACKAGE... is given, update only the specified packages.  Otherwise
