@@ -451,9 +451,11 @@ be read."
                                   (with-store store
                                     (remove (cut valid-path? store <>)
                                             ',files)))))
+           (count   (length missing))
            (port    (store-import-channel session)))
-      (format #t (_ "sending ~a store files to '~a'...~%")
-              (length missing) (session-get session 'host))
+      (format #t (N_ "sending ~a store item to '~a'...~%"
+                     "sending ~a store items to '~a'...~%" count)
+              count (session-get session 'host))
 
       ;; Send MISSING in topological order.
       (export-paths store missing port)
@@ -472,9 +474,11 @@ be read."
   "Retrieve FILES from SESSION's store, and import them."
   (let* ((session (channel-get-session (nix-server-socket remote)))
          (host    (session-get session 'host))
-         (port    (store-export-channel session files)))
-    (format #t (_ "retrieving ~a files from '~a'...~%")
-            (length files) host)
+         (port    (store-export-channel session files))
+         (count   (length files)))
+    (format #t (N_ "retrieving ~a store item from '~a'...~%"
+                   "retrieving ~a store items from '~a'...~%" count)
+            count host)
 
     ;; We cannot use the 'import-paths' RPC here because we already
     ;; hold the locks for FILES.
