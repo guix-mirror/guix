@@ -625,6 +625,86 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
 
 
 ;;;
+;;; Installation tests.
+;;;
+
+(define (assert-node-repl node name)
+  "Bail out if NODE is not running Guile."
+  (match (node-guile-version node)
+    (#f
+     (leave (_ "Guile could not be started on '~a'~%")
+            name))
+    ((? string? version)
+     ;; Note: The version string already contains the word "Guile".
+     (info (_ "'~a' is running ~a~%")
+           name (node-guile-version node)))))
+
+(define (assert-node-has-guix node name)
+  "Bail out if NODE lacks the (guix) module, or if its daemon is not running."
+  (match (node-eval node
+                    '(begin
+                       (use-modules (guix))
+                       (with-store store
+                         (add-text-to-store store "test"
+                                            "Hello, build machine!"))))
+    ((? string? str)
+     (info (_ "Guix is usable on '~a' (test returned ~s)~%")
+           name str))
+    (x
+     (leave (_ "failed to use Guix module on '~a' (test returned ~s)~%")
+            name x))))
+
+(define %random-state
+  (delay
+    (seed->random-state (logxor (getpid) (car (gettimeofday))))))
+
+(define (nonce)
+  (string-append (gethostname) "-"
+                 (number->string (random 1000000 (force %random-state)))))
+
+(define (assert-node-can-import node name daemon-socket)
+  "Bail out if NODE refuses to import our archives."
+  (let ((session (node-session node)))
+    (with-store store
+      (let* ((item   (add-text-to-store store "export-test" (nonce)))
+             (remote (connect-to-remote-daemon session daemon-socket)))
+        (send-files (list item) remote)
+        (if (valid-path? remote item)
+            (info (_ "'~a' successfully imported '~a'~%")
+                  name item)
+            (leave (_ "'~a' was not properly imported on '~a'~%")
+                   item name))))))
+
+(define (assert-node-can-export node name daemon-socket)
+  "Bail out if we cannot import signed archives from NODE."
+  (let* ((session (node-session node))
+         (remote  (connect-to-remote-daemon session daemon-socket))
+         (item    (add-text-to-store remote "import-test" (nonce)))
+         (port    (store-export-channel session (list item))))
+    (with-store store
+      (if (and (import-paths store port)
+               (valid-path? store item))
+          (info (_ "successfully imported '~a' from '~a'~%")
+                item name)
+          (leave (_ "failed to import '~a' from '~a'~%")
+                 item name)))))
+
+(define (check-machine-availability machine-file)
+  "Check that each machine in MACHINE-FILE is usable as a build machine."
+  (let ((machines (build-machines machine-file)))
+    (info (_ "testing ~a build machines defined in '~a'...~%")
+          (length machines) machine-file)
+    (let* ((names    (map build-machine-name machines))
+           (sockets  (map build-machine-daemon-socket machines))
+           (sessions (map open-ssh-session machines))
+           (nodes    (map make-node sessions)))
+      (for-each assert-node-repl nodes names)
+      (for-each assert-node-has-guix nodes names)
+      (for-each assert-node-can-import nodes names sockets)
+      (for-each assert-node-can-export nodes names sockets))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -673,6 +753,13 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
                    (else
                     (leave (_ "invalid request line: ~s~%") line)))
              (loop (read-line)))))))
+    (("test" rest ...)
+     (with-error-handling
+       (let ((file (match rest
+                     ((file) file)
+                     (()     %machine-file)
+                     (_      (leave (_ "wrong number of arguments~%"))))))
+         (check-machine-availability (or file %machine-file)))))
     (("--version")
      (show-version-and-exit "guix offload"))
     (("--help")

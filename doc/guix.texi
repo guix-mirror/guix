@@ -941,9 +941,8 @@ name, and they will be scheduled on matching build machines.
 @end table
 @end deftp
 
-The @code{guix} command must be in the search path on the build
-machines, since offloading works by invoking the @code{guix archive} and
-@code{guix build} commands.  In addition, the Guix modules must be in
+The @code{guile} command must be in the search path on the build
+machines.  In addition, the Guix modules must be in
 @code{$GUILE_LOAD_PATH} on the build machine---you can check whether
 this is the case by running:
 
@@ -977,6 +976,26 @@ relations between the master and the build machines.  Concretely, when
 the master receives files from a build machine (and @i{vice versa}), its
 build daemon can make sure they are genuine, have not been tampered
 with, and that they are signed by an authorized key.
+
+@cindex offload test
+To test whether your setup is operational, run this command on the
+master node:
+
+@example
+# guix offload test
+@end example
+
+This will attempt to connect to each of the build machines specified in
+@file{/etc/guix/machines.scm}, make sure Guile and the Guix modules are
+available on each machine, attempt to export to the machine and import
+from it, and report any error in the process.
+
+If you want to test a different machine file, just specify it on the
+command line:
+
+@example
+# guix offload test machines-qualif.scm
+@end example
 
 
 @node Invoking guix-daemon
