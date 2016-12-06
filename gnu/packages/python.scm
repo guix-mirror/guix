@@ -11825,3 +11825,29 @@ the Flask web framework in Python.  It is similar to package
 @code{python-flask-restful} but supports the @code{python-swagger}
 documentation builder.")
     (license license:expat)))
+
+(define-public python-sadisplay
+  (package
+    (name "python-sadisplay")
+    (version "0.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "sadisplay" version))
+      (sha256
+        (base32
+          "0zqad2fl7q26p090qmqgmxbm6iwgf9zij1w8da1g3wdgjj72ql05"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-sqlalchemy" ,python-sqlalchemy)))
+    (native-inputs
+      `(("python-nose" ,python-nose)))
+    (home-page "https://bitbucket.org/estin/sadisplay")
+    (synopsis "SQLAlchemy schema displayer")
+    (description "This package provides a program to build Entity
+Relationship diagrams from a SQLAlchemy model (or directly from the
+database).")
+    (license license:bsd-3)))
+
+(define-public python2-sadisplay
+  (package-with-python2 python-sadisplay))
