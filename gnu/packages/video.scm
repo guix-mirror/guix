@@ -213,14 +213,14 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20160220-2245")
+    (version "20161205-2245")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/pub/x264/snapshots/"
+              (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
                                   "x264-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "12zyzbiihfhamf7yi4qqaj6k0nisnrydvfr36kxadvmsm7dg4sj3"))))
+                "0jjzdwag59kqlk09bb2pykm1ss8bw3p9q7bsks2kjgdwbj121a44"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -246,7 +246,7 @@ television and DVD.  It is also known as AC-3.")
                                                      (%current-system)))
                                  '("--disable-asm")
                                  '()))))
-    (home-page "http://www.videolan.org/developers/x264.html")
+    (home-page "https://www.videolan.org/developers/x264.html")
     (synopsis "H.264 video coding library")
     (description "libx264 is an advanced encoding library for creating
 H.264 (MPEG-4 AVC) video streams.")
