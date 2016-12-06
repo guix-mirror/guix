@@ -92,7 +92,9 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0n2yx3gjlpr4kgqx845fj6amnmg25r2l6a7rzab5hxnpmar985hc"))))
+               "0n2yx3gjlpr4kgqx845fj6amnmg25r2l6a7rzab5hxnpmar985hc"))
+             (patches (search-patches "httpd-CVE-2016-8740.patch"))
+             (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
