@@ -173,7 +173,7 @@ private key from '~a': ~a")
         (session (make-session #:user (build-machine-user machine)
                                #:host (build-machine-name machine)
                                #:port (build-machine-port machine)
-                               #:timeout 5        ;seconds
+                               #:timeout 10       ;seconds
                                ;; #:log-verbosity 'protocol
                                #:identity (build-machine-private-key machine)
 
