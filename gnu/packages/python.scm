@@ -6866,10 +6866,28 @@ convert an @code{.ipynb} notebook file into various static formats including:
     (description
      "The Jupyter HTML notebook is a web-based notebook environment for
 interactive computing.")
+    (properties `((python2-variant . ,(delay python2-notebook))))
     (license license:bsd-3)))
 
 (define-public python2-notebook
-  (package-with-python2 python-notebook))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-notebook))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-mock" ,python2-mock)
+         ,@(package-native-inputs base)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'check 'disable-test-case
+              ;; The test requires network access to localhost. Curiously it
+              ;; fails with Python 2 only. Simply make the test-case return
+              ;; immediately.
+              (lambda _
+                (substitute*
+                    "notebook/services/nbconvert/tests/test_nbconvert_api.py"
+                  (("formats = self.nbconvert_api") "return #")))))))))))
 
 (define-public python-widgetsnbextension
   (package
