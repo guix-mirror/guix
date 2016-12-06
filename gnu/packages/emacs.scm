@@ -1442,7 +1442,7 @@ mode, which displays information about Elasticsearch clusters.")
 (define-public emacs-expand-region
   (package
     (name "emacs-expand-region")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
@@ -1451,7 +1451,7 @@ mode, which displays information about Elasticsearch clusters.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1zfiaqyb3zqiyqjkpqsjw660j09805nqsg25q6ars2h8gs0rnvxb"))))
+         "08dy1f411sh9wwww53rjw80idcf3vpki6ba2arl4hl5jcw9651g0"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magnars/expand-region.el")
     (synopsis "Increase selected region by semantic units")
