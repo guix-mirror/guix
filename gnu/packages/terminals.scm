@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages wm)
@@ -260,6 +262,35 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
                    license:gpl2+))
     (supported-systems (filter (cut string-suffix? "-linux" <>)
                                %supported-systems))))
+
+(define-public libtermkey
+  (package
+    (name "libtermkey")
+    (version "0.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.leonerd.org.uk/code/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32 "09ir16kaarv55mnc4jn2sqnjjhzpb1aha51wpd9ayif887g4d5r3"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list
+                     "CC=gcc"
+                     (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:test-target "test"))
+    (inputs `(("ncurses", ncurses)))
+    (native-inputs `(("libtool", libtool)
+                     ("perl-test-harness" ,perl-test-harness)
+                     ("pkg-config", pkg-config)))
+    (synopsis "Keyboard entry processing library for terminal-based programs")
+    (description
+     "Libtermkey handles all the necessary logic to recognise special keys, UTF-8
+combining, and so on, with a simple interface.")
+    (home-page "http://www.leonerd.org.uk/code/libtermkey")
+    (license license:expat)))
 
 (define-public picocom
   (package
