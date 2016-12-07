@@ -117,7 +117,7 @@ may be either a libc package or #f.)"
         `(append (list ,(string-append "--target=" target)
                        ,@(if libc
                              `( ;; Disable libcilkrts because it is not
-                                ;; ported to GNU/Hurd. 
+                                ;; ported to GNU/Hurd.
                                "--disable-libcilkrts")
                              `( ;; Disable features not needed at this stage.
                                "--disable-shared" "--enable-static"
@@ -438,10 +438,7 @@ GCC that does not target a libc; otherwise, target that libc."
                      (let* ((mach (assoc-ref inputs "cross-gnumach-headers"))
                             (cpath (string-append mach "/include")))
                        (for-each (cut setenv <> cpath)
-                                 '("CROSS_C_INCLUDE_PATH"
-                                   "CROSS_CPLUS_INCLUDE_PATH"
-                                   "CROSS_OBJC_INCLUDE_PATH"
-                                   "CROSS_OBJCPLUS_INCLUDE_PATH"))))
+                                 ',%gcc-cross-include-paths)))
                    %standard-phases)
          #:configure-flags (list ,(string-append "--target=" target))
          ,@(package-arguments mig)))
@@ -481,10 +478,7 @@ GCC that does not target a libc; otherwise, target that libc."
                      (cpath (string-append mach "/include:"
                                            hurd "/include")))
                 (for-each (cut setenv <> cpath)
-                          '("CROSS_C_INCLUDE_PATH"
-                            "CROSS_CPLUS_INCLUDE_PATH"
-                            "CROSS_OBJC_INCLUDE_PATH"
-                            "CROSS_OBJCPLUS_INCLUDE_PATH"))))
+                          ',%gcc-cross-include-paths)))
             ,phases))))
 
       (propagated-inputs `(("gnumach-headers" ,xgnumach-headers)
@@ -512,10 +506,7 @@ GCC that does not target a libc; otherwise, target that libc."
               (let* ((glibc-headers (assoc-ref inputs "cross-glibc-hurd-headers"))
                     (cpath (string-append glibc-headers "/include")))
                 (for-each (cut setenv <> cpath)
-                          '("CROSS_C_INCLUDE_PATH"
-                            "CROSS_CPLUS_INCLUDE_PATH"
-                            "CROSS_OBJC_INCLUDE_PATH"
-                            "CROSS_OBJCPLUS_INCLUDE_PATH"))))
+                          ',%gcc-cross-include-paths)))
             ,phases))))
 
       (inputs `(("cross-glibc-hurd-headers" ,xglibc/hurd-headers)))
@@ -589,10 +580,7 @@ XBINUTILS and the cross tool chain."
                   (let* ((kernel (assoc-ref inputs "kernel-headers"))
                          (cpath (string-append kernel "/include")))
                     (for-each (cut setenv <> cpath)
-                              '("CROSS_C_INCLUDE_PATH"
-                                "CROSS_CPLUS_INCLUDE_PATH"
-                                "CROSS_OBJC_INCLUDE_PATH"
-                                "CROSS_OBJCPLUS_INCLUDE_PATH"))
+                              ',%gcc-cross-include-paths)
                     (setenv "CROSS_LIBRARY_PATH"
                             (string-append kernel "/lib")) ;for Hurd's libihash
                     #t))
