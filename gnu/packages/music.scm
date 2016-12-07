@@ -1711,7 +1711,17 @@ follows a traditional multi-track tape recorder control paradigm.")
         (base32
          "1392spswkhfd38fggf584wb3m8aqpg7csfrs9zxnzyvhgmp0fgqk"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sse-flags
+           (lambda* (#:key system #:allow-other-keys)
+             (when (not (or (string-prefix? "x86_64" system)
+                            (string-prefix? "i686" system)))
+               (substitute* "wscript"
+                 (("'-msse', '-mfpmath=sse', ") ""))
+             #t))))
+       #:tests? #f)) ; no tests
     (inputs
      `(("lv2" ,lv2)
        ("lvtk" ,lvtk)
