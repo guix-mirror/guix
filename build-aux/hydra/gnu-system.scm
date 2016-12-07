@@ -123,7 +123,8 @@ SYSTEM."
 (define %cross-targets
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"
-    "arm-linux-gnueabihf"))
+    "arm-linux-gnueabihf"
+    "i686-w64-mingw32"))
 
 (define (demo-os)
   "Return the \"demo\" 'operating-system' structure."
@@ -278,6 +279,11 @@ valid."
       ;; 'mips64el-linux'.
       (string-contains target system))
 
+    (define (pointless? target)
+      ;; Return #t if it makes no sense to cross-build to TARGET from SYSTEM.
+      (and (string-contains target "mingw")
+           (not (string=? "x86_64-linux" system))))
+
     (define (either proc1 proc2)
       (lambda (x)
         (or (proc1 x) (proc2 x))))
@@ -287,7 +293,8 @@ valid."
                          (package-cross-job store (job-name package)
                                             package target system))
                        %packages-to-cross-build))
-                (remove (either from-32-to-64? same?) %cross-targets)))
+                (remove (either from-32-to-64? same? pointless?)
+                        %cross-targets)))
 
   ;; Turn off grafts.  Grafting is meant to happen on the user's machines.
   (parameterize ((%graft? #f))
