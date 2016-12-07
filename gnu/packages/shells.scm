@@ -174,6 +174,7 @@ has a small feature set similar to a traditional Bourne shell.")
 (define-public tcsh
   (package
     (name "tcsh")
+    (replacement tcsh/fixed)
     (version "6.18.01")
     (source (origin
               (method url-fetch)
@@ -230,6 +231,15 @@ interactive login shell and a shell script command processor.  It includes a
 command-line editor, programmable word completion, spelling correction, a
 history mechanism, job control and a C-like syntax.")
     (license bsd-4)))
+
+(define tcsh/fixed
+  (package
+    (inherit tcsh)
+    (name "tcsh")
+    (source (origin
+              (inherit (package-source tcsh))
+              (patches (cons (search-patch "tcsh-fix-out-of-bounds-read.patch")
+                             (origin-patches (package-source tcsh))))))))
 
 (define-public zsh
   (package
