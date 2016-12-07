@@ -54,7 +54,6 @@
              (gnu packages compression)
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
-             (gnu packages commencement)
              (gnu packages package-management)
              (gnu system)
              (gnu system vm)
@@ -241,7 +240,7 @@ all its dependencies, and ready to be installed on non-GuixSD distributions.")
                         (match (package-transitive-inputs package)
                           (((_ inputs _ ...) ...)
                            inputs))))
-                      %final-inputs))))
+                      (%final-inputs)))))
     (lambda (store package system)
       "Return a job for PACKAGE on SYSTEM, or #f if this combination is not
 valid."
