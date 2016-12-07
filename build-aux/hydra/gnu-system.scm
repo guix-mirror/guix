@@ -283,9 +283,9 @@ valid."
       (and (string-contains target "mingw")
            (not (string=? "x86_64-linux" system))))
 
-    (define (either proc1 proc2)
+    (define (either proc1 proc2 proc3)
       (lambda (x)
-        (or (proc1 x) (proc2 x))))
+        (or (proc1 x) (proc2 x) (proc3 x))))
 
     (append-map (lambda (target)
                   (map (lambda (package)
