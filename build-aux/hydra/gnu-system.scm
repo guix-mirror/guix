@@ -111,7 +111,7 @@ SYSTEM."
         gawk gnu-gettext hello guile-2.0 zlib gzip xz
         %bootstrap-binaries-tarball
         %binutils-bootstrap-tarball
-        %glibc-bootstrap-tarball
+        (%glibc-bootstrap-tarball)
         %gcc-bootstrap-tarball
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
