@@ -78,16 +78,17 @@
     (arguments
      `(#:python ,python-2               ;setup assumes Python 2
        #:test-target "test"
-       #:phases (alist-cons-before
-                 'check 'check-setup
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "testing/functional/__init__.py"
-                     (("/bin/sh") (which "sh")))
-                   (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
-                   (setenv "TZDIR"          ;some timestamp checks need TZDIR
-                           (string-append (assoc-ref inputs "tzdata")
-                                          "/share/zoneinfo")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "testing/functional/__init__.py"
+               (("/bin/sh") (which "sh")))
+             (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
+             (setenv "TZDIR"          ;some timestamp checks need TZDIR
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t)))))
     (home-page "http://duplicity.nongnu.org/index.html")
     (synopsis "Encrypted backup using rsync algorithm")
     (description
