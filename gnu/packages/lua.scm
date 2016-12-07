@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
@@ -364,4 +366,38 @@ secure session between the peers.")
      "LGI is gobject-introspection based dynamic Lua binding to GObject
 based libraries.  It allows using GObject-based libraries directly from Lua.
 Notable examples are GTK+, GStreamer and Webkit.")
+    (license license:expat)))
+
+(define-public lua-lpeg
+  (package
+    (name "lua-lpeg")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "13mz18s359wlkwm9d9iqlyyrrwjc6iqfpa99ai0icam2b3khl68h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; `make install` isn't available, so we have to do it manually
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (lua-version ,(version-major+minor (package-version lua))))
+               (install-file "lpeg.so"
+                             (string-append out "/lib/lua/" lua-version))
+               (install-file "re.lua"
+                             (string-append out "/share/lua/" lua-version))
+               #t))))
+       #:test-target "test"))
+    (inputs `(("lua", lua)))
+    (synopsis "Pattern-matching library for Lua")
+    (description
+     "LPeg is a pattern-matching library for Lua, based on Parsing Expression
+Grammars (PEGs).")
+    (home-page "http://www.inf.puc-rio.br/~roberto/lpeg")
     (license license:expat)))
