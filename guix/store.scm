@@ -374,29 +374,36 @@ space on the file system so that the garbage collector can still operate,
 should the disk become full.  When CPU-AFFINITY is true, it must be an integer
 corresponding to an OS-level CPU number to which the daemon's worker process
 for this connection will be pinned.  Return a server object."
-  (let ((port (or port (open-unix-domain-socket file))))
-    (write-int %worker-magic-1 port)
-    (let ((r (read-int port)))
-      (and (eqv? r %worker-magic-2)
-           (let ((v (read-int port)))
-             (and (eqv? (protocol-major %protocol-version)
-                        (protocol-major v))
-                  (begin
-                    (write-int %protocol-version port)
-                    (when (>= (protocol-minor v) 14)
-                      (write-int (if cpu-affinity 1 0) port)
-                      (when cpu-affinity
-                        (write-int cpu-affinity port)))
-                    (when (>= (protocol-minor v) 11)
-                      (write-int (if reserve-space? 1 0) port))
-                    (let ((conn (%make-nix-server port
-                                                  (protocol-major v)
-                                                  (protocol-minor v)
-                                                  (make-hash-table 100)
-                                                  (make-hash-table 100))))
-                      (let loop ((done? (process-stderr conn)))
-                        (or done? (process-stderr conn)))
-                      conn))))))))
+  (guard (c ((nar-error? c)
+             ;; One of the 'write-' or 'read-' calls below failed, but this is
+             ;; really a connection error.
+             (raise (condition
+                     (&nix-connection-error (file (or port file))
+                                            (errno EPROTO))
+                     (&message (message "build daemon handshake failed"))))))
+    (let ((port (or port (open-unix-domain-socket file))))
+      (write-int %worker-magic-1 port)
+      (let ((r (read-int port)))
+        (and (eqv? r %worker-magic-2)
+             (let ((v (read-int port)))
+               (and (eqv? (protocol-major %protocol-version)
+                          (protocol-major v))
+                    (begin
+                      (write-int %protocol-version port)
+                      (when (>= (protocol-minor v) 14)
+                        (write-int (if cpu-affinity 1 0) port)
+                        (when cpu-affinity
+                          (write-int cpu-affinity port)))
+                      (when (>= (protocol-minor v) 11)
+                        (write-int (if reserve-space? 1 0) port))
+                      (let ((conn (%make-nix-server port
+                                                    (protocol-major v)
+                                                    (protocol-minor v)
+                                                    (make-hash-table 100)
+                                                    (make-hash-table 100))))
+                        (let loop ((done? (process-stderr conn)))
+                          (or done? (process-stderr conn)))
+                        conn)))))))))
 
 (define (close-connection server)
   "Close the connection to SERVER."
