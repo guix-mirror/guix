@@ -4851,14 +4851,14 @@ ISO 8601 dates, time and duration.")
 (define-public python-html5lib
   (package
     (name "python-html5lib")
-    (version "1.0b8")
+    (version "1.0b10")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "html5lib" version))
         (sha256
           (base32
-            "1lknq5j3nh11xrl268ks76zaj0gyzh34v94n5vbf6dk8llzxdx0q"))))
+            "1yd068a5c00wd0ajq0hqimv7fd82lhrw0w3s01vbhy9bbd6xapqd"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six))) ; required to "import html5lib"
