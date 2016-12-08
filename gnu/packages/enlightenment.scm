@@ -57,7 +57,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.18.3")
+    (version "1.18.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -65,7 +65,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1h347sfxajyb5s931m9qga14wwiqci7aicww2imxjhzm8w4fqj07"))))
+                "09c0ajszjarcs6d62zlgnf1aha2f921mfr0gxg6nwza36xzc1srr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
