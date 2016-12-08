@@ -5629,7 +5629,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.3.0")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
@@ -5639,7 +5639,7 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1r8fk3whkil348y5hfsd4r56qjmchhq4nxm6s7ra5rlisw0mf9fy"))
+         "1d3670apjy15c9l40fpq71lifxga6j9z2gisdirycwk18s4mvcp2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
