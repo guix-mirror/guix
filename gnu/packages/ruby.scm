@@ -2204,28 +2204,27 @@ current line in an external editor.")
 (define-public ruby-sdoc
   (package
     (name "ruby-sdoc")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "sdoc" version))
               (sha256
                (base32
-                "16xyfair1j4irfkd6sxvmdcak957z71lwkvhglrznfpkalfnqyqp"))))
+                "0qhvy10vnmrqcgh8494m13kd5ag9c3sczzhfasv8j0294ylk679n"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'build 'relax-minitest-requirement
+         (add-before 'check 'set-rubylib
           (lambda _
-            (substitute* "sdoc.gemspec"
-              (("<minitest>\\.freeze, \\[\"~> 4\\.0\"\\]")
-               "<minitest>.freeze, [\">= 4.0\"]"))
+            (setenv "RUBYLIB" "lib")
             #t)))))
     (propagated-inputs
      `(("ruby-json" ,ruby-json)))
     (native-inputs
      `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)))
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-hoe" ,ruby-hoe)))
     (synopsis "Generate searchable RDoc documentation")
     (description
      "SDoc is an RDoc documentation generator to build searchable HTML
