@@ -37,7 +37,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (gnu packages perl-web))
+  #:use-module (gnu packages perl-web)
+  #:use-module (gnu packages pkg-config))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -2763,6 +2764,29 @@ their Perl code.  Although there are mechanisms to compile and link (or glue)
 C code in your Perl programs, there isn't a clear method to compile standard,
 self-contained C libraries.  This module main goal is to help in that task.")
     (license (package-license perl))))
+
+(define-public perl-extutils-pkgconfig
+  (package
+    (name "perl-extutils-pkgconfig")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
+                                  "ExtUtils-PkgConfig-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cxh6w8vmyqmhl6afys2q6z6jkp1m6zvacpk70196zmk48p1kcv9"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://search.cpan.org/dist/ExtUtils-PkgConfig")
+    (synopsis "Simplistic interface to pkg-config")
+    (description
+     "@code{ExtUtils::PkgConfig} is a very simplistic interface to the
+@command{pkg-config} utility, intended for use in the @file{Makefile.PL}
+of perl extensions which bind libraries that @command{pkg-config} knows.
+It is really just boilerplate code that you would have written yourself.")
+    (license lgpl2.1+)))
 
 (define-public perl-file-changenotify
   (package
