@@ -6615,6 +6615,29 @@ including a stack trace of what was going on when it occurred.")
                               "Test-NoWarnings-" version))
     (license lgpl2.1)))
 
+(define-public perl-test-number-delta
+  (package
+    (name "perl-test-number-delta")
+    (version "1.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                                  "Test-Number-Delta-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0jfhzhpzkc23mkrlbnv085ykpfncmy99hvppbzjnrpvgks8k0m2k"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Number-Delta")
+    (synopsis
+     "Compare the difference between numbers against a given tolerance")
+    (description
+     "At some point or another, most programmers find they need to compare
+floating-point numbers for equality.  The typical idiom is to test if the
+absolute value of the difference of the numbers is within a desired tolerance,
+usually called epsilon.  This module provides such a function for use with
+@code{Test::More}.")
+    (license asl2.0)))
+
 (define-public perl-test-output
   (package
     (name "perl-test-output")
