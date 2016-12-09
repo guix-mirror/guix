@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -2215,8 +2215,8 @@ current line in an external editor.")
          (add-after 'build 'relax-minitest-requirement
           (lambda _
             (substitute* "sdoc.gemspec"
-              (("<minitest>, \\[\"~> 4\\.0\"\\]")
-               "<minitest>, [\">= 4.0\"]"))
+              (("<minitest>\\.freeze, \\[\"~> 4\\.0\"\\]")
+               "<minitest>.freeze, [\">= 4.0\"]"))
             #t)))))
     (propagated-inputs
      `(("ruby-json" ,ruby-json)))
