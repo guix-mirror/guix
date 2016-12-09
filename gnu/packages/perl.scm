@@ -596,6 +596,25 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-canary-stability
+  (package
+    (name "perl-canary-stability")
+    (version "2012")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                                  "Canary-Stability-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01vih43hvpqy67m6a6fwmlswli91mqpv8n8ccglvlkc33l8hn97x"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Canary-Stability")
+    (synopsis "Check compatibility with the installed perl version")
+    (description
+     "This module is used by Schmorp's modules during configuration stage
+to test the installed perl for compatibility with his modules.")
+    (license (package-license perl))))
+
 (define-public perl-carp-assert
   (package
     (name "perl-carp-assert")
