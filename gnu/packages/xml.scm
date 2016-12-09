@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,6 +236,34 @@ the @code{Graph} class and write it out in a specific file format.")
     (description
      "Atom is a syndication, API, and archiving format for weblogs and other data.
 @code{XML::Atom} implements the feed format as well as a client for the API.")
+    (license (package-license perl))))
+
+(define-public perl-xml-descent
+  (package
+    (name "perl-xml-descent")
+    (version "1.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AN/ANDYA/"
+                                  "XML-Descent-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l5xmw2hd95ypppz3lyvp4sn02ccsikzjwacli3ydxfdz1bbh4d7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-test-differences" ,perl-test-differences)
+       ("perl-xml-tokeparser" ,perl-xml-tokeparser)))
+    (home-page "http://search.cpan.org/dist/XML-Descent")
+    (synopsis "Recursive descent XML parsing")
+    (description
+     "The conventional models for parsing XML are either @dfn{DOM}
+(a data structure representing the entire document tree is created) or
+@dfn{SAX} (callbacks are issued for each element in the XML).
+
+XML grammar is recursive - so it's nice to be able to write recursive
+parsers for it.  @code{XML::Descent} allows such parsers to be created.")
     (license (package-license perl))))
 
 (define-public perl-xml-parser
