@@ -4049,6 +4049,50 @@ replacement.  Whereas Module::Build has over 6,700 lines of code; this module
 has less than 120, yet supports the features needed by most distributions.")
     (license (package-license perl))))
 
+(define-public perl-module-build-xsutil
+  (package
+    (name "perl-module-build-xsutil")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/H/HI/HIDEAKIO/"
+                                  "Module-Build-XSUtil-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nrs0b6hmwl3sw3g50b9857qgp5cbbbpl716zwn30h9vwjj2yxhm"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-cwd-guard" ,perl-cwd-guard)
+       ("perl-file-copy-recursive" ,perl-file-copy-recursive)
+       ("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-devel-checkcompiler" ,perl-devel-checkcompiler)))
+    (home-page "http://search.cpan.org/dist/Module-Build-XSUtil")
+    (synopsis "Module::Build class for building XS modules")
+    (description
+     "@code{Module::Build::XSUtil} is subclass of @code{Module::Build}
+for support building XS modules.
+
+This is a list of a new parameters in the @code{Module::Build::new} method:
+
+@enumerate
+@item @code{needs_compiler_c99}: This option checks C99 compiler availability.
+@item @code{needs_compiler_cpp}: This option checks C++ compiler availability.
+Can also pass @code{extra_compiler_flags} and @code{extra_linker_flags} for C++.
+@item @code{generate_ppport_h}: Generate @file{ppport.h} by @code{Devel::PPPort}.
+@item @code{generate_xshelper_h}: Generate @file{xshelper.h} which is a helper
+header file to include @file{EXTERN.h}, @file{perl.h}, @file{XSUB.h} and
+@file{ppport.h}, and defines some portability stuff which are not supported by
+@file{ppport.h}.
+
+It is ported from @code{Module::Install::XSUtil}.
+@item @code{cc_warnings}: Toggle compiler warnings.  Enabled by default.
+@item @code{-g options}: Invoke @file{Build.PL} with @code{-g} to enable
+debug options.
+@end enumerate")
+    (license (package-license perl))))
+
 (define-public perl-module-find
   (package
     (name "perl-module-find")
