@@ -2150,6 +2150,27 @@ the appropriate objects.")
 particular command is available.")
     (license (package-license perl))))
 
+(define-public perl-devel-checkcompiler
+  (package
+  (name "perl-devel-checkcompiler")
+  (version "0.07")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://cpan/authors/id/S/SY/SYOHEX/"
+                                "Devel-CheckCompiler-" version ".tar.gz"))
+            (sha256
+             (base32
+              "1db973a4dbyknjxq608hywil5ai6vplnayshqxrd7m5qnjbpd2vn"))))
+  (build-system perl-build-system)
+  (native-inputs
+   `(("perl-module-build-tiny" ,perl-module-build-tiny)))
+  (home-page "http://search.cpan.org/dist/Devel-CheckCompiler")
+  (synopsis "Check compiler availability")
+  (description "@code{Devel::CheckCompiler} is a tiny module to check
+whether a compiler is available.  It can test for a C99 compiler, or
+you can tell it to compile a C source file with optional linker flags.")
+  (license (package-license perl))))
+
 (define-public perl-devel-globaldestruction
   (package
     (name "perl-devel-globaldestruction")
