@@ -656,6 +656,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libcmis-fix-test-onedrive.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
+  %D%/packages/patches/libepoxy-gl-null-checks.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\

@@ -462,7 +462,8 @@ OpenGL graphics API.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1d1brhwfmlzgnphmdwlvn5wbcrxsdyzf1qfcf8nb89xqzznxs037"))))
+                "1d1brhwfmlzgnphmdwlvn5wbcrxsdyzf1qfcf8nb89xqzznxs037"))
+              (patches (search-patches "libepoxy-gl-null-checks.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
