@@ -11851,3 +11851,26 @@ database).")
 
 (define-public python2-sadisplay
   (package-with-python2 python-sadisplay))
+
+(define-public python-flask-restful-swagger
+  (package
+    (name "python-flask-restful-swagger")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flask-restful-swagger" version))
+       (sha256
+        (base32
+         "16msl8hd5xjmj833bpy264v98cpl5hkw5bgl5gf5vgndxbv3rm6v"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask-restful" ,python-flask-restful)))
+    (home-page "https://github.com/rantav/flask-restful-swagger")
+    (synopsis "Extract Swagger specs from Flask-Restful projects")
+    (description "This package lets you extract Swagger API documentation
+specs from your Flask-Restful projects.")
+    (license license:expat)))
+
+(define-public python2-flask-restful-swagger
+  (package-with-python2 python-flask-restful-swagger))
