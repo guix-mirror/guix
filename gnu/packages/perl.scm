@@ -4872,6 +4872,36 @@ own set of Moose-like types.  These custom types can then be used to describe
 fields in Moo-based classes.")
     (license (package-license perl))))
 
+(define-public perl-mouse
+  (package
+  (name "perl-mouse")
+  (version "2.4.9")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://cpan/authors/id/S/SY/SYOHEX/Mouse-v"
+                  version
+                  ".tar.gz"))
+            (sha256
+             (base32
+              "1y20sl97x1h4y1iid47hj0w1hb2887dchh4nfffgmqpyggkslh4n"))))
+  (build-system perl-build-system)
+  (native-inputs
+   `(("perl-module-build" ,perl-module-build)
+     ("perl-module-build-xsutil" ,perl-module-build-xsutil)
+     ("perl-test-exception" ,perl-test-exception)
+     ("perl-test-fatal" ,perl-test-fatal)
+     ("perl-test-leaktrace" ,perl-test-leaktrace)
+     ("perl-test-output" ,perl-test-output)
+     ("perl-test-requires" ,perl-test-requires)
+     ("perl-try-tiny" ,perl-try-tiny)))
+  (home-page "https://github.com/gfx/p5-Mouse")
+  (synopsis "Fast Moose-compatible object system for perl5")
+  (description
+   "Mouse is a @code{Moose} compatible object system that implements a
+subset of the functionality for reduced startup time.")
+  (license (package-license perl))))
+
 (define-public perl-mozilla-ca
   (package
     (name "perl-mozilla-ca")
