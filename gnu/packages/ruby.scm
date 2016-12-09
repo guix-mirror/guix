@@ -1426,8 +1426,8 @@ conversion to (X)HTML.")
          (add-before 'check 'use-latest-redcarpet
           (lambda _
             (substitute* "mocha.gemspec"
-              (("<redcarpet>, \\[\"~> 1\"\\]")
-               "<redcarpet>, [\">= 3\"]"))
+              (("<redcarpet>.freeze, \\[\"~> 1\"\\]")
+               "<redcarpet>.freeze, [\">= 3\"]"))
             #t))
          (add-before 'check 'hardcode-version
           (lambda _
@@ -3493,7 +3493,7 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
                 "Bundler::GemHelper.gemspec.version"))
              ;; Loosen unnecessarily strict test-unit version specification.
              (substitute* "domain_name.gemspec"
-               (("<test-unit>, \\[\\\"~> 2.5.5") "<test-unit>, [\">0"))
+               (("<test-unit>.freeze, \\[\\\"~> 2.5.5") "<test-unit>, [\">0"))
              #t)))))
     (propagated-inputs
      `(("ruby-unf" ,ruby-unf)))
