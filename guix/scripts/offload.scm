@@ -177,6 +177,14 @@ private key from '~a': ~a")
                                ;; #:log-verbosity 'protocol
                                #:identity (build-machine-private-key machine)
 
+                               ;; By default libssh reads ~/.ssh/known_hosts
+                               ;; and uses that to adjust its choice of cipher
+                               ;; suites, which changes the type of host key
+                               ;; that the server sends (RSA vs. Ed25519,
+                               ;; etc.).  Opt for something reproducible and
+                               ;; stateless instead.
+                               #:knownhosts "/dev/null"
+
                                ;; We need lightweight compression when
                                ;; exchanging full archives.
                                #:compression
