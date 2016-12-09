@@ -208,6 +208,31 @@ explicitly alias the class to another name or, if you prefer, you can do so
 implicitly.")
     (license (package-license perl))))
 
+(define-public perl-any-moose
+  (package
+    (name "perl-any-moose")
+    (version "0.27")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                                  "Any-Moose-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dc55mpayrixwx8dwql0vj0jalg4rlb3k64rprc84bl0z8vkx9m8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-mouse" ,perl-mouse)
+       ("perl-moose" ,perl-moose)))
+    (home-page "http://search.cpan.org/dist/Any-Moose")
+    (synopsis "Transparently use Moose or Mouse modules")
+    (description
+     "This module facilitates using @code{Moose} or @code{Mouse} modules
+without changing the code.  By default, Mouse will be provided to libraries,
+unless Moose is already loaded, or explicitly requested by the end-user.  End
+users can force the decision of which backend to use by setting the environment
+variable ANY_MOOSE to be Moose or Mouse.")
+    (license (package-license perl))))
+
 (define-public perl-appconfig
   (package
     (name "perl-appconfig")
