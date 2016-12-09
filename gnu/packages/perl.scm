@@ -1343,6 +1343,28 @@ contained in Appendix A of FIPS Publication 181, \"Standard for Automated
 Password Generator\".")
     (license (package-license perl))))
 
+(define-public perl-cwd-guard
+  (package
+    (name "perl-cwd-guard")
+    (version "0.05")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
+                                  "Cwd-Guard-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xwf4rmii55k3lp19mpbh00mbgby7rxdk2lk84148bjhp6i7rz3s"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-requires" ,perl-test-requires)))
+    (home-page "http://search.cpan.org/dist/Cwd-Guard")
+    (synopsis "Temporarily change working directory")
+    (description
+     "@code{Cwd::Guard} changes the current directory using a limited scope.
+It returns to the previous working directory when the object is destroyed.")
+    (license (package-license perl))))
+
 (define-public perl-czplib
   (package
     (name "perl-czplib")
