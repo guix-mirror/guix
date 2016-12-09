@@ -4974,6 +4974,32 @@ fields in Moo-based classes.")
 subset of the functionality for reduced startup time.")
   (license (package-license perl))))
 
+(define-public perl-mousex-nativetraits
+  (package
+    (name "perl-mousex-nativetraits")
+    (version "1.09")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GF/GFUJI/"
+                                  "MouseX-NativeTraits-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pnbchkxfz9fwa8sniyjqp0mz75b3k2fafq9r09znbbh51dbz9gq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-any-moose" ,perl-any-moose)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-mouse" ,perl-mouse)))
+    (home-page "http://search.cpan.org/dist/MouseX-NativeTraits")
+    (synopsis "Extend attribute interfaces for Mouse")
+    (description
+     "While @code{Mouse} attributes provide a way to name your accessors,
+readers, writers, clearers and predicates, @code{MouseX::NativeTraits}
+provides commonly used attribute helper methods for more specific types
+of data.")
+    (license (package-license perl))))
+
 (define-public perl-mozilla-ca
   (package
     (name "perl-mozilla-ca")
