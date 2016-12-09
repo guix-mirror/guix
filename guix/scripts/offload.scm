@@ -710,7 +710,14 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
 
 (define (check-machine-availability machine-file)
   "Check that each machine in MACHINE-FILE is usable as a build machine."
-  (let ((machines (build-machines machine-file)))
+  (define (build-machine=? m1 m2)
+    (and (string=? (build-machine-name m1) (build-machine-name m2))
+         (= (build-machine-port m1) (build-machine-port m2))))
+
+  ;; A given build machine may appear several times (e.g., once for
+  ;; "x86_64-linux" and a second time for "i686-linux"); test them only once.
+  (let ((machines (delete-duplicates (build-machines machine-file)
+                                     build-machine=?)))
     (info (_ "testing ~a build machines defined in '~a'...~%")
           (length machines) machine-file)
     (let* ((names    (map build-machine-name machines))
