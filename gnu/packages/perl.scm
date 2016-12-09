@@ -7732,6 +7732,30 @@ attribute names.")
     ;; modification, are permitted under any circumstances.  No warranty.
     (license public-domain)))
 
+(define-public perl-xs-object-magic
+  (package
+    (name "perl-xs-object-magic")
+    (version "0.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                                  "XS-Object-Magic-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03fghj7hq0fiicmfdxhmzfm4mzv7s097pgkd32ji7jnljvhm9six"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (home-page "http://search.cpan.org/dist/XS-Object-Magic")
+    (synopsis "Opaque, extensible XS pointer backed objects using sv_magic")
+    (description
+     "This way of associating structs with Perl space objects is designed to
+supersede Perl's builtin @code{T_PTROBJ} with something that is extensible
+(structs can be associated with any data type) and opaque (the C pointer is
+neither visible nor modifiable from Perl space).")
+    (license (package-license perl))))
+
 (define-public perl-yaml
   (package
     (name "perl-yaml")
