@@ -269,6 +269,29 @@ as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
     (home-page "http://search.cpan.org/dist/XML-Parser")))
 
+(define-public perl-xml-tokeparser
+  (package
+    (name "perl-xml-tokeparser")
+    (version "0.05")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/P/PO/PODMASTER/"
+                                  "XML-TokeParser-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hnpwb3lh6cbgwvjjgqzcp6jm4mp612qn6ili38adc9nhkwv8fc5"))))
+    (build-system perl-build-system)
+    (propagated-inputs `(("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "http://search.cpan.org/dist/XML-TokeParser")
+    (synopsis "Simplified interface to XML::Parser")
+    (description
+     "@code{XML::TokeParser} provides a procedural (\"pull mode\") interface
+to @code{XML::Parser} in much the same way that Gisle Aas'
+@code{HTML::TokeParser} provides a procedural interface to @code{HTML::Parser}.
+@code{XML::TokeParser} splits its XML input up into \"tokens\", each
+corresponding to an @code{XML::Parser} event.")
+    (license (package-license perl))))
+
 (define-public perl-libxml
   (package
     (name "perl-libxml")
