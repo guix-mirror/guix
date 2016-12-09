@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -266,6 +267,39 @@ manipulate, read, and write Zip archive files.")
     (synopsis "Small utils for array manipulation")
     (description "@code{Array::Utils} is a small pure-perl module containing
 list manipulation routines.")
+    (license (package-license perl))))
+
+(define-public perl-async-interrupt
+  (package
+    (name "perl-async-interrupt")
+    (version "1.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                                  "Async-Interrupt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "092zs7b72f8q109c3z829nqfgwqghp3nhw44c0gcyhacbb4wgpk3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/Async-Interrupt")
+    (synopsis "Allow C/XS libraries to interrupt perl asynchronously")
+    (description
+     "@code{Async::Interrupt} implements a single feature only of interest
+to advanced perl modules, namely asynchronous interruptions (think \"UNIX
+signals\", which are very similar).
+
+Sometimes, modules wish to run code asynchronously (in another thread,
+or from a signal handler), and then signal the perl interpreter on
+certain events.  One common way is to write some data to a pipe and use
+an event handling toolkit to watch for I/O events.  Another way is to
+send a signal.  Those methods are slow, and in the case of a pipe, also
+not asynchronous - it won't interrupt a running perl interpreter.
+
+This module implements asynchronous notifications that enable you to
+signal running perl code from another thread, asynchronously, and
+sometimes even without using a single syscall.")
     (license (package-license perl))))
 
 (define-public perl-autovivification
