@@ -453,7 +453,7 @@ attachments, create new maildirs, and so on.")
 (define-public alot
   (package
     (name "alot")
-    (version "0.3.7")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               ;; package author intends on distributing via github rather
@@ -464,12 +464,12 @@ attachments, create new maildirs, and so on.")
               (file-name (string-append "alot-" version ".tar.gz"))
               (sha256
                (base32
-                "09md9llg38r6xby8l0y0zf8nhlh91cr4xs0r15b294hhp8hl2bgx"))))
+                "0sl1kl2fhkv208llnbny4blcvrfdk4vx6bcw5pnyh9ylwb0pipi2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       ;; python 3 is unsupported, more info:
-       ;; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
+       ;; python 3 is currently unsupported, more info:
+       ;; https://github.com/pazz/alot/blob/master/docs/source/faq.rst
        #:python ,python-2))
     (inputs
      `(("python2-magic" ,python2-magic)
