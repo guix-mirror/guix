@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,3 +164,11 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))
+
+(define-public aspell-dict-sv
+  (aspell-dictionary "sv" "Swedish"
+                     #:version "0.51-0"
+                     #:prefix "aspell-"
+                     #:sha256
+                     (base32
+                      "02jwkjhr32kvyibnyzgx3smbnm576jwdzg3avdf6zxwckhy5fw4v")))

@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -257,7 +258,6 @@ download utility.  It supports HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink.
 Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
     (license l:gpl2+)))
 
-
 (define-public uget
   (package
     (name "uget")
@@ -292,3 +292,36 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
 HTTP, HTTPS, BitTorrent and Metalink, supporting multi-connection
 downloads, download scheduling, download rate limiting.")
     (license l:lgpl2.1+)))
+
+(define-public mktorrent
+  (package
+    (name "mktorrent")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mktorrent/mktorrent/"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17qi3nfky240pq6qcmf5qg324mxm83vk9r3nvsdhsvinyqm5d3kg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))          ; no configure script
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "NO_HASH_CHECK=1"
+                          "USE_LARGE_FILES=1"
+                          "USE_LONG_OPTIONS=1"
+                          "USE_PTHREADS=1")
+       #:tests? #f))                            ; no tests
+    (home-page "http://mktorrent.sourceforge.net/")
+    (synopsis "Utility to create BitTorrent metainfo files")
+    (description "mktorrent is a simple command-line utility to create
+BitTorrent @dfn{metainfo} files, often known simply as @dfn{torrents}, from
+both single files and whole directories.  It can add multiple trackers and web
+seed URLs, and set the @code{private} flag to disallow advertisement through
+the distributed hash table (DHT) and Peer Exchange.  Hashing is multi-threaded
+and will take advantage of multiple processor cores where possible.")
+    (license (list l:public-domain      ; sha1.*, used to build without OpenSSL
+                   l:gpl2+))))          ; with permission to link with OpenSSL

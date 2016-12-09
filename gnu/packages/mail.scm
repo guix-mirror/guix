@@ -453,7 +453,7 @@ attachments, create new maildirs, and so on.")
 (define-public alot
   (package
     (name "alot")
-    (version "0.3.7")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               ;; package author intends on distributing via github rather
@@ -464,12 +464,12 @@ attachments, create new maildirs, and so on.")
               (file-name (string-append "alot-" version ".tar.gz"))
               (sha256
                (base32
-                "09md9llg38r6xby8l0y0zf8nhlh91cr4xs0r15b294hhp8hl2bgx"))))
+                "0sl1kl2fhkv208llnbny4blcvrfdk4vx6bcw5pnyh9ylwb0pipi2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       ;; python 3 is unsupported, more info:
-       ;; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
+       ;; python 3 is currently unsupported, more info:
+       ;; https://github.com/pazz/alot/blob/master/docs/source/faq.rst
        #:python ,python-2))
     (inputs
      `(("python2-magic" ,python2-magic)
@@ -933,15 +933,15 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.26.0")
+    (version "2.2.27")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.dovecot.org/releases/"
+       (uri (string-append "https://www.dovecot.org/releases/"
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "01bgj8b2whi35ghbxb19nmr3xvx2zgjzxxw1crgx2v73kprs34pn"))))
+                "1s8qvr6fa9d0n179kdwgpsi72zkvpbh9q57q8fr2fjysgjl94zw9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -973,7 +973,7 @@ facilities for checking incoming mail.")
                        (("/bin/cat") (which "cat"))
                        (("/bin/false") (which "false")))
                      #t)))))
-    (home-page "http://www.dovecot.org")
+    (home-page "https://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
     (description
      "Dovecot is a mail server whose major goals are security and reliability.

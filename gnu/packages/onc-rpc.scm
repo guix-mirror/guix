@@ -43,6 +43,14 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'remote-dangling-symlink
            (lambda _
+             (substitute* '("man/netconfig.5"
+                            "man/getnetconfig.3t"
+                            "man/getnetpath.3t"
+                            "man/rpc.3t"
+                            "src/getnetconfig.c"
+                            "tirpc/netconfig.h")
+               (("/etc/netconfig") (string-append %output "/etc/netconfig")))
+
              ;; Remove the dangling symlinks since it breaks the
              ;; 'patch-source-shebangs' file tree traversal.
              (delete-file "INSTALL"))))))

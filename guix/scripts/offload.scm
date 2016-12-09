@@ -75,6 +75,10 @@
   (private-key     build-machine-private-key      ; file name
                    (default (user-openssh-private-key)))
   (host-key        build-machine-host-key)        ; string
+  (compression     build-machine-compression  ; string
+                   (default "zlib@openssh.com,zlib"))
+  (compression-level build-machine-compression-level ;integer
+                     (default 3))
   (daemon-socket   build-machine-daemon-socket    ; string
                    (default "/var/guix/daemon-socket/socket"))
   (parallel-builds build-machine-parallel-builds  ; number
@@ -169,14 +173,16 @@ private key from '~a': ~a")
         (session (make-session #:user (build-machine-user machine)
                                #:host (build-machine-name machine)
                                #:port (build-machine-port machine)
-                               #:timeout 5        ;seconds
+                               #:timeout 10       ;seconds
                                ;; #:log-verbosity 'protocol
                                #:identity (build-machine-private-key machine)
 
                                ;; We need lightweight compression when
                                ;; exchanging full archives.
-                               #:compression "zlib"
-                               #:compression-level 3)))
+                               #:compression
+                               (build-machine-compression machine)
+                               #:compression-level
+                               (build-machine-compression-level machine))))
     (match (connect! session)
       ('ok
        ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
@@ -384,7 +390,8 @@ MACHINE."
              ;; Use exit code 100 for a permanent build failure.  The daemon
              ;; interprets other non-zero codes as transient build failures.
              (primitive-exit 100)))
-    (build-derivations store (list drv)))
+    (parameterize ((current-build-output-port (build-log-port)))
+      (build-derivations store (list drv))))
 
   (retrieve-files outputs store)
   (format (current-error-port) "done with offloaded '~a'~%"
@@ -445,9 +452,11 @@ be read."
                                   (with-store store
                                     (remove (cut valid-path? store <>)
                                             ',files)))))
+           (count   (length missing))
            (port    (store-import-channel session)))
-      (format #t (_ "sending ~a store files to '~a'...~%")
-              (length missing) (session-get session 'host))
+      (format #t (N_ "sending ~a store item to '~a'...~%"
+                     "sending ~a store items to '~a'...~%" count)
+              count (session-get session 'host))
 
       ;; Send MISSING in topological order.
       (export-paths store missing port)
@@ -466,9 +475,11 @@ be read."
   "Retrieve FILES from SESSION's store, and import them."
   (let* ((session (channel-get-session (nix-server-socket remote)))
          (host    (session-get session 'host))
-         (port    (store-export-channel session files)))
-    (format #t (_ "retrieving ~a files from '~a'...~%")
-            (length files) host)
+         (port    (store-export-channel session files))
+         (count   (length files)))
+    (format #t (N_ "retrieving ~a store item from '~a'...~%"
+                   "retrieving ~a store items from '~a'...~%" count)
+            count host)
 
     ;; We cannot use the 'import-paths' RPC here because we already
     ;; hold the locks for FILES.
@@ -625,6 +636,86 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
 
 
 ;;;
+;;; Installation tests.
+;;;
+
+(define (assert-node-repl node name)
+  "Bail out if NODE is not running Guile."
+  (match (node-guile-version node)
+    (#f
+     (leave (_ "Guile could not be started on '~a'~%")
+            name))
+    ((? string? version)
+     ;; Note: The version string already contains the word "Guile".
+     (info (_ "'~a' is running ~a~%")
+           name (node-guile-version node)))))
+
+(define (assert-node-has-guix node name)
+  "Bail out if NODE lacks the (guix) module, or if its daemon is not running."
+  (match (node-eval node
+                    '(begin
+                       (use-modules (guix))
+                       (with-store store
+                         (add-text-to-store store "test"
+                                            "Hello, build machine!"))))
+    ((? string? str)
+     (info (_ "Guix is usable on '~a' (test returned ~s)~%")
+           name str))
+    (x
+     (leave (_ "failed to use Guix module on '~a' (test returned ~s)~%")
+            name x))))
+
+(define %random-state
+  (delay
+    (seed->random-state (logxor (getpid) (car (gettimeofday))))))
+
+(define (nonce)
+  (string-append (gethostname) "-"
+                 (number->string (random 1000000 (force %random-state)))))
+
+(define (assert-node-can-import node name daemon-socket)
+  "Bail out if NODE refuses to import our archives."
+  (let ((session (node-session node)))
+    (with-store store
+      (let* ((item   (add-text-to-store store "export-test" (nonce)))
+             (remote (connect-to-remote-daemon session daemon-socket)))
+        (send-files (list item) remote)
+        (if (valid-path? remote item)
+            (info (_ "'~a' successfully imported '~a'~%")
+                  name item)
+            (leave (_ "'~a' was not properly imported on '~a'~%")
+                   item name))))))
+
+(define (assert-node-can-export node name daemon-socket)
+  "Bail out if we cannot import signed archives from NODE."
+  (let* ((session (node-session node))
+         (remote  (connect-to-remote-daemon session daemon-socket))
+         (item    (add-text-to-store remote "import-test" (nonce)))
+         (port    (store-export-channel session (list item))))
+    (with-store store
+      (if (and (import-paths store port)
+               (valid-path? store item))
+          (info (_ "successfully imported '~a' from '~a'~%")
+                item name)
+          (leave (_ "failed to import '~a' from '~a'~%")
+                 item name)))))
+
+(define (check-machine-availability machine-file)
+  "Check that each machine in MACHINE-FILE is usable as a build machine."
+  (let ((machines (build-machines machine-file)))
+    (info (_ "testing ~a build machines defined in '~a'...~%")
+          (length machines) machine-file)
+    (let* ((names    (map build-machine-name machines))
+           (sockets  (map build-machine-daemon-socket machines))
+           (sessions (map open-ssh-session machines))
+           (nodes    (map make-node sessions)))
+      (for-each assert-node-repl nodes names)
+      (for-each assert-node-has-guix nodes names)
+      (for-each assert-node-can-import nodes names sockets)
+      (for-each assert-node-can-export nodes names sockets))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -673,6 +764,13 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
                    (else
                     (leave (_ "invalid request line: ~s~%") line)))
              (loop (read-line)))))))
+    (("test" rest ...)
+     (with-error-handling
+       (let ((file (match rest
+                     ((file) file)
+                     (()     %machine-file)
+                     (_      (leave (_ "wrong number of arguments~%"))))))
+         (check-machine-availability (or file %machine-file)))))
     (("--version")
      (show-version-and-exit "guix offload"))
     (("--help")

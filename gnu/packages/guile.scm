@@ -146,8 +146,8 @@ without requiring the source code to be rewritten.")
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
              ("readline" ,readline)
-             ("bash" ,bash)))
-
+             ,@(libiconv-if-needed)
+             ,@(if (target-mingw?) '() `(("bash" ,bash)))))
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
        ;; reads `-lltdl -lunistring', adding them here will add the needed
@@ -176,8 +176,15 @@ without requiring the source code to be rewritten.")
                   ;; Tell (ice-9 popen) the file name of Bash.
                   (let ((bash (assoc-ref inputs "bash")))
                     (substitute* "module/ice-9/popen.scm"
+                      ;; If bash is #f allow fallback for user to provide
+                      ;; "bash" in PATH.  This happens when cross-building to
+                      ;; MinGW for which we do not have Bash yet.
                       (("/bin/sh")
-                       (string-append bash "/bin/bash")))))
+                       ,@(if (target-mingw?)
+                             '((if bash
+                                   (string-append bash "/bin/bash")
+                                   "bash"))
+                             '((string-append bash "/bin/bash")))))))
                 %standard-phases)))
 
    (native-search-paths

@@ -684,14 +684,14 @@ property manipulation.")
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.16")
+    (version "1.8.17")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "0imkxn25n6sbcgfldrx4z29npjprb1lxjm5fb89q4297161nx3zi"))))
+               "1450fkj1jmxyphqn6cd95z1ykwsabajm9jw4i412qpwss8w9a4fy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -705,7 +705,8 @@ property manipulation.")
              ;; nice if this fix ultimately made its way into libtool.
              (let ((coreutils (assoc-ref inputs "coreutils")))
                (substitute* "libtool"
-                 (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls"))))))
+                 (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))
+               #t)))
          (add-after 'install 'install-perl-bindings
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.

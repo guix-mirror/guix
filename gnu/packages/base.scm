@@ -46,7 +46,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (ice-9 match)
-  #:export (glibc))
+  #:export (glibc
+            libiconv-if-needed))
 
 ;;; Commentary:
 ;;;
@@ -1031,6 +1032,16 @@ that lack it.  iconv is used to convert between character encodings in a
 program.  It supports a wide variety of different encodings.")
     (home-page "http://www.gnu.org/software/libiconv/")
     (license lgpl3+)))
+
+(define* (libiconv-if-needed #:optional (target (%current-target-system)))
+  "Return either a libiconv package specification to include in a dependency
+list for platforms that have an incomplete libc, or the empty list.  If a
+package needs iconv ,@(libiconv-if-needed) should be added."
+  ;; POSIX C libraries provide iconv.  Platforms with an incomplete libc
+  ;; without iconv, such as MinGW, must return the then clause.
+  (if (target-mingw? target)
+      `(("libiconv" ,libiconv))
+      '()))
 
 (define-public (canonical-package package)
   ;; Avoid circular dependency by lazily resolving 'commencement'.

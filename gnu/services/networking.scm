@@ -467,6 +467,9 @@ HiddenServicePort ~a ~a~%"
       (chown "/var/lib/tor" (passwd:uid %user) (passwd:gid %user))
       (chmod "/var/lib/tor" #o700)
 
+      ;; Make sure /var/lib is accessible to the 'tor' user.
+      (chmod "/var/lib" #o755)
+
       (for-each initialize
                 '#$(map hidden-service-name
                         (tor-configuration-hidden-services config)))))

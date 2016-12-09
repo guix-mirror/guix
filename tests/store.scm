@@ -48,6 +48,15 @@
 
 (test-begin "store")
 
+(test-equal "connection handshake error"
+  EPROTO
+  (let ((port (%make-void-port "rw")))
+    (guard (c ((nix-connection-error? c)
+               (and (eq? port (nix-connection-error-file c))
+                    (nix-connection-error-code c))))
+      (open-connection #f #:port port)
+      'broken)))
+
 (test-equal "store-path-hash-part"
   "283gqy39v3g9dxjy26rynl0zls82fmcg"
   (store-path-hash-part

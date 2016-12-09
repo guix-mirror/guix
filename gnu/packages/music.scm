@@ -1498,7 +1498,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "3.0.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1506,7 +1506,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "0p640hlw28264nzrnd2lm4bi5snas4fvh80p8lpxvph2hjw3sncl"))))
+                "1qijvlbv41lnqaqbp6gh1i42xzf1syviyxz8wr39xbz55cw7y0d8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1711,7 +1711,17 @@ follows a traditional multi-track tape recorder control paradigm.")
         (base32
          "1392spswkhfd38fggf584wb3m8aqpg7csfrs9zxnzyvhgmp0fgqk"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sse-flags
+           (lambda* (#:key system #:allow-other-keys)
+             (when (not (or (string-prefix? "x86_64" system)
+                            (string-prefix? "i686" system)))
+               (substitute* "wscript"
+                 (("'-msse', '-mfpmath=sse', ") ""))
+             #t))))
+       #:tests? #f)) ; no tests
     (inputs
      `(("lv2" ,lv2)
        ("lvtk" ,lvtk)
@@ -2565,6 +2575,68 @@ communicates via LV2 ports.  Any saved Ingen graph can be loaded as an LV2
 plugin on any system where Ingen is installed.  This allows users to visually
 develop custom plugins for use in other applications without programming.")
       (license license:agpl3+))))
+
+(define-public qmidiarp
+  (package
+    (name "qmidiarp")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/qmidiarp/qmidiarp/"
+                                  version "/qmidiarp-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1gkfv8ajgf86kbn6j5ilfc1zlz17gdi9yxzywqd6jwff4xlm75hx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-qt5"
+             "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("lv2" ,lv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://qmidiarp.sourceforge.net/")
+    (synopsis "MIDI arpeggiator")
+    (description "QMidiArp is an advanced MIDI arpeggiator, programmable step
+sequencer and LFO.  It can hold any number of arpeggiator, sequencer, or LFO
+modules running in parallel.")
+    (license license:gpl2+)))
+
+(define-public seq24
+  (package
+    (name "seq24")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/seq24/trunk/"
+                                  version "/+download/seq24-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "12dphdhnvfk1k0vmagi1v2lhyxjyj1j3cz6ksjw0ydcvid1x8ap2"))
+              (patches (search-patches "seq24-rename-mutex.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("gtkmm" ,gtkmm-2)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("lash" ,lash)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://edge.launchpad.net/seq24/")
+    (synopsis "Real-time MIDI sequencer")
+    (description "Seq24 is a real-time MIDI sequencer.  It was created to
+provide a very simple interface for editing and playing MIDI loops.")
+    (license license:gpl2+)))
 
 (define-public python-discogs-client
   (package

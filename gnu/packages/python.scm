@@ -3924,14 +3924,14 @@ both of which are installed automatically if you install this library.")
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
-    (version "0.32.9")
+    (version "0.32.11")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "SQLAlchemy-Utils" version))
         (sha256
          (base32
-          "1zbmmh7n8m01ikizn2mj1mfwch26nsr1awv9mvskqry7av0mpy98"))))
+          "1wghyvk73cmq3iqyg3fczw128fv2pan2v76m0xg1bw05h8fhvnk3"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -4520,6 +4520,7 @@ standard library.")
   (package-with-python2 python-simplegeneric))
 
 (define-public python-ipython-genutils
+  ;; TODO: This package is retired, check if can be removed, see description.
   (package
     (name "python-ipython-genutils")
     (version "0.1.0")
@@ -4536,7 +4537,13 @@ standard library.")
     (home-page "http://ipython.org")
     (synopsis "Vestigial utilities from IPython")
     (description
-     "This package provides retired utilities from IPython.")
+     "This package provides retired utilities from IPython.  No packages
+outside IPython/Jupyter should depend on it.
+
+This package shouldn't exist.  It contains some common utilities shared by
+Jupyter and IPython projects during The Big Split.  As soon as possible, those
+packages will remove their dependency on this, and this package will go
+away.")
     (license license:bsd-3)))
 
 (define-public python2-ipython-genutils
@@ -4705,13 +4712,13 @@ tools for mocking system commands and recording calls to those.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "4.0.0")
+    (version "4.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "1npl8g6bfsff9j938ypx0q5fyzy2l8lp0jl8skjjj2zv0z27dlig"))))
+        (base32 "1h2gp1p06sww9rzfkfzqy489bh47gj3910y2b1wdk3dcx1cqz4is"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -4844,14 +4851,14 @@ ISO 8601 dates, time and duration.")
 (define-public python-html5lib
   (package
     (name "python-html5lib")
-    (version "1.0b8")
+    (version "1.0b10")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "html5lib" version))
         (sha256
           (base32
-            "1lknq5j3nh11xrl268ks76zaj0gyzh34v94n5vbf6dk8llzxdx0q"))))
+            "1yd068a5c00wd0ajq0hqimv7fd82lhrw0w3s01vbhy9bbd6xapqd"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six))) ; required to "import html5lib"
@@ -6859,10 +6866,28 @@ convert an @code{.ipynb} notebook file into various static formats including:
     (description
      "The Jupyter HTML notebook is a web-based notebook environment for
 interactive computing.")
+    (properties `((python2-variant . ,(delay python2-notebook))))
     (license license:bsd-3)))
 
 (define-public python2-notebook
-  (package-with-python2 python-notebook))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-notebook))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-mock" ,python2-mock)
+         ,@(package-native-inputs base)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'check 'disable-test-case
+              ;; The test requires network access to localhost. Curiously it
+              ;; fails with Python 2 only. Simply make the test-case return
+              ;; immediately.
+              (lambda _
+                (substitute*
+                    "notebook/services/nbconvert/tests/test_nbconvert_api.py"
+                  (("formats = self.nbconvert_api") "return #")))))))))))
 
 (define-public python-widgetsnbextension
   (package
@@ -9153,9 +9178,8 @@ useful for solving the Assignment Problem.")
     (propagated-inputs
      `(("python-itsdangerous" ,python-itsdangerous)
        ("python-jinja2" ,python-jinja2)
+       ("python-click" ,python-click)
        ("python-werkzeug" ,python-werkzeug)))
-    (native-inputs
-     `(("python-click" ,python-click)))
     (home-page "https://github.com/mitsuhiko/flask/")
     (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
     (description "Flask is a micro web framework based on the Werkzeug toolkit
@@ -11801,3 +11825,52 @@ the Flask web framework in Python.  It is similar to package
 @code{python-flask-restful} but supports the @code{python-swagger}
 documentation builder.")
     (license license:expat)))
+
+(define-public python-sadisplay
+  (package
+    (name "python-sadisplay")
+    (version "0.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "sadisplay" version))
+      (sha256
+        (base32
+          "0zqad2fl7q26p090qmqgmxbm6iwgf9zij1w8da1g3wdgjj72ql05"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-sqlalchemy" ,python-sqlalchemy)))
+    (native-inputs
+      `(("python-nose" ,python-nose)))
+    (home-page "https://bitbucket.org/estin/sadisplay")
+    (synopsis "SQLAlchemy schema displayer")
+    (description "This package provides a program to build Entity
+Relationship diagrams from a SQLAlchemy model (or directly from the
+database).")
+    (license license:bsd-3)))
+
+(define-public python2-sadisplay
+  (package-with-python2 python-sadisplay))
+
+(define-public python-flask-restful-swagger
+  (package
+    (name "python-flask-restful-swagger")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flask-restful-swagger" version))
+       (sha256
+        (base32
+         "16msl8hd5xjmj833bpy264v98cpl5hkw5bgl5gf5vgndxbv3rm6v"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask-restful" ,python-flask-restful)))
+    (home-page "https://github.com/rantav/flask-restful-swagger")
+    (synopsis "Extract Swagger specs from Flask-Restful projects")
+    (description "This package lets you extract Swagger API documentation
+specs from your Flask-Restful projects.")
+    (license license:expat)))
+
+(define-public python2-flask-restful-swagger
+  (package-with-python2 python-flask-restful-swagger))

@@ -820,14 +820,16 @@ and to return information on pronunciations, meanings and synonyms.")
                    (("./configure") "$(CONFIG_SHELL) ./configure" ))
                  #t)))
            (add-after 'install 'bin-install
-             ;; Create a symlink bin/soffice to the executable script.
+             ;; Create 'soffice' and 'libreoffice' symlinks to the executable
+             ;; script.
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin")))
+                      (bin (string-append out "/bin"))
+                      (soffice (string-append
+                                out "/lib/libreoffice/program/soffice")))
                  (mkdir bin)
-                 (symlink
-                   (string-append out "/lib/libreoffice/program/soffice")
-                   (string-append bin "/soffice")))
+                 (symlink soffice (string-append bin "/soffice"))
+                 (symlink soffice (string-append bin "/libreoffice")))
                #t)))
        #:configure-flags
         (list

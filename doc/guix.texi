@@ -28,7 +28,8 @@ Copyright @copyright{} 2016 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
 Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
-Copyright @copyright{} 2016 Julien Lepiller
+Copyright @copyright{} 2016 Julien Lepiller@*
+Copyright @copyright{} 2016 Alex ter Weele
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -921,6 +922,13 @@ Port number of SSH server on the machine.
 The SSH private key file to use when connecting to the machine, in
 OpenSSH format.
 
+@item @code{compression} (default: @code{"zlib@@openssh.com,zlib"})
+@itemx @code{compression-level} (default: @code{3})
+The SSH-level compression methods and compression level requested.
+
+Note that offloading relies on SSH compression to reduce bandwidth usage
+when transferring files to and from build machines.
+
 @item @code{daemon-socket} (default: @code{"/var/guix/daemon-socket/socket"})
 File name of the Unix-domain socket @command{guix-daemon} is listening
 to on that machine.
@@ -941,9 +949,8 @@ name, and they will be scheduled on matching build machines.
 @end table
 @end deftp
 
-The @code{guix} command must be in the search path on the build
-machines, since offloading works by invoking the @code{guix archive} and
-@code{guix build} commands.  In addition, the Guix modules must be in
+The @code{guile} command must be in the search path on the build
+machines.  In addition, the Guix modules must be in
 @code{$GUILE_LOAD_PATH} on the build machine---you can check whether
 this is the case by running:
 
@@ -977,6 +984,26 @@ relations between the master and the build machines.  Concretely, when
 the master receives files from a build machine (and @i{vice versa}), its
 build daemon can make sure they are genuine, have not been tampered
 with, and that they are signed by an authorized key.
+
+@cindex offload test
+To test whether your setup is operational, run this command on the
+master node:
+
+@example
+# guix offload test
+@end example
+
+This will attempt to connect to each of the build machines specified in
+@file{/etc/guix/machines.scm}, make sure Guile and the Guix modules are
+available on each machine, attempt to export to the machine and import
+from it, and report any error in the process.
+
+If you want to test a different machine file, just specify it on the
+command line:
+
+@example
+# guix offload test machines-qualif.scm
+@end example
 
 
 @node Invoking guix-daemon
@@ -7155,7 +7182,15 @@ modifying or deleting previous generations.  Old system generations get
 an entry in the GRUB boot menu, allowing you to boot them in case
 something went wrong with the latest generation.  Reassuring, no?  The
 @command{guix system list-generations} command lists the system
-generations available on disk.
+generations available on disk.  It is also possible to roll back the
+system via the commands @command{guix system roll-back} and
+@command{guix system switch-generation}.
+
+Although the command @command{guix system reconfigure} will not modify
+previous generations, must take care when the current generation is not
+the latest (e.g., after invoking @command{guix system roll-back}), since
+the operation might overwrite a later generation (@pxref{Invoking guix
+system}).
 
 @unnumberedsubsubsec The Programming Interface
 
@@ -8555,7 +8590,7 @@ Thus, it can be instantiated like this:
 (use-modules (gnu services networking)
              (gnu packages admin))
 
-(service wpa-supplicant-type wpa-supplicant)
+(service wpa-supplicant-service-type wpa-supplicant)
 @end lisp
 @end defvr
 
@@ -12579,6 +12614,12 @@ The command starts system services specified in @var{file} that are not
 currently running; if a service is currently running, it does not
 attempt to upgrade it since this would not be possible without stopping it
 first.
+
+This command creates a new generation whose number is one greater than
+the current generation (as reported by @command{guix system
+list-generations}).  If that generation already exists, it will be
+overwritten.  This behavior mirrors that of @command{guix package}
+(@pxref{Invoking guix package}).
 
 It also adds a GRUB menu entry for the new OS configuration, and moves
 entries for older configurations to a submenu---unless

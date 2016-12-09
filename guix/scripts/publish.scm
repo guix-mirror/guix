@@ -365,6 +365,14 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
                            (response-headers response)
                            eq?)))
 
+(define (with-content-length response length)
+  "Return RESPONSE with a 'content-length' header set to LENGTH."
+  (set-field response (response-headers)
+             (alist-cons 'content-length length
+                         (alist-delete 'content-length
+                                       (response-headers response)
+                                       eq?))))
+
 (define-syntax-rule (swallow-EPIPE exp ...)
   "Swallow EPIPE errors raised by EXP..."
   (catch 'system-error
@@ -432,13 +440,8 @@ blocking."
             (call-with-input-file (utf8->string body)
               (lambda (input)
                 (let* ((size     (stat:size (stat input)))
-                       (headers  (alist-cons 'content-length size
-                                             (alist-delete 'content-length
-                                                           (response-headers response)
-                                                           eq?)))
-                       (response (write-response (set-field response
-                                                            (response-headers)
-                                                            headers)
+                       (response (write-response (with-content-length response
+                                                                      size)
                                                  client))
                        (output   (response-port response)))
                   (dump-port input output)

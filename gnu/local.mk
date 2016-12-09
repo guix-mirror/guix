@@ -248,6 +248,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
   %D%/packages/messaging.scm			\
+  %D%/packages/mingw.scm			\
   %D%/packages/mg.scm				\
   %D%/packages/microcom.scm			\
   %D%/packages/mit-krb5.scm			\
@@ -358,6 +359,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/texinfo.scm			\
   %D%/packages/tex.scm				\
   %D%/packages/textutils.scm			\
+  %D%/packages/text-editors.scm			\
   %D%/packages/time.scm				\
   %D%/packages/tls.scm				\
   %D%/packages/tmux.scm				\
@@ -435,6 +437,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/vm.scm				\
 						\
   %D%/build/activation.scm			\
+  %D%/build/cross-toolchain.scm			\
   %D%/build/file-systems.scm			\
   %D%/build/install.scm				\
   %D%/build/linux-boot.scm			\
@@ -554,6 +557,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
+  %D%/packages/patches/gcc-4.9.3-mingw-gthr-default.patch	\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
   %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
@@ -620,6 +624,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-linker-flags.patch			\
+  %D%/packages/patches/httpd-CVE-2016-8740.patch			\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
@@ -715,6 +720,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mesa-wayland-egl-symbols-check-mips.patch	\
   %D%/packages/patches/metabat-remove-compilation-date.patch	\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
+  %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
@@ -822,6 +828,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ratpoison-shell.patch			\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
+  %D%/packages/patches/readline-7.0-mingw.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpm-CVE-2014-8118.patch			\
   %D%/packages/patches/rsem-makefile.patch			\
@@ -834,6 +841,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
+  %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/serf-comment-style-fix.patch		\
   %D%/packages/patches/serf-deflate-buckets-test-fix.patch	\
   %D%/packages/patches/slim-session.patch			\
@@ -857,6 +865,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tclxml-3.2-install.patch			\
   %D%/packages/patches/tcsh-do-not-define-BSDWAIT.patch		\
   %D%/packages/patches/tcsh-fix-autotest.patch			\
+  %D%/packages/patches/tcsh-fix-out-of-bounds-read.patch	\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\

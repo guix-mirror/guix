@@ -102,6 +102,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.2
   (package (inherit ruby)
+    (replacement #f)
     (version "2.2.6")
     (source
      (origin
@@ -115,6 +116,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.1
   (package (inherit ruby)
+    (replacement #f)
     (version "2.1.10")
     (source
      (origin
@@ -148,6 +150,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-1.8
   (package (inherit ruby)
+    (replacement #f)
     (version "1.8.7-p374")
     (source
      (origin

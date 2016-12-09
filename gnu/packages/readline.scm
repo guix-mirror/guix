@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +25,8 @@
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils))
 
 (define-public readline
   (let ((post-install-phase
@@ -61,8 +63,18 @@
                          ;; cross-compiling, so provide the correct answer.
                          ,@(if (%current-target-system)
                                '("bash_cv_wcwidth_broken=no")
+                               '())
+                         ;; MinGW: ncurses provides the termcap api.
+                         ,@(if (target-mingw?)
+                               '("bash_cv_termcap_lib=ncurses")
                                '()))
 
+                   ,@(if (target-mingw?)
+                         ;; MinGW: termcap in ncurses
+                         ;; some SIG_* #defined in _POSIX
+                         '(#:make-flags '("TERMCAP_LIB=-lncurses"
+                                          "CPPFLAGS=-D_POSIX -D'chown(f,o,g)=0'"))
+                         '())
                    #:phases (alist-cons-after
                              'install 'post-install
                              ,post-install-phase

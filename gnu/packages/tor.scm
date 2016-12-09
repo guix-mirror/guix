@@ -39,14 +39,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.2.8.10")
+    (version "0.2.8.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0kcw9hq4xz8p91xwyhjfry5p1dmn7vvnhpfz66vl9gsfndbqr2y8"))))
+               "1cvaviamvmajzpdgjn2k1rk3g9ywl1c4ygs5157gvnkyl6zs1pks"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))  ; for tests

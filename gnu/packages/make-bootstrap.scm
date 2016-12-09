@@ -32,6 +32,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages multiprecision)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -332,61 +333,39 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("binutils" ,%binutils-static)))))
 
-(define %glibc-stripped
+(define (%glibc-stripped)
   ;; GNU libc's essential shared libraries, dynamic linker, and headers,
   ;; with all references to store directories stripped.  As a result,
   ;; libc.so is unusable and need to be patched for proper relocation.
+  (define (hurd-triplet? triplet)
+    (and (string-suffix? "-gnu" triplet)
+         (not (string-contains triplet "linux"))))
+
   (let ((glibc (glibc-for-bootstrap)))
     (package (inherit glibc)
       (name "glibc-stripped")
       (build-system trivial-build-system)
       (arguments
-       `(#:modules ((guix build utils))
+       `(#:modules ((guix build utils)
+                    (guix build make-bootstrap))
          #:builder
          (begin
-           (use-modules (guix build utils))
-
-           (setvbuf (current-output-port) _IOLBF)
-           (let* ((out    (assoc-ref %outputs "out"))
-                  (libdir (string-append out "/lib"))
-                  (incdir (string-append out "/include"))
-                  (libc   (assoc-ref %build-inputs "libc"))
-                  (linux  (assoc-ref %build-inputs "kernel-headers")))
-             (mkdir-p libdir)
-             (for-each (lambda (file)
-                         (let ((target (string-append libdir "/"
-                                                      (basename file))))
-                           (copy-file file target)
-                           (remove-store-references target)))
-                       (find-files (string-append libc "/lib")
-                                   "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|util).*\\.so(\\..*)?|libc_nonshared\\.a)$"))
-
-             (copy-recursively (string-append libc "/include") incdir)
-
-             ;; Copy some of the Linux-Libre headers that glibc headers
-             ;; refer to.
-             (mkdir (string-append incdir "/linux"))
-             (for-each (lambda (file)
-                         (copy-file (string-append linux "/include/linux/" file)
-                                    (string-append incdir "/linux/"
-                                                   (basename file))))
-                       '("limits.h" "errno.h" "socket.h" "kernel.h"
-                         "sysctl.h" "param.h" "ioctl.h" "types.h"
-                         "posix_types.h" "stddef.h"))
-
-             (copy-recursively (string-append linux "/include/asm")
-                               (string-append incdir "/asm"))
-             (copy-recursively (string-append linux "/include/asm-generic")
-                               (string-append incdir "/asm-generic"))
-
-             #t))))
-      (inputs `(("libc" ,(let ((target (%current-target-system)))
+           (use-modules (guix build make-bootstrap))
+           (make-stripped-libc (assoc-ref %outputs "out")
+                               (assoc-ref %build-inputs "libc")
+                               (assoc-ref %build-inputs "kernel-headers")))))
+      (inputs `(("kernel-headers"
+                 ,(if (or (and (%current-target-system)
+                               (hurd-triplet? (%current-target-system)))
+                          (string-suffix? "-hurd" (%current-system)))
+                      gnumach-headers
+                      linux-libre-headers))
+                ("libc" ,(let ((target (%current-target-system)))
                            (if target
                                (glibc-for-bootstrap
                                 (parameterize ((%current-target-system #f))
                                   (cross-libc target)))
-                               glibc)))
-                ("kernel-headers" ,linux-libre-headers)))
+                               glibc)))))
 
       ;; Only one output.
       (outputs '("out")))))
@@ -647,9 +626,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; A tarball with the statically-linked Binutils programs.
   (tarball-package %binutils-static-stripped))
 
-(define %glibc-bootstrap-tarball
+(define (%glibc-bootstrap-tarball)
   ;; A tarball with GNU libc's shared libraries, dynamic linker, and headers.
-  (tarball-package %glibc-stripped))
+  (tarball-package (%glibc-stripped)))
 
 (define %gcc-bootstrap-tarball
   ;; A tarball with a dynamic-linked GCC and its headers.
@@ -689,7 +668,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (inputs `(("guile-tarball" ,%guile-bootstrap-tarball)
               ("gcc-tarball" ,%gcc-bootstrap-tarball)
               ("binutils-tarball" ,%binutils-bootstrap-tarball)
-              ("glibc-tarball" ,%glibc-bootstrap-tarball)
+              ("glibc-tarball" ,(%glibc-bootstrap-tarball))
               ("coreutils&co-tarball" ,%bootstrap-binaries-tarball)))
     (synopsis "Tarballs containing all the bootstrap binaries")
     (description synopsis)

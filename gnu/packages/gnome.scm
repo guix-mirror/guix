@@ -5688,3 +5688,39 @@ only know by its Unicode name or code point.")
 with many options to write web sites, scripts and other code.
 Bluefish supports many programming and markup languages.")
     (license license:gpl3+)))
+
+(define-public gnome-system-monitor
+  (package
+    (name "gnome-system-monitor")
+    (version "3.20.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ya41b58syf8g5pc12gw1xm6jhdx3crap803bjwm086r7x2an8wv"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("libgtop" ,libgtop)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files.
+       ("gtk+" ,gtk+)
+       ("gtkmm" ,gtkmm)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)))
+    (home-page "https://wiki.gnome.org/Apps/SystemMonitor")
+    (synopsis "Process viewer and system resource monitor for GNOME")
+    (description
+     "GNOME System Monitor is a GNOME process viewer and system monitor with
+an attractive, easy-to-use interface.  It has features, such as a tree view
+for process dependencies, icons for processes, the ability to hide processes,
+graphical time histories of CPU/memory/swap usage and the ability to
+kill/reinice processes.")
+    (license license:gpl2+)))
