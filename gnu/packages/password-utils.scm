@@ -280,6 +280,7 @@ any X11 window.")
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (delete 'build)
          (add-after 'install 'wrap-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
