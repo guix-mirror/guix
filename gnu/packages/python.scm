@@ -4862,7 +4862,8 @@ ISO 8601 dates, time and duration.")
             "1yd068a5c00wd0ajq0hqimv7fd82lhrw0w3s01vbhy9bbd6xapqd"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-six" ,python-six))) ; required to "import html5lib"
+     `(("python-six" ,python-six)
+       ("python-webencodings" ,python-webencodings)))
     (arguments
      `(#:test-target "check"))
     (home-page
