@@ -23,12 +23,17 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
@@ -265,3 +270,55 @@ safety and thread safety guarantees.")
     (home-page "https://www.rust-lang.org")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
+
+(define-public cargo
+  (package
+    (name "cargo")
+    (version (cargo-version (rustc-version %rust-bootstrap-binaries-version)))
+    (source (origin
+              (method url-fetch)
+              ;; Use a cargo tarball with vendored dependencies and a cargo
+              ;; config file.
+              (uri (string-append
+                    "https://github.com/dvc94ch/cargo"
+                    "/archive/" version "-cargo-vendor.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hpix5hwz10pm1wh65gimhsy9nxjvy7yikgbpw8afwglqr3bl856"))))
+    (build-system cargo-build-system)
+    (propagated-inputs
+     `(("cmake" ,cmake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("libgit2" ,libgit2)
+       ("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("python-2" ,python-2)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:cargo ,cargo-bootstrap
+       #:tests? #f ; FIXME
+       #:phases
+       (modify-phases %standard-phases
+         ;; Avoid cargo complaining about missmatched checksums.
+         (delete 'patch-source-shebangs)
+         (delete 'patch-generated-file-shebangs)
+         (delete 'patch-usr-bin-file)
+         ;; Set CARGO_HOME to use the vendored dependencies.
+         (add-after 'unpack 'set-cargo-home
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((gcc (assoc-ref inputs "gcc"))
+                    (cc (string-append gcc "/bin/gcc")))
+               (setenv "CARGO_HOME" (string-append (getcwd) "/cargohome"))
+               (setenv "CMAKE_C_COMPILER" cc)
+               (setenv "CC" cc))
+             #t)))))
+    (home-page "https://github.com/rust-lang/cargo")
+    (synopsis "Build tool and package manager for Rust")
+    (description "Cargo is a tool that allows Rust projects to declare their
+dependencies and ensures a reproducible build.")
+    ;; Cargo is dual licensed Apache and MIT. Also contains
+    ;; code from openssl which is GPL2 with linking exception.
+    (license (list license:asl2.0 license:expat license:gpl2))))
