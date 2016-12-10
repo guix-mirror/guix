@@ -291,6 +291,9 @@ any X11 window.")
                (wrap-program (string-append out "/bin/pass")
                  `("PATH" ":" prefix (,(string-join path ":"))))))))
        #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+       ;; Parallel tests may cause a race condition leading to a
+       ;; timeout in some circumstances.
+       #:parallel-tests? #f
        #:test-target "test"))
     (inputs
      `(("getopt" ,util-linux)
