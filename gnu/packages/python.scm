@@ -4893,6 +4893,46 @@ and written in Python.")
 (define-public python2-html5lib-0.9
   (package-with-python2 python-html5lib-0.9))
 
+(define-public python-webencodings
+  (package
+    (name "python-webencodings")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "webencodings" version))
+              (sha256
+               (base32
+                "015rw7662lkpb9aqiqah2hbizk6w531badqwjpz41rr47glmxid5"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test" "-v" "webencodings/tests.py")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/SimonSapin/python-webencodings")
+    (synopsis "Character encoding aliases for legacy web content")
+    (description
+     "In order to be compatible with legacy web content when interpreting
+something like @code{Content-Type: text/html; charset=latin1}, tools need
+to use a particular set of aliases for encoding labels as well as some
+overriding rules.  For example, @code{US-ASCII} and @code{iso-8859-1} on
+the web are actually aliases for @code{windows-1252}, and an @code{UTF-8}
+or @code{UTF-16} BOM takes precedence over any other encoding declaration.
+The WHATWG @url{https://encoding.spec.whatwg.org/,Encoding} standard
+defines all such details so that implementations do not have to
+reverse-engineer each other.
+
+This module implements the Encoding standard and has encoding labels and
+BOM detection, but the actual implementation for encoders and decoders
+is Python’s.")
+    (license license:bsd-3)))
+
+(define-public python2-webencodings
+  (package-with-python2 python-webencodings))
+
 (define-public python-urwid
   (package
     (name "python-urwid")
