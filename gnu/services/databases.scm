@@ -160,7 +160,8 @@ and stores the database cluster in @var{data-directory}."
 (define-record-type* <mysql-configuration>
   mysql-configuration make-mysql-configuration
   mysql-configuration?
-  (mysql mysql-configuration-mysql (default mariadb)))
+  (mysql mysql-configuration-mysql (default mariadb))
+  (port mysql-configuration-port (default 3306)))
 
 (define %mysql-accounts
   (list (user-group
@@ -175,10 +176,11 @@ and stores the database cluster in @var{data-directory}."
 
 (define mysql-configuration-file
   (match-lambda
-    (($ <mysql-configuration> mysql)
-     (plain-file "my.cnf" "[mysqld]
+    (($ <mysql-configuration> mysql port)
+     (mixed-text-file "my.cnf" "[mysqld]
 datadir=/var/lib/mysql
 socket=/run/mysqld/mysqld.sock
+port=" (number->string port) "
 "))))
 
 (define (%mysql-activation config)

@@ -10177,6 +10177,9 @@ or @var{mysql}.
 
 For MySQL, a temporary root password will be displayed at activation time.
 For MariaDB, the root password is empty.
+
+@item @code{port} (default: @code{3306})
+TCP port on which the database server listens for incoming connections.
 @end table
 @end deftp
 
