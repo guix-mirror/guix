@@ -94,7 +94,7 @@ are already there.")
 (define-public direnv
   (package
     (name "direnv")
-    (version "2.9.0")
+    (version "2.10.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://github.com/direnv/" name
@@ -102,7 +102,7 @@ are already there.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "04v3v2sz9m6ivgbxcplxscj1dsvpaqpqnxgls4060naj3iz9sg82"))))
+               "1h5ywn0glw1kmxs3jwjv9fvnhha942c6k740p5ghvyns05ds9cqf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
