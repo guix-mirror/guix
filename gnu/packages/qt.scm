@@ -1061,63 +1061,6 @@ contain over 620 classes.")
      `(("python" ,python-2)
        ,@(alist-delete "python" (package-inputs python-pyqt))))))
 
-(define-public python-pyqt-5.5
-  (package (inherit python-pyqt)
-    (version "5.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri
-          (string-append "mirror://sourceforge/pyqt/PyQt5/"
-                         "PyQt-" version "/PyQt-gpl-"
-                         version ".tar.gz"))
-        (sha256
-         (base32
-          "056qmkv02wdcfblqdaxiswrgn4wa88sz22i1x58dpb1iniavplfd"))
-       (patches (search-patches "pyqt-configure.patch"))))
-    (arguments
-     `(#:modules ((srfi srfi-1)
-                  ,@%gnu-build-system-modules)
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (sip (string-append out "/share/sip"))
-                    (plugins (string-append out "/plugins"))
-                    (designer (string-append plugins "/designer"))
-                    (qml (string-append plugins "/PyQt5"))
-                    (python (assoc-ref inputs "python"))
-                    (python-version
-                      (last (string-split python #\-)))
-                    (python-major+minor
-                      (string-join
-                        (take (string-split python-version #\.) 2)
-                        "."))
-                    (lib (string-append out "/lib/python"
-                                        python-major+minor
-                                        "/site-packages")))
-               (zero? (system* "python" "configure.py"
-                               "--confirm-license"
-                               "--bindir" bin
-                               "--destdir" lib
-                               "--designer-plugindir" designer
-                               "--qml-plugindir" qml
-                               "--sipdir" sip))))))))
-    (native-inputs
-     `(("python-sip" ,python-sip)
-       ("qt" ,qt)))))
-
-(define-public python2-pyqt-5.5
-  (package (inherit python-pyqt-5.5)
-    (name "python2-pyqt")
-    (native-inputs
-     `(("python-sip" ,python2-sip)
-       ("qt" ,qt)))
-    (inputs
-     `(("python" ,python-2)))))
-
 (define-public python-pyqt-4
   (package (inherit python-pyqt)
     (name "python-pyqt")
