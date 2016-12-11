@@ -219,6 +219,8 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
        (patches (search-patches "fcgi-2.4.0-poll.patch"
                                 "fcgi-2.4.0-gcc44-fixes.patch"))))
     (build-system gnu-build-system)
+    ;; Parallel building is not supported.
+    (arguments `(#:parallel-build? #f))
     (home-page "http://www.fastcgi.com")
     (synopsis "Language-independent, high-performant extension to CGI")
     (description "FastCGI is a language independent, scalable extension to CGI
