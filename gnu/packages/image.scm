@@ -484,12 +484,14 @@ error-resilience, a Java-viewer for j2k-images, ...")
 (define openjpeg-2.1.2
   (package
     (inherit openjpeg)
+    (name "openjpeg")
     (version "2.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/uclouvain/openjpeg/archive/v"
                             version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
