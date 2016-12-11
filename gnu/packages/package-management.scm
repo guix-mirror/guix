@@ -482,13 +482,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "62")
+    (version "63")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "127b4gsw11hjbha5jpz5i42pc142h52pwzs1p792047y0j1yjg8z"))))
+                "12q5d2nszql1g4jf2ss863v0wpvvhrkaivqzhy6af9m9zwvw0p0k"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -498,22 +498,7 @@ transactions from C or Python.")
                   (add-after 'unpack 'dependency-on-python-magic
                     (lambda _
                       (substitute* "setup.py"
-                        (("'python-magic',") ""))))
-                  ;; The test suite assumes we have pytest >= 2.9.0.
-                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=841146
-                  (add-after 'unpack 'disable-failing-test
-                    (lambda _
-                      (substitute* "tests/comparators/utils.py"
-                        (("skip\\(reason\\=\\\"requires \\{\\}\\\"\\.format\\(tool\\)\\)")
-                          "skipif(True, reason=\"Requires pytest >= 2.9\")"))))
-                  (add-before 'build 'disable-egg-zipping
-                    (lambda _
-                      ;; Leave the .egg file uncompressed.
-                      (let ((port (open-file "setup.cfg" "a")))
-                        (display "\n[easy_install]\nzip_ok = 0\n"
-                                 port)
-                        (close-port port)
-                        #t))))))
+                        (("'python-magic',") "")))))))
     (inputs `(("rpm" ,rpm)                        ;for rpm-python
               ("python-file" ,python-file)
               ("python-debian" ,python-debian)
