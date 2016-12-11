@@ -1865,14 +1865,14 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
 (define-public sunxi-tools
   (package
     (name "sunxi-tools")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/linux-sunxi/"
                            "sunxi-tools/archive/v" version ".tar.gz"))
        (sha256
-        (base32 "06qd2b4dlzbmzfy4q9n8v5rkkbmgcfdbv4nkkcp4nysi10k7cpfs"))
+        (base32 "08iqwj95qw2s7ilhrdi2lkbc8dx64zk5lzz1qk587jr0lla81x41"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
