@@ -133,15 +133,15 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0
   (package
    (name "guile")
-   (version "2.0.12")
-   (replacement guile-2.0.13)                 ;CVE-2016-8606 and CVE-2016-8605
+   (version "2.0.13")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "1sdpjq0jf1h65w29q0zprj4x6kdp5jskkvbnlwphy9lvdxrqg0fy"))))
+              "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p"))
+            (patches (search-patches "guile-repl-server-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
@@ -206,19 +206,6 @@ without requiring the source code to be rewritten.")
     (inherit guile-2.0)
     (properties '((hidden? . #t)))          ;people should install 'guile-2.0'
     (replacement #f)))
-
-(define guile-2.0.13
-  (package
-    (inherit guile-2.0)
-    (version "2.0.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p"))
-              (patches (search-patches "guile-repl-server-test.patch"))))))
 
 (define-public guile-next
   (package (inherit guile-2.0)
