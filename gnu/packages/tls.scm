@@ -355,7 +355,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0b")
+    (version "1.1.0c")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -366,7 +366,7 @@ required structures.")
               (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "1xznrqvb1dbngv2k2nb6da6fdw00c01sy2i36yjdxr4vpxrf0pd4"))))
+                "1xfn5ydl14myd9wgxm4nxy5a42cpp1g12ijf3g9m4mz0l90n8hzw"))))
     (outputs '("out"
                "doc"        ;1.3MiB of man3 pages
                "static"))   ; 5.5MiB of .a files
@@ -377,13 +377,42 @@ required structures.")
            (delete 'patch-tests)          ; These two phases are not needed by
            (delete 'patch-Makefile.org)   ; OpenSSL 1.1.0.
 
-           (add-after 'configure 'patch-runpath
+           ;; Override configure phase since -rpath is now a configure option.
+           (replace 'configure
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-                 (substitute* "Makefile.shared"
-                   (("\\$\\$\\{SHAREDCMD\\} \\$\\$\\{SHAREDFLAGS\\}")
-                    (string-append "$${SHAREDCMD} $${SHAREDFLAGS}"
-                                   " -Wl,-rpath," lib)))
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib")))
+                 (zero?
+                  (system* "./config"
+                           "shared"                   ;build shared libraries
+                           "--libdir=lib"
+
+                           ;; The default for this catch-all directory is
+                           ;; PREFIX/ssl.  Change that to something more
+                           ;; conventional.
+                           (string-append "--openssldir=" out
+                                          "/share/openssl-" ,version)
+
+                           (string-append "--prefix=" out)
+                           (string-append "-Wl,-rpath," lib)
+
+                           ;; XXX FIXME: Work around a code generation bug in GCC
+                           ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                           ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                           ,@(if (and (not (%current-target-system))
+                                      (string-prefix? "armhf" (%current-system)))
+                                 '("-mfpu=vfpv3")
+                                 '()))))))
+
+           ;; XXX: Duplicate this phase to make sure 'version' evaluates
+           ;; in the current scope and not the inherited one.
+           (replace 'remove-miscellany
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; The 'misc' directory contains random undocumented shell and Perl
+               ;; scripts.  Remove them to avoid retaining a reference on Perl.
+               (let ((out (assoc-ref outputs "out")))
+                 (delete-file-recursively (string-append out "/share/openssl-"
+                                                         ,version "/misc"))
                  #t)))))))))
 
 (define-public libressl

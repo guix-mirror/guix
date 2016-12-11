@@ -329,14 +329,14 @@ written in Objective Caml.")
 (define-public coq
   (package
     (name "coq")
-    (version "8.4pl6")
+    (version "8.5pl2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://coq.inria.fr/distrib/V" version
                                   "/files/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mpbj4yf36kpjg2v2sln12i8dzqn8rag6fd07hslj2lpm4qs4h55"))))
+                "0wyywia0darak2zmc5v0ra9rn0b9whwdfiahralm8v5za499s8w3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
@@ -348,24 +348,24 @@ written in Objective Caml.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (mandir (string-append out "/share/man"))
-                           (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
-                      (zero? (system* "./configure"
-                                      "--prefix" out
-                                      "--mandir" mandir
-                                      "--browser" browser)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mandir (string-append out "/share/man"))
+                    (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
+               (zero? (system* "./configure"
+                               "-prefix" out
+                               "-mandir" mandir
+                               "-browser" browser)))))
          (replace 'build
-                  (lambda _
-                    (zero? (system* "make" "-j" (number->string
-                                                 (parallel-job-count))
-                                    "world"))))
+           (lambda _
+             (zero? (system* "make" "-j" (number->string
+                                          (parallel-job-count))
+                             "world"))))
          (delete 'check)
          (add-after 'install 'check
-                    (lambda _
-                      (with-directory-excursion "test-suite"
-                        (zero? (system* "make"))))))))
+           (lambda _
+             (with-directory-excursion "test-suite"
+               (zero? (system* "make"))))))))
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
     (description
@@ -453,6 +453,42 @@ It is developed using Objective Caml and Camlp5.")
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
     (license gpl2+)))
+
+(define-public ocaml-menhir
+  (package
+    (name "ocaml-menhir")
+    (version "20161115")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://gallium.inria.fr/~fpottier/menhir/"
+                    "menhir-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j8nmcj2gq6hyyi16z27amiahplgrnk4ppchpm0v4qy80kwkf47k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ocaml" ,ocaml)))
+    (arguments
+     `(#:parallel-build? #f ; Parallel build causes failure
+       #:tests? #f ; No check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PREFIX" out))
+             #t)))))
+    (home-page "http://gallium.inria.fr/~fpottier/menhir")
+    (synopsis "Parser generator")
+    (description "Menhir is a parser generator.  It turns high-level grammar
+specifications, decorated with semantic actions expressed in the OCaml
+programming language into parsers, again expressed in OCaml. It is based on
+Knuth’s LR(1) parser construction technique.")
+    ;; The file src/standard.mly and all files listed in src/mnehirLib.mlpack
+    ;; that have an *.ml or *.mli extension are GPL licensed. All other files
+    ;; are QPL licensed.
+    (license (list gpl2+ qpl))))
 
 (define-public lablgtk
   (package

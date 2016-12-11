@@ -425,6 +425,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
+    (replacement openjpeg/fixed)
     (version "2.1.1")
     (source
       (origin
@@ -461,9 +462,21 @@ error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
+(define openjpeg/fixed
+  (package
+    (inherit openjpeg)
+    (source
+      (origin
+        (inherit (package-source openjpeg))
+        (patches
+          (append
+            (origin-patches (package-source openjpeg))
+            (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch")))))))
+
 (define-public openjpeg-1
   (package (inherit openjpeg)
     (name "openjpeg")
+    (replacement #f)
     (version "1.5.2")
     (source
      (origin
@@ -860,14 +873,14 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.0")
+    (version "2.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "1kg5yrdwgazhbczybyx4548m0ijssabcp8hl5l87w78z833vikks"))))
+                "0g6fl8rrbspa9vpswixmpxrg71l19kqgc2b5cak7vmwxphj01wbk"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")

@@ -177,6 +177,14 @@ private key from '~a': ~a")
                                ;; #:log-verbosity 'protocol
                                #:identity (build-machine-private-key machine)
 
+                               ;; By default libssh reads ~/.ssh/known_hosts
+                               ;; and uses that to adjust its choice of cipher
+                               ;; suites, which changes the type of host key
+                               ;; that the server sends (RSA vs. Ed25519,
+                               ;; etc.).  Opt for something reproducible and
+                               ;; stateless instead.
+                               #:knownhosts "/dev/null"
+
                                ;; We need lightweight compression when
                                ;; exchanging full archives.
                                #:compression
@@ -700,9 +708,18 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
           (leave (_ "failed to import '~a' from '~a'~%")
                  item name)))))
 
-(define (check-machine-availability machine-file)
-  "Check that each machine in MACHINE-FILE is usable as a build machine."
-  (let ((machines (build-machines machine-file)))
+(define (check-machine-availability machine-file pred)
+  "Check that each machine matching PRED in MACHINE-FILE is usable as a build
+machine."
+  (define (build-machine=? m1 m2)
+    (and (string=? (build-machine-name m1) (build-machine-name m2))
+         (= (build-machine-port m1) (build-machine-port m2))))
+
+  ;; A given build machine may appear several times (e.g., once for
+  ;; "x86_64-linux" and a second time for "i686-linux"); test them only once.
+  (let ((machines (filter pred
+                          (delete-duplicates (build-machines machine-file)
+                                             build-machine=?))))
     (info (_ "testing ~a build machines defined in '~a'...~%")
           (length machines) machine-file)
     (let* ((names    (map build-machine-name machines))
@@ -766,11 +783,16 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
              (loop (read-line)))))))
     (("test" rest ...)
      (with-error-handling
-       (let ((file (match rest
-                     ((file) file)
-                     (()     %machine-file)
-                     (_      (leave (_ "wrong number of arguments~%"))))))
-         (check-machine-availability (or file %machine-file)))))
+       (let-values (((file pred)
+                     (match rest
+                       ((file regexp)
+                        (values file
+                                (compose (cut string-match regexp <>)
+                                         build-machine-name)))
+                       ((file) (values file (const #t)))
+                       (()     (values %machine-file (const #t)))
+                       (_      (leave (_ "wrong number of arguments~%"))))))
+         (check-machine-availability (or file %machine-file) pred))))
     (("--version")
      (show-version-and-exit "guix offload"))
     (("--help")

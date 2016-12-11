@@ -959,14 +959,14 @@ script files.")
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "2.14.1")
+    (version "2.15.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://gmsh.info/src/gmsh-"
                           version "-source.tgz"))
       (sha256
-       (base32 "1vsxp47j6srmy8kqb3p1z9pmlm42whhhz7r0vzpa2a86gga4zx17"))
+       (base32 "02h7fk4vv8qwnq3ymm409c5sp4nksd0m9h2vkxqmy42l0ic4nalr"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code

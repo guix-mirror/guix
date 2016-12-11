@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2315,36 +2316,34 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
 (define-public ghc-trifecta
   (package
     (name "ghc-trifecta")
-    (version "1.5.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/trifecta/trifecta-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0fjhnsbafl3yw34pyhcsvrqy6a2mnhyqys6gna3rrlygs8ck7hpb"))))
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/trifecta/"
+                    "trifecta-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rbhv9m17k7l1zr70i0yw5da0qjgxmfh1da8brj0zdzwjn9ac0mk"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
-                               ; -package ansi-terminal-0.6.2.3"
     (inputs
-     `(("ghc-charset" ,ghc-charset)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-reducers" ,ghc-reducers)
+     `(("ghc-reducers" ,ghc-reducers)
        ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-charset" ,ghc-charset)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-doctest" ,ghc-doctest)
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-hashable" ,ghc-hashable)
+       ("ghc-lens" ,ghc-lens)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-parsers" ,ghc-parsers)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)))
     (home-page "https://github.com/ekmett/trifecta/")
@@ -6671,34 +6670,47 @@ constant-time:
     (license license:bsd-3)))
 
 (define-public idris
+  ;; TODO: IDRIS_LIBRARY_PATH only accepts a single path and not a colon
+  ;; separated list.
+  ;; TODO: When installing idris the location of the standard libraries
+  ;; cannot be specified.
+  ;; NOTE: Creating an idris build system:
+  ;; Idris packages can be packaged and installed using a trivial
+  ;; build system.
+  ;; (zero? (system* (string-append idris "/bin/idris")
+  ;;                                "--ibcsubdir"
+  ;;                                (string-append out "/idris/libs/lightyear")
+  ;;                                "--install" "lightyear.ipkg")
+  ;; (native-search-paths
+  ;;   (list (search-path-specification
+  ;;          (variable "IDRIS_LIBRARY_PATH")
+  ;;          (files '("idris/libs")))))
   (package
     (name "idris")
-    (version "0.9.19.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/idris-"
-                           version "/idris-" version ".tar.gz"))
-       (sha256
-        (base32
-         "10641svdsjlxbxmbvylpia04cz5nn9486lpiay8ibqcrc1792qgc"))
-       (modules '((guix build utils)))
-       (snippet
-        '(substitute* "idris.cabal"
-           ;; Package description file has a too-tight version restriction,
-           ;; rendering it incompatible with GHC 7.10.2.  This is fixed
-           ;; upstream.  See
-           ;; <https://github.com/idris-lang/Idris-dev/issues/2734>.
-           (("vector < 0.11") "vector < 0.12")))))
+    (version "0.12.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/"
+                    "idris-" version "/idris-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ijrbgzaahw9aagn4al55nqcggrg9ajlrkq2fjc1saq3xdd3v7rs"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-cc-command
-                              (lambda _
-                                (setenv "CC" "gcc"))))))
+     `(;; FIXME: runhaskell Setup.hs test doesn't set paths required by test
+       ;; suite.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-cc-command
+           (lambda _
+             (setenv "CC" "gcc"))))))
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-async" ,ghc-async)
        ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
@@ -6707,12 +6719,19 @@ constant-time:
        ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-cheapskate" ,ghc-cheapskate)
        ("ghc-fingertree" ,ghc-fingertree)
+       ("ghc-fsnotify" ,ghc-fsnotify)
+       ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-parsers" ,ghc-parsers)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)
        ("ghc-split" ,ghc-split)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-rerun" ,ghc-tasty-rerun)
+       ("ghc-terminal-size" ,ghc-terminal-size)
        ("ghc-text" ,ghc-text)
        ("ghc-trifecta" ,ghc-trifecta)
        ("ghc-uniplate" ,ghc-uniplate)
@@ -7992,6 +8011,122 @@ helper functions for Lists, Maybes, Tuples, Functions.")
     (synopsis "2D and 3D plots using gnuplot")
     (description "This package provides a Haskell module for creating 2D and
 3D plots using gnuplot.")
+    (license license:bsd-3)))
+
+(define-public ghc-hinotify
+  (package
+    (name "ghc-hinotify")
+    (version "0.3.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/hinotify/"
+                    "hinotify-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03c1f4d7x805zdiq2w26kl09xrfjw19saycdkhnixzv2qcr6xm1p"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/kolmodin/hinotify.git")
+    (synopsis "Haskell binding to inotify")
+    (description "This library provides a wrapper to the Linux kernel's inotify
+feature, allowing applications to subscribe to notifications when a file is
+accessed or modified.")
+    (license license:bsd-3)))
+
+(define-public ghc-fsnotify
+  (package
+    (name "ghc-fsnotify")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/fsnotify/"
+                    "fsnotify-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0asl313a52qx2w6dw25g845683xsl840bwjh118nkwi5v1xipkzb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-async" ,ghc-async)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-hinotify" ,ghc-hinotify)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-temporary-rc" ,ghc-temporary-rc)))
+    (home-page "https://github.com/haskell-fswatch/hfsnotify")
+    (synopsis "Cross platform library for file change notification.")
+    (description "Cross platform library for file creation, modification, and
+deletion notification. This library builds upon existing libraries for platform
+specific Windows, Mac, and Linux filesystem event notification.")
+    (license license:bsd-3)))
+
+(define-public ghc-tasty-rerun
+  (package
+    (name "ghc-tasty-rerun")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/tasty-rerun/"
+                    "tasty-rerun-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ycxg7whabgcxyzy6gr536x8ykzx45whh1wrbsc7c58zi862fczd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-reducers" ,ghc-reducers)
+       ("ghc-split" ,ghc-split)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-tasty" ,ghc-tasty)))
+    (home-page "http://github.com/ocharles/tasty-rerun")
+    (synopsis "Run tests by filtering the test tree")
+    (description "This package adds the ability to run tests by filtering the
+test tree based on the result of a previous test run.  You can use this to run
+only those tests that failed in the last run, or to only run the tests that have
+been added since previous test run.")
+  (license license:bsd-3)))
+
+(define-public ghc-ieee754
+  (package
+    (name "ghc-ieee754")
+    (version "0.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/ieee754/"
+                    "ieee754-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zvfnnd5nm5kgr60214cdyks0kqdqyzpwk5sdh0s60yr8b7fyjny"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/patperry/hs-ieee754")
+    (synopsis "Utilities for dealing with IEEE floating point numbers")
+    (description "Utilities for dealing with IEEE floating point numbers,
+ported from the Tango math library; approximate and exact equality comparisons
+for general types.")
+    (license license:bsd-3)))
+
+(define-public ghc-terminal-size
+  (package
+    (name "ghc-terminal-size")
+    (version "0.3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/terminal-size/"
+                    "terminal-size-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0n4nvj3dbj9gxfnprgish45asn9z4dipv9j98s8i7g2n8yb3xhmm"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/terminal-size")
+    (synopsis "Get terminal window height and width")
+    (description "Get terminal window height and width without ncurses
+dependency.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here

@@ -5629,7 +5629,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.3.3")
+    (version "2.3.4")
     (source
      (origin
        (method url-fetch)
@@ -5639,7 +5639,7 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1d3670apjy15c9l40fpq71lifxga6j9z2gisdirycwk18s4mvcp2"))
+         "1xyraxmhyx62mxx8z7c8waygvcijwkh48ms1ar60w2cv2y2sn4al"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5699,15 +5699,16 @@ Needleman-Wunsch).")
 (define-public pardre
   (package
     (name "pardre")
-    (version "1.1.5")
+    ;; The source of 1.1.5 changed in place, so we append "-1" to the version.
+    (version "1.1.5-1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pardre/ParDRe-rel"
-                           version ".tar.gz"))
+                           "1.1.5" ".tar.gz"))
        (sha256
         (base32
-         "0zkyjzv4s8q2h5npalhirbk17r5b1h0n2a42mh7njzlf047h9bhy"))))
+         "17j73nc0viq4f6qj50nrndsrif5d6b71q8fl87m54psiv0ilns2b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests included

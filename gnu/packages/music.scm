@@ -231,6 +231,74 @@ score, keyboard, guitar, drum and controller views.")
 many input formats and provides a customisable Vi-style user interface.")
      (license license:gpl2+)))
 
+(define-public denemo
+  (package
+    (name "denemo")
+    (version "2.0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/denemo/denemo-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1a7g38695g7jjypx25qp0dx0asrh72xwdj0mdhmb9pfyzlppq0wh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Denemo's documentation says to use this command to run its
+           ;; testsuite.
+           (lambda _
+             (zero? (system* "make" "-C" "tests" "check"))))
+         (add-after 'install 'correct-filename
+           ;; "graft-derivation/shallow" from the (guix grafts) module runs in
+           ;; the C locale, expecting file names to be ASCII encoded. This
+           ;; phase renames a filename with a Unicode character in it to meet
+           ;; the aforementioned condition.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (chdir (string-append
+                       out
+                       "/share/denemo/templates/instruments/woodwind"))
+               (rename-file "Clarinet in B♭.denemo"
+                            "Clarinet in Bb.denemo"))
+             #t)))))
+    (native-inputs
+     `(("glib:bin", glib "bin")   ; for gtester
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("aubio" ,aubio)
+       ("evince" ,evince)
+       ("fftw" ,fftw)
+       ("fluidsynth" ,fluidsynth)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtk-doc" ,gtk-doc)
+       ("gtksourceview" ,gtksourceview)
+       ("guile" ,guile-2.0)
+       ("intltool" ,intltool)
+       ("librsvg" ,librsvg)
+       ("libsndfile" ,libsndfile)
+       ("libtool" ,libtool)
+       ("libxml2" ,libxml2)
+       ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)
+       ("rubberband" ,rubberband)))
+    (propagated-inputs
+     `(("lilypond", lilypond)))
+    (synopsis "Graphical music notation, front-end to GNU Lilypond")
+    (description
+     "GNU Denemo is a music notation editor that provides a convenient
+interface to the powerful music engraving program Lilypond.  Music can be
+typed in using the computer keyboard, played in using a MIDI keyboard, or
+even input via a microphone connected to the sound card.  The final product
+is publication-quality music notation that is continuously generated in the
+background while you work.")
+    (home-page "http://www.denemo.org")
+    (license license:gpl3+)))
+
 (define-public hydrogen
   (package
     (name "hydrogen")

@@ -65,7 +65,7 @@ loop.")
 (define-public libev
   (package
     (name "libev")
-    (version "4.20")
+    (version "4.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/libev/Attic/libev-"
@@ -73,7 +73,7 @@ loop.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "17j47pbkr65a18mfvy2861p5k7w4pxmdgiw723ryfqd9gx636w7q"))))
+                "0ynxxm7giy4hg3qp9q8wshqw1jla9sxbsbi2pwsdsl1v1hz79zn7"))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/libev.html")
     (synopsis "Event loop loosely modelled after libevent")
