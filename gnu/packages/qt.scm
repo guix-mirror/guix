@@ -1084,28 +1084,27 @@ contain over 620 classes.")
        #:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
        #:phases
-         (alist-replace
-         'configure
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (bin (string-append out "/bin"))
-                  (sip (string-append out "/share/sip"))
-                  (python (assoc-ref inputs "python"))
-                  (python-version
-                    (last (string-split python #\-)))
-                  (python-major+minor
-                    (string-join
-                      (take (string-split python-version #\.) 2)
-                      "."))
-                  (lib (string-append out "/lib/python"
-                                      python-major+minor
-                                      "/site-packages")))
-             (zero? (system* "python" "configure.py"
-                             "--confirm-license"
-                             "--bindir" bin
-                             "--destdir" lib
-                             "--sipdir" sip))))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (sip (string-append out "/share/sip"))
+                    (python (assoc-ref inputs "python"))
+                    (python-version
+                      (last (string-split python #\-)))
+                    (python-major+minor
+                      (string-join
+                        (take (string-split python-version #\.) 2)
+                        "."))
+                    (lib (string-append out "/lib/python"
+                                        python-major+minor
+                                        "/site-packages")))
+               (zero? (system* "python" "configure.py"
+                               "--confirm-license"
+                               "--bindir" bin
+                               "--destdir" lib
+                               "--sipdir" sip))))))))
     (license (list license:gpl2 license:gpl3)))) ; choice of either license
 
 (define-public python2-pyqt-4
