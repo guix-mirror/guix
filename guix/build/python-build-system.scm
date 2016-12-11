@@ -137,11 +137,15 @@
       ;; (given with `package_dir`). This will by copied to the output, too,
       ;; so we need to remove.
       (let ((before (find-files "build" "\\.egg-info$" #:directories? #t)))
-        (call-setuppy test-target '() use-setuptools?)
-        (let* ((after (find-files "build" "\\.egg-info$" #:directories? #t))
-               (inter (lset-difference eqv? after before)))
-          (for-each delete-file-recursively inter)))
-    #t))
+        (if (call-setuppy test-target '() use-setuptools?)
+            (let* ((after (find-files "build" "\\.egg-info$" #:directories? #t))
+                   (inter (lset-difference eqv? after before)))
+              (for-each delete-file-recursively inter)
+              #t)
+            #f))
+      (begin
+        (format #t "test suite not run~%")
+        #t)))
 
 (define (get-python-version python)
   (let* ((version     (last (string-split python #\-)))
