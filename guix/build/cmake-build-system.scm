@@ -66,6 +66,7 @@
 (define* (check #:key (tests? #t) (parallel-tests? #t) (test-target "test")
                 #:allow-other-keys)
   (let ((gnu-check (assoc-ref gnu:%standard-phases 'check)))
+    (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
     (gnu-check #:tests? tests? #:test-target test-target
               #:parallel-tests? parallel-tests?)))
 

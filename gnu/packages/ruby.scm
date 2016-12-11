@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -47,8 +47,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (replacement ruby-2.3.3)
-    (version "2.3.1")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
@@ -57,9 +56,8 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0f3395q7pd2hrl2gv26bib80038sjawxgmhl9zn22fjs9m9va9b7"))
+         "1p0rfk0blrbfjcnv0vb0ha4hxflgkfhv9zbzp4vvld2pi31ahkqs"))
        (modules '((guix build utils)))
-       (patches (search-patches "ruby-symlinkfix.patch"))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
@@ -101,25 +99,6 @@
 a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
-
-(define ruby-2.3.3
-  (package
-    (inherit ruby)
-    (version "2.3.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
-                           (version-major+minor version)
-                           "/ruby-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1p0rfk0blrbfjcnv0vb0ha4hxflgkfhv9zbzp4vvld2pi31ahkqs"))
-       (modules '((guix build utils)))
-       (snippet `(begin
-                   ;; Remove bundled libffi
-                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))))
 
 (define-public ruby-2.2
   (package (inherit ruby)
@@ -1447,8 +1426,8 @@ conversion to (X)HTML.")
          (add-before 'check 'use-latest-redcarpet
           (lambda _
             (substitute* "mocha.gemspec"
-              (("<redcarpet>, \\[\"~> 1\"\\]")
-               "<redcarpet>, [\">= 3\"]"))
+              (("<redcarpet>.freeze, \\[\"~> 1\"\\]")
+               "<redcarpet>.freeze, [\">= 3\"]"))
             #t))
          (add-before 'check 'hardcode-version
           (lambda _
@@ -2225,28 +2204,27 @@ current line in an external editor.")
 (define-public ruby-sdoc
   (package
     (name "ruby-sdoc")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "sdoc" version))
               (sha256
                (base32
-                "16xyfair1j4irfkd6sxvmdcak957z71lwkvhglrznfpkalfnqyqp"))))
+                "0qhvy10vnmrqcgh8494m13kd5ag9c3sczzhfasv8j0294ylk679n"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'build 'relax-minitest-requirement
+         (add-before 'check 'set-rubylib
           (lambda _
-            (substitute* "sdoc.gemspec"
-              (("<minitest>, \\[\"~> 4\\.0\"\\]")
-               "<minitest>, [\">= 4.0\"]"))
+            (setenv "RUBYLIB" "lib")
             #t)))))
     (propagated-inputs
      `(("ruby-json" ,ruby-json)))
     (native-inputs
      `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)))
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-hoe" ,ruby-hoe)))
     (synopsis "Generate searchable RDoc documentation")
     (description
      "SDoc is an RDoc documentation generator to build searchable HTML
@@ -3514,7 +3492,7 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
                 "Bundler::GemHelper.gemspec.version"))
              ;; Loosen unnecessarily strict test-unit version specification.
              (substitute* "domain_name.gemspec"
-               (("<test-unit>, \\[\\\"~> 2.5.5") "<test-unit>, [\">0"))
+               (("<test-unit>.freeze, \\[\\\"~> 2.5.5") "<test-unit>, [\">0"))
              #t)))))
     (propagated-inputs
      `(("ruby-unf" ,ruby-unf)))

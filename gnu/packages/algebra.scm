@@ -544,7 +544,8 @@ a C program.")
                "1kwbx92ps0r7s2mqy7lxbxanslxdzj7dp7r7gmdkzv1j8yqf3kwf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-shared" "--enable-openmp")
+     '(#:configure-flags
+       '("--enable-shared" "--enable-openmp" "--enable-threads")
        #:phases (alist-cons-before
                  'build 'no-native
                  (lambda _

@@ -102,7 +102,6 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (replacement cairo/fixed)
    (version "1.14.6")
    (source (origin
             (method url-fetch)
@@ -110,7 +109,8 @@ tools have full access to view and control running applications.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lmjlzmghmr27y615px9hkm552x7ap6pmq9mfbzr6smp8y2b6g31"))))
+              "0lmjlzmghmr27y615px9hkm552x7ap6pmq9mfbzr6smp8y2b6g31"))
+            (patches (search-patches "cairo-CVE-2016-9082.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -156,10 +156,6 @@ affine transformation (scale, rotation, shear, etc.).")
   (package
     (inherit cairo)
     (name "cairo-xcb")
-    (source (origin
-              (inherit (package-source cairo))
-              (patches (search-patches "cairo-CVE-2016-9082.patch"))))
-    (replacement #f)
     (inputs
      `(("mesa" ,mesa)
        ,@(package-inputs cairo)))
@@ -169,17 +165,10 @@ affine transformation (scale, rotation, shear, etc.).")
        '("--enable-xlib-xcb" "--enable-gl" "--enable-egl")))
     (synopsis "2D graphics library (with X11 support)")))
 
-(define cairo/fixed
-  (package
-    (inherit cairo)
-    (source (origin
-              (inherit (package-source cairo))
-              (patches (search-patches "cairo-CVE-2016-9082.patch"))))))
-
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.2.4")
+   (version "1.3.3")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -187,7 +176,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14g4kpph8hgplkm954daxiymxx0vicfq7b7svvdsx54g5bqvv7a4"))))
+               "1jdkdjvci5d6r26vimsz24hz3xqqrk5xq40n693jn4m42mqrh816"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -212,7 +201,7 @@ affine transformation (scale, rotation, shear, etc.).")
     "HarfBuzz is an OpenType text shaping engine.")
    (license (license:x11-style "file://COPYING"
                        "See 'COPYING' in the distribution."))
-   (home-page "http://www.freedesktop.org/wiki/Software/HarfBuzz/")))
+   (home-page "https://www.freedesktop.org/wiki/Software/HarfBuzz/")))
 
 (define-public pango
   (package

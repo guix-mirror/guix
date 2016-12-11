@@ -661,6 +661,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libcmis-fix-test-onedrive.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
+  %D%/packages/patches/libepoxy-gl-null-checks.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
@@ -675,16 +676,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtiff-CVE-2015-8665+CVE-2015-8683.patch \
-  %D%/packages/patches/libtiff-CVE-2016-3623.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-3945.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-3990.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-3991.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-5314.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-5321.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-5323.patch		\
-  %D%/packages/patches/libtiff-oob-accesses-in-decode.patch	\
-  %D%/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libupnp-CVE-2016-6255.patch		\
@@ -735,16 +726,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
-  %D%/packages/patches/mupdf-CVE-2016-6265.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-6525.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7504.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7505.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7506.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7563.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-7564.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-8674.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-9017.patch		\
-  %D%/packages/patches/mupdf-CVE-2016-9136.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
@@ -854,7 +835,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-puma-ignore-broken-test.patch       \
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
-  %D%/packages/patches/ruby-symlinkfix.patch                    \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/ruby-yard-fix-skip-of-markdown-tests.patch \
   %D%/packages/patches/sed-hurd-path-max.patch			\

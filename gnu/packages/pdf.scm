@@ -95,17 +95,6 @@
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
              ;; GLib.  But of course, that Cairo must not depend on Poppler.
              ("cairo" ,(package (inherit cairo)
-                         (replacement
-                           (package
-                             (inherit cairo)
-                             (replacement #f)
-                             (source
-                               (origin
-                                 (inherit (package-source cairo))
-                                 (patches (search-patches
-                                            "cairo-CVE-2016-9082.patch"))))
-                             (inputs (alist-delete "poppler"
-                                                   (package-inputs cairo)))))
                          (inputs (alist-delete "poppler"
                                                (package-inputs cairo)))))
              ("glib" ,glib)))
@@ -490,7 +479,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.9a")
+    (version "1.10a")
     (source
       (origin
         (method url-fetch)
@@ -498,18 +487,8 @@ extracting content or merging files.")
                             name "-" version "-source.tar.gz"))
         (sha256
          (base32
-          "1k64pdapyj8a336jw3j61fhn0rp4q6az7d0dqp9r5n3d9rgwa5c0"))
-        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
-                                 "mupdf-CVE-2016-6265.patch"
-                                 "mupdf-CVE-2016-6525.patch"
-                                 "mupdf-CVE-2016-7504.patch"
-                                 "mupdf-CVE-2016-7505.patch"
-                                 "mupdf-CVE-2016-7506.patch"
-                                 "mupdf-CVE-2016-7563.patch"
-                                 "mupdf-CVE-2016-7564.patch"
-                                 "mupdf-CVE-2016-8674.patch"
-                                 "mupdf-CVE-2016-9017.patch"
-                                 "mupdf-CVE-2016-9136.patch"))
+          "0dm8wcs8i29aibzkqkrn8kcnk4q0kd1v66pg48h5c3qqp4v1zk5a"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Delete all the bundled libraries except for mujs, which is
