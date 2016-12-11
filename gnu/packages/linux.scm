@@ -351,28 +351,10 @@ https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?i
                               "082a5dpkgsc0mjlzqc03d815xx8gdqk0s4glvi4y1b9vl8c4vmwy"))))))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.37"
-                    "1zw3hwpgxkxwplb81in5969vgbaamcwqarmxj3aq88yg6bqnh6b5"
+  (make-linux-libre "4.4.38"
+                    "038mzv5dj7cj5vywiafniai2f56wh7k2yirv0ac61nvg2v25r2jk"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=668dc0c33815e4f9ec02989785658516d343bc31")
-                            (file-name "linux-libre-4.4-CVE-2016-8655.patch")
-                            (sha256
-                             (base32
-                              "1bzgj36y8v7gflq3dlhmbbvvn9098a4yk4pcpixdz5c5pm7wrdv3")))
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=82330dbfb463389f2b0214dbcc69b78cc8e6cf8f")
-                            (file-name "linux-libre-4.4-iovec-fix.patch")
-                            (sha256
-                             (base32
-                              "1mqmgiqjm4pf4b3jzknclmdjfaqqr4708gcdgzhn84brrcm5iz30"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
   (make-linux-libre "4.1.36"
