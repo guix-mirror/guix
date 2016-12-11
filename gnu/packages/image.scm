@@ -444,7 +444,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (replacement openjpeg/fixed)
+    (replacement openjpeg-2.1.2)
     (version "2.1.1")
     (source
       (origin
@@ -481,16 +481,20 @@ error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
-(define openjpeg/fixed
+(define openjpeg-2.1.2
   (package
     (inherit openjpeg)
+    (version "2.1.2")
     (source
       (origin
-        (inherit (package-source openjpeg))
+        (method url-fetch)
+        (uri (string-append "https://github.com/uclouvain/openjpeg/archive/v"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
         (patches
-          (append
-            (origin-patches (package-source openjpeg))
-            (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch")))))))
+          (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
