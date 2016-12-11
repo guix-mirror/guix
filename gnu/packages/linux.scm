@@ -327,28 +327,10 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.13"
-                    "1n1bhasqih8acag2glwaqsh76avpinvchvwg6g4q1pfm2vs1499x"
+  (make-linux-libre "4.8.14"
+                    "06rh1j2m4x6kv7prgg2pakw81b7w75dxrl31ch1psf44yqy51q6q"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=9bd018da073c1360c260d2e11e0da9b24911c4a8")
-                            (file-name "linux-libre-4.8-CVE-2016-8655.patch")
-                            (sha256
-                             (base32
-                              "1pq80vnwv01l0rj2g0r7i4rjnx3ll8iq4rpl6w3fmc77agdb3bpq")))
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=af8a38c78233a3356c626c1fabfc93c66094e6e8")
-                            (file-name "linux-libre-4.8-iovec-fix.patch")
-                            (sha256
-                             (base32
-                              "082a5dpkgsc0mjlzqc03d815xx8gdqk0s4glvi4y1b9vl8c4vmwy"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.38"
@@ -363,33 +345,15 @@ https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?i
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.13")
-(define %linux-libre-hash "1n1bhasqih8acag2glwaqsh76avpinvchvwg6g4q1pfm2vs1499x")
+(define %linux-libre-version "4.8.14")
+(define %linux-libre-hash "06rh1j2m4x6kv7prgg2pakw81b7w75dxrl31ch1psf44yqy51q6q")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=9bd018da073c1360c260d2e11e0da9b24911c4a8")
-                            (file-name "linux-libre-4.8-CVE-2016-8655.patch")
-                            (sha256
-                             (base32
-                              "1pq80vnwv01l0rj2g0r7i4rjnx3ll8iq4rpl6w3fmc77agdb3bpq")))
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=af8a38c78233a3356c626c1fabfc93c66094e6e8")
-                            (file-name "linux-libre-4.8-iovec-fix.patch")
-                            (sha256
-                             (base32
-                              "082a5dpkgsc0mjlzqc03d815xx8gdqk0s4glvi4y1b9vl8c4vmwy"))))))
+                    #:extra-version "arm-generic"))
 
 
 ;;;
