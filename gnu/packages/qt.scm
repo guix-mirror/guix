@@ -992,7 +992,21 @@ module provides support functions to the automatically generated code.")
      `(("python-sip" ,python-sip)
        ("qtbase" ,qtbase))) ; for qmake
     (inputs
-     `(("python" ,python-wrapper)))
+     `(("python" ,python-wrapper)
+       ("qtbase" ,qtbase)
+       ("qtconnectivity" ,qtconnectivity)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtlocation" ,qtlocation)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsensors" ,qtsensors)
+       ("qtserialport" ,qtserialport)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebkit" ,qtwebkit)
+       ("qtwebsockets" ,qtwebsockets)
+       ("qtx11extras" ,qtx11extras)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
     (arguments
      `(#:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
@@ -1044,7 +1058,8 @@ contain over 620 classes.")
      `(("python-sip" ,python2-sip)
        ("qtbase" ,qtbase)))
     (inputs
-     `(("python" ,python-2)))))
+     `(("python" ,python-2)
+       ,@(alist-delete "python" (package-inputs python-pyqt))))))
 
 (define-public python-pyqt-5.5
   (package (inherit python-pyqt)
@@ -1120,6 +1135,7 @@ contain over 620 classes.")
     (native-inputs
      `(("python-sip" ,python-sip)
        ("qt" ,qt-4)))
+    (inputs `(("python" ,python-wrapper)))
     (arguments
      `(#:tests? #f ; no check target
        #:modules ((srfi srfi-1)
