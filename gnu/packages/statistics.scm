@@ -226,6 +226,32 @@ operators and fast summary statistics.  With @code{bit} class vectors of true
 binary booleans, @code{TRUE} and @code{FALSE} can be stored with 1 bit only.")
     (license license:gpl2)))
 
+(define-public r-bit64
+  (package
+    (name "r-bit64")
+    (version "0.9-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bit64" version))
+       (sha256
+        (base32
+         "0fz5m3fhvxgwjl76maag7yn0zdw24rx34gy6v77378fajag9yllg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bit" ,r-bit)))
+    (home-page "http://ff.r-forge.r-project.org/")
+    (synopsis "S3 class for vectors of 64 bit integers")
+    (description
+     "The bit64 package provides serializable S3 atomic 64 bit (signed)
+integers that can be used in vectors, matrices, arrays and @code{data.frames}.
+Methods are available for coercion from and to logicals, integers, doubles,
+characters and factors as well as many elementwise and summary functions.
+Many fast algorithmic operations such as @code{match} and @code{order} support
+interactive data exploration and manipulation and optionally leverage
+caching.")
+    (license license:gpl2)))
+
 (define-public r-colorspace
   (package
     (name "r-colorspace")
