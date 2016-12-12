@@ -23,12 +23,15 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages apr)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages version-control))
 
 (define-public kdevelop-pg-qt
   (package
@@ -52,6 +55,79 @@
     (description "KDevelop-PG-Qt is the parser generator used in KDevplatform
 for some KDevelop language plugins (Ruby, PHP, CSS...).")
     (license license:lgpl2.0+)))
+
+(define-public kdevplatform
+  (package
+    (name "kdevplatform")
+    (version "5.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/KDE/kdevplatform/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1m8c0ixv91diyy9bvq53d4jik4zrnf7bix7clad4ywxnlpcs4ahr"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("apr" ,apr)
+       ("apr-util" ,apr-util)
+       ("boost" ,boost)
+       ("karchive" ,karchive)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcmutils" ,kcmutils)
+       ("kiconthemes" ,kiconthemes)
+       ("kdeclarative" ,kdeclarative)
+       ("kdoctools" ,kdoctools)
+       ("kguiaddons" ,kguiaddons)
+       ("kinit" ,kinit)
+       ("kitemmodels" ,kitemmodels)
+       ("knewstuff" ,knewstuff)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kio" ,kio)
+       ("ki18n" ,ki18n)
+       ("kparts" ,kparts)
+       ("kservice" ,kservice)
+       ("grantlee" ,grantlee)
+       ("libkomparediff2" ,libkomparediff2)
+       ("sonnet" ,sonnet)
+       ("threadweaver" ,threadweaver)
+       ("ktexteditor" ,ktexteditor)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtscript" ,qtscript)
+       ("qtwebkit" ,qtwebkit)
+       ("qtx11extras" ,qtx11extras)
+       ("plasma" ,plasma-framework)
+       ("subversion" ,subversion)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check ;; add-after 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+               (setenv "QT_PLUGIN_PATH"
+                       (string-append out "/lib/plugins:"
+                                      (getenv "QT_PLUGIN_PATH")))
+               (setenv "XDG_DATA_DIRS"
+                       (string-append out "/share:"
+                                      (getenv "XDG_DATA_DIRS")))
+               (zero?
+                (system* "ctest" "-R" ;; almost all tests require a display
+                         "filteringstrategy|kdevvarlengtharray|kdevhash"))))))))
+    (home-page "https://github.com/KDE/kdevplatform")
+    (synopsis "Framework to build integrated development environments (IDEs)")
+    (description "KDevPlatform is the basis of KDevelop and contains some
+plugins, as well as code to create plugins, or complete applications.")
+    (license license:gpl3+)))
 
 (define-public libkomparediff2
   (package
