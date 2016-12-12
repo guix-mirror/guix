@@ -819,15 +819,14 @@ have been used.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "18.3.1")
+    (version "31.0.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/s/setuptools/setuptools-"
-                          version ".tar.gz"))
+      (uri (pypi-uri "setuptools" version))
       (sha256
        (base32
-        "0kc7rbav00ks6iaw14p38y81q12fx0lpkhgf5m97xc04f5r318ig"))
+        "0ypybh4hx3bv4vhg2dc74xpj1g56ggnaffm87k4abhwjwq6wq608"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -853,7 +852,12 @@ test hooks,
 project installation,
 platform-specific details,
 Python 3 support.")
-    (license license:psfl)))
+    ;; TODO: setuptools now bundles the following libraries:
+    ;; packaging, pyparsing, six and appdirs. How to unbundle?
+    (license (list license:psfl        ; setuptools itself
+                   license:expat       ; six, appdirs, pyparsing
+                   license:asl2.0      ; packaging is dual ASL2/BSD-2
+                   license:bsd-2))))
 
 (define-public python2-setuptools
   (package-with-python2 python-setuptools))
