@@ -27,11 +27,97 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control))
+
+(define-public kdevelop
+  (package
+    (name "kdevelop")
+    (version "5.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/kdevelop"
+                            "/" version "/src/kdevelop-"
+                            version ".tar.xz"))
+        (sha256
+         (base32
+          "0rl6csmzf14gf0r0mk7z2lj7cq8fggf5qmlbxq6j68vp2q0pj0cv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kdevplatform" ,kdevplatform)
+       ("kdevelop-pg-qt" ,kdevelop-pg-qt)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtwebkit" ,qtwebkit)
+       ("karchive" ,karchive)
+       ("kcmutils" ,kcmutils)
+       ("kconfig" ,kconfig)
+       ("kdeclarative" ,kdeclarative)
+       ("kdoctools" ,kdoctools)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("knotifyconfig" ,knotifyconfig)
+       ("knotifications" ,knotifications)
+       ("kparts" ,kparts)
+       ("kcrash" ,kcrash)
+       ("knewstuff" ,knewstuff)
+       ("krunner" ,krunner)
+       ("kxmlgui" ,kxmlgui)
+       ("libksysguard" ,libksysguard)
+       ("threadweaver" ,threadweaver)
+       ("ktexteditor" ,ktexteditor)
+       ("kwindowsystem" ,kwindowsystem)
+       ("plasma" ,plasma-framework)
+       ("grantlee" ,grantlee)
+       ("libepoxy" ,libepoxy)
+       ("clang" ,clang)
+       ("shared-mime-info" ,shared-mime-info)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check) ;; there are some issues with the test suite
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (kdevplatform (assoc-ref inputs "kdevplatform"))
+                    (kio (assoc-ref inputs "kio"))
+                    (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
+                    (qtdeclarative (assoc-ref inputs "qtdeclarative"))
+                    (plugins "/lib/plugins")
+                    (qml "/qml"))
+               (wrap-program (string-append out "/bin/kdevelop")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   (,(string-append out plugins)
+                    ,(string-append kdevplatform plugins)
+                    ,(string-append kio plugins)))
+                 `("QML2_IMPORT_PATH" ":" prefix
+                   (,(string-append qtquickcontrols qml)
+                    ,(string-append qtdeclarative qml))))))))))
+    (home-page "https://kdevelop.org")
+    (synopsis "IDE for C, C++, Python, Javascript and PHP")
+    (description "The KDevelop IDE provides semantic syntax highlighting, as
+well as code navigation and completion for C, C++ (using Clang/LLVM), QML,
+JavaScript, Python and PHP.  It also integrates with a debugger, different
+build systems (CMake, QMake, custom Makefiles) and version control
+software (Git, Subversion, Mercurial, CVS and Bazaar).")
+    (license license:lgpl2.1+)))
 
 (define-public kdevelop-pg-qt
   (package
