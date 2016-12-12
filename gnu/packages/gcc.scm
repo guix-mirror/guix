@@ -358,7 +358,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "0fihlcy5hnksdxk0sn6bvgnyq8gfrgs8m794b1jxwd1dxinzg3b0"))
-              (patches (search-patches "gcc-strmov-store-file-names.patch"
+              (patches (search-patches "gcc-arm-bug-71399.patch"
+                                       "gcc-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
 (define-public gcc-6
@@ -377,7 +378,7 @@ Go.  It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions accordingly.
-(define-public gcc gcc-4.9)
+(define-public gcc gcc-5)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
