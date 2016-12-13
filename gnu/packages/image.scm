@@ -1068,7 +1068,17 @@ PNG, and performs PNG integrity checks and corrections.")
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     `(#:test-target "test"))
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env-on-MIPS
+           ;; This is borrowed from Debian's patchset for libjpeg
+           ;; https://sources.debian.net/data/main/libj/libjpeg-turbo/1:1.5.1-2/debian/patches/0001-Declare-env-on-MIPS-on-first-use-Courtesy-of-Aurelie.patch
+           (lambda _
+             (substitute* "simd/jsimd_mips.c"
+               (("env = getenv\\(\"JSIMD_FORCEDSPR2")
+                "char *env = getenv\(\"JSIMD_FORCEDSPR2"))
+             #t)))))
     (home-page "http://www.libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
