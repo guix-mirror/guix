@@ -2301,7 +2301,12 @@ is used by the Requests library to verify HTTPS requests.")
                (substitute* "click/_unicodefun.py"
                  (("'locale'")
                   (string-append "'" glibc "/bin/locale'"))))
-             #t)))))
+             #t))
+         (replace 'check
+           (lambda _
+             (zero? (system* "make" "test")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://click.pocoo.org")
     (synopsis "Command line library for Python")
     (description
