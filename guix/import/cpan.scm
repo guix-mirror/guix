@@ -116,6 +116,31 @@ if the original's domain was metacpan."
       (and (access? core X_OK)
            core))))
 
+(define core-module?
+  (let ((perl-version (package-version perl))
+        (rx (make-regexp
+             (string-append "released with perl v?([0-9\\.]*)"
+                            "(.*and removed from v?([0-9\\.]*))?"))))
+    (lambda (name)
+      (define (version-between? lower version upper)
+        (and (version>=? version lower)
+             (or (not upper)
+                 (version>? upper version))))
+      (and (force %corelist)
+           (parameterize ((current-error-port (%make-void-port "w")))
+             (let* ((corelist (open-pipe* OPEN_READ (force %corelist) name)))
+               (let loop ()
+                 (let ((line (read-line corelist)))
+                   (if (eof-object? line)
+                       (begin (close-pipe corelist) #f)
+                       (or (and=> (regexp-exec rx line)
+                                  (lambda (m)
+                                    (let ((first (match:substring m 1))
+                                          (last  (match:substring m 3)))
+                                      (version-between?
+                                       first perl-version last))))
+                           (loop)))))))))))
+
 (define (cpan-module->sexp meta)
   "Return the `package' s-expression for a CPAN module from the metadata in
 META."
@@ -131,31 +156,6 @@ META."
     (match (assoc-ref meta "version")
       ((? number? vrs) (number->string vrs))
       ((? string? vrs) vrs)))
-
-  (define core-module?
-    (let ((perl-version (package-version perl))
-          (rx (make-regexp
-               (string-append "released with perl v?([0-9\\.]*)"
-                              "(.*and removed from v?([0-9\\.]*))?"))))
-      (lambda (name)
-        (define (version-between? lower version upper)
-          (and (version>=? version lower)
-               (or (not upper)
-                   (version>? upper version))))
-        (and (force %corelist)
-             (parameterize ((current-error-port (%make-void-port "w")))
-               (let* ((corelist (open-pipe* OPEN_READ (force %corelist) name)))
-                 (let loop ()
-                   (let ((line (read-line corelist)))
-                     (if (eof-object? line)
-                         (begin (close-pipe corelist) #f)
-                         (or (and=> (regexp-exec rx line)
-                                    (lambda (m)
-                                      (let ((first (match:substring m 1))
-                                            (last  (match:substring m 3)))
-                                        (version-between?
-                                         first perl-version last))))
-                             (loop)))))))))))
 
   (define (convert-inputs phases)
     ;; Convert phase dependencies into a list of name/variable pairs.
