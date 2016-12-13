@@ -419,4 +419,4 @@ interface for those who are accustomed to the ircII way of doing things.")
                    ;; BSD license except that you are not permitted to remove the
                    ;; "Redistribution is permitted" clause of the license if you
                    ;; distribute binaries.
-                   license:non-copyleft "http://epicsol.org/copyright"))))
+                   (license:non-copyleft "http://epicsol.org/copyright")))))
