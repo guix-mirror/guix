@@ -341,9 +341,11 @@ written in Objective Caml.")
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
+       ("findlib" ,ocaml-findlib)
        ("hevea" ,hevea)))
     (inputs
      `(("ocaml" ,ocaml)
+       ("lablgtk" ,lablgtk)
        ("camlp5" ,camlp5)))
     (arguments
      `(#:phases
@@ -356,7 +358,8 @@ written in Objective Caml.")
                (zero? (system* "./configure"
                                "-prefix" out
                                "-mandir" mandir
-                               "-browser" browser)))))
+                               "-browser" browser
+                               "-coqide" "opt")))))
          (replace 'build
            (lambda _
              (zero? (system* "make" "-j" (number->string
