@@ -27,6 +27,7 @@
   #:use-module (gnu packages web)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (nginx-configuration
             nginx-configuration?
@@ -67,6 +68,7 @@
   (nginx         nginx-configuration-nginx)         ;<package>
   (log-directory nginx-configuration-log-directory) ;string
   (run-directory nginx-configuration-run-directory) ;string
+  (server-blocks nginx-configuration-server-blocks) ;list
   (file          nginx-configuration-file))         ;string | file-like
 
 (define (config-domain-strings names)
@@ -148,7 +150,8 @@ of index files."
 
 (define nginx-activation
   (match-lambda
-    (($ <nginx-configuration> nginx log-directory run-directory config-file)
+    (($ <nginx-configuration> nginx log-directory run-directory server-blocks
+                              config-file)
      #~(begin
          (use-modules (guix build utils))
 
@@ -164,17 +167,25 @@ of index files."
          (mkdir-p (string-append #$run-directory "/scgi_temp"))
          ;; Check configuration file syntax.
          (system* (string-append #$nginx "/sbin/nginx")
-                  "-c" #$config-file "-t")))))
+                  "-c" #$(or config-file
+                             (default-nginx-config log-directory
+                               run-directory server-blocks))
+                  "-t")))))
 
 (define nginx-shepherd-service
   (match-lambda
-    (($ <nginx-configuration> nginx log-directory run-directory config-file)
+    (($ <nginx-configuration> nginx log-directory run-directory server-blocks
+                              config-file)
      (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
             (nginx-action
              (lambda args
                #~(lambda _
                    (zero?
-                    (system* #$nginx-binary "-c" #$config-file #$@args))))))
+                    (system* #$nginx-binary "-c"
+                             #$(or config-file
+                                   (default-nginx-config log-directory
+                                     run-directory server-blocks))
+                             #$@args))))))
 
        ;; TODO: Add 'reload' action.
        (list (shepherd-service
@@ -192,14 +203,20 @@ of index files."
                        (service-extension activation-service-type
                                           nginx-activation)
                        (service-extension account-service-type
-                                          (const %nginx-accounts))))))
+                                          (const %nginx-accounts))))
+                (compose concatenate)
+                (extend (lambda (config servers)
+                          (nginx-configuration
+                            (inherit config)
+                            (server-blocks
+                              (append (nginx-configuration-server-blocks config)
+                              servers)))))))
 
 (define* (nginx-service #:key (nginx nginx)
                         (log-directory "/var/log/nginx")
                         (run-directory "/var/run/nginx")
-                        (server-list (list (nginx-server-configuration)))
-                        (config-file
-                         (default-nginx-config log-directory run-directory server-list)))
+                        (server-list '())
+                        (config-file #f))
   "Return a service that runs NGINX, the nginx web server.
 
 The nginx daemon loads its runtime configuration from CONFIG-FILE, stores log
@@ -209,4 +226,5 @@ files in LOG-DIRECTORY, and stores temporary runtime files in RUN-DIRECTORY."
             (nginx nginx)
             (log-directory log-directory)
             (run-directory run-directory)
+            (server-blocks server-list)
             (file config-file))))

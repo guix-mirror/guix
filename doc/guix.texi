@@ -11827,8 +11827,8 @@ The @code{(gnu services web)} module provides the following service:
 @deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
        [#:log-directory ``/var/log/nginx''] @
        [#:run-directory ``/var/run/nginx''] @
-       [#:server-list (list (nginx-server-configuration))] @
-       [#:config-file]
+       [#:server-list '()] @
+       [#:config-file @code{#f}]
 
 Return a service that runs @var{nginx}, the nginx web server.
 
@@ -11842,6 +11842,20 @@ As an alternative to using a @var{config-file}, @var{server-list} can be
 used to specify the list of @dfn{server blocks} required on the host.  For
 this to work, use the default value for @var{config-file}.
 
+@end deffn
+
+@deffn {Scheme Variable} nginx-service-type
+This is type for the nginx web server.
+
+This service can be extended to add server blocks in addition to the
+default one, as in this example:
+
+@example
+(simple-service 'my-extra-server nginx-service-type
+                (list (nginx-server-configuration
+                        (https-port #f)
+                        (root "/srv/http/extra-website"))))
+@end example
 @end deffn
 
 @deftp {Data Type} nginx-server-configuration
