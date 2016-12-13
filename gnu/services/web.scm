@@ -74,8 +74,8 @@
 of domain names."
  (string-join
   (map (match-lambda
-        ('default "_")
-        ((? string? str) str))
+        ('default "_ ")
+        ((? string? str) (string-append str " ")))
        names)))
 
 (define (config-index-strings names)
@@ -83,7 +83,7 @@ of domain names."
 of index files."
  (string-join
   (map (match-lambda
-        ((? string? str) str))
+        ((? string? str) (string-append str " ")))
        names)))
 
 (define (default-nginx-server-config server)
