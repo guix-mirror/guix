@@ -2808,6 +2808,9 @@ reStructuredText.")
         (base32
          "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
     (build-system python-build-system)
+    (arguments
+     ;; FIXME: Missing dependencies.
+     '(#:tests? #f))
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-docutils" ,python-docutils)
