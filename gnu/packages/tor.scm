@@ -138,7 +138,7 @@ networks.")
 (define-public onionshare
   (package
     (name "onionshare")
-    (version "0.9")
+    (version "0.9.2")
     (source
       (origin
         (method url-fetch)
@@ -147,8 +147,7 @@ networks.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0pc3xbq379415s0i0y6rz02hay20zbvgra1jmg4mgrl9vbdr8zmw"))
-        (patches (search-patches "onionshare-fix-install-paths.patch"))))
+          "02iv7dg15da57gy3zvfchnwwpr21n1gva7mqwpwr958ni2034smk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -157,25 +156,17 @@ networks.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out        (assoc-ref outputs "out"))
                     (onionshare (string-append out "/share/onionshare")))
-               (substitute*
-                 "install/pyinstaller.spec"
-                 ;; inform onionshare where the 'resources' files are installed
-                 (("../resources") onionshare))
-               (substitute*
-                 "onionshare/strings.py"
+               (substitute* "onionshare/strings.py"
                  ;; correct the locale directory
                  (("helpers.get_resource_path\\('locale'\\)")
                   (string-append "'" onionshare "/locale'")))
-               (substitute*
-                 "onionshare/helpers.py"
+               (substitute* "onionshare/helpers.py"
                  ;; correct the location of version.txt
-                 (("/usr") out)
                  (("get_resource_path\\('version.txt'\\)")
                   (string-append "'" onionshare "/version.txt'"))
                  (("get_resource_path\\('wordlist.txt'\\)")
                   (string-append "'" onionshare "/wordlist.txt'")))
-               (substitute*
-                 "onionshare/web.py"
+               (substitute* "onionshare/web.py"
                  ;; fix the location of the html files
                  (("helpers.get_resource_path\\('html/denied.html'\\)")
                   (string-append "'" onionshare "/html/denied.html'"))
@@ -183,25 +174,26 @@ networks.")
                   (string-append "'" onionshare "/html/404.html'"))
                  (("helpers.get_resource_path\\('html/index.html'\\)")
                   (string-append "'" onionshare "/html/index.html'")))
-               (substitute*
-                 "onionshare_gui/file_selection.py"
+               (substitute* "onionshare_gui/file_selection.py"
+                 ;; fancy box image in the GUI
                  (("helpers.get_resource_path\\('images/drop_files.png'\\)")
                   (string-append "'" onionshare "/images/drop_files.png'")))
-               (substitute*
-                 "onionshare_gui/server_status.py"
+               (substitute* "onionshare_gui/server_status.py"
                  (("helpers.get_resource_path\\('images/server_stopped.png'\\)")
                   (string-append "'" onionshare "/images/server_stopped.png'"))
                  (("helpers.get_resource_path\\('images/server_working.png'\\)")
                   (string-append "'" onionshare "/images/server_working.png'"))
                  (("helpers.get_resource_path\\('images/server_started.png'\\)")
                   (string-append "'" onionshare "/images/server_started.png'")))
-               (substitute*
-                 "onionshare_gui/onionshare_gui.py"
+               (substitute* "onionshare_gui/onionshare_gui.py"
+                  ;; for the icon on the GUI
                  (("helpers.get_resource_path\\('images/logo.png'\\)")
                   (string-append "'" onionshare "/images/logo.png'")))
-               (substitute*
-                 "install/onionshare.desktop"
-                 (("/usr") out))
+               (substitute* '("setup.py" "onionshare/helpers.py")
+                 (("sys.prefix,") (string-append "'" out "',")))
+               (substitute* "setup.py"
+                 ;; for the nautilus plugin
+                 (("/usr/share/nautilus") "share/nautilus"))
              #t)))
          (delete 'check)
          (add-before 'strip 'tests
