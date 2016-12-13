@@ -1625,6 +1625,12 @@ standard library.")
         (base32
          "0561gz2w3i825gyl42mcq14y3dcgkapfiv5zv9a2bz15qxiijl56"))))
     (build-system python-build-system)
+    (arguments
+     ;; FIXME: "ImportError: 'test' module incorrectly imported from
+     ;; '/gnu/store/...-python-pytest-mimimal-3.0.5/lib/python3.5/site-packages'.
+     ;; Expected '/tmp/guix-build-python-py-1.4.31.drv-0/py-1.4.31/py'.
+     ;; Is this module globally installed?"
+     '(#:tests? #f))
     (home-page "http://pylib.readthedocs.org/")
     (synopsis "Python library for parsing, I/O, instrospection, and logging")
     (description
