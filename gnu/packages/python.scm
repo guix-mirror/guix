@@ -4278,24 +4278,24 @@ support for Python 3 and PyPy.  It is based on cffi.")
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
      `(#:phases
-       (alist-cons-after
-        'install 'install-doc
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                 (doc (string-append data "/doc/" ,name "-" ,version))
-                 (html (string-append doc "/html")))
-            (setenv "LD_LIBRARY_PATH"
-                    (string-append (assoc-ref inputs "cairo") "/lib" ":"
-                                   (assoc-ref inputs "gdk-pixbuf") "/lib"))
-            (setenv "LANG" "en_US.UTF-8")
-            (mkdir-p html)
-            (for-each (lambda (file)
-                        (copy-file (string-append "." file)
-                                   (string-append doc file)))
-                      '("/README.rst" "/CHANGES" "/LICENSE"))
-            (system* "python" "setup.py" "build_sphinx")
-            (copy-recursively "docs/_build/html" html)))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html")))
+               (setenv "LD_LIBRARY_PATH"
+                       (string-append (assoc-ref inputs "cairo") "/lib" ":"
+                                      (assoc-ref inputs "gdk-pixbuf") "/lib"))
+               (setenv "LANG" "en_US.UTF-8")
+               (mkdir-p html)
+               (for-each (lambda (file)
+                           (copy-file (string-append "." file)
+                                      (string-append doc file)))
+                         '("/README.rst" "/CHANGES" "/LICENSE"))
+               (system* "python" "setup.py" "build_sphinx")
+               (copy-recursively "docs/_build/html" html)
+               #t))))))
     (home-page "https://github.com/SimonSapin/cairocffi")
     (synopsis "Python bindings and object-oriented API for Cairo")
     (description
