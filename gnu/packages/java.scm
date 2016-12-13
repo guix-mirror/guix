@@ -783,7 +783,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     (license license:gpl2+)))
 
 (define-public icedtea-7
-  (let* ((version "2.6.7")
+  (let* ((version "2.6.8")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -800,7 +800,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "1r4y1afjdm72j4lkd1jsim595zy5s3hvc3dnl13f5a7wrxp2v4nh"))
+                  "0p95402viz6dnfkhhn18hrvm7wqfvij0xnxvp9nqj3aq3gzk0h45"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -927,25 +927,25 @@ build process and its dependencies, whereas Make uses Makefile format.")
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
-                 "0y38vgvzw2xggfg0nlalv42amy5sv6vzvjxik8bvkm1sajzazb2w"))
+                 "1qscircx5z9rnyx4k6lzxbrl5q6f9shag962zl0f52cyrcma5gp6"))
          ("corba-drop"
           ,(drop "corba"
-                 "0r778nhmzcnf6jkl50f6f279vbzh96rcwr74vb0930wgl2g46j80"))
+                 "0f25l1db5v9ib4v5wb32wjblb2zzx8f8qgr2g84yg26aq2m8swig"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "02y7zaw4irjvbihpr4pbrl64pxjx5anfxms3i24rp1q6aj2n1gcz"))
+                 "1z4i404i3rrf5zmch8z2rslqm7vs1wzjhvjf6kgkdvnrka7a86xs"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "1xrhdgykpi7amyyirzchp4mjrx2j3xm6nqg4bbfy2kxv7daw3z69"))
+                 "06h49jgf76408j1qhhkksly8fbyw1wisyvgi1csvj2f63bkr6c3m"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "108d560iabk334lcifr5xf1w075a6c918smpbcaccsrln8qd6g79"))
+                 "0qg76gjlnyrjskzz019fi47vqdxpa51sdhcyx4lsa25j5vsih4gc"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "1r5llvhxzdihyz6rmr6ri9wz8zvbw4gmlllhb340p86liqqh1rqk"))
+                 "04w82l34z83n8cd901bvmlrdk825nw5ijgny5cn1idnhplzcckh0"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "0p3arg01jfdnbx856qfhhzp7s9yzmqwa1fspk5spmmxb9m7mj4h4"))
+                 "153i1panv3mzwh39dc8rxr9hj5920y86a4m8djxsk6qnyd4gamfa"))
          ,@(fold alist-delete (package-native-inputs icedtea-6)
                  '("openjdk6-src"))))
       (inputs
