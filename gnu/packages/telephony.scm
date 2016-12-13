@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
@@ -210,6 +210,7 @@ internet.")
              (method url-fetch)
              (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
                                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "1w2g623qkd7gdyydglx2hr4s2y237lg0nszjmy7z8d2iq8hvb9sn"))))
