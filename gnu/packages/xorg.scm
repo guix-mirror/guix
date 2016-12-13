@@ -4733,7 +4733,7 @@ script around the mkfontscale program.")
 (define-public xproto
   (package
     (name "xproto")
-    (version "7.0.29")
+    (version "7.0.31")
     (source
       (origin
         (method url-fetch)
@@ -4743,7 +4743,7 @@ script around the mkfontscale program.")
                ".tar.bz2"))
         (sha256
           (base32
-            "12lzpa9mrzkyrhrphzpi1014np3328qg7mdq08wj6wyaj9q4f6kc"))))
+            "0ivpxz0rx2a7nahkpkhfgymz7j0pwzaqvyqpdgw9afmxl1yp9yf6"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
