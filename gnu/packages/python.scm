@@ -2365,12 +2365,11 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
              (sha256
               (base32
                "0zsqrzlybf25xscgi7ja4s48y2abf9wvjkn47wh984qgs1fq2xy5"))))
+    ;; TODO: unbundle urllib3 and chardet.
     (build-system python-build-system)
-    (native-inputs
-     `(("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-wheel" ,python-wheel)))
+    (arguments
+     ;; FIXME: Some tests require network access.
+     '(#:tests? #f))
     (home-page "http://python-requests.org/")
     (synopsis "Python HTTP library")
     (description
