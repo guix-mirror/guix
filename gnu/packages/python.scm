@@ -2782,6 +2782,9 @@ reStructuredText.")
         (base32
          "0lagrwifsgn0s8bzqahpr87p7gd38xja8f06akscinp6hj89283k"))))
     (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests require sphinx, which depends on this.
+     '(#:tests? #f))
     (home-page "http://pygments.org/")
     (synopsis "Syntax highlighting")
     (description
