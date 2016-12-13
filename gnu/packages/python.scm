@@ -946,6 +946,9 @@ password storage.")
        (base32
         "0snmb8xffb3vsma0z67i0h0w2g2dy0p3gsgh9gi4i0kgc5l8spqh"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)))
     (home-page "http://pypi.python.org/pypi/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
