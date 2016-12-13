@@ -1077,7 +1077,7 @@ PNG, and performs PNG integrity checks and corrections.")
            (lambda _
              (substitute* "simd/jsimd_mips.c"
                (("env = getenv\\(\"JSIMD_FORCEDSPR2")
-                "char *env = getenv\(\"JSIMD_FORCEDSPR2"))
+                "char *env = getenv(\"JSIMD_FORCEDSPR2"))
              #t)))))
     (home-page "http://www.libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
