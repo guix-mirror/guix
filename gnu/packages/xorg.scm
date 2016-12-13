@@ -2543,7 +2543,7 @@ It is used to cotrol the pointer with a joystick device.")
 (define-public xf86-input-mouse
   (package
     (name "xf86-input-mouse")
-    (version "1.9.1")
+    (version "1.9.2")
     (source
       (origin
         (method url-fetch)
@@ -2553,7 +2553,7 @@ It is used to cotrol the pointer with a joystick device.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1kn5kx3qyn9qqvd6s24a2l1wfgck2pgfvzl90xpl024wfxsx719l"))))
+            "0bsbgww9421792zan43j60mndqprhfxhc48agsi15d3abjqda9gl"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
