@@ -4230,15 +4230,15 @@ a front-end for C compilers or analysis tools.")
        ("python-six" ,python-six)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'install 'install-doc
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((doc (string-append (assoc-ref outputs "out") "/share"
-                                    "/doc/" ,name "-" ,version)))
-            (mkdir-p doc)
-            (copy-file "README.md"
-                       (string-append doc "/README.md"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((doc (string-append (assoc-ref outputs "out") "/share"
+                                       "/doc/" ,name "-" ,version)))
+               (mkdir-p doc)
+               (copy-file "README.md"
+                          (string-append doc "/README.md"))
+               #t))))))
     (home-page "https://github.com/tych0/xcffib")
     (synopsis "XCB Python bindings")
     (description
