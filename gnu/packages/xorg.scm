@@ -2519,7 +2519,7 @@ It is used to cotrol the pointer with a joystick device.")
 (define-public xf86-input-keyboard
   (package
     (name "xf86-input-keyboard")
-    (version "1.8.1")
+    (version "1.9.0")
     (source
       (origin
         (method url-fetch)
@@ -2529,7 +2529,7 @@ It is used to cotrol the pointer with a joystick device.")
                ".tar.bz2"))
         (sha256
           (base32
-            "04d27kwqq03fc26an6051hs3i0bff8albhnngzyd59wxpwwzzj0s"))))
+            "12032yg412kyvnmc5fha1in7mpi651d8sa1bk4138s2j2zr01jgp"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
