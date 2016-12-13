@@ -218,7 +218,25 @@ internet.")
      `(("procps" ,procps)))
     (build-system gnu-build-system)
     (arguments
-     `(#:test-target "runtest"))
+     '(#:test-target "runtest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-mips-variable-in-testsuite
+           ;; This comes from https://github.com/cisco/libsrtp/pull/151
+           (lambda _
+             (substitute* "test/srtp_driver.c"
+               (("mips ") "mips_est ")
+               (("mips\\)") "mips_est)"))
+             #t))
+         (add-after 'unpack 'patch-dictionary-location
+           ;; With the above changes, the rtpw_test.sh test finally runs, and fails
+           (lambda _
+             (substitute* "test/rtpw.c"
+               (("/usr/share/dict/words")
+                (string-append (assoc-ref %build-inputs "procps")
+                               "/share/doc/procps-ng"))
+                (("words.txt") "FAQ"))
+             #t)))))
     (synopsis "Secure RTP (SRTP) Reference Implementation")
     (description "This package provides an implementation of the Secure
 Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
