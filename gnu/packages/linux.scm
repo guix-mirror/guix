@@ -924,7 +924,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.8.0")
+    (version "4.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -932,7 +932,7 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "12dk5hn1zlraqk2p0z8dv2xgsz0x9v8l3vcvf51fzj0v8b45j2d3"))))
+                "1i0n071hiqxw1gisngw2jln3kcp9sh47n6fj5hdwqrvp7w20zwy0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -960,7 +960,7 @@ packet filter.")
        ("flex" ,flex)
        ("bison" ,bison)))
     (home-page
-     "http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2")
+     "https://wiki.linuxfoundation.org/networking/iproute2")
     (synopsis
      "Utilities for controlling TCP/IP networking and traffic in Linux")
     (description
