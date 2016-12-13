@@ -11827,7 +11827,7 @@ The @code{(gnu services web)} module provides the following service:
 @deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
        [#:log-directory ``/var/log/nginx''] @
        [#:run-directory ``/var/run/nginx''] @
-       [#:vhost-list (list (nginx-vhost-configuration))] @
+       [#:server-list (list (nginx-server-configuration))] @
        [#:config-file]
 
 Return a service that runs @var{nginx}, the nginx web server.
@@ -11838,32 +11838,32 @@ files are written to @var{run-directory}.  For proper operation, these
 arguments should match what is in @var{config-file} to ensure that the
 directories are created when the service is activated.
 
-As an alternative to using a @var{config-file}, @var{vhost-list} can be
-used to specify the list of @dfn{virtual hosts} required on the host.  For
+As an alternative to using a @var{config-file}, @var{server-list} can be
+used to specify the list of @dfn{server blocks} required on the host.  For
 this to work, use the default value for @var{config-file}.
 
 @end deffn
 
-@deftp {Data Type} nginx-vhost-configuration
-Data type representing the configuration of an nginx virtual host.
+@deftp {Data Type} nginx-server-configuration
+Data type representing the configuration of an nginx server block.
 This type has the following parameters:
 
 @table @asis
 @item @code{http-port} (default: @code{80})
 Nginx will listen for HTTP connection on this port.  Set it at @code{#f} if
 nginx should not listen for HTTP (non secure) connection for this
-@dfn{virtual host}.
+@dfn{server block}.
 
 @item @code{https-port} (default: @code{443})
 Nginx will listen for HTTPS connection on this port.  Set it at @code{#f} if
-nginx should not listen for HTTPS (secure) connection for this @dfn{virtual host}.
+nginx should not listen for HTTPS (secure) connection for this @dfn{server block}.
 
 Note that nginx can listen for HTTP and HTTPS connections in the same
-@dfn{virtual host}.
+@dfn{server block}.
 
 @item @code{server-name} (default: @code{(list 'default)})
-A list of server names this vhost represents. @code{'default} represents the
-default vhost for connections matching no other vhost.
+A list of server names this server represents. @code{'default} represents the
+default server for connections matching no other server.
 
 @item @code{root} (default: @code{"/srv/http"})
 Root of the website nginx will serve.

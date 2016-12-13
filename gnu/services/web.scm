@@ -30,8 +30,8 @@
   #:use-module (ice-9 match)
   #:export (nginx-configuration
             nginx-configuration?
-            nginx-vhost-configuration
-            nginx-vhost-configuration?
+            nginx-server-configuration
+            nginx-server-configuration?
             nginx-service
             nginx-service-type))
 
@@ -41,24 +41,24 @@
 ;;;
 ;;; Code:
 
-(define-record-type* <nginx-vhost-configuration>
-  nginx-vhost-configuration make-nginx-vhost-configuration
-  nginx-vhost-configuration?
-  (http-port           nginx-vhost-configuration-http-port
+(define-record-type* <nginx-server-configuration>
+  nginx-server-configuration make-nginx-server-configuration
+  nginx-server-configuration?
+  (http-port           nginx-server-configuration-http-port
                        (default 80))
-  (https-port          nginx-vhost-configuration-https-port
+  (https-port          nginx-server-configuration-https-port
                        (default 443))
-  (server-name         nginx-vhost-configuration-server-name
+  (server-name         nginx-server-configuration-server-name
                        (default (list 'default)))
-  (root                nginx-vhost-configuration-root
+  (root                nginx-server-configuration-root
                        (default "/srv/http"))
-  (index               nginx-vhost-configuration-index
+  (index               nginx-server-configuration-index
                        (default (list "index.html")))
-  (ssl-certificate     nginx-vhost-configuration-ssl-certificate
+  (ssl-certificate     nginx-server-configuration-ssl-certificate
                        (default "/etc/nginx/cert.pem"))
-  (ssl-certificate-key nginx-vhost-configuration-ssl-certificate-key
+  (ssl-certificate-key nginx-server-configuration-ssl-certificate-key
                        (default "/etc/nginx/key.pem"))
-  (server-tokens?      nginx-vhost-configuration-server-tokens?
+  (server-tokens?      nginx-server-configuration-server-tokens?
                        (default #f)))
 
 (define-record-type* <nginx-configuration>
@@ -86,37 +86,37 @@ of index files."
         ((? string? str) str))
        names)))
 
-(define (default-nginx-vhost-config vhost)
+(define (default-nginx-server-config server)
   (string-append
    "    server {\n"
-   (if (nginx-vhost-configuration-http-port vhost)
+   (if (nginx-server-configuration-http-port server)
        (string-append "      listen "
-                      (number->string (nginx-vhost-configuration-http-port vhost))
+                      (number->string (nginx-server-configuration-http-port server))
                       ";\n")
        "")
-   (if (nginx-vhost-configuration-https-port vhost)
+   (if (nginx-server-configuration-https-port server)
        (string-append "      listen "
-                      (number->string (nginx-vhost-configuration-https-port vhost))
+                      (number->string (nginx-server-configuration-https-port server))
                       " ssl;\n")
        "")
    "      server_name " (config-domain-strings
-                         (nginx-vhost-configuration-server-name vhost))
+                         (nginx-server-configuration-server-name server))
                         ";\n"
-   (if (nginx-vhost-configuration-ssl-certificate vhost)
+   (if (nginx-server-configuration-ssl-certificate server)
        (string-append "      ssl_certificate "
-                      (nginx-vhost-configuration-ssl-certificate vhost) ";\n")
+                      (nginx-server-configuration-ssl-certificate server) ";\n")
        "")
-   (if (nginx-vhost-configuration-ssl-certificate-key vhost)
+   (if (nginx-server-configuration-ssl-certificate-key server)
        (string-append "      ssl_certificate_key "
-                      (nginx-vhost-configuration-ssl-certificate-key vhost) ";\n")
+                      (nginx-server-configuration-ssl-certificate-key server) ";\n")
        "")
-   "      root " (nginx-vhost-configuration-root vhost) ";\n"
-   "      index " (config-index-strings (nginx-vhost-configuration-index vhost)) ";\n"
-   "      server_tokens " (if (nginx-vhost-configuration-server-tokens? vhost)
+   "      root " (nginx-server-configuration-root server) ";\n"
+   "      index " (config-index-strings (nginx-server-configuration-index server)) ";\n"
+   "      server_tokens " (if (nginx-server-configuration-server-tokens? server)
                               "on" "off") ";\n"
    "    }\n"))
 
-(define (default-nginx-config log-directory run-directory vhost-list)
+(define (default-nginx-config log-directory run-directory server-list)
   (plain-file "nginx.conf"
               (string-append
                "user nginx nginx;\n"
@@ -129,7 +129,7 @@ of index files."
                "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
                "    scgi_temp_path " run-directory "/scgi_temp;\n"
                "    access_log " log-directory "/access.log;\n"
-               (let ((http (map default-nginx-vhost-config vhost-list)))
+               (let ((http (map default-nginx-server-config server-list)))
                  (do ((http http (cdr http))
                       (block "" (string-append (car http) "\n" block )))
                      ((null? http) block)))
@@ -197,9 +197,9 @@ of index files."
 (define* (nginx-service #:key (nginx nginx)
                         (log-directory "/var/log/nginx")
                         (run-directory "/var/run/nginx")
-                        (vhost-list (list (nginx-vhost-configuration)))
+                        (server-list (list (nginx-server-configuration)))
                         (config-file
-                         (default-nginx-config log-directory run-directory vhost-list)))
+                         (default-nginx-config log-directory run-directory server-list)))
   "Return a service that runs NGINX, the nginx web server.
 
 The nginx daemon loads its runtime configuration from CONFIG-FILE, stores log
