@@ -206,6 +206,7 @@ unavailable optional dependencies such as Guile-JSON."
                  %cran-updater
                  %bioconductor-updater
                  %hackage-updater
+                 ((guix import cpan) => %cpan-updater)
                  ((guix import pypi) => %pypi-updater)
                  ((guix import gem) => %gem-updater)
                  ((guix import github) => %github-updater)))
