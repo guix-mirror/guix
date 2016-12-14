@@ -89,7 +89,13 @@ NAMES (strings)."
   "Fetch URL, store the content in a temporary file and call PROC with that
 file.  Returns the value returned by PROC.  On error call ERROR-THUNK and
 return its value or leave if it's false."
-  (proc (http-fetch/cached (string->uri url))))
+  (catch #t
+    (lambda ()
+      (proc (http-fetch/cached (string->uri url))))
+    (lambda (key . args)
+      (if error-thunk
+          (error-thunk)
+          (leave (_ "~A: download failed~%") url)))))
 
 (define (is-elpa-package? name elpa-pkg-spec)
   "Return true if the string NAME corresponds to the name of the package
