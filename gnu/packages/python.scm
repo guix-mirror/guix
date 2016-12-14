@@ -3060,6 +3060,9 @@ mining and data analysis.")
        (sha256
         (base32 "0jz416fqvpahqyffw8plmszzfj669w8wvf3y9clnr5lr6a7md3kn"))))
     (build-system python-build-system)
+    (arguments
+     ;; TODO: Some tests require running X11 server. Disable them?
+     '(#:tests? #f))
     ;; See DEPENDS.txt for the list of build and run time requiremnts
     (propagated-inputs
      `(("python-matplotlib" ,python-matplotlib)
