@@ -1245,6 +1245,30 @@ and stored in memory.")
     (description "This package provides a modern list API library for Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-bui
+  (package
+    (name "emacs-bui")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/alezost/bui.el/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vsh1v99xxm6hhqp0vg9fbs230kawa7xb5dnd8fidf3vwm622aqh"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("dash" ,emacs-dash)))
+    (home-page "https://github.com/alezost/bui.el")
+    (synopsis "Buffer interface library for Emacs")
+    (description
+     "BUI (Buffer User Interface) is a library for making @code{list} and
+@code{info} interfaces to display an arbitrary data of the same
+type, for example: packages, buffers, files, etc.")
+    (license license:gpl3+)))
+
 (define-public emacs-d-mode
   (package
     (name "emacs-d-mode")
