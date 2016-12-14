@@ -48,6 +48,8 @@
   postgresql-configuration?
   (postgresql     postgresql-configuration-postgresql ;<package>
                   (default postgresql))
+  (port           postgresql-configuration-port
+                  (default 5432))
   (config-file    postgresql-configuration-file)
   (data-directory postgresql-configuration-data-directory))
 
@@ -80,7 +82,7 @@ host	all	all	::1/128 	trust"))
 
 (define postgresql-activation
   (match-lambda
-    (($ <postgresql-configuration> postgresql config-file data-directory)
+    (($ <postgresql-configuration> postgresql port config-file data-directory)
      #~(begin
          (use-modules (guix build utils)
                       (ice-9 match))
@@ -108,7 +110,7 @@ host	all	all	::1/128 	trust"))
 
 (define postgresql-shepherd-service
   (match-lambda
-    (($ <postgresql-configuration> postgresql config-file data-directory)
+    (($ <postgresql-configuration> postgresql port config-file data-directory)
      (let ((start-script
             ;; Wrapper script that switches to the 'postgres' user before
             ;; launching daemon.
@@ -121,6 +123,7 @@ host	all	all	::1/128 	trust"))
                               (system* postgres
                                        (string-append "--config-file="
                                                       #$config-file)
+                                       "-p" (number->string #$port)
                                        "-D" #$data-directory)))))
        (list (shepherd-service
               (provision '(postgres))
@@ -140,6 +143,7 @@ host	all	all	::1/128 	trust"))
                                           (const %postgresql-accounts))))))
 
 (define* (postgresql-service #:key (postgresql postgresql)
+                             (port 5432)
                              (config-file %default-postgres-config)
                              (data-directory "/var/lib/postgresql/data"))
   "Return a service that runs @var{postgresql}, the PostgreSQL database server.
@@ -149,6 +153,7 @@ and stores the database cluster in @var{data-directory}."
   (service postgresql-service-type
            (postgresql-configuration
             (postgresql postgresql)
+            (port port)
             (config-file config-file)
             (data-directory data-directory))))
 

@@ -10166,13 +10166,14 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 The @code{(gnu services databases)} module provides the following services.
 
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
-       [#:config-file] [#:data-directory ``/var/lib/postgresql/data'']
+       [#:config-file] [#:data-directory ``/var/lib/postgresql/data''] @
+       [#:port 5432]
 Return a service that runs @var{postgresql}, the PostgreSQL database
 server.
 
 The PostgreSQL daemon loads its runtime configuration from
-@var{config-file} and stores the database cluster in
-@var{data-directory}.
+@var{config-file}, stores the database cluster in @var{data-directory} and
+listens on @var{port}.
 @end deffn
 
 @deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
