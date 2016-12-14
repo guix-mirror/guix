@@ -230,7 +230,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "2.1.4")
+    (version "2.1.5")
     (replacement #f)
     (source (origin
               (method url-fetch)
@@ -238,7 +238,7 @@ without requiring the source code to be rewritten.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1w8kyy8nz6489d092fix6lvgjrk0bww7i0c2k67ym4hq0kjl0r1j"))
+                "0r9y4hw17dlxahik4zsccfb2f3p2a07wqndfm251bgmam9hln6gi"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -247,7 +247,10 @@ without requiring the source code to be rewritten.")
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
     (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
-    (properties '((timeout . 72000)))  ; 20 hours
+    (properties '((timeout . 72000)               ;20 hours
+                  (upstream-name . "guile")
+                  (ftp-server . "alpha.gnu.org")
+                  (ftp-directory . "/gnu/guile")))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
