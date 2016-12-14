@@ -797,14 +797,13 @@ API for locking files.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/m/mock/"
-                           "mock-" version ".tar.gz"))
+       (uri (pypi-uri "mock" version))
        (sha256
         (base32
          "0kzlsbki6q0awf89rc287f3aj8x431lrajf160a70z0ikhnxsfdq"))))
     (build-system python-build-system)
     (arguments '(#:test-target "check"))
-    (home-page "http://code.google.com/p/mock/")
+    (home-page "https://github.com/testing-cabal/mock")
     (synopsis "Python mocking and patching library for testing")
     (description
      "Mock is a library for testing in Python.  It allows you to replace parts
