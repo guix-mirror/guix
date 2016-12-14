@@ -106,6 +106,10 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
                (base32
                 "0906hms6y6znjhpd0g4wmzv9vcla4brkdpsm4zha9zdj8g5vq2hd"))))
     (build-system python-build-system)
+    (arguments
+     ;; FIXME: Upstream uses a 'runtests.py' script that is not
+     ;; present in the pypi tarball.
+     '(#:tests? #f))
     (propagated-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/alsoicode/django-simple-math-captcha")
