@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6670,24 +6670,9 @@ constant-time:
     (license license:bsd-3)))
 
 (define-public idris
-  ;; TODO: IDRIS_LIBRARY_PATH only accepts a single path and not a colon
-  ;; separated list.
-  ;; TODO: When installing idris the location of the standard libraries
-  ;; cannot be specified.
-  ;; NOTE: Creating an idris build system:
-  ;; Idris packages can be packaged and installed using a trivial
-  ;; build system.
-  ;; (zero? (system* (string-append idris "/bin/idris")
-  ;;                                "--ibcsubdir"
-  ;;                                (string-append out "/idris/libs/lightyear")
-  ;;                                "--install" "lightyear.ipkg")
-  ;; (native-search-paths
-  ;;   (list (search-path-specification
-  ;;          (variable "IDRIS_LIBRARY_PATH")
-  ;;          (files '("idris/libs")))))
   (package
     (name "idris")
-    (version "0.12.3")
+    (version "0.99")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6695,17 +6680,8 @@ constant-time:
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "1ijrbgzaahw9aagn4al55nqcggrg9ajlrkq2fjc1saq3xdd3v7rs"))))
+                "1sd4vy5rx0mp32xj99qijhknkgw4d2rxvz6wiy3pym6kaqmc497i"))))
     (build-system haskell-build-system)
-    (arguments
-     `(;; FIXME: runhaskell Setup.hs test doesn't set paths required by test
-       ;; suite.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-cc-command
-           (lambda _
-             (setenv "CC" "gcc"))))))
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
@@ -6741,6 +6717,31 @@ constant-time:
        ("ghc-vector" ,ghc-vector)
        ("ghc-zip-archive" ,ghc-zip-archive)
        ("ghc-zlib" ,ghc-zlib)))
+    (arguments
+     `(#:tests? #f ; FIXME: Test suite doesn't run in a sandbox.
+       #:configure-flags
+       (list (string-append "--datasubdir="
+                            (assoc-ref %outputs "out") "/lib/idris"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-cc-command
+           (lambda _
+             (setenv "CC" "gcc")
+             #t))
+         (add-after 'install 'fix-libs-install-location
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib/idris"))
+                    (modules (string-append lib "/libs")))
+               (for-each
+                (lambda (module)
+                  (symlink (string-append modules "/" module)
+                           (string-append lib "/" module)))
+                '("prelude" "base" "contrib" "effects" "pruviloj"))))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "IDRIS_LIBRARY_PATH")
+            (files '("lib/idris")))))
     (home-page "http://www.idris-lang.org")
     (synopsis "General purpose language with full dependent types")
     (description "Idris is a general purpose language with full dependent
