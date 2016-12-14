@@ -50,6 +50,8 @@
                   (default postgresql))
   (port           postgresql-configuration-port
                   (default 5432))
+  (locale         postgresql-configuration-locale
+                  (default "en_US.utf8"))
   (config-file    postgresql-configuration-file)
   (data-directory postgresql-configuration-data-directory))
 
@@ -82,13 +84,18 @@ host	all	all	::1/128 	trust"))
 
 (define postgresql-activation
   (match-lambda
-    (($ <postgresql-configuration> postgresql port config-file data-directory)
+    (($ <postgresql-configuration> postgresql port locale config-file data-directory)
      #~(begin
          (use-modules (guix build utils)
                       (ice-9 match))
 
          (let ((user (getpwnam "postgres"))
-               (initdb (string-append #$postgresql "/bin/initdb")))
+               (initdb (string-append #$postgresql "/bin/initdb"))
+               (initdb-args
+                (append
+                 (if #$locale
+                     (list (string-append "--locale=" #$locale))
+                     '()))))
            ;; Create db state directory.
            (mkdir-p #$data-directory)
            (chown #$data-directory (passwd:uid user) (passwd:gid user))
@@ -103,14 +110,19 @@ host	all	all	::1/128 	trust"))
                 (lambda ()
                   (setgid (passwd:gid user))
                   (setuid (passwd:uid user))
-                  (primitive-exit (system* initdb "-D" #$data-directory)))
+                  (primitive-exit
+                   (apply system*
+                          initdb
+                          "-D"
+                          #$data-directory
+                          initdb-args)))
                 (lambda ()
                   (primitive-exit 1))))
              (pid (waitpid pid))))))))
 
 (define postgresql-shepherd-service
   (match-lambda
-    (($ <postgresql-configuration> postgresql port config-file data-directory)
+    (($ <postgresql-configuration> postgresql port locale config-file data-directory)
      (let ((start-script
             ;; Wrapper script that switches to the 'postgres' user before
             ;; launching daemon.
@@ -144,6 +156,7 @@ host	all	all	::1/128 	trust"))
 
 (define* (postgresql-service #:key (postgresql postgresql)
                              (port 5432)
+                             (locale "en_US.utf8")
                              (config-file %default-postgres-config)
                              (data-directory "/var/lib/postgresql/data"))
   "Return a service that runs @var{postgresql}, the PostgreSQL database server.
@@ -154,6 +167,7 @@ and stores the database cluster in @var{data-directory}."
            (postgresql-configuration
             (postgresql postgresql)
             (port port)
+            (locale locale)
             (config-file config-file)
             (data-directory data-directory))))
 

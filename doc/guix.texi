@@ -10167,13 +10167,13 @@ The @code{(gnu services databases)} module provides the following services.
 
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
        [#:config-file] [#:data-directory ``/var/lib/postgresql/data''] @
-       [#:port 5432]
+       [#:port 5432] [#:locale ``en_US.utf8'']
 Return a service that runs @var{postgresql}, the PostgreSQL database
 server.
 
-The PostgreSQL daemon loads its runtime configuration from
-@var{config-file}, stores the database cluster in @var{data-directory} and
-listens on @var{port}.
+The PostgreSQL daemon loads its runtime configuration from @var{config-file},
+creates a database cluster with @var{locale} as the default
+locale, stored in @var{data-directory}.  It then listens on @var{port}.
 @end deffn
 
 @deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
