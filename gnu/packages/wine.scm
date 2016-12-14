@@ -83,7 +83,7 @@
        ("libmpg123" ,mpg123)
        ("libldap" ,openldap)
        ("libnetapi" ,samba)
-       ("libsane" ,sane-backends)
+       ("libsane" ,sane-backends-minimal)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg)
        ("libtiff" ,libtiff)
