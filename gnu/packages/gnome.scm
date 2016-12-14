@@ -4399,7 +4399,19 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))))
+                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))
+              (snippet
+              '(begin
+                 (use-modules (guix build utils))
+                 (substitute* "configure"
+                   ;; Replace libsystemd-login with libelogind.
+                   (("libsystemd-login") "libelogind"))
+                 (substitute* "src/devices/wwan/nm-modem-manager.c"
+                   (("systemd") "elogind"))
+                 (substitute* "src/nm-session-monitor.c"
+                   (("systemd") "elogind"))
+                 (substitute* "./src/nm-logging.c"
+                   (("systemd") "elogind"))))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -4409,7 +4421,9 @@ users.")
              (doc      (assoc-ref %outputs "doc"))
              (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
                                       "/sbin/dhclient")))
-         (list "--with-crypto=gnutls"
+         (list "--with-systemd-logind=yes" ;In GuixSD, this is provided by elogind.
+               "--with-consolekit=no"
+               "--with-crypto=gnutls"
                "--disable-config-plugin-ibft"
                "--sysconfdir=/etc"
                "--localstatedir=/var"
@@ -4474,7 +4488,8 @@ users.")
        ("polkit" ,polkit)
        ("ppp" ,ppp)
        ("readline" ,readline)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux)
+       ("elogind" ,elogind)))
     (synopsis "Network connection manager")
     (home-page "http://www.gnome.org/projects/NetworkManager/")
     (description
