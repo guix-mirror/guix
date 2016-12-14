@@ -5721,7 +5721,10 @@ complexity of Python source code.")
                ".tar.gz"))
         (sha256
           (base32
-            "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))))
+           "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))
+    (arguments
+     ;; XXX Tests not compatible with Python 3.5.
+     '(#:tests? #f))))
 
 (define-public python2-pyflakes-0.8.1
   (package-with-python2 python-pyflakes-0.8.1))
