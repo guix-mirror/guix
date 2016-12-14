@@ -10484,6 +10484,12 @@ parsing UK postcodes.")
              (base32
               "0vs0dkmg0dlaxf8w6q2i3k0i03gmp56ablldv7ci9x3nbadkn71g"))))
   (build-system python-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+       (replace 'check
+         (lambda _
+           (zero? (system* "python" "-m" "unittest" "-v" "faker.tests")))))))
   (native-inputs
    `(;; For testing
      ("python-email-validator" ,python-email-validator)
