@@ -562,6 +562,8 @@ Python.")
       ("python-future" ,python-future)
       ("python-click" ,python-click)
       ("python-h5py" ,python-h5py)))
+   (native-inputs
+    `(("python-nose" ,python-nose)))
    (home-page "http://www.biom-format.org")
    (synopsis "Biological Observation Matrix (BIOM) format utilities")
    (description
