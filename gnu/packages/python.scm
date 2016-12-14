@@ -8468,6 +8468,8 @@ servers.")
       (base32
        "0g9xvl69y7nr3w7ag4fsp6sm4fqf6vrqjw7504x2hzrrsh3ampq8"))))
    (build-system python-build-system)
+   (native-inputs
+    `(("python-nose" ,python-nose)))
    (synopsis "JSON Matching Expressions")
    (description "JMESPath (pronounced “james path”) is a Python library that
 allows one to declaratively specify how to extract elements from a JSON
