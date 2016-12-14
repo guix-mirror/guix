@@ -47,6 +47,10 @@
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'disable-backends
+           (lambda _
+             (setenv "BACKENDS" " ")
+             #t))
          (add-after
           'install 'install-udev-rules
           (lambda* (#:key outputs #:allow-other-keys)
