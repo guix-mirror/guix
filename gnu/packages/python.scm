@@ -5702,7 +5702,10 @@ complexity of Python source code.")
                ".tar.gz"))
         (sha256
           (base32
-            "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))))
+           "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))
+    (arguments
+     ;; XXX Tests not compatible with Python 3.5.
+     '(#:tests? #f))))
 
 (define-public python2-pep8-1.5.7
   (package-with-python2 python-pep8-1.5.7))
