@@ -7330,6 +7330,7 @@ internationalized messages within program source text.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-zope-event" ,python-zope-event)
+       ("python-zope-exceptions", python-zope-exceptions)
        ("python-zope-interface" ,python-zope-interface)))
     (native-inputs
      `(("python-zope-testing" ,python-zope-testing)
