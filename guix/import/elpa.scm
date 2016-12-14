@@ -228,7 +228,7 @@ type '<elpa-package>'."
                         (bytevector->nix-base32-string (file-sha256 tarball))
                         "failed to download package")))))
        (build-system emacs-build-system)
-       ,@(maybe-inputs 'inputs dependencies)
+       ,@(maybe-inputs 'propagated-inputs dependencies)
        (home-page ,(elpa-package-home-page pkg))
        (synopsis ,(elpa-package-synopsis pkg))
        (description ,(elpa-package-description pkg))
