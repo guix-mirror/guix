@@ -11927,3 +11927,28 @@ network.")
 
 (define-public python2-argcomplete
   (package-with-python2 python-argcomplete))
+
+(define-public python-xopen
+  (package
+    (name "python-xopen")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "xopen" version))
+        (sha256
+          (base32
+           "1wx6mylzcsyhjl19ycb83qq6iqpmr927lz62njfsar6ldsj0qcni"))
+        (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/marcelm/xopen/")
+    (synopsis "Open compressed files transparently")
+    (description "This module provides an @code{xopen} function that works like
+Python's built-in @code{open} function, but can also deal with compressed files.
+Supported compression formats are gzip, bzip2 and, xz, and are automatically
+recognized by their file extensions.  The focus is on being as efficient as
+possible on all supported Python versions.")
+    (license license:expat)))
+
+(define-public python2-xopen
+  (package-with-python2 python-xopen))
