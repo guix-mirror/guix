@@ -7605,7 +7605,7 @@ for RAID-4, RAID-5 or RAID-6, or @code{raid10} for RAID-10.
 @cindex LUKS
 The following example specifies a mapping from @file{/dev/sda3} to
 @file{/dev/mapper/home} using LUKS---the
-@url{http://code.google.com/p/cryptsetup,Linux Unified Key Setup}, a
+@url{https://gitlab.com/cryptsetup/cryptsetup,Linux Unified Key Setup}, a
 standard mechanism for disk encryption.
 The @file{/dev/mapper/home}
 device can then be used as the @code{device} of a @code{file-system}
