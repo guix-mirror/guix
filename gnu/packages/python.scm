@@ -10314,6 +10314,8 @@ datetime type.")
               (base32
                "1jhnxgnw8y3mbzjssixh6qkc7a3afc4fygajhqrqalnilyvpzshq"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://github.com/jpvanhal/inflection")
     (synopsis "Python string transformation library")
     (description
