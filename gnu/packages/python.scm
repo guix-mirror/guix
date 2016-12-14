@@ -10520,6 +10520,8 @@ addresses, and phone numbers.")
                (base32
                 "1f5m28vkh4ksq3d80d8mmd2z8wxvc3mgy2pmrv2751dm2xgznm4w"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-unidecode" ,python-unidecode)))
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)))
     (home-page "https://github.com/mk-fg/pretty-yaml")
