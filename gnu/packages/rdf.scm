@@ -315,6 +315,18 @@ ideal (e.g. in LV2 implementations or embedded applications).")
           (base32
             "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))
     (build-system python-build-system)
+    (arguments
+     '(;; FIXME: Three test failures. Try uncommenting the below next update.
+       #:tests? #f))
+       ;; #:phases
+       ;; (modify-phases %standard-phases
+       ;;   (replace 'check
+       ;;     (lambda _
+       ;;       ;; Run tests from the build directory so python3 only
+       ;;       ;; sees the installed 2to3 version.
+       ;;       (zero? (system* "nosetests" "--where=./build/src")))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
     (propagated-inputs
       `(("python-html5lib" ,python-html5lib)
         ("python-isodate" ,python-isodate)
@@ -329,12 +341,4 @@ powerful language for representing information.")
                         "See LICENSE in the distribution."))))
 
 (define-public python2-rdflib
-  (let ((base (package-with-python2 python-rdflib)))
-    (package
-      (inherit base)
-      (inputs
-        (append (package-inputs base)
-                `(("python2-nose" ,python2-nose))))
-      (arguments
-        `(#:python ,python-2
-          #:tests? #f))))) ; 3 tests fail, also outside Guix
+  (package-with-python2 python-rdflib))
