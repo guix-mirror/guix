@@ -8125,6 +8125,14 @@ Blog, News or Announcements section to a Sphinx website.")
                (base32
                 "1an5lkkqk1zha47198p42ji3m94xmzx1a03dn7866m87n4r4q8h5"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test" "-v")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-args" ,python-args)))
     (home-page "https://github.com/kennethreitz/clint")
