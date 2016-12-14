@@ -3290,7 +3290,8 @@ capabilities.")
     (native-inputs
      `(("unzip" ,unzip)
        ("python2-cython" ,python2-cython)
-       ("python2-mock" ,python2-mock)))
+       ("python2-mock" ,python2-mock)
+       ("python2-nose" ,python2-nose)))
     (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/fastlmm/")
     (synopsis "Perform genome-wide association studies on large data sets")
     (description
