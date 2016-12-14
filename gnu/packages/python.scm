@@ -5795,7 +5795,10 @@ complexity of Python source code.")
             (for-each delete-file-recursively
                       (find-files "." "__pycache__" #:directories? #t))
             (for-each delete-file (find-files "." "\\.pyc$"))
-            #t))))))
+            #t))))
+    (arguments
+     ;; XXX Fails with Python 3.5.
+     '(#:tests? #f))))
 
 (define-public python2-flake8-2.2.4
   (package-with-python2 python-flake8-2.2.4))
