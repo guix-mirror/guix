@@ -6155,6 +6155,8 @@ and MAC network addresses.")
        (base32
         "0c7gh3lsdjds262h0v1sqc66l7hqgfwbakn96qrhdbl0i3vm5yz8"))))
   (build-system python-build-system)
+  (native-inputs
+   `(("python-pytest" ,python-pytest)))
   (home-page "https://bitbucket.org/micktwomey/pyiso8601")
   (synopsis "Module to parse ISO 8601 dates")
   (description
