@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 (define-module (gnu packages scanner)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb)
@@ -78,3 +80,41 @@ proving access to any raster image scanner hardware (flatbed scanner,
 hand-held scanner, video- and still-cameras, frame-grabbers, etc.).  The
 package contains the library, but no drivers.")
     (license licence:gpl2+))) ; plus linking exception
+
+;; This variant links in the hpaio backend, provided by hplip, which adds
+;; support for HP scanners whose backends are not maintained by
+;; 'sane-backends'. It also builds all of those backends.
+(define-public sane-backends
+  (package
+    (inherit sane-backends-minimal)
+    (name "sane-backends")
+    (inputs
+     `(("hplip" ,(@ (gnu packages cups) hplip))
+       ,@(package-inputs sane-backends-minimal)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sane-backends-minimal)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'disable-backends)
+           (add-after 'unpack 'add-backends
+             (lambda _
+               (substitute* "backend/dll.conf.in"
+                 (("hp5590" all) (format #f "~a~%~a" all "hpaio")))
+               #t))
+           (add-after 'install 'install-hpaio
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (define hplip (string-append (assoc-ref inputs "hplip")
+                                            "/lib/sane"))
+               (define out (string-append (assoc-ref outputs "out")
+                                          "/lib/sane"))
+               (for-each
+                (lambda (file)
+                  (symlink file (string-append out "/" (basename file))))
+                (find-files hplip))
+               #t))))))
+    (synopsis
+     "Raster image scanner library and drivers, with scanner support")
+    (description "SANE stands for \"Scanner Access Now Easy\" and is an API
+proving access to any raster image scanner hardware (flatbed scanner,
+hand-held scanner, video- and still-cameras, frame-grabbers, etc.).  The
+package contains the library and drivers.")))
