@@ -2648,9 +2648,7 @@ services for numerous locations.")
          "1rvqisrh3lridsb8rvm7spvncyq206ly0245zgpbm8swi5fhfjp8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(;; Network manager not yet packaged.
-       #:configure-flags '("--disable-network-manager")
-       ;; Color management test can't reach the colord system service.
+     `(;; Color management test can't reach the colord system service.
        #:tests? #f))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2679,7 +2677,8 @@ services for numerous locations.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libwacom" ,libwacom)
        ("librsvg" ,librsvg)
-       ("xf86-input-wacom" ,xf86-input-wacom)))
+       ("xf86-input-wacom" ,xf86-input-wacom)
+       ("network-manager" ,network-manager)))
     (home-page "http://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
