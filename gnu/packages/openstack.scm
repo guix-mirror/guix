@@ -113,6 +113,9 @@ manner.")
         (base32
          "1a310k3dv04jg7zvmk37h2ql7y9kf4hvdxb74bjlwdxgmy6h4wap"))))
     (build-system python-build-system)
+    (arguments
+     ;; TODO: Requires unpackaged 'eventlet'.
+     '(#:tests? #f))
     (propagated-inputs
       `(("python-flake8-2.2.4" ,python-flake8-2.2.4)
         ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
