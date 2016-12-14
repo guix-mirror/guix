@@ -2068,10 +2068,18 @@ from git information.
         (base32
          "0djxvdwm8s60dbfn7bhf40x6g818p3b3mlwijm1c3bqg7msn271y"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "testtools.run"
+                             "fixtures.test_suite")))))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (native-inputs
-     `(("python-pbr-minimal" ,python-pbr-minimal)
+     `(("python-mock" ,python-mock)
+       ("python-pbr-minimal" ,python-pbr-minimal)
        ("python-testtools" ,python-testtools)))
     (home-page "https://launchpad.net/python-fixtures")
     (synopsis "Python test fixture library")
