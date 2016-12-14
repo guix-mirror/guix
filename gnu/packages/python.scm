@@ -8544,7 +8544,7 @@ Amazon Web Services (AWS) API.")
                (base32
                 "0qyqq9akm4vshhn8cngjc1qykcvsn7cz6dlm6njfsgpbraqrmbbw"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (native-inputs
      `(("python-flake8" ,python-flake8)
        ("python-pytest" ,python-pytest)))
     (synopsis "Library for property based testing")
@@ -8561,7 +8561,8 @@ seamlessly into your existing Python unit testing work flow.")
                      (strip-python2-variant python-hypothesis))))
     (package (inherit hypothesis)
       (native-inputs
-       `(("python2-enum34" ,python2-enum34))))))
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-native-inputs hypothesis))))))
 
 (define-public python-pytest-subtesthack
   (package
