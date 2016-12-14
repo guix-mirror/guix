@@ -178,8 +178,8 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 
 # Linux-Libre configurations.
 KCONFIGS =					\
-  gnu/packages/linux-libre-4.8-i686.conf	\
-  gnu/packages/linux-libre-4.8-x86_64.conf	\
+  gnu/packages/linux-libre-4.9-i686.conf	\
+  gnu/packages/linux-libre-4.9-x86_64.conf	\
   gnu/packages/linux-libre-4.4-i686.conf	\
   gnu/packages/linux-libre-4.4-x86_64.conf	\
   gnu/packages/linux-libre-4.1-i686.conf	\
