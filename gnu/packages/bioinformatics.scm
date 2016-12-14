@@ -1832,7 +1832,7 @@ preparation protocols.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-nose" ,python-nose)))
-    (home-page "https://code.google.com/p/cutadapt/")
+    (home-page "https://cutadapt.readthedocs.io/en/stable/")
     (synopsis "Remove adapter sequences from nucleotide sequencing reads")
     (description
      "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
@@ -4263,7 +4263,7 @@ viewer.")
        `(("perl" ,perl)
          ("zlib" ,zlib)))
       (supported-systems '("x86_64-linux"))
-      (home-page "https://code.google.com/p/mosaik-aligner/")
+      (home-page "https://github.com/wanpinglee/MOSAIK")
       (synopsis "Map nucleotide sequence reads to reference genomes")
       (description
        "MOSAIK is a program for mapping second and third-generation sequencing
@@ -7807,7 +7807,7 @@ may optionally be provided to further inform the peak-calling process.")
      `(("python2-numpy" ,python2-numpy)
        ("python2-scipy" ,python2-scipy)
        ("python2-pysam" ,python2-pysam)))
-    (home-page "https://code.google.com/p/pepr-chip-seq/")
+    (home-page "https://github.com/shawnzhangyx/PePr")
     (synopsis "Peak-calling and prioritization pipeline for ChIP-Seq data")
     (description
      "PePr is a ChIP-Seq peak calling or differential binding analysis tool
