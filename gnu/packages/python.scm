@@ -6425,14 +6425,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.6")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "0xgn3yvlmv5rs92wgjj39qscr6s7mwbbsx7j683sfa6ijmyb1k01"))))
+         "1x2mz4wggja5ih45c6cw0kzyad4jr8avg327dawjr1gnpdq1psa7"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -6447,29 +6447,15 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.6")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0gwvmz6w5ml0bjbgmdiscsv5i948lrjd381z7h9qkz6kr398c3ad"))))
+         "0k6v7wq4h0yk9r0x0bl2x9fyrg4a6gj5qp4m9mgpk6m481yyygwm"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-test
-           (lambda _
-             ;; This test is known to fail with OpenSSL >= 1.0.2i and older
-             ;; versions of python-cryptography:
-             ;; https://github.com/pyca/cryptography/issues/3196
-             ;; TODO: Try re-enabling the test when upgrading
-             ;; python-cryptography.
-             (substitute* "tests/hazmat/backends/test_openssl.py"
-               (("def test_numeric_string_x509_name_entry")
-                 "@pytest.mark.xfail\n    def test_numeric_string_x509_name_entry"))
-             #t)))))
     (inputs
      `(("openssl" ,openssl)))
     (propagated-inputs
