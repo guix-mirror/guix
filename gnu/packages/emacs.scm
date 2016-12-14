@@ -1269,6 +1269,59 @@ and stored in memory.")
 type, for example: packages, buffers, files, etc.")
     (license license:gpl3+)))
 
+(define-public emacs-guix
+  (package
+    (name "emacs-guix")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alezost/guix.el"
+                                  "/releases/download/v" version
+                                  "/emacs-guix-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h168597am5vcix149l27g876v4f5yqwx8v0s9mmsdva1qqcq5s5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (let ((guix        (assoc-ref %build-inputs "guix"))
+             (geiser      (assoc-ref %build-inputs "geiser"))
+             (dash        (assoc-ref %build-inputs "dash"))
+             (bui         (assoc-ref %build-inputs "bui"))
+             (magit-popup (assoc-ref %build-inputs "magit-popup"))
+             (site-lisp   "/share/emacs/site-lisp"))
+         (list (string-append "--with-guix-site-dir="
+                              guix "/share/guile/site/2.0")
+               (string-append "--with-geiser-lispdir=" geiser site-lisp)
+               (string-append "--with-dash-lispdir="
+                              dash site-lisp "/guix.d/dash-"
+                              ,(package-version emacs-dash))
+               (string-append "--with-bui-lispdir="
+                              bui site-lisp "/guix.d/bui-"
+                              ,(package-version emacs-bui))
+               (string-append "--with-popup-lispdir="
+                              magit-popup site-lisp "/guix.d/magit-popup-"
+                              ,(package-version emacs-magit-popup))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("emacs" ,emacs-minimal)))
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("guix" ,guix)))
+    (propagated-inputs
+     `(("geiser" ,geiser)
+       ("dash" ,emacs-dash)
+       ("bui" ,emacs-bui)
+       ("magit-popup" ,emacs-magit-popup)))
+    (home-page "https://github.com/alezost/guix.el")
+    (synopsis "Emacs interface for GNU Guix")
+    (description
+     "Emacs-Guix provides a visual interface, tools and features for the
+GNU Guix package manager.  Particularly, it allows you to do various
+package management tasks from Emacs.  To begin with, run @code{M-x
+guix-help} command.")
+    (license license:gpl3+)))
+
 (define-public emacs-d-mode
   (package
     (name "emacs-d-mode")
