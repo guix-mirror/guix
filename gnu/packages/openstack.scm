@@ -81,6 +81,8 @@ all the files it generates a report.")
           (base32
            "0g4dfskaiy47rhsh4gh66l5vmdsrgq0qk68pl3ix1cj3ffvfndzv"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ;FIXME: Requires packaging python-doc8.
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))
