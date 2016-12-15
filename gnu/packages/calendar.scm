@@ -125,7 +125,7 @@ data units.")
      `(("sqlite" ,sqlite)))
     (propagated-inputs
      `(("python-configobj" ,python-configobj)
-       ("python-dateutil-2" ,python-dateutil-2)
+       ("python-dateutil" ,python-dateutil)
        ("python-icalendar" ,python-icalendar)
        ("python-tzlocal" ,python-tzlocal)
        ("python-urwid" ,python-urwid)

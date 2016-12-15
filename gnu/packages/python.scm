@@ -973,7 +973,7 @@ Python file, so it can be easily copied into your project.")
 (define-public python2-six
   (package-with-python2 python-six))
 
-(define-public python-dateutil-2
+(define-public python-dateutil
   (package
     (name "python-dateutil")
     (version "2.5.2")
@@ -993,29 +993,6 @@ Python file, so it can be easily copied into your project.")
      "The dateutil module provides powerful extensions to the standard
 datetime module, available in Python 2.3+.")
     (license license:bsd-3)))
-
-(define-public python2-dateutil-2
-  (package-with-python2 python-dateutil-2))
-
-(define-public python-dateutil
-  (package
-    (name "python-dateutil")
-    (version "1.5") ; last version for python < 3
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "http://labix.org/download/python-dateutil/"
-                          "python-dateutil-" version ".tar.gz"))
-      (sha256
-       (base32
-        "0fqfglhy5khbvsipr3x7m6bcaqljh8xl5cw33vbfxy7qhmywm2n0"))))
-    (build-system python-build-system)
-    (home-page "https://dateutil.readthedocs.io/en/stable/")
-    (synopsis "Extensions to the standard datetime module")
-    (description
-     "The dateutil module provides powerful extensions to the standard
-datetime module, available in Python 2.3+.")
-    (license license:psfl)))
 
 (define-public python2-dateutil
   (package-with-python2 python-dateutil))
@@ -1062,7 +1039,7 @@ datetime module, available in Python 2.3+.")
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-pytz" ,python-pytz)
-       ("python-dateutil" ,python-dateutil-2)))
+       ("python-dateutil" ,python-dateutil)))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-cython" ,python-cython)))
@@ -2908,7 +2885,7 @@ sources.")
          "0bh4lnj2p1nh0wf5pgxgfbrp27xhb1rinahkb5j7s3qprq6qn0sr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil-2)
+     `(("python-dateutil" ,python-dateutil)
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
@@ -3002,7 +2979,7 @@ interested parties to subscribe to events, or \"signals\".")
        ("python-blinker" ,python-blinker)
        ("python-unidecode" ,python-unidecode)
        ("python-six" ,python-six)
-       ("python-dateutil-2" ,python-dateutil-2)))
+       ("python-dateutil" ,python-dateutil)))
     (home-page "http://getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
@@ -3530,7 +3507,7 @@ transcendental functions).")
        ("python-pygobject" ,python-pygobject)
        ("gobject-introspection" ,gobject-introspection)
        ("python-tkinter" ,python "tk")
-       ("python-dateutil" ,python-dateutil-2)
+       ("python-dateutil" ,python-dateutil)
        ("python-numpy" ,python-numpy-bootstrap)
        ("python-pillow" ,python-pillow)
        ("python-pytz" ,python-pytz)
@@ -4029,7 +4006,7 @@ both of which are installed automatically if you install this library.")
      `(("python-six" ,python-six)
        ("python-sqlalchemy" ,python-sqlalchemy)))
     (native-inputs
-     `(("python-dateutil" ,python-dateutil-2)
+     `(("python-dateutil" ,python-dateutil)
        ("python-flexmock" ,python-flexmock)
        ("python-psycopg2" ,python-psycopg2)
        ("python-pytest" ,python-pytest)
@@ -8140,7 +8117,7 @@ processes across test runs.")
                "01v2f3swd5s72x65cdihw83dx1z799b4i49a6ncg7vqmcm20wapd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil-2" ,python-dateutil-2)
+     `(("python-dateutil" ,python-dateutil)
        ("python-pytz" ,python-pytz)))
     (synopsis "Python library for parsing iCalendar files")
     (description "The icalendar package is a parser/generator of iCalendar
@@ -8588,7 +8565,7 @@ document.")
     ;; FIXME: Many tests are failing.
     '(#:tests? #f))
    (propagated-inputs
-    `(("python-dateutil" ,python-dateutil-2)
+    `(("python-dateutil" ,python-dateutil)
       ("python-docutils" ,python-docutils)
       ("python-jmespath" ,python-jmespath)))
    (native-inputs
@@ -9352,7 +9329,7 @@ introspection of @code{zope.interface} instances in code.")
      '(;; The test suite relies on some non-portable Windows interfaces.
        #:tests? #f))
     (propagated-inputs
-     `(("python-dateutil-2" ,python-dateutil-2)
+     `(("python-dateutil" ,python-dateutil)
        ("python-pyicu" ,python-pyicu)))
     (synopsis "Parse and generate vCard and vCalendar files")
     (description "Vobject is intended to be a full featured Python package for
@@ -10392,7 +10369,7 @@ objects, patterned after the Mocha library for Ruby.")
        ("python-chai" ,python-chai)
        ("python-simplejson" ,python-simplejson)))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil-2)))
+     `(("python-dateutil" ,python-dateutil)))
     (home-page "https://github.com/crsmithdev/arrow/")
     (synopsis "Dates and times for Python")
     (description
@@ -10597,7 +10574,7 @@ parsing UK postcodes.")
      ("python-mock" ,python-mock)
      ("python-ukpostcodeparser" ,python-ukpostcodeparser)))
   (propagated-inputs
-   `(("python-dateutil" ,python-dateutil-2)
+   `(("python-dateutil" ,python-dateutil)
      ("python-six" ,python-six)))
   (home-page "https://github.com/joke2k/faker")
   (synopsis "Python package that generates fake data")
@@ -11202,7 +11179,7 @@ List.  Forked from and using the same API as the publicsuffix package.")
        ("python-coverage" ,python-coverage)))
     (propagated-inputs
      `(("python-six" ,python-six)
-       ("python-dateutil-2" ,python-dateutil-2)))
+       ("python-dateutil" ,python-dateutil)))
     (arguments
      `(#:phases (modify-phases %standard-phases
         ;; The tests are normally executed via `make test`, but the PyPi
@@ -11785,7 +11762,7 @@ useful as a validator for JSON data.")
             "1k5mjg9iqbjfslb5prrsfz7dhlvi6s35p1jxq8dm87w1b7dn5i2g"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil-2" ,python-dateutil-2)))
+     `(("python-dateutil" ,python-dateutil)))
     (home-page
       "https://bitbucket.org/nielsenb/aniso8601")
     (synopsis
