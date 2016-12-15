@@ -375,6 +375,8 @@ common features used in Tempest.")
          (base32
           "13r778jfb0fhna37c2pd1f2xipnsbd7zli7qhn96acrzymrwj5k1"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Requires packaging python-argparse.
     (propagated-inputs
       `(("python-netaddr" ,python-netaddr)
         ("python-six" ,python-six)
