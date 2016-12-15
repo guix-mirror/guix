@@ -1804,7 +1804,7 @@ preparation protocols.")
 (define-public cutadapt
   (package
     (name "cutadapt")
-    (version "1.8")
+    (version "1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1813,7 +1813,7 @@ preparation protocols.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "161bp87y6gd6r5bmvjpn2b1k942i3fizfpa139f0jn6jv1wcp5h5"))))
+                "19smhh6444ikn4jlmyhvffw4m5aw7yg07rqsk7arg8dkwyga1i4v"))))
     (build-system python-build-system)
     (arguments
      ;; tests must be run after install
@@ -1830,6 +1830,8 @@ preparation protocols.")
                             "/site-packages"))
                    (zero? (system* "nosetests" "-P" "tests")))
                  (alist-delete 'check %standard-phases))))
+    (inputs
+     `(("python-xopen" ,python-xopen)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-nose" ,python-nose)))
