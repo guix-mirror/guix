@@ -692,7 +692,7 @@ See http://minikanren.org/ for more on miniKanren generally.")
 (define-public guile-irregex
   (package
     (name "guile-irregex")
-    (version "0.9.4")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -700,7 +700,7 @@ See http://minikanren.org/ for more on miniKanren generally.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0cmaqvqvyarcnnsyrl2p6vwyv1r3k1q7qw8p9zrlnz1vpbj7vb90"))))
+                "1ia3m7dp3lcxa048q0gqbiwwsyvn99baw6xkhb4bhhzn4k7bwyqq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build utils)
