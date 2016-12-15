@@ -241,7 +241,7 @@ and 'interactive' (default)."
                    ((archive-type)
                     (match (and=> (package-source package) origin-uri)
                       ((? string? uri)
-                       (file-extension uri))
+                       (file-extension (basename uri)))
                       (_
                        "gz")))
                    ((url signature-url)
