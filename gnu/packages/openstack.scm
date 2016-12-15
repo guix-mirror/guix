@@ -484,6 +484,8 @@ in an application or library.")
         (base32
           "1fhy6yvbd565nv4x4i3ppyrlbmz3yy9d0xsvw5nkqsa7g43nmf8z"))))
   (build-system python-build-system)
+  (arguments
+   '(#:tests? #f)) ; FIXME: Requires oslo.utils >= 3.2.0.
   (propagated-inputs
    `(("python-debtcollector" ,python-debtcollector)
      ("python-oslo.config" ,python-oslo.config)
