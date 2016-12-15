@@ -2536,6 +2536,7 @@ somewhat intelligeble.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
        ("python-cryptography" ,python-cryptography)
        ("python-pyjwt" ,python-pyjwt)
        ("python-blinker" ,python-blinker)))
@@ -2552,7 +2553,6 @@ OAuth request-signing logic.")
     (package
       (inherit base)
       (native-inputs `(("python2-unittest2" ,python2-unittest2)
-                       ("python2-mock" ,python2-mock)
                        ,@(package-native-inputs base))))))
 
 (define-public python-itsdangerous
