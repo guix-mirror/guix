@@ -54,9 +54,6 @@
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
        ("libevent" ,libevent)))
-
-    ;; TODO: Recommend `torsocks' since `torify' needs it.
-
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
     (description
@@ -66,7 +63,11 @@ somebody watching your Internet connection from learning what sites you
 visit, and it prevents the sites you visit from learning your physical
 location.  Tor works with many of your existing applications, including
 web browsers, instant messaging clients, remote login, and other
-applications based on the TCP protocol.")
+applications based on the TCP protocol.
+To @code{torify} applications (to take measures to ensure that an application,
+which has not been designed for use with Tor such as ssh, will use only Tor for
+internet connectivity, and also ensures that there are no leaks from DNS, UDP or
+the application layer) you need to install @code{torsocks}.")
     (license bsd-3)))
 
 (define-public torsocks
