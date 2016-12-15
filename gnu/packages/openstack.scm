@@ -292,10 +292,13 @@ portions of your testing code.")
     (native-inputs
       `(("python-pbr" ,python-pbr)
         ;; Tests
+        ("python-discover" ,python-discover)
         ("python-docutils" ,python-docutils)
         ("python-mock" ,python-mock)
+        ("python-oslosphinx" ,python-oslosphinx)
         ("python-oslotest" ,python-oslotest)
-        ("python-sphinx" ,python-sphinx)))
+        ("python-sphinx" ,python-sphinx)
+        ("python-testrepository" ,python-testrepository)))
     (home-page "https://github.com/dreamhost/stevedore")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
