@@ -5355,6 +5355,8 @@ Python style, together with a fast and comfortable execution environment.")
        (sha256
         (base32 "0ibi3xsfm2kysph61mnfy0pf8d5rkgxgrdb0z9nbizgcgdsb5a0m"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; Tests requires a running X11 server.
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
        ("python-matplotlib" ,python-matplotlib)
