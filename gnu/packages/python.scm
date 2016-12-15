@@ -5306,17 +5306,18 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "3.2.1")
+    (version "3.9.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/snakemake/snakemake-"
-             version ".tar.gz"))
+       (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0fi4b63sj60hvi7rfydvmz2icl4wj74djw5sn2gl8hxd02qw4b91"))))
+        (base32 "1d48ql0010v9ls6mac7fz6j391gm4h74a64hqgw89s0vfqgdyzdl"))))
     (build-system python-build-system)
-    (home-page "https://bitbucket.org/johanneskoester/snakemake")
+    (arguments
+     ;; TODO: Package missing test dependencies.
+     '(#:tests? #f))
+    (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
       "Snakemake aims to reduce the complexity of creating workflows by
