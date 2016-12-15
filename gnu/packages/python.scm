@@ -3988,11 +3988,22 @@ both of which are installed automatically if you install this library.")
          (base32
           "1wghyvk73cmq3iqyg3fczw128fv2pan2v76m0xg1bw05h8fhvnk3"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Many tests require a running database server.
+       ;; #:phases
+       ;; (modify-phases %standard-phases
+       ;;   (replace 'check
+       ;;     (lambda _
+       ;;       (zero? (system* "py.test" "sqlalchemy_utils" "tests")))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-sqlalchemy" ,python-sqlalchemy)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-dateutil" ,python-dateutil-2)
+       ("python-flexmock" ,python-flexmock)
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-pytest" ,python-pytest)
+       ("python-pytz" ,python-pytz)))
     (home-page "https://github.com/kvesteri/sqlalchemy-utils")
     (synopsis "Various utility functions for SQLAlchemy")
     (description
