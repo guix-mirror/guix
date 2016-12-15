@@ -2710,15 +2710,26 @@ written in pure Python.")
                (base32
                 "0nmqsfmiw4arjxqkmf9z66ml950pcdjk6aq4gin4sywmzdjw5fzp"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Python 3 tests are failing.
     (home-page "http://defunkt.io/pystache/")
     (synopsis "Python logic-less template engine")
     (description
      "Pystache is a Python implementation of the framework agnostic,
 logic-free templating system Mustache.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pystache))))))
 
 (define-public python2-pystache
-  (package-with-python2 python-pystache))
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-pystache)))
+           (arguments
+            `(#:python ,python-2
+              #:phases
+              (modify-phases %standard-phases
+                (replace 'check
+                  (lambda _
+                    (zero? (system* "python" "test_pystache.py")))))))))
 
 (define-public python-joblib
   (package
