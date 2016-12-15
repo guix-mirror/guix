@@ -7439,6 +7439,8 @@ Markup Language.")
         (base32
          "0pqwwmvm1prhwv1ziv9lp8iirz7xkwb6n2kyj36p2h0ppyyhjnm4"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
     (home-page "http://pypi.python.org/pypi/zope.proxy")
