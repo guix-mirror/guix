@@ -5406,6 +5406,36 @@ and statistical routines from scipy and statsmodels.")
       (propagated-inputs `(("python2-pytz" ,python2-pytz)
                            ,@(package-propagated-inputs base))))))
 
+(define-public python-mpmath
+  (package
+  (name "python-mpmath")
+  (version "0.19")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append "http://mpmath.org/files/mpmath-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "08ijsr4ifrqv3cjc26mkw0dbvyygsa99in376hr4b96ddm1gdpb8"))))
+  (build-system python-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+       (replace 'check
+         (lambda _
+           (zero?
+            (system* "python" "mpmath/tests/runtests.py" "-local")))))))
+  (home-page "http://mpmath.org")
+  (synopsis "Arbitrary-precision floating-point arithmetic in python")
+  (description
+    "@code{mpmath} can be used as an arbitrary-precision substitute for
+Python's float/complex types and math/cmath modules, but also does much
+more advanced mathematics.")
+  (license license:bsd-3)))
+
+(define-public python2-mpmath
+  (package-with-python2 python-mpmath))
+
 (define-public python-sympy
   (package
     (name "python-sympy")
