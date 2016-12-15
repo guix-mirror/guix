@@ -5439,7 +5439,7 @@ more advanced mathematics.")
 (define-public python-sympy
   (package
     (name "python-sympy")
-    (version "0.7.6")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -5447,8 +5447,10 @@ more advanced mathematics.")
              "https://github.com/sympy/sympy/releases/download/sympy-"
              version "/sympy-" version ".tar.gz"))
        (sha256
-        (base32 "19yp0gy4i7p4g6l3b8vaqkj9qj7yqb5kqy0qgbdagpzgkdz958yz"))))
+        (base32 "1bpzjwr9hrr7w88v4vgnj9lr6vxcldc94si13n8xpr1rv08d5b1y"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mpmath" ,python-mpmath)))
     (home-page "http://www.sympy.org/")
     (synopsis "Python library for symbolic mathematics")
     (description
