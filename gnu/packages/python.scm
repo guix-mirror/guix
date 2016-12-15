@@ -4447,6 +4447,8 @@ Python language binding specification.")
        (sha256
         (base32 "1gzjg2k6f14i1msm2b0ax8d9ds1hvk6qd5nlaivg8m4cxqp4cp1x"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Requires python-cherrypy.
     (propagated-inputs
      `(("python-psutil" ,python-psutil)
        ("python-drmaa" ,python-drmaa)
