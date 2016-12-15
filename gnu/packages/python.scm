@@ -5991,6 +5991,9 @@ from an XML-based format.")
         (base32
          "0g6n288l83sfwavxh1aryi0aqvsr3sp7v6f903mckwqa4scpky62"))))
     (build-system python-build-system)
+    (arguments
+     ;; FIXME: Some tests need network access.
+     '(#:tests? #f))
     (synopsis "Tool and library for manipulating LilyPond files")
     (description "This package provides a Python library to parse, manipulate
 or create documents in LilyPond format.  A command line program ly is also
