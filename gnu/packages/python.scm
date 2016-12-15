@@ -9975,6 +9975,8 @@ to occurences in strings and comments.")
         (base32
          "0i283z1pivmir61z8kbiycigc94l61v33ygzkhczf1ifq7cppyds"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; TODO: Requires many libraries not in Guix.
     (home-page "https://github.com/ultrabug/py3status")
     (synopsis "Extensible i3status wrapper written in Python")
     (description "py3status is an i3status wrapper which extends i3status
