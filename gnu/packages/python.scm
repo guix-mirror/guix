@@ -11940,6 +11940,12 @@ asynchronous messaging environments.")
           (base32
             "17wzkkcqy5zc0g68xlad3kcv66iw14d2pwqc0h9420gak0vbhx7g"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "test3.py")))))))
     (home-page "http://github.com/gfxmonk/termstyle")
     (synopsis "Console text coloring for Python")
     (description "This package provides console text coloring for Python.")
