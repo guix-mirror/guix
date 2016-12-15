@@ -521,6 +521,8 @@ handlers and support for context specific logging (like resource id’s etc).")
         (base32
          "00s03krhf833gs76aw5ns32w9m1i4hx6x6d9g82m0j5wyqk0sci4"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Requires python-oslo.utils >= 3.2.0.
     (propagated-inputs
       `(("python-iso8601" ,python-iso8601)
         ("python-netaddr" ,python-netaddr)
