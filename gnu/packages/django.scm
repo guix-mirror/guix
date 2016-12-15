@@ -135,7 +135,8 @@ with arguments to the field constructor.")
                 "1mmc7zsz3dlhs6sx4sppkj1vgshabi362r1a8b8wpj1qfximpqcb"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; FIXME: How to run tests?
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-setuppy
            (lambda _
