@@ -8273,6 +8273,17 @@ with a new public API, and RPython support.")
                (base32
                 "1msqv747iz12r73mz4qvsmlwkddwjvrahlrk7ysrcz07h7dsscxs"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Tests require write access to HOME.
+             (setenv "HOME" "/tmp")
+             (zero? (system* "nosetests")))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-astor" ,python-astor)
        ("python-clint" ,python-clint)
