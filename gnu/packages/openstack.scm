@@ -628,6 +628,8 @@ and better support for mocking results.")
             ;; phase.
             (delete-file "oslo_utils/tests/test_netutils.py")))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Requires oslo.config >= 2.7.0.
     (propagated-inputs
       `(("python-debtcollector" ,python-debtcollector)
         ("python-oslo.i18n" ,python-oslo.i18n)
@@ -641,6 +643,8 @@ and better support for mocking results.")
       `(("python-babel" ,python-babel)
         ("python-pbr" ,python-pbr)
         ;; Tests.
+        ("python-bandit" ,python-bandit)
+        ("python-oslo.config" ,python-oslo.config)
         ("python-oslotest" ,python-oslotest)
         ("python-mock" ,python-mock)
         ("python-mox3" ,python-mox3)
