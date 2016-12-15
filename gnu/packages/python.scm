@@ -7412,6 +7412,8 @@ defining data schemas.")
                (base32
                 "1x9dfqypgympnlm25p9m43xh4qv3p7d75vksv9pzqibrb4cggw5n"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
        ("python-zope-schema" ,python-zope-schema)))
