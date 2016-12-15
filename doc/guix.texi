@@ -2403,10 +2403,12 @@ profile as well as all of their dependencies are transferred (due to
 target machine.  The @code{--missing} option can help figure out which
 items are missing from the target store.
 
-Archives are stored in the ``Nix archive'' or ``Nar'' format, which is
-comparable in spirit to `tar', but with a few noteworthy differences
+@cindex nar, archive format
+@cindex normalized archive (nar)
+Archives are stored in the ``normalized archive'' or ``nar'' format, which is
+comparable in spirit to `tar', but with differences
 that make it more appropriate for our purposes.  First, rather than
-recording all Unix metadata for each file, the Nar format only mentions
+recording all Unix metadata for each file, the nar format only mentions
 the file type (regular, directory, or symbolic link); Unix permissions
 and owner/group are dismissed.  Second, the order in which directory
 entries are stored always follows the order of file names according to
