@@ -2303,7 +2303,7 @@ capabilities of the Linux kernel.")
 (define-public libraw1394
   (package
     (name "libraw1394")
-    (version "2.1.0")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2311,7 +2311,7 @@ capabilities of the Linux kernel.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kwnf4ha45c04mhc4yla672aqmvqqihxix1gvblns5cd2pc2cc8b"))))
+                "0pm5b415j1qdzyw38wdv8h7ff4yx20831z1727mpsb6jc6bwdk03"))))
     (build-system gnu-build-system)
     (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Interface library for the Linux IEEE1394 drivers")
