@@ -328,7 +328,8 @@ extensions.")
         "1cpp2vwmawpd29hjsklsps181lq2ah91cl412qvpnz228nf9sqn5"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; FIXME: Requires oslo.log >= 1.14.0.
+       #:phases
        (modify-phases %standard-phases
          (add-before
           'check 'pre-check
