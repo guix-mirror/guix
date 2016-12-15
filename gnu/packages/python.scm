@@ -3674,6 +3674,16 @@ operators such as union, intersection, and difference.")
         (base32
          "0nhan2qvrw7b7gg5zddwa22kybdv3x1g26vkd7q8lvnkgzrs4dga"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; It's easier to run tests after install.
+             ;; Make installed package available for running the tests
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "python" "-m" "rpy2.tests" "-v")))))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (inputs
