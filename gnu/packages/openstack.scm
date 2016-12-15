@@ -405,11 +405,19 @@ common features used in Tempest.")
         (base32
          "0kvha0rs9295njyl2z6n6zm5dapi5mrl5zwjm0m6ldqrvccyf8c3"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Requires python-mock >= 1.2.
     (native-inputs
       `(("python-babel" ,python-babel)
         ("python-pbr" ,python-pbr)
         ;; Tests.
-        ("python-oslotest" ,python-oslotest)))
+        ("python-coverage" ,python-coverage)
+        ("python-hacking" ,python-hacking)
+        ("python-mock" ,python-mock)
+        ("python-os-client-config" ,python-os-client-config)
+        ("python-oslotest" ,python-oslotest)
+        ("python-oslosphinx" ,python-oslosphinx)
+        ("python-sphinx" ,python-sphinx)))
     (home-page "http://launchpad.net/oslo")
     (synopsis "Oslo context library")
     (description
