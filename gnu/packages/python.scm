@@ -7318,6 +7318,8 @@ forms, HTTP servers, regular expressions, and more.")
         (base32
          "1r7iqknhh55y45f64mz5hghgvzx34h1i11k350s0avx6q8gznja1"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (native-inputs
      `(("python-six" ,python-six)
        ;("python-zope-interface" ,python-zope-interface)
