@@ -7380,6 +7380,8 @@ internationalized messages within program source text.")
         (base32
          "1p943jdxb587dh7php4vx04qvn7b2877hr4qs5zyckvp5afhhank"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Tests can't find zope.event.
     (propagated-inputs
      `(("python-zope-event" ,python-zope-event)
        ("python-zope-exceptions", python-zope-exceptions)
