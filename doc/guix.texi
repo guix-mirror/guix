@@ -5388,6 +5388,8 @@ the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 the updater for @uref{http://cran.r-project.org/, CRAN} packages;
 @item bioconductor
 the updater for @uref{http://www.bioconductor.org/, Bioconductor} R packages;
+@item cpan
+the updater for @uref{http://www.cpan.org/, CPAN} packages;
 @item pypi
 the updater for @uref{https://pypi.python.org, PyPI} packages.
 @item gem
