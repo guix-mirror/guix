@@ -7495,12 +7495,15 @@ Zope3, which are are special objects that have a structural location.")
         (base32
          "14zmf684amc0x32kq05yxnhfqd1cmyhafkw05gn81rn90zjv6ssy"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Tests can't find zope.testrunner.
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
        ("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
-     (native-inputs
-     `(("python-zope-component" ,python-zope-component)
+    (native-inputs
+     `(("python-six" ,python-six)
+       ("python-zope-component" ,python-zope-component)
        ("python-zope-configuration" ,python-zope-configuration)
        ("python-zope-location" ,python-zope-location)
        ("python-zope-testrunner" ,python-zope-testrunner)
