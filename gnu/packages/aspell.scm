@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,3 +173,11 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "02jwkjhr32kvyibnyzgx3smbnm576jwdzg3avdf6zxwckhy5fw4v")))
+
+(define-public aspell-dict-el
+  (aspell-dictionary "el" "Greek"
+                     #:version "0.08-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1ljcc30zg2v2h3w5h5jr5im41mw8jbsgvvhdd2cii2yzi8d0zxja")))
