@@ -21,8 +21,8 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
-  #:use-module (guix build-system idris)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -109,3 +109,73 @@ be predicated on values, meaning that some aspects of a program's behaviour
 can be specified precisely in the type.  The language is closely related to
 Epigram and Agda.")
     (license license:bsd-3)))
+
+;; Idris modules use the gnu-build-system so that the IDRIS_LIBRARY_PATH is set.
+(define (idris-default-arguments name)
+  `(#:modules ((guix build gnu-build-system)
+               (guix build utils)
+               (ice-9 ftw)
+               (ice-9 match))
+    #:phases
+    (modify-phases %standard-phases
+      (delete 'configure)
+      (delete 'build)
+      (delete 'check)
+      (replace 'install
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (idris (assoc-ref inputs "idris"))
+                 (idris-bin (string-append idris "/bin/idris"))
+                 (idris-libs (string-append idris "/lib/idris/libs"))
+                 (module-name (and (string-prefix? "idris-" ,name)
+                                   (substring ,name 6)))
+                 (ibcsubdir (string-append out "/lib/idris/" module-name))
+                 (ipkg (string-append module-name ".ipkg"))
+                 (idris-library-path (getenv "IDRIS_LIBRARY_PATH"))
+                 (idris-path (string-split idris-library-path #\:))
+                 (idris-path-files (apply append
+                                          (map (lambda (path)
+                                                 (map (lambda (dir)
+                                                        (string-append path "/" dir))
+                                                      (scandir path))) idris-path)))
+                 (idris-path-subdirs (filter (lambda (path)
+                                               (and path (match (stat:type (stat path))
+                                                           ('directory #t)
+                                                           (_ #f))))
+                                                    idris-path-files))
+                 (install-cmd (cons* idris-bin
+                                     "--ibcsubdir" ibcsubdir
+                                     "--install" ipkg
+                                     (apply append (map (lambda (path)
+                                                          (list "--idrispath"
+                                                                path))
+                                                        idris-path-subdirs)))))
+            (setenv "IDRIS_LIBRARY_PATH" idris-libs)
+            ;; FIXME: Seems to be a bug in idris that causes a dubious failure.
+            (apply system* install-cmd)
+            #t))))))
+
+(define-public idris-lightyear
+  (let ((commit "6d65ad111b4bed2bc131396f8385528fc6b3678a"))
+    (package
+      (name "idris-lightyear")
+      (version (git-version "0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ziman/lightyear")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1pkxnn3ryr0v0cin4nasw7kgkc9dnnpja1nfbj466mf3qv5s98af"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("idris" ,idris)))
+      (arguments (idris-default-arguments name))
+      (home-page "https://github.com/ziman/lightyear")
+      (synopsis "Lightweight parser combinator library for Idris")
+      (description "Lightweight parser combinator library for Idris, inspired
+by Parsec.  This package is used (almost) the same way as Parsec, except for one
+difference: backtracking.")
+      (license license:bsd-2))))
