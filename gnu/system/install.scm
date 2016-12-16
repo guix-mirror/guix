@@ -393,6 +393,7 @@ Use Alt-F2 for documentation.
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
                      mdadm
+                     dosfstools         ;mkfs.fat, for the UEFI boot partition
                      btrfs-progs
                      wireless-tools iw wpa-supplicant-minimal iproute
                      ;; XXX: We used to have GNU fdisk here, but as of version
