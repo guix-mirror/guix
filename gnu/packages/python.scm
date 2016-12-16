@@ -7086,7 +7086,8 @@ interactive computing.")
     (propagated-inputs
      `(("python-notebook" ,python-notebook)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-certifi" ,python-certifi)
+       ("python-nose" ,python-nose)))
     (home-page "http://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "This package provides interactive HTML widgets for Jupyter
