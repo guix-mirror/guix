@@ -2879,27 +2879,7 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
                 "1k3x44biak00aiv3hpm1yd6nn4hhp7n0qnbs3zh2q9sw7qr1qj5r"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; FIXME: "ImportError: No module named 'utility'"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (python-version (string-take (string-take-right
-                                                 (assoc-ref inputs "python") 5) 3))
-                   (path (string-join
-                          (map (lambda (name)
-                                 (string-append (assoc-ref inputs name)
-                                                "/lib/python" python-version
-                                                "/site-packages"))
-                               '("python-scipy"
-                                 "python-numpy"
-                                 "python-matplotlib"))
-                          ":")))
-              (wrap-program (string-append out "/bin/idr")
-                `("PYTHONPATH" ":" prefix (,path))))
-            #t)))))
+     `(#:tests? #f)) ; FIXME: "ImportError: No module named 'utility'"
     (propagated-inputs
      `(("python-scipy" ,python-scipy)
        ("python-sympy" ,python-sympy)
