@@ -6672,11 +6672,18 @@ message digests and key derivation functions.")
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0vji4yrfshs15xpczbhzhasnjrwcarsqg87n98ixnyafnyxs6ybp"))))
+         "0vji4yrfshs15xpczbhzhasnjrwcarsqg87n98ixnyafnyxs6ybp"))
+       (patches
+        (search-patches "python-pyopenssl-skip-network-test.patch"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Some tests fail with "NameError: name 'long' is not defined".
-     '(#:tests? #f))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "py.test" "-v")))))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-six" ,python-six)))
