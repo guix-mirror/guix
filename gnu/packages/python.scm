@@ -10798,6 +10798,8 @@ characters, mouse support, and auto suggestions.")
                (base32
                 "1mmbiyzf0n8hm7z2a562x7w5cbl6jc0zsk6vp40q1z4cyblv1k13"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: No tests in pypi tarball.
     (propagated-inputs
      `(("python-docopt" ,python-docopt)
        ("python-jedi" ,python-jedi)
