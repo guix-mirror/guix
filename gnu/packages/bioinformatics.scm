@@ -7843,6 +7843,8 @@ replacement for strverscmp.")
         (base32
          "0avw11h63ldpxy5pizc3wl1wa01ha7q10wb240nggsjz3jaqvyiy"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-simplejson" ,python-simplejson)
