@@ -2900,8 +2900,9 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
               (wrap-program (string-append out "/bin/idr")
                 `("PYTHONPATH" ":" prefix (,path))))
             #t)))))
-    (inputs
+    (propagated-inputs
      `(("python-scipy" ,python-scipy)
+       ("python-sympy" ,python-sympy)
        ("python-numpy" ,python-numpy)
        ("python-matplotlib" ,python-matplotlib)))
     (native-inputs
