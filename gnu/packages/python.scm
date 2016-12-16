@@ -5155,13 +5155,12 @@ implementation of D-Bus.")
       `(("sqlite" ,sqlite)))
     (arguments
      `(#:phases
-        ;; swap check and install phases
-        (alist-cons-after
-         'install 'check
-         (assoc-ref %standard-phases 'check)
-         (alist-delete
-          'check
-          %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "python" "setup.py" "test")))))))
     (home-page "https://github.com/rogerbinns/apsw/")
     (synopsis "Another Python SQLite Wrapper")
     (description "APSW is a Python wrapper for the SQLite
