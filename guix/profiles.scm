@@ -939,6 +939,10 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
                           extras)
               (manifest-inputs manifest)))
 
+    (define glibc-utf8-locales                    ;lazy reference
+      (module-ref (resolve-interface '(gnu packages base))
+                  'glibc-utf8-locales))
+
     (define builder
       (with-imported-modules '((guix build profiles)
                                (guix build union)
@@ -952,6 +956,13 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
 
             (setvbuf (current-output-port) _IOLBF)
             (setvbuf (current-error-port) _IOLBF)
+
+            ;; Some file names (e.g., in 'nss-certs') are UTF-8 encoded so
+            ;; install a UTF-8 locale.
+            (setenv "LOCPATH"
+                    (string-append #+glibc-utf8-locales "/lib/locale/"
+                                   #+(package-version glibc-utf8-locales)))
+            (setlocale LC_ALL "en_US.utf8")
 
             (define search-paths
               ;; Search paths of MANIFEST's packages, converted back to their
