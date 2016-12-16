@@ -5232,7 +5232,8 @@ screen-scraping projects.  It offers Pythonic idioms for navigating,
 searching, and modifying a parse tree, providing a toolkit for
 dissecting a document and extracting what you need.  It automatically
 converts incoming documents to Unicode and outgoing documents to UTF-8.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-beautifulsoup4))))))
 
 (define-public python2-beautifulsoup4
   (package
