@@ -507,6 +507,7 @@ assert-no-store-file-names:
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
 	     --exclude=guix-prettify.el						\
+	     --exclude=ChangeLog						\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\
