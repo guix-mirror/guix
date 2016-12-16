@@ -87,6 +87,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -12150,6 +12151,9 @@ specs from your Flask-Restful projects.")
           (base32
             "11bwiw6j0nilgz81xnw6f1npyga3prp8asjqrm87cdr3ria5l03x"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pexpect" ,python-pexpect)
+       ("tcsh" ,tcsh)))
     (home-page "https://github.com/kislyuk/argcomplete")
     (synopsis "Shell tab completion for Python argparse")
     (description "argcomplete provides extensible command line tab completion
