@@ -1562,6 +1562,7 @@ databases.")
        ("python-scipy" ,python2-scipy)))
     (native-inputs
      `(("python-mock" ,python2-mock)   ; for tests
+       ("python-nose" ,python2-nose)   ; for tests
        ("python-pytz" ,python2-pytz))) ; for tests
     (home-page "https://github.com/YeoLab/clipper")
     (synopsis "CLIP peak enrichment recognition")
