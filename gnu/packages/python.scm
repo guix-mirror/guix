@@ -11959,10 +11959,7 @@ python-axolotl.")
            (lambda _
              (for-each delete-file-recursively
                        '("axolotl/tests" "build/lib/axolotl/tests"))
-             #t)))
-       ;; Prevent creation of the egg. This works around
-       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765
-       #:configure-flags '("--root=/")))
+             #t)))))
     (propagated-inputs
      `(("python-axolotl-curve25519" ,python-axolotl-curve25519)
        ("python-dateutil" ,python-dateutil)
