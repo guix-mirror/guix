@@ -2002,6 +2002,7 @@ trees (phylogenies) and characters.")
        ("python-pybigwig" ,python2-pybigwig)))
     (native-inputs
      `(("python-mock" ,python2-mock)   ;for tests
+       ("python-nose" ,python2-nose)   ;for tests
        ("python-pytz" ,python2-pytz))) ;for tests
     (home-page "https://github.com/fidelram/deepTools")
     (synopsis "Tools for normalizing and visualizing deep-sequencing data")
