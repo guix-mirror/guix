@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
