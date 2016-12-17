@@ -23,8 +23,10 @@
   #:use-module ((ice-9 rdelim) #:select (read-string))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-41)
   #:use-module (ice-9 receive)
+  #:use-module (web uri)
   #:use-module (guix combinators)
   #:use-module (guix http-client)
   #:use-module (guix hash)
@@ -128,10 +130,18 @@ package definition."
 
 (define (fetch-description base-url name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
-NAME, or #f on failure.  NAME is case-sensitive."
+NAME, or #f in case of failure.  NAME is case-sensitive."
   ;; This API always returns the latest release of the module.
   (let ((url (string-append base-url name "/DESCRIPTION")))
-    (description->alist (read-string (http-fetch url)))))
+    (guard (c ((http-get-error? c)
+               (format (current-error-port)
+                       "error: failed to retrieve package information \
+from ~s: ~a (~s)~%"
+                       (uri->string (http-get-error-uri c))
+                       (http-get-error-code c)
+                       (http-get-error-reason c))
+               #f))
+      (description->alist (read-string (http-fetch url))))))
 
 (define (listify meta field)
   "Look up FIELD in the alist META.  If FIELD contains a comma-separated
