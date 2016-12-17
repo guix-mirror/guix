@@ -4924,7 +4924,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.5.2a")
+    (version "2.5.2b")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alexdobin/STAR/archive/"
@@ -4932,7 +4932,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xjlsm4p9flln111hv4xx7xy94c2nl53zvdvbk9winmiradjsdra"))
+                "1na6np880r1zaamiy00hy8bid5anpy0kgf63587v2yl080krk2zq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4941,6 +4941,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
                   ;; Remove pre-built binaries and bundled htslib sources.
                   (delete-file-recursively "bin/MacOSX_x86_64")
                   (delete-file-recursively "bin/Linux_x86_64")
+                  (delete-file-recursively "bin/Linux_x86_64_static")
                   (delete-file-recursively "source/htslib")
                   #t))))
     (build-system gnu-build-system)
