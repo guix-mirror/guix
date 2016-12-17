@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,7 +102,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r
   (package
     (name "r")
-    (version "3.3.1")
+    (version "3.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -109,7 +110,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1qm9znh8akfy9fkzzi6f1vz2w1dd0chsr6qn7kw80lqzhgjrmi9x"))))
+                "0k2i9qdd83g09fcpls2198q4ykxkii5skczb514gnx7mx4hsv56j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
