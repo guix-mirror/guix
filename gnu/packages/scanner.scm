@@ -39,7 +39,14 @@
                    "sane-backends-" version ".tar.gz"))
              (sha256
               (base32
-               "0b3fvhrxl4l82bf3v0j47ypjv6a0k5lqbgknrq1agpmjca6vmmx4"))))
+               "0b3fvhrxl4l82bf3v0j47ypjv6a0k5lqbgknrq1agpmjca6vmmx4"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Generated HTML files and udev rules normally embed a
+              ;; timestamp.  Work around that to build things reproducibly.
+              '(substitute* "tools/sane-desc.c"
+                 (("asctime \\(localtime \\(&current_time\\)\\)")
+                  "\"1970-01-01\"")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
