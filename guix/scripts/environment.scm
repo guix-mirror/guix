@@ -323,7 +323,8 @@ profile."
                       #:system system
                       #:hooks (if bootstrap?
                                   '()
-                                  %default-profile-hooks)))
+                                  %default-profile-hooks)
+                      #:locales? (not bootstrap?)))
 
 (define requisites* (store-lift requisites))
 
