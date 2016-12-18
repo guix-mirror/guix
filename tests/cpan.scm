@@ -101,13 +101,15 @@
        (pk 'fail x #f)))))
 
 (test-equal "source-url-http"
-  ((@@ (guix import cpan) fix-source-url)
-   "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+  ((@@ (guix import cpan) cpan-source-url)
+   `(("download_url" .
+      "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
   "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
 
 (test-equal "source-url-https"
-  ((@@ (guix import cpan) fix-source-url)
-   "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+  ((@@ (guix import cpan) cpan-source-url)
+   `(("download_url" .
+      "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
   "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
 
 (test-end "cpan")
