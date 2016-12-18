@@ -5726,11 +5726,13 @@ Consider packages for @var{system}---e.g., @code{x86_64-linux}.
 Packages and their dependencies form a @dfn{graph}, specifically a
 directed acyclic graph (DAG).  It can quickly become difficult to have a
 mental model of the package DAG, so the @command{guix graph} command
-provides a visual representation of the DAG.  @command{guix graph}
-emits a DAG representation in the input format of
+provides a visual representation of the DAG.  By default,
+@command{guix graph} emits a DAG representation in the input format of
 @uref{http://www.graphviz.org/, Graphviz}, so its output can be passed
-directly to the @command{dot} command of Graphviz.  The general
-syntax is:
+directly to the @command{dot} command of Graphviz.  It can also emit an
+HTML page with embedded JavaScript code to display a ``chord diagram''
+in a Web browser, using the @uref{https://d3js.org/, d3.js} library.
+The general syntax is:
 
 @example
 guix graph @var{options} @var{package}@dots{}
@@ -5854,6 +5856,8 @@ Produce a graph using the selected @var{backend}.
 
 @item --list-backends
 List the supported graph backends.
+
+Currently, the available backends are Graphviz and d3.js.
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
