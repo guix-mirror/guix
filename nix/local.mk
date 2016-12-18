@@ -189,9 +189,9 @@ nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service
 
 etc/guix-%.service: etc/guix-%.service.in	\
 			 $(top_builddir)/config.status
-	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";				\
-	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
-	       "$(srcdir)/$<" > "$@.tmp";	\
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
+	$(SED) -e 's|@''bindir''@|$(bindir)|' <	\
+	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
 # The '.conf' jobs for Upstart.
@@ -200,9 +200,9 @@ nodist_upstartjob_DATA = etc/guix-daemon.conf etc/guix-publish.conf
 
 etc/guix-%.conf: etc/guix-%.conf.in	\
 			 $(top_builddir)/config.status
-	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";				\
-	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
-	       "$(srcdir)/$<" > "$@.tmp";		\
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
+	$(SED) -e 's|@''bindir''@|$(bindir)|' <	\
+	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
 EXTRA_DIST +=					\
