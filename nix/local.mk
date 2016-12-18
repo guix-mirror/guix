@@ -209,8 +209,10 @@ EXTRA_DIST +=					\
   %D%/libstore/schema.sql			\
   %D%/AUTHORS					\
   %D%/COPYING					\
-  etc/guix-daemon.service.in	\
-  etc/guix-daemon.conf.in
+  etc/guix-daemon.service.in			\
+  etc/guix-daemon.conf.in			\
+  etc/guix-publish.service.in			\
+  etc/guix-publish.conf.in
 
 if CAN_RUN_TESTS
 
