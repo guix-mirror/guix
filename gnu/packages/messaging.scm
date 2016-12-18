@@ -709,7 +709,8 @@ encrypted messenger protocol.")
       ("openal" ,openal)
       ("v4l-utils" ,v4l-utils)))
    (synopsis "Lightweight Tox client")
-   (description "A  lightweight Tox client.  Tox is a distributed and secure
+   (description
+    "Utox is a lightweight Tox client.  Tox is a distributed and secure
 instant messenger with audio and video chat capabilities.")
    (home-page "http://utox.org/")
    (license license:gpl3)))
