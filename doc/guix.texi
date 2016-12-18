@@ -3187,6 +3187,19 @@ which file the system is defined in.
 
 @end defvr
 
+@defvr {Scheme Variable} cargo-build-system
+@cindex Rust programming language
+@cindex Cargo (Rust build system)
+This variable is exported by @code{(guix build-system cargo)}.  It
+supports builds of packages using Cargo, the build tool of the
+@uref{https://www.rust-lang.org, Rust programming language}.
+
+In its @code{configure} phase, this build system replaces dependencies
+specified in the @file{Carto.toml} file with inputs to the Guix package.
+The @code{install} phase installs the binaries, and it also installs the
+source code and @file{Cargo.toml} file.
+@end defvr
+
 @defvr {Scheme Variable} cmake-build-system
 This variable is exported by @code{(guix build-system cmake)}.  It
 implements the build procedure for packages using the
