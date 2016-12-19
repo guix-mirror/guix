@@ -146,10 +146,10 @@ SILC and ICB protocols via plugins.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://weechat.org/files/src/weechat-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0lyqrymdjdvkzg8510l46c4zw8mjagnmri2i6m9y9qz0c1sfaq9h"))
+                "1qqnb9bdi15l30378rnmhf26ndacwi5hmq5vpz4lfyihk17xnryn"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
