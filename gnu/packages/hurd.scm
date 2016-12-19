@@ -102,14 +102,14 @@ communication.")
 (define-public hurd-headers
   (package
     (name "hurd-headers")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/hurd/hurd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pbc4aqgzxvkgivw80ghp3w755cl0fwxmg357vq7chimj64jk78d"))))
+                "1nw9gly0n7pyv3cpfm4mmxy4yccrx4g0lyrvd3vk2vil26jpbggw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("mig" ,mig)))
