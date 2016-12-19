@@ -6868,6 +6868,7 @@ swap partition on @file{/dev/sda2}, you would run:
 
 @example
 mkswap /dev/sda2
+swapon /dev/sda2
 @end example
 
 @node Proceeding with the Installation
