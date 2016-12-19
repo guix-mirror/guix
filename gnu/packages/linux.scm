@@ -346,7 +346,7 @@ It has been modified to remove all non-free binary blobs.")
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
 (define %linux-libre-version "4.8.15")
-(define %linux-libre-hash "0msgi44mh1ighfawysrzrljikwrapkvk418d6h0v45vj2i5rwln9"")
+(define %linux-libre-hash "0msgi44mh1ighfawysrzrljikwrapkvk418d6h0v45vj2i5rwln9")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
