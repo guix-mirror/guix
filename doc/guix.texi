@@ -8299,6 +8299,10 @@ The list of URLs where to look for substitutes by default.
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.
 
+@item @code{log-file} (default: @code{"/var/log/guix-daemon.log"})
+File where @command{guix-daemon}'s standard output and standard error
+are written.
+
 @item @code{lsof} (default: @var{lsof})
 The lsof package to use.
 

@@ -1089,6 +1089,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default %default-substitute-urls))
   (extra-options    guix-configuration-extra-options ;list of strings
                     (default '()))
+  (log-file         guix-configuration-log-file   ;string
+                    (default "/var/log/guix-daemon.log"))
   (lsof             guix-configuration-lsof       ;<package>
                     (default lsof)))
 
@@ -1101,7 +1103,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
     (($ <guix-configuration> guix build-group build-accounts
                              authorize-key? keys
                              use-substitutes? substitute-urls extra-options
-                             lsof)
+                             log-file lsof)
      (list (shepherd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
@@ -1118,7 +1120,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
                 ;; Add 'lsof' (for the GC) to the daemon's $PATH.
                 #:environment-variables
-                (list (string-append "PATH=" #$lsof "/bin"))))
+                (list (string-append "PATH=" #$lsof "/bin"))
+
+                #:log-file #$log-file))
             (stop #~(make-kill-destructor)))))))
 
 (define (guix-accounts config)
