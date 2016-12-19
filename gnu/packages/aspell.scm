@@ -183,3 +183,10 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "1ljcc30zg2v2h3w5h5jr5im41mw8jbsgvvhdd2cii2yzi8d0zxja")))
+
+(define-public aspell-dict-grc
+  (aspell-dictionary "grc" "Ancient Greek"
+                     #:version "0.02-0"
+                     #:sha256
+                     (base32
+                      "1zxr8958v37v260fkqd4pg37ns5h5kyqm54hn1hg70wq5cz8h512")))
