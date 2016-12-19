@@ -631,14 +631,15 @@ Works word processor file format.")
 (define-public hunspell
   (package
     (name "hunspell")
-    (version "1.3.3")
+    (version "1.5.4")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/Hunspell/" version "/"
-                          name "-" version ".tar.gz"))
+      (uri (string-append "https://github.com/hunspell/hunspell/archive/v"
+                          version ".tar.gz"))
       (sha256 (base32
-               "0v14ff9s37vkh45diaddndcrj0hmn67arh8xh8k79q9c1vgc1cm7"))))
+               "0ngwk18dwd8p5a5f20h2jlgrz9wbc1k189mmmprb2zmqwfi02b45"))
+      (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (home-page "http://hunspell.sourceforge.net/")
     (synopsis "Spell checker")
