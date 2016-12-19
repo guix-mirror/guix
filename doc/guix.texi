@@ -8300,8 +8300,7 @@ The list of URLs where to look for substitutes by default.
 List of extra command-line options for @command{guix-daemon}.
 
 @item @code{lsof} (default: @var{lsof})
-@itemx @code{lsh} (default: @var{lsh})
-The lsof and lsh packages to use.
+The lsof package to use.
 
 @end table
 @end deftp

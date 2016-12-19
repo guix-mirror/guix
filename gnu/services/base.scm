@@ -37,7 +37,6 @@
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
-  #:use-module (gnu packages ssh)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
@@ -1091,9 +1090,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (extra-options    guix-configuration-extra-options ;list of strings
                     (default '()))
   (lsof             guix-configuration-lsof       ;<package>
-                    (default lsof))
-  (lsh              guix-configuration-lsh        ;<package>
-                    (default lsh)))
+                    (default lsof)))
 
 (define %default-guix-configuration
   (guix-configuration))
@@ -1104,7 +1101,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
     (($ <guix-configuration> guix build-group build-accounts
                              authorize-key? keys
                              use-substitutes? substitute-urls extra-options
-                             lsof lsh)
+                             lsof)
      (list (shepherd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
@@ -1119,10 +1116,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                       "--substitute-urls" #$(string-join substitute-urls)
                       #$@extra-options)
 
-                ;; Add 'lsof' (for the GC) and 'lsh' (for offloading) to the
-                ;; daemon's $PATH.
+                ;; Add 'lsof' (for the GC) to the daemon's $PATH.
                 #:environment-variables
-                (list (string-append "PATH=" #$lsof "/bin:" #$lsh "/bin"))))
+                (list (string-append "PATH=" #$lsof "/bin"))))
             (stop #~(make-kill-destructor)))))))
 
 (define (guix-accounts config)
