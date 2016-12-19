@@ -1816,20 +1816,21 @@ preparation protocols.")
                 "19smhh6444ikn4jlmyhvffw4m5aw7yg07rqsk7arg8dkwyga1i4v"))))
     (build-system python-build-system)
     (arguments
-     ;; tests must be run after install
-     `(#:phases (alist-cons-after
-                 'install 'check
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (setenv "PYTHONPATH"
-                           (string-append
-                            (getenv "PYTHONPATH")
-                            ":" (assoc-ref outputs "out")
-                            "/lib/python"
-                            (string-take (string-take-right
-                                          (assoc-ref inputs "python") 5) 3)
-                            "/site-packages"))
-                   (zero? (system* "nosetests" "-P" "tests")))
-                 (alist-delete 'check %standard-phases))))
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The tests must be run after installation.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getenv "PYTHONPATH")
+                      ":" (assoc-ref outputs "out")
+                      "/lib/python"
+                      (string-take (string-take-right
+                                    (assoc-ref inputs "python") 5) 3)
+                      "/site-packages"))
+             (zero? (system* "nosetests" "-P" "tests")))))))
     (inputs
      `(("python-xopen" ,python-xopen)))
     (native-inputs
