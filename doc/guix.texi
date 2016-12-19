@@ -12562,6 +12562,9 @@ The number of seconds to wait for keyboard input before booting.  Set to
 
 @item @code{theme} (default: @var{%default-theme})
 The @code{grub-theme} object describing the theme to use.
+
+@item @code{grub} (default: @code{grub})
+The GRUB package to use.
 @end table
 
 @end deftp
