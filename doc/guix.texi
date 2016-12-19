@@ -359,6 +359,9 @@ without interference.  Its data lives exclusively in two directories,
 usually @file{/gnu/store} and @file{/var/guix}; other files on your
 system, such as @file{/etc}, are left untouched.
 
+Once installed, Guix can be updated by running @command{guix pull}
+(@pxref{Invoking guix pull}).
+
 @menu
 * Binary Installation::         Getting Guix running in no time!
 * Requirements::                Software needed to build and run Guix.
@@ -2308,6 +2311,7 @@ this option is primarily useful when the daemon was running with
 @section Invoking @command{guix pull}
 
 @cindex upgrading Guix
+@cindex updating Guix
 @cindex @command{guix pull}
 @cindex pull
 Packages are installed or upgraded to the latest version available in
@@ -6948,6 +6952,14 @@ in the new system is initially empty; other users' passwords need to be
 initialized by running the @command{passwd} command as @code{root},
 unless your configuration specifies otherwise
 (@pxref{user-account-password, user account passwords}).
+
+@cindex upgrading GuixSD
+From then on, you can update GuixSD whenever you want by running
+@command{guix pull} as @code{root} (@pxref{Invoking guix pull}), and
+then running @command{guix system reconfigure} to build a new system
+generation with the latest packages and services (@pxref{Invoking guix
+system}).  We recommend doing that regularly so that your system
+includes the latest security updates (@pxref{Security Updates}).
 
 Join us on @code{#guix} on the Freenode IRC network or on
 @file{guix-devel@@gnu.org} to share your experience---good or not so
