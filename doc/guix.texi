@@ -11993,7 +11993,7 @@ Data type representing the configuration of Cuirass.
 @item @code{log-file} (default: @code{"/var/log/cuirass.log"})
 Location of the log file.
 
-@item @code{cache-directory} (default: @code{""})
+@item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
 Location of the repository cache.
 
 @item @code{user} (default: @code{"cuirass"})

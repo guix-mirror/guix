@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,7 @@
   (log-file         cuirass-configuration-log-file ;string
                     (default "/var/log/cuirass.log"))
   (cache-directory  cuirass-configuration-cache-directory ;string (dir-name)
-                    (default ""))
+                    (default "/var/cache/cuirass"))
   (user             cuirass-configuration-user ;string
                     (default "cuirass"))
   (group            cuirass-configuration-group ;string
@@ -80,9 +81,7 @@
             (requirement '(guix-daemon))
             (start #~(make-forkexec-constructor
                       (list (string-append #$cuirass "/bin/cuirass")
-                            #$@(if (string=? "" cache-directory)
-                                   '()
-                                   (list "--cache-directory" cache-directory))
+                            "--cache-directory" #$cache-directory
                             #$@(if (null? specs)
                                    '()
                                    (let ((str (format #f "'~S" specs)))
@@ -112,11 +111,27 @@
            (home-directory (string-append "/var/run/" cuirass-user))
            (shell #~(string-append #$shadow "/sbin/nologin"))))))
 
+(define (cuirass-activation config)
+  "Return the activation code for CONFIG."
+  (let ((cache (cuirass-configuration-cache-directory config))
+        (user  (cuirass-configuration-user config))
+        (group (cuirass-configuration-group config)))
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+
+          (mkdir-p #$cache)
+
+          (let ((uid (passwd:uid (getpw #$user)))
+                (gid (group:gid (getgr #$group))))
+            (chown #$cache uid gid))))))
+
 (define cuirass-service-type
   (service-type
    (name 'cuirass)
    (extensions
     (list
+     (service-extension activation-service-type cuirass-activation)
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
      (service-extension account-service-type cuirass-account)))))
 
