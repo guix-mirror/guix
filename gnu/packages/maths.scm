@@ -425,40 +425,35 @@ singular value problems.")
                                 "See LICENSE in the distribution."))))
 
 (define-public gnuplot
-  ;; Gnuplot version 5.0.4 was updated in-place, resulting in a hash mismatch.
-  ;; This can be removed at the next version update.
-  (let ((upstream-version "5.0.4")
-        (guix-revision "1"))
-    (package
-      (name "gnuplot")
-      (version (string-append upstream-version "-" guix-revision))
-      (source
-       (origin
-        (method url-fetch)
-        (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
-                            upstream-version "/gnuplot-"
-                            upstream-version ".tar.gz"))
-        (sha256
-         (base32
-          "07n3w12dkcxjnhsvsliaqnkhajhi818v6q8mkpmpbplbf92vh70m"))))
-      (build-system gnu-build-system)
-      (inputs `(("readline" ,readline)
-                ("cairo" ,cairo)
-                ("pango" ,pango)
-                ("gd" ,gd)))
-      (native-inputs `(("pkg-config" ,pkg-config)
-                       ("texlive" ,texlive-minimal)))
-      (home-page "http://www.gnuplot.info")
-      (synopsis "Command-line driven graphing utility")
-      (description "Gnuplot is a portable command-line driven graphing
+  (package
+    (name "gnuplot")
+    (version "5.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
+                                  version "/gnuplot-"
+                                  version ".tar.gz"))
+       (sha256
+        (base32
+         "0lr065qdlgss8lmy31l7hkmnk9fp4lvqq9qgb1f1209f36zy1wr5"))))
+    (build-system gnu-build-system)
+    (inputs `(("readline" ,readline)
+              ("cairo" ,cairo)
+              ("pango" ,pango)
+              ("gd" ,gd)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("texlive" ,texlive-minimal)))
+    (home-page "http://www.gnuplot.info")
+    (synopsis "Command-line driven graphing utility")
+    (description "Gnuplot is a portable command-line driven graphing
 utility.  It was originally created to allow scientists and students to
 visualize mathematical functions and data interactively, but has grown to
 support many non-interactive uses such as web scripting.  It is also used as a
 plotting engine by third-party applications like Octave.")
-      ;;  X11 Style with the additional restriction that derived works may only be
-      ;;  distributed as patches to the original.
-      (license (license:fsf-free
-                "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright")))))
+    ;;  X11 Style with the additional restriction that derived works may only be
+    ;;  distributed as patches to the original.
+    (license (license:fsf-free
+              "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
 
 (define-public gctp
   (package
