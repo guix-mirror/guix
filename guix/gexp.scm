@@ -669,11 +669,8 @@ references; otherwise, return only non-native references."
                    result)
            result))
       (($ <gexp-input> (? gexp? exp) _ #f)
-       (if native?
-           (append (gexp-inputs exp #:native? #t)
-                   result)
-           (append (gexp-inputs exp)
-                   result)))
+       (append (gexp-inputs exp #:native? native?)
+               result))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
            (cons `(,str) result)
