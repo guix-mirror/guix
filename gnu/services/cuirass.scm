@@ -42,6 +42,8 @@
 (define-record-type* <cuirass-configuration>
   cuirass-configuration make-cuirass-configuration
   cuirass-configuration?
+  (log-file         cuirass-configuration-log-file ;string
+                    (default "/var/log/cuirass.log"))
   (cache-directory  cuirass-configuration-cache-directory ;string (dir-name)
                     (default ""))
   (user             cuirass-configuration-user ;string
@@ -64,6 +66,7 @@
   (and
    (cuirass-configuration? config)
    (let ((cache-directory  (cuirass-configuration-cache-directory config))
+         (log-file         (cuirass-configuration-log-file config))
          (interval         (cuirass-configuration-interval config))
          (database         (cuirass-configuration-database config))
          (specs            (cuirass-configuration-specifications config))
@@ -86,7 +89,8 @@
                             "--database" #$database
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
-                            #$@(if one-shot? '("--one-shot") '()))))
+                            #$@(if one-shot? '("--one-shot") '()))
+                      #:log-file #$log-file))
             (stop #~(make-kill-destructor)))))))
 
 (define (cuirass-account config)
