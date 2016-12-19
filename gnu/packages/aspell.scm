@@ -66,7 +66,8 @@ dictionaries, including personal ones.")
 ;;;
 ;;; Dictionaries.
 ;;;
-;;; Use 'export ASPELL_CONF="dict-dir $HOME/.guix-profile/lib/aspell"' to use them.
+;;; Use 'export ASPELL_CONF="dict-dir $HOME/.guix-profile/lib/aspell"' to use
+;;; them.
 ;;;
 
 (define* (aspell-dictionary dict-name full-name
@@ -82,16 +83,17 @@ dictionaries, including personal ones.")
               (sha256 sha256)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero? (system* "./configure"))))
-                 %standard-phases)
-                #:make-flags (let ((out (assoc-ref %outputs "out")))
-                               (list (string-append "dictdir=" out "/lib/aspell")
-                                     (string-append "datadir=" out "/lib/aspell")))
-                #:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"))))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "dictdir=" out "/lib/aspell")
+               (string-append "datadir=" out "/lib/aspell")))
+       #:tests? #f))
     (native-inputs `(("aspell" ,aspell)
                      ("which" ,which)))
     (synopsis (string-append full-name " dictionary for GNU Aspell")) ; XXX: i18n
