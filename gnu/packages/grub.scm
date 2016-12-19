@@ -84,12 +84,6 @@
                                        (assoc-ref inputs "mdadm")
                                        "/sbin/mdadm\"")))
 
-                     ;; Ditto for efibootmgr.
-                     (substitute* "grub-core/osdep/unix/platform.c"
-                       (("efibootmgr")
-                        (string-append (assoc-ref inputs "efibootmgr")
-                                       "/sbin/efibootmgr")))
-
                      ;; Make the font visible.
                      (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
                      (system* "gunzip" "unifont.bdf.gz")
@@ -103,9 +97,6 @@
                      #t)))))
     (inputs
      `(("gettext" ,gettext-minimal)
-
-       ;; For {U,}EFI.
-       ("efibootmgr" ,efibootmgr)
 
        ;; Depend on LVM2 for libdevmapper, used by 'grub-probe' and
        ;; 'grub-install' to recognize mapped devices (LUKS, etc.)
