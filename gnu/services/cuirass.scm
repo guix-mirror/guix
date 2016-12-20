@@ -114,6 +114,7 @@
 (define (cuirass-activation config)
   "Return the activation code for CONFIG."
   (let ((cache (cuirass-configuration-cache-directory config))
+        (db    (dirname (cuirass-configuration-database config)))
         (user  (cuirass-configuration-user config))
         (group (cuirass-configuration-group config)))
     (with-imported-modules '((guix build utils))
@@ -121,10 +122,12 @@
           (use-modules (guix build utils))
 
           (mkdir-p #$cache)
+          (mkdir-p #$db)
 
           (let ((uid (passwd:uid (getpw #$user)))
                 (gid (group:gid (getgr #$group))))
-            (chown #$cache uid gid))))))
+            (chown #$cache uid gid)
+            (chown #$db uid gid))))))
 
 (define cuirass-service-type
   (service-type
