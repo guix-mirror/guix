@@ -103,14 +103,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.0")
+    (version "3.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0h7cx4cd3niycx7pl0p2358cx2smwm5sb3l9bpb8czkdl6v115c8"))))
+               "1dpylyg79avi7brpkcmzaq7bqqkz45flp0ws6f2c8b1gyz4hdnzm"))))
     (build-system gnu-build-system)
     (arguments
      '(;; TODO: Add `--with-sql'.
@@ -150,6 +150,7 @@
 
                    #t)
                  %standard-phases)
+       #:configure-flags '("--sysconfdir=/etc")
        #:parallel-tests? #f))
     (inputs
      `(("dejagnu" ,dejagnu)
@@ -158,15 +159,11 @@
        ("guile" ,guile-2.0)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
-
-       ;; With Readline 6.3, examples/pop3client.c fails to build because it
-       ;; uses the now undefined 'CPPFunction' type.
-       ("readline" ,readline-6.2)
-
+       ("readline" ,readline)
        ("linux-pam" ,linux-pam)
        ("libltdl" ,libltdl)
        ("gdbm" ,gdbm)))
-    (home-page "http://www.gnu.org/software/mailutils/")
+    (home-page "https://www.gnu.org/software/mailutils/")
     (synopsis "Utilities and library for reading and serving mail")
     (description
      "GNU Mailutils is a collection of programs for managing, viewing and
