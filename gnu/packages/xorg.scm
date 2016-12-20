@@ -3436,7 +3436,7 @@ X server.")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "13.1.0")
+    (version "13.2.1")
     (source
       (origin
         (method url-fetch)
@@ -3446,14 +3446,16 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1k50whwnkzxam2ihc1sw456dx0pvr76naycm4qhyjxqv9d72879w"))))
+           "0azn3g0vcki47n5jddagk2rmbwdvp845k8p7d2r56zxs3w8ggxz2"))))
     (build-system gnu-build-system)
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("mesa" ,mesa)            ; for xatracker
-              ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("mesa" ,mesa)                   ; for xatracker
+       ("xorg-server" ,xorg-server)))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+     `(("eudev" ,eudev)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "VMware SVGA video driver for X server")
     (description
