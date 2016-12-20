@@ -303,7 +303,8 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   "Return true if PACKAGE is a Python package from PyPI."
 
   (define (pypi-url? url)
-    (string-prefix? "https://pypi.python.org/" url))
+    (or (string-prefix? "https://pypi.python.org/" url)
+        (string-prefix? "https://pypi.io/packages" url)))
 
   (let ((source-url (and=> (package-source package) origin-uri))
         (fetch-method (and=> (package-source package) origin-method)))
