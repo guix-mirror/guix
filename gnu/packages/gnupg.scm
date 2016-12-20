@@ -225,8 +225,7 @@ compatible to GNU Pth.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("adns" ,adns)
-       ("bzip2" ,bzip2)
+     `(("bzip2" ,bzip2)
        ("curl" ,curl)
        ("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
