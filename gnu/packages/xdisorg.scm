@@ -716,7 +716,7 @@ within a single process.")
 (define-public xcape
   (package
     (name "xcape")
-    (version "1.1")
+    (version "1.2")
     (source
       (origin
         (method url-fetch)
@@ -725,7 +725,7 @@ within a single process.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "0jkdiaxc6sryrbibdgi2y1c48n4l9xyazhxr16l6h4ibddx95bk9"))))
+            "0898zc3vwxia00h9kfknpf7jygxgwggrx8v5mxc31w4lzn2dhzm2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
