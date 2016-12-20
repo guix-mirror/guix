@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,8 @@
   #:use-module (gnu packages slang)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -893,6 +896,68 @@ MIDI functionality to the Linux-based operating system.")
     ;; This is mostly GPLv2+ but a few files such as 'alsactl.c' are
     ;; GPLv2-only.
     (license license:gpl2)))
+
+(define-public alsa-plugins
+  (package
+    (name "alsa-plugins")
+    (version "1.1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1w81z5jlwqhd1l2m7qrq69lc4k9dnrg1wn52jsl2hrf3hbhd394f"))))
+    (build-system gnu-build-system)
+    ;; TODO: Split libavcodec and speex if possible. It looks like they can not
+    ;; be split, there are references to both in files.
+    ;; TODO: Remove OSS related plugins, they add support to run native
+    ;; ALSA applications on OSS however we do not offer OSS and OSS is
+    ;; obsolete.
+    (outputs '("out" "pulseaudio"))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'split
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Distribute the binaries to the various outputs.
+             (let* ((out (assoc-ref outputs "out"))
+                    (pua (assoc-ref outputs "pulseaudio"))
+                    (pualib (string-append pua "/lib/alsa-lib"))
+                    (puaconf (string-append pua "/share/alsa/alsa.conf.d")))
+               (mkdir-p puaconf)
+               (mkdir-p pualib)
+               (chdir (string-append out "/share"))
+               (for-each (lambda (file)
+                           (rename-file file (string-append puaconf "/" (basename file))))
+                         (find-files out "\\.(conf|example)"))
+               (for-each (lambda (file)
+                           (rename-file file (string-append pualib "/" (basename file))))
+                         (find-files out ".*pulse\\.(la|so)"))
+               (chdir "..")
+               ;; We have moved the files to output pulsaudio, the
+               ;; directory is now empty.
+               (delete-file-recursively (string-append out "/share"))
+               #t))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("speex" ,speex) ; libspeexdsp resampling plugin
+       ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
+       ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
+       ("pulseaudio" ,pulseaudio))) ; PulseAudio plugin
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.alsa-project.org/")
+    (synopsis "Plugins for the Advanced Linux Sound Architecture (ALSA)")
+    (description
+     "The Advanced Linux Sound Architecture (ALSA) provides audio and
+MIDI functionality to the Linux-based operating system.  This package enhances ALSA
+by providing additional plugins which include: upmixing, downmixing, jackd and
+pulseaudio support for native alsa applications, format conversion (s16 to a52), and
+external rate conversion.")
+    (license (list license:gpl2+
+                   ;; `rate/rate_samplerate.c': LGPL v2.1 or later.
+                   license:lgpl2.1+))))
 
 (define-public iptables
   (package
