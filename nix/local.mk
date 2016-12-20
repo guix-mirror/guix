@@ -22,7 +22,7 @@
 #
 
 BUILT_SOURCES += %D%/libstore/schema.sql.hh
-CLEANFILES += $(BUILT_SOURCES) etc/guix-daemon.service etc/guix-daemon.conf
+CLEANFILES += $(BUILT_SOURCES)
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
@@ -204,6 +204,10 @@ etc/guix-%.conf: etc/guix-%.conf.in	\
 	$(SED) -e 's|@''bindir''@|$(bindir)|' <	\
 	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
+
+CLEANFILES +=					\
+  $(nodist_systemdservice_DATA)			\
+  $(nodist_upstartjob_DATA)
 
 EXTRA_DIST +=					\
   %D%/libstore/schema.sql			\
