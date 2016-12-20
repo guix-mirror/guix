@@ -12025,6 +12025,9 @@ from source.
 
 @item @code{one-shot?} (default: @code{#f})
 Only evaluate specifications and build derivations once.
+
+@item @code{cuirass} (default: @code{cuirass})
+The Cuirass package to use.
 @end table
 @end deftp
 

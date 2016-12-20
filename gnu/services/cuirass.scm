@@ -43,6 +43,8 @@
 (define-record-type* <cuirass-configuration>
   cuirass-configuration make-cuirass-configuration
   cuirass-configuration?
+  (cuirass          cuirass-configuration-cuirass ;package
+                    (default cuirass))
   (log-file         cuirass-configuration-log-file ;string
                     (default "/var/log/cuirass.log"))
   (cache-directory  cuirass-configuration-cache-directory ;string (dir-name)
@@ -66,7 +68,8 @@
   "Return a <shepherd-service> for the Cuirass service with CONFIG."
   (and
    (cuirass-configuration? config)
-   (let ((cache-directory  (cuirass-configuration-cache-directory config))
+   (let ((cuirass          (cuirass-configuration-cuirass config))
+         (cache-directory  (cuirass-configuration-cache-directory config))
          (log-file         (cuirass-configuration-log-file config))
          (user             (cuirass-configuration-user config))
          (group            (cuirass-configuration-group config))
