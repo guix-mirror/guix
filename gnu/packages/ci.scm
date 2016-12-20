@@ -217,8 +217,11 @@ their dependencies.")
                       (mods   (string-append json "/share/guile/site/2.0:"
                                              sqlite "/share/guile/site/2.0:"
                                              guix "/share/guile/site/2.0")))
+                 ;; Make sure 'cuirass' can find the 'git' and 'evaluate'
+                 ;; commands, as well as the relevant Guile modules.
                  (wrap-program (string-append out "/bin/cuirass")
-                   `("PATH" ":" prefix (,(string-append git "/bin")))
+                   `("PATH" ":" prefix (,(string-append out "/bin")
+                                        ,(string-append git "/bin")))
                    `("GUILE_LOAD_PATH" ":" prefix (,mods))
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))
                  #t))))))
