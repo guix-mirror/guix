@@ -797,7 +797,7 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.6.5")
+    (version "1.6.6")
     (source
      (origin
        (method url-fetch)
@@ -805,7 +805,7 @@ which can add many functionalities to the base client.")
                            "/msmtp-" version ".tar.xz"))
        (sha256
         (base32
-         "01jh9ba49bih8zsh40myw6qq1ll210q1vw0jg865vrn7jc3dd83n"))))
+         "0ppvww0sb09bnsrpqnvlrn8vx231r24xn2iiwpy020mxc8gxn5fs"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
