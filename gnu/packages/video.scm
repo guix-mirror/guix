@@ -1399,7 +1399,7 @@ from various services and pipes them into a video playing application.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.2.0")
+    (version "6.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mltframework/mlt/"
@@ -1407,7 +1407,7 @@ from various services and pipes them into a video playing application.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zwzfgxrcbwkxnkiwv0a1rzxdnnaly90yyarl9wdw84nx11ffbnx"))))
+                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
