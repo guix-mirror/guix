@@ -305,13 +305,14 @@ Extension (MIME).")
                 "1d56n2m9inm8gnzm88aa27xl2a7sp7aff3484vmflpqkinjqf0p1"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda _
-                   (substitute* "src/tests/t.frame"
-                     (("GREP=/bin/grep")
-                      (string-append "GREP=" (which "grep") "\n"))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             (substitute* "src/tests/t.frame"
+               (("GREP=/bin/grep")
+                (string-append "GREP=" (which "grep") "\n")))
+             #t)))))
     (native-inputs `(("flex" ,flex)))
     (inputs `(("bdb" ,bdb)))
     (home-page "http://bogofilter.sourceforge.net/")
