@@ -137,6 +137,8 @@
    (name 'cuirass)
    (extensions
     (list
+     (service-extension profile-service-type      ;for 'info cuirass'
+                        (compose list cuirass-configuration-cuirass))
      (service-extension activation-service-type cuirass-activation)
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
      (service-extension account-service-type cuirass-account)))))
