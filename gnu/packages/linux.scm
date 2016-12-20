@@ -245,13 +245,15 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
-       ,@(if configuration-file
-             `(("kconfig" ,(configuration-file
-                            (system->linux-architecture
-                             (or (%current-target-system)
-                                 (%current-system)))
-                            #:variant (version-major+minor version))))
-             '())))
+       ,@(match (and configuration-file
+                     (configuration-file
+                      (system->linux-architecture
+                       (or (%current-target-system) (%current-system)))
+                      #:variant (version-major+minor version)))
+           (#f                                    ;no config for this platform
+            '())
+           ((? string? config)
+            `(("kconfig" ,config))))))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
