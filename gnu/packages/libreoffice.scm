@@ -641,12 +641,14 @@ Works word processor file format.")
                "0ngwk18dwd8p5a5f20h2jlgrz9wbc1k189mmmprb2zmqwfi02b45"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)))
     (home-page "http://hunspell.sourceforge.net/")
     (synopsis "Spell checker")
     (description "Hunspell is a spell checker and morphological analyzer
 library and program designed for languages with rich morphology and complex
 word compounding or character encoding.")
-    ;; triple license, including "mpl1.1 or later"
+    ;; Triple license, including "mpl1.1 or later".
     (license (list mpl1.1 gpl2+ lgpl2.1+))))
 
 (define-public hyphen
