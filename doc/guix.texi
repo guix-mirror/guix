@@ -5997,6 +5997,21 @@ The @code{--container} option requires Linux-libre 3.19 or newer.
 The available options are summarized below.
 
 @table @code
+@item --root=@var{file}
+@itemx -r @var{file}
+@cindex persistent environment
+@cindex garbage collector root, for environments
+Make @var{file} a symlink to the profile for this environment, and
+register it as a garbage collector root.
+
+This is useful if you want to protect your environment from garbage
+collection, to make it ``persistent''.
+
+When this option is omitted, the environment is protected from garbage
+collection only for the duration of the @command{guix environment}
+session.  This means that next time you recreate the same environment,
+you could have to rebuild or re-download packages.
+
 @item --expression=@var{expr}
 @itemx -e @var{expr}
 Create an environment for the package or list of packages that
