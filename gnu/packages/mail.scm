@@ -113,43 +113,43 @@
                "1dpylyg79avi7brpkcmzaq7bqqkz45flp0ws6f2c8b1gyz4hdnzm"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; TODO: Add `--with-sql'.
-       #:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda _
-                   ;; Use the right file name for `cat'.
-                   (substitute* "testsuite/lib/mailutils.exp"
-                     (("/bin/cat")
-                      (which "cat")))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Use the right file name for `cat'.
+             (substitute* "testsuite/lib/mailutils.exp"
+               (("/bin/cat")
+                (which "cat")))
 
-                   ;; Tests try to invoke 'maidag' such that it looks up the
-                   ;; 'root' user, which does not exist in the build
-                   ;; environment.
-                   (substitute* "maidag/tests/testsuite"
-                     (("root <")         "nobody <")
-                     (("spool/root")     "spool/nobody")
-                     (("root@localhost") "nobody@localhost"))
+             ;; Tests try to invoke 'maidag' such that it looks up the
+             ;; 'root' user, which does not exist in the build
+             ;; environment.
+             (substitute* "maidag/tests/testsuite"
+               (("root <")         "nobody <")
+               (("spool/root")     "spool/nobody")
+               (("root@localhost") "nobody@localhost"))
 
-                   ;; The 'pipeact.at' tests generate a shell script; make
-                   ;; sure it uses the right shell.
-                   (substitute* '("sieve/tests/testsuite"
-                                  "mh/tests/testsuite")
-                     (("#! /bin/sh")
-                      (string-append "#!" (which "sh"))))
+             ;; The 'pipeact.at' tests generate a shell script; make
+             ;; sure it uses the right shell.
+             (substitute* '("sieve/tests/testsuite"
+                            "mh/tests/testsuite")
+               (("#! /bin/sh")
+                (string-append "#!" (which "sh"))))
 
-                   (substitute* "mh/tests/testsuite"
-                     (("moreproc: /bin/cat")
-                      (string-append "moreproc: " (which "cat"))))
+             (substitute* "mh/tests/testsuite"
+               (("moreproc: /bin/cat")
+                (string-append "moreproc: " (which "cat"))))
 
-                   ;; XXX: The comsatd tests rely on being able to open
-                   ;; /dev/tty, but that gives ENODEV in the build
-                   ;; environment.  Thus, ignore test failures here.
-                   (substitute* "comsat/tests/Makefile.in"
-                     (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
-                      (string-append "-" all)))
+             ;; XXX: The comsatd tests rely on being able to open
+             ;; /dev/tty, but that gives ENODEV in the build
+             ;; environment.  Thus, ignore test failures here.
+             (substitute* "comsat/tests/Makefile.in"
+               (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
+                (string-append "-" all)))
 
-                   #t)
-                 %standard-phases)
+             #t)))
+       ;; TODO: Add `--with-sql'.
        #:configure-flags '("--sysconfdir=/etc")
        #:parallel-tests? #f))
     (inputs
