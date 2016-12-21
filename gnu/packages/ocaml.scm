@@ -24,7 +24,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ocaml)
-  #:use-module ((guix licenses) #:hide (zlib))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix svn-download)
@@ -146,7 +146,7 @@ functional, imperative and object-oriented styles of programming.")
     ;; The compiler is distributed under qpl1.0 with a change to choice of
     ;; law: the license is governed by the laws of France.  The library is
     ;; distributed under lgpl2.0.
-    (license (list qpl lgpl2.0))))
+    (license (list license:qpl license:lgpl2.0))))
 
 (define-public opam
   (package
@@ -211,7 +211,7 @@ simultaneous compiler installations, flexible package constraints, and a
 Git-friendly development workflow.")
 
     ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
-    (license lgpl3)))
+    (license license:lgpl3)))
 
 (define-public camlp4
   (package
@@ -253,7 +253,7 @@ syntax of OCaml.")
 
     ;; This is LGPLv2 with an exception that allows packages statically-linked
     ;; against the library to be released under any terms.
-    (license lgpl2.0)))
+    (license license:lgpl2.0)))
 
 (define-public camlp5
   (package
@@ -294,7 +294,7 @@ syntax of OCaml.")
 tools for syntax (Stream Parsers and Grammars) and the ability to modify the
 concrete syntax of the language (Quotations, Syntax Extensions).")
     ;; Most files are distributed under bsd-3, but ocaml_stuff/* is under qpl.
-    (license (list bsd-3 qpl))))
+    (license (list license:bsd-3 license:qpl))))
 
 (define-public hevea
   (package
@@ -325,7 +325,7 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
     (description
      "HeVeA is a LaTeX to HTML translator that generates modern HTML 5.  It is
 written in Objective Caml.")
-    (license qpl)))
+    (license license:qpl)))
 
 (define-public coq
   (package
@@ -378,7 +378,7 @@ development of computer programs consistent with their formal specification.
 It is developed using Objective Caml and Camlp5.")
     ;; The code is distributed under lgpl2.1.
     ;; Some of the documentation is distributed under opl1.0+.
-    (license (list lgpl2.1 opl1.0+))))
+    (license (list license:lgpl2.1 license:opl1.0+))))
 
 (define-public proof-general
   (package
@@ -456,7 +456,7 @@ It is developed using Objective Caml and Camlp5.")
      "Proof General is a major mode to turn Emacs into an interactive proof
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public ocaml-menhir
   (package
@@ -492,7 +492,7 @@ Knuth’s LR(1) parser construction technique.")
     ;; The file src/standard.mly and all files listed in src/mnehirLib.mlpack
     ;; that have an *.ml or *.mli extension are GPL licensed. All other files
     ;; are QPL licensed.
-    (license (list gpl2+ qpl))))
+    (license (list license:gpl2+ license:qpl))))
 
 (define-public lablgtk
   (package
@@ -555,7 +555,7 @@ gdk-pixbuf, the GLArea widget (in combination with LablGL), gnomecanvas,
 gnomeui, gtksourceview, gtkspell,
 libglade (and it an generate OCaml code from .glade files),
 libpanel, librsvg and quartz.")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public unison
   (package
@@ -676,7 +676,7 @@ a collection of files and directories to be stored on different hosts
 (or different disks on the same host), modified separately, and then
 brought up to date by propagating the changes in each replica
 to the other.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public ocaml-findlib
   (package
@@ -724,4 +724,4 @@ dependency information about multiple packages.  There is also a tool that
 allows the user to enter queries on the command-line.  In order to simplify
 compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
-    (license x11)))
+    (license license:x11)))
