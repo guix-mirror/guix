@@ -121,7 +121,7 @@
                    ;; XXX FIXME: These tests fail within the build container.
                    (lambda _
                      (substitute* "tests/syscalls.scm"
-                       (("^\\(test-assert \"(clone|setns|pivot-root)\"" all)
+                       (("^\\(test-(assert|equal) \"(clone|setns|pivot-root)\"" all)
                         (string-append "(test-skip 1)\n" all)))
                      (substitute* "tests/containers.scm"
                        (("^\\(test-(assert|equal)" all)
