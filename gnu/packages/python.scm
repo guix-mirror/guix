@@ -3347,6 +3347,27 @@ capabilities.")
 (define python2-numpy-bootstrap
   (package-with-python2 python-numpy-bootstrap))
 
+(define-public python-munch
+  (package
+    (name "python-munch")
+    (version "2.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "munch" version))
+        (sha256
+         (base32
+          "1cmqg91xnqx8gvnh4pmp0bfl1dfcm65d5p9mg73zz8pkjhx6h80l"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Infinidat/munch")
+    (synopsis "Dot-accessible dictionary")
+    (description "Munch is a dot-accessible dictionary similar to JavaScript
+objects.")
+    (license license:expat)))
+
+(define-public python2-munch
+  (package-with-python2 python-munch))
+
 (define-public python2-fastlmm
   (package
     (name "python2-fastlmm")
