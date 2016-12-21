@@ -819,9 +819,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
-  %D%/packages/patches/qemu-CVE-2016-8576.patch			\
-  %D%/packages/patches/qemu-CVE-2016-8577.patch			\
-  %D%/packages/patches/qemu-CVE-2016-8578.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
