@@ -3465,6 +3465,33 @@ association studies (GWAS) on extremely large data sets.")
 (define-public python2-numpy
   (package-with-python2 python-numpy))
 
+(define-public python-pygit2
+  (package
+    (name "python-pygit2")
+    (version "0.24.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pygit2" version))
+       (sha256
+        (base32
+         "0shnafv9zc483wmcr4fzgvirg1qzz42xpdqd4a3ad39sdj1qbbia"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-cffi" ,python-cffi)
+       ("libgit2" ,libgit2)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/libgit2/pygit2")
+    (synopsis "Python bindings for libgit2")
+    (description "Pygit2 is a set of Python bindings to the libgit2 shared
+library, libgit2 implements Git plumbing.")
+    ;; GPL2.0 only, with linking exception.
+    (license license:gpl2)))
+
+(define-public python2-pygit2
+  (package-with-python2 python-pygit2))
+
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
