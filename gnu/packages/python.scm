@@ -9313,6 +9313,33 @@ presume or force a developer to use a particular tool or library.")
 (define-public python2-flask
   (package-with-python2 python-flask))
 
+(define-public python-flask-wtf
+  (package
+    (name "python-flask-wtf")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Flask-WTF" version))
+       (sha256
+        (base32
+         "04l5743j2dici46038sqlzvf0xzpg8rf7s9ld2x24xv7f4idg990"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask-babel" ,python-flask-babel)
+       ("python-babel" ,python-babel)
+       ("python-wtforms" ,python-wtforms)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/lepture/flask-wtf")
+    (synopsis "Simple integration of Flask and WTForms")
+    (description "Flask-WTF integrates Flask and WTForms, including CSRF, file
+upload, and reCAPTCHA.")
+    (license license:bsd-3)))
+
+(define-public python2-flask-wtf
+  (package-with-python2 python-flask-wtf))
+
 (define-public python-cookies
   (package
     (name "python-cookies")
