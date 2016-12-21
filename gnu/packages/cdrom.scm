@@ -328,12 +328,14 @@ from an audio CD.")
                    (parano (assoc-ref inputs "cdparanoia"))
                    (which  (assoc-ref inputs "which"))
                    (discid (assoc-ref inputs "cd-discid"))
+                   (flac   (assoc-ref inputs "flac"))
                    (out    (assoc-ref outputs "out")))
                (define (wrap file)
                  (wrap-program file
                                `("PATH" ":" prefix
                                  (,(string-append out "/bin:"
                                                   wget "/bin:"
+                                                  flac "/bin:"
                                                   which "/bin:"
                                                   vorbis "/bin:"
                                                   discid "/bin:"
@@ -349,6 +351,7 @@ from an audio CD.")
               ("cdparanoia" ,cdparanoia)
               ("cd-discid" ,cd-discid)
               ("vorbis-tools" ,vorbis-tools)
+              ("flac" ,flac)
 
               ;; A couple of Python and Perl scripts are included.
               ("python" ,python)
