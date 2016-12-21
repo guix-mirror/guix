@@ -2538,6 +2538,34 @@ version numbers.")
              (propagated-inputs
               `(("python2-functools32" ,python2-functools32))))))
 
+(define-public python-kitchen
+  (package
+    (name "python-kitchen")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kitchen" version))
+       (sha256
+        (base32
+         "0ggv3p4x8jvmmzhp0xm00h6pvh1g0gmycw71rjwagnrj8n23vxrq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-chardet" ,python-chardet)))
+    (home-page "https://fedorahosted.org/kitchen")
+    (synopsis "Python API for snippets")
+    (description "@code{kitchen} module provides a python API for all sorts of
+little useful snippets of code that everybody ends up writing for their projects
+but never seem big enough to build an independent release.  Use kitchen and stop
+cutting and pasting that code over and over.")
+    (license (list license:lgpl2.1+
+                   ;; subprocess.py, test_subprocess.py,
+                   ;; kitchen/pycompat25/defaultdict.py:
+                   license:psfl))))
+
+(define-public python2-kitchen
+  (package-with-python2 python-kitchen))
+
 (define-public python-unidecode
   (package
     (name "python-unidecode")
