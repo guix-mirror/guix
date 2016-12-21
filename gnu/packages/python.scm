@@ -9340,6 +9340,29 @@ upload, and reCAPTCHA.")
 (define-public python2-flask-wtf
   (package-with-python2 python-flask-wtf))
 
+(define-public python-flask-multistatic
+  (package
+    (name "python-flask-multistatic")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flask-multistatic" version))
+       (sha256
+        (base32
+         "0p4v50rwv64wcd0zlq7rzl4waprwr4hj19s3cgf1isywa7jcisgm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)))
+    (home-page "https://pagure.io/flask-multistatic")
+    (synopsis "Flask plugin to allow overriding static files")
+    (description "@code{flask-multistatic} is a flask plugin that adds support
+for overriding static files.")
+    (license license:gpl3+)))
+
+(define-public python2-flask-multistatic
+  (package-with-python2 python-flask-multistatic))
+
 (define-public python-cookies
   (package
     (name "python-cookies")
