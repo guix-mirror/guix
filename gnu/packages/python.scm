@@ -5392,6 +5392,27 @@ another XPath engine to find the matching elements in an XML or HTML document.")
 (define-public python2-cssselect
   (package-with-python2 python-cssselect))
 
+(define-public python-openid-cla
+  (package
+    (name "python-openid-cla")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-openid-cla" version))
+       (sha256
+        (base32
+         "102hy2qisvjxp5s0v9lvwqi4f2dk0dhns40vjgn008yxc7k0h3cr"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/puiterwijk/python-openid-cla/")
+    (synopsis "Implementation of the OpenID CLA extension for python-openid")
+    (description "@code{openid-cla} is an implementation of the OpenID
+contributor license agreement extension for python-openid.")
+    (license license:bsd-3)))
+
+(define-public python2-openid-cla
+  (package-with-python2 python-openid-cla))
+
 (define-public python-netifaces
   (package
     (name "python-netifaces")
