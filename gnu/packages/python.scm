@@ -8105,6 +8105,28 @@ minimal and fast API targetting the following uses:
 (define-public python2-execnet
   (package-with-python2 python-execnet))
 
+(define-public python-trollius-redis
+  (package
+    (name "python-trollius-redis")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "trollius_redis" version))
+        (sha256
+         (base32
+          "0k3vypszmgmaipgw9xscvgm79h2zd6p6ci8gdp5sxl6g5kbqr9fy"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/benjolitz/trollius-redis")
+    (synopsis "Port of asyncio-redis to trollius")
+    (description "@code{trollius-redis} is a Redis client for Python
+  trollius.  It is an asynchronious IO (PEP 3156) implementation of the
+  Redis protocol.")
+    (license license:bsd-2)))
+
+(define-public python2-trollius-redis
+  (package-with-python2 python-trollius-redis))
+
 ;;; The software provided by this package was integrated into pytest 2.8.
 (define-public python-pytest-cache
   (package
