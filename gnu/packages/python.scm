@@ -6102,6 +6102,28 @@ term.js Javascript terminal emulator library.")
           ,python2-backport-ssl-match-hostname)
           ,@(package-propagated-inputs terminado))))))
 
+(define-public python-straight-plugin
+  (package
+    (name "python-straight-plugin")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "straight.plugin" version))
+       (sha256
+        (base32
+         "069pjll4383p4kkgvcc40hgyvf79j2wdbpgwz77yigzxksh1gj62"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/ironfroggy/straight.plugin")
+    (synopsis "Simple namespaced plugin facility")
+    (description "Straight Plugin provides a type of plugin you can create from
+almost any existing Python modules, and an easy way for outside developers to
+add functionality and customization to your projects with their own plugins.")
+    (license license:expat)))
+
+(define-public python2-straight-plugin
+  (package-with-python2 python-straight-plugin))
+
 (define-public python-fonttools
   (package
     (name "python-fonttools")
