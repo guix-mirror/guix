@@ -5138,6 +5138,27 @@ features useful for text console applications.")
 (define-public python2-urwid
   (package-with-python2 python-urwid))
 
+(define-public python2-openid
+  (package
+    (name "python2-openid")
+    (version "2.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-openid" version))
+       (sha256
+        (base32
+         "1vvhxlghjan01snfdc4k7ykd80vkyjgizwgg9bncnin8rqz1ricj"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Python 3 support is in `python3-openid`, a separate package.
+     `(#:python ,python-2))
+    (home-page "https://github.com/openid/python-openid")
+    (synopsis "OpenID support for servers and consumers")
+    (description "This library provides OpenID authentication for Python, both
+for clients and servers.")
+    (license license:asl2.0)))
+
 (define-public python-urwidtrees
   (package
     (name "python-urwidtrees")
