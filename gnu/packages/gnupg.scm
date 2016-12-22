@@ -220,7 +220,11 @@ compatible to GNU Pth.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1js308b46ifx1gim0c9nivr5yxhans7iq1yvkf7zl2928gdm9p65"))))
+                "1js308b46ifx1gim0c9nivr5yxhans7iq1yvkf7zl2928gdm9p65"))
+              (patches
+               ;; This fixes a test failure on 32bit. Remove for next version.
+               ;; https://lists.gnu.org/archive/html/guix-devel/2016-12/msg00869.html
+               (search-patches "gnupg-test-segfault-on-32bit-arch.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
