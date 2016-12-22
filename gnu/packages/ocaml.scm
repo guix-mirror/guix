@@ -50,6 +50,13 @@
   #:use-module (guix svn-download)
   #:use-module (guix utils))
 
+;; A shortcut for files from ocaml forge. Downloaded files are computed from
+;; their number, not their name.
+(define (ocaml-forge-uri name version file-number)
+  (string-append "https://forge.ocamlcore.org/frs/download.php/"
+                 (number->string file-number) "/" name "-" version
+                 ".tar.gz"))
+
 (define-public ocaml
   (package
     (name "ocaml")
@@ -509,14 +516,12 @@ Knuth’s LR(1) parser construction technique.")
   (package
     (name "lablgtk")
     (version "2.18.5")
-    (source
-      (origin
-        (method url-fetch)
-          (uri (string-append "https://forge.ocamlcore.org/frs/download.php/"
-                              "1627/lablgtk-2.18.5.tar.gz"))
-          (sha256
-            (base32
-              "0cyj6sfdvzx8hw7553lhgwc0krlgvlza0ph3dk9gsxy047dm3wib"))))
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1627))
+              (sha256
+               (base32
+                "0cyj6sfdvzx8hw7553lhgwc0krlgvlza0ph3dk9gsxy047dm3wib"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
