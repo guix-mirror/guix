@@ -2960,7 +2960,7 @@ and is very extensible.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.16.1")
+    (version "0.18.1")
     (source
      (origin
        (method url-fetch)
@@ -2970,7 +2970,7 @@ and is very extensible.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "140skabifgc7lvvj873pnzlwx0ni6q8qkrsyad2ccjb3h8rxzkih"))))
+         "1hwswckdmd27f7k1jvwdc0m4mqrgxl2s245yq1scq34v124bjqgq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2978,21 +2978,12 @@ and is very extensible.")
         'check 'set-HOME
         ;; some tests require access to "$HOME"
         (lambda _ (setenv "HOME" "/tmp"))
-        ;; Tests can only be run after the library has been installed and not
-        ;; within the source directory.
-        (alist-cons-after
-         'install 'check
-         (lambda _
-           (with-directory-excursion "/tmp"
-             ;; With Python 3 one test of 3334 fails
-             ;; (sklearn.tests.test_common.test_transformers); see
-             ;; https://github.com/scikit-learn/scikit-learn/issues/3693
-             (system* "nosetests" "-v" "sklearn")))
-         (alist-delete 'check %standard-phases)))))
+        %standard-phases)))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-cython" ,python-cython)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)))
