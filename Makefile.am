@@ -70,6 +70,7 @@ MODULES =					\
   guix/build-system/haskell.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
+  guix/build-system/ocaml.scm			\
   guix/build-system/waf.scm			\
   guix/build-system/r.scm			\
   guix/build-system/ruby.scm			\
@@ -95,6 +96,7 @@ MODULES =					\
   guix/build/gnu-dist.scm			\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
+  guix/build/ocaml-build-system.scm		\
   guix/build/r-build-system.scm			\
   guix/build/ruby-build-system.scm		\
   guix/build/waf-build-system.scm		\

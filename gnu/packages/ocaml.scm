@@ -71,7 +71,7 @@
     (native-search-paths
      (list (search-path-specification
             (variable "OCAMLPATH")
-            (files (list "lib/ocaml")))
+            (files (list "lib/ocaml" "lib/ocaml/site-lib")))
            (search-path-specification
             (variable "CAML_LD_LIBRARY_PATH")
             (files (list "lib/ocaml/site-lib/stubslibs")))))
