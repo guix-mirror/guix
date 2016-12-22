@@ -42,8 +42,10 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -756,3 +758,25 @@ allows the user to enter queries on the command-line.  In order to simplify
 compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
+
+;; note that some tests may hang for no obvious reason.
+(define-public ocaml-ounit
+  (package
+    (name "ocaml-ounit")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "ounit" version 1258))
+              (sha256
+               (base32
+                "118xsadrx84pif9vaq13hv4yh22w9kmr0ypvhrs0viir1jr0ajjd"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("libxml2" ,libxml2))) ; for xmllint
+    (arguments
+     `(#:tests? #f)) ; tests are done during build
+    (home-page "http://ounit.forge.ocamlcore.org")
+    (synopsis "Unit testing framework for OCaml")
+    (description "Unit testing framework for OCaml.  It is similar to JUnit and
+other XUnit testing frameworks.")
+    (license license:expat)))
