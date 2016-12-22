@@ -256,9 +256,19 @@ Git-friendly development workflow.")
                      ;; This is a home-made 'configure' script.
                      (let ((out (assoc-ref outputs "out")))
                        (zero? (system* "./configure"
-                                       (string-append "--libdir=" out "/lib")
+                                       (string-append "--libdir=" out
+                                                      "/lib/ocaml/site-lib")
                                        (string-append "--bindir=" out "/bin")
-                                       (string-append "--pkgdir=" out)))))))))
+                                       (string-append "--pkgdir=" out
+                                                      "/lib/ocaml/site-lib"))))))
+                  (add-after 'install 'install-meta
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "camlp4/META.in"
+                          (("directory = .*")
+                            (string-append "directory = \"" out
+                                           "/lib/ocaml/site-lib/camlp4\"\n")))
+                        (zero? (system* "make" "install-META"))))))))
     (home-page "https://github.com/ocaml/camlp4")
     (synopsis "Write parsers in OCaml")
     (description
@@ -726,7 +736,12 @@ to the other.")
                         "-config" (string-append out "/etc/ocamfind.conf")
                         "-mandir" (string-append out "/share/man")
                         "-sitelib" (string-append out "/lib/ocaml/site-lib")
-                        "-with-toolbox")))))))
+                        "-with-toolbox"))))
+                  (add-after 'install 'remove-camlp4
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file-recursively
+                          (string-append out "/lib/ocaml/site-lib/camlp4"))))))))
     (home-page "http://projects.camlcity.org/projects/findlib.html")
     (synopsis "Management tool for OCaml libraries")
     (description
