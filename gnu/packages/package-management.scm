@@ -44,7 +44,6 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
   #:use-module (gnu packages man)
-  #:use-module (gnu packages emacs)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages python)
   #:use-module (gnu packages popt)
@@ -162,7 +161,6 @@
 
                        #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-minimal)     ;for guix.el
 
                      ;; XXX: Keep the development inputs here even though
                      ;; they're unnecessary, just so that 'guix environment
@@ -206,9 +204,7 @@
     (propagated-inputs
      `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
        ("guile-json" ,guile-json)
-       ("guile-ssh" ,guile-ssh)
-       ("geiser" ,geiser)                         ;for guix.el
-       ("emacs-magit-popup" ,emacs-magit-popup))) ;for "M-x guix" command
+       ("guile-ssh" ,guile-ssh)))
 
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")

@@ -237,14 +237,4 @@ AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
 AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],
   [chmod +x pre-inst-env])
 
-dnl Emacs interface.
-AC_PATH_PROG([DOT_USER_PROGRAM], [dot], [dot])
-AM_PATH_LISPDIR
-AM_CONDITIONAL([HAVE_EMACS], [test "x$EMACS" != "xno"])
-
-emacsuidir="${guilemoduledir}/guix/emacs"
-AC_SUBST([emacsuidir])
-AC_CONFIG_FILES([emacs/guix-config.el
-                 emacs/guix-helper.scm])
-
 AC_OUTPUT

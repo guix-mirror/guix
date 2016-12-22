@@ -54,12 +54,6 @@ Documentation License''.
 * guix environment: (guix)Invoking guix environment. Building development environments with Guix.
 @end direntry
 
-@dircategory Emacs
-@direntry
-* Guix user interface: (guix)Emacs Interface. Package management from the comfort of Emacs.
-@end direntry
-
-
 @titlepage
 @title GNU Guix Reference Manual
 @subtitle Using the GNU Guix Functional Package Manager
@@ -86,7 +80,6 @@ package management tool written for the GNU system.
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
 * Package Management::          Package installation, upgrade, etc.
-* Emacs Interface::             Using Guix from Emacs.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
 * GNU Distribution::            Software for your friendly GNU system.
@@ -123,19 +116,6 @@ Package Management
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Invoking guix archive::       Exporting and importing store files.
-
-Emacs Interface
-
-* Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
-* Package Management: Emacs Package Management.	Managing packages and generations.
-* Licenses: Emacs Licenses.		Interface for licenses of Guix packages.
-* Package Source Locations: Emacs Package Locations.	Interface for package location files.
-* Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
-* Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
-* Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
-* Completions: Emacs Completions.	Completing @command{guix} shell command.
-* Development: Emacs Development.	Tools for Guix developers.
-* Hydra: Emacs Hydra.			Interface for Guix build farm.
 
 Programming Interface
 
@@ -278,8 +258,7 @@ assists with the creation and maintenance of software environments.
 @cindex user interfaces
 Guix provides a command-line package management interface
 (@pxref{Invoking guix package}), a set of command-line utilities
-(@pxref{Utilities}), a visual user interface in Emacs (@pxref{Emacs
-Interface}), as well as Scheme programming interfaces
+(@pxref{Utilities}), as well as Scheme programming interfaces
 (@pxref{Programming Interface}).
 @cindex build daemon
 Its @dfn{build daemon} is responsible for building packages on behalf of
@@ -1414,10 +1393,14 @@ procedures or dependencies.  Guix also goes beyond this obvious set of
 features.
 
 This chapter describes the main features of Guix, as well as the package
-management tools it provides.  Two user interfaces are provided for
-routine package management tasks: A command-line interface described below
-(@pxref{Invoking guix package, @code{guix package}}), as well as a visual user
-interface in Emacs described in a subsequent chapter (@pxref{Emacs Interface}).
+management tools it provides.  Along with the command-line interface
+described below (@pxref{Invoking guix package, @code{guix package}}),
+you may also use Emacs Interface, after installing @code{emacs-guix}
+package (run @kbd{M-x guix-help} command to start with it):
+
+@example
+guix package -i emacs-guix
+@end example
 
 @menu
 * Features::                    How Guix will make your life brighter.
@@ -1434,9 +1417,7 @@ interface in Emacs described in a subsequent chapter (@pxref{Emacs Interface}).
 
 When using Guix, each package ends up in the @dfn{package store}, in its
 own directory---something that resembles
-@file{/gnu/store/xxx-package-1.2}, where @code{xxx} is a base32 string
-(note that Guix comes with an Emacs extension to shorten those file
-names, @pxref{Emacs Prettify}.)
+@file{/gnu/store/xxx-package-1.2}, where @code{xxx} is a base32 string.
 
 Instead of referring to these directories, users have their own
 @dfn{profile}, which points to the packages that they actually want to
@@ -1982,9 +1963,7 @@ also result from derivation builds, can be available as substitutes.
 
 The @code{hydra.gnu.org} server is a front-end to a build farm that
 builds packages from the GNU distribution continuously for some
-architectures, and makes them available as substitutes (@pxref{Emacs
-Hydra}, for information on how to query the continuous integration
-server).  This is the
+architectures, and makes them available as substitutes.  This is the
 default source of substitutes; it can be overridden by passing the
 @option{--substitute-urls} option either to @command{guix-daemon}
 (@pxref{daemon-substitute-urls,, @code{guix-daemon --substitute-urls}})
@@ -2508,9 +2487,6 @@ The primary purpose of this operation is to facilitate inspection of
 archive contents coming from possibly untrusted substitute servers.
 
 @end table
-
-@c *********************************************************************
-@include emacs.texi
 
 @c *********************************************************************
 @node Programming Interface
@@ -4922,11 +4898,6 @@ have created your own packages on @code{GUIX_PACKAGE_PATH}
 (@pxref{Defining Packages}), you will be able to edit the package
 recipes. Otherwise, you will be able to examine the read-only recipes
 for packages currently in the store.
-
-If you are using Emacs, note that the Emacs user interface provides the
-@kbd{M-x guix-edit} command and a similar functionality in the ``package
-info'' and ``package list'' buffers created by the @kbd{M-x
-guix-search-by-name} and similar commands (@pxref{Emacs Commands}).
 
 
 @node Invoking guix download
