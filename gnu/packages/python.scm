@@ -33,6 +33,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -714,6 +715,51 @@ earlier versions of Python.  The function checks the hostname in the
 certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
     (license license:psfl)))
+
+(define-public python-hdf4
+  (package
+   (name "python-hdf4")
+   (version "0.9")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri name version))
+      (sha256
+       (base32
+        "1hjiyrxvxk9817qyqky3nar4y3fs4z8wxz0n884zzb5wi6skrjks"))))
+   (build-system python-build-system)
+   (native-inputs `(("nose" ,python-nose)))
+   (propagated-inputs `(("numpy" ,python-numpy)))
+   (inputs
+    `(("hdf4" ,hdf4)
+      ("libjpeg" ,libjpeg)
+      ("zlib" ,zlib)))
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (replace 'check
+          (lambda _
+            ;; The 'runexamples' script sets PYTHONPATH to CWD, then goes
+            ;; on to import numpy. Somehow this works on their CI system.
+            ;; Let's just manage PYTHONPATH here instead.
+            (substitute* "runexamples.sh"
+              (("export PYTHONPATH=.*") ""))
+            (setenv "PYTHONPATH"
+                    (string-append (getcwd) ":"
+                                   (getenv "PYTHONPATH")))
+            (and (zero? (system* "./runexamples.sh"))
+                 (zero? (system* "nosetests" "-v"))))))))
+   (home-page "https://github.com/fhs/python-hdf4")
+   (synopsis "Python interface to the NCSA HDF4 library")
+   (description
+    "Python-HDF4 is a python wrapper around the NCSA HDF version 4 library,
+which implements the SD (Scientific Dataset), VS (Vdata) and V (Vgroup) API’s.
+NetCDF files can also be read and modified.  Python-HDF4 is a fork of
+@url{http://hdfeos.org/software/pyhdf.php,pyhdf}.")
+   (license license:expat)))
+
+(define-public python2-hdf4
+  (package-with-python2 python-hdf4))
 
 (define-public python-h5py
   (package
