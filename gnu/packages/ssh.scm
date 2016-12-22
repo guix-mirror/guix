@@ -85,7 +85,7 @@ remote applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.7.0")
+   (version "1.8.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -93,7 +93,7 @@ remote applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "116mh112w48vv9k3f15ggp5kxw5sj4b88dzb5j69llsh7ba1ymp4"))))
+              "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))))
    (build-system gnu-build-system)
    ;; The installed libssh2.pc file does not include paths to libgcrypt and
    ;; zlib libraries, so we need to propagate the inputs.
