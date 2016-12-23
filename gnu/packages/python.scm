@@ -810,6 +810,57 @@ concepts.")
 (define-public python2-h5py
   (package-with-python2 python-h5py))
 
+(define-public python-netcdf4
+  (package
+    (name "python-netcdf4")
+    (version "1.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "netCDF4" version))
+       (sha256
+        (base32
+         "1qcymsfxsdfr4sx0vl7ih5d14z66k6c9sjy4gb6rjaksk5387zvg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (inputs
+     `(("netcdf" ,netcdf)
+       ("hdf4" ,hdf4)
+       ("hdf5" ,hdf5)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "NO_NET" "1") ; disable opendap tests
+             (with-directory-excursion "test"
+               (setenv "PYTHONPATH" ; find and add the library we just built
+                       (string-append
+                        (car (find-files "../build" "lib.*"
+                                         #:directories? #:t
+                                         #:fail-on-error? #:t))
+                        ":" (getenv "PYTHONPATH")))
+               (zero? (system* "python" "run_all.py"))))))))
+    (home-page
+     "https://github.com/Unidata/netcdf4-python")
+    (synopsis "Python/numpy interface to the netCDF library")
+    (description "Netcdf4-python is a Python interface to the netCDF C
+library.  netCDF version 4 has many features not found in earlier
+versions of the library and is implemented on top of HDF5.  This module
+can read and write files in both the new netCDF 4 and the old netCDF 3
+format, and can create files that are readable by HDF5 clients.  The
+API is modelled after @code{Scientific.IO.NetCDF}, and should be familiar
+to users of that module.")
+    ;; The software is mainly ISC, but includes some files covered
+    ;; by the Expat license.
+    (license (list license:isc license:expat))))
+
+(define-public python2-netcdf4
+  (package-with-python2 python-netcdf4))
+
 (define-public python-lockfile
   (package
     (name "python-lockfile")
