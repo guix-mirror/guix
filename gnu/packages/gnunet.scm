@@ -173,6 +173,8 @@ and support for SSL3 and TLS.")
              (base32
               "1gn6mvab2vhfj9637ykg1zjzb23fngfnyd24wlgxmjhf49pn334h"))))
    (build-system gnu-build-system)
+   (outputs '("out"
+              "doc"))                             ; 1.5 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
              ("zlib" ,zlib)))
@@ -201,6 +203,15 @@ and support for SSL3 and TLS.")
       #:phases
       ;; We have to patch runtests.pl in tests/ directory
       (modify-phases %standard-phases
+        (add-after 'install 'move-man3-pages
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Move section 3 man pages to "doc".
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
+              (mkdir-p (string-append doc "/share/man"))
+              (rename-file (string-append out "/share/man/man3")
+                           (string-append doc "/share/man/man3"))
+              #t)))
         (add-before 'configure 'autoconf
           ;; Clear artifacts left (shebangs) from release preparation.
           (lambda _
