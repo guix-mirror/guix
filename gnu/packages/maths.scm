@@ -726,10 +726,12 @@ HDF5 file is encoded according to the HDF File Format Specification.")
        ("doxygen" ,doxygen)
        ("graphviz" ,graphviz)))
     (inputs
-     `(("hdf5" ,hdf5)
-       ("zlib" ,zlib)))
+     `(("hdf4" ,hdf4-alt)
+       ("hdf5" ,hdf5)
+       ("zlib" ,zlib)
+       ("libjpeg" ,libjpeg)))
     (arguments
-     `(#:configure-flags '("--enable-doxygen" "--enable-dot")
+     `(#:configure-flags '("--enable-doxygen" "--enable-dot" "--enable-hdf4")
        #:parallel-tests? #f))           ;various race conditions
     (home-page "http://www.unidata.ucar.edu/software/netcdf/")
     (synopsis "Library for scientific data")
