@@ -285,6 +285,8 @@ asynchronous fashion.")
        #:configure-flags (list "--sysconfdir=/etc"      "--localstatedir=/var"
                                "--enable-shared"        "--disable-static"
                                "--enable-messages"      "--enable-ctrl"
+                               "--enable-nsec"          "--enable-nsec3"
+                               "--enable-tsig"          "--enable-caching"
                                ;; NSID is a rarely-used debugging aid, that also
                                ;; causes the build to fail. Just disable it.
                                "--disable-nsid")))
