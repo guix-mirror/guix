@@ -2698,7 +2698,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.8.5")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2706,7 +2706,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1vq83a8sz8dnshbyaghacqvcwv2n1kh53yjv87rxx9dc4b0b2iyj"))))
+                "18y88avadn4wb3xmczd6pfcjr7ik62dw4phk6fmkms2j8vmvl9z2"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2733,11 +2733,11 @@ and copy/paste text in the console and in xterm.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
                      ("xmlto" ,xmlto)
-                     ;; For building documentation
+                     ;; For building documentation.
                      ("libxml2" ,libxml2)
                      ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
-                     ;; For tests
+                     ;; For tests.
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
