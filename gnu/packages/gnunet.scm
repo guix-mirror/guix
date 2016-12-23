@@ -205,16 +205,17 @@ and support for SSL3 and TLS.")
           ;; Clear artifacts left (shebangs) from release preparation.
           (lambda _
             (zero? (system* "./buildconf"))))
-        (add-before 'check 'disable-test1026
+        (replace 'check
           (lambda _
             ;; It is unclear why test1026 fails, however the content of it
             ;; suggests that it is not vital for gnurl.
             (delete-file "tests/data/test1026")
-            #t))
-        (add-before 'check 'patch-runtests
-          (lambda _
+
             (substitute* "tests/runtests.pl"
               (("/bin/sh") (which "sh")))
+
+            ;; Make test output more verbose.
+            (zero? (system* "make" "-C" "tests" "test"))
             #t)))))
    (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
    (description
