@@ -261,15 +261,17 @@ asynchronous fashion.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.1-6281")
+    (version "2.2.3")
     (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
-                           name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0vj71z7i9lfbnp93k28aplwldp5mfli0kvrbwmha6fjha6kcr910"))))
+     (let ((revision "6711"))
+       (origin
+         (method url-fetch)
+         (uri
+          (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
+                         name "-" version "-" revision ".tar.gz"))
+         (sha256
+          (base32
+           "0ikfm40gx0zjw3gnxsw3rn1k4wb8jacgklja3ygcj1knq6hy2zaa")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
