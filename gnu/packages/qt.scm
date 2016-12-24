@@ -348,7 +348,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtbase
   (package
     (name "qtbase")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -357,7 +357,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ip6xnizsn269r4s1nq9lkx8cdxkjqr1fidwrj3sa8xb7h96syry"))
+               "0zjmcrmnnmaz1lr9wc5i6y565hsvl8ycn790ivqaz62dv54zbkgd"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -531,7 +531,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtsvg
   (package (inherit qtbase)
     (name "qtsvg")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -540,7 +540,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "10fqrlqkiq83xhx79g8d2sjy7hjdnp28067z8f4byj7db81rzy51"))))
+               "0irr9h566hl9nx8p919rz276zbfvvd6vqdb6i9g6b3piikdigw5h"))))
     (propagated-inputs `())
     (native-inputs `(("perl" ,perl)))
     (inputs
@@ -565,7 +565,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtimageformats
   (package (inherit qtsvg)
     (name "qtimageformats")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -574,7 +574,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1rb27x7i2pmvsck6wax2cg31gqpzaakciy45wm5l3lcl86j48czg"))
+               "1x3p1xmw7spxa4bwriyrwsfrq31jabsdjsi5fras9y39naia55sg"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -592,7 +592,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtx11extras
   (package (inherit qtsvg)
     (name "qtx11extras")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -601,7 +601,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1yrkn8pqdbvbqykas3wx1vdfimhjkgx3s5jgdxib9dgmgyx6vjzw"))))
+               "09z49jm70f5i0gcdz9a16z00pg96x8pz7vri5wpirh3fqqn0qnjz"))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
@@ -610,7 +610,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtxmlpatterns
   (package (inherit qtsvg)
     (name "qtxmlpatterns")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -619,14 +619,14 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "02z2qxamslg6sphnaykjcjfpypq4b69pb586s43vw4fplm72m21q"))))
+               "1rgqnpg64gn5agmvjwy0am8hp5fpxl3cdkixr1yrsdxi5a6961d8"))))
     (native-inputs `(("perl" ,perl)))
     (inputs `(("qtbase" ,qtbase)))))
 
 (define-public qtdeclarative
   (package (inherit qtsvg)
     (name "qtdeclarative")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -635,7 +635,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1x7rij423g5chlfd2kix54f393vxwjvdfsn1c7sybqmfycwn5pl6"))))
+               "0mjxfwnplpx60jc6y94krg00isddl9bfwc7dayl981njb4qds4zx"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -649,7 +649,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtconnectivity
   (package (inherit qtsvg)
     (name "qtconnectivity")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -658,7 +658,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "00r7lc1w3snfp2qfqmviqzv0cw16zd8m1sfpvxvpl65yqmzcli4q"))))
+               "0rmr7bd4skby7bax9hpj2sid2bq3098nkw7xm02mdp04hc3bks5k"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -670,7 +670,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtwebsockets
   (package (inherit qtsvg)
     (name "qtwebsockets")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -679,7 +679,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0hwb2l7iwf4wf7l95dli8j3b7h0nffp56skfg1x810kzj0df26vl"))))
+               "1laj0slwibs0bg69kgrdhc9k1s6yisq3pcsr0r9rhbkzisv7aajw"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
@@ -688,7 +688,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtsensors
   (package (inherit qtsvg)
     (name "qtsensors")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -697,7 +697,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1gii6wg2xd3bkb86y5hgpmwcpl04xav030zscpl6fhscl9kcqg98"))))
+               "041v1x8pwfzpyk6y0sy5zgm915pi15xdhiy18fd5wqayvcp99cyc"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
@@ -706,7 +706,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtmultimedia
   (package (inherit qtsvg)
     (name "qtmultimedia")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -715,7 +715,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ndmhiflmyr144nq8drd5njsdi282ixsm4730q5n0ji2v9dp1bh5"))
+               "1vvxmgmvjnz9w1h2ph1j2fy77ij141ycx5fric60lq02pxzifax5"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -735,7 +735,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtwayland
   (package (inherit qtsvg)
     (name "qtwayland")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -744,7 +744,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "04dynjcr6gxi3hcqdf688a4hkabi2l17slpcx9k0f3dxygwcgf96"))))
+               "1iq1c89y4ggq0dxjlf62jyhh8a9l3x7y914x84w5pby8h3hwagzj"))))
     (native-inputs
      `(("glib" ,glib)
        ("perl" ,perl)
@@ -766,7 +766,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtserialport
   (package (inherit qtsvg)
     (name "qtserialport")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -775,7 +775,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0rc2l14s59qskp16wqlkizfai32s41qlm7a86r3qahx28gc51qaw"))))
+               "09jsryc0z49cz9783kq48rkn42f10c6krzivp812ddwjsfdy3mbn"))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("qtbase" ,qtbase)
@@ -784,7 +784,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtwebchannel
   (package (inherit qtsvg)
     (name "qtwebchannel")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -793,7 +793,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "05lqfidlh1ahdd1j9y20p2037qbcq51zkdzj2m8fwhn7ghbwvd1s"))))
+               "16rij92dxy4k5231l3dpmhy7cnz0cjkn50cpzaf014zrdz3kmav3"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
@@ -803,7 +803,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtlocation
   (package (inherit qtsvg)
     (name "qtlocation")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -812,7 +812,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0rd898gndn41jrp78203lxd94ybfv693l0qg0myag4r46ikk69vh"))))
+               "17zkzffzwbg6aqhsggs23cmwzq4y45m938842lsc423hfm7fdsgr"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
@@ -823,7 +823,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qttools
   (package (inherit qtsvg)
     (name "qttools")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -832,7 +832,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "004m9l7bgh7qnncbyl3d5fkggdrqx58ib21xv4hflvvarxrssibg"))))
+               "1b6zqa5690b8lqms7rrhb8rcq0xg5hp117v3m08qngbcd0i706b4"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
@@ -843,7 +843,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtscript
   (package (inherit qtsvg)
     (name "qtscript")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -852,7 +852,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0040890p5ilyrmcpndz1hhp08x2ms5gw4lp4n5iax2a957yy2i4w"))))
+               "09m41n95448pszr7inlg03ycb66s1a9hzfylaka92382acf1myav"))))
     (native-inputs
      `(("perl" ,perl)
        ("qttools" ,qttools)))
@@ -862,7 +862,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtquickcontrols
   (package (inherit qtsvg)
     (name "qtquickcontrols")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -871,7 +871,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0cpcrmz9n5b4bgmshmk093lirl9xwqb23inchnai1zqg21vrmqfq"))))
+               "17cyfyqzjbm9dhq9pjscz36y84y16rmxwk6h826gjfprddrimsvg"))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -879,7 +879,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtquickcontrols2
   (package (inherit qtsvg)
     (name "qtquickcontrols2")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -888,7 +888,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0i8h933vhvx1bmniqdx0idg6vk82w9byd3dq0bb2phwjg5vv1xb3"))))
+               "1v77ydy4k15lksp3bi2kgha2h7m79g4n7c2qhbr09xnvpb8ars7j"))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -896,7 +896,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtgraphicaleffects
   (package (inherit qtsvg)
     (name "qtgraphicaleffects")
-    (version "5.7.0")
+    (version "5.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -905,7 +905,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1rwdjg5mk6xpadmxfq64xfp573zp5lrj9illb9105ra5wff565n8"))))
+               "1j2drnx7zp3w6cgvy7bn00fyk5v7vw1j1hidaqcg78lzb6zgls1c"))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -1203,7 +1203,7 @@ different kinds of sliders, and much more.")
 (define-public qtwebkit
   (package
     (name "qtwebkit")
-    (version "5.7.0")
+    (version "5.7.1")
     (source
       (origin
         (method url-fetch)
@@ -1215,7 +1215,7 @@ different kinds of sliders, and much more.")
         ;; <http://lists.qt-project.org/pipermail/development/2016-May/025923.html>.
         (sha256
          (base32
-          "1prlpl3zslzpr1iv7m3irvxjxn3v8nlxh21v9k2kaq4fpwy2b8y7"))))
+          "00szgcra6pf2myfjrdbsr1gmrxycpbjqlzkplna5yr1rjg4gfv54"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
