@@ -451,3 +451,78 @@ with a layered architecture of JTAG interface and TAP support.")
       (home-page "https://github.com/totalspectrum/gcc-propeller")
       (synopsis "GCC for the Parallax Propeller"))))
 
+;; There is no release, so we take the latest version as referenced from here:
+;; https://github.com/dbetz/propeller-gcc
+(define-public proplib
+  (let ((commit "844741fe0ceb140ab2fdf9d0667f68c1c39c31da")
+        (revision "1"))
+    (package
+      (name "proplib")
+      (version (string-append "0.0.0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/totalspectrum/proplib.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "0q7irf1x8iqx07n7lzksax9armrdkizs49swsz76nbks0mw67wiv"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               (string-append "BUILD="  (getcwd) "/build"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'fix-Makefile
+             (lambda _
+               (substitute* "Makefile"
+                 ;; The GCC sources are not part of this package, so we cannot
+                 ;; install the out-of-tree license file.
+                 (("cp \\.\\..*") "")
+                 ;; Control the installation time of the headers.
+                 ((" install-includes") ""))
+               #t))
+           ;; The Makefile does not separate building from installation, so we
+           ;; have to create the target directories at build time.
+           (add-before 'build 'create-target-directories
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-dirs" make-flags))))
+           (add-before 'build 'set-cross-environment-variables
+             (lambda* (#:key outputs #:allow-other-keys)
+               (setenv "CROSS_LIBRARY_PATH"
+                       (string-append (assoc-ref outputs "out")
+                                      "/propeller-elf/lib:"
+                                      (or (getenv "CROSS_LIBRARY_PATH") "")))
+               (setenv "CROSS_C_INCLUDE_PATH"
+                       (string-append (assoc-ref outputs "out")
+                                      "/propeller-elf/include:"
+                                      (or (getenv "CROSS_C_INCLUDE_PATH") "")))
+               #t))
+           (add-after 'build 'build-tiny
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "tiny" make-flags))))
+           ;; The build of the tiny libraries depends on the includes to be
+           ;; available.  Since we set CROSS_C_INCLUDE_PATH to the output
+           ;; directory, we have to install the includes first.
+           (add-before 'build-tiny 'install-includes
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-includes" make-flags))))
+           (add-after 'install 'install-tiny
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-tiny" make-flags)))))))
+      (native-inputs
+       `(("propeller-gcc" ,propeller-gcc)
+         ("propeller-binutils" ,propeller-binutils)
+         ("perl" ,perl)))
+      (home-page "https://github.com/totalspectrum/proplib")
+      (synopsis "C library for the Parallax Propeller")
+      (description "This is a C library for the Parallax Propeller
+micro-controller.")
+      ;; Most of the code is released under the Expat license.  Some of the
+      ;; included code is public domain and some changes are BSD licensed.
+      (license license:expat))))
+
