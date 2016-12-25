@@ -543,3 +543,41 @@ Propeller micro-controller development.")
     (home-page (package-home-page propeller-gcc))
     (license (package-license propeller-gcc))))
 
+(define-public openspin
+  (package
+    (name "openspin")
+    (version "1.00.78")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/parallaxinc/"
+                                  "OpenSpin/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1k2dbz1v604g4r2d9qhckg2m8dnhiya760mbsqfsg4waxal87yb7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'remove-timestamp
+           (lambda _
+             (substitute* "SpinSource/openspin.cpp"
+               ((" Compiled on.*$") "\\n\");"))
+             #t))
+         ;; Makefile does not include "install" target
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin")))
+               (mkdir-p bin)
+               (install-file "build/openspin" bin)
+               #t))))))
+    (home-page "https://github.com/parallaxinc/OpenSpin")
+    (synopsis "Spin/PASM compiler for the Parallax Propeller")
+    (description "OpenSpin is a compiler for the Spin/PASM language of the
+Parallax Propeller.  It was ported from Chip Gracey's original x86 assembler
+code.")
+    (license license:expat)))
+
