@@ -108,7 +108,8 @@ project (but it is usable outside of the Gnome platform).")
     (source
       (origin
         (inherit (package-source libxml2))
-        (patches (search-patches "libxml2-CVE-2016-4658.patch"))))))
+        (patches (search-patches "libxml2-CVE-2016-4658.patch"
+                                 "libxml2-CVE-2016-5131.patch"))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)

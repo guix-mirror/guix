@@ -697,6 +697,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
   %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
+  %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
