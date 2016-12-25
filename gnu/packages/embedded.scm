@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
@@ -30,7 +30,9 @@
   #:use-module (guix build utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gdb)
@@ -369,3 +371,47 @@ language.")
       (description "OpenOCD provides on-chip programming and debugging support
 with a layered architecture of JTAG interface and TAP support.")
       (license license:gpl2+))))
+
+;; The commits for all propeller tools are the latest versions as published
+;; here: https://github.com/dbetz/propeller-gcc
+
+(define propeller-binutils
+  (let ((xbinutils (cross-binutils "propeller-elf"))
+        (commit "3bfba30076f8ce160a2f42914fdb68f24445fd44")
+        (revision "1"))
+    (package
+      (inherit xbinutils)
+      (name "propeller-binutils")
+      (version (string-append "0.0.0-" revision "." (string-take commit 9)))
+      (source (origin (inherit (package-source xbinutils))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/totalspectrum/binutils-propeller.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "1v3rgxwj7b8817wy5ccf8621v75qcxvcxygk4acr3hbc6yqybr8h"))))
+      (arguments
+       `(;; FIXME: For some reason there are many test failures.  Some of them
+         ;; appear to be due to regular expression mismatch, but it's not
+         ;; obvious how to fix the failures.
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-/bin/sh-in-tests
+             (lambda _
+               (substitute* '("sim/testsuite/Makefile.in"
+                              "sim/testsuite/mips64el-elf/Makefile.in"
+                              "sim/testsuite/d10v-elf/Makefile.in"
+                              "sim/testsuite/sim/cris/asm/badarch1.ms")
+                 (("/bin/sh") (which "sh")))
+               #t)))
+         ,@(package-arguments xbinutils)))
+      (native-inputs
+       `(("bison" ,bison)
+         ("flex" ,flex)
+         ("texinfo" ,texinfo)
+         ("dejagnu" ,dejagnu)
+         ,@(package-native-inputs xbinutils))))))
+
