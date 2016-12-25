@@ -415,3 +415,39 @@ with a layered architecture of JTAG interface and TAP support.")
          ("dejagnu" ,dejagnu)
          ,@(package-native-inputs xbinutils))))))
 
+(define-public propeller-gcc
+  (let ((xgcc (cross-gcc "propeller-elf"
+                         propeller-binutils))
+        (commit "b4f45a4725e0b6d0af59e594c4e3e35ca4105867")
+        (revision "1"))
+    (package (inherit xgcc)
+      (name "propeller-gcc")
+      (version (string-append "6.0.0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/totalspectrum/gcc-propeller.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "0d9kdxm2fzanjqa7q5850kzbsfl0fqyaahxn74h6nkxxacwa11zb"))
+                (patches
+                 (append
+                  (origin-patches (package-source gcc-6))
+                  (search-patches "gcc-cross-environment-variables.patch")))))
+      (native-inputs
+       `(("flex" ,flex)
+         ,@(package-native-inputs xgcc)))
+      ;; All headers and cross libraries of the propeller toolchain are
+      ;; installed under the "propeller-elf" prefix.
+      (native-search-paths
+       (list (search-path-specification
+              (variable "CROSS_C_INCLUDE_PATH")
+              (files '("propeller-elf/include")))
+             (search-path-specification
+              (variable "CROSS_LIBRARY_PATH")
+              (files '("propeller-elf/lib")))))
+      (home-page "https://github.com/totalspectrum/gcc-propeller")
+      (synopsis "GCC for the Parallax Propeller"))))
+
