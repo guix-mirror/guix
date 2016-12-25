@@ -663,3 +663,39 @@ they are much faster than regular Spin bytecodes (but also quite a bit
 larger).")
     (license license:expat)))
 
+(define-public spinsim
+  (let ((commit "66915a7ad1a3a2cf990a725bb341fab8d11eb620")
+        (revision "1"))
+    (package
+      (name "spinsim")
+      (version (string-append "0.75-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/parallaxinc/spinsim.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "1n9kdhlxsdx7bz6c80w8dhi96zp633gd6qs0x9i4ii8qv4i7sj5k"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out")
+                                         "/bin")))
+                 (install-file "build/spinsim" bin))
+               #t)))))
+      (home-page "https://github.com/parallaxinc/spinsim")
+      (synopsis "Spin simulator")
+      (description "This package provides the tool @code{spinsim}, a simulator
+and simple debugger for Spin programs written for a Parallax Propeller
+micro-controller.  Spinsim supports execution from cog memory and hub
+execution, but it does not support multi-tasking.  It supports about
+two-thirds of the opcodes in the P2 instruction set.")
+      (license license:expat))))
+
