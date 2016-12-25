@@ -526,3 +526,20 @@ micro-controller.")
       ;; included code is public domain and some changes are BSD licensed.
       (license license:expat))))
 
+(define-public propeller-toolchain
+  (package
+    (name "propeller-toolchain")
+    (version (package-version propeller-gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     `(("binutils" ,propeller-binutils)
+       ("libc" ,proplib)
+       ("gcc" ,propeller-gcc)))
+    (synopsis "Complete GCC tool chain for Propeller micro-controllers")
+    (description "This package provides a complete GCC tool chain for
+Propeller micro-controller development.")
+    (home-page (package-home-page propeller-gcc))
+    (license (package-license propeller-gcc))))
+
