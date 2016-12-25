@@ -581,3 +581,36 @@ Parallax Propeller.  It was ported from Chip Gracey's original x86 assembler
 code.")
     (license license:expat)))
 
+(define-public propeller-load
+  (let ((commit "ba9c0a7251cf751d8d292ae19ffa03132097c0c0")
+        (revision "1"))
+    (package
+      (name "propeller-load")
+      (version "3.4.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dbetz/propeller-load.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "1qv3xaapl9fmj3zn58b60sprp4rnvnlpci8ci0pdrzkw6fhvx3pg"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags
+         (list "OS=linux"
+               (string-append "TARGET=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (native-inputs
+       `(("openspin" ,openspin)
+         ("propeller-toolchain" ,propeller-toolchain)))
+      (home-page "https://github.com/dbetz/propeller-load")
+      (synopsis "Loader for Parallax Propeller micro-controllers")
+      (description "This package provides the tool @code{propeller-load} to
+upload binaries to a Parallax Propeller micro-controller.")
+      (license license:expat))))
+
