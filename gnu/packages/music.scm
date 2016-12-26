@@ -2056,13 +2056,13 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "14yn88xrcinpdg3ic285ar0wmwldzyjfd3ll6clmp3z3r4iqffip"))))
+                "0sna2hx8sdaa36jnvw5a7m31wzfm717lw2ixh906fsfp43i74k5m"))))
     (build-system python-build-system)
     (arguments
      `(;; Python 3 support is still "alpha", and the upstream maintainers ask
