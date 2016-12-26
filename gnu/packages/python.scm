@@ -10648,14 +10648,14 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 (define-public python-stem
   (package
     (name "python-stem")
-    (version "1.4.1b")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "stem" version ".tar.bz2"))
+       (uri (pypi-uri "stem" version))
        (sha256
         (base32
-         "09a3amp1y351nwz088ckiibbp666qi2lxwkyknavswfm400s0ns7"))))
+         "0fm67dfx6qaj0mg80r4yw2i72birpzn7cnbyz4p1857max3zfc97"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
