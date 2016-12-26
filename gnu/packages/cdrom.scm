@@ -456,3 +456,43 @@ CDDB to name and tag each track automatically, and it allows for each track to
 be by a different artist.  Asunder can encode to multiple formats in one
 session, and it can create M3U playlists.")
     (license gpl2)))
+
+(define-public ripit
+  (package
+    (name "ripit")
+    (version "3.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.suwald.com/ripit/ripit-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ap71x477jy9c4jiqazb3y45hxdxm3jbq24x05g3vjyqzigi4x1b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'patch-usr-bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/bin/install") (string-append
+                                      (assoc-ref inputs "coreutils")
+                                      "/bin/install"))
+               (("\\$\\(DESTDIR\\)/usr/local") (assoc-ref outputs "out"))
+               (("../../etc") "etc")))))))
+    (native-inputs
+     `(("coreutils" ,coreutils)))
+    (inputs
+     `(("perl" ,perl)))
+    (propagated-inputs
+     `(("cdparanoia" ,cdparanoia)
+       ("flac" ,flac)
+       ("vorbis-tools" ,vorbis-tools)
+       ("wavpack" ,wavpack)
+       ("perl-cddb-get" ,perl-cddb-get)))
+    (home-page "http://www.suwald.com/ripit/about.php")
+    (synopsis "Command-line program to extract audio CDs")
+    (description "RipIT is used to extract audio from CDs.")
+    (license gpl2)))
