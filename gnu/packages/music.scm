@@ -2065,39 +2065,33 @@ websites such as Libre.fm.")
                 "0sna2hx8sdaa36jnvw5a7m31wzfm717lw2ixh906fsfp43i74k5m"))))
     (build-system python-build-system)
     (arguments
-     `(;; Python 3 support is still "alpha", and the upstream maintainers ask
-       ;; packagers not to use it yet:
-       ;; https://github.com/beetbox/beets/releases/tag/v1.4.1
-       ;; TODO Check this again for the next release.
-       #:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
            (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp"))))
          (replace 'check
            (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
-     `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
-       ("python2-flask" ,python2-flask)
-       ("python2-mock" ,python2-mock)
-       ("python2-mpd2" ,python2-mpd2)
-       ("python2-nose" ,python2-nose)
-       ("python2-pathlib" ,python2-pathlib)
-       ("python2-pyxdg" ,python2-pyxdg)
-       ("python2-pyechonest" ,python2-pyechonest)
-       ("python2-pylast" ,python2-pylast)
-       ("python2-rarfile" ,python2-rarfile)
-       ("python2-responses" ,python2-responses)))
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-flask" ,python-flask)
+       ("python-mock" ,python-mock)
+       ("python-mpd2" ,python-mpd2)
+       ("python-nose" ,python-nose)
+       ("python-pathlib" ,python-pathlib)
+       ("python-pyxdg" ,python-pyxdg)
+       ("python-pylast" ,python-pylast)
+       ("python-rarfile" ,python-rarfile)
+       ("python-responses" ,python-responses)))
     ;; TODO: Install optional plugins and dependencies.
     (inputs
-     `(("python2-discogs-client" ,python2-discogs-client)
-       ("python2-enum34" ,python2-enum34)
-       ("python2-jellyfish" ,python2-jellyfish)
-       ("python2-munkres" ,python2-munkres)
-       ("python2-musicbrainzngs" ,python2-musicbrainzngs)
-       ("python2-mutagen" ,python2-mutagen)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-unidecode" ,python2-unidecode)))
+     `(("python-discogs-client" ,python-discogs-client)
+       ("python-enum34" ,python-enum34)
+       ("python-jellyfish" ,python-jellyfish)
+       ("python-munkres" ,python-munkres)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)
+       ("python-mutagen" ,python-mutagen)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-unidecode" ,python-unidecode)))
     (home-page "http://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
