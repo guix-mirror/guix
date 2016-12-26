@@ -3145,7 +3145,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
 (define-public xf86-video-qxl
   (package
     (name "xf86-video-qxl")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3153,7 +3153,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                 "xf86-video-qxl-" version ".tar.bz2"))
               (sha256
                (base32
-                "018ic9ddxfnjcv2yss0mwk1gq6rmip1hrgi2wxwqkbqx1cpx4yp5"))))
+                "14jc24znnahhmz4kqalafmllsg8awlz0y6gpgdpk5ih38ph851mi"))))
     (build-system gnu-build-system)
     (inputs
       `(("fontsproto" ,fontsproto)
