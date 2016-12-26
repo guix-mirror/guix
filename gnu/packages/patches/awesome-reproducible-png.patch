@@ -7,8 +7,8 @@ See <https://wiki.debian.org/ReproducibleBuilds/TimestampsInPNG>.
          set(ALL_ICONS ${ALL_ICONS} ${output})
  
          add_custom_command(
--            COMMAND ${CONVERT_EXECUTABLE} ${input} ${ARGN} ${output}
-+            COMMAND ${CONVERT_EXECUTABLE} +set date:create +set date:modify -define png:exclude-chunk=time ${input} ${ARGN} ${output}
+-            COMMAND ${CONVERT_EXECUTABLE} ${input} -strip ${ARGN} ${output}
++            COMMAND ${CONVERT_EXECUTABLE} +set date:create +set date:modify -define png:exclude-chunk=time ${input} -strip ${ARGN} ${output}
              OUTPUT  ${output}
              DEPENDS ${input}
              VERBATIM)
