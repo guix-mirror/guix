@@ -626,6 +626,25 @@ cases where the clan modules are not classes derived from each other, and thus
 the Carp.pm module doesn't help.")
     (license (package-license perl))))
 
+(define-public perl-cddb-get
+  (package
+    (name "perl-cddb-get")
+    (version "2.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/F/FO/FONKIE/CDDB_get-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1jfrwvfasylcafbvb0jjm94ad4v6k99a7rf5i4qwzhg4m0gvmk5x"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/CDDB_get")
+    (synopsis "Read the CDDB entry for an audio CD in your drive")
+    (description "This module can retrieve information from the CDDB.")
+    ;; Either GPLv2 or the "Artistic" license.
+    (license (list gpl2 artistic2.0))))
+
 (define-public perl-class-accessor
   (package
     (name "perl-class-accessor")
