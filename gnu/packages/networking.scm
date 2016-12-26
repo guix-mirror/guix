@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -34,6 +34,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
@@ -548,6 +550,38 @@ HTTP(S) request, and receive the reply headers.  It is somewhat similar to
 by firewalls or when you want to monitor the response time of the actual web
 application stack itself.")
     (license license:gpl2)))        ; with permission to link with OpenSSL
+
+(define-public httpstat
+  (package
+    (name "httpstat")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpstat" version))
+       (sha256
+        (base32
+         "1chw2nk56vaq87aba012a270k9na06hfx1pfbsrc3jfvlc2kb9hb"))))
+    (build-system python-build-system)
+    (inputs `(("curl" ,curl)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-curl-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "httpstat.py"
+               (("ENV_CURL_BIN.get\\('curl'\\)")
+                (string-append "ENV_CURL_BIN.get('"
+                               (assoc-ref inputs "curl")
+                               "/bin/curl')"))))))))
+    (home-page "https://github.com/reorx/httpstat")
+    (synopsis "Visualize curl statistics")
+    (description
+     "@command{httpstat} is a tool to visualize statistics from the
+@command{curl} HTTP client.  It acts as a wrapper for @command{curl} and
+prints timing information for each step of the HTTP request (DNS lookup,
+TCP connection, TLS handshake and so on) in the terminal.")
+    (license license:expat)))
 
 (define-public bwm-ng
   (package
