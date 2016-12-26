@@ -1272,7 +1272,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.2")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1280,7 +1280,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0h168597am5vcix149l27g876v4f5yqwx8v0s9mmsdva1qqcq5s5"))))
+                "0nhx0c3xc16frpyqikaml73hjyn8a0jijq5ibq8a4zrjiw1pqxwy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1316,10 +1316,10 @@ type, for example: packages, buffers, files, etc.")
     (home-page "https://github.com/alezost/guix.el")
     (synopsis "Emacs interface for GNU Guix")
     (description
-     "Emacs-Guix provides a visual interface, tools and features for the
-GNU Guix package manager.  Particularly, it allows you to do various
-package management tasks from Emacs.  To begin with, run @code{M-x
-guix-help} command.")
+     "Emacs-Guix provides a visual interface, tools and features for the GNU
+Guix package manager.  Particularly, it allows you to do various package
+management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
+@code{M-x guix-help} command.")
     (license license:gpl3+)))
 
 (define-public emacs-d-mode
