@@ -3873,3 +3873,26 @@ closely-packed, non-overlapping points.")
 tokenization of R code, and helpers for interacting with the tokenized
 representation of R code.")
     (license license:expat)))
+
+(define-public r-ggbeeswarm
+  (package
+    (name "r-ggbeeswarm")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ggbeeswarm" version))
+              (sha256
+               (base32
+                "1jgp55rvmzc4agcrlsjn8m5lk85di9c4wj94xzikqkql4lvq3qpd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beeswarm" ,r-beeswarm)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-vipor" ,r-vipor)))
+    (home-page "https://github.com/eclarke/ggbeeswarm")
+    (synopsis "Categorical scatter (violin point) plots")
+    (description
+     "This package provides two methods of plotting categorical scatter plots
+such that the arrangement of points within a category reflects the density of
+data at that region, and avoids over-plotting.")
+    (license license:gpl2+)))
