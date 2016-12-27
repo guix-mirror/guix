@@ -7822,6 +7822,49 @@ provided as a matrix which can be used as an offset for different expression
 of gene-level counts.")
     (license license:gpl2+)))
 
+(define-public r-rhdf5
+  (package
+    (name "r-rhdf5")
+    (version "2.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "rhdf5" version))
+              (sha256
+               (base32
+                "0pb04li55ysag30s7rap7nnivc0rqmgsmpj43kin0rxdabfn1w0k"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-smallhdf5
+           (lambda* (#:key outputs #:allow-other-keys)
+             (system* "tar" "-xzvf"
+                      "src/hdf5source/hdf5small.tgz" "-C" "src/" )
+             (substitute* "src/Makevars"
+               (("^.*cd hdf5source &&.*$") "")
+               (("^.*gunzip -dc hdf5small.tgz.*$") "")
+               (("^.*rm -rf hdf5.*$") "")
+               (("^.*mv hdf5source/hdf5 ..*$") ""))
+             (substitute* "src/hdf5/configure"
+               (("/bin/mv") "mv"))
+             #t)))))
+    (propagated-inputs
+     `(("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("perl" ,perl)
+       ("zlib" ,zlib)))
+    (home-page "http://bioconductor.org/packages/rhdf5")
+    (synopsis "HDF5 interface to R")
+    (description
+     "This R/Bioconductor package provides an interface between HDF5 and R.
+HDF5's main features are the ability to store and access very large and/or
+complex datasets and a wide variety of metadata on mass storage (disk) through
+a completely portable file format.  The rhdf5 package is thus suited for the
+exchange of large and/or complex datasets between R and other software
+package, and for letting R applications work on datasets that are larger than
+the available RAM.")
+    (license license:artistic2.0)))
+
 (define-public emboss
   (package
     (name "emboss")
