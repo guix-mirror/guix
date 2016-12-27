@@ -907,7 +907,13 @@ Python 3 support.")
 (define-public python2-setuptools
   (package-with-python2 python-setuptools))
 
-
+;;; Pycrypto is abandoned upstream [0] and contains at least one bug that can be
+;;; exploited to achieve arbitrary code execution [1].
+;;;
+;;; TODO Remove this package from GNU Guix.
+;;;
+;;; [0] https://github.com/dlitz/pycrypto/issues/173
+;;; [1] https://github.com/dlitz/pycrypto/issues/176
 (define-public python-pycrypto
   (package
     (name "python-pycrypto")
