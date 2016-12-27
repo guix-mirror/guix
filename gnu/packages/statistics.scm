@@ -3896,3 +3896,29 @@ representation of R code.")
 such that the arrangement of points within a category reflects the density of
 data at that region, and avoids over-plotting.")
     (license license:gpl2+)))
+
+(define-public r-statmod
+  (package
+    (name "r-statmod")
+    (version "1.4.27")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "statmod" version))
+              (sha256
+               (base32
+                "14yilq9d3z20hig4rs8bjqyydw3dfx90mhmzvw9w8p16h0s595sn"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/statmod")
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (synopsis "Statistical modeling")
+    (description
+     "This package provides a collection of algorithms and functions to aid
+statistical modeling.  It includes growth curve comparisons, limiting dilution
+analysis (aka ELDA), mixed linear models, heteroscedastic regression,
+inverse-Gaussian probability calculations, Gauss quadrature and a secure
+convergence algorithm for nonlinear models.  It also includes advanced
+generalized linear model functions that implement secure convergence,
+dispersion modeling and Tweedie power-law families.")
+    ;; Statmod is distributed under either license
+    (license (list license:gpl2 license:gpl3))))
