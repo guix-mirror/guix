@@ -10667,8 +10667,6 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
      `(("python-mock" ,python-mock)
        ("python-pep8" ,python-pep8)
        ("python-pyflakes" ,python-pyflakes)))
-    (propagated-inputs
-     `(("python-pycrypto" ,python-pycrypto)))
     (home-page "https://stem.torproject.org/")
     (synopsis
      "Python controller library that allows applications to interact with Tor")
