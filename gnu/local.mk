@@ -353,6 +353,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ssh.scm				\
   %D%/packages/stalonetray.scm			\
   %D%/packages/statistics.scm			\
+  %D%/packages/storage.scm			\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
   %D%/packages/sync.scm			\
@@ -508,6 +509,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-drop-unrar.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
+  %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
+  %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
+  %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/chicken-CVE-2017-6949.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clang-libc-search-path.patch		\
