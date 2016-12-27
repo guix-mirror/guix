@@ -3834,3 +3834,22 @@ with alternating row colors) in LaTeX and HTML formats easily from
 combination of a violin/histogram plot and a scatter plot by offsetting points
 within a category based on their density using quasirandom noise.")
     (license license:gpl2+)))
+
+(define-public r-beeswarm
+  (package
+    (name "r-beeswarm")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "beeswarm" version))
+              (sha256
+               (base32
+                "0hy89bwv7jixlg91li1fywa77916am2whqp1m1fx1khd45g44581"))))
+    (build-system r-build-system)
+    (home-page "http://www.cbs.dtu.dk/~eklund/beeswarm/")
+    (synopsis "Implementation of bee swarm plots")
+    (description
+     "This package provides an implementation of bee swarm plots.  The bee
+swarm plot is a one-dimensional scatter plot like stripchart, but with
+closely-packed, non-overlapping points.")
+    (license license:artistic2.0)))
