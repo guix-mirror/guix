@@ -3853,3 +3853,23 @@ within a category based on their density using quasirandom noise.")
 swarm plot is a one-dimensional scatter plot like stripchart, but with
 closely-packed, non-overlapping points.")
     (license license:artistic2.0)))
+
+(define-public r-sourcetools
+  (package
+    (name "r-sourcetools")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sourcetools" version))
+       (sha256
+        (base32
+         "0jx6kslygfqaic3cmjwag3dy98q1a2dw20cz7z8agsknmmbk6dy2"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/sourcetools")
+    (synopsis "Tools for reading, tokenizing and parsing R code")
+    (description
+     "The sourcetools package provides both an R and C++ interface for the
+tokenization of R code, and helpers for interacting with the tokenized
+representation of R code.")
+    (license license:expat)))
