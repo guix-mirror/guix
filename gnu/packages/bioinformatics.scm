@@ -7800,6 +7800,28 @@ for DNA and protein sequences.  This package supports several sequence
 kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
     (license license:gpl2+)))
 
+(define-public r-tximport
+  (package
+    (name "r-tximport")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "tximport" version))
+              (sha256
+               (base32
+                "1k5a7dad6zqg936s17f6cmwgqp11x24z9zhxndsgwbscgpyhpcb0"))))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/tximport")
+    (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
+    (description
+     "This package provides tools to import transcript-level abundance,
+estimated counts and transcript lengths, and to summarize them into matrices
+for use with downstream gene-level analysis packages.  Average transcript
+length, weighted by sample-specific transcript abundance estimates, is
+provided as a matrix which can be used as an offset for different expression
+of gene-level counts.")
+    (license license:gpl2+)))
+
 (define-public emboss
   (package
     (name "emboss")
