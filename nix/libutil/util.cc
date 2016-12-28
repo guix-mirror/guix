@@ -861,6 +861,10 @@ void killUser(uid_t uid)
                which means "follow POSIX", which we don't want here
                  */
             if (syscall(SYS_kill, -1, SIGKILL, false) == 0) break;
+#elif __GNU__
+            /* Killing all a user's processes using PID=-1 does currently
+               not work on the Hurd.  */
+            if (kill(getpid(), SIGKILL) == 0) break;
 #else
             if (kill(-1, SIGKILL) == 0) break;
 #endif
@@ -873,6 +877,10 @@ void killUser(uid_t uid)
     });
 
     int status = pid.wait(true);
+#if __GNU__
+    /* When the child killed itself, status = SIGKILL.  */
+    if (status == SIGKILL) return;
+#endif
     if (status != 0)
         throw Error(format("cannot kill processes for uid `%1%': %2%") % uid % statusToString(status));
 
