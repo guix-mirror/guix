@@ -2674,16 +2674,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "3.11")
+    (version "3.12")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/P/PyYAML/PyYAML-"
-             version ".tar.gz"))
+       (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "1s26125vfnskng58ym37xhwv8v0mm95b2cwbjfag8prfhy596v63"))))
+         "1aqjl8dk9amd4zr99n8v2qxzgmr2hdvqfma4zh7a41rj6336c9sr"))))
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
