@@ -2889,14 +2889,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.0.2")
+    (version "2.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "0lagrwifsgn0s8bzqahpr87p7gd38xja8f06akscinp6hj89283k"))))
+         "10axnp2wpjnq9g8wg53fx0c70dfxqrz498jyz8mrdx9a3flwir48"))))
     (build-system python-build-system)
     (home-page "http://pygments.org/")
     (synopsis "Syntax highlighting")
