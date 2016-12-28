@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
   #:use-module (srfi srfi-26))
 
 ;; Should be one less than the current released version.
-(define %rust-bootstrap-binaries-version "1.12.1")
+(define %rust-bootstrap-binaries-version "1.13.0")
 
 (define %rust-bootstrap-binaries
   (origin
@@ -48,7 +49,7 @@
           "-i686-unknown-linux-gnu.tar.gz"))
     (sha256
      (base32
-      "1cvbx7bbhbn3w6pn64rp9fdp2n17rwzxgsnifncw5nqx9p8vksgd"))))
+      "0fcl7xgm2m21sjv1f27i3v692aa91lk8r867hl8d6l377w8k95r3"))))
 
 (define (increment-rust-version rust-version major patch)
   (match (string-split rust-version #\.)
@@ -200,7 +201,7 @@ rustc-bootstrap and cargo-bootstrap packages.")
                     "rustc-" version "-src.tar.gz"))
               (sha256
                (base32
-                "112h7qgbn8c7s5880vplpgy5n58sc8css32dq7z5wylpr9slgf7c"))))
+                "0srvmhhdbbcl21nzg9m9zni7k10h88lsy8k1ljz03g8mx79fv467"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cmake" ,cmake)
