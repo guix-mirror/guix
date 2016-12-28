@@ -26,7 +26,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
@@ -6084,6 +6084,65 @@ pseudo terminal (pty), and interact with both the process and its pty.")
 
 (define-public python2-ptyprocess
   (package-with-python2 python-ptyprocess))
+
+(define-public python-cram
+  (package
+    (name "python-cram")
+    (version "0.7")
+    (home-page "https://bitheap.org/cram/")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append home-page "cram-"
+                                        version ".tar.gz")
+                         (pypi-uri "cram" version)))
+              (sha256
+               (base32
+                "0bvz6fwdi55rkrz3f50zsy35gvvwhlppki2yml5bj5ffy9d499vx"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* (find-files "cram" ".*\\.py$")
+               ;; Replace default shell path.
+               (("/bin/sh") (which "sh")))
+             (substitute* (find-files "tests" ".*\\.t$")
+               (("md5") "md5sum")
+               (("/bin/bash") (which "bash"))
+               (("/bin/sh") (which "sh")))
+             (substitute* "cram/_test.py"
+               ;; This hack works around a bug triggered by substituting
+               ;; the /bin/sh paths. "tests/usage.t" compares the output of
+               ;; "cram -h", which breaks the output at 80 characters. This
+               ;; causes the line showing the default shell to break into two
+               ;; lines, but the test expects a single line...
+               (("env\\['COLUMNS'\\] = '80'")
+                "env['COLUMNS'] = '160'"))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           ;; The test phase uses the built library and executable.
+           ;; It's easier to run it after install since the build
+           ;; directory contains version-specific PATH.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv "PATH" (string-append (getenv "PATH") ":"
+                                           (assoc-ref outputs "out") "/bin"))
+             (zero? (system* "make" "test")))))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("which" ,which)))
+    (synopsis "Simple testing framework for command line applications")
+    (description
+     "Cram is a functional testing framework for command line applications.
+Cram tests look like snippets of interactive shell sessions.  Cram runs each
+command and compares the command output in the test with the command’s actual
+output.")
+    (license license:gpl2+)))
+
+(define-public python2-cram
+  (package-with-python2 python-cram))
 
 (define-public python-terminado
   (package
