@@ -5862,14 +5862,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "2.6.5")
+    (version "2.6.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "0q758a3fiiawr20b3hhjfs677cwj6xi284yb7xspcvv0fdicz54d"))))
+         "1h055llfd0ps0ig7qb3v1j9068xv90dc9s7xkhkgz9zg8r4g5sys"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
