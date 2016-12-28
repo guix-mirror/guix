@@ -10582,14 +10582,14 @@ implementation for Python.")
 (define-public python-prompt-toolkit
  (package
   (name "python-prompt-toolkit")
-  (version "1.0.7")
+  (version "1.0.9")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
       (sha256
         (base32
-          "1vyjd0b7wciv55i19l44zy0adx8q7ss79lhy2r9d1rwz2y4822zg"))))
+          "172r15k9kwdw2lnajvpz1632dd16nqz1kcal1p0lq5ywdarj6rfd"))))
   (build-system python-build-system)
   (arguments
    '(#:tests? #f)) ; The test suite uses some Windows-specific data types.
