@@ -1273,3 +1273,31 @@ the string into one of the standard Common Lisp number types, if possible, or
 else @code{parse-number} signals an error of type @code{invalid-number}.")
     (license license:bsd-3)))
 
+(define-public sbcl-iterate
+  (package
+    (name "sbcl-iterate")
+    ;; The latest official release (1.4.3) fails to build so we have to take
+    ;; the current darcs tarball from quicklisp.
+    (version "20160825")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/iterate/"
+                           "2016-08-25/iterate-"
+                           version "-darcs.tgz"))
+       (sha256
+        (base32
+         "0kvz16gnxnkdz0fy1x8y5yr28nfm7i2qpvix7mgwccdpjmsb4pgm"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/iterate/")
+    (synopsis "Iteration construct for Common Lisp")
+    (description "@code{iterate} is an iteration construct for Common Lisp.
+It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
+
+@itemize
+@item it is extensible,
+@item it helps editors like Emacs indent iterate forms by having a more
+  lisp-like syntax, and
+@item it isn't part of the ANSI standard for Common Lisp.
+@end itemize\n")
+    (license license:expat)))
