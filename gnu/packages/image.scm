@@ -100,7 +100,8 @@ library.  It supports almost all PNG features and is extensible.")
 (define-public libpng-1.2
   (package
     (inherit libpng)
-    (version "1.2.56")
+    (replacement #f)
+    (version "1.2.57")
     (source
      (origin
        (method url-fetch)
@@ -111,7 +112,7 @@ library.  It supports almost all PNG features and is extensible.")
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src"
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
-        (base32 "1ghd03p353x0vi4dk83n1nlldg11w7vqdk3f99rkgfb82ic59ki4"))))))
+        (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
 
 (define-public libjpeg
   (package
