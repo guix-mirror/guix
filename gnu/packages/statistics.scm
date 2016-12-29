@@ -256,13 +256,13 @@ caching.")
 (define-public r-colorspace
   (package
     (name "r-colorspace")
-    (version "1.2-7")
+    (version "1.3-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "colorspace" version))
        (sha256
-        (base32 "0flw97iwwpkxy6si9cn982jhl61wb1rxi3r0nz2xxf0c3fzw18d5"))))
+        (base32 "0d1ya7hx4y58n5ivwmdmq2zgh0g2sbv7ykh13n85c1355csd57yx"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/colorspace")
     (synopsis "Color space manipulation")
