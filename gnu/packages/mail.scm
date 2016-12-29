@@ -393,11 +393,7 @@ repository and Maildir/IMAP as LOCAL repository.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("emacs" ,emacs-minimal)
-       ("libtool" ,libtool)
-       ("texinfo" ,texinfo)))
+       ("emacs" ,emacs-minimal)))
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
@@ -413,18 +409,15 @@ repository and Maildir/IMAP as LOCAL repository.")
                            (guix build emacs-utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-configure.ac
+         (add-after 'unpack 'patch-configure
            ;; By default, elisp code goes to "share/emacs/site-lisp/mu4e",
            ;; so our Emacs package can't find it.  Setting "--with-lispdir"
            ;; configure flag doesn't help because "mu4e" will be added to
            ;; the lispdir anyway, so we have to modify "configure.ac".
            (lambda _
-             (substitute* "configure.ac"
-               (("^ +lispdir=.*") ""))
+             (substitute* "configure"
+               (("^ +lispdir=\"\\$\\{lispdir\\}/mu4e/\".*") ""))
              #t))
-         (add-after 'patch-configure.ac 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vi"))))
          (add-before 'check 'check-tz-setup
            (lambda* (#:key inputs #:allow-other-keys)
              ;; For mu/test/test-mu-query.c
