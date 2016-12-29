@@ -97,8 +97,8 @@ VERSION, INPUTS, NATIVE-INPUTS, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                               (base32
                                ,(bytevector->nix-base32-string (port-sha256 port))))))
                    (build-system cargo-build-system)
-                   ,@(maybe-native-inputs native-inputs)
-                   ,@(maybe-inputs inputs)
+                   ,@(maybe-native-inputs native-inputs "src")
+                   ,@(maybe-inputs inputs "src")
                    (home-page ,(match home-page
                                  (() "")
                                  (_ home-page)))

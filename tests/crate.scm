@@ -91,7 +91,7 @@
          ('build-system 'cargo-build-system)
          ('inputs
           ('quasiquote
-           (("rust-bar" ('unquote 'rust-bar)))))
+           (("rust-bar" ('unquote 'rust-bar) "src"))))
          ('home-page "http://example.com")
          ('synopsis "summary")
          ('description "summary")

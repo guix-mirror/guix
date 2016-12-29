@@ -54,7 +54,7 @@
           (when (and crate path)
             (match (string-split (basename path) #\-)
               ((_ ... version)
-               (format port "\"~a:~a\" = { path = \"~a/rustsrc\" }~%"
+               (format port "\"~a:~a\" = { path = \"~a/share/rust-source\" }~%"
                        crate version path)))))))
      inputs)
     (close-port port))
@@ -63,19 +63,22 @@
 (define* (build #:key (cargo-build-flags '("--release" "--frozen"))
                 #:allow-other-keys)
   "Build a given Cargo package."
-  (zero? (apply system* `("cargo" "build" ,@cargo-build-flags))))
+  (if (file-exists? "Cargo.lock")
+      (zero? (apply system* `("cargo" "build" ,@cargo-build-flags)))
+      #t))
 
 (define* (check #:key tests? #:allow-other-keys)
   "Run tests for a given Cargo package."
-  (when tests?
-    (zero? (system* "cargo" "test"))))
+  (if (and tests? (file-exists? "Cargo.lock"))
+      (zero? (system* "cargo" "test"))
+      #t))
 
 (define* (install #:key inputs outputs #:allow-other-keys)
   "Install a given Cargo package."
   (let* ((out (assoc-ref outputs "out"))
          (src (assoc-ref inputs "source"))
-         (bin (string-append out "/bin"))
-         (rsrc (string-append out "/rustsrc")))
+         (rsrc (string-append (assoc-ref outputs "src")
+                              "/share/rust-source")))
     (mkdir-p rsrc)
     ;; Rust doesn't have a stable ABI yet. Because of this
     ;; Cargo doesn't have a search path for binaries yet.
@@ -87,8 +90,9 @@
     ;; When the package includes executables we install
     ;; it using cargo install. This fails when the crate
     ;; doesn't contain an executable.
-    (system* "cargo" "install" "--root" bin)
-    #t))
+    (if (file-exists? "Cargo.lock")
+        (system* "cargo" "install" "--root" out)
+        (mkdir out))))
 
 (define %standard-phases
   ;; 'configure' phase is not needed.

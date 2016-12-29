@@ -109,7 +109,7 @@ to NAME and VERSION."
                                 #:inputs inputs
                                 #:system system
                                 #:modules imported-modules
-                                #:outputs outputs
+                                #:outputs (cons "src" outputs)
                                 #:guile-for-build guile-for-build))
 
 (define* (lower name
@@ -121,7 +121,7 @@ to NAME and VERSION."
   "Return a bag for NAME."
 
   (define private-keywords
-    '(#:source #:target #:cargo #:rustc #:inputs #:native-inputs))
+    '(#:source #:target #:cargo #:rustc #:inputs #:native-inputs #:outputs))
 
   (and (not target) ;; TODO: support cross-compilation
        (bag

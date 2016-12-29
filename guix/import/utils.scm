@@ -211,24 +211,26 @@ into a proper sentence and by using two spaces between sentences."
     (regexp-substitute/global #f "\\. \\b"
                               cleaned 'pre ".  " 'post)))
 
-(define (package-names->package-inputs names)
+(define* (package-names->package-inputs names #:optional (output #f))
   (map (lambda (input)
-         (list input (list 'unquote (string->symbol input))))
+         (cons* input (list 'unquote (string->symbol input))
+                            (or (and output (list output))
+                                '())))
        names))
 
-(define (maybe-inputs package-names)
+(define* (maybe-inputs package-names #:optional (output #f))
   "Given a list of PACKAGE-NAMES, tries to generate the 'inputs' field of a
 package definition."
-  (match (package-names->package-inputs package-names)
+  (match (package-names->package-inputs package-names output)
     (()
      '())
     ((package-inputs ...)
      `((inputs (,'quasiquote ,package-inputs))))))
 
-(define (maybe-native-inputs package-names)
+(define* (maybe-native-inputs package-names #:optional (output #f))
   "Given a list of PACKAGE-NAMES, tries to generate the 'inputs' field of a
 package definition."
-  (match (package-names->package-inputs package-names)
+  (match (package-names->package-inputs package-names output)
     (()
      '())
     ((package-inputs ...)
