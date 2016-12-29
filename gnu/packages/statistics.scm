@@ -3771,16 +3771,14 @@ estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.7-13")
+    (version "1.7-14")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "0m67bnrg7r1jxvs9p7rpa430szp5qfp65r056yb8bivpc16jd98c"))))
+                "167m142rwwfy8b9hnfc3fi28dcsdjk61g1crqhll6sh5xmgnfn28"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-lattice" ,r-lattice)))
     (home-page "http://zoo.R-Forge.R-project.org/")
     (synopsis "S3 infrastructure for regular and irregular time series")
     (description "This package contains an S3 class with methods for totally
