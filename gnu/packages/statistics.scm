@@ -324,13 +324,13 @@ OpenSSL should be used.")
 (define-public r-estimability
   (package
     (name "r-estimability")
-    (version "1.1-1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "estimability" version))
               (sha256
                (base32
-                "049adh8i0ad0m0qln2ylqdxcs5v2q9zfignn2a50r5f93ip2ay6w"))))
+                "13b80bpnbrarazjvnpnk91ljjsqgfm2fm3gy66aj09cmmsmv199h"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/estimability")
     (synopsis "Tools for assessing estimability of linear predictions")
