@@ -1226,3 +1226,26 @@ multiple inspectors with independent history.")
            (delete 'create-asd-file)
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
+
+(define-public sbcl-parse-js
+  (let ((commit "fbadc6029bec7039602abfc06c73bb52970998f6")
+        (revision "1"))
+    (package
+      (name "sbcl-parse-js")
+      (version (string-append "0.0.0-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://marijn.haverbeke.nl/git/parse-js")
+               (commit commit)))
+         (file-name (string-append name "-" commit "-checkout"))
+         (sha256
+          (base32
+           "1wddrnr5kiya5s3gp4cdq6crbfy9fqcz7fr44p81502sj3bvdv39"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "http://marijnhaverbeke.nl/parse-js/")
+      (synopsis "Parse JavaScript")
+      (description "Parse-js is a Common Lisp package for parsing
+JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
+      (license license:zlib))))
