@@ -5227,20 +5227,21 @@ data types as well.")
 (define-public r-annotate
   (package
     (name "r-annotate")
-    (version "1.52.0")
+    (version "1.52.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotate" version))
        (sha256
         (base32
-         "1fd2csq7dcs2gwndgwdx2nwkymz8gsmlnqqzv3p0vjjsvvq5n2a8"))))
+         "0yymz8qxgnbybvfhqrgkd1hh9dhwxdii1yxkhr1zicjgb35xixxb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-dbi" ,r-dbi)
+       ("r-rcurl" ,r-rcurl)
        ("r-xml" ,r-xml)
        ("r-xtable" ,r-xtable)))
     (home-page
