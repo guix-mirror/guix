@@ -1342,36 +1342,27 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.9.0")
+    (version "0.11.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0y83rji4f270hbb41m4jpr0z3yzvpvbsl32mpg9d38hlydw8fk1s"))))
+                "1v66khq5w17xdbkpb00pf9xbl84dlzx4lq286fvzskb949b3y4yn"))))
     (build-system python-build-system)
     (arguments
-      `(#:python ,python-2 ; only python-2 is supported.
-        #:phases
+      `(#:phases
         (modify-phases %standard-phases
-          (add-before 'build 'disable-egg-compression
-            ;; Do not compress the egg.
-            (lambda _
-              (let ((port (open-file "setup.cfg" "a")))
-                (display "\n[easy_install]\nzip_ok = 0\n"
-                         port)
-                (close-port port)
-                #t)))
           (add-after 'install 'install-doc
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (doc (string-append out "/share/doc/khard")))
                 (copy-recursively "misc/khard" doc)))))))
     (propagated-inputs
-     `(("python2-vobject" ,python2-vobject)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-atomicwrites" ,python2-atomicwrites)
-       ("python2-configobj" ,python2-configobj)))
+     `(("python-vobject" ,python-vobject)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-atomicwrites" ,python-atomicwrites)
+       ("python-configobj" ,python-configobj)))
     (synopsis "Console address book using CardDAV")
     (description "Khard is an address book for the console.  It creates, reads,
 modifies and removes CardDAV address book entries at your local machine.  For
