@@ -46,8 +46,7 @@ to NAME and VERSION."
   "Return the default Cargo package."
   ;; Lazily resolve the binding to avoid a circular dependency.
   (let ((rust (resolve-interface '(gnu packages rust))))
-    ;; FIXME: Package cargo and replace cargo-bootstrap with cargo.
-    (module-ref rust 'cargo-bootstrap)))
+    (module-ref rust 'cargo)))
 
 (define (default-rustc)
   "Return the default Rustc package."

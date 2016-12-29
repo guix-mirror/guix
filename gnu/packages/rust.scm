@@ -122,9 +122,7 @@
 which can in turn be used to build the final Rust compiler.")
     (license license:asl2.0)))
 
-;; FIXME: Make private once cargo is packaged. Is currently used by the
-;; cargo-build-system.
-(define-public cargo-bootstrap
+(define cargo-bootstrap
   (package
     (name "cargo-bootstrap")
     (version (cargo-version %rust-bootstrap-binaries-version))
