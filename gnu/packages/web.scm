@@ -3330,13 +3330,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "1fkqf5ynd1g0932qwv5nr70bw42m8vxpc9rhi0qxmdamwqcw8qjn"))))
+                "1ixcl9xjc1k9zvl6v6bsw4kpramr1h53b4s46qg8kahkqy6kqd8a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
