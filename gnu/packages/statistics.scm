@@ -2173,6 +2173,29 @@ ENVI binary files, fast calculation of AUC, LogitBoost classifier, base64
 encoder/decoder, round-off-error-free sum and cumsum, etc.")
     (license license:gpl3+)))
 
+(define-public r-rprojroot
+  (package
+    (name "r-rprojroot")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rprojroot" version))
+       (sha256
+        (base32
+         "04ywfpar4d2hyi4rh4fbixrbzd665gpa2jhx67g8857cr70pp0nh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)))
+    (home-page "https://github.com/krlmlr/rprojroot")
+    (synopsis "Finding files in project subdirectories")
+    (description
+     "This package helps accessing files relative to a project root.  It
+provides helpers for robust, reliable and flexible paths to files below a
+project root.  The root of a project is defined as a directory that matches a
+certain criterion, e.g., it contains a certain regular file.")
+    (license license:gpl3)))
+
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
