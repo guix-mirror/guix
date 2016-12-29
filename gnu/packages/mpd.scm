@@ -85,6 +85,17 @@ interfacing MPD in the C, C++ & Objective C languages.")
                (base32
                 "0c0p61p3jfh89pnqwd9nrw55krfvvnzhkpdq53g6njvg0aybh1c3"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-service-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (systemd (string-append out "/etc/systemd/system"))
+                    (systemd-user (string-append out "/etc/systemd/user")))
+               (install-file "systemd/system/mpd.service" systemd)
+               (install-file "systemd/user/mpd.service" systemd-user)
+               #t))))))
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
