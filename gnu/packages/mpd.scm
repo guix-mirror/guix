@@ -74,7 +74,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.19.19")
+    (version "0.19.21")
     (source (origin
               (method url-fetch)
               (uri
@@ -83,7 +83,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "07af1m2lgblyiq0gcs26zv8n22wrhrpmf49xsm338h1n87d6r1dw"))))
+                "0c0p61p3jfh89pnqwd9nrw55krfvvnzhkpdq53g6njvg0aybh1c3"))))
     (build-system gnu-build-system)
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
