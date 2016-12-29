@@ -2292,17 +2292,21 @@ error stream.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "1.0.0")
+    (version "1.1-1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "08b1syv8z887gxiw8i09dpqh0zisfb6ihq6qqr01zipvkahzq34f"))))
+                "11vnzds5gidgakdmsbdn0bvnsz064ym1savwb7l6gc1bjn7xa2k4"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dbi" ,r-dbi)))
+     `(("r-dbi" ,r-dbi)
+       ("r-bh" ,r-bh)
+       ("r-memoise" ,r-memoise)
+       ("r-plogr" ,r-plogr)
+       ("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/rstats-db/RSQLite")
     (synopsis "SQLite interface for R")
     (description
