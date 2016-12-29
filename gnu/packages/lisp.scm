@@ -1301,3 +1301,43 @@ It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
 @item it isn't part of the ANSI standard for Common Lisp.
 @end itemize\n")
     (license license:expat)))
+
+(define-public sbcl-cl-uglify-js
+  ;; There have been many bug fixes since the 2010 release.
+  (let ((commit "429c5e1d844e2f96b44db8fccc92d6e8e28afdd5")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-uglify-js")
+      (version (string-append "0.1-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mishoo/cl-uglify-js.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0k39y3c93jgxpr7gwz7w0d8yknn1fdnxrjhd03057lvk5w8js27a"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("sbcl-parse-js" ,sbcl-parse-js)
+         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+         ("sbcl-cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("sbcl-parse-number" ,sbcl-parse-number)
+         ("sbcl-iterate" ,sbcl-iterate)))
+      (home-page "https://github.com/mishoo/cl-uglify-js")
+      (synopsis "JavaScript compressor library for Common Lisp")
+      (description "This is a Common Lisp version of UglifyJS, a JavaScript
+compressor.  It works on data produced by @code{parse-js} to generate a
+@dfn{minified} version of the code.  Currently it can:
+
+@itemize
+@item reduce variable names (usually to single letters)
+@item join consecutive @code{var} statements
+@item resolve simple binary expressions
+@item group most consecutive statements using the ``sequence'' operator (comma)
+@item remove unnecessary blocks
+@item convert @code{IF} expressions in various ways that result in smaller code
+@item remove some unreachable code
+@end itemize\n")
+      (license license:zlib))))
