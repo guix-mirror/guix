@@ -1249,3 +1249,27 @@ multiple inspectors with independent history.")
       (description "Parse-js is a Common Lisp package for parsing
 JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
       (license license:zlib))))
+
+(define-public sbcl-parse-number
+  (package
+    (name "sbcl-parse-number")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sharplispers/parse-number/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k6s4v65ksc1j5i0dprvzfvj213v6nah7i0rgd0726ngfjisj9ir"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "http://www.cliki.net/PARSE-NUMBER")
+    (synopsis "Parse numbers")
+    (description "@code{parse-number} is a library of functions for parsing
+strings into one of the standard Common Lisp number types without using the
+reader.  @code{parse-number} accepts an arbitrary string and attempts to parse
+the string into one of the standard Common Lisp number types, if possible, or
+else @code{parse-number} signals an error of type @code{invalid-number}.")
+    (license license:bsd-3)))
+
