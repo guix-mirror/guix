@@ -380,15 +380,15 @@ repository and Maildir/IMAP as LOCAL repository.")
 (define-public mu
   (package
     (name "mu")
-    (version "0.9.16")
+    (version "0.9.18")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/djcb/mu/archive/v"
+              (uri (string-append "https://github.com/djcb/mu/releases/"
+                                  "download/" version "/mu-"
                                   version ".tar.gz"))
-              (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "0p7hqri1r1x6750x138cc29mh81kdav2dcim26y58s8an206h25g"))))
+                "02g82zvxfgn17wzy846bfxj0izjj7yklhwdnhwxy1y2kin4fqnb5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
