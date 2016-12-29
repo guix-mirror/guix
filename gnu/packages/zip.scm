@@ -156,7 +156,7 @@ recreates the stored directory structure by default.")
 (define-public perl-zip
   (package
     (name "perl-zip")
-    (version "1.30")
+    (version "1.59")
     (source 
      (origin
        (method url-fetch)
@@ -165,7 +165,7 @@ recreates the stored directory structure by default.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0633zah5z9njiqnvy3vh42fjymncmil1jdfb7d18w8xpfzzp5d7q"))))
+         "0m31qlppg65vh32pwxkwjby02q70abx49d2yk6vfd4585fqb27cx"))))
     (build-system perl-build-system)
     (synopsis  "Provides an interface to ZIP archive files")
     (description "The Archive::Zip module allows a Perl program to create,
