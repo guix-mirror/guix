@@ -2269,6 +2269,26 @@ grobs.")
 and draw tables.")
     (license license:gpl2+)))
 
+(define-public r-plogr
+  (package
+    (name "r-plogr")
+    (version "0.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "plogr" version))
+       (sha256
+        (base32
+         "13zliqlbkl8b04k9ga0sx5jsh7k867gracgl84l2a9kcqy9mqx92"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/krlmlr/plogr")
+    (synopsis "R bindings for the plog C++ logging library")
+    (description
+     "This package provides the header files for a stripped-down version of
+the plog header-only C++ logging library, and a method to log to R's standard
+error stream.")
+    (license license:expat)))
+
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
