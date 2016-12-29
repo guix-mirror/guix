@@ -64,6 +64,7 @@
 (define-public libpng
   (package
    (name "libpng")
+   (replacement libpng/fixed)
    (version "1.6.25")
    (source (origin
             (method url-fetch)
@@ -87,6 +88,14 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
+
+(define libpng/fixed
+  (package
+    (inherit libpng)
+    (source
+      (origin
+        (inherit (package-source libpng))
+        (patches (search-patches "libpng-fix-null-ptr-dereference.patch"))))))
 
 (define-public libpng-1.2
   (package
