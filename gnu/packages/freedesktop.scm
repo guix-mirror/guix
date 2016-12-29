@@ -211,7 +211,8 @@ the freedesktop.org XDG Base Directory specification.")
        ("shepherd" ,shepherd)                ;for 'halt' and 'reboot', invoked
                                              ;when pressing the power button
        ("dbus" ,dbus)
-       ("eudev" ,eudev)))
+       ("eudev" ,eudev)
+       ("acl" ,acl)))           ;to add individual users to ACLs on /dev nodes
     (home-page "https://github.com/wingo/elogind")
     (synopsis "User, seat, and session management service")
     (description "Elogind is the systemd project's \"logind\" service,
