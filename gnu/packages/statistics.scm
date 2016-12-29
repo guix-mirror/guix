@@ -442,13 +442,13 @@ Munsell colour system.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.7")
+    (version "0.12.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "1ipid4yfqp1k5c70f7bz7izzq63srmrcxhiqrnyilk2wgrvd7ypb"))))
+        (base32 "0is1vql1q82g7yakad4skx707ip0fx3rgdwv9a8mi8259gly2qji"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ Integration")
