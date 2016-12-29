@@ -1972,14 +1972,14 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "0ln1dc26mkl5pc26vvyf01d35x75q6cjaj39cccxp67chbwbdlds"))))
+         "127znf522r5mn3k6frhdd7pqh063bs3l85gn9h7cx50hpjf2as4k"))))
     (build-system r-build-system)
     (home-page "https://github.com/rstats-db/hms")
     (synopsis "Pretty time of day")
