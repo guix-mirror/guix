@@ -5958,13 +5958,13 @@ also known as views, in a controlled vocabulary.")
 (define-public r-biocstyle
   (package
    (name "r-biocstyle")
-   (version "2.2.0")
+   (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "0qbk23fz8cn260isd9xlh9lxfj4adar6iqzai01c4kz0p31f45za"))))
+                "0sl99xw940ixrm6v24lgaw3ljh56g59a6rdz7g160hx84z9f8n2n"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
