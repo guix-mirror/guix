@@ -1680,7 +1680,11 @@ void DerivationGoal::startBuilder()
             % drv.platform % settings.thisSystem % drvPath);
     }
 
-    useChroot = settings.useChroot;
+    /* Note: built-in builders are *not* running in a chroot environment so
+       that we can easily implement them in Guile without having it as a
+       derivation input (they are running under a separate build user,
+       though).  */
+    useChroot = settings.useChroot && !isBuiltin(drv);
 
     /* Construct the environment passed to the builder. */
     env.clear();
@@ -2048,12 +2052,7 @@ void DerivationGoal::runChild()
         commonChildInit(builderOut);
 
 #if CHROOT_ENABLED
-	/* Note: built-in builders are *not* running in a chroot environment
-	   so that we can easily implement them in Guile without having it as
-	   a derivation input (they are running under a separate build user,
-	   though).  */
-
-        if (useChroot && !isBuiltin(drv)) {
+        if (useChroot) {
             /* Initialise the loopback interface. */
             AutoCloseFD fd(socket(PF_INET, SOCK_DGRAM, IPPROTO_IP));
             if (fd == -1) throw SysError("cannot open IP socket");
