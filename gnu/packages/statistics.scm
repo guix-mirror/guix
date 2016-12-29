@@ -712,22 +712,22 @@ legends.")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "2.1.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0s9rvp0f736ji6p9xpxq54agxf95pjkql4sj7ag0hv2xhnp27hzj"))))
+        (base32 "1nicx903gl9hg8g1yl5v3n8p2pds756yln6bbclkkd3kal4dkmv4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-gtable" ,r-gtable)
        ("r-plyr" ,r-plyr)
-       ("r-proto" ,r-proto)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-tibble" ,r-tibble)
        ("r-reshape2" ,r-reshape2)
-       ("r-scales" ,r-scales)
-       ("r-svglite" ,r-svglite)))
+       ("r-scales" ,r-scales)))
     (home-page "http://ggplot2.org")
     (synopsis "An implementation of the grammar of graphics")
     (description
