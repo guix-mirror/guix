@@ -2305,20 +2305,18 @@ ldap, and also supports cookies, redirects, authentication, etc.")
 (define-public r-xml
   (package
     (name "r-xml")
-    (version "3.98-1.4")
+    (version "3.98-1.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "XML" version))
               (sha256
                (base32
-                "09hiy5a875v2fhsgrsfymrwccn9249wnnsr6ck2slrig65svq2lw"))))
+                "0dcdj7ryn8lm7wmv4hqhh9jxa5k97l6ad8xyvb932yfkwj1g1byy"))))
     (properties
      `((upstream-name . "XML")))
     (build-system r-build-system)
     (inputs
      `(("libxml2" ,libxml2)))
-    (propagated-inputs
-     `(("r-rcurl" ,r-rcurl)))
     (home-page "http://www.omegahat.org/RSXML")
     (synopsis "Tools for parsing and generating XML within R")
     (description
