@@ -3485,6 +3485,28 @@ definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
 curves, Cox models, and parametric accelerated failure time models.")
     (license license:lgpl2.0+)))
 
+(define-public r-base64
+  (package
+    (name "r-base64")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "base64" version))
+       (sha256
+        (base32
+         "1labh0ycdm2xcjssj8bhnyjvbk44mcdsi0rb2p8rfqa428mrq9cf"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-openssl" ,r-openssl)))
+    (home-page "http://cran.r-project.org/web/packages/base64")
+    (synopsis "Base64 encoder and decoder")
+    (description
+     "This package is a compatibility wrapper to replace the orphaned package
+by Romain Francois.  New applications should use the openssl or base64enc
+package instead.")
+    (license license:expat)))
+
 (define-public r-hmisc
   (package
     (name "r-hmisc")
