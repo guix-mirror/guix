@@ -488,14 +488,14 @@ and operations on them using LAPACK and SuiteSparse.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-15")
+   (version "1.8-16")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "05xzmsx51y92c0r0yihac8m9d3v1sqnn8ahcgm3q75j8z6zybsjs"))))
+       "0pj31gdwra7nv8spys4pfcbmsik99q1y1d0d2g37ywc3sz5s0rlj"))))
    (build-system r-build-system)
    (home-page "http://cran.r-project.org/web/packages/mgcv")
    (synopsis "Mixed generalised additive model computation")
