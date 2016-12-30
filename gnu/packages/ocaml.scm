@@ -2329,3 +2329,26 @@ s-expressions.")
     (synopsis "OCaml variants as first class values")
     (description "OCaml variants as first class values.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-conv
+  (package
+    (name "ocaml-ppx-sexp-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_sexp_conv" version
+              "1rbj6d5dl625gdxih34xcrdvikci6h8i2dl9x3wraa4qrgishiw7"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("sexplib" ,ocaml-sexplib)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_sexp_conv")
+    (synopsis "Generation of S-expression conversion functions from type definitions")
+    (description "Generation of S-expression conversion functions from type
+definitions.")
+    (license license:asl2.0)))
