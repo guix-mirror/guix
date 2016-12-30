@@ -864,3 +864,45 @@ arbitrary-precision integers.  It uses GMP to efficiently implement arithmetic
 over big integers. Small integers are represented as Caml unboxed integers,
 for speed and space economy.")
     (license license:lgpl2.1+))) ; with an exception
+
+(define-public ocaml-frontc
+  (package
+    (name "ocaml-frontc")
+    (version "3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.irit.fr/recherches/ARCHI/MARCH/"
+                                  "frontc/Frontc-" version ".tgz"))
+              (sha256
+               (base32
+                "16dz153s92dgbw1rrfwbhscy73did87kfmjwyh3qpvs748h1sc4g"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'install-meta
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-output-to-file
+                   (string-append out "/lib/ocaml/frontc/META")
+                 (lambda _
+                   (display
+                    (string-append
+                     "description = \"Parser for the C language\"
+version = \"" ,version "\"
+requires = \"unix\"
+archive(byte) = \"frontc.cma\"
+archive(native) = \"frontc.cmxa\""))))
+               (symlink (string-append out "/lib/ocaml/frontc")
+                        (string-append out "/lib/ocaml/FrontC"))))))
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          "OCAML_SITE=$(LIB_DIR)/ocaml/")))
+    (home-page "https://www.irit.fr/FrontC")
+    (synopsis "C parser and lexer library")
+    (description "FrontC is an OCAML library providing a C parser and lexer.
+The result is a syntactic tree easy to process with usual OCAML tree management.
+It provides support for ANSI C syntax, old-C K&R style syntax and the standard
+GNU CC attributes.  It provides also a C pretty printer as an example of use.")
+    (license license:lgpl2.1)))
