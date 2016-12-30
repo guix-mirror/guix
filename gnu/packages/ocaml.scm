@@ -906,3 +906,34 @@ The result is a syntactic tree easy to process with usual OCAML tree management.
 It provides support for ANSI C syntax, old-C K&R style syntax and the standard
 GNU CC attributes.  It provides also a C pretty printer as an example of use.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-qtest
+  (package
+    (name "ocaml-qtest")
+    (version "2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/vincent-hugot/iTeML/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n7x5l6h4j44f75wzgzjsjkq349i4gj707w1hr7fx84igxxfr6vl"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("findlib" ,ocaml-findlib)))
+    (propagated-inputs
+     `(("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:tests? #f ; No test target.
+       #:make-flags
+       (list (string-append "BIN=" (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/vincent-hugot/iTeML")
+    (synopsis "Inline (Unit) Tests for OCaml")
+    (description "Qtest extracts inline unit tests written using a special
+syntax in comments.  Those tests are then run using the oUnit framework and the
+qcheck library.  The possibilities range from trivial tests -- extremely simple
+to use -- to sophisticated random generation of test cases.")
+    (license license:lgpl3+)))
