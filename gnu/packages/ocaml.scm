@@ -780,3 +780,36 @@ compilers that can directly deal with packages.")
     (description "Unit testing framework for OCaml.  It is similar to JUnit and
 other XUnit testing frameworks.")
     (license license:expat)))
+
+(define-public camlzip
+  (package
+    (name "camlzip")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1616))
+              (sha256
+               (base32
+                "0m6gyjw46w3qnhxfsyqyag42znl5lwargks7w7rfchr9jzwpff68"))))
+    (build-system ocaml-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'fix-install-name
+           (lambda* (#:key #:allow-other-keys)
+             (substitute* "Makefile"
+               (("install zip") "install camlzip")))))
+       #:install-target "install-findlib"
+       #:make-flags
+       (list "all" "allopt"
+             (string-append "INSTALLDIR=" (assoc-ref %outputs "out")
+                            "/lib/ocaml"))))
+    (home-page "http://forge.ocamlcore.org/projects/camlzip")
+    (synopsis "Provides easy access to compressed files")
+    (description "Provides easy access to compressed files in ZIP, GZIP and
+JAR format.  It provides functions for reading from and writing to compressed
+files in these formats.")
+    (license license:lgpl2.1+)))
