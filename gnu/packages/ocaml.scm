@@ -1728,3 +1728,27 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
 that represent binary data in an ASCII string format by translating it into a
 radix-64 representation.  It is specified in RFC 4648.")
     (license license:isc)))
+
+(define-public ocamlify
+  (package
+    (name "ocamlify")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1209))
+              (sha256
+               (base32
+                "1f0fghvlbfryf5h3j4as7vcqrgfjb4c8abl5y0y5h069vs4kp5ii"))))
+    (build-system ocaml-build-system)
+    ; tests are done during build
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check))))
+    (home-page "https://forge.ocamlcore.org/projects/ocamlify")
+    (synopsis "Include files in OCaml code")
+    (description "OCamlify allows to create OCaml source code by including
+whole files into OCaml string or string list.  The code generated can be
+compiled as a standard OCaml file.  It allows embedding external resources as
+OCaml code.")
+    (license license:lgpl2.1+))); with the OCaml static compilation exception
