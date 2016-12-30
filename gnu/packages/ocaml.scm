@@ -1586,3 +1586,27 @@ representation of the data.")
     (synopsis "Lexer generator for Unicode and OCaml")
     (description "Lexer generator for Unicode and OCaml.")
     (license license:expat)))
+
+(define-public ocaml-uchar
+  (package
+    (name "ocaml-uchar")
+    (version "0.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/ocaml/uchar/releases/download/v"
+                            version "/uchar-" version ".tbz"))
+        (sha256 (base32
+                  "0ficw1x7ymbd6m8hqw3w1aycwm1hbwd6bad3c5pspwnzh3qlikhi"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "native=true" "native-dynlink=true")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)))
+    (home-page "https://github.com/ocaml/uchar")
+    (synopsis "Compatibility library for OCaml's Uchar module")
+    (description "The uchar package provides a compatibility library for the
+`Uchar` module introduced in OCaml 4.03.")
+    (license license:lgpl2.1)))
