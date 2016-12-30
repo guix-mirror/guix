@@ -2067,3 +2067,24 @@ It contains:
 @item a framework for dealing with attributes and extension points.
 @end enumerate")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-optcomp
+  (package
+    (name "ocaml-ppx-optcomp")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_optcomp" version
+               "13an8p2r7sd0d5lv54mlzrxdni47408bwqi3bjcx4m6005170q30"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_optcomp/")
+    (synopsis "Optional compilation for OCaml")
+    (description "Ppx_optcomp stands for Optional Compilation.  It is a tool
+used to handle optional compilations of pieces of code depending of the word
+size, the version of the compiler, ...")
+    (license license:asl2.0)))
