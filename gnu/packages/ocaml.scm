@@ -2231,3 +2231,25 @@ different preprocessors that generate code from type specifications.")
     (synopsis "Syntax extension for writing in-line tests in ocaml code")
     (description "Syntax extension for writing in-line tests in ocaml code.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-bench
+  (package
+    (name "ocaml-ppx-bench")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_bench" version
+                   "1hky3y17qpb925rymf97wv54di9gaqdmkix7wpkjw14qzl512b68"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_bench/")
+    (synopsis "Syntax extension for writing in-line benchmarks in ocaml code")
+    (description "Syntax extension for writing in-line benchmarks in ocaml code.")
+    (license license:asl2.0)))
