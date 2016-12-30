@@ -2147,3 +2147,42 @@ programs.  It allows the definition of simple macros and file inclusion.  Cpp oi
 @item simple to install and to maintain.
 @end enumerate")
     (license license:bsd-3)))
+
+;; this package is not reproducible. This is related to temporary filenames
+;; such as findlib_initxxxxx where xxxxx is random.
+(define-public ocaml-ppx-deriving
+  (package
+    (name "ocaml-ppx-deriving")
+    (version "4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/whitequark/ppx_deriving//archive/v"
+                            version ".tar.gz"))
+        (sha256 (base32
+                  "1fr16g121j6zinwcprzlhx2py4271n9jzs2m9hq2f3qli2b1p0vl"))
+        (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("cppo" ,ocaml-cppo)
+       ("ounit" ,ocaml-ounit)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("result" ,ocaml-result)
+       ("ppx-tools" ,ocaml-ppx-tools)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+           (add-before 'install 'fix-environment
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; the installation procedures looks for the installed module
+               (setenv "OCAMLPATH"
+                       (string-append (getenv "OCAMLPATH") ":"
+                                      (getenv "OCAMLFIND_DESTDIR"))))))))
+    (home-page "https://github.com/whitequark/ppx_deriving/")
+    (synopsis "Type-driven code generation for OCaml >=4.02")
+    (description "Ppx_deriving provides common infrastructure for generating
+code based on type definitions, and a set of useful plugins for common tasks.")
+    (license license:expat)))
