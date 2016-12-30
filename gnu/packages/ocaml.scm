@@ -35,6 +35,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lynx)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -832,4 +833,34 @@ files in these formats.")
     (home-page "https://forge.ocamlcore.org/projects/ocamlmod")
     (synopsis "Generate modules from OCaml source files")
     (description "Generate modules from OCaml source files.")
+    (license license:lgpl2.1+))) ; with an exception
+
+(define-public ocaml-zarith
+  (package
+    (name "ocaml-zarith")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "zarith" version 1574))
+              (sha256
+               (base32
+                "0l36hzmfbvdai2kcgynh13vfdim5x2grnaw61fxqalyjm90c3di3"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("gmp" ,gmp)))
+    (arguments
+     `(#:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key #:allow-other-keys)
+             (zero? (system* "./configure")))))))
+    (home-page "https://forge.ocamlcore.org/projects/zarith/")
+    (synopsis "Implements arbitrary-precision integers")
+    (description "Implements arithmetic and logical operations over
+arbitrary-precision integers.  It uses GMP to efficiently implement arithmetic
+over big integers. Small integers are represented as Caml unboxed integers,
+for speed and space economy.")
     (license license:lgpl2.1+))) ; with an exception
