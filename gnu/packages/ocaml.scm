@@ -44,6 +44,7 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -1361,3 +1362,35 @@ simple (yet expressive) query language to select the tests to run.")
 events and signals.  React doesn't define any primitive event or signal, it
 lets the client choose the concrete timeline.")
     (license license:bsd-3)))
+
+(define-public ocaml-ssl
+  (package
+    (name "ocaml-ssl")
+    (version "0.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/savonet/ocaml-ssl/archive/"
+                            version ".tar.gz"))
+        (sha256 (base32
+                  "1ds5gzyzpcgwn7h40dmjkll7g990cr82ay05b2a7nrclvv6fdpg8"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:make-flags (list "OCAMLFIND_LDCONF=ignore")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-before 'configure 'bootstrap
+                     (lambda* (#:key #:allow-other-keys)
+                       (system* "./bootstrap")
+                       (substitute* "src/OCamlMakefile"
+                         (("/bin/sh") (which "bash")))
+                       (substitute* "configure"
+                         (("/bin/sh") (which "bash"))))))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("which" ,which)))
+    (propagated-inputs `(("openssl" ,openssl)))
+    (home-page "https://github.com/savonet/ocaml-ssl/")
+    (synopsis "OCaml bindings for OpenSSL")
+    (description "OCaml bindings for OpenSSL.")
+    (license license:lgpl2.1)))
