@@ -1153,3 +1153,32 @@ declarative manner, without resorting to exceptions.  It defines combinators
 to operate on the result type available from OCaml 4.03 in the standard
 library.")
     (license license:isc)))
+
+(define-public ocaml-mtime
+  (package
+    (name "ocaml-mtime")
+    (version "0.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/mtime/releases/"
+                                  "mtime-" version ".tbz"))
+              (sha256
+               (base32
+                "1hfx4ny2dkw6jf3jppz0640dafl5xgn8r2si9kpwzhmibal8qrah"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("topkg" ,ocaml-topkg)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags
+       '("native=true" "native-dynlink=true" "jsoo=false")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/mtime")
+    (synopsis "Monotonic wall-clock time for OCaml")
+    (description "Access monotonic wall-clock time.  It allows to measure time
+spans without being subject to operating system calendar time adjustments.")
+    (license license:isc)))
