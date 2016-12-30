@@ -1610,3 +1610,35 @@ representation of the data.")
     (description "The uchar package provides a compatibility library for the
 `Uchar` module introduced in OCaml 4.03.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-uutf
+  (package
+    (name "ocaml-uutf")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/uutf/releases/"
+                                  "uutf-" version ".tbz"))
+              (sha256
+                (base32
+                  "08i0cw02cxw4mi2rs01v9xi307qshs6fnd1dlqyb52kcxzblpp37"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (propagated-inputs `(("uchar" ,ocaml-uchar)
+                         ("cmdliner" ,ocaml-cmdliner)))
+    (home-page "http://erratique.ch/software/uutf")
+    (synopsis "Non-blocking streaming Unicode codec for OCaml")
+    (description "Uutf is a non-blocking streaming codec to decode and encode
+the UTF-8, UTF-16, UTF-16LE and UTF-16BE encoding schemes.  It can efficiently
+work character by character without blocking on IO.  Decoders perform character
+position tracking and support newline normalization.
+
+Functions are also provided to fold over the characters of UTF encoded OCaml
+string values and to directly encode characters in OCaml Buffer.t values.")
+    (license license:isc)))
