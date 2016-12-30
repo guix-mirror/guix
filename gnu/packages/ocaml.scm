@@ -1182,3 +1182,33 @@ library.")
     (description "Access monotonic wall-clock time.  It allows to measure time
 spans without being subject to operating system calendar time adjustments.")
     (license license:isc)))
+
+(define-public ocaml-cmdliner
+  (package
+    (name "ocaml-cmdliner")
+    (version "0.9.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
+                                  "cmdliner-" version ".tbz"))
+              (sha256
+               (base32
+                "0hdxlkgiwjml9dpaa80282a8350if7mc1m6yz2mrd7gci3fszykx"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags '("native=true" "native-dynlink=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/cmdliner")
+    (synopsis "Declarative definition of command line interfaces for OCaml")
+    (description "Cmdliner is a module for the declarative definition of command
+line interfaces.  It provides a simple and compositional mechanism to convert
+command line arguments to OCaml values and pass them to your functions.  The
+module automatically handles syntax errors, help messages and UNIX man page
+generation. It supports programs with single or multiple commands and respects
+most of the POSIX and GNU conventions.")
+    (license license:bsd-3)))
