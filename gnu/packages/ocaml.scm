@@ -40,6 +40,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1825,3 +1826,38 @@ many additional enhancements, including:
 every compliant installation of OCaml and organize these libraries into a
 hierarchy of modules.")
     (license license:lgpl2.1+)))
+
+(define-public ocaml-pcre
+  (package
+    (name "ocaml-pcre")
+    (version "7.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mmottl/pcre-ocaml/archive"
+                                  "/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rj6dw79px4sj2kq0iss2nzq3rnsn9wivvc0f44wa1mppr6njfb3"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'link-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out "/lib/ocaml/site-lib/pcre")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dllpcre_stubs.so")
+                        (string-append stubs "/dllpcre_stubs.so"))))))))
+    (native-inputs
+     `(("batteries" ,ocaml-batteries)
+       ("pcre:bin" ,pcre "bin")))
+    (propagated-inputs `(("pcre" ,pcre)))
+    (home-page "https://mmottl.github.io/pcre-ocaml")
+    (synopsis "Bindings to the Perl Compatibility Regular Expressions library")
+    (description "Pcre-ocaml offers library functions for string pattern
+matching and substitution, similar to the functionality offered by the Perl
+language.")
+    (license license:lgpl2.1+))); with the OCaml link exception
