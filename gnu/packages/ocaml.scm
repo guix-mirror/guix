@@ -2117,3 +2117,33 @@ provide a tool that can be used to:
 @item improved errors for misspelled/misplaced attributes and extension points.
 @end enumerate")
     (license license:asl2.0)))
+
+(define-public ocaml-cppo
+  (package
+    (name "ocaml-cppo")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/mjambon/cppo/archive/v" version
+                            ".tar.gz"))
+        (sha256 (base32
+                  "02gma6nw09vfnd6h7bl3n70lwz7m9z2svplxyfh6h5bf4lqgqzjv"))
+        (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:make-flags (list (string-append "BINDIR="
+                                         (assoc-ref %outputs "out") "/bin"))
+       #:tests? #f))
+    (home-page "https://github.com/mjambon/cppo")
+    (synopsis "Equivalent of the C preprocessor for OCaml programs")
+    (description "Cppo is an equivalent of the C preprocessor for OCaml
+programs.  It allows the definition of simple macros and file inclusion.  Cpp ois:
+@enumerate
+@item more OCaml-friendly than cpp
+@item easy to learn without consulting a manual
+@item reasonably fast
+@item simple to install and to maintain.
+@end enumerate")
+    (license license:bsd-3)))
