@@ -1670,3 +1670,29 @@ string values and to directly encode characters in OCaml Buffer.t values.")
 the JSON data format.  It can process JSON text without blocking on IO and
 without a complete in-memory representation of the data.")
     (license license:isc)))
+
+(define-public ocaml-ocurl
+  (package
+    (name "ocaml-ocurl")
+    (version "0.7.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ygrek.org.ua/p/release/ocurl/ocurl-"
+                                  version ".tar.gz"))
+              (sha256
+                (base32
+                  "0pm6nm33wi0p9h765k6zb94ljpknryam4qd1hmb2rsk2y0y1181n"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (add-before 'configure 'fix-/bin/sh
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (substitute* "configure"
+                         (("-/bin/sh") (string-append "-" (which "bash")))))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("curl" ,curl)))
+    (home-page "http://ocurl.forge.ocamlcore.org/")
+    (synopsis "OCaml bindings for libcurl")
+    (description "Client-side URL transfer library, supporting HTTP and a
+multitude of other network protocols (FTP/SMTP/RTSP/etc).")
+    (license license:isc)))
