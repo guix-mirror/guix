@@ -2352,3 +2352,26 @@ s-expressions.")
     (description "Generation of S-expression conversion functions from type
 definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-variants-conv
+  (package
+    (name "ocaml-ppx-variants-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_variants_conv" version
+              "0vnn2l1118cj72413d3f7frlw6yc09l8f64jlzkzbgb9bxpalx34"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-core" ,ocaml-ppx-core)
+       ("variantslib" ,ocaml-variantslib)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_variants_conv")
+    (synopsis "Generation of accessor and iteration functions for ocaml variant
+types")
+    (description "Generation of accessor and iteration functions for ocaml
+variant types.")
+    (license license:asl2.0)))
