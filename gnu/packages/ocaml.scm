@@ -1752,3 +1752,47 @@ whole files into OCaml string or string list.  The code generated can be
 compiled as a standard OCaml file.  It allows embedding external resources as
 OCaml code.")
     (license license:lgpl2.1+))); with the OCaml static compilation exception
+
+(define-public omake
+  (package
+    (name "omake")
+    (version "0.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.camlcity.org/download/"
+                                  "omake-" version ".tar.gz"))
+              (sha256
+               (base32
+                "093ansbppms90hiqvzar2a46fj8gm9iwnf8gn38s6piyp70lrbsj"))
+              (patches (search-patches "omake-fix-non-determinism.patch"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-makefile
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (substitute* "mk/osconfig_unix.mk"
+                                    (("CC = cc") "CC = gcc")))))))
+    (native-inputs `(("hevea" ,hevea)))
+    (home-page "http://projects.camlcity.org/projects/omake.html")
+    (synopsis "Build system designed for scalability and portability")
+    (description "Similar to make utilities you may have used, but it features
+many additional enhancements, including:
+
+@enumerate
+@item Support for projects spanning several directories or directory hierarchies.
+@item Fast, reliable, automated, scriptable dependency analysis using MD5 digests,
+      with full support for incremental builds.
+@item Dependency analysis takes the command lines into account — whenever the
+      command line used to build a target changes, the target is considered
+      out-of-date.
+@item Fully scriptable, includes a library that providing support for standard
+      tasks in C, C++, OCaml, and LaTeX projects, or a mixture thereof.
+@end enumerate")
+    (license (list license:lgpl2.1 ; libmojave
+                   license:expat ; OMake scripts
+                   license:gpl2)))) ; OMake itself, with ocaml linking exception
+                                    ; see LICENSE.OMake
