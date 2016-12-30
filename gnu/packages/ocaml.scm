@@ -1501,3 +1501,35 @@ message report is decoupled from logging and is handled by a reporter.")
 POSIX or Windows conventions.  Fpath processes paths without accessing the
 file system and is independent from any system library.")
     (license license:isc)))
+
+(define-public ocaml-bos
+  (package
+    (name "ocaml-bos")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/bos/releases/"
+                                  "bos-" version ".tbz"))
+              (sha256
+                (base32
+                  "1ly66lysk4w6mdy4k1n3ynlpfpq7lw4wshcpzgx58v6x613w5s7q"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)))
+    (propagated-inputs `(("topkg" ,ocaml-topkg)
+                         ("astring" ,ocaml-astring)
+                         ("fmt" ,ocaml-fmt)
+                         ("fpath" ,ocaml-fpath)
+                         ("logs" ,ocaml-logs)
+                         ("rresult" ,ocaml-rresult)))
+    (home-page "http://erratique.ch/software/bos")
+    (synopsis "Basic OS interaction for OCaml")
+    (description "Bos provides support for basic and robust interaction with
+the operating system in OCaml.  It has functions to access the process
+environment, parse command line arguments, interact with the file system and
+run command line programs.")
+    (license license:isc)))
