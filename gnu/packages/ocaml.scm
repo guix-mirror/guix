@@ -2210,3 +2210,24 @@ code based on type definitions, and a set of useful plugins for common tasks.")
     (description "The type_conv library factors out functionality needed by
 different preprocessors that generate code from type specifications.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-inline-test
+  (package
+    (name "ocaml-ppx-inline-test")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_inline_test" version
+              "0859ni43fl39dd5g6cxfhq0prxmx59bd2bfq8jafp593ba4q0icq"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+      `(("ppx-driver" ,ocaml-ppx-driver)
+        ("ppx-tools" ,ocaml-ppx-tools)
+        ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_inline_test/")
+    (synopsis "Syntax extension for writing in-line tests in ocaml code")
+    (description "Syntax extension for writing in-line tests in ocaml code.")
+    (license license:asl2.0)))
