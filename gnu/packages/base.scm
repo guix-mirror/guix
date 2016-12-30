@@ -162,7 +162,8 @@ implementation offers several extensions over the standard utility.")
             (sha256
              (base32
               "097hx7sbzp8qirl4m930lw84kn0wmxhmq7v1qpra3mrg0b8cyba0"))
-            (patches (search-patches "tar-skip-unreliable-tests.patch"))))
+            (patches (search-patches "tar-CVE-2016-6321.patch"
+                                     "tar-skip-unreliable-tests.patch"))))
    (build-system gnu-build-system)
    ;; Note: test suite requires ~1GiB of disk space.
    (arguments
