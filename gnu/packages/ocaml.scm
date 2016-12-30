@@ -1285,3 +1285,34 @@ removes deprecated and rarely used functions, alters some signatures and names,
 adds a few missing functions and fully exploits OCaml's newfound string
 immutability.")
     (license license:isc)))
+
+(define-public ocaml-alcotest
+  (package
+    (name "ocaml-alcotest")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/alcotest/releases/"
+                                  "download/" version "/alcotest-" version ".tbz"))
+              (sha256
+                (base32
+                  "0g5lzk0gpfx4q8hyhr460gr4lab5wakfxsmhfwvb3yinxwzs95gc"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (propagated-inputs `(("fmt" ,ocaml-fmt)
+                         ("astring" ,ocaml-astring)))
+    (home-page "https://github.com/mirage/alcotest")
+    (synopsis "Lightweight OCaml test framework")
+    (description "Alcotest exposes simple interface to perform unit tests.  It
+exposes a simple TESTABLE module type, a check function to assert test
+predicates and a run function to perform a list of unit -> unit test callbacks.
+Alcotest provides a quiet and colorful output where only faulty runs are fully
+displayed at the end of the run (with the full logs ready to inspect), with a
+simple (yet expressive) query language to select the tests to run.")
+    (license license:isc)))
