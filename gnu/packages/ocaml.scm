@@ -1069,3 +1069,27 @@ and generate binary formats, files and protocols.  Bitstring handling is added
 as primitives to the language, making it exceptionally simple to use and very
 powerful.")
     (license license:isc)))
+
+(define-public ocaml-result
+  (package
+    (name "ocaml-result")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/janestreet/result"
+                                  "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pgpfsgvhxnh0i37fkvp9j8nadns9hz9iqgabj4dr519j2gr1xvw"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/janestreet/result")
+    (synopsis "Compatibility Result module")
+    (description "Uses the new result type defined in OCaml >= 4.03 while
+staying compatible with older version of OCaml should use the Result module
+defined in this library.")
+    (license license:bsd-3)))
