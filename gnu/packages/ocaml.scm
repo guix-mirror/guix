@@ -1255,3 +1255,33 @@ most of the POSIX and GNU conventions.")
     (description "Fmt exposes combinators to devise Format pretty-printing
 functions.")
     (license license:isc)))
+
+(define-public ocaml-astring
+  (package
+    (name "ocaml-astring")
+    (version "0.8.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://erratique.ch/software/astring/releases/astring-"
+                            version ".tbz"))
+        (sha256 (base32
+                  "0ixjwc3plrljvj24za3l9gy0w30lsbggp8yh02lwrzw61ls4cri0"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (home-page "http://erratique.ch/software/astring")
+    (synopsis "Alternative String module for OCaml")
+    (description "Astring exposes an alternative String module for OCaml.  This
+module balances minimality and expressiveness for basic, index-free, string
+processing and provides types and functions for substrings, string sets and
+string maps.  The String module exposed by Astring has exception safe functions,
+removes deprecated and rarely used functions, alters some signatures and names,
+adds a few missing functions and fully exploits OCaml's newfound string
+immutability.")
+    (license license:isc)))
