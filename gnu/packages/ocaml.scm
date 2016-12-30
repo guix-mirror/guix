@@ -2088,3 +2088,32 @@ It contains:
 used to handle optional compilations of pieces of code depending of the word
 size, the version of the compiler, ...")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-driver
+  (package
+    (name "ocaml-ppx-driver")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_driver" version
+              "011zzr45897j49b7iiybb29k7pspcx36mlnp7nh6pxb8b0ga76fh"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-optcomp" ,ocaml-ppx-optcomp)))
+    (propagated-inputs
+     `(("ppx-optcomp" ,ocaml-ppx-optcomp)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_driver/")
+    (synopsis "Feature-full driver for OCaml AST transformers")
+    (description "A driver is an executable created from a set of OCaml AST
+transformers linked together with a command line frontend.  The aim is to
+provide a tool that can be used to:
+@enumerate
+@item easily view the pre-processed version of a file, no need to construct a
+      complex command line: @command{ppx file.ml} will do
+@item use a single executable to run several transformations: no need to fork
+      many times just for pre-processing
+@item improved errors for misspelled/misplaced attributes and extension points.
+@end enumerate")
+    (license license:asl2.0)))
