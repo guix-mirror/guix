@@ -1093,3 +1093,33 @@ powerful.")
 staying compatible with older version of OCaml should use the Result module
 defined in this library.")
     (license license:bsd-3)))
+
+(define-public ocaml-topkg
+  (package
+    (name "ocaml-topkg")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/topkg/releases/"
+                                  "topkg-" version ".tbz"))
+              (sha256
+               (base32
+                "18rrh6fmf708z7dd30amljmcgaypj3kk49jrmrj68r4wnw8004j8"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("result" ,ocaml-result)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags '("build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/topkg")
+    (synopsis "Transitory OCaml software packager")
+    (description "Topkg is a packager for distributing OCaml software. It
+provides an API to describe the files a package installs in a given build
+configuration and to specify information about the package's distribution,
+creation and publication procedures.")
+    (license license:isc)))
