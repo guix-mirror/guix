@@ -2297,3 +2297,19 @@ by making sure that you only compare comparable values.")
     (description "Sexplib contains functionality for parsing and pretty-printing
 s-expressions.")
     (license license:asl2.0)))
+
+(define-public ocaml-typerep
+  (package
+    (name "ocaml-typerep")
+    (version "113.33.03")
+    (source (janestreet-origin "typerep" version
+              "1b9v5bmi824a9d4sx0f40ixq0yfcbiqxafg4a1jx95xg9199zafy"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/typerep/")
+    (synopsis "Typerep is a library for runtime types")
+    (description "Typerep is a library for runtime types.")
+    (license license:asl2.0)))
