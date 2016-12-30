@@ -2394,3 +2394,28 @@ variant types.")
     (synopsis "Expands [%here] into its location")
     (description "Expands [%here] into its location.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-assert
+  (package
+    (name "ocaml-ppx-assert")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_assert" version
+              "1k5kxmqkibp5fk25pgz81f3c1r4mgvb5byzf6bnmxd24y60wn46p"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-compare" ,ocaml-ppx-compare)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-sexplib" ,ocaml-sexplib)
+       ("ppx-here" ,ocaml-ppx-here)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_assert")
+    (synopsis "Assert-like extension nodes that raise useful errors on failure")
+    (description "Assert-like extension nodes that raise useful errors on failure.")
+    (license license:asl2.0)))
