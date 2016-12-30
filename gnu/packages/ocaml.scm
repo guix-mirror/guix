@@ -1882,3 +1882,21 @@ language.")
     (description "Help building unitary testing of interactive program.  You
 can match the question using a regular expression or a timeout.")
     (license license:lgpl2.1+))) ; with the OCaml static compilation exception
+
+(define-public ocaml-fileutils
+  (package
+    (name "ocaml-fileutils")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1651))
+              (sha256
+               (base32
+                "0g6zx2rcvacklxyli19ixcf6ich9ipxsps4k3jz98f5zlaab0a7g"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("ounit" ,ocaml-ounit)))
+    (home-page "http://ocaml-fileutils.forge.ocamlcore.org")
+    (synopsis "Pure OCaml functions to manipulate real file and filename")
+    (description "Library to provide pure OCaml functions to manipulate real
+file (POSIX like) and filename.")
+    (license license:lgpl2.1+))) ; with the OCaml static compilation exception
