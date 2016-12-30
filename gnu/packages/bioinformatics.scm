@@ -7855,15 +7855,20 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "0.6")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "0avw11h63ldpxy5pizc3wl1wa01ha7q10wb240nggsjz3jaqvyiy"))))
+         "12gs1jw2jrxrij529rnl5kaqxfcqn15yzcsggxkfhdx634ml0cny"))
+       (patches (search-patches "multiqc-fix-git-subprocess-error.patch"))))
     (build-system python-build-system)
+    (arguments
+     ;; Tests are to be introduced in the next version, see
+     ;; https://github.com/ewels/MultiQC/issues/376
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-simplejson" ,python-simplejson)
