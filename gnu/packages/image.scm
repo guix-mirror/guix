@@ -95,7 +95,7 @@ library.  It supports almost all PNG features and is extensible.")
     (source
       (origin
         (inherit (package-source libpng))
-        (patches (search-patches "libpng-fix-null-ptr-dereference.patch"))))))
+        (patches (search-patches "libpng-CVE-2016-10087.patch"))))))
 
 (define-public libpng-1.2
   (package
