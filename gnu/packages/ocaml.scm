@@ -2253,3 +2253,30 @@ different preprocessors that generate code from type specifications.")
     (synopsis "Syntax extension for writing in-line benchmarks in ocaml code")
     (description "Syntax extension for writing in-line benchmarks in ocaml code.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-compare
+  (package
+    (name "ocaml-ppx-compare")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_compare" version
+              "0bfhi33kq9l4q6zzc6svki2csracz5j4731c3npcy6cs73jynn0z"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_compare/")
+    (synopsis "Generation of comparison functions from types")
+    (description "Generation of fast comparison functions from type expressions
+and definitions.  Ppx_compare is a ppx rewriter that derives comparison functions
+from type representations.  The scaffolded functions are usually much faster
+than ocaml's Pervasives.compare.  Scaffolding functions also gives you more
+flexibility by allowing you to override them for a specific type and more safety
+by making sure that you only compare comparable values.")
+    (license license:asl2.0)))
