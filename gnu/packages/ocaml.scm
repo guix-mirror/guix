@@ -2025,3 +2025,21 @@ structured values at speeds sufficient to saturate a gigabit connection.  The
 protocol is also heavily optimized for size, making it ideal for long-term
 storage of large amounts of data.")
     (license license:asl2.0)))
+
+(define-public ocaml-fieldslib
+  (package
+    (name "ocaml-fieldslib")
+    (version "113.33.03")
+    (source (janestreet-origin "fieldslib" version
+               "1rm3bn54bzk2hlq8f3w067ak8s772w4a8f78i3yh79vxfzq8ncvv"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/fieldslib/")
+    (synopsis "Syntax extension to record fields")
+    (description "Syntax extension to define first class values representing
+record fields, to get and set record fields, iterate and fold over all fields
+of a record and create new record values.")
+    (license license:asl2.0)))
