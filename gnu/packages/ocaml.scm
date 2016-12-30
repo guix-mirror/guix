@@ -1443,3 +1443,34 @@ make it easy to run normally-blocking I/O operations concurrently in a single
 process.  Also, in many cases, Lwt threads can interact without the need for
 locks or other synchronization primitives.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-logs
+  (package
+    (name "ocaml-logs")
+    (version "0.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/logs/releases/"
+                                  "logs-" version ".tbz"))
+              (sha256
+                (base32
+                  "1khbn7jqpid83zn8rvyh1x1sirls7zc878zj4fz985m5xlsfy853"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build" "--with-js_of_ocaml" "false")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)))
+    (propagated-inputs `(("fmt" ,ocaml-fmt)
+                         ("lwt" ,ocaml-lwt)
+                         ("mtime" ,ocaml-mtime)
+                         ("result" ,ocaml-result)
+                         ("cmdliner" ,ocaml-cmdliner)
+                         ("topkg" ,ocaml-topkg)))
+    (home-page "http://erratique.ch/software/logs")
+    (synopsis "Logging infrastructure for OCaml")
+    (description "Logs provides a logging infrastructure for OCaml.  Logging is
+performed on sources whose reporting level can be set independently.  Log
+message report is decoupled from logging and is handled by a reporter.")
+    (license license:isc)))
