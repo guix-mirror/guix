@@ -2186,3 +2186,27 @@ programs.  It allows the definition of simple macros and file inclusion.  Cpp oi
     (description "Ppx_deriving provides common infrastructure for generating
 code based on type definitions, and a set of useful plugins for common tasks.")
     (license license:expat)))
+
+(define-public ocaml-ppx-type-conv
+  (package
+    (name "ocaml-ppx-type-conv")
+    (version "113.33.03")
+    (source
+      (janestreet-origin "ppx_type_conv" version
+        "1sp602ads2f250nv4d4rgw54d14k7flyhb4w8ff084f657hhmxv2"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-deriving" ,ocaml-ppx-deriving)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("result" ,ocaml-result)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-driver" ,ocaml-ppx-driver)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_type_conv/")
+    (synopsis "Support Library for type-driven code generators")
+    (description "The type_conv library factors out functionality needed by
+different preprocessors that generate code from type specifications.")
+    (license license:asl2.0)))
