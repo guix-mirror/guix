@@ -1861,3 +1861,24 @@ hierarchy of modules.")
 matching and substitution, similar to the functionality offered by the Perl
 language.")
     (license license:lgpl2.1+))); with the OCaml link exception
+
+(define-public ocaml-expect
+  (package
+    (name "ocaml-expect")
+    (version "0.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1372))
+              (sha256
+               (base32
+                "07xq8w2x2vffc32z7vk6y14jwbfb1cw0m2lm1jzi60hnr1dvg8by"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ocaml-pcre" ,ocaml-pcre)
+       ("ounit" ,ocaml-ounit)))
+    (propagated-inputs `(("batteries" ,ocaml-batteries)))
+    (home-page "https://forge.ocamlcore.org/projects/ocaml-expect/")
+    (synopsis "Simple implementation of expect")
+    (description "Help building unitary testing of interactive program.  You
+can match the question using a regular expression or a timeout.")
+    (license license:lgpl2.1+))) ; with the OCaml static compilation exception
