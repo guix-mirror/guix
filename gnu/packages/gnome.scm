@@ -5288,12 +5288,12 @@ existing databases over the internet.")
               (sha256
                (base32
                 "1fj6wjvnjygzm9br3sw9gya6d18yly1rm69yaiar9spfbkvv4wai"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/tmp"
                            "--sysconfdir=/tmp")
        #:imported-modules ((guix build python-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%glib-or-gtk-build-system-modules)
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap
                     (@@ (guix build python-build-system) wrap)))))
