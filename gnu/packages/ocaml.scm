@@ -1533,3 +1533,30 @@ the operating system in OCaml.  It has functions to access the process
 environment, parse command line arguments, interact with the file system and
 run command line programs.")
     (license license:isc)))
+
+(define-public ocaml-xmlm
+  (package
+    (name "ocaml-xmlm")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/xmlm/releases/"
+                                  "xmlm-" version ".tbz"))
+              (sha256
+                (base32
+                  "1jywcrwn5z3gkgvicr004cxmdaqfmq8wh72f81jqz56iyn5024nh"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure)
+                   (replace 'build
+                     (lambda* (#:key #:allow-other-keys)
+                       (zero? (system* "pkg/build" "true")))))))
+    (native-inputs `(("opam" ,opam)))
+    (home-page "http://erratique.ch/software/xmlm")
+    (synopsis "Streaming XML codec for OCaml")
+    (description "Xmlm is a streaming codec to decode and encode the XML data
+format.  It can process XML documents without a complete in-memory
+representation of the data.")
+    (license license:isc)))
