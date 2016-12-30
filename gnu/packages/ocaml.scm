@@ -1335,3 +1335,29 @@ simple (yet expressive) query language to select the tests to run.")
     (synopsis "Tools for authors of ppx rewriters and other syntactic tools")
     (description "Tools for authors of ppx rewriters and other syntactic tools.")
     (license license:expat)))
+
+(define-public ocaml-react
+  (package
+    (name "ocaml-react")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://erratique.ch/software/react/releases/react-"
+                            version ".tbz"))
+        (sha256 (base32
+                  "0knhgbngphv5sp1yskfd97crf169qhpc0igr6w7vqw0q36lswyl8"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("opam" ,opam)))
+    (arguments `(#:tests? #f
+                 #:build-flags (list "native=true" "native-dynlink=true")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (home-page "http://erratique.ch/software/react")
+    (synopsis "Declarative events and signals for OCaml")
+    (description "React is an OCaml module for functional reactive programming
+(FRP).  It provides support to program with time varying values: declarative
+events and signals.  React doesn't define any primitive event or signal, it
+lets the client choose the concrete timeline.")
+    (license license:bsd-3)))
