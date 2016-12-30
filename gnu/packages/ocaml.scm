@@ -1696,3 +1696,35 @@ without a complete in-memory representation of the data.")
     (description "Client-side URL transfer library, supporting HTTP and a
 multitude of other network protocols (FTP/SMTP/RTSP/etc).")
     (license license:isc)))
+
+(define-public ocaml-base64
+  (package
+    (name "ocaml-base64")
+    (version "2.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-base64/"
+                                  "releases/download/v" version "/base64-"
+                                   version ".tbz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                 "1p45sawchmrkr22gkmydjc4ary23pisp58zsnb7iq7d82nxs1lfq"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:build-flags (list "build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("topkg" ,ocaml-topkg)
+       ("opam" ,opam)
+       ("rresult" ,ocaml-rresult)
+       ("bos" ,ocaml-bos)
+       ("alcotest" ,ocaml-alcotest)))
+    (home-page "https://github.com/mirage/ocaml-base64")
+    (synopsis "Base64 encoding for OCaml")
+    (description "Base64 is a group of similar binary-to-text encoding schemes
+that represent binary data in an ASCII string format by translating it into a
+radix-64 representation.  It is specified in RFC 4648.")
+    (license license:isc)))
