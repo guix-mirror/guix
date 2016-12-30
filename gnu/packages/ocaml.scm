@@ -937,3 +937,26 @@ syntax in comments.  Those tests are then run using the oUnit framework and the
 qcheck library.  The possibilities range from trivial tests -- extremely simple
 to use -- to sophisticated random generation of test cases.")
     (license license:lgpl3+)))
+
+(define-public ocaml-stringext
+  (package
+    (name "ocaml-stringext")
+    (version "1.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rgrinberg/stringext"
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "19g6lfn03iki9f8h91hi0yiqn0b3wkxyq08b3y23wgv6jw6mssfh"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("qtest" ,ocaml-qtest)))
+    (home-page "https://github.com/rgrinberg/stringext")
+    (synopsis "Extra string functions for OCaml")
+    (description "Provides a single module named Stringext that provides a grab
+bag of often used but missing string functions from the stdlib.  E.g, split,
+full_split, cut, rcut, etc..")
+    ;; the only mention of a license in this project is in its `opam' file
+    ;; where it says `mit'.
+    (license license:expat)))
