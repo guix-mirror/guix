@@ -2280,3 +2280,20 @@ than ocaml's Pervasives.compare.  Scaffolding functions also gives you more
 flexibility by allowing you to override them for a specific type and more safety
 by making sure that you only compare comparable values.")
     (license license:asl2.0)))
+
+(define-public ocaml-sexplib
+  (package
+    (name "ocaml-sexplib")
+    (version "113.33.03")
+    (source (janestreet-origin "sexplib" version
+              "1ffjmj8if9lyv965cgn2ld1xv7g52qsr8mqflbm515ck1i8l2ima"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/sexplib/")
+    (synopsis "Library for serializing OCaml values to and from S-expressions")
+    (description "Sexplib contains functionality for parsing and pretty-printing
+s-expressions.")
+    (license license:asl2.0)))
