@@ -216,6 +216,11 @@ AC_MSG_CHECKING([for zlib's shared library name])
 AC_MSG_RESULT([$LIBZ])
 AC_SUBST([LIBZ])
 
+dnl Check for Guile-SSH, for the (guix ssh) module.
+GUIX_CHECK_GUILE_SSH
+AM_CONDITIONAL([HAVE_GUILE_SSH],
+  [test "x$guix_cv_have_recent_guile_ssh" = "xyes"])
+
 AC_CACHE_SAVE
 
 m4_include([config-daemon.ac])

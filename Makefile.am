@@ -170,6 +170,13 @@ MODULES +=					\
 
 endif
 
+if HAVE_GUILE_SSH
+
+MODULES +=					\
+  guix/ssh.scm
+
+endif HAVE_GUILE_SSH
+
 if BUILD_DAEMON_OFFLOAD
 
 MODULES +=					\

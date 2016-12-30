@@ -27,6 +27,7 @@
   #:use-module (ssh version)
   #:use-module (guix config)
   #:use-module (guix records)
+  #:use-module (guix ssh)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module ((guix serialization)
@@ -221,53 +222,6 @@ instead of '~a' of type '~a'~%")
        (leave (_ "failed to connect to '~a': ~a~%")
               (build-machine-name machine) (get-error session))))))
 
-(define* (connect-to-remote-daemon session
-                                   #:optional
-                                   (socket-name "/var/guix/daemon-socket/socket"))
-  "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
-an SSH session.  Return a <nix-server> object."
-  (define redirect
-    ;; Code run in SESSION to redirect the remote process' stdin/stdout to the
-    ;; daemon's socket, à la socat.  The SSH protocol supports forwarding to
-    ;; Unix-domain sockets but libssh doesn't have an API for that, hence this
-    ;; hack.
-    `(begin
-       (use-modules (ice-9 match) (rnrs io ports))
-
-       (let ((sock   (socket AF_UNIX SOCK_STREAM 0))
-             (stdin  (current-input-port))
-             (stdout (current-output-port)))
-         (setvbuf stdin _IONBF)
-         (setvbuf stdout _IONBF)
-         (connect sock AF_UNIX ,socket-name)
-
-         (let loop ()
-           (match (select (list stdin sock) '() (list stdin stdout sock))
-             ((reads writes ())
-              (when (memq stdin reads)
-                (match (get-bytevector-some stdin)
-                  ((? eof-object?)
-                   (primitive-exit 0))
-                  (bv
-                   (put-bytevector sock bv))))
-              (when (memq sock reads)
-                (match (get-bytevector-some sock)
-                  ((? eof-object?)
-                   (primitive-exit 0))
-                  (bv
-                   (put-bytevector stdout bv))))
-              (loop))
-             (_
-              (primitive-exit 1)))))))
-
-  (let ((channel
-         (open-remote-pipe* session OPEN_BOTH
-                            ;; Sort-of shell-quote REDIRECT.
-                            "guile" "-c"
-                            (object->string
-                             (object->string redirect)))))
-    (open-connection #:port channel)))
-
 
 ;;;
 ;;; Synchronization.
@@ -382,8 +336,9 @@ MACHINE."
   ;; Protect DRV from garbage collection.
   (add-temp-root store (derivation-file-name drv))
 
-  (send-files (cons (derivation-file-name drv) inputs)
-              store)
+  (with-store local
+    (send-files local (cons (derivation-file-name drv) inputs) store
+                #:log-port (current-output-port)))
   (format (current-error-port) "offloading '~a' to '~a'...~%"
           (derivation-file-name drv) (build-machine-name machine))
   (format (current-error-port) "@ build-remote ~a ~a~%"
@@ -401,93 +356,17 @@ MACHINE."
     (parameterize ((current-build-output-port (build-log-port)))
       (build-derivations store (list drv))))
 
-  (retrieve-files outputs store)
+  (retrieve-files* outputs store)
   (format (current-error-port) "done with offloaded '~a'~%"
           (derivation-file-name drv)))
 
-(define (store-import-channel session)
-  "Return an output port to which archives to be exported to SESSION's store
-can be written."
-  ;; Using the 'import-paths' RPC on a remote store would be slow because it
-  ;; makes a round trip every time 32 KiB have been transferred.  This
-  ;; procedure instead opens a separate channel to use the remote
-  ;; 'import-paths' procedure, which consumes all the data in a single round
-  ;; trip.
-  (define import
-    `(begin
-       (use-modules (guix))
-
-       (with-store store
-         (setvbuf (current-input-port) _IONBF)
-         (import-paths store (current-input-port)))))
-
-  (open-remote-output-pipe session
-                           (string-join
-                            `("guile" "-c"
-                              ,(object->string
-                                (object->string import))))))
-
-(define (store-export-channel session files)
-  "Return an input port from which an export of FILES from SESSION's store can
-be read."
-  ;; Same as above: this is more efficient than calling 'export-paths' on a
-  ;; remote store.
-  (define export
-    `(begin
-       (use-modules (guix))
-
-       (with-store store
-         (setvbuf (current-output-port) _IONBF)
-         (export-paths store ',files (current-output-port)))))
-
-  (open-remote-input-pipe session
-                          (string-join
-                           `("guile" "-c"
-                             ,(object->string
-                               (object->string export))))))
-
-(define (send-files files remote)
-  "Send the subset of FILES that's missing to REMOTE, a remote store."
-  (with-store store
-    ;; Compute the subset of FILES missing on SESSION and send them.
-    (let* ((session (channel-get-session (nix-server-socket remote)))
-           (node    (make-node session))
-           (missing (node-eval node
-                               `(begin
-                                  (use-modules (guix)
-                                               (srfi srfi-1) (srfi srfi-26))
-
-                                  (with-store store
-                                    (remove (cut valid-path? store <>)
-                                            ',files)))))
-           (count   (length missing))
-           (port    (store-import-channel session)))
-      (format #t (N_ "sending ~a store item to '~a'...~%"
-                     "sending ~a store items to '~a'...~%" count)
-              count (session-get session 'host))
-
-      ;; Send MISSING in topological order.
-      (export-paths store missing port)
-
-      ;; Tell the remote process that we're done.  (In theory the
-      ;; end-of-archive mark of 'export-paths' would be enough, but in
-      ;; practice it's not.)
-      (channel-send-eof port)
-
-      ;; Wait for completion of the remote process.
-      (let ((result (zero? (channel-get-exit-status port))))
-        (close-port port)
-        result))))
-
-(define (retrieve-files files remote)
-  "Retrieve FILES from SESSION's store, and import them."
-  (let* ((session (channel-get-session (nix-server-socket remote)))
-         (host    (session-get session 'host))
-         (port    (store-export-channel session files))
-         (count   (length files)))
+(define (retrieve-files* files remote)
+  "Retrieve FILES from REMOTE and import them using 'restore-file-set'."
+  (let-values (((port count)
+                (file-retrieval-port files remote)))
     (format #t (N_ "retrieving ~a store item from '~a'...~%"
                    "retrieving ~a store items from '~a'...~%" count)
-            count host)
+            count (remote-store-host remote))
 
     ;; We cannot use the 'import-paths' RPC here because we already
     ;; hold the locks for FILES.
@@ -677,8 +556,8 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
   (delay
     (seed->random-state (logxor (getpid) (car (gettimeofday))))))
 
-(define (nonce)
-  (string-append (gethostname) "-"
+(define* (nonce #:optional (name (gethostname)))
+  (string-append name "-"
                  (number->string (random 1000000 (force %random-state)))))
 
 (define (assert-node-can-import node name daemon-socket)
@@ -687,7 +566,9 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
     (with-store store
       (let* ((item   (add-text-to-store store "export-test" (nonce)))
              (remote (connect-to-remote-daemon session daemon-socket)))
-        (send-files (list item) remote)
+        (with-store local
+          (send-files local (list item) remote))
+
         (if (valid-path? remote item)
             (info (_ "'~a' successfully imported '~a'~%")
                   name item)
@@ -698,10 +579,9 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
   "Bail out if we cannot import signed archives from NODE."
   (let* ((session (node-session node))
          (remote  (connect-to-remote-daemon session daemon-socket))
-         (item    (add-text-to-store remote "import-test" (nonce)))
-         (port    (store-export-channel session (list item))))
+         (item    (add-text-to-store remote "import-test" (nonce name))))
     (with-store store
-      (if (and (import-paths store port)
+      (if (and (retrieve-files store (list item) remote)
                (valid-path? store item))
           (info (_ "successfully imported '~a' from '~a'~%")
                 item name)
