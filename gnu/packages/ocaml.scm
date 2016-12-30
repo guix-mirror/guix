@@ -2375,3 +2375,22 @@ types")
     (description "Generation of accessor and iteration functions for ocaml
 variant types.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-here
+  (package
+    (name "ocaml-ppx-here")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_here" version
+              "1ay8lfxi0qg3ib2zkwh4h0vqk3gjmxaz572gzab0bbxyqn3z86v7"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_here")
+    (synopsis "Expands [%here] into its location")
+    (description "Expands [%here] into its location.")
+    (license license:asl2.0)))
