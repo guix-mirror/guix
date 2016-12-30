@@ -1414,6 +1414,32 @@ strings.")
 files and directories.")
     (license license:gpl3+)))
 
+(define-public emacs-git-gutter
+  (package
+    (name "emacs-git-gutter")
+    (version "0.90")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/syohex/" name "/archive/"
+                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1nmhvhpq1l56mj2yq3ag23rw3x4xgnsy8szp30s26l0yjnkhc4qg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syohex/emacs-git-gutter")
+    (synopsis "See and manage hunks of text in a version control system")
+    (description
+     "This package is an Emacs minor mode for displaying and interacting with
+hunks of text managed in a version control system.  Added modified and deleted
+areas can be indicated with symbols on the edge of the buffer, and commands
+can be used to move between and perform actions on these hunks.
+
+Git, Mercurial, Subversion and Bazaar are supported, and many parts of the
+display and behaviour is easily customisable.")
+    (license license:gpl3+)))
+
 (define-public emacs-el-mock
   (package
     (name "emacs-el-mock")
