@@ -5310,6 +5310,8 @@ existing databases over the internet.")
     (inputs
      `(("python" ,python-2)
        ("python2-pygobject" ,python2-pygobject)
+       ("gnome-desktop" ,gnome-desktop)
+       ("libsoup" ,libsoup)
        ("libnotify" ,libnotify)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
