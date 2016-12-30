@@ -2043,3 +2043,27 @@ storage of large amounts of data.")
 record fields, to get and set record fields, iterate and fold over all fields
 of a record and create new record values.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-core
+  (package
+    (name "ocaml-ppx-core")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_core" version
+               "0f69l4czhgssnhb5ds2j9dbqjyz8dp1y3i3x0i4h6pxnms20zbxa"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (inputs `(("ppx-tools" ,ocaml-ppx-tools)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_core/")
+    (synopsis "Standard library for ppx rewriters")
+    (description "Ppx_core is a standard library for OCaml AST transformers.
+It contains:
+@enumerate
+@item various auto-generated AST traversal using an open recursion scheme
+@item helpers for building AST fragments
+@item helpers for matching AST fragments
+@item a framework for dealing with attributes and extension points.
+@end enumerate")
+    (license license:asl2.0)))
