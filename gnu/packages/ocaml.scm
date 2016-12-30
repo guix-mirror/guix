@@ -1560,3 +1560,29 @@ run command line programs.")
 format.  It can process XML documents without a complete in-memory
 representation of the data.")
     (license license:isc)))
+
+(define-public ocaml-ulex
+  (package
+    (name "ocaml-ulex")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.cduce.org/download/ulex-"
+                                  version ".tar.gz"))
+              (sha256
+                (base32
+                  "0fjlkwps14adfgxdrbb4yg65fhyimplvjjs1xqj5np197cig67x0"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:phases (modify-phases %standard-phases (delete 'configure))
+                 #:tests? #f
+                 #:make-flags
+                 (list "all.opt"
+                       (string-append "OCAMLBUILD=ocamlbuild -byte-plugin "
+                                      "-cflags -I,"
+                                      (assoc-ref %build-inputs "camlp4")
+                                      "/lib/ocaml/site-lib/camlp4"))))
+    (native-inputs `(("camlp4" ,camlp4)))
+    (home-page "http://www.cduce.org/download.html#side")
+    (synopsis "Lexer generator for Unicode and OCaml")
+    (description "Lexer generator for Unicode and OCaml.")
+    (license license:expat)))
