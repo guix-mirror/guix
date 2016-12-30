@@ -2313,3 +2313,19 @@ s-expressions.")
     (synopsis "Typerep is a library for runtime types")
     (description "Typerep is a library for runtime types.")
     (license license:asl2.0)))
+
+(define-public ocaml-variantslib
+  (package
+    (name "ocaml-variantslib")
+    (version "113.33.03")
+    (source (janestreet-origin "variantslib" version
+              "05vp799vl38fvl98ga5miwbzh09cnnpapi6q6gdvwyqi6w7s919n"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/variantslib")
+    (synopsis "OCaml variants as first class values")
+    (description "OCaml variants as first class values.")
+    (license license:asl2.0)))
