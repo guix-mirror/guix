@@ -266,13 +266,13 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
 (define-public libtermkey
   (package
     (name "libtermkey")
-    (version "0.18")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.leonerd.org.uk/code/"
                                   name "/" name "-" version ".tar.gz"))
               (sha256
-               (base32 "09ir16kaarv55mnc4jn2sqnjjhzpb1aha51wpd9ayif887g4d5r3"))))
+               (base32 "1ds8gdr8p2dfr970z8kxgfz6x7m1jxmmfrb2aafab3wcni6al1f5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list
