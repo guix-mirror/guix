@@ -2004,3 +2004,24 @@ from the oasis build log
 @item a @code{js_build_tools} ocamlbuild plugin with various goodies.
 @end enumerate")
     (license license:asl2.0)))
+
+(define-public ocaml-bin-prot
+  (package
+    (name "ocaml-bin-prot")
+    (version "113.33.03")
+    (source (janestreet-origin "bin_prot" version
+               "1ws8c017z8nbj3vw92ndvjk9011f71rmp3llncbv8r5fc76wqv3l"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/bin_prot/")
+    (synopsis "Binary protocol generator")
+    (description "This library contains functionality for reading and writing
+OCaml-values in a type-safe binary protocol.  It is extremely efficient,
+typically supporting type-safe marshalling and unmarshalling of even highly
+structured values at speeds sufficient to saturate a gigabit connection.  The
+protocol is also heavily optimized for size, making it ideal for long-term
+storage of large amounts of data.")
+    (license license:asl2.0)))
