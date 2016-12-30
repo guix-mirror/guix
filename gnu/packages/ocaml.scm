@@ -2419,3 +2419,25 @@ variant types.")
     (synopsis "Assert-like extension nodes that raise useful errors on failure")
     (description "Assert-like extension nodes that raise useful errors on failure.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-enumerate
+  (package
+    (name "ocaml-ppx-enumerate")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_enumerate" version
+              "15g7yfv9wg2h9r6k6q1zrhygmsl4xrfn25mrb0i4czjjivzmxjh4"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_enumerate")
+    (synopsis "Generate a list containing all values of a finite type")
+    (description "Ppx_enumerate is a ppx rewriter which generates a definition
+for the list of all values of a type (for a type which only has finitely
+many values).")
+    (license license:asl2.0)))
