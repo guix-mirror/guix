@@ -25,6 +25,7 @@
 
 (define-module (gnu packages ocaml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -1002,3 +1004,68 @@ tests.  After application execution, it is possible to generate a report in HTML
 format that is the replica of the application source code annotated with code
 coverage information.")
     (license license:gpl3+)))
+
+(define-public ocaml-bitstring
+  (package
+    (name "ocaml-bitstring")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xguerin/bitstring"
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0miw4banfpmx4kxrckpqr57b1fcmsqdmspyjx6gqjd4kghm4l7xj"))
+              (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("time" ,time)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bisect" ,ocaml-bisect)))
+    (propagated-inputs
+     `(("camlp4" ,camlp4)))
+    (arguments
+     `(#:configure-flags
+       (list "CAMLP4OF=camlp4of" "--enable-coverage")
+       #:make-flags
+       (list (string-append "BISECTLIB="
+                            (assoc-ref %build-inputs "bisect")
+                            "/lib/ocaml/site-lib")
+             (string-append "OCAMLCFLAGS=-g -I "
+                            (assoc-ref %build-inputs "camlp4")
+                            "/lib/ocaml/site-lib/camlp4 -I "
+                            "$(BISECTLIB)/bisect")
+             (string-append "OCAMLOPTFLAGS=-g -I "
+                            (assoc-ref %build-inputs "camlp4")
+                            "/lib/ocaml/site-lib/camlp4 -I "
+                            "$(BISECTLIB)/bisect"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("@abs_top_builddir@")
+                (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
+             (substitute* "configure"
+               (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
+                                            "/bin/sh")))))
+         (add-after 'install 'link-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out
+                                          "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out
+                                        "/lib/ocaml/site-lib/bitstring")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dllbitstring.so")
+                        (string-append stubs "/dllbitstring.so"))))))))
+    (home-page "https://github.com/xguerin/bitstring")
+    (synopsis "Bitstrings and bitstring matching for OCaml")
+    (description "Adds Erlang-style bitstrings and matching over bitstrings as
+a syntax extension and library for OCaml.  You can use this module to both parse
+and generate binary formats, files and protocols.  Bitstring handling is added
+as primitives to the language, making it exceptionally simple to use and very
+powerful.")
+    (license license:isc)))
