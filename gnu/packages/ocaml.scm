@@ -2461,3 +2461,24 @@ many values).")
     (description "A ppx rewriter for monadic and applicative let bindings,
 match expressions, and if expressions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-typerep-conv
+  (package
+    (name "ocaml-ppx-typerep-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_typerep_conv" version
+              "0g0xqm9s1b2jjvxb8yp69281q2s3bwz6sibn10fvgcdawpa0rmrg"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("typerep" ,ocaml-typerep)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_typerep_conv")
+    (synopsis "Generation of runtime types from type declarations")
+    (description "Automatic generation of runtime types from type definitions.")
+    (license license:asl2.0)))
