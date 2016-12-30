@@ -1316,3 +1316,22 @@ Alcotest provides a quiet and colorful output where only faulty runs are fully
 displayed at the end of the run (with the full logs ready to inspect), with a
 simple (yet expressive) query language to select the tests to run.")
     (license license:isc)))
+
+(define-public ocaml-ppx-tools
+  (package
+    (name "ocaml-ppx-tools")
+    (version "5.0+4.02.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/alainfrisch/ppx_tools/archive/"
+                            version ".tar.gz"))
+        (sha256 (base32
+                  "0rjg4rngi8k9873z4zq95zn9hj8qyw1vcrf11y15aqasfpqq16rc"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:phases (modify-phases %standard-phases (delete 'configure))
+                 #:tests? #f))
+    (home-page "https://github.com/alainfrisch/ppx_tools")
+    (synopsis "Tools for authors of ppx rewriters and other syntactic tools")
+    (description "Tools for authors of ppx rewriters and other syntactic tools.")
+    (license license:expat)))
