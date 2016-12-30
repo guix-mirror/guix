@@ -1642,3 +1642,31 @@ position tracking and support newline normalization.
 Functions are also provided to fold over the characters of UTF encoded OCaml
 string values and to directly encode characters in OCaml Buffer.t values.")
     (license license:isc)))
+
+(define-public ocaml-jsonm
+  (package
+    (name "ocaml-jsonm")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/jsonm/releases/"
+                                  "jsonm-" version ".tbz"))
+              (sha256
+                (base32
+                  "1v3ln6d965lplj28snjdqdqablpp1kx8bw2cfx0m6i157mqyln62"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (propagated-inputs `(("uutf" ,ocaml-uutf)
+                         ("cmdliner" ,ocaml-cmdliner)))
+    (home-page "http://erratique.ch/software/jsonm")
+    (synopsis "Non-blocking streaming JSON codec for OCaml")
+    (description "Jsonm is a non-blocking streaming codec to decode and encode
+the JSON data format.  It can process JSON text without blocking on IO and
+without a complete in-memory representation of the data.")
+    (license license:isc)))
