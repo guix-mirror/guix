@@ -813,3 +813,23 @@ other XUnit testing frameworks.")
 JAR format.  It provides functions for reading from and writing to compressed
 files in these formats.")
     (license license:lgpl2.1+)))
+
+(define-public ocamlmod
+  (package
+    (name "ocamlmod")
+    (version "0.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1544))
+              (sha256
+               (base32
+                "1w0w8lfyymvk300dv13gvhrddpcyknvyp4g2yvq2vaw7khkhjs9g"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:tests? #f)) ; tests are done during build
+    (home-page "https://forge.ocamlcore.org/projects/ocamlmod")
+    (synopsis "Generate modules from OCaml source files")
+    (description "Generate modules from OCaml source files.")
+    (license license:lgpl2.1+))) ; with an exception
