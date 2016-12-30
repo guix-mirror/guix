@@ -1123,3 +1123,33 @@ provides an API to describe the files a package installs in a given build
 configuration and to specify information about the package's distribution,
 creation and publication procedures.")
     (license license:isc)))
+
+(define-public ocaml-rresult
+  (package
+    (name "ocaml-rresult")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/rresult/releases/"
+                                  "rresult-" version ".tbz"))
+              (sha256
+               (base32
+                "1xxycxhdhaq8p9vhwi93s2mlxjwgm44fcxybx5vghzgbankz9yhm"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("topkg" ,ocaml-topkg)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags '("build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/rresult")
+    (synopsis "Result value combinators for OCaml")
+    (description "Handle computation results and errors in an explicit and
+declarative manner, without resorting to exceptions.  It defines combinators
+to operate on the result type available from OCaml 4.03 in the standard
+library.")
+    (license license:isc)))
