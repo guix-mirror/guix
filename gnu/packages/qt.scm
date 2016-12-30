@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
@@ -906,6 +906,27 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1j2drnx7zp3w6cgvy7bn00fyk5v7vw1j1hidaqcg78lzb6zgls1c"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtdeclarative-render2d
+  (package (inherit qtsvg)
+    (name "qtdeclarative-render2d")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0zwch9vn17f3bpy300jcfxx6cx9qymk5j7khx0x9k1xqid4166c3"))
+             (modules '((guix build utils)))
+             (snippet
+              '(delete-file-recursively "tools/opengldummy/3rdparty"))))
+    (native-inputs `())
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
