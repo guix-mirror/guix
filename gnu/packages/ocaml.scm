@@ -1227,3 +1227,31 @@ module automatically handles syntax errors, help messages and UNIX man page
 generation. It supports programs with single or multiple commands and respects
 most of the POSIX and GNU conventions.")
     (license license:bsd-3)))
+
+(define-public ocaml-fmt
+  (package
+    (name "ocaml-fmt")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
+                            version ".tbz"))
+        (sha256 (base32
+                  "16y7ibndnairb53j8a6qgipyqwjxncn4pl9jiw5bxjfjm59108px"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (propagated-inputs `(("result" ,ocaml-result)
+                         ("cmdliner" ,ocaml-cmdliner)))
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build" "--with-base-unix" "true"
+                                     "--with-cmdliner" "true")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (home-page "http://erratique.ch/software/fmt")
+    (synopsis "OCaml Format pretty-printer combinators")
+    (description "Fmt exposes combinators to devise Format pretty-printing
+functions.")
+    (license license:isc)))
