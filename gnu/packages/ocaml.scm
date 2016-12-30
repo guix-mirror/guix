@@ -1474,3 +1474,30 @@ locks or other synchronization primitives.")
 performed on sources whose reporting level can be set independently.  Log
 message report is decoupled from logging and is handled by a reporter.")
     (license license:isc)))
+
+(define-public ocaml-fpath
+  (package
+    (name "ocaml-fpath")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/fpath/releases/"
+                                  "fpath-" version ".tbz"))
+              (sha256
+                (base32
+                  "05134ij27xjl6gaqsc65yl19vfj6cjxq3mbm9bf4mija8grdpn6g"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)))
+    (propagated-inputs `(("topkg" ,ocaml-topkg)
+                         ("astring" ,ocaml-astring)))
+    (home-page "http://erratique.ch/software/fpath")
+    (synopsis "File system paths for OCaml")
+    (description "Fpath is an OCaml module for handling file system paths with
+POSIX or Windows conventions.  Fpath processes paths without accessing the
+file system and is independent from any system library.")
+    (license license:isc)))
