@@ -2441,3 +2441,23 @@ variant types.")
 for the list of all values of a type (for a type which only has finitely
 many values).")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-let
+  (package
+    (name "ocaml-ppx-let")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_let" version
+              "0gd6d3gdaqfwjcs7gaw1qxc30i584q6a86ndaj1bx1q63xqd6yx9"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_let")
+    (synopsis "Monadic let-bindings")
+    (description "A ppx rewriter for monadic and applicative let bindings,
+match expressions, and if expressions.")
+    (license license:asl2.0)))
