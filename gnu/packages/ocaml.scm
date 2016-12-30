@@ -32,8 +32,10 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages lynx)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -1393,4 +1395,51 @@ lets the client choose the concrete timeline.")
     (home-page "https://github.com/savonet/ocaml-ssl/")
     (synopsis "OCaml bindings for OpenSSL")
     (description "OCaml bindings for OpenSSL.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml-lwt
+  (package
+    (name "ocaml-lwt")
+    (version "2.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/ocsigen/lwt/archive/" version
+                            ".tar.gz"))
+        (sha256 (base32
+                  "1gbw0g8a5a4b16diqrmlhc8ilnikrm4w3jjm1zq310maqg8z0zxz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-ssl" "--enable-glib" "--enable-react"
+             "--enable-ppx")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-some-checks
+           (lambda* (#:key #:allow-other-keys)
+             (substitute* "tests/unix/main.ml"
+               (("Test_mcast.suite;") ""))))
+         (add-after 'install 'link-stubs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out "/lib/ocaml/site-lib/lwt")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dlllwt-glib_stubs.so")
+                        (string-append stubs "/dlllwt-glib_stubs.so"))
+               (symlink (string-append lib "/dlllwt-unix_stubs.so")
+                        (string-append stubs "/dlllwt-unix_stubs.so"))))))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("ppx-tools" ,ocaml-ppx-tools)))
+    (inputs `(("libev" ,libev)
+              ("glib" ,glib)))
+    (propagated-inputs `(("result" ,ocaml-result)
+                         ("ocaml-ssl" ,ocaml-ssl)
+                         ("ocaml-react" ,ocaml-react)))
+    (home-page "https://github.com/ocsigen/lwt")
+    (synopsis "Cooperative threads and I/O in monadic style")
+    (description "Lwt provides typed, composable cooperative threads.  These
+make it easy to run normally-blocking I/O operations concurrently in a single
+process.  Also, in many cases, Lwt threads can interact without the need for
+locks or other synchronization primitives.")
     (license license:lgpl2.1)))
