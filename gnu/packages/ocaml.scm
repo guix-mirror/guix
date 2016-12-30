@@ -960,3 +960,45 @@ full_split, cut, rcut, etc..")
     ;; the only mention of a license in this project is in its `opam' file
     ;; where it says `mit'.
     (license license:expat)))
+
+
+(define-public ocaml-bisect
+  (package
+    (name "ocaml-bisect")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "bisect" version 1051))
+              (sha256
+               (base32
+                "0kcg2rh0qlkfpbv3nhcb75n62b04gbrz0zasq15ynln91zd5qrg0"))
+              (patches
+               (search-patches
+                "ocaml-bisect-fix-camlp4-in-another-directory.patch"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("libxml2" ,libxml2)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("camlp4" ,camlp4)))
+    (arguments
+     `(#:test-target "tests"
+       #:make-flags
+       (list "all" (string-append "CAMLP4_LIBDIR="
+                                  (assoc-ref %build-inputs "camlp4")
+                                  "/lib/ocaml/site-lib/camlp4"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "./configure" "-prefix"
+                             (assoc-ref outputs "out"))))))))
+    (home-page "http://bisect.x9c.fr")
+    (synopsis "Code coverage tool for the OCaml language")
+    (description "Bisect is a code coverage tool for the OCaml language.  It is
+a camlp4-based tool that allows to instrument your application before running
+tests.  After application execution, it is possible to generate a report in HTML
+format that is the replica of the application source code annotated with code
+coverage information.")
+    (license license:gpl3+)))
