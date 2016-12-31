@@ -7848,7 +7848,7 @@ be set via config files and/or environment variables.")
 (define-public python-ndg-httpsclient
   (package
     (name "python-ndg-httpsclient")
-    (version "0.4.0")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7856,7 +7856,7 @@ be set via config files and/or environment variables.")
                     "ndg_httpsclient-" version ".tar.gz"))
               (sha256
                 (base32
-                  "0x32ibixm3vv5m9xfk83xsqm8xcqw4dd0khbh6qbri6rxgymbhg8"))))
+                  "1b5qirv46v4dpnmfqviwq42mdwfcby4dxmz0i41wad2337pqf2aq"))))
     (build-system python-build-system)
     (arguments
      '(;; The tests appear to require networking.
