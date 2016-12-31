@@ -141,7 +141,8 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
                      recursive?
                      (log-port (current-error-port)))
   "Send the subset of FILES from LOCAL (a local store) that's missing to
-REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES."
+REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES.
+Return the list of store items actually sent."
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
          (session (channel-get-session (nix-server-socket remote)))
@@ -170,7 +171,7 @@ REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES."
     ;; Wait for completion of the remote process.
     (let ((result (zero? (channel-get-exit-status port))))
       (close-port port)
-      result)))
+      missing)))
 
 (define (remote-store-session remote)
   "Return the SSH channel beneath REMOTE, a remote store as returned by
