@@ -238,6 +238,10 @@ Git-friendly development workflow.")
     (inputs `(("ocaml" ,ocaml)))
     (arguments
      '(#:tests? #f                                ;no documented test target
+       ;; a race-condition will lead byte and native targets to  mkdir _build
+       ;; which  fails on the second attempt.
+       #:parallel-build? #f
+       #:make-flags '("all")
        #:phases (modify-phases %standard-phases
                   (replace
                    'configure
