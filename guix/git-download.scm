@@ -82,14 +82,26 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                                            (((names dirs) ...)
                                             dirs)))
 
-          (git-fetch '#$(git-reference-url ref)
-                     '#$(git-reference-commit ref)
+          (git-fetch (getenv "git url") (getenv "git commit")
                      #$output
-                     #:recursive? '#$(git-reference-recursive? ref)
+                     #:recursive? (call-with-input-string
+                                      (getenv "git recursive?")
+                                    read)
                      #:git-command (string-append #+git "/bin/git")))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "git-checkout") build
+
+                      ;; Use environment variables and a fixed script name so
+                      ;; there's only one script in store for all the
+                      ;; downloads.
+                      #:script-name "git-download"
+                      #:env-vars
+                      `(("git url" . ,(git-reference-url ref))
+                        ("git commit" . ,(git-reference-commit ref))
+                        ("git recursive?" . ,(object->string
+                                              (git-reference-recursive? ref))))
+
                       #:system system
                       #:local-build? #t           ;don't offload repo cloning
                       #:hash-algo hash-algo
