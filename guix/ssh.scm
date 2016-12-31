@@ -112,9 +112,10 @@ can be written."
                               ,(object->string
                                 (object->string import))))))
 
-(define (store-export-channel session files)
+(define* (store-export-channel session files
+                               #:key recursive?)
   "Return an input port from which an export of FILES from SESSION's store can
-be read."
+be read.  When RECURSIVE? is true, the closure of FILES is exported."
   ;; Same as above: this is more efficient than calling 'export-paths' on a
   ;; remote store.
   (define export
@@ -126,7 +127,8 @@ be read."
 
          ;; FIXME: Exceptions are silently swallowed.  We should report them
          ;; somehow.
-         (export-paths store ',files (current-output-port)))))
+         (export-paths store ',files (current-output-port)
+                       #:recursive? ,recursive?))))
 
   (open-remote-input-pipe session
                           (string-join
@@ -135,11 +137,14 @@ be read."
                                (object->string export))))))
 
 (define* (send-files local files remote
-                     #:key (log-port (current-error-port)))
+                     #:key
+                     recursive?
+                     (log-port (current-error-port)))
   "Send the subset of FILES from LOCAL (a local store) that's missing to
-REMOTE, a remote store."
+REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES."
   ;; Compute the subset of FILES missing on SESSION and send them.
-  (let* ((session (channel-get-session (nix-server-socket remote)))
+  (let* ((files   (if recursive? (requisites local files) files))
+         (session (channel-get-session (nix-server-socket remote)))
          (node    (make-node session))
          (missing (node-eval node
                              `(begin
@@ -180,19 +185,22 @@ remote store as returned by 'connect-to-remote-daemon'."
     ((? session? session)
      (session-get session 'host))))
 
-(define (file-retrieval-port files remote)
+(define* (file-retrieval-port files remote
+                              #:key recursive?)
   "Return an input port from which to retrieve FILES (a list of store items)
 from REMOTE, along with the number of items to retrieve (lower than or equal
 to the length of FILES.)"
-  (values (store-export-channel (remote-store-session remote) files)
-          (length files)))
+  (values (store-export-channel (remote-store-session remote) files
+                                #:recursive? recursive?)
+          (length files)))            ;XXX: inaccurate when RECURSIVE? is true
 
 (define* (retrieve-files local files remote
-                         #:key (log-port (current-error-port)))
+                         #:key recursive? (log-port (current-error-port)))
   "Retrieve FILES from REMOTE and import them using the 'import-paths' RPC on
-LOCAL."
+LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
   (let-values (((port count)
-                (file-retrieval-port files remote)))
+                (file-retrieval-port files remote
+                                     #:recursive? recursive?)))
     (format #t (N_ "retrieving ~a store item from '~a'...~%"
                    "retrieving ~a store items from '~a'...~%" count)
             count (remote-store-host remote))
