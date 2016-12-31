@@ -145,12 +145,13 @@ Utilities
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 * Invoking guix challenge::     Challenging substitute servers.
+* Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
 
 Invoking @command{guix build}
 
 * Common Build Options::        Build options for most commands.
-* Package Transformation Options::    Creating variants of packages.
+* Package Transformation Options::  Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
 
 GNU Distribution
@@ -199,12 +200,14 @@ Services
 * Log Rotation::                The rottlog service.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
+* Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * Network File System::         NFS related services.
+* Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -551,7 +554,8 @@ interest primarily for developers and not for casual users.
 
 @item
 @c Note: We need at least 0.10.2 for 'channel-send-eof'.
-Support for build offloading (@pxref{Daemon Offload Setup}) depends on
+Support for build offloading (@pxref{Daemon Offload Setup}) and
+@command{guix copy} (@pxref{Invoking guix copy}) depends on
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH},
 version 0.10.2 or later.
 
@@ -2384,7 +2388,9 @@ However, note that, in both examples, all of @code{emacs} and the
 profile as well as all of their dependencies are transferred (due to
 @code{-r}), regardless of what is already available in the store on the
 target machine.  The @code{--missing} option can help figure out which
-items are missing from the target store.
+items are missing from the target store.  The @command{guix copy}
+command simplifies and optimizes this whole process, so this is probably
+what you should use in this case (@pxref{Invoking guix copy}).
 
 @cindex nar, archive format
 @cindex normalized archive (nar)
@@ -4415,6 +4421,7 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 * Invoking guix challenge::     Challenging substitute servers.
+* Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
 @end menu
 
@@ -4467,7 +4474,7 @@ described in the subsections below.
 
 @menu
 * Common Build Options::        Build options for most commands.
-* Package Transformation Options::    Creating variants of packages.
+* Package Transformation Options::  Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
 @end menu
 
@@ -6370,6 +6377,68 @@ Consider @var{urls} the whitespace-separated list of substitute source
 URLs to compare to.
 
 @end table
+
+@node Invoking guix copy
+@section Invoking @command{guix copy}
+
+@cindex copy, of store items, over SSH
+@cindex SSH, copy of store items
+@cindex sharing store items across machines
+@cindex transferring store items across machines
+The @command{guix copy} command copies items from the store of one
+machine to that of another machine over a secure shell (SSH)
+connection@footnote{This command is available only when Guile-SSH was
+found.  @xref{Requirements}, for details.}.  For example, the following
+command copies the @code{coreutils} package, the user's profile, and all
+their dependencies over to @var{host}, logged in as @var{user}:
+
+@example
+guix copy --to=@var{user}@@@var{host} \
+          coreutils `readlink -f ~/.guix-profile`
+@end example
+
+If some of the items to be copied are already present on @var{host},
+they are not actually sent.
+
+The command below retrieves @code{libreoffice} and @code{gimp} from
+@var{host}, assuming they are available there:
+
+@example
+guix copy --from=@var{host} libreoffice gimp
+@end example
+
+The SSH connection is established using the Guile-SSH client, which is
+compatible with OpenSSH: it honors @file{~/.ssh/known_hosts} and
+@file{~/.ssh/config}, and uses the SSH agent for authentication.
+
+The key used to sign items that are sent must be accepted by the remote
+machine.  Likewise, the key used by the remote machine to sign items you
+are retrieving must be in @file{/etc/guix/acl} so it is accepted by your
+own daemon.  @xref{Invoking guix archive}, for more information about
+store item authentication.
+
+The general syntax is:
+
+@example
+guix copy [--to=@var{spec}|--from=@var{spec}] @var{items}@dots{}
+@end example
+
+You must always specify one of the following options:
+
+@table @code
+@item --to=@var{spec}
+@itemx --from=@var{spec}
+Specify the host to send to or receive from.  @var{spec} must be an SSH
+spec such as @code{example.org}, @code{charlie@@example.org}, or
+@code{charlie@@example.org:2222}.
+@end table
+
+The @var{items} can be either package names, such as @code{gimp}, or
+store items, such as @file{/gnu/store/@dots{}-idutils-4.6}.
+
+When specifying the name of a package to send, it is first built if
+needed, unless @option{--dry-run} was specified.  Common build options
+are supported (@pxref{Common Build Options}).
 
 
 @node Invoking guix container

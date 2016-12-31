@@ -41,7 +41,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 binary-ports)
-  #:export (guix-archive))
+  #:export (guix-archive
+            options->derivations+files))
 
 
 ;;;

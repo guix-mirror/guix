@@ -173,7 +173,8 @@ endif
 if HAVE_GUILE_SSH
 
 MODULES +=					\
-  guix/ssh.scm
+  guix/ssh.scm					\
+  guix/scripts/copy.scm
 
 endif HAVE_GUILE_SSH
 
