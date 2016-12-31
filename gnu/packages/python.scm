@@ -11281,14 +11281,14 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python-freezegun
   (package
     (name "python-freezegun")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "freezegun" version))
         (sha256
           (base32
-            "14l19x06v5jkq4rdwbmfyw4x9lrjb2300afrk21r1ash7y1y9a0w"))))
+            "1sf38d3ibv1jhhvr52x7dhrsiyqk1hm165dfv8w8wh0fhmgxg151"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
