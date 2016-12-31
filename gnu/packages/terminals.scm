@@ -710,3 +710,34 @@ of VT100 terminal.")
 
 (define-public python2-pyte
   (package-with-python2 python-pyte))
+
+(define-public python-blessings
+  (package
+    (name "python-blessings")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "blessings" version))
+       (sha256
+        (base32
+         "1smngy65p8mi62lgm04icasx22v976szhs2aq95y2ljmi1srb4bl"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: For py3, 2to2 is used to convert the code, but test-suite fails
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/erikrose/blessings")
+    (synopsis "Python module to manage terminal color, styling, and
+positioning")
+    (description "Blessings is a pythonic API to manipulate terminal color,
+styling, and positioning.  It provides similar features to curses but avoids
+some of curses’s limitations: it does not require clearing the whole screen
+for little changes, provides a scroll-back buffer after the program exits, and
+avoids styling altogether when the output is redirected to something other
+than a terminal.")
+    (license license:expat)))
+
+(define-public python2-blessings
+  (package-with-python2 python-blessings))
