@@ -125,12 +125,6 @@ SYSTEM."
     "arm-linux-gnueabihf"
     "i686-w64-mingw32"))
 
-(define (demo-os)
-  "Return the \"demo\" 'operating-system' structure."
-  (let* ((dir  (dirname (assoc-ref (current-source-location) 'filename)))
-         (file (string-append dir "/demo-os.scm")))
-    (read-operating-system file)))
-
 (define %guixsd-supported-systems
   '("x86_64-linux" "i686-linux"))
 
@@ -156,14 +150,7 @@ system.")
     (expt 2 20))
 
   (if (member system %guixsd-supported-systems)
-      (list (->job 'qemu-image
-                   (run-with-store store
-                     (mbegin %store-monad
-                       (set-guile-for-build (default-guile))
-                       (system-qemu-image (demo-os)
-                                          #:disk-image-size
-                                          (* 1400 MiB))))) ; 1.4 GiB
-            (->job 'usb-image
+      (list (->job 'usb-image
                    (run-with-store store
                      (mbegin %store-monad
                        (set-guile-for-build (default-guile))
