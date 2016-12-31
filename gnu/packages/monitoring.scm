@@ -24,16 +24,17 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages mail)
   #:use-module (gnu packages gd)
-  #:use-module (gnu packages image))
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages zip))
 
 (define-public nagios
   (package
     (name "nagios")
-    (version "4.0.8")
-    ;; XXX: Newer versions such as 4.2.3 bundle a copy of AngularJS.
+    (version "4.2.4")
+    ;; XXX: Nagios 4.2.x and later bundle a copy of AngularJS.
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +42,7 @@
                     version "/nagios-" version ".tar.gz"))
               (sha256
                (base32
-                "0jyad39wa318613awlnpczrrakvjcipz8qp1mdsig1cp1hjqs9lb"))
+                "0w0blbwiw0ps04b7gkyyk89qkgwsxh6gydhmggbm1kl3ar3mq1dh"))
               (modules '((guix build utils)))
               (snippet
                ;; Ensure reproducibility.
@@ -49,6 +50,8 @@
                   (("__DATE__") "\"1970-01-01\"")
                   (("__TIME__") "\"00:00:00\"")))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (inputs
      `(("zlib" ,zlib)
        ("libpng-apng" ,libpng)
