@@ -10314,17 +10314,14 @@ network support library.")
 (define-public python-ply
   (package
     (name "python-ply")
-    (version "3.8")
+    (version "3.9")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/"
-               "96/e0/430fcdb6b3ef1ae534d231397bee7e9304be14a47a267e82ebcb3323d0b5"
-               "/ply-" version ".tar.gz"))
+        (uri (pypi-uri "ply" version))
         (sha256
           (base32
-            "1f70ipynmiy09k6px2j7v4w5cdrc21za3xs2k6f1bsvb0bzvvlg7"))))
+            "0gpl0yli3w03ipyqfrp3w5nf0iawhsq65anf5wwm2wf5p502jzhd"))))
     (build-system python-build-system)
     (home-page "http://www.dabeaz.com/ply/")
     (synopsis "Python Lex & Yacc")
