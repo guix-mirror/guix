@@ -8027,13 +8027,13 @@ applications.")
 (define-public python-click-log
   (package
     (name "python-click-log")
-    (version "0.1.3")
+    (version "0.1.8")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-log" version))
              (sha256
               (base32
-               "0kdd1vminxpcfczxl2kkf285n0dr1gxh2cdbx1p6vkj7b7bci3gx"))))
+               "14ikfjfgnzf21mjniq9lfk2igzykgzfvwwrk85nw2b9fq44109sp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
