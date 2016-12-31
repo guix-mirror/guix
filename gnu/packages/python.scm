@@ -4815,13 +4815,13 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-ipykernel
   (package
     (name "python-ipykernel")
-    (version "4.5.0")
+    (version "4.5.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "ipykernel" version))
       (sha256
-       (base32 "15c2bp1x3i6s4xb7vz7742h3kmvdfdfn9n2haywm3mwgvf77jni4"))))
+       (base32 "0qllv0k6zzv1r1cj1x2ygxmlrrqhbslzj8rc6r6fg3kc1rgz4m2s"))))
     (build-system python-build-system)
     ;; The tests load a submodule of IPython.  However, IPython itself depends
     ;; on ipykernel.
