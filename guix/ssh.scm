@@ -25,7 +25,10 @@
   #:use-module (ssh dist)
   #:use-module (ssh dist node)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 binary-ports)
   #:export (connect-to-remote-daemon
             send-files
             retrieve-files
@@ -205,6 +208,16 @@ LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
     (format #t (N_ "retrieving ~a store item from '~a'...~%"
                    "retrieving ~a store items from '~a'...~%" count)
             count (remote-store-host remote))
+    (when (eof-object? (lookahead-u8 port))
+      ;; The failure could be because one of the requested store items is not
+      ;; valid on REMOTE, or because Guile or Guix is improperly installed.
+      ;; TODO: Improve error reporting.
+      (raise (condition
+              (&message
+               (message
+                (format #f
+                        (_ "failed to retrieve store items from '~a'")
+                        (remote-store-host remote)))))))
 
     (let ((result (import-paths local port)))
       (close-port port)
