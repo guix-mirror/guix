@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +63,10 @@
               (sha256
                (base32
                 "1qwwvy8nzd87hk8rd9sm667nppakiapnx4ypdwcrlnav2dz6kil3"))
-              (patches (search-patches "ocaml-CVE-2015-8869.patch"))))
+              (patches
+               (search-patches
+                "ocaml-CVE-2015-8869.patch"
+                "ocaml-Add-a-.file-directive.patch"))))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification

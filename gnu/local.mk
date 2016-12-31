@@ -752,6 +752,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
+  %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openexr-missing-samples.patch		\
