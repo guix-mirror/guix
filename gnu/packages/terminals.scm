@@ -741,3 +741,39 @@ than a terminal.")
 
 (define-public python2-blessings
   (package-with-python2 python-blessings))
+
+(define-public python-curtsies
+  (package
+    (name "python-curtsies")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "curtsies" version))
+       (sha256
+        (base32
+         "1vljmw3sy6lrqahhpyg4gk13mzcx3mwhvg8s41698ms3cpgkjipc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "nosetests" "-v"))))))
+    (propagated-inputs
+     `(("python-blessings" ,python-blessings)
+       ("python-wcwidth", python-wcwidth)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyte" ,python-pyte)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/thomasballinger/curtsies")
+    (synopsis "Library for curses-like terminal interaction with colored
+strings")
+    (description "Curtsies is a Python library for interacting with the
+terminal.  It features string-like objects which carry formatting information,
+per-line fullscreen terminal rendering, and keyboard input event reporting.")
+    (license license:expat)))
+
+(define-public python2-curtsies
+  (package-with-python2 python-curtsies))
