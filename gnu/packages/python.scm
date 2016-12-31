@@ -639,14 +639,14 @@ on localhost.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2016.3")
+    (version "2016.10")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pytz" version ".tar.bz2"))
       (sha256
        (base32
-        "1mjmrkk4vc5xzppw7fm0pli1nnbj57cvqv7jjv5whcmccyhxz4y1"))))
+        "0az099cyp6p5xbsvfcdacj4hvxncbwm2ayn3h55mcp07zb2b45kh"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
     (home-page "http://pythonhosted.org/pytz")
