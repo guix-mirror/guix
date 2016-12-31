@@ -9028,14 +9028,14 @@ layouts.")
 (define-public python-pyquery
   (package
     (name "python-pyquery")
-    (version "1.2.13")
+    (version "1.2.17")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyquery" version))
        (sha256
         (base32
-         "0j9fsisip21qv4xljsg5dmni1pgpvwrjyyhhql0glydc4bs5rjgv"))))
+         "1xia20wm0vx5dk85kcwgh13bylz8qh47ffjxssd2586r60xi783a"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-webob" ,python-webob)
