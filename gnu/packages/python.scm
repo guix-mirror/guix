@@ -11596,14 +11596,14 @@ to Python.")
 (define-public python-graphql-relay
   (package
     (name "python-graphql-relay")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "graphql-relay" version))
         (sha256
          (base32
-          "04wr9ayshxjjdcg2v21c7ffbz36kif1wjl3604fqd3qignb3fbxi"))))
+          "1nv5dxcj59zv31qvl8bd142njmxcmymny2dz3br1l2cpbljbf5i7"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
