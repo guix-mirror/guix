@@ -1,0 +1,213 @@
+Description: Debian patches to make tipp10 compile
+Author: Christoph Martin <chrism@debian.org>
+Last-Update: 2016-07-20
+
+https://sources.debian.net/data/main/t/tipp10/2.1.0-2/debian/patches/0001-FixCompiling
+
+--- a/widget/tickerboard.cpp
++++ b/widget/tickerboard.cpp
+@@ -97,7 +97,8 @@ void TickerBoard::startTicker(bool wasPa
+ 
+ 		if (tickerSpeed == 50) {
+ 			scrollOffset = 290;
+-			scroll(-290, 0, QRect::QRect(10, 15, 590, 35)); //contentsRect());
++			const QRect qr = QRect(10, 15, 590, 35);
++			scroll(-290, 0, qr); //contentsRect());
+ 		}
+ 
+ 		startFlag = true;
+@@ -153,7 +154,8 @@ void TickerBoard::changeChar() {
+ 			scrollOffset = 0;
+ 		} else {
+ 			scrollOffset = 290;
+-			scroll(-290, 0, QRect::QRect(10, 15, 590, 35)); //contentsRect());
++			const QRect qr = QRect(10, 15, 590, 35);
++			scroll(-290, 0, qr); //contentsRect());
+ 		}
+ 		splitLesson();
+ 	}
+@@ -242,7 +244,8 @@ void TickerBoard::progress() {
+ 
+ 				// Move ticker 1 pixel to left
+ 				scrollOffset++;
+-				scroll(-1, 0, QRect::QRect(10, 15, 590, 35)); //contentsRect());
++				const QRect qr = QRect(10, 15, 590, 35);
++				scroll(-1, 0, qr); //contentsRect());
+ 
+ 				if ((lessonOffset - scrollOffset) <= 30) {
+ 					setSpeed(tickerSpeed);
+@@ -265,14 +268,16 @@ void TickerBoard::progress() {
+ 			// 160 pixels overage (because the user must see at least the next word)
+ 			if ((lessonOffset - scrollOffset) > 200) {
+ 				scrollOffset += (lessonOffset - scrollOffset) - 200;
+-				scroll(-((lessonOffset - scrollOffset) - 200), 0, QRect::QRect(10, 15, 590, 35)); //contentsRect());
++				const QRect qr = QRect(10, 15, 590, 35);
++				scroll(-((lessonOffset - scrollOffset) - 200), 0, qr); //contentsRect());
+ 			}
+ 		} else {
+ 			// If the user types faster than the ticker, move ticker faster after
+ 			// 160 pixels overage (because the user must see at least the next word)
+ 			if ((lessonOffset - scrollOffset) > 280) {
+ 				scrollOffset += 570;
+-				scroll(-570, 0, QRect::QRect(10, 15, 590, 35)); //contentsRect());
++				const QRect qr = QRect(10, 15, 590, 35);
++				scroll(-570, 0, qr); //contentsRect());
+ 			}
+ 
+ 		}
+--- a/widget/settingspages.cpp
++++ b/widget/settingspages.cpp
+@@ -501,7 +501,7 @@ void DatabasePage::writeSettings() {
+ 	QSettings settings;
+ 	#endif
+ 	settings.beginGroup("database");
+-	settings.setValue("pathpro", lineDatabasePath->text() + "/" + QString::QString(APP_USER_DB));
++	settings.setValue("pathpro", lineDatabasePath->text() + "/" + QString(APP_USER_DB));
+ 	settings.endGroup();
+ }
+ 
+--- a/widget/lessondialog.cpp
++++ b/widget/lessondialog.cpp
+@@ -89,7 +89,7 @@ void LessonDialog::updateContent() {
+ 			*lessonData = lineLessonContent->toPlainText().split("\n", QString::SkipEmptyParts);
+ 			// Delete empty lines
+ 			for (int i = 0; i < lessonData->size(); i++) {
+-				if (QString::QString(lessonData->at(i).toLocal8Bit().constData()).simplified() == "") {
++				if (QString(lessonData->at(i).toLocal8Bit().constData()).simplified() == "") {
+ 					lessonData->removeAt(i);
+ 				}
+ 			}
+@@ -259,7 +259,7 @@ void LessonDialog::clickSave() {
+ 	contentList = lineLessonContent->toPlainText().split("\n", QString::SkipEmptyParts);
+ 	// Delete empty lines
+ 	for (i = 0; i < contentList.size(); i++) {
+-		if (QString::QString(contentList.at(i).toLocal8Bit().constData()).simplified() == "") {
++		if (QString(contentList.at(i).toLocal8Bit().constData()).simplified() == "") {
+ 			contentList.removeAt(i);
+ 		}
+ 	}
+--- a/sql/chartablesql.cpp
++++ b/sql/chartablesql.cpp
+@@ -57,7 +57,7 @@ QVariant CharSqlModel::data(const QModel
+ 			// Read the unicode value
+ 			unicode = value.toInt();
+ 			// Convert unicode to a char
+-			unicodeToChar = QString::QString(QChar(unicode)); //"\'" + QString::QString(QChar(unicode)) + "\'";
++			unicodeToChar = QString(QChar(unicode)); //"\'" + QString::QString(QChar(unicode)) + "\'";
+ 			return unicodeToChar;
+ 		} else {
+ 			// Last column (error weight)
+--- a/sql/startsql.cpp
++++ b/sql/startsql.cpp
+@@ -344,7 +344,7 @@ bool StartSql::updateOwnLesson(QString l
+ 		for (i = 0; i < content.size(); i++) {
+ 			//simplifiedContent = QString::QString(
+ 			//	content.at(i)).replace(QChar(0x27), "''", Qt::CaseSensitive).simplified();
+-			simplifiedContent = trim(QString::QString(
++			simplifiedContent = trim(QString(
+ 				content.at(i)).replace(QChar(0x27), "''", Qt::CaseSensitive));
+ 
+ 			if (!query.exec("INSERT INTO own_content VALUES(NULL,'" +
+--- a/def/defines.h
++++ b/def/defines.h
+@@ -27,9 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fi
+ #define DEFINES_H
+ 
+ // OS constants
+-#define APP_WIN						true
++#define APP_WIN						false
+ #define APP_MAC						false
+-#define APP_X11						false
++#define APP_X11						true
+ #define APP_PORTABLE				false //at least one of the 3 OS must be true too!
+ 
+ // Languages
+@@ -47,6 +47,7 @@ Foundation, Inc., 51 Franklin Street, Fi
+ #define APP_URL 					"http://www.tipp10.com"
+ #define APP_DB 						"tipp10v2.template"
+ #define APP_USER_DB					"tipp10v2.db"
++#define APP_SHARE_DIR					"/usr/share/tipp10"
+ 
+ // Update constants
+ #define UPDATE_URL 					"www.tipp10.com"
+--- a/tipp10.pro
++++ b/tipp10.pro
+@@ -88,3 +88,15 @@ SOURCES         += 	main.cpp \
+                     sql/startsql.cpp \
+                     games/abcrainwidget.cpp \
+                     games/charball.cpp
++
++target.path = /usr/bin/
++INSTALLS += target
++share.path = /usr/share/tipp10/
++share.files = release/* *wav
++INSTALLS += share
++desktop.path = /usr/share/applications/
++desktop.files = tipp10.desktop
++INSTALLS += desktop
++pixmap.path = /usr/share/pixmaps/
++pixmap.files = tipp10.png
++INSTALLS += pixmap
+--- a/sql/connection.h
++++ b/sql/connection.h
+@@ -179,11 +179,13 @@ static bool createConnection() {
+ 				CANCEL_NO, "Betroffener Pfad:\n" + dbPath);*/
+ 			// Try to create new databae in user path
+ 			// Exist a database in the program dir?
+-			if (QFile::exists(QCoreApplication::applicationDirPath() + "/" + dbNameTemplate)) {
++			// if (QFile::exists(QCoreApplication::applicationDirPath() + "/" + dbNameTemplate)) {
++		  	if (QFile::exists(QString(APP_SHARE_DIR) + "/" + dbNameTemplate)) {
+ 			//if (QFile::exists(":/" + dbNameTemplate)) {
+ 				// A database exist in the program dir
+ 				// -> copy database to user home dir
+-				QFile file(QCoreApplication::applicationDirPath() + "/" + dbNameTemplate);
++				// QFile file(QCoreApplication::applicationDirPath() + "/" + dbNameTemplate);
++			  	QFile file(QString(APP_SHARE_DIR) + "/" + dbNameTemplate);
+ 				//QFile file(":/" + dbNameTemplate);
+ 				if (file.copy(dbPath)) {
+ 					QFile::setPermissions(dbPath, QFile::permissions(dbPath) | QFile::WriteUser);
+@@ -229,7 +231,8 @@ static bool createConnection() {
+ 		// Exist a database in user's home dir?
+ 		if (!QFile::exists(dbPath)) {
+ 			// Exist a database template in the program dir?
+-			dbPath = QCoreApplication::applicationDirPath() + "/" + dbNameTemplate;
++			// dbPath = QCoreApplication::applicationDirPath() + "/" + dbNameTemplate;
++		  	dbPath = QString(APP_SHARE_DIR) + "/" + dbNameTemplate;
+ 			//dbPath = ":/" + dbNameTemplate;
+ 			if (QFile::exists(dbPath)) {
+ 				// A database template exist in the program dir
+--- a/widget/helpbrowser.cpp
++++ b/widget/helpbrowser.cpp
+@@ -52,13 +52,15 @@ HelpBrowser::HelpBrowser(QString link, Q
+     textBrowser->setOpenExternalLinks(true);
+ 	
+     textBrowser->setSource(QString("file:///") + 
+-    	QCoreApplication::applicationDirPath() + 
++	// QCoreApplication::applicationDirPath() + 
++    	APP_SHARE_DIR + 
+     	QString("/help/") + language + QString("/index.html"));
+     	
+     if (link != "") {
+     
+ 		textBrowser->setSource(QString("file:///") + 
+-			QCoreApplication::applicationDirPath() + 
++			// QCoreApplication::applicationDirPath() + 
++			APP_SHARE_DIR + 
+ 			QString("/help/") + language + QString("/content/") + link);
+ 			
+ 	}
+--- a/tipp10.desktop
++++ b/tipp10.desktop
+@@ -1,10 +1,10 @@
+ [Desktop Entry]
+-Encoding=UTF-8
+ Name=TIPP10
+ Comment=Touch Typing Tutor
+ Comment[de]=10-Finger-Schreibtrainer
+-Exec=tipp10
++Exec=/usr/bin/tipp10
+ Icon=tipp10.png
+ Terminal=false
+ Type=Application
+ Categories=Education;
++Keywords=learning;touchtyping

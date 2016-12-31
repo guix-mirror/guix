@@ -1,0 +1,332 @@
+Description: Remove license dialog and license key checking
+
+https://sources.debian.net/data/main/t/tipp10/2.1.0-2/debian/patches/0002-RemoveLicenseCode
+
+--- a/main.cpp
++++ b/main.cpp
+@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fi
+ #include "def/defines.h"
+ #include "sql/connection.h"
+ #include "widget/mainwindow.h"
+-#include "widget/licensedialog.h"
+ #include "widget/illustrationdialog.h"
+ 
+ int main(int argc, char *argv[]) {
+@@ -59,7 +58,7 @@ int main(int argc, char *argv[]) {
+ 	QSettings settings;
+ 	#endif
+ 
+-	// Read/write language, license key and show illustration flag
++	// Read/write language and show illustration flag
+ 	settings.beginGroup("general");
+ 	QString languageGui = settings.value("language_gui",
+ 		QLocale::system().name()).toString();
+@@ -101,7 +100,6 @@ int main(int argc, char *argv[]) {
+ 	QString languageLesson = settings.value("language_lesson",
+ 		"").toString();
+ 
+-	QString licenseKey = settings.value("licensekey", "").toString();
+ 	bool showIllustration = settings.value("check_illustration", true).toBool();
+ 	bool useNativeStyle = settings.value("check_native_style", false).toBool();
+ 	settings.endGroup();
+--- a/tipp10.pro
++++ b/tipp10.pro
+@@ -43,7 +43,6 @@ HEADERS         += 	def/defines.h \
+                     widget/helpbrowser.h \
+                     widget/companylogo.h \
+                     widget/errormessage.h \
+-                    widget/licensedialog.h \
+                     widget/txtmessagedialog.h \
+                     widget/checkversion.h \
+                     sql/connection.h \
+@@ -78,7 +77,6 @@ SOURCES         += 	main.cpp \
+                     widget/helpbrowser.cpp \
+                     widget/companylogo.cpp \
+                     widget/errormessage.cpp \
+-                    widget/licensedialog.cpp \
+                     widget/txtmessagedialog.cpp \
+                     widget/checkversion.cpp \
+                     sql/lessontablesql.cpp \
+--- a/widget/licensedialog.cpp
++++ /dev/null
+@@ -1,168 +0,0 @@
+-/*
+-Copyright (c) 2006-2009, Tom Thielicke IT Solutions
+-
+-This program is free software; you can redistribute it and/or
+-modify it under the terms of the GNU General Public License
+-as published by the Free Software Foundation; either version 2
+-of the License.
+-
+-This program is distributed in the hope that it will be useful,
+-but WITHOUT ANY WARRANTY; without even the implied warranty of
+-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-GNU General Public License for more details.
+-
+-You should have received a copy of the GNU General Public License
+-along with this program; if not, write to the Free Software
+-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+-02110-1301, USA.
+-*/
+-
+-/****************************************************************
+-**
+-** Implementation of the LicenseDialog class
+-** File name: licensedialog.cpp
+-**
+-****************************************************************/
+-
+-#include <QHBoxLayout>
+-#include <QVBoxLayout>
+-#include <QMessageBox>
+-#include <QSettings>
+-#include <QCoreApplication>
+-
+-#include "licensedialog.h"
+-#include "def/defines.h"
+-
+-LicenseDialog::LicenseDialog(QWidget *parent) : QDialog(parent) {
+-
+-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+-
+-	setWindowTitle(tr("Lizenznummer"));
+-	setWindowIcon(QIcon(":/img/" + QString(ICON_FILENAME)));
+-
+-	// Create texbox
+-    createLineEdit();
+-
+-	// Create buttons
+-    createButtons();
+-
+-	// Set the layout of all widgets created above
+-	createLayout();
+-
+-	lineLicensing->setFocus();
+-}
+-
+-void LicenseDialog::createButtons() {
+-	//Buttons
+-	buttonOk = new QPushButton(this);
+-	buttonDemo = new QPushButton(this);
+-
+-	buttonOk->setText(tr("&Ok"));
+-	buttonDemo->setText(tr("&Demo starten"));
+-	buttonDemo->setToolTip(tr("Im Demo-Modus koennen pro Lektion nur\n"
+-		"10 Schriftzeichen eingegeben werden"));
+-
+-	buttonOk->setDefault(true);
+-	// Widget connections
+-    connect(buttonOk, SIGNAL(clicked()), this, SLOT(clickOk()));
+-    connect(buttonDemo, SIGNAL(clicked()), this, SLOT(clickDemo()));
+-}
+-
+-void LicenseDialog::createLineEdit() {
+-
+-	lineLicensing = new QLineEdit();
+-	lineLicensing->setInputMask(">NNNNNNNNNNNNNN");
+-
+-	labelLicensing = new QLabel(tr("Bitte geben Sie Ihre Lizenznummer "
+-		"(ohne Leerzeichen) ein, "
+-		"die Sie im Arbeitsbuch (Schulbuch) auf Seite 3 finden:"));
+-
+-	labelLicensing->setWordWrap(true);
+-}
+-
+-void LicenseDialog::createLayout() {
+-	// Button layout horizontal
+-	QHBoxLayout *buttonLayoutHorizontal = new QHBoxLayout;
+-    buttonLayoutHorizontal->addStretch(1);
+-    buttonLayoutHorizontal->addWidget(buttonDemo);
+-    buttonLayoutHorizontal->addWidget(buttonOk);
+-	// Full layout of all widgets vertical
+-	QVBoxLayout *mainLayout = new QVBoxLayout;
+-    mainLayout->addSpacing(1);
+-    mainLayout->addWidget(labelLicensing);
+-    mainLayout->addSpacing(1);
+-    mainLayout->addWidget(lineLicensing);
+-    mainLayout->addSpacing(1);
+-    mainLayout->addLayout(buttonLayoutHorizontal);
+-    mainLayout->setMargin(15);
+-    mainLayout->setSpacing(15);
+-    // Pass layout to parent widget (this)
+-	this->setLayout(mainLayout);
+-}
+-
+-void LicenseDialog::clickOk() {
+-
+-	// Check license key
+-	if (!checkLicenseKey(lineLicensing->text())) {
+-
+-		// License key is wrong
+-
+-		// Message to the user
+-		QMessageBox::information(0, APP_NAME,
+-			tr("Die eingegebene Lizenznummer ist leider nicht "
+-			"korrekt.\nBitte ueberpruefen Sie die Schreibweise."));
+-
+-		lineLicensing->setFocus();
+-
+-	} else {
+-
+-		// License key is ok
+-		writeSettings();
+-		accept();
+-	}
+-}
+-
+-void LicenseDialog::clickDemo() {
+-	accept();
+-}
+-
+-bool LicenseDialog::checkLicenseKey(QString licenseKey) {
+-	if (licenseKey.size() == 14 &&
+-		licenseKey[0].isLetter() &&
+-		licenseKey[1].isLetter() &&
+-		(licenseKey.mid(2, 2) == "39" ||
+-		licenseKey.mid(2, 2) == "41" ||
+-		licenseKey.mid(2, 2) == "43" ||
+-		licenseKey.mid(2, 2) == "49" ||
+-		licenseKey.mid(2, 2) == "99") &&
+-		licenseKey[4].isDigit() &&
+-		licenseKey[5].isDigit() &&
+-		licenseKey[6].isDigit() &&
+-		licenseKey[7].isLetter() &&
+-		licenseKey[8].isDigit() &&
+-		licenseKey[9].isDigit() &&
+-		licenseKey[10].isDigit() &&
+-		licenseKey[11].isDigit() &&
+-		licenseKey[12].isLetter() &&
+-		licenseKey[13].isLetter()) {
+-
+-		return true;
+-	}
+-	return false;
+-}
+-
+-void LicenseDialog::writeSettings() {
+-	// Saves settings of the startwiget
+-	// (uses the default constructor of QSettings, passing
+-	// the application and company name see main function)
+-	#if APP_PORTABLE
+-	QSettings settings(QCoreApplication::applicationDirPath() +
+-    	"/portable/settings.ini", QSettings::IniFormat);
+-    #else
+-	QSettings settings;
+-	#endif
+-
+-	settings.beginGroup("general");
+-	settings.setValue("licensekey", lineLicensing->text());
+-	settings.endGroup();
+-}
+--- a/widget/licensedialog.h
++++ /dev/null
+@@ -1,85 +0,0 @@
+-/*
+-Copyright (c) 2006-2009, Tom Thielicke IT Solutions
+-
+-This program is free software; you can redistribute it and/or
+-modify it under the terms of the GNU General Public License
+-as published by the Free Software Foundation; either version 2
+-of the License.
+-
+-This program is distributed in the hope that it will be useful,
+-but WITHOUT ANY WARRANTY; without even the implied warranty of
+-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-GNU General Public License for more details.
+-
+-You should have received a copy of the GNU General Public License
+-along with this program; if not, write to the Free Software
+-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+-02110-1301, USA.
+-*/
+-
+-/****************************************************************
+-**
+-** Definition of the LicenseDialog class
+-** File name: licensedialog.h
+-**
+-****************************************************************/
+-
+-#ifndef LICENSEDIALOG_H
+-#define LICENSEDIALOG_H
+-
+-#include <QDialog>
+-#include <QWidget>
+-#include <QPushButton>
+-#include <QLabel>
+-#include <QLineEdit>
+-#include <QString>
+-
+-//! The LicenseDialog class provides a license input widget.
+-/*!
+-	The LicenseDialog class shows a dialog to enter a license key.
+-
+-	@author Tom Thielicke, s712715
+-	@version 0.0.1
+-	@date 09.09.2008
+-*/
+-class LicenseDialog : public QDialog {
+-	Q_OBJECT
+-
+-	public:
+-
+-		//! Constructor, creates two table objects and provide it in two tabs.
+-		LicenseDialog(QWidget *parent = 0);
+-
+-		bool checkLicenseKey(QString licenseKey);
+-
+-	public slots:
+-
+-	private slots:
+-
+-		//! Start button pressed
+-		void clickOk();
+-
+-		//! Demo button pressed
+-		void clickDemo();
+-
+-	private:
+-
+-		//! Creates a cancel and a ok button.
+-		void createButtons();
+-
+-		//! Creates a textbox.
+-		void createLineEdit();
+-
+-		//! Creates the layout of the complete class.
+-		void createLayout();
+-
+-		//! Writes user settings
+-		void writeSettings();
+-
+-		QPushButton *buttonOk;
+-		QPushButton *buttonDemo;
+-		QLabel *labelLicensing;
+-		QLineEdit *lineLicensing;
+-};
+-
+-#endif //LICENSEDIALOG_H
+--- a/widget/mainwindow.cpp
++++ b/widget/mainwindow.cpp
+@@ -116,11 +116,6 @@ void MainWindow::closeEvent(QCloseEvent
+ 	}
+ }
+ 
+-bool MainWindow::checkLicenseKey(QString licenseKey) {
+-
+-    return false;
+-}
+-
+ void MainWindow::createMenu() {
+ 	//Mac-Version:
+ 	//-----------
+--- a/widget/mainwindow.h
++++ b/widget/mainwindow.h
+@@ -39,7 +39,6 @@ Foundation, Inc., 51 Franklin Street, Fi
+ #include "trainingwidget.h"
+ #include "evaluationwidget.h"
+ #include "illustrationdialog.h"
+-#include "licensedialog.h"
+ #include "games/abcrainwidget.h"
+ #include "helpbrowser.h"
+ 
