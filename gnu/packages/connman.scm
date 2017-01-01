@@ -28,6 +28,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages samba)
@@ -50,7 +51,7 @@
     (arguments
      `(#:configure-flags
        (list "--enable-nmcompat"
-             ;; "--enable-polkit"
+             "--enable-polkit"
              "--enable-openconnect"
              "--enable-openvpn"
              "--enable-vpnc"
@@ -71,7 +72,7 @@
        ("glib" ,glib)
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
-       ;; ("polkit" ,polkit) ; pkg-config cannot find polkit.pc
+       ("polkit" ,polkit)        ;so connman can be used by unprivileged users
        ("readline" ,readline)
        ;; These inputs are needed for connman to include the interface to
        ;; these technologies so IF they are installed they can be used.
