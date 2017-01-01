@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -846,9 +846,9 @@ environment."
       (match (assoc exp substs)
         ((_ id)
          id)
-        (_
-         #'(syntax-error "error: no 'ungexp' substitution"
-                         #'ref))))
+        (_                                        ;internal error
+         (with-syntax ((exp exp))
+           #'(syntax-error "error: no 'ungexp' substitution" exp)))))
 
     (define (substitute-ungexp-splicing exp substs)
       (syntax-case exp ()
@@ -860,7 +860,7 @@ environment."
                         #,(substitute-references #'(rest ...) substs))))
            (_
             #'(syntax-error "error: no 'ungexp-splicing' substitution"
-                            #'ref))))))
+                            exp))))))
 
     (define (substitute-references exp substs)
       ;; Return a variant of EXP where all the cars of SUBSTS have been
