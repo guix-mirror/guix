@@ -812,9 +812,9 @@ environment."
            (cons exp result))
           ((ungexp-native-splicing _ ...)
            (cons exp result))
-          ((exp0 exp ...)
+          ((exp0 . exp)
            (let ((result (loop #'exp0 result)))
-             (fold loop result #'(exp ...))))
+             (loop  #'exp result)))
           (_
            result))))
 
@@ -875,9 +875,9 @@ environment."
          (substitute-ungexp-splicing exp substs))
         (((ungexp-native-splicing _ ...) rest ...)
          (substitute-ungexp-splicing exp substs))
-        ((exp0 exp ...)
+        ((exp0 . exp)
          #`(cons #,(substitute-references #'exp0 substs)
-                 #,(substitute-references #'(exp ...) substs)))
+                 #,(substitute-references #'exp substs)))
         (x #''x)))
 
     (syntax-case s (ungexp output)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +90,16 @@
             (eq? p coreutils)))
          (equal? `(display ,(derivation->output-path
                              (package-derivation %store coreutils)))
+                 (gexp->sexp* exp)))))
+
+(test-assert "one input package, dotted list"
+  (let ((exp (gexp (coreutils . (ungexp coreutils)))))
+    (and (gexp? exp)
+         (match (gexp-inputs exp)
+           (((p "out"))
+            (eq? p coreutils)))
+         (equal? `(coreutils . ,(derivation->output-path
+                                 (package-derivation %store coreutils)))
                  (gexp->sexp* exp)))))
 
 (test-assert "one input origin"
