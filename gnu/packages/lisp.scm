@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -207,24 +208,24 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
        ;; --build=<triplet>.
        #:build #f
        #:phases
-       (alist-cons-after
-        'unpack 'patch-sh-and-pwd
-        (lambda _
-          ;; The package is very messy with its references to "/bin/sh" and
-          ;; some other absolute paths to traditional tools.  These appear in
-          ;; many places where our automatic patching misses them.  Therefore
-          ;; we do the following, in this early (post-unpack) phase, to solve
-          ;; the problem from its root.
-          (substitute* (find-files "." "configure|Makefile")
-            (("/bin/sh") "sh"))
-          (substitute* '("src/clisp-link.in")
-            (("/bin/pwd") "pwd")))
-        (alist-cons-before
-         'build 'chdir-to-source
-         (lambda _
-           ;; We are supposed to call make under the src sub-directory.
-           (chdir "src"))
-         %standard-phases))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sh-and-pwd
+           (lambda _
+             ;; The package is very messy with its references to "/bin/sh" and
+             ;; some other absolute paths to traditional tools.  These appear in
+             ;; many places where our automatic patching misses them.  Therefore
+             ;; we do the following, in this early (post-unpack) phase, to solve
+             ;; the problem from its root.
+             (substitute* (find-files "." "configure|Makefile")
+               (("/bin/sh") "sh"))
+             (substitute* '("src/clisp-link.in")
+               (("/bin/pwd") "pwd"))
+             #t))
+         (add-before 'build 'chdir-to-source
+           (lambda _
+             ;; We are supposed to call make under the src sub-directory.
+             (chdir "src")
+             #t)))
        ;; Makefiles seem to have race conditions.
        #:parallel-build? #f))
     (home-page "http://www.clisp.org/")
