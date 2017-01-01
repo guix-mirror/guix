@@ -1930,19 +1930,14 @@ accessing bigWig files.")
 (define-public python-dendropy
   (package
     (name "python-dendropy")
-    (version "4.1.0")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "DendroPy" version))
        (sha256
         (base32
-         "1jfz7gp18wph311w1yygbvjanb3n5mdqal439bb6myw41dwb5m63"))
-       ;; There are two known test failures that will be fixed in the next
-       ;; release after 4.1.0.
-       ;; https://github.com/jeetsukumaran/DendroPy/issues/48
-       (patches (search-patches
-                 "python-dendropy-exclude-failing-tests.patch"))))
+         "15c7s3d5gf19ljsxvq5advaa752wfi7pwrdjyhzmg85hccyvp47p"))))
     (build-system python-build-system)
     (home-page "http://packages.python.org/DendroPy/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
@@ -1957,15 +1952,6 @@ trees (phylogenies) and characters.")
   (let ((base (package-with-python2 (strip-python2-variant python-dendropy))))
     (package
       (inherit base)
-      ;; Do not use same source as 'python-dendropy' because the patched
-      ;; failing tests do not occur on Python 2.
-      (source
-       (origin
-         (method url-fetch)
-         (uri (pypi-uri "DendroPy" (package-version base)))
-         (sha256
-          (base32
-           "1jfz7gp18wph311w1yygbvjanb3n5mdqal439bb6myw41dwb5m63"))))
       (arguments
        `(#:python ,python-2
          #:phases
