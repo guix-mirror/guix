@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -76,17 +76,17 @@
 ;;;
 
 (define %gnumaint-base-url
-  "http://cvs.savannah.gnu.org/viewvc/*checkout*/gnumaint/")
+  "http://cvs.savannah.gnu.org/viewvc/*checkout*/womb/gnumaint/")
 
 (define %package-list-url
   (string->uri
-   (string-append %gnumaint-base-url "gnupackages.txt?root=womb")))
+   (string-append %gnumaint-base-url "gnupackages.txt")))
 
 (define %package-description-url
   ;; This file contains package descriptions in recutils format.
   ;; See <https://lists.gnu.org/archive/html/guix-devel/2013-10/msg00071.html>.
   (string->uri
-   (string-append %gnumaint-base-url "pkgblurbs.txt?root=womb")))
+   (string-append %gnumaint-base-url "pkgblurbs.txt")))
 
 (define-record-type* <gnu-package-descriptor>
   gnu-package-descriptor
