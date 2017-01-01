@@ -27,6 +27,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages bash)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -301,6 +302,7 @@ Makefile, simplifying the entire process for the developer.")
     (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)
+                     ("help2man" ,help2man) ;because we modify ltmain.sh
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
                      ("autoconf" ,(autoconf-wrapper)))) ;others on 'autom4te'
 
@@ -328,6 +330,10 @@ Makefile, simplifying the entire process for the developer.")
              (substitute* "tests/testsuite"
                (("/bin/sh")
                 (string-append bash "/bin/bash")))))))))
+         (add-after 'patch-source-shebangs 'restore-ltmain-shebang
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build-aux/ltmain.in"
+               (("^#!.*/bin/sh$") "/bin/sh")))))))
 
     (synopsis "Generic shared library support tools")
     (description
