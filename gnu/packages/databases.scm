@@ -210,7 +210,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.16")
+    (version "5.7.17")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -222,7 +222,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "198qhd9bdm0fnpp307mgby2aar92yzya0937kxi7bcpdfjcvada9"))))
+               "0lcn9cm36n14g22bcppq5vf4nxbrl3khvlsp9hsixqdfb3l27gyf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
