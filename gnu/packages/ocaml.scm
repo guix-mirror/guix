@@ -71,7 +71,10 @@
     (native-search-paths
      (list (search-path-specification
             (variable "OCAMLPATH")
-            (files (list (string-append "lib/ocaml"))))))
+            (files (list "lib/ocaml")))
+           (search-path-specification
+            (variable "CAML_LD_LIBRARY_PATH")
+            (files (list "lib/ocaml/site-lib/stubslibs")))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
