@@ -35,6 +35,7 @@
     \"license\": \"MIT/Apache-2.0\",
     \"description\": \"summary\",
     \"homepage\": \"http://example.com\",
+    \"repository\": \"http://example.com\",
   }
 }")
 

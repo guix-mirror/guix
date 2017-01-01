@@ -55,7 +55,8 @@
              (crate (assoc-ref crate-json "crate"))
              (name (assoc-ref crate "name"))
              (version (assoc-ref crate "max_version"))
-             (home-page (assoc-ref crate "homepage"))
+             (homepage (assoc-ref crate "homepage"))
+             (repository (assoc-ref crate "repository"))
              (synopsis (assoc-ref crate "description"))
              (description (assoc-ref crate "description"))
              (license (string->license (assoc-ref crate "license")))
@@ -67,7 +68,10 @@
               (filter (lambda (dep)
                         (not ((crate-kind-predicate "normal") dep))) deps))
              (inputs (crates->inputs input-crates))
-             (native-inputs (crates->inputs native-input-crates)))
+             (native-inputs (crates->inputs native-input-crates))
+             (home-page (match homepage
+                          (() repository)
+                          (_ homepage))))
     (callback #:name name #:version version
               #:inputs inputs #:native-inputs native-inputs
               #:home-page home-page #:synopsis synopsis
@@ -95,7 +99,9 @@ VERSION, INPUTS, NATIVE-INPUTS, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                    (build-system cargo-build-system)
                    ,@(maybe-native-inputs native-inputs)
                    ,@(maybe-inputs inputs)
-                   (home-page ,home-page)
+                   (home-page ,(match home-page
+                                 (() "")
+                                 (_ home-page)))
                    (synopsis ,synopsis)
                    (description ,(beautify-description description))
                    (license ,(match license
