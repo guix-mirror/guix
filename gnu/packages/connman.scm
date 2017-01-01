@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Mathieu OTHACEHE <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages tls)
@@ -127,3 +129,43 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
     (description
      "An EFL user interface for the @code{connman} connection manager.")
     (license lgpl3)))
+
+(define-public cmst
+  (package
+    (name "cmst")
+    (version "2016.10.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/andrew-bibb/cmst/releases/download/cmst-"
+             version "/cmst-" version ".tar.gz"))
+       (sha256
+        (base32 "1xpn4sqnxzpsjjwh9hva9sn55xlryiz2f2mwpyj2l31janj7a082"))))
+    (inputs
+     `(("qt" ,qt)))
+    (native-inputs
+     `(("qmake" ,qt)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero?
+              (system* "qmake"
+                       (string-append "PREFIX="
+                                      (assoc-ref outputs "out"))))))
+         (add-before 'install 'fix-Makefiles
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (find-files "." "Makefile")
+                 (("INSTALL_ROOT)")
+                  (string-append "INSTALL_ROOT)" out))
+                 (("/usr/bin") "/bin"))))))))
+    (home-page "https://github.com/andrew-bibb/cmst")
+    (synopsis "Qt frontend for Connman")
+    (description
+     "Cmst is a Qt based frontend for the @code{connman} connection manager.
+This package also provides a systemtray icon.")
+    (license x11)))
