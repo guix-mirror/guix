@@ -43,6 +43,8 @@
 
 (define* (configure #:key inputs #:allow-other-keys)
   "Replace Cargo.toml [dependencies] section with guix inputs."
+  ;; Make sure Cargo.toml is writeable when the crate uses git-fetch.
+  (chmod "Cargo.toml" #o644)
   (let ((port (open-file "Cargo.toml" "a" #:encoding "utf-8")))
     (format port "~%[replace]~%")
     (for-each
