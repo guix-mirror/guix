@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,8 +57,8 @@
                     (default 60))
   (database         cuirass-configuration-database ;string (file-name)
                     (default "/var/run/cuirass/cuirass.db"))
-  (specifications   cuirass-configuration-specifications ;specification-alist
-                    (default '()))
+  (specifications   cuirass-configuration-specifications
+                    (default #~'())) ;gexp that evaluates to specification-alist
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
                     (default #f))
   (one-shot?        cuirass-configuration-one-shot? ;boolean
@@ -85,11 +85,8 @@
             (start #~(make-forkexec-constructor
                       (list (string-append #$cuirass "/bin/cuirass")
                             "--cache-directory" #$cache-directory
-                            #$@(if (null? specs)
-                                   '()
-                                   (let ((str (format #f "'~S" specs)))
-                                     (list "--specifications"
-                                           (plain-file "specs.scm" str))))
+                            "--specifications"
+                            #$(scheme-file "cuirass-specs.scm" specs)
                             "--database" #$database
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())

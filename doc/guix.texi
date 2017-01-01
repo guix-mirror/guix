@@ -13,7 +13,7 @@
 @set OPENPGP-SIGNING-KEY-ID BCA689B636553801C3C62150197A5888235FACAC
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015, 2016 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
@@ -12028,16 +12028,22 @@ defining a build job based on a specification that can be found in
 Cuirass source tree.
 
 @example
-(let ((spec `((#:name . "guix")
-              (#:url . "git://git.savannah.gnu.org/guix.git")
-              (#:load-path . ".")
-              ;; Adapt to a valid absolute file name.
-              (#:file . "/.../cuirass/tests/gnu-system.scm")
-              (#:proc . hydra-jobs)
-              (#:arguments (subset . "hello"))
-              (#:branch . "master"))))
+(let ((spec #~((#:name . "guix")
+               (#:url . "git://git.savannah.gnu.org/guix.git")
+               (#:load-path . ".")
+
+               ;; Here we must provide an absolute file name.
+               ;; We take jobs from one of the examples provided
+               ;; by Cuirass.
+               (#:file . #$(file-append
+                            cuirass
+                            "/tests/gnu-system.scm"))
+
+               (#:proc . hydra-jobs)
+               (#:arguments (subset . "hello"))
+               (#:branch . "master"))))
   (cuirass-service #:config (cuirass-configuration
-                             (specifications (list spec)))))
+                             (specifications #~(list #$spec)))))
 @end example
 
 While information related to build jobs are located directly in the
@@ -12068,8 +12074,9 @@ Cuirass jobs.
 Location of sqlite database which contains the build results and previously
 added specifications.
 
-@item @code{specifications} (default: @code{'()})
-A list of specifications, where a specification is an association list
+@item @code{specifications} (default: @code{#~'()})
+A gexp (@pxref{G-Expressions}) that evaluates to a list of specifications,
+where a specification is an association list
 (@pxref{Associations Lists,,, guile, GNU Guile Reference Manual}) whose
 keys are keywords (@code{#:keyword-example}) as shown in the example
 above.
