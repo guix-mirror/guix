@@ -1641,6 +1641,38 @@ system.")
     (license (list license:gpl2                   ;programs
                    license:lgpl2.1))))            ;library
 
+(define-public kbd-neo
+  (package
+    (name "kbd-neo")
+    (version "2486")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://svn.neo-layout.org/!svn/bc/"
+                           version "/linux/console/neo.map"))
+       (file-name (string-append name "-" version ".map"))
+       (sha256
+        (base32
+         "19mfrd31vzpsjiwc7pshxm0b0sz5dd17xrz6k079cy4im1vf0r4g"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((out (string-append %output "/share/keymaps"))
+                         (source (assoc-ref %build-inputs "source")))
+                     (mkdir-p out)
+                     (copy-file source (string-append out "/neo.map"))
+                     #t))))
+    (home-page "https://neo-layout.org")
+    (synopsis "Neo2 console layout")
+    (description
+     "Kbd-neo provides the Neo2 keyboard layout for use with
+@command{loadkeys(1)} from @code{kbd(4)}.")
+    ;; The file is located in an svn directory, the entire content of
+    ;; the directory is licensed as GPL3.
+    (license license:gpl3+)))
+
 (define-public kbd
   (package
     (name "kbd")
