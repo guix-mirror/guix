@@ -12011,21 +12011,16 @@ providing substitutes to others (@pxref{Substitutes}).
 
 The @code{(gnu services cuirass)} module provides the following service.
 
-@deffn {Scheme Procedure} cuirass-service @
-       [#:config @code{(cuirass-configuration)}]
-Return a service that runs @command{cuirass}.
+@defvr {Scheme Procedure} cuirass-service-type
+The type of the Cuirass service.  Its value must be a
+@code{cuirass-configuration} object, as described below.
+@end defvr
 
-The @var{#:config} keyword argument specifies the configuration for
-@command{cuirass}, which must be a @code{<cuirass-configuration>}
-object, by default it doesn't provide any build job.  If you want to
-provide your own configuration you will most likely use the
-@code{cuirass-configuration} special form which returns such objects.
-@end deffn
-
-In order to add build jobs you will have to set the
-@code{specifications} field.  Here is an example of a cuirass service
-defining a build job based on a specification that can be found in
-Cuirass source tree.
+To add build jobs, you have to set the @code{specifications} field of
+the configuration.  Here is an example of a service defining a build job
+based on a specification that can be found in Cuirass source tree.  This
+service polls the Guix repository and builds a subset of the Guix
+packages, as prescribed in the @file{gnu-system.scm} example spec:
 
 @example
 (let ((spec #~((#:name . "guix")
@@ -12042,11 +12037,12 @@ Cuirass source tree.
                (#:proc . hydra-jobs)
                (#:arguments (subset . "hello"))
                (#:branch . "master"))))
-  (cuirass-service #:config (cuirass-configuration
-                             (specifications #~(list #$spec)))))
+  (service cuirass-service-type
+           (cuirass-configuration
+            (specifications #~(list #$spec)))))
 @end example
 
-While information related to build jobs are located directly in the
+While information related to build jobs is located directly in the
 specifications, global settings for the @command{cuirass} process are
 accessible in other @code{cuirass-configuration} fields.
 

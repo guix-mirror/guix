@@ -30,8 +30,7 @@
             cuirass-configuration
             cuirass-configuration?
 
-            cuirass-service-type
-            cuirass-service))
+            cuirass-service-type))
 
 ;;;; Commentary:
 ;;;
@@ -57,8 +56,8 @@
                     (default 60))
   (database         cuirass-configuration-database ;string (file-name)
                     (default "/var/run/cuirass/cuirass.db"))
-  (specifications   cuirass-configuration-specifications
-                    (default #~'())) ;gexp that evaluates to specification-alist
+  (specifications   cuirass-configuration-specifications)
+                                  ;gexp that evaluates to specification-alist
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
                     (default #f))
   (one-shot?        cuirass-configuration-one-shot? ;boolean
@@ -140,6 +139,3 @@
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
      (service-extension account-service-type cuirass-account)))))
 
-(define* (cuirass-service #:key (config (cuirass-configuration)))
-  "Return a service that runs cuirass according to CONFIG."
-  (service cuirass-service-type config))
