@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -313,21 +314,21 @@ Makefile, simplifying the entire process for the developer.")
                                       (or (%current-target-system)
                                           (%current-system))))
 
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Run the test suite in parallel, if possible.
-                   (setenv "TESTSUITEFLAGS"
-                           (string-append
-                            "-j"
-                            (number->string (parallel-job-count))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Run the test suite in parallel, if possible.
+             (setenv "TESTSUITEFLAGS"
+                     (string-append
+                      "-j"
+                      (number->string (parallel-job-count))))
+           ;; Path references to /bin/sh.
+           (let ((bash (assoc-ref inputs "bash")))
+             (substitute* "tests/testsuite"
+               (("/bin/sh")
+                (string-append bash "/bin/bash")))))))))
 
-                   ;; Path references to /bin/sh.
-                   (let ((bash (assoc-ref inputs "bash")))
-                     (substitute* "tests/testsuite"
-                       (("/bin/sh")
-                        (string-append bash "/bin/bash")))))
-                 %standard-phases)))
     (synopsis "Generic shared library support tools")
     (description
      "GNU Libtool helps in the creation and use of shared libraries, by
