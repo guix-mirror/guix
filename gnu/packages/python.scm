@@ -7851,9 +7851,7 @@ be set via config files and/or environment variables.")
     (version "0.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/n/ndg-httpsclient/"
-                    "ndg_httpsclient-" version ".tar.gz"))
+              (uri (pypi-uri "ndg_httpsclient" version))
               (sha256
                 (base32
                   "1b5qirv46v4dpnmfqviwq42mdwfcby4dxmz0i41wad2337pqf2aq"))))
