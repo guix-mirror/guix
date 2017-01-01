@@ -221,6 +221,11 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
              (substitute* '("src/clisp-link.in")
                (("/bin/pwd") "pwd"))
              #t))
+         (add-after 'unpack 'remove-timestamps
+           (lambda _
+             (substitute* "src/constobj.d"
+               (("__DATE__ __TIME__") "\"1\""))
+             #t))
          (add-before 'build 'chdir-to-source
            (lambda _
              ;; We are supposed to call make under the src sub-directory.
