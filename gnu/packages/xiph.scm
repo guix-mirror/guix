@@ -127,7 +127,7 @@ compressed video format.")
 (define speex
   (package
     (name "speex")
-    (version "1.2rc1")
+    (version "1.2.0")
     (source
      (origin
       (method url-fetch)
@@ -135,7 +135,7 @@ compressed video format.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "19mpkhbz3s08snvndn0h1dk2j139max6b0rr86nnsjmxazf30brl"))))
+        "150047wnllz4r94whb9r73l5qf0z5z3rlhy98bawfbblmkq8mbpa"))))
     (build-system gnu-build-system)
     (inputs `(("libogg" ,libogg)))
     (home-page "https://gnu.org/software/speex")
