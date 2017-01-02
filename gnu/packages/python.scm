@@ -32,7 +32,7 @@
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -4280,24 +4280,22 @@ a general image processing tool.")
      `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases
-       (alist-replace
-        'check
-        (lambda _
-          (with-directory-excursion "tests"
-            (zero? (system* "python" "all_tests.py"))))
-        (alist-cons-after
-         'install 'install-doc
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                  (doc (string-append data "/doc/" ,name "-" ,version))
-                  (examples (string-append doc "/examples")))
-             (mkdir-p examples)
-             (for-each (lambda (file)
-                         (copy-file (string-append "." file)
-                                    (string-append doc file)))
-                       '("/README.rst" "/CHANGES" "/LICENSE"))
-             (copy-recursively "examples" examples)))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "tests"
+               (zero? (system* "python" "all_tests.py")))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (examples (string-append doc "/examples")))
+               (mkdir-p examples)
+               (for-each (lambda (file)
+                           (copy-file (string-append "." file)
+                                      (string-append doc file)))
+                         '("/README.rst" "/CHANGES" "/LICENSE"))
+               (copy-recursively "examples" examples)))))))
     (home-page "https://github.com/eliben/pycparser")
     (synopsis "C parser in Python")
     (description
