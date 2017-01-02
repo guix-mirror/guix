@@ -722,6 +722,9 @@ with the Linux kernel.")
                        ;; We need this to get a working openpty() function.
                        "--enable-pt_chown"
 
+                       ;; <https://lists.gnu.org/archive/html/bug-hurd/2016-10/msg00033.html>
+                       "--disable-werror"
+
                        ;; nscd fails to build for GNU/Hurd:
                        ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.
                        ;; Disable it.
