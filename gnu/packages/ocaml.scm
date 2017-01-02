@@ -838,6 +838,14 @@ compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
 
+(define-public ocaml4.01-findlib
+  (package
+    (inherit ocaml-findlib)
+    (name "ocaml4.01-findlib")
+    (native-inputs
+     `(("m4" ,m4)
+       ("ocaml" ,ocaml-4.01)))))
+
 ;; note that some tests may hang for no obvious reason.
 (define-public ocaml-ounit
   (package
