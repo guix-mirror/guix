@@ -5694,14 +5694,14 @@ connection to each user.")
 (define-public python-backports-abc
   (package
     (name "python-backports-abc")
-      (version "0.4")
+      (version "0.5")
       (source
         (origin
           (method url-fetch)
           (uri (pypi-uri "backports_abc" version))
           (sha256
            (base32
-            "19fh75lni9pb673n2fn505m1rckm0af0szcv5xx1qm1xpa940glb"))))
+            "1pkv8d1zxj5f9i227dxbjczncbv7ks7ywnjwyxfjagm02i2yafq3"))))
     (build-system python-build-system)
     (home-page "https://github.com/cython/backports_abc")
     (synopsis "Backport of additions to the 'collections.abc' module")
