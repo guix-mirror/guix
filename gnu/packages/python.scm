@@ -11722,13 +11722,13 @@ replay them during future tests.  It is designed to work with python-requests.")
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
-    (version "0.1.8")
+    (version "0.1.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "s3transfer" version))
               (sha256
                (base32
-                "1jivjkp3xqif9gzr5fiq28jsskmh50vzzd7ldsb4rbyiw1iyv3hy"))))
+                "1h8g9bknvxflxkpbnxyfxmk8pvgykbbk9ljdvhqh6z4vjc2926ms"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
