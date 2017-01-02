@@ -228,3 +228,29 @@ wl-pprint library.")
       (description "This is a bifunctor library for Idris based off the
 excellent Haskell Bifunctors package from Edward Kmett.")
       (license license:bsd-3))))
+
+(define-public idris-lens
+  (let ((commit "26f012005f6849806cea630afe317e42cae97f29"))
+    (package
+      (name "idris-lens")
+      (version (git-version "0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/HuwCampbell/idris-lens")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06jzfj6rad08rk92w8jk5byi79svmyg0mrcqhibgx8rkjjy6vmai"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("idris" ,idris)))
+      (propagated-inputs
+       `(("idris-bifunctors" ,idris-bifunctors)))
+      (arguments (idris-default-arguments name))
+      (home-page "https://github.com/HuwCampbell/idris-lens")
+      (synopsis "Van Laarhoven lenses for Idris")
+      (description "Lenses are composable functional references.  They allow
+accessing and modifying data within a structure.")
+      (license license:bsd-3))))
