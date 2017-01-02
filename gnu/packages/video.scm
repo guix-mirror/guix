@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
@@ -610,14 +610,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.9")
+    (version "2.8.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1s3011q7sxyb55n3r8aiv7xh53bwxjdxa83s2ilqhq5rygrrgg8i"))))
+               "1ca84kc715xm7wmbnj1z4jfhxj8c7rxhy4cqwrd8cnih0l196j1c"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
