@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2015, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -64,7 +64,8 @@ when producing a bootstrap libc."
       #t))
 
   (define %libc-object-files-rx "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|\
-util).*\\.so(\\..*)?|lib(machuser|hurduser).so.*|libc(rt|)_nonshared\\.a)$")
+util).*\\.so(\\..*)?|lib(machuser|hurduser).so.*|(libc(rt|)|libpthread)\
+_nonshared\\.a)$")
 
   (setvbuf (current-output-port) _IOLBF)
   (let* ((libdir (string-append output "/lib")))
