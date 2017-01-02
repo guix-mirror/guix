@@ -35,6 +35,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
@@ -168,6 +169,7 @@ buffers.")
        ("exif" ,libexif)                         ;optional, EXIF + XMP support
        ("lcms" ,lcms)                            ;optional, color management
        ("librsvg" ,librsvg)                      ;optional, SVG support
+       ("poppler", poppler)             ; optional, PDF support
        ("python" ,python-2)                      ;optional, Python support
        ("python2-pygtk" ,python2-pygtk)          ;optional, Python support
        ("gegl" ,gegl)))
