@@ -10198,13 +10198,13 @@ provides support for parsing, splitting and formatting SQL statements.")
 (define-public python-greenlet
   (package
     (name "python-greenlet")
-    (version "0.4.9")
+    (version "0.4.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "greenlet" version))
               (sha256
                (base32
-                "04h0m54dyqg49vyarq26mry6kbivnpl47rnmmrk9qn8wpfxviybr"))))
+                "1xhik26j4f3kc4qw9xmj0c567rb5h1zryb4ijwqnqwwjvfhbv59h"))))
     (build-system python-build-system)
     (home-page "https://greenlet.readthedocs.io/")
     (synopsis "Lightweight in-process concurrent programming")
