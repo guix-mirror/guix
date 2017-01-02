@@ -474,7 +474,7 @@ the bootstrap environment."
                  (unsetenv "CPATH")
 
                  ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
-                 ,@(if (string-match "i586-gnu" (%current-system))
+                 ,@(if (hurd-triplet? (%current-system))
                        `((substitute* "libpthread/Makefile"
                            (("LDLIBS-pthread.so =.*")
                             (string-append "LDLIBS-pthread.so = "
@@ -499,7 +499,7 @@ the bootstrap environment."
         ,@%boot1-inputs
 
         ;; A native MiG is needed to build Glibc on Hurd.
-        ,@(if (string-match "i586-gnu" (%current-system))
+        ,@(if (hurd-triplet? (%current-system))
               `(("mig" ,mig-boot0))
               '())
 

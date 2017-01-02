@@ -28,7 +28,12 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages base)
-  #:use-module (guix git-download))
+  #:use-module (guix git-download)
+  #:export (hurd-triplet?))
+
+(define (hurd-triplet? triplet)
+  (and (string-suffix? "-gnu" triplet)
+       (not (string-contains triplet "linux"))))
 
 (define-public gnumach-headers
   (package
