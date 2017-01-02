@@ -1285,15 +1285,14 @@ Python 3.3+.")
 (define-public python-pyicu
   (package
     (name "python-pyicu")
-    (version "1.9.2")
+    (version "1.9.5")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/P/PyICU/PyICU-"
-                          version ".tar.gz"))
+      (uri (pypi-uri "PyICU" version))
       (sha256
        (base32
-        "1diba0g8md614fvm9yf50paiwdkhj6rd7xwf1rg9mc0pxc0hhn4v"))))
+        "16rmxy9y0qhqqna2v49i7nzwm09as699rbyvh4raw7w602w55c3k"))))
     (build-system python-build-system)
     (inputs
      `(("icu4c" ,icu4c)))
