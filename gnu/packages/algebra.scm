@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -581,6 +581,7 @@ cosine/ sine transforms or DCT/DST).")
 ;; "--enable-flags" is added to the fftw and fftwf packages.
 (define-public fftw-with-threads
   (package (inherit fftw)
+    (name "fftw-pthreads")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
        ((#:configure-flags flags)
@@ -588,6 +589,7 @@ cosine/ sine transforms or DCT/DST).")
 
 (define-public fftwf-with-threads
   (package (inherit fftwf)
+    (name "fftwf-pthreads")
     (arguments
      (substitute-keyword-arguments (package-arguments fftwf)
        ((#:configure-flags flags)
