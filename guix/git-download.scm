@@ -30,7 +30,9 @@
             git-reference-commit
             git-reference-recursive?
 
-            git-fetch))
+            git-fetch
+            git-version
+            git-file-name))
 
 ;;; Commentary:
 ;;;
@@ -109,5 +111,13 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                       #:recursive? #t
                       #:guile-for-build guile
                       #:local-build? #t)))
+
+(define (git-version version revision commit)
+  "Return the version string for packages using git-download."
+  (string-append version "-" revision "." (string-take commit 7)))
+
+(define (git-file-name name version)
+  "Return the file-name for packages using git-download."
+  (string-append name "-" version "-checkout"))
 
 ;;; git-download.scm ends here
