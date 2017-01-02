@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages security-token)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -381,6 +383,33 @@ programming task, it is suggested that all software should try to use GPGME
 instead.  This way bug fixes or improvements can be done at a central place
 and every application benefits from this.")
     (license license:lgpl2.1+)))
+
+(define-public python-gpg
+  (package
+    (name "python-gpg")
+    (version (package-version gpgme))
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gpg" version))
+              (sha256
+               (base32
+                "1x74i6q713c0bckls7rdm8kgsmllf9qvy9x62jghszlhgjkyh9nd"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; No test suite.
+    (inputs
+     `(("gpgme" ,gpgme)))
+    (native-inputs
+     `(("swig" ,swig)))
+    (home-page (package-home-page gpgme))
+    (synopsis "Python bindings for GPGME GnuPG cryptography library")
+    (description "This package provides Python bindings to the GPGME GnuPG
+cryptographic library.  It is developed in the GPGME source code, and then
+distributed separately.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-gpg
+  (package-with-python2 python-gpg))
 
 (define-public python-pygpgme
   (package
