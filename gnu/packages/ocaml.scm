@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -211,6 +212,36 @@ functional, imperative and object-oriented styles of programming.")
     ;; law: the license is governed by the laws of France.  The library is
     ;; distributed under lgpl2.0.
     (license (list license:qpl license:lgpl2.0))))
+
+(define-public ocaml-4.01
+  (package
+    (inherit ocaml)
+    (version "4.01.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://caml.inria.fr/pub/distrib/ocaml-"
+                    (version-major+minor version)
+                    "/ocaml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "03d7ida94s1gpr3gadf4jyhmh5rrszd5s4m4z59daaib25rvfyv7"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ocaml)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda _
+               ;; Specifying '-j' at all causes the build to fail.
+               (zero? (system* "make" "world.opt"))))
+           (replace 'check
+             (lambda _
+               (with-directory-excursion "testsuite"
+                 (zero? (system*
+                         "make"
+                         "all"
+                         (string-append
+                          "TOPDIR=" (getcwd) "/.."))))))))))))
 
 (define-public opam
   (package
