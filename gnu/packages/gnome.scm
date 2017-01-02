@@ -5347,7 +5347,7 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20160605")
+    (version "20161119")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/horst3180/arc-theme"
@@ -5355,7 +5355,7 @@ functionality and behavior.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sq2031xda8jn2ws0x2bvhq77jfh7xy0c3kg86v6vm2kbrrss7y6"))))
+                "1kbhaxmydyip3vdw4kf8rk776jcd9wf0w7z6h2i4naxdn4rsnw54"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
