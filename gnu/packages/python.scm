@@ -4266,14 +4266,14 @@ a general image processing tool.")
 (define-public python-pycparser
   (package
     (name "python-pycparser")
-    (version "2.14")
+    (version "2.17")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pycparser" version))
       (sha256
        (base32
-        "0wvzyb6rxsfj3xcnpa4ynbh9qc7rrbk2277d5wqpphmx9akv8nbr"))))
+        "1dkkjri0miidqb1zcqhqljfa34fcy9k5akasgwsv6k622zlk3b0a"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
