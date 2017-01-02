@@ -1796,3 +1796,32 @@ many additional enhancements, including:
                    license:expat ; OMake scripts
                    license:gpl2)))) ; OMake itself, with ocaml linking exception
                                     ; see LICENSE.OMake
+
+(define-public ocaml-batteries
+  (package
+    (name "ocaml-batteries")
+    (version "2.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "batteries" version 1650))
+              (sha256
+               (base32
+                "1a97w3x2l1jr5x9kj5gqm1x6b0q9fjqdcsvls7arnl3bvzgsia0n"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("qtest" ,ocaml-qtest)
+       ("bisect" ,ocaml-bisect)
+       ("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check) ; tests are run by the build phase
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "ocaml" "setup.ml" "-build")))))))
+    (home-page "http://batteries.forge.ocamlcore.org/")
+    (synopsis "Development platform for the OCaml programming language")
+    (description "Define a standard set of libraries which may be expected on
+every compliant installation of OCaml and organize these libraries into a
+hierarchy of modules.")
+    (license license:lgpl2.1+)))
