@@ -306,7 +306,13 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
   "Display version information for COMMAND and `(exit 0)'."
   (simple-format #t "~a (~a) ~a~%"
                  command %guix-package-name %guix-version)
-  (display (_ "Copyright (C) 2017 the Guix authors
+  (format #t "Copyright ~a 2017 ~a"
+          ;; TRANSLATORS: Translate "(C)" to the copyright symbol
+          ;; (C-in-a-circle), if this symbol is available in the user's
+          ;; locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
+          (_ "(C)")
+          (_ "the Guix authors\n"))
+  (display (_"\
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
