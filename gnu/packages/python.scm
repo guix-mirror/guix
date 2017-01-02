@@ -8833,14 +8833,14 @@ available in Django, but is a standalone package.")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.3")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "136kcjbs0s98qkx8a418b05dfblqp0kiiqyx8vhx4rarwc7bqi3n"))))
+         "03dyxgjknp4ffsv7vwfd28l5bbpzi0ylp20543wpg3iahyyrwma8"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
