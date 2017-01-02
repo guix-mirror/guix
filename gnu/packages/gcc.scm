@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -494,8 +494,11 @@ as the 'native-search-paths' field."
               %generic-search-paths))
 
 (define-public gfortran
-  (custom-gcc gcc "gfortran" '("fortran")
-              %generic-search-paths))
+  ;; Note: Update this when GCC changes!  We cannot use
+  ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
+  ;; that is not 'eq?' with GFORTRAN-4.9, and thus 'fold-packages' would
+  ;; report two gfortran@4.9 that are in fact identical.
+  gfortran-4.9)
 
 (define-public gfortran-5
   (custom-gcc gcc-5 "gfortran" '("fortran")
