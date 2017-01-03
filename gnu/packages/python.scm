@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -8767,9 +8767,9 @@ normally the case.")
 (define-public python2-pytest-subtesthack
   (package-with-python2 python-pytest-subtesthack))
 
-(define-public python2-xdo
+(define-public python-xdo
   (package
-    (name "python2-xdo")
+    (name "python-xdo")
     (version "0.3")
     (source (origin
               (method url-fetch)
@@ -8781,8 +8781,7 @@ normally the case.")
                 "1vqh1n5yy5dhnq312kwrl90fnck4v26is3lq3lxdvcn60vv19da0"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f))  ; no tests provided
+     `(#:tests? #f))  ; no tests provided
     (inputs
      `(("xdotool" ,xdotool)
        ("libX11" ,libx11)))
@@ -8792,6 +8791,9 @@ normally the case.")
 input.  (Note that this is mostly a legacy library; you may wish to look at
 python-xdo for newer bindings.)")
     (license license:bsd-3)))
+
+(define-public python2-xdo
+  (package-with-python2 python-xdo))
 
 (define-public python-wtforms
   (package
