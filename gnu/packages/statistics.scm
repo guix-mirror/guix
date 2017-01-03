@@ -3534,14 +3534,14 @@ package instead.")
 (define-public r-hmisc
   (package
     (name "r-hmisc")
-    (version "4.0-1")
+    (version "4.0-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Hmisc" version))
        (sha256
         (base32
-         "1dlm2gj1b9l6nf9w9zc0cn8d2japhx6cwifzmgjv4gg4skazlldq"))))
+         "1lg9k0kj803wsm3h0a991q9l2lrgsqryzfv2z79b88kjbfapqpqr"))))
     (properties `((upstream-name . "Hmisc")))
     (build-system r-build-system)
     (native-inputs
@@ -3549,6 +3549,7 @@ package instead.")
     (propagated-inputs
      `(("r-acepack" ,r-acepack)
        ("r-base64" ,r-base64)
+       ("r-base64enc" ,r-base64enc)
        ("r-data-table" ,r-data-table)
        ("r-formula" ,r-formula)
        ("r-ggplot2" ,r-ggplot2)
