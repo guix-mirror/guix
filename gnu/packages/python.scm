@@ -8770,7 +8770,7 @@ normally the case.")
 (define-public python2-xdo
   (package
     (name "python2-xdo")
-    (version "0.2")
+    (version "0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8778,7 +8778,7 @@ normally the case.")
                     "python-xdo_" version ".orig.tar.gz"))
               (sha256
                (base32
-                "1kl5c1p0dyxf62plnk6fl77ycfb4whwjms16r14dxx8kn90hlqz4"))))
+                "1vqh1n5yy5dhnq312kwrl90fnck4v26is3lq3lxdvcn60vv19da0"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
