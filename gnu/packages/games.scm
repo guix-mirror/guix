@@ -2753,7 +2753,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.5.0")
+   (version "0.5.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
@@ -2761,7 +2761,7 @@ with the \"Stamp\" tool within Tux Paint.")
                                 version "-Source.tar.gz"))
             (sha256
              (base32
-              "0fx7c7m6mfanqy7kln7yf6abb5l3r68picf32js2yls11jj0vbng"))))
+              "1i8avad7w7ikj870z519j383ldy29r6f956bs38cbr8wk513pp69"))))
    (arguments
     '(#:tests? #f
       #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
