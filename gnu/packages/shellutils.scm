@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -58,14 +58,14 @@ between various shells or commands.")
 (define-public trash-cli
   (package
     (name "trash-cli")
-    (version "0.12.9.14")
+    (version "0.17.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trash-cli" version))
        (sha256
         (base32
-         "1p4v2qx0sy47d9c9axszq04wns63s4b7rrhmsavg948sklqdaf54"))))
+         "019sjab29jkps8zkf8icihhf3ng4lx9y4p1lxjd3wbnnynphc4is"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
