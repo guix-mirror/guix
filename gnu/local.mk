@@ -183,6 +183,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/hurd.scm				\
   %D%/packages/ibus.scm				\
   %D%/packages/icu4c.scm			\
+  %D%/packages/idris.scm			\
   %D%/packages/idutils.scm			\
   %D%/packages/image.scm			\
   %D%/packages/image-viewers.scm	\
