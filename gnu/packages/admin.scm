@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -790,7 +790,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.17p1")
+    (version "1.8.19p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -800,7 +800,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1k2mn65l1kmsxm8wh0gjxy496xhbpiimbpm6yv6kw6snzc3xg466"))))
+                "14pwdwl03kdbbyjkvxrfx409x3c1fjqz8aqz2wgwddinhz7v3bxq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
