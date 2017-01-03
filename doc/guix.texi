@@ -2394,7 +2394,7 @@ what you should use in this case (@pxref{Invoking guix copy}).
 
 @cindex nar, archive format
 @cindex normalized archive (nar)
-Archives are stored in the ``normalized archive'' or ``nar'' format, which is
+By default archives are stored in the ``normalized archive'' or ``nar'' format, which is
 comparable in spirit to `tar', but with differences
 that make it more appropriate for our purposes.  First, rather than
 recording all Unix metadata for each file, the nar format only mentions
@@ -2409,6 +2409,9 @@ and that digital signature is appended.  When importing, the daemon
 verifies the signature and rejects the import in case of an invalid
 signature or if the signing key is not authorized.
 @c FIXME: Add xref to daemon doc about signatures.
+
+Optionally, archives can be exported as a Docker image in the tar
+archive format using @code{--format=docker}.
 
 The main options are:
 
@@ -2437,6 +2440,19 @@ keys (see @code{--authorize} below.)
 Read a list of store file names from the standard input, one per line,
 and write on the standard output the subset of these files missing from
 the store.
+
+@item -f
+@item --format=@var{FMT}
+@cindex docker, export
+@cindex export format
+Specify the export format.  Acceptable arguments are @code{nar} and
+@code{docker}.  The default is the nar format.  When the format is
+@code{docker}, recursively export the specified store directory as a
+Docker image in tar archive format, as specified in
+@uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
+version 1.2.0 of the Docker Image Specification}.  Using
+@code{--format=docker} implies @code{--recursive}.  The generated
+archive can be loaded by Docker using @command{docker load}.
 
 @item --generate-key[=@var{parameters}]
 @cindex signing, archives

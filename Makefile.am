@@ -160,6 +160,7 @@ MODULES =					\
 if HAVE_GUILE_JSON
 
 MODULES +=					\
+  guix/docker.scm	   			\
   guix/import/github.scm   			\
   guix/import/json.scm				\
   guix/import/crate.scm				\

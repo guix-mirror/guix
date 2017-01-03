@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix ui)
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
+  #:use-module (guix docker)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
@@ -62,6 +64,8 @@
 Export/import one or more packages from/to the store.\n"))
   (display (_ "
       --export           export the specified files/packages to stdout"))
+  (display (_ "
+      --format=FMT       export files/packages in the specified format FMT"))
   (display (_ "
   -r, --recursive        combined with '--export', include dependencies"))
   (display (_ "
@@ -117,6 +121,9 @@ Export/import one or more packages from/to the store.\n"))
          (option '("export") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'export #t result)))
+         (option '(#\f "format") #t #f
+                 (lambda (opt name arg result . rest)
+                   (alist-cons 'format arg result)))
          (option '(#\r "recursive") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'export-recursive? #t result)))
@@ -331,7 +338,15 @@ the input port."
                 (else
                  (with-store store
                    (cond ((assoc-ref opts 'export)
-                          (export-from-store store opts))
+                          (cond ((equal? (assoc-ref opts 'format) "docker")
+                                 (match (car opts)
+                                   (('argument . (? store-path? item))
+                                    (format #t "~a\n"
+                                            (build-docker-image
+                                             item
+                                             #:system (assoc-ref opts 'system))))
+                                   (_ (leave (_ "argument must be a direct store path~%")))))
+                                (_ (export-from-store store opts))))
                          ((assoc-ref opts 'import)
                           (import-paths store (current-input-port)))
                          ((assoc-ref opts 'missing)
