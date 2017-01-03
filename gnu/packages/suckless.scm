@@ -79,23 +79,28 @@ optimising the environment for the application in use and the task performed.")
 (define-public dmenu
   (package
     (name "dmenu")
-    (version "4.5")
+    (version "4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/dmenu-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0l58jpxrr80fmyw5pgw5alm5qry49aw6y049745wl991v2cdcb08"))))
+                "1cwnvamqqlgczvd5dv5rsgqbhv8kp0ddjnhmavb3q732i8028yja"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
        #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+                          (string-append "PREFIX=" %output)
+                          (string-append "FREETYPEINC="
+                                         (assoc-ref %build-inputs "freetype")
+                                         "/include/freetype2"))
        #:phases
        (alist-delete 'configure %standard-phases)))
     (inputs
-     `(("libx11" ,libx11)
+     `(("freetype" ,freetype)
+       ("libxft" ,libxft)
+       ("libx11" ,libx11)
        ("libxinerama" ,libxinerama)))
     (home-page "http://tools.suckless.org/dmenu/")
     (synopsis "Dynamic menu")
