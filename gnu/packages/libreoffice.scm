@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -713,7 +714,7 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.1.5.2")
+    (version "5.1.6.2")
     (source
      (origin
       (method url-fetch)
@@ -722,7 +723,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "http://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "1qg0dj0zwh5ifhmvv4k771nmyqddz4ifn75s9mr1p0nyix8zks8x"))))
+               "150xb76pc3889gfy4jrnq8sidymm1aihkm5pzy8b1fdy51zip804"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
