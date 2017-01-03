@@ -41,16 +41,19 @@
 (define-public dwm
   (package
     (name "dwm")
-    (version "6.0")
+    (version "6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://dl.suckless.org/dwm/dwm-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "0mpbivy9j80l1jqq4bd4g4z8s5c54fxrjj44avmfwncjwqylifdj"))))
+              (base32 "1zkmwb6df6m254shx06ly90c0q4jl70skk1pvkixpb7hcxhwbxn2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
+       #:make-flags (list (string-append "FREETYPEINC="
+                                         (assoc-ref %build-inputs "freetype")
+                                         "/include/freetype2"))
        #:phases
        (alist-replace
         'configure
@@ -66,7 +69,9 @@
                      (string-append "DESTDIR=" out) "PREFIX="))))
          %standard-phases))))
     (inputs
-     `(("libx11" ,libx11)
+     `(("freetype" ,freetype)
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)
        ("libxinerama" ,libxinerama)))
     (home-page "http://dwm.suckless.org/")
     (synopsis "Dynamic window manager")
