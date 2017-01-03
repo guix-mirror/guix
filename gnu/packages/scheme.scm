@@ -332,7 +332,9 @@ mashups, office (web agendas, mail clients, ...), etc.")
                                   "2016/09/12/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "1rwymbbmnwdyhdzilv9w75an989xw9kjf3x52iqdng3nphpflcga"))))
+                "1rwymbbmnwdyhdzilv9w75an989xw9kjf3x52iqdng3nphpflcga"))
+              (patches
+               (search-patches "chicken-CVE-2016-6830+CVE-2016-6831.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
