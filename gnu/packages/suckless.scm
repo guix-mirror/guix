@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,15 +107,14 @@ numbers of user-defined menu items efficiently.")
 (define-public slock
   (package
     (name "slock")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/slock-"
                                   version ".tar.gz"))
-              (patches (search-patches "slock-CVE-2016-6866.patch"))
               (sha256
                (base32
-                "065xa9hl7zn0lv2f7yjxphqsa35rg6dn9hv10gys0sh4ljpa7d5s"))))
+                "0sif752303dg33f14k6pgwq2jp1hjyhqv6x4sy3sj281qvdljf5m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
