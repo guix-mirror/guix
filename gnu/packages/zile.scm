@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -21,14 +21,21 @@
 (define-module (gnu packages zile)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
-  #:use-module (gnu packages perl)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages version-control))
 
 (define-public zile
   (package
@@ -67,3 +74,70 @@
      "GNU Zile is a lightweight Emacs clone.  It usage is similar to the
 default Emacs configuration, but it carries a much lighter feature set.")
     (license gpl3+)))
+
+(define-public zile-on-guile
+  ;; This is a fork of Zile that uses Guile, announced here:
+  ;; <http://lists.gnu.org/archive/html/guile-user/2012-02/msg00033.html>.
+  (let ((commit "fd097811a60e58696d734c35b0eb7da3afc1adb7")
+        (revision "0"))
+    (package
+      (inherit zile)
+      (name "zile-on-guile")
+      (version (string-append (package-version zile)
+                              "-" revision "."
+                              (string-take commit 7)))
+      (home-page "https://github.com/spk121/zile")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)
+                      (recursive? #t)))           ;for the Gnulib sub-module
+                (sha256
+                 (base32
+                  "0wlli8hqal9ikmbl3a49kyhzyf164jk6mdbir3bclq2gxszs532d"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (inputs
+       `(("guile" ,guile-2.0)
+         ,@(package-inputs zile)))
+      (native-inputs
+       `(("m4" ,m4)                               ;for 'bootstrap'
+         ("autoconf" ,(autoconf-wrapper))
+         ("automake" ,automake)
+
+         ;; For some reason, 'bootstrap' insists on having these.
+         ("git" ,git)
+         ("gpg" ,gnupg)
+
+         ,@(package-native-inputs zile)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments zile)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'bootstrap
+               (lambda _
+                 ;; Make sure all the files are writable so that ./bootstrap
+                 ;; can proceed.
+                 (for-each (lambda (file)
+                             (chmod file #o755))
+                           (find-files "."))
+                 (patch-shebang "gnulib/gnulib-tool")
+                 (zero? (system* "sh" "./bootstrap"
+                                 "--gnulib-srcdir=gnulib"
+                                 "--skip-git" "--skip-po"
+                                 "--verbose"))))
+             (add-after 'install 'wrap-command
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; Add zile.scm to the search path.
+                 (let* ((out    (assoc-ref outputs "out"))
+                        (scheme (dirname
+                                 (car (find-files out "^zile\\.scm$")))))
+                   (wrap-program (string-append out "/bin/zile-on-guile")
+                     `("GUILE_LOAD_PATH" ":" prefix (,scheme)))
+                   #t)))))))
+      (synopsis "Lightweight clone of the Emacs editor using Guile")
+      (description
+       "GNU Zile is a lightweight clone of the Emacs editor, and Zile-on-Guile
+is a variant of Zile that can be extended in Guile Scheme.  Hitting
+@kbd{M-C} (or: @kbd{Alt} and @kbd{C}) brings up a Guile REPL from which
+interactive functions akin to those of Emacs can be invoked."))))
