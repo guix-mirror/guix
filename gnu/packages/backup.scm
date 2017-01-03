@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -544,3 +545,37 @@ changes are stored.")
     (home-page "https://attic-backup.org/")
     (license license:bsd-3)
     (properties `((superseded . ,borg)))))
+
+(define-public wimlib
+  (package
+    (name "wimlib")
+    (version "1.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wimlib.net/downloads/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mbz03smlc054i2m9q2sbqymml9m897kfs84q7g81i26y811p6wq"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)
+       ("libxml2" ,libxml2)
+       ("ntfs-3g" ,ntfs-3g)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags (list "--enable-test-support")))
+    (home-page "https://wimlib.net/")
+    (synopsis "WIM file manipulation library and utilities")
+    (description "wimlib is a C library and set of command-line utilities for
+creating, modifying, extracting, and mounting archives in the Windows Imaging
+Format (@dfn{WIM files}).  It can capture and apply WIMs directly from and to
+NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
+    ;; wimlib is dual-licenced under version 3 or later of either the GPL or
+    ;; LGPL, except those files explicitly marked as being released into the
+    ;; public domain (CC0) in their headers.
+    (license (list license:gpl3+
+                   license:lgpl3+
+                   license:cc0))))
