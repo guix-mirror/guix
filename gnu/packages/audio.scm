@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2699,7 +2699,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.4.11")
+    (version "0.4.12")
     (source
      (origin
        (method url-fetch)
@@ -2707,7 +2707,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0j765drdb7h3y5ipjv9sg1a0if6zh8cksbv3rdk5ppd7kxcrjnlb"))))
+         "0n9skdap1vnl6w52fx0gsrjlk7w3xgdwi62ycyf96h29rx059z6a"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))
