@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
@@ -1425,5 +1425,75 @@ type system, elevating types to first-class status.")
      "guile-aspell is a Guile Scheme library for comparing a string against a
 dictionary and suggesting spelling corrections.")
     (license gpl3+)))
+
+(define-public guile-bash
+  ;; This project is currently retired.  It was initially announced here:
+  ;; <https://lists.gnu.org/archive/html/guile-user/2015-02/msg00003.html>.
+  (let ((commit "1eabc563ca5692b3e08d84f1f0e6fd2283284469")
+        (revision "0"))
+    (package
+      (name "guile-bash")
+      (version (string-append "0.1.6-" revision "." (string-take commit 7)))
+      (home-page
+       "https://anonscm.debian.org/cgit/users/kaction-guest/retired/dev.guile-bash.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (commit commit)
+                      (url home-page)))
+                (sha256
+                 (base32
+                  "097vny990wp2qpjij6a5a5gwc6fxzg5wk56inhy18iki5v6pif1p"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "sh" "bootstrap")))))
+
+         #:configure-flags
+         ;; Add -I to match 'bash.pc' of Bash 4.4.
+         (list (string-append "CPPFLAGS=-I"
+                              (assoc-ref %build-inputs "bash:include")
+                              "/include/bash/include")
+
+               ;; The '.a' file is useless.
+               "--disable-static"
+
+               ;; Install 'lib/bash' as Bash 4.4 expects.
+               (string-append "--libdir=" (assoc-ref %outputs "out")
+                              "/lib/bash"))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("autoconf" ,(autoconf-wrapper))
+                       ("automake" ,automake)
+                       ("libtool" ,libtool)
+                       ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
+                       ("gettext" ,gettext-minimal)))
+      (inputs `(("guile" ,guile-2.0)
+                ("bash:include" ,bash "include")))
+      (synopsis "Extend Bash using Guile")
+      (description
+       "Guile-Bash provides a shared library and set of Guile modules,
+allowing you to extend Bash in Scheme.  Scheme interfaces allow you to access
+the following aspects of Bash:
+
+@itemize
+@item aliases;
+@item setting and getting Bash variables;
+@item creating dynamic variables;
+@item creating Bash functions with a Scheme implementation;
+@item reader macro for output capturing;
+@item reader macro for evaluating raw Bash commands.
+@end itemize
+
+To enable it, run:
+
+@example
+enable -f ~/.guix-profile/lib/bash/libguile-bash.so scm
+@end example
+
+and then run @command{scm example.scm}.")
+      (license gpl3+))))
 
 ;;; guile.scm ends here
