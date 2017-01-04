@@ -168,6 +168,7 @@ successful, or false to signal an error."
         ((string=? system "i586-gnu") "/lib/ld.so.1")
         ((string=? system "i686-gnu") "/lib/ld.so.1")
         ((string=? system "aarch64-linux") "/lib/ld-linux-aarch64.so.1")
+        ((string=? system "powerpc-linux") "/lib/ld.so.1")
 
         ;; XXX: This one is used bare-bones, without a libc, so add a case
         ;; here just so we can keep going.
