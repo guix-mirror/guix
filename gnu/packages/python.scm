@@ -11719,6 +11719,28 @@ English stemmer.")
 (define-public python2-snowballstemmer
   (package-with-python2 python-snowballstemmer))
 
+(define-public python-sphinx-cloud-sptheme
+  (package
+    (name "python-sphinx-cloud-sptheme")
+    (version "1.7.1")
+    (source (origin
+      (method url-fetch)
+      (uri (pypi-uri "cloud_sptheme" version))
+      (sha256
+       (base32
+        "0zm9ap4p5dzln8f1m2immadaxv2xpg8jg4w53y52rhfl7pdb58vy"))))
+  (build-system python-build-system)
+  (native-inputs
+    `(("python-sphinx" ,python-sphinx)))
+  (home-page "https://bitbucket.org/ecollins/cloud_sptheme")
+  (synopsis "'Cloud' theme for Sphinx documenter")
+  (description "This package contains the \"Cloud\" theme for Sphinx and some
+related extensions.")
+  (license license:bsd-3)))
+
+(define-public python2-sphinx-cloud-sptheme
+  (package-with-python2 python-sphinx-cloud-sptheme))
+
 (define-public python-betamax
   (package
     (name "python-betamax")
