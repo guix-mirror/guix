@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +32,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -91,6 +92,17 @@ edges."
                      (map edge->tuple
                           (list p3 p3 p2)
                           (list p2 p1 p1))))))))
+
+(test-assert "reverse package DAG"
+  (let-values (((backend nodes+edges) (make-recording-backend)))
+    (run-with-store %store
+      (export-graph (list libunistring) 'port
+                    #:node-type %reverse-package-node-type
+                    #:backend backend))
+    ;; We should see nothing more than these 3 packages.
+    (let-values (((nodes edges) (nodes+edges)))
+      (and (member (package->tuple guile-2.0) nodes)
+           (->bool (member (edge->tuple libunistring guile-2.0) edges))))))
 
 (test-assert "bag-emerged DAG"
   (let-values (((backend nodes+edges) (make-recording-backend)))

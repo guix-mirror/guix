@@ -5445,6 +5445,10 @@ end, display the fraction of packages covered by all these updaters.
 List top-level dependent packages that would need to be rebuilt as a
 result of upgrading one or more packages.
 
+@xref{Invoking guix graph, the @code{reverse-package} type of
+@command{guix graph}}, for information on how to visualize the list of
+dependents of a package.
+
 @end table
 
 Be aware that the @code{--list-dependent} option only
@@ -5745,6 +5749,20 @@ several types of graphs, allowing you to choose the level of detail:
 This is the default type used in the example above.  It shows the DAG of
 package objects, excluding implicit dependencies.  It is concise, but
 filters out many details.
+
+@item reverse-package
+This shows the @emph{reverse} DAG of packages.  For example:
+
+@example
+guix graph --type=reverse-package ocaml
+@end example
+
+... yields the graph of packages that depend on OCaml.
+
+Note that for core packages this can yield huge graphs.  If all you want
+is to know the number of packages that depend on a given package, use
+@command{guix refresh --list-dependent} (@pxref{Invoking guix refresh,
+@option{--list-dependent}}).
 
 @item bag-emerged
 This is the package DAG, @emph{including} implicit inputs.

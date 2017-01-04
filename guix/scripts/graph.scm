@@ -37,6 +37,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (%package-node-type
+            %reverse-package-node-type
             %bag-node-type
             %bag-with-origins-node-type
             %bag-emerged-node-type
@@ -100,6 +101,25 @@ name."
    (identifier (lift1 object-address %store-monad))
    (label node-full-name)
    (edges (lift1 package-node-edges %store-monad))))
+
+
+;;;
+;;; Reverse package DAG.
+;;;
+
+(define %reverse-package-node-type
+  ;; For this node type we first need to compute the list of packages and the
+  ;; list of back-edges.  Since we want to do it only once, we use the
+  ;; promises below.
+  (let* ((packages   (delay (fold-packages cons '())))
+         (back-edges (delay (run-with-store #f    ;store not actually needed
+                              (node-back-edges %package-node-type
+                                               (force packages))))))
+    (node-type
+     (inherit %package-node-type)
+     (name "reverse-package")
+     (description "the reverse DAG of packages")
+     (edges (lift1 (force back-edges) %store-monad)))))
 
 
 ;;;
@@ -323,6 +343,7 @@ substitutes."
 (define %node-types
   ;; List of all the node types.
   (list %package-node-type
+        %reverse-package-node-type
         %bag-node-type
         %bag-with-origins-node-type
         %bag-emerged-node-type
