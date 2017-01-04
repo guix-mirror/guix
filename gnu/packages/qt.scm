@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1313,3 +1313,37 @@ embed content from the World Wide Web into your Qt application.  At the same
 time Web content can be enhanced with native controls.")
 
     (license license:lgpl2.1+)))
+
+(define-public dotherside
+  (package
+    (name "dotherside")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/filcuc/DOtherSide/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pqlrvy4ajjir80ra79ka3n0rjj0ir0f0m91cq86iz3nnw8w148z"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://github.com/frankosterfeld/qtkeychain")
+    (synopsis "C language library for creating bindings for the Qt QML language")
+    (description
+     "DOtherSide is a C language library for creating bindings for the
+QT QML language.  The following features are implementable from
+a binding language:
+@itemize
+@item Creating custom QObject
+@item Creating custom QAbstractListModels
+@item Creating custom properties, signals and slots
+@item Creating from QML QObject defined in the binded language
+@item Creating from Singleton QML QObject defined in the binded language
+@end itemize\n")
+    (license license:lgpl3)))                    ;version 3 only (+ exception)
