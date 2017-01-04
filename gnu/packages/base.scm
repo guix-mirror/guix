@@ -117,15 +117,14 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.2.2")
+   (version "4.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
-                                ".tar.bz2"))
+                                ".tar.xz"))
             (sha256
              (base32
-              "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))
-            (patches (search-patches "sed-hurd-path-max.patch"))))
+              "1anhdgah8h423hlmn9hwzxzr7hjbqjm6hxq3z1p7p7nf8640vhj7"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
@@ -140,8 +139,10 @@ including, for example, recursive directory searching.")
                   (substitute* '("testsuite/bsd.sh"
                                  "testsuite/bug-regex9.c")
                     (("/bin/sh")
-                     (string-append bash "/bin/bash")))
+                     (string-append bash "/bin/sh")))
                   #t)))))))
+   (native-inputs
+    `(("perl" ,perl))) ; for build-aux/help2man
    (description
     "Sed is a non-interactive, text stream editor.  It receives a text
 input from a file or from standard input and it then applies a series of text
@@ -149,7 +150,7 @@ editing commands to the stream and prints its output to standard output.  It
 is often used for substituting text patterns in a stream.  The GNU
 implementation offers several extensions over the standard utility.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/sed/")))
+   (home-page "https://www.gnu.org/software/sed/")))
 
 (define-public tar
   (package
