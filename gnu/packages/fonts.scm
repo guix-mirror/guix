@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -681,6 +681,49 @@ utilities to ease adding new glyphs to the font.")
 all languages with a consistent look and aesthetic.  Its goal is to properly
 display all Unicode symbols.")
     (license license:silofl1.1)))
+
+(define-public font-google-roboto
+  (package
+    (name "font-google-roboto")
+    (version "2.136")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/google/roboto/releases/download/"
+                           "v" version "/roboto-hinted.zip"))
+       (file-name (string-append name "-" version ".zip"))
+       (sha256
+        (base32
+         "0spscx08fad7i8qs7icns96iwcapniq8lwwqqvbf7bamvs8qfln4"))))
+    (native-inputs `(("unzip" ,unzip)))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((PATH (string-append (assoc-ref %build-inputs
+                                                         "unzip")
+                                              "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype")))
+                     (setenv "PATH" PATH)
+                     (system* "unzip" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (chdir "roboto-hinted")
+                     (for-each (lambda (ttf)
+                                 (copy-file ttf
+                                            (string-append font-dir "/" ttf)))
+                               (find-files "." "\\.ttf$"))))))
+    (home-page "https://github.com/google/roboto")
+    (synopsis "The Roboto family of fonts")
+    (description
+     "Roboto is Google’s signature family of fonts, the default font on Android
+and Chrome OS, and the recommended font for the
+visual language \"Material Design\".")
+    (license license:asl2.0)))
 
 (define-public font-un
   (package
