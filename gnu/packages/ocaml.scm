@@ -777,7 +777,10 @@ compilers that can directly deal with packages.")
     (native-inputs
      `(("libxml2" ,libxml2))) ; for xmllint
     (arguments
-     `(#:tests? #f)) ; tests are done during build
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests are done during build.
+         (delete 'check))))
     (home-page "http://ounit.forge.ocamlcore.org")
     (synopsis "Unit testing framework for OCaml")
     (description "Unit testing framework for OCaml.  It is similar to JUnit and
