@@ -834,7 +834,10 @@ files in these formats.")
     (native-inputs
      `(("ounit" ,ocaml-ounit)))
     (arguments
-     `(#:tests? #f)) ; tests are done during build
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests are done during build.
+         (delete 'check))))
     (home-page "https://forge.ocamlcore.org/projects/ocamlmod")
     (synopsis "Generate modules from OCaml source files")
     (description "Generate modules from OCaml source files.")
