@@ -7920,3 +7920,43 @@ mm10.  In addition, it contains a blacklist filter to remove regions that
 display copy number variation.  Files are stored as GRanges objects from the
 GenomicRanges Bioconductor package.")
     (license license:gpl2)))
+
+(define-public r-copywriter
+  (package
+    (name "r-copywriter")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "CopywriteR" version))
+       (sha256
+        (base32
+         "1bwwnsyk7cpgwkagsnn5mv6fv233b0rkhjvbadrh70h8m4anawfj"))))
+    (properties `((upstream-name . "CopywriteR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-chipseq" ,r-chipseq)
+       ("r-copyhelper" ,r-copyhelper)
+       ("r-data-table" ,r-data-table)
+       ("r-dnacopy" ,r-dnacopy)
+       ("r-futile-logger" ,r-futile-logger)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-iranges" ,r-iranges)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/PeeperLab/CopywriteR")
+    (synopsis "Copy number information from targeted sequencing")
+    (description
+     "CopywriteR extracts DNA copy number information from targeted sequencing
+by utilizing off-target reads.  It allows for extracting uniformly distributed
+copy number information, can be used without reference, and can be applied to
+sequencing data obtained from various techniques including chromatin
+immunoprecipitation and target enrichment on small gene panels.  Thereby,
+CopywriteR constitutes a widely applicable alternative to available copy
+number detection tools.")
+    (license license:gpl2)))
