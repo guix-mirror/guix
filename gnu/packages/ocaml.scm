@@ -90,58 +90,59 @@
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh-references
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let* ((sh (string-append (assoc-ref inputs "bash")
-                                                "/bin/sh"))
-                             (quoted-sh (string-append "\"" sh "\"")))
-                        (with-fluids ((%default-port-encoding #f))
-                          (for-each (lambda (file)
-                                      (substitute* file
-                                        (("\"/bin/sh\"")
-                                         (begin
-                                           (format (current-error-port) "\
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((sh (string-append (assoc-ref inputs "bash")
+                                       "/bin/sh"))
+                    (quoted-sh (string-append "\"" sh "\"")))
+               (with-fluids ((%default-port-encoding #f))
+                 (for-each
+                  (lambda (file)
+                    (substitute* file
+                      (("\"/bin/sh\"")
+                       (begin
+                         (format (current-error-port) "\
 patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
-                                                   file quoted-sh)
-                                           quoted-sh))))
-                                    (find-files "." "\\.ml$"))
-                          #t))))
+                                 file quoted-sh)
+                         quoted-sh))))
+                  (find-files "." "\\.ml$"))
+                 #t))))
          (replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (mandir (string-append out "/share/man")))
-                      ;; Custom configure script doesn't recognize
-                      ;; --prefix=<PREFIX> syntax (with equals sign).
-                      (zero? (system* "./configure"
-                                      "--prefix" out
-                                      "--mandir" mandir)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mandir (string-append out "/share/man")))
+               ;; Custom configure script doesn't recognize
+               ;; --prefix=<PREFIX> syntax (with equals sign).
+               (zero? (system* "./configure"
+                               "--prefix" out
+                               "--mandir" mandir)))))
          (replace 'build
-                  (lambda _
-                    (zero? (system* "make" "-j" (number->string
-                                                 (parallel-job-count))
-                                    "world.opt"))))
+           (lambda _
+             (zero? (system* "make" "-j" (number->string
+                                          (parallel-job-count))
+                             "world.opt"))))
          (delete 'check)
          (add-after 'install 'check
-                    (lambda _
-                      (with-directory-excursion "testsuite"
-                        (zero? (system* "make" "all")))))
+           (lambda _
+             (with-directory-excursion "testsuite"
+               (zero? (system* "make" "all")))))
          (add-before 'check 'prepare-socket-test
-                     (lambda _
-                       (format (current-error-port)
-                               "Spawning local test web server on port 8080~%")
-                       (when (zero? (primitive-fork))
-                         (run-server (lambda (request request-body)
-                                       (values '((content-type . (text/plain)))
-                                               "Hello!"))
-                                     'http '(#:port 8080)))
-                       (let ((file "testsuite/tests/lib-threads/testsocket.ml"))
-                         (format (current-error-port)
-                                 "Patching ~a to use localhost port 8080~%"
-                                 file)
-                         (substitute* file
-                           (("caml.inria.fr") "localhost")
-                           (("80") "8080")
-                           (("HTTP1.0") "HTTP/1.0"))
-                         #t))))))
+           (lambda _
+             (format (current-error-port)
+                     "Spawning local test web server on port 8080~%")
+             (when (zero? (primitive-fork))
+               (run-server (lambda (request request-body)
+                             (values '((content-type . (text/plain)))
+                                     "Hello!"))
+                           'http '(#:port 8080)))
+             (let ((file "testsuite/tests/lib-threads/testsocket.ml"))
+               (format (current-error-port)
+                       "Patching ~a to use localhost port 8080~%"
+                       file)
+               (substitute* file
+                 (("caml.inria.fr") "localhost")
+                 (("80") "8080")
+                 (("HTTP1.0") "HTTP/1.0"))
+               #t))))))
     (home-page "https://ocaml.org/")
     (synopsis "The OCaml programming language")
     (description
