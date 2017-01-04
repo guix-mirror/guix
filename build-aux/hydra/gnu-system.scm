@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,7 +123,8 @@ SYSTEM."
 (define %cross-targets
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"
-    "arm-linux-gnueabihf"))
+    "arm-linux-gnueabihf"
+    "powerpc-linux-gnu"))
 
 (define (demo-os)
   "Return the \"demo\" 'operating-system' structure."
