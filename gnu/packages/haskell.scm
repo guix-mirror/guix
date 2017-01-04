@@ -8131,29 +8131,27 @@ dependency.")
 
 (define-public ghc-language-c
   (package
-   (name "ghc-language-c")
-   (version "0.5.0")
-   (source
+    (name "ghc-language-c")
+    (version "0.5.0")
+    (source
      (origin
        (method url-fetch)
-       (uri (string-append
-              "https://hackage.haskell.org/package/language-c/language-c-"
-              version
-              ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "language-c/language-c-" version ".tar.gz"))
        (sha256
-         (base32
-           "08i2bl7jmmymn2sldzlbz6ig7lx3wfwhlpadzibs3fx72z08pmc6"))))
-   (build-system haskell-build-system)
-   (inputs `(("ghc-syb" ,ghc-syb)))
-   (native-inputs
+        (base32
+         "08i2bl7jmmymn2sldzlbz6ig7lx3wfwhlpadzibs3fx72z08pmc6"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-syb" ,ghc-syb)))
+    (native-inputs
      `(("ghc-happy" ,ghc-happy)
        ("ghc-alex" ,ghc-alex)))
-   (home-page "http://visq.github.io/language-c/")
-   (synopsis "Analysis and generation of C code")
-   (description
-     "Language C is a haskell library for the analysis and generation of C code.
-It features a complete, well tested parser and pretty printer for all of C99
+    (home-page "http://visq.github.io/language-c/")
+    (synopsis "Analysis and generation of C code")
+    (description
+     "Language C is a Haskell library for the analysis and generation of C code.
+It features a complete, well-tested parser and pretty printer for all of C99
 and a large set of GNU extensions.")
-   (license license:bsd-3)))
+    (license license:bsd-3)))
 
 ;;; haskell.scm ends here
