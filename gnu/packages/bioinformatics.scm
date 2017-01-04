@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -7869,3 +7869,28 @@ replacement for strverscmp.")
 samples into a single report.  It contains modules for a large number of
 common bioinformatics tools.")
     (license license:gpl3)))
+
+(define-public r-chipseq
+  (package
+    (name "r-chipseq")
+    (version "1.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "chipseq" version))
+       (sha256
+        (base32
+         "115ayp82rs99iaswrx45skw1i5iacgwzz5k8rzijbp5qic0554n0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shortread" ,r-shortread)))
+    (home-page "http://bioconductor.org/packages/chipseq")
+    (synopsis "Package for analyzing ChIPseq data")
+    (description
+     "This package provides tools for processing short read data from ChIPseq
+experiments.")
+    (license license:artistic2.0)))
