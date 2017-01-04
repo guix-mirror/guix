@@ -8073,4 +8073,31 @@ It features a complete, well-tested parser and pretty printer for all of C99
 and a large set of GNU extensions.")
     (license license:bsd-3)))
 
+(define-public ghc-markdown-unlit
+  (package
+    (name "ghc-markdown-unlit")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://hackage/package/markdown-unlit/"
+                    "markdown-unlit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kj2bffl7ndd8ygwwa3r1mbpwbxbfhyfgnbla8k8g9i6ffp0qrbw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-silently" ,ghc-silently)
+       ("ghc-stringbuilder" ,ghc-stringbuilder)
+       ("ghc-temporary" ,ghc-temporary)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/sol/markdown-unlit#readme")
+    (synopsis "Literate Haskell support for Markdown")
+    (description "This package allows you to have a README.md that at the
+same time is a literate Haskell program.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
