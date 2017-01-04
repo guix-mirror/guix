@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -214,7 +214,7 @@ interface, for the Transmission BitTorrent daemon.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.29.0")
+    (version "1.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -222,7 +222,7 @@ interface, for the Transmission BitTorrent daemon.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bn8j6yhjnsxlxr1cdxw39gphvsrk3qhvvq92rsirxjvwwix0r0s"))))
+                "1xiiqk4yiqr0c4hf05zkma9if13lp3wh37z1r0w60ahxs5k56v5z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"
@@ -237,7 +237,8 @@ interface, for the Transmission BitTorrent daemon.")
                 (string-append "// " text)))
              (substitute* "test/LpdMessageReceiverTest.cc"
                (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
-                (string-append "// " text))))))))
+                (string-append "// " text)))
+             #t)))))
     (native-inputs
      `(("cppunit" ,cppunit) ; for the tests
        ("pkg-config" ,pkg-config)))
