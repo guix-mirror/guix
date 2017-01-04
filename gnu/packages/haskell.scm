@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -8099,5 +8101,36 @@ and a large set of GNU extensions.")
     (description "This package allows you to have a README.md that at the
 same time is a literate Haskell program.")
     (license license:expat)))
+
+(define-public corrode
+  (let ((commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
+    (package
+      (name "corrode")
+      (version (string-append "0.0.1-" (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jameysharp/corrode.git")
+               (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
+         (file-name
+          (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
+      (build-system haskell-build-system)
+      (inputs
+       `(("ghc-language-c" ,ghc-language-c)
+         ("ghc-markdown-unlit" ,ghc-markdown-unlit)))
+      (home-page "https://github.com/jameysharp/corrode")
+      (synopsis "Automatic semantics-preserving translation from C to Rust")
+      (description
+       "This program reads a C source file and prints an equivalent module in
+Rust syntax.  It is intended to be useful for two different purposes:
+
+@enumerate
+@item Partial automation for migrating legacy code that was implemented in C.
+@item A new, complementary approach to static analysis for C programs.
+@end enumerate\n")
+      (license license:gpl2+))))
 
 ;;; haskell.scm ends here
