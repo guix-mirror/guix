@@ -9,6 +9,7 @@
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+# Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 #
@@ -129,6 +130,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/fcitx.scm			\
   %D%/packages/figlet.scm			\
   %D%/packages/file.scm				\
+  %D%/packages/file-systems.scm			\
   %D%/packages/finance.scm			\
   %D%/packages/firmware.scm			\
   %D%/packages/flashing-tools.scm		\
