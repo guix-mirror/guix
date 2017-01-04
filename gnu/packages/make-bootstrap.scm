@@ -441,8 +441,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                  ;; the 'pre-configure phase of our main gcc package, because
                  ;; that shared library is not present in this static gcc.  See
                  ;; <https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00008.html>.
-                 (substitute* (find-files "gcc/config"
-                                          "^gnu-user.*\\.h$")
+                 (substitute* (cons "gcc/config/rs6000/sysv4.h"
+                                    (find-files "gcc/config"
+                                                "^gnu-user.*\\.h$"))
                    ((" -lgcc_s}}") "}}")))
                ,phases)))))
      (native-inputs

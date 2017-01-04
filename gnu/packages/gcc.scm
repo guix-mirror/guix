@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -211,7 +212,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
-                                         "^(linux|gnu)(64|-elf|-eabi)?\\.h$")
+                                         "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
                   (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
                    (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
                            suffix
@@ -240,7 +241,21 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
 ~a"
-                           libc line))))
+                           libc line)))
+
+              ;; The rs6000 (a.k.a. powerpc) config in GCC does not use
+              ;; GNU_USER_* defines.  Do the above for this case.
+              (substitute*
+                  "gcc/config/rs6000/sysv4.h"
+                (("#define LIB_LINUX_SPEC (.*)$" _ suffix)
+                 (format #f "#define LIB_LINUX_SPEC \
+\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib -lgcc_s}} \" ~a"
+                         libc libc libdir suffix))
+                (("#define	STARTFILE_LINUX_SPEC.*$" line)
+                 (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
+#define STANDARD_STARTFILE_PREFIX_2 \"\"
+~a"
+                         libc line))))
 
               ;; Don't retain a dependency on the build-time sed.
               (substitute* "fixincludes/fixincl.x"
