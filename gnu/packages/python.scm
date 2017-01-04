@@ -11695,6 +11695,30 @@ provide extendible implementations of common aspects of a cloud so that you can
 focus on building massively scalable web applications.")
     (license license:expat)))
 
+(define-public python-snowballstemmer
+  (package
+    (name "python-snowballstemmer")
+    (version "1.2.1")
+    (source (origin
+      (method url-fetch)
+      (uri (pypi-uri "snowballstemmer" version))
+      (sha256
+       (base32
+        "0a0idq4y5frv7qsg2x62jd7rd272749xk4x99misf5rcifk2d7wi"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; No tests exist
+       #:tests? #f))
+    (home-page "https://github.com/shibukawa/snowball_py")
+    (synopsis "Snowball stemming library collection for Python")
+    (description "This package provides 16 word stemmer algorithms generated
+from Snowball algorithms.  It includes the 15 original ones plus the Poerter
+English stemmer.")
+    (license license:bsd-3)))
+
+(define-public python2-snowballstemmer
+  (package-with-python2 python-snowballstemmer))
+
 (define-public python-betamax
   (package
     (name "python-betamax")
