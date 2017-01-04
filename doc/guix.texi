@@ -4685,7 +4685,7 @@ procedure (@pxref{Defining Packages, @code{package-input-rewriting}}).
 
 @item --with-graft=@var{package}=@var{replacement}
 This is similar to @code{--with-input} but with an important difference:
-instead of rebuilding all the dependency chain, @var{replacement} is
+instead of rebuilding the whole dependency chain, @var{replacement} is
 built and then @dfn{grafted} onto the binaries that were initially
 referring to @var{package}.  @xref{Security Updates}, for more
 information on grafts.
