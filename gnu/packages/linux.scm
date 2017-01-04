@@ -2216,7 +2216,7 @@ thanks to the use of namespaces.")
                             "CC=gcc"))
        #:phases (alist-delete 'configure %standard-phases)
        #:tests? #f))  ; no test suite
-    (home-page "http://sourceforge.net/projects/hdparm/")
+    (home-page "https://sourceforge.net/projects/hdparm/")
     (synopsis "Tune hard disk parameters for high performance")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
@@ -2282,7 +2282,7 @@ about ACPI devices.")
                (base32
                 "1vl7c6vc724v4jwki17czgj6lnrknnj1a6llm8gkl32i2gnam5j3"))))
     (build-system gnu-build-system)
-    (home-page "http://sourceforge.net/projects/acpid2/")
+    (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
     (description
      "acpid is designed to notify user-space programs of Advanced
@@ -2407,7 +2407,7 @@ protocol in question.")
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
-    (home-page "http://sourceforge.net/projects/libavc1394/")
+    (home-page "https://sourceforge.net/projects/libavc1394/")
     (synopsis "AV/C protocol library for IEEE 1394")
     (description
      "Libavc1394 is a programming interface to the AV/C specification from
@@ -2888,7 +2888,7 @@ The package provides additional NTFS tools.")
     (description
      "Monitor a hardware random number generator, and supply entropy
 from that to the system kernel's @file{/dev/random} machinery.")
-    (home-page "http://sourceforge.net/projects/gkernel")
+    (home-page "https://sourceforge.net/projects/gkernel")
     ;; The source package is offered under the GPL2+, but the files
     ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
     (license (list license:gpl2 license:gpl2+))))

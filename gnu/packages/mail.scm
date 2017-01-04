@@ -1251,7 +1251,7 @@ program's primary purpose.")
        ("libtool" ,libtool)))
     (inputs
      `(("libesmtp" ,libesmtp)))
-    (home-page "http://sourceforge.net/projects/esmtp/")
+    (home-page "https://sourceforge.net/projects/esmtp/")
     (synopsis "Relay-only mail transfer agent (MTA)")
     (description "Esmtp is a simple relay-only mail transfer agent built using
 libESMTP.  It sends e-mail via a remote SMTP server using credentials from the

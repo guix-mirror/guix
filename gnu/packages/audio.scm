@@ -1448,7 +1448,7 @@ connections between them.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libsndfile" ,libsndfile)))
-    (home-page "http://sourceforge.net/projects/bs2b/")
+    (home-page "https://sourceforge.net/projects/bs2b/")
     (synopsis "Bauer stereophonic-to-binaural DSP")
     (description
      "The Bauer stereophonic-to-binaural DSP (bs2b) library and plugins is
@@ -2279,7 +2279,7 @@ can play and record audio files.")
         (base32 "1hmadwqfpg15vhwq9pa1sl5xslibrjpk6hpq2s9hfmx1s5l6ihfw"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no 'check' target
-    (home-page "http://sourceforge.net/p/soxr/wiki/Home/")
+    (home-page "https://sourceforge.net/p/soxr/wiki/Home/")
     (synopsis "One-dimensional sample-rate conversion library")
     (description
      "The SoX Resampler library (libsoxr) performs one-dimensional sample-rate

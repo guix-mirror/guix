@@ -362,7 +362,7 @@ login, passwd, su, groupadd, and useradd.")
        #:tests? #f))                              ; no tests
     (inputs `(("shadow" ,shadow)))
 
-    (home-page "http://sourceforge.net/projects/mingetty")
+    (home-page "https://sourceforge.net/projects/mingetty")
     (synopsis "Getty for the text console")
     (description
      "Small console getty that is started on the Linux text console,
@@ -717,7 +717,7 @@ by bandwidth they use.")
              `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc)))))
         %standard-phases)))
     ;; The clusterssh.sourceforge.net address requires login to view
-    (home-page "http://sourceforge.net/projects/clusterssh/")
+    (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
     (description
      "ClusterSSH controls a number of xterm windows via a single graphical

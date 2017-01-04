@@ -392,7 +392,7 @@ Ogg, MP3, or FLAC formats.  Its goal is to be easy to use, requiring only
 a few mouse clicks to convert an entire album.  It supports CDDB lookups
 for album and track information.")
    (license license:gpl2)
-   (home-page "http://sourceforge.net/projects/ripperx/")))
+   (home-page "https://sourceforge.net/projects/ripperx/")))
 
 (define-public libmpcdec
   (package

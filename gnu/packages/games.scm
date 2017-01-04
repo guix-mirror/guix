@@ -968,7 +968,7 @@ Collect herrings and other goodies while sliding down the hill, but avoid fish
 bones.
 
 This game is based on the GPL version of the famous game TuxRacer.")
-    (home-page "http://sourceforge.net/projects/extremetuxracer/")
+    (home-page "https://sourceforge.net/projects/extremetuxracer/")
     (license license:gpl2+)))
 
 (define-public supertuxkart

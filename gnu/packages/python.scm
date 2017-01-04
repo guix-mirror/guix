@@ -6555,7 +6555,7 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyasn1" ,python-pyasn1)))
-    (home-page "http://sourceforge.net/projects/pyasn1/")
+    (home-page "https://sourceforge.net/projects/pyasn1/")
     (synopsis "ASN.1 codec implementations")
     (description
      "Pyasn1-modules is a collection of Python modules providing ASN.1 types and

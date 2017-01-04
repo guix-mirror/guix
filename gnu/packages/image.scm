@@ -580,7 +580,7 @@ compose, and analyze GIF images.")
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("bzip2" ,bzip2)))
-    (home-page "http://sourceforge.net/projects/enlightenment/")
+    (home-page "https://sourceforge.net/projects/enlightenment/")
     (synopsis
      "Loading, saving, rendering and manipulating image files")
     (description

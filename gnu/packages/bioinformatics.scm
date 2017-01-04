@@ -1097,7 +1097,7 @@ confidence to have in an alignment.")
        ("pigz" ,pigz)
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
-    (home-page "http://sourceforge.net/p/bless-ec/wiki/Home/")
+    (home-page "https://sourceforge.net/p/bless-ec/wiki/Home/")
     (synopsis "Bloom-filter-based error correction tool for NGS reads")
     (description
      "@dfn{Bloom-filter-based error correction solution for high-throughput

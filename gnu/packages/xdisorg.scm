@@ -601,7 +601,7 @@ X Window System.")
        ("libxt" ,libxt)
        ("libxext" ,libxext)
        ("libxinerama" ,libxinerama)))
-    (home-page "http://sourceforge.net/projects/libxosd/")
+    (home-page "https://sourceforge.net/projects/libxosd/")
     (synopsis "X On Screen Display")
     (description
      "XOSD provides a C library and a simple utility (osd_cat) for displaying

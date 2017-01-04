@@ -1322,7 +1322,7 @@ Password Generator\".")
                                              ,(package-version perl)
                                              "/czplib/"))
             #t)))))
-    (home-page "http://sourceforge.net/projects/czplib/")
+    (home-page "https://sourceforge.net/projects/czplib/")
     (synopsis "Library for genomic analysis")
     (description "Chaolin Zhang's Perl Library (czplib) contains assorted
 functions and data structures for processing and analysing genomic and

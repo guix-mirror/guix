@@ -2200,7 +2200,7 @@ removed.  Both IPv4 and IPv6 are supported.")
     (inputs
      `(("ghc-mtl" ,ghc-mtl)))
     (home-page
-     "http://sourceforge.net/projects/lazy-regex")
+     "https://sourceforge.net/projects/lazy-regex")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "@code{Text.Regex.Base} provides the interface API for
 regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
@@ -2223,7 +2223,7 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
-    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "POSIX regular expressions for Haskell")
     (description "This library provides the POSIX regex backend used by the
 Haskell library @code{regex-base}.")
@@ -2247,7 +2247,7 @@ Haskell library @code{regex-base}.")
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)
        ("ghc-regex-posix" ,ghc-regex-posix)))
-    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "This library provides one module layer over
 @code{regex-posix} to replace @code{Text.Regex}.")
