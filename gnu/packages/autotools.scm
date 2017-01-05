@@ -329,11 +329,13 @@ Makefile, simplifying the entire process for the developer.")
            (let ((bash (assoc-ref inputs "bash")))
              (substitute* "tests/testsuite"
                (("/bin/sh")
-                (string-append bash "/bin/sh"))))))
+                (string-append bash "/bin/sh")))
+             #t)))
          (add-after 'patch-source-shebangs 'restore-ltmain-shebang
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build-aux/ltmain.in"
-               (("^#!.*/bin/sh$") "/bin/sh")))))))
+               (("^#!.*/bin/sh$") "/bin/sh"))
+             #t)))))
 
     (synopsis "Generic shared library support tools")
     (description
