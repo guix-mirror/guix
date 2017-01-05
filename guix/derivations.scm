@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -520,9 +520,9 @@ that form."
   (define (write-input input port)
     (match input
       (($ <derivation-input> path sub-drvs)
-       (display "(" port)
-       (write path port)
-       (display "," port)
+       (display "(\"" port)
+       (display path port)
+       (display "\"," port)
        (write-string-list sub-drvs)
        (display ")" port))))
 
@@ -545,7 +545,7 @@ that form."
      (write-list inputs write-input port)
      (display "," port)
      (write-string-list sources)
-     (format port ",~s,~s," system builder)
+     (simple-format port ",\"~a\",\"~a\"," system builder)
      (write-string-list args)
      (display "," port)
      (write-list env-vars write-env-var port)
