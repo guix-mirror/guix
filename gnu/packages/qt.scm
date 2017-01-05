@@ -55,6 +55,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -946,6 +947,30 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `())
     (inputs
      `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtgamepad
+  (package (inherit qtsvg)
+    (name "qtgamepad")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "10lijbsg9xx5ddbbjymdgl41nxz99yn1qgiww2kkggxwwdjj2axv"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libxrender" ,libxrender)
+       ("sdl2" ,sdl2)
+       ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
 (define-public python-sip
