@@ -622,7 +622,7 @@ store.")
                       ;; Same for `popen'.
                       (substitute* "libio/iopopen.c"
                         (("/bin/sh")
-                         (string-append bash "/bin/bash")))
+                         (string-append bash "/bin/sh")))
 
                       ;; Same for the shell used by the 'exec' functions for
                       ;; scripts that lack a shebang.
