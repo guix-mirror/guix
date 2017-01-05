@@ -29,6 +29,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages fcitx)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
@@ -105,6 +106,7 @@ joystick, and graphics hardware.")
      ;;
      ;; For more information, see: https://dev.solus-project.com/T1721
      (append `(("dbus" ,dbus)
+               ("fcitx" ,fcitx) ; helps with CJK input
                ("glib" ,glib)
                ("ibus" ,ibus))
              (package-inputs sdl)))
