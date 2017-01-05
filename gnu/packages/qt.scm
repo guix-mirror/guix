@@ -781,6 +781,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("eudev" ,eudev)))))
 
+(define-public qtserialbus
+  (package (inherit qtsvg)
+    (name "qtserialbus")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0mxi43l2inpbar8rmg21qjg33bv3f1ycxjgvzjf12ncnybhdnzkj"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtserialport" ,qtserialport)))))
+
 (define-public qtwebchannel
   (package (inherit qtsvg)
     (name "qtwebchannel")
