@@ -365,7 +365,7 @@ functionality beyond that which is outlined in the POSIX standard.")
             (let ((bash (assoc-ref inputs "bash")))
               (substitute* "job.c"
                 (("default_shell =.*$")
-                 (format #f "default_shell = \"~a/bin/bash\";\n"
+                 (format #f "default_shell = \"~a/bin/sh\";\n"
                          bash)))))))))
    (synopsis "Remake files automatically")
    (description
