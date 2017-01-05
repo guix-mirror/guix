@@ -629,7 +629,7 @@ store.")
                       (substitute* (find-files "." "^paths\\.h$")
                         (("#define[[:blank:]]+_PATH_BSHELL[[:blank:]].*$")
                          (string-append "#define _PATH_BSHELL \""
-                                        bash "/bin/bash\"\n")))
+                                        bash "/bin/sh\"\n")))
 
                       ;; Nscd uses __DATE__ and __TIME__ to create a string to
                       ;; make sure the client and server come from the same
