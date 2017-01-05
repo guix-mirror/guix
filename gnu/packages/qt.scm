@@ -993,6 +993,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
+(define-public qtpurchasing
+  (package (inherit qtsvg)
+    (name "qtpurchasing")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0hkvrgafz1hx9q4yc3nskv3pd3fszghvvd5a7mj33ynf55wpb57n"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
