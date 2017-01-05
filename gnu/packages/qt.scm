@@ -973,6 +973,26 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
+(define-public qtscxml
+  (package (inherit qtsvg)
+    (name "qtscxml")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "135kknqdmib2cjryfmvfgv7a2qx9pyba3m7i7nkbc5d742r4mbcx"))
+             (modules '((guix build utils)))
+             (snippet
+              '(delete-file-recursively "tests/3rdparty"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
