@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -398,7 +398,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.8")
+    (version "2.5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -407,7 +407,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dghd0m5zwayv553g4cr990s4ig5lyh0b52qfdv5rbqnndpj3cjn"))))
+                "0znfznyqr360ryi7za9szbz1l5236v2cig25s4k7kkw0w8828xzh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
