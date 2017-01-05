@@ -11700,11 +11700,11 @@ focus on building massively scalable web applications.")
     (name "python-snowballstemmer")
     (version "1.2.1")
     (source (origin
-      (method url-fetch)
-      (uri (pypi-uri "snowballstemmer" version))
-      (sha256
-       (base32
-        "0a0idq4y5frv7qsg2x62jd7rd272749xk4x99misf5rcifk2d7wi"))))
+              (method url-fetch)
+              (uri (pypi-uri "snowballstemmer" version))
+              (sha256
+               (base32
+                "0a0idq4y5frv7qsg2x62jd7rd272749xk4x99misf5rcifk2d7wi"))))
     (build-system python-build-system)
     (arguments
      `(;; No tests exist
@@ -11724,19 +11724,19 @@ English stemmer.")
     (name "python-sphinx-cloud-sptheme")
     (version "1.7.1")
     (source (origin
-      (method url-fetch)
-      (uri (pypi-uri "cloud_sptheme" version))
-      (sha256
-       (base32
-        "0zm9ap4p5dzln8f1m2immadaxv2xpg8jg4w53y52rhfl7pdb58vy"))))
-  (build-system python-build-system)
-  (native-inputs
-    `(("python-sphinx" ,python-sphinx)))
-  (home-page "https://bitbucket.org/ecollins/cloud_sptheme")
-  (synopsis "'Cloud' theme for Sphinx documenter")
-  (description "This package contains the \"Cloud\" theme for Sphinx and some
+              (method url-fetch)
+              (uri (pypi-uri "cloud_sptheme" version))
+              (sha256
+               (base32
+                "0zm9ap4p5dzln8f1m2immadaxv2xpg8jg4w53y52rhfl7pdb58vy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://bitbucket.org/ecollins/cloud_sptheme")
+    (synopsis "'Cloud' theme for Sphinx documenter")
+    (description "This package contains the \"Cloud\" theme for Sphinx and some
 related extensions.")
-  (license license:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-sphinx-cloud-sptheme
   (package-with-python2 python-sphinx-cloud-sptheme))
@@ -11745,13 +11745,12 @@ related extensions.")
   (package
     (name "python-sphinx-alabaster-theme")
     (version "0.7.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "alabaster" version))
-        (sha256
-         (base32
-          "027anxzcb951gjlcc43y3rbn9qrw36d16vj9wd2smv5410xx9bs7"))))
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "alabaster" version))
+              (sha256
+               (base32
+                "027anxzcb951gjlcc43y3rbn9qrw36d16vj9wd2smv5410xx9bs7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pygments" ,python-pygments)))
