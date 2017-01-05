@@ -347,7 +347,8 @@ types of devices that provide serial consoles.")
          (delete 'configure)
          (add-after 'unpack 'patch-makefile
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile" (("/usr") (assoc-ref outputs "out")))))
+             (substitute* "Makefile" (("/usr") (assoc-ref outputs "out")))
+             #t))
          (add-before 'install 'create-output-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref %outputs "out")))
