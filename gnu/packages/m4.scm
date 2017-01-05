@@ -50,7 +50,7 @@
                     (substitute* (find-files "tests"
                                              "posix_spawn")
                       (("/bin/sh")
-                       (format #f "~a/bin/bash" bash)))))
+                       (format #f "~a/bin/sh" bash)))))
                 %standard-phases)))
    (synopsis "Macro processor")
    (description
