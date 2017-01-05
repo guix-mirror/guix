@@ -334,7 +334,7 @@ Makefile, simplifying the entire process for the developer.")
          (add-after 'patch-source-shebangs 'restore-ltmain-shebang
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build-aux/ltmain.in"
-               (("^#!.*/bin/sh$") "/bin/sh"))
+               (("^#!.*/bin/sh$") "#!/bin/sh"))
              #t)))))
 
     (synopsis "Generic shared library support tools")
