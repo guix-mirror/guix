@@ -2329,7 +2329,7 @@ dark background.")
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
-    (version "1.8.0")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2338,7 +2338,7 @@ dark background.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xsqiklg0q4w6gj0js1hvsz4lkypvcx6c9kzb1mz232gwlqx1azw"))))
+                "12065r7h1s9v8lnq5mk3654dkw4cq60ky8aniqq5n2ivv6qd2d4q"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Fuco1/smartparens")
