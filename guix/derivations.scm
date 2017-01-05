@@ -453,19 +453,22 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
        (loop (read drv-port)
              (cons (ununquote exp) result))))))
 
-(define read-derivation
-  (let ((cache (make-weak-value-hash-table 200)))
-    (lambda (drv-port)
-      "Read the derivation from DRV-PORT and return the corresponding
+(define %derivation-cache
+  ;; Maps derivation file names to <derivation> objects.
+  ;; XXX: This is redundant with 'atts-cache' in the store.
+  (make-weak-value-hash-table 200))
+
+(define (read-derivation drv-port)
+  "Read the derivation from DRV-PORT and return the corresponding
 <derivation> object."
-      ;; Memoize that operation because `%read-derivation' is quite expensive,
-      ;; and because the same argument is read more than 15 times on average
-      ;; during something like (package-derivation s gdb).
-      (let ((file (and=> (port-filename drv-port) basename)))
-        (or (and file (hash-ref cache file))
-            (let ((drv (%read-derivation drv-port)))
-              (hash-set! cache file drv)
-              drv))))))
+  ;; Memoize that operation because `%read-derivation' is quite expensive,
+  ;; and because the same argument is read more than 15 times on average
+  ;; during something like (package-derivation s gdb).
+  (let ((file (port-filename drv-port)))
+    (or (and file (hash-ref %derivation-cache file))
+        (let ((drv (%read-derivation drv-port)))
+          (hash-set! %derivation-cache file drv)
+          drv))))
 
 (define-inlinable (write-sequence lst write-item port)
   ;; Write each element of LST with WRITE-ITEM to PORT, separating them with a
@@ -866,10 +869,12 @@ output should not be used."
                                       system builder args env-vars #f))
          (drv        (add-output-paths drv-masked)))
 
-    (let ((file (add-text-to-store store (string-append name ".drv")
-                                   (derivation->string drv)
-                                   (map derivation-input-path inputs))))
-      (set-file-name drv file))))
+    (let* ((file (add-text-to-store store (string-append name ".drv")
+                                    (derivation->string drv)
+                                    (map derivation-input-path inputs)))
+           (drv  (set-file-name drv file)))
+      (hash-set! %derivation-cache file drv)
+      drv)))
 
 (define* (map-derivation store drv mapping
                          #:key (system (%current-system)))
