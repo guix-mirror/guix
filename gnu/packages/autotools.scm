@@ -325,11 +325,11 @@ Makefile, simplifying the entire process for the developer.")
                      (string-append
                       "-j"
                       (number->string (parallel-job-count))))
-           ;; Path references to /bin/sh.
+           ;; Patch references to /bin/sh.
            (let ((bash (assoc-ref inputs "bash")))
              (substitute* "tests/testsuite"
                (("/bin/sh")
-                (string-append bash "/bin/bash")))))))))
+                (string-append bash "/bin/sh"))))))
          (add-after 'patch-source-shebangs 'restore-ltmain-shebang
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build-aux/ltmain.in"
