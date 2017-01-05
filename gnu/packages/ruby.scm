@@ -1912,13 +1912,13 @@ to reproduce user environments.")
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.6.8")
+    (version "1.7.0.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "17pjhvm4yigriizxbbpx266nnh6nckdm33m3j4ws9dcg99daz91p"))))
+                "10xahg0fwydh27psm8bv429mdja2ks6x83vxizq26ib8wvs05mv3"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
