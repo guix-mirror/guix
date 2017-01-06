@@ -872,6 +872,9 @@ compilers that can directly deal with packages.")
 other XUnit testing frameworks.")
     (license license:expat)))
 
+(define-public ocaml4.01-ounit
+  (package-with-ocaml4.01 ocaml-ounit))
+
 (define-public camlzip
   (package
     (name "camlzip")
