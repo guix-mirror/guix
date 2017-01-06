@@ -352,17 +352,16 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
     (description
      "The Liberation font family aims at metric compatibility with
 Arial, Times New Roman, and Courier New.
-
 There are three sets:
 
-- Sans (a substitute for Arial, Albany, Helvetica, Nimbus Sans L, and
+@enumerate
+@enum Sans (a substitute for Arial, Albany, Helvetica, Nimbus Sans L, and
 Bitstream Vera Sans);
-
-- Serif (a substitute for Times New Roman, Thorndale, Nimbus Roman, and
+@enum Serif (a substitute for Times New Roman, Thorndale, Nimbus Roman, and
 Bitstream Vera Serif);
-
-- Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
+@enum Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
 and Bitstream Vera Sans Mono).
+@end enumerate
 
 The Liberation Fonts are sponsored by Red Hat.")
     (license license:silofl1.1)))
