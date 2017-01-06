@@ -1082,6 +1082,9 @@ qcheck library.  The possibilities range from trivial tests -- extremely simple
 to use -- to sophisticated random generation of test cases.")
     (license license:lgpl3+)))
 
+(define-public ocaml4.01-qtest
+  (package-with-ocaml4.01 ocaml-qtest))
+
 (define-public ocaml-stringext
   (package
     (name "ocaml-stringext")
