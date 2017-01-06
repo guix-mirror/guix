@@ -1031,6 +1031,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
+(define-public qtcharts
+  (package (inherit qtsvg)
+    (name "qtcharts")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1qrzcddwff2hxsbxrraff16j4abah2zkra2756s1mvydj9lyxzl5"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
