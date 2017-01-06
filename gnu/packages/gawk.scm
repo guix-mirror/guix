@@ -47,7 +47,7 @@
                      (let ((bash (assoc-ref inputs "bash")))
                        (substitute* "io.c"
                          (("/bin/sh")
-                          (string-append bash "/bin/bash")))
+                          (string-append bash "/bin/sh")))
 
                        ;; When cross-compiling, remove dependencies on the
                        ;; `check-for-shared-lib-support' target, which tries
