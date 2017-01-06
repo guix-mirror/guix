@@ -1478,15 +1478,15 @@ high-throughput sequencing data – with an emphasis on simplicity.")
 (define-public cd-hit
   (package
     (name "cd-hit")
-    (version "4.6.5")
+    (version "4.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/weizhongli/cdhit"
                                   "/releases/download/V" version
-                                  "/cd-hit-v" version "-2016-0304.tar.gz"))
+                                  "/cd-hit-v" version "-2016-0711.tar.gz"))
               (sha256
                (base32
-                "15db0hq38yyifwqx9b6l34z14jcq576dmjavhj8a426c18lvnhp3"))))
+                "1w8hd4fszgg29nqiz569fldwy012la77nljcmlhglgicws56z54p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
