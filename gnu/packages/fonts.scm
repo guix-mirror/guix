@@ -179,7 +179,7 @@ TrueType (TTF) files.")
     (synopsis "Vera font family derivate with additional characters")
     (description "DejaVu provides an expanded version of the Vera font family
 aiming for quality and broader Unicode coverage while retaining the original
-Vera style.  DejaVu currently works towards conformance with the Multilingual
+Vera style.  DejaVu currently works towards conformance to the Multilingual
 European Standards (MES-1 and MES-2) for Unicode coverage.  The DejaVu fonts
 provide serif, sans and monospaced variants.")
     (license
@@ -399,8 +399,8 @@ The Liberation Fonts are sponsored by Red Hat.")
        #:tests? #f)) ;; No test target in tarball
     (home-page "http://terminus-font.sourceforge.net/")
     (synopsis "Simple bitmap programming font")
-    (description "Terminus Font is a clean, fixed width bitmap font, designed
-for long (8 and more hours per day) work with computers.")
+    (description "Terminus Font is a clean, fixed-width bitmap font, designed
+for long periods of working with computers (8 or more hours per day).")
     (license license:silofl1.1)))
 
 (define-public font-adobe-source-han-sans
@@ -496,12 +496,12 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
      "WenQuanYi Zen Hei is a Hei-Ti style (sans-serif type) Chinese outline
 font.  It is designed for general purpose text formatting and on-screen
 display of Chinese characters and symbols from many other languages.
-WenQuanYi Zen Hei provides a rather complete coverage to Chinese Hanzi glyphs,
+WenQuanYi Zen Hei provides a rather complete coverage of Chinese Hanzi glyphs,
 including both simplified and traditional forms.  The total glyph number in
 this font is over 35,000, including over 21,000 Chinese Hanzi.  This font has
-full coverage to GBK(CP936) charset, CJK Unified Ideographs, as well as the
-code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
-ko (Korean) locales for fontconfig.")
+full coverage of the GBK (CP936) charset, CJK Unified Ideographs, as well as
+the code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
+ko (Korean) locales for @code{fontconfig}.")
     ;; GPLv2 with font embedding exception
     (license license:gpl2)))
 
@@ -677,10 +677,10 @@ utilities to ease adding new glyphs to the font.")
                                (find-files "." "\\.otf$"))))))
     (native-inputs `(("unzip" ,unzip)))
     (home-page "https://www.google.com/get/noto/")
-    (synopsis "Fonts aimed to cover all languages")
-    (description "Googe Noto Fonts is a family of fonts aimed to support all
-languages with a consistent look and aesthetic.  It's goal is to have no Unicode
-symbols unable to be displayed properly.")
+    (synopsis "Fonts to cover all languages")
+    (description "Google Noto Fonts is a family of fonts designed to support
+all languages with a consistent look and aesthetic.  Its goal is to properly
+display all Unicode symbols.")
     (license license:silofl1.1)))
 
 (define-public font-un
@@ -822,11 +822,11 @@ glyph designs, not just an added slant.")
      `(("source" ,source)
        ("unzip" ,unzip)))
     (home-page "https://sourcefoundry.org/hack/")
-    (synopsis "Typeface designed for sourcecode")
+    (synopsis "Typeface designed for source code")
     (description
-     "Hack is designed to be a workhorse typeface for code, it expands upon
-the Bitstream Vera & DejaVu projects, provides 1561 glyphs including
-powerline support.")
+     "Hack is designed to be a workhorse typeface for code.  It expands upon
+the Bitstream Vera & DejaVu projects, provides 1561 glyphs, and includes
+Powerline support.")
     (license (license:x11-style
               "https://github.com/chrissimpkins/Hack/blob/master/LICENSE.md"
               "Hack Open Font License v2.0"))))
