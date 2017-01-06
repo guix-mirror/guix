@@ -1010,6 +1010,27 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
+(define-public qtcanvas3d
+  (package (inherit qtsvg)
+    (name "qtcanvas3d")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1d5xpq3mhjg4ipxzap7s2vnlfcd02d3yq720npv10xxp2ww0i1x8"))
+             (modules '((guix build utils)))
+             (snippet
+              '(delete-file-recursively "examples/canvas3d/3rdparty"))))
+    (native-inputs `())
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
