@@ -370,6 +370,15 @@ libskba (working with X.509 certificates and CMS data).")
     (inputs
      `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-cmake-file
+           (lambda _
+             ;; Work around <https://bugs.gnupg.org/gnupg/issue2877>.
+             (substitute* "lang/cpp/src/GpgmeppConfig.cmake.in"
+               (("@libsuffix@") ".so"))
+             #t)))))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
     (synopsis "Library providing simplified access to GnuPG functionality")
     (description
