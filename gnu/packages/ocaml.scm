@@ -29,6 +29,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
@@ -1212,6 +1213,35 @@ declarative manner, without resorting to exceptions.  It defines combinators
 to operate on the result type available from OCaml 4.03 in the standard
 library.")
     (license license:isc)))
+
+(define-public ocaml-sqlite3
+  (package
+    (name "ocaml-sqlite3")
+    (version "4.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mmottl/sqlite3-ocaml/releases/download/v"
+             version "/sqlite3-ocaml-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14c1nir7c6bivajg0vyx853y7la7r5d25g1v5hjb2wfi73r15p1m"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (home-page "https://mmottl.github.io/sqlite3-ocaml")
+    (synopsis "SQLite3 Bindings for OCaml")
+    (description
+     "SQLite3-OCaml is an OCaml library with bindings to the SQLite3 client
+API.  Sqlite3 is a self-contained, serverless, zero-configuration,
+transactional SQL database engine with outstanding performance for many use
+cases.  These bindings are written in a way that enables a friendly
+coexistence with the old (version 2) SQLite and its OCaml wrapper
+@code{ocaml-sqlite}.")
+    (license license:expat)))
 
 (define-public ocaml-mtime
   (package
