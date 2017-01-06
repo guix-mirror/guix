@@ -10156,7 +10156,7 @@ different processes.  This allows better error handling when running code over
 multiple processes (imagine multiprocessing, billiard, futures, celery etc).
 
 @item Parse traceback strings and raise with the parsed tracebacks.
-@end itemize")
+@end enumerate\n")
     (license license:bsd-3)))
 
 (define-public python2-tblib
