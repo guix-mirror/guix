@@ -5808,14 +5808,14 @@ generate FASTA, JSON, YAML, RDF, JSON-LD, HTML, CSV, tabular output etc.")
 (define-public bioruby
   (package
     (name "bioruby")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "bio" version))
        (sha256
         (base32
-         "01k2fyjl5fpx4zn8g6gqiqvsg2j1fgixrs9p03vzxckynxdq3wmc"))))
+         "0hdl0789c9n4mprnx5pgd46bfwl8d000rqpamj5h6kkjgspijv49"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-libxml" ,ruby-libxml)))
