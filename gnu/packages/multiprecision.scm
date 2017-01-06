@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,13 @@
                 '(;; Build a "fat binary", with routines for several
                   ;; sub-architectures.
                   "--enable-fat"
-                  "--enable-cxx")))
+                  "--enable-cxx"
+                  ,@(cond ((target-mingw?)
+                           ;; Static and shared cannot be built in one go:
+                           ;; they produce different headers.  We need shared.
+                           `("--disable-static"
+                             "--enable-shared"))
+                          (else '())))))
    (synopsis "Multiple-precision arithmetic library")
    (description
     "GMP is a library for arbitrary precision arithmetic, operating on

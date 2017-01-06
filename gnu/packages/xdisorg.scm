@@ -92,8 +92,7 @@
     (inputs `(("pygtk" ,python2-pygtk)
               ("xrandr" ,xrandr)))
     (native-inputs `(("gettext"           ,gettext-minimal)
-                     ("python-docutils"   ,python2-docutils)
-                     ("python-setuptools" ,python2-setuptools)))
+                     ("python-docutils"   ,python2-docutils)))
     (home-page "https://christian.amsuess.com/tools/arandr/")
     (synopsis "Another RandR graphical user interface")
     ;; TRANSLATORS: "X11 resize-and-rotate" should not be translated.
@@ -242,7 +241,6 @@ following the mouse.")
   (package
     (name "pixman")
     (version "0.34.0")
-    (replacement pixman/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -250,7 +248,8 @@ following the mouse.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "13m842m9ffac3m9r0b4lvwjhwzg3w4353djkjpf00s0wnm4v5di1"))))
+                "13m842m9ffac3m9r0b4lvwjhwzg3w4353djkjpf00s0wnm4v5di1"))
+              (patches (search-patches "pixman-CVE-2016-5296.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("libpng" ,libpng)
@@ -263,14 +262,6 @@ following the mouse.")
 manipulation, providing features such as image compositing and trapezoid
 rasterisation.")
     (license license:x11)))
-
-(define pixman/fixed
-  (package
-    (inherit pixman)
-    (source (origin
-              (inherit (package-source pixman))
-              (patches (search-patches "pixman-CVE-2016-5296.patch"))))))
-
 
 (define-public libdrm
   (package
@@ -610,7 +601,7 @@ X Window System.")
        ("libxt" ,libxt)
        ("libxext" ,libxext)
        ("libxinerama" ,libxinerama)))
-    (home-page "http://sourceforge.net/projects/libxosd/")
+    (home-page "https://sourceforge.net/projects/libxosd/")
     (synopsis "X On Screen Display")
     (description
      "XOSD provides a C library and a simple utility (osd_cat) for displaying
@@ -725,7 +716,7 @@ within a single process.")
 (define-public xcape
   (package
     (name "xcape")
-    (version "1.1")
+    (version "1.2")
     (source
       (origin
         (method url-fetch)
@@ -734,7 +725,7 @@ within a single process.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "0jkdiaxc6sryrbibdgi2y1c48n4l9xyazhxr16l6h4ibddx95bk9"))))
+            "0898zc3vwxia00h9kfknpf7jygxgwggrx8v5mxc31w4lzn2dhzm2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -949,7 +940,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -957,7 +948,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "0xxx0xpxhrhlhi2axq9867zqrhwqavc1qrr833k1xr0pvm5m0aqc"))))
+                "1a65ai93ygras5bi7wc0s5i3zqslzqlnw3klq3sdnp2p0d6hjjqn"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1036,7 +1027,7 @@ actions, a built-in clock, a battery monitor and a system tray.")
 (define-public xcb-util-xrm
   (package
     (name "xcb-util-xrm")
-    (version "1.0")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1044,7 +1035,7 @@ actions, a built-in clock, a battery monitor and a system tray.")
                     "/download/v" version "/xcb-util-xrm-" version ".tar.bz2"))
               (sha256
                (base32
-                "1h5vxwpd37dqfw9yj1l4zd9c5dj30r3g0szgysr6kd7xrqgaq04l"))
+                "0vbqhag51i0njc8d5fc8c6aa12496cwrc3s6s7sa5kfc17cwhppp"))
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled m4.

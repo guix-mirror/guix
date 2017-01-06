@@ -497,7 +497,7 @@ the bootstrap environment."
                  (unsetenv "CPATH")
 
                  ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
-                 ,@(if (string-match "i586-gnu" (%current-system))
+                 ,@(if (hurd-triplet? (%current-system))
                        `((substitute* "libpthread/Makefile"
                            (("LDLIBS-pthread.so =.*")
                             (string-append "LDLIBS-pthread.so = "
@@ -522,7 +522,7 @@ the bootstrap environment."
         ,@%boot1-inputs
 
         ;; A native MiG is needed to build Glibc on Hurd.
-        ,@(if (string-match "i586-gnu" (%current-system))
+        ,@(if (hurd-triplet? (%current-system))
               `(("mig" ,mig-boot0))
               '())
 
@@ -806,6 +806,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
+  ;; FIXME: This depends on 'bootstrap-binaries' via Makefile.in.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs (static-libgcc-package bash)
                                  %boot3-inputs

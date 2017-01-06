@@ -217,7 +217,7 @@ which allows users to view a desktop computing environment.")
     (inputs
       `(("cyrus-sasl" ,cyrus-sasl)
         ("glib" ,glib)
-        ("libjpeg" ,libjpeg)
+        ("libjpeg-turbo" ,libjpeg-turbo)
         ("lz4" ,lz4)
         ("opus" ,opus)
         ("zlib" ,zlib)))

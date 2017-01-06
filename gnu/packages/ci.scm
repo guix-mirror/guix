@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +34,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -180,4 +183,62 @@
        "Hydra is a tool for continuous integration testing and software
 release that uses a purely functional language to describe build jobs and
 their dependencies.")
+      (license l:gpl3+))))
+
+(define-public cuirass
+  (let ((commit "cbdb59af8e7a1b40d687f80e62c5892686d384d2")
+        (revision "2"))
+    (package
+      (name "cuirass")
+      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/mthl/cuirass")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0qmhchazg8wyrfn6d2im4jg7d52gb0xp8afjan5szl3bpphi4s28"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'bootstrap
+             (lambda _ (zero? (system* "sh" "bootstrap"))))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; Wrap the 'cuirass' command to refer to the right modules.
+               (let* ((out    (assoc-ref outputs "out"))
+                      (json   (assoc-ref inputs "guile-json"))
+                      (sqlite (assoc-ref inputs "guile-sqlite3"))
+                      (git    (assoc-ref inputs "git"))
+                      (guix   (assoc-ref inputs "guix"))
+                      (mods   (string-append json "/share/guile/site/2.0:"
+                                             sqlite "/share/guile/site/2.0:"
+                                             guix "/share/guile/site/2.0")))
+                 ;; Make sure 'cuirass' can find the 'git' and 'evaluate'
+                 ;; commands, as well as the relevant Guile modules.
+                 (wrap-program (string-append out "/bin/cuirass")
+                   `("PATH" ":" prefix (,(string-append out "/bin")
+                                        ,(string-append git "/bin")))
+                   `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))
+                 #t))))))
+      (inputs
+       `(("guile" ,guile-2.0)
+         ("guile-json" ,guile-json)
+         ("guile-sqlite3" ,guile-sqlite3)
+         ("guix" ,guix)
+         ("git" ,git)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (synopsis "Continuous integration system")
+      (description
+       "Cuirass is a continuous integration tool using GNU Guix.  It is
+intended as a replacement for Hydra.")
+      (home-page "https://notabug.org/mthl/cuirass")
       (license l:gpl3+))))

@@ -63,17 +63,14 @@ internal RPC protocols and file formats.")
         (base32
          "1xbgbfg4g43bihkyw1a2giqa2gxmqc5wkh0fzqcb90qi1z1hpi7c"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "https://github.com/google/protobuf")
     (synopsis "Protocol buffers is a data interchange format")
     (description
      "Protocol buffers are a language-neutral, platform-neutral extensible
 mechanism for serializing structured data.")
-    (license bsd-3)
-    (properties `((python2-variant . ,(delay python2-protobuf))))))
+    (license bsd-3)))
 
 (define-public python2-protobuf
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-protobuf)))
-           (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+  (package-with-python2 python-protobuf))

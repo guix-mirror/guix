@@ -175,6 +175,7 @@ successful, or false to signal an error."
         ((string=? system "arm-eabi") "no-ld.so")
         ((string=? system "xtensa-elf") "no-ld.so")
         ((string=? system "avr") "no-ld.so")
+        ((string=? system "propeller-elf") "no-ld.so")
         ((string=? system "i686-mingw") "no-ld.so")
 
         (else (error "dynamic linker name not known for this system"
@@ -288,7 +289,8 @@ $out/bin/guile --version~%"
 
 (define %bootstrap-base-urls
   ;; This is where the initial binaries come from.
-  '("http://alpha.gnu.org/gnu/guix/bootstrap"
+  '("ftp://alpha.gnu.org/gnu/guix/bootstrap"
+    "http://alpha.gnu.org/gnu/guix/bootstrap"
     "http://www.fdn.fr/~lcourtes/software/guix/packages"))
 
 (define %bootstrap-coreutils&co

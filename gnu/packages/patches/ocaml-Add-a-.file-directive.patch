@@ -1,0 +1,96 @@
+From: Stephane Glondu <steph@glondu.net>
+Date: Sun, 16 Aug 2015 20:59:14 +0200
+Subject: Add a .file directive to generated .s files
+
+When no .file directive is given, the toolchain records the filename
+of the .o file, which is sometimes random, making generated objects
+non-deterministic.
+
+We use Location.input_name for adding .file directives to assembly
+files. Note: when the file is preprocessed, this reference holds the
+name of the temporary file. Hence, files compiled with -pp are still
+not deterministic.
+
+Bug-Debian: https://bugs.debian.org/795784
+Bug-Debian: https://bugs.debian.org/796336
+---
+ asmcomp/amd64/emit.mlp | 1 +
+ asmcomp/arm/emit.mlp   | 1 +
+ asmcomp/arm64/emit.mlp | 1 +
+ asmcomp/i386/emit.mlp  | 1 +
+ asmcomp/power/emit.mlp | 1 +
+ asmcomp/sparc/emit.mlp | 1 +
+ 6 files changed, 6 insertions(+)
+
+diff --git a/asmcomp/amd64/emit.mlp b/asmcomp/amd64/emit.mlp
+index d56d0f5..4d7aa30 100644
+--- a/asmcomp/amd64/emit.mlp
++++ b/asmcomp/amd64/emit.mlp
+@@ -794,6 +794,7 @@ let data l =
+ let begin_assembly() =
+   reset_debug_info();                   (* PR#5603 *)
+   float_constants := [];
++  `	.file \"{emit_string (String.escaped !Location.input_name)}\"\n`;
+   if !Clflags.dlcode then begin
+     (* from amd64.S; could emit these constants on demand *)
+     if macosx then
+diff --git a/asmcomp/arm/emit.mlp b/asmcomp/arm/emit.mlp
+index 4948fb2..6f30fba 100644
+--- a/asmcomp/arm/emit.mlp
++++ b/asmcomp/arm/emit.mlp
+@@ -892,6 +892,7 @@ let data l =
+
+ let begin_assembly() =
+   reset_debug_info();
++  `	.file \"{emit_string (String.escaped !Location.input_name)}\"\n`;
+   `	.syntax	unified\n`;
+   begin match !arch with
+   | ARMv4   -> `	.arch	armv4t\n`
+diff --git a/asmcomp/arm64/emit.mlp b/asmcomp/arm64/emit.mlp
+index 750c2b2..5afbb8a 100644
+--- a/asmcomp/arm64/emit.mlp
++++ b/asmcomp/arm64/emit.mlp
+@@ -942,6 +942,7 @@ let data l =
+
+ let begin_assembly() =
+   reset_debug_info();
++  `	.file \"{emit_string (String.escaped !Location.input_name)}\"\n`;
+   let lbl_begin = Compilenv.make_symbol (Some "data_begin") in
+   `	.data\n`;
+   `	.globl	{emit_symbol lbl_begin}\n`;
+diff --git a/asmcomp/i386/emit.mlp b/asmcomp/i386/emit.mlp
+index 98df5f9..531150f 100644
+--- a/asmcomp/i386/emit.mlp
++++ b/asmcomp/i386/emit.mlp
+@@ -986,6 +986,7 @@ let data l =
+ let begin_assembly() =
+   reset_debug_info();                   (* PR#5603 *)
+   float_constants := [];
++  `	.file \"{emit_string (String.escaped !Location.input_name)}\"\n`;
+   let lbl_begin = Compilenv.make_symbol (Some "data_begin") in
+   `	.data\n`;
+   `	.globl	{emit_symbol lbl_begin}\n`;
+diff --git a/asmcomp/power/emit.mlp b/asmcomp/power/emit.mlp
+index 4344085..343132b 100644
+--- a/asmcomp/power/emit.mlp
++++ b/asmcomp/power/emit.mlp
+@@ -887,6 +887,7 @@ let data l =
+ let begin_assembly() =
+   defined_functions := StringSet.empty;
+   external_functions := StringSet.empty;
++  `	.file \"{emit_string (String.escaped !Location.input_name)}\"\n`;
+   (* Emit the beginning of the segments *)
+   let lbl_begin = Compilenv.make_symbol (Some "data_begin") in
+   emit_string data_space;
+diff --git a/asmcomp/sparc/emit.mlp b/asmcomp/sparc/emit.mlp
+index 877a3d5..7b041e9 100644
+--- a/asmcomp/sparc/emit.mlp
++++ b/asmcomp/sparc/emit.mlp
+@@ -727,6 +727,7 @@ let data l =
+ (* Beginning / end of an assembly file *)
+
+ let begin_assembly() =
++  `	.file \"{emit_string (String.escaped !Location.input_name)}\"\n`;
+   let lbl_begin = Compilenv.make_symbol (Some "data_begin") in
+   `	.data\n`;
+   `	.global	{emit_symbol lbl_begin}\n`;

@@ -40,6 +40,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libusb)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix store)
@@ -752,6 +753,10 @@ with the administrator's password."
          ;; Screen lockers are a pretty useful thing and these are small.
          (screen-locker-service slock)
          (screen-locker-service xlockmore "xlock")
+
+         ;; Add udev rules for MTP devices so that non-root users can access
+         ;; them.
+         (simple-service 'mtp udev-service-type (list libmtp))
 
          ;; The D-Bus clique.
          (avahi-service)

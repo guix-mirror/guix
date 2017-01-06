@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,8 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages base))
 
 (define-public libunistring
   (package
@@ -36,7 +38,7 @@
             (sha256
              (base32
               "15z76qrmrvkc3c6hfq2lzzqysgd21s682f2smycfab5g598n8drf"))))
-   (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
+   (propagated-inputs (libiconv-if-needed))
    (build-system gnu-build-system)
    (arguments
     ;; Work around parallel build issue whereby C files may be compiled before

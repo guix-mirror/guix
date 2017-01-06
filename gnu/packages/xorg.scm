@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -333,6 +334,44 @@ the Present extension, a complete direct rendering solution for OpenGL is
 provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
+
+
+(define-public editres
+  (package
+    (name "editres")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/app/" name "-"
+               version
+               ".tar.bz2"))
+        (sha256
+         (base32
+          "1w2d5hb5pw9ii2jlf4yjlp899402zfwc8hdkpdr3i1fy1cjd2riv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output "/lib/X11/app-defaults"))))
+    (inputs
+     `(("libxaw" ,libxaw)
+       ("libxmu" ,libxmu)
+       ("libxt" ,libxt)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Tool to browse and edit X Toolkit resource specifications")
+    (description
+     "Editres is a tool that allows users and application developers to view
+the full widget hierarchy of any X Toolkit application that speaks the Editres
+protocol.  In addition, editres will help the user construct resource
+specifications, allow the user to apply the resource to the application and
+view the results dynamically.  Once the user is happy with a resource
+specification editres will append the resource string to the user's X
+Resources file.")
+    (license license:x11)))
 
 
 (define-public encodings
@@ -2360,7 +2399,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.3")
+    (version "1.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2368,10 +2407,10 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0iil4pnla0kjdx52ay7igq65sx32sjbzn1wx9q3v74m5g7712m16"))))
+         "1cc00876lqvyadsfmj3sh1h2i0r3qfar98izdfar5f8q41w2009j"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python)))
-    (home-page "http://www.freedesktop.org/wiki/Software/libevdev/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
     (synopsis "Wrapper library for evdev devices")
     (description
      "libevdev is a wrapper library for evdev devices. it moves the common
@@ -2386,7 +2425,7 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.10.3")
+    (version "2.10.4")
     (source
       (origin
         (method url-fetch)
@@ -2396,7 +2435,7 @@ devices, thus making direct access unnecessary.")
                ".tar.bz2"))
         (sha256
           (base32
-            "18ijnclnylrr7vkvflalkw4bqfily3scg6baczjjgycdpsj1p8js"))))
+            "1hhc97k1qmgs85fp8p2i3gq4p18azlczbvklv33w19p1phzs1xmv"))))
     (build-system gnu-build-system)
     (inputs
       `(("udev" ,eudev)
@@ -2420,7 +2459,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.16.0")
+    (version "0.23.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2428,7 +2467,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jbgnxsbr3g4g9vkspcc6pqy7av59zx5bb78vkvaqy8yx4qybbgx"))))
+                "1p596v3kbmjpdz3kz8z19bnd79l860f1pbwjvma7bz7qx3gynlqb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2450,7 +2489,7 @@ provide all features that libinput supports it does little beyond.")
 (define-public xf86-input-joystick
   (package
     (name "xf86-input-joystick")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
@@ -2460,7 +2499,7 @@ provide all features that libinput supports it does little beyond.")
                ".tar.bz2"))
         (sha256
           (base32
-            "038mfqairyyqvz02rk7v3i070sab1wr0k6fkxvyvxdgkfbnqcfzf"))))
+            "1awfq496d082brgjbr60lhm6jvr9537rflwxqdfqwfzjy3n6jxly"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2480,7 +2519,7 @@ It is used to cotrol the pointer with a joystick device.")
 (define-public xf86-input-keyboard
   (package
     (name "xf86-input-keyboard")
-    (version "1.8.1")
+    (version "1.9.0")
     (source
       (origin
         (method url-fetch)
@@ -2490,7 +2529,7 @@ It is used to cotrol the pointer with a joystick device.")
                ".tar.bz2"))
         (sha256
           (base32
-            "04d27kwqq03fc26an6051hs3i0bff8albhnngzyd59wxpwwzzj0s"))))
+            "12032yg412kyvnmc5fha1in7mpi651d8sa1bk4138s2j2zr01jgp"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2504,7 +2543,7 @@ It is used to cotrol the pointer with a joystick device.")
 (define-public xf86-input-mouse
   (package
     (name "xf86-input-mouse")
-    (version "1.9.1")
+    (version "1.9.2")
     (source
       (origin
         (method url-fetch)
@@ -2514,7 +2553,7 @@ It is used to cotrol the pointer with a joystick device.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1kn5kx3qyn9qqvd6s24a2l1wfgck2pgfvzl90xpl024wfxsx719l"))))
+            "0bsbgww9421792zan43j60mndqprhfxhc48agsi15d3abjqda9gl"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2536,7 +2575,7 @@ as USB mice.")
 (define-public xf86-input-synaptics
   (package
     (name "xf86-input-synaptics")
-    (version "1.8.99.1")
+    (version "1.9.0")
     (source
       (origin
         (method url-fetch)
@@ -2546,7 +2585,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1apbcwn20p7sy07ghlldmqcnxag2r9sdjqmb4xxzki0hz8wm72ac"))))
+            "0niv0w1czbxh4y3qkqbpdp5gjwhp3379inwhknhif0m4sy4k5fmg"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
@@ -2648,7 +2687,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.7.0")
+    (version "7.8.0")
     (source
       (origin
         (method url-fetch)
@@ -2658,7 +2697,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hy1n8an98mflfbdcb3q7wv59x971j7nf9zhivf90p0lgdbiqkc4"))))
+            "1ynnm4v4261xmg94b7jam9hjyym4n2nqba23rv23v3wjfbkms7s0"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
@@ -3050,7 +3089,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.12")
+    (version "1.0.13")
     (source
      (origin
        (method url-fetch)
@@ -3060,7 +3099,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
              ".tar.bz2"))
        (sha256
         (base32
-         "07irv1zkk0rkyn1d7f2gn1icgcz2ix0pwv74sjian763gynmg80f"))))
+         "1js7vak68g2800f1cy5r41wl5x2j7dbmbd7zxypzfgcw2fx454kd"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3106,7 +3145,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
 (define-public xf86-video-qxl
   (package
     (name "xf86-video-qxl")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3114,7 +3153,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                 "xf86-video-qxl-" version ".tar.bz2"))
               (sha256
                (base32
-                "018ic9ddxfnjcv2yss0mwk1gq6rmip1hrgi2wxwqkbqx1cpx4yp5"))))
+                "14jc24znnahhmz4kqalafmllsg8awlz0y6gpgdpk5ih38ph851mi"))))
     (build-system gnu-build-system)
     (inputs
       `(("fontsproto" ,fontsproto)
@@ -3397,7 +3436,7 @@ X server.")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "13.1.0")
+    (version "13.2.1")
     (source
       (origin
         (method url-fetch)
@@ -3407,14 +3446,16 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1k50whwnkzxam2ihc1sw456dx0pvr76naycm4qhyjxqv9d72879w"))))
+           "0azn3g0vcki47n5jddagk2rmbwdvp845k8p7d2r56zxs3w8ggxz2"))))
     (build-system gnu-build-system)
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("mesa" ,mesa)            ; for xatracker
-              ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("mesa" ,mesa)                   ; for xatracker
+       ("xorg-server" ,xorg-server)))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+     `(("eudev" ,eudev)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "VMware SVGA video driver for X server")
     (description
@@ -4847,7 +4888,7 @@ an X Window System display.")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.5.1")
+    (version "1.5.2")
     (source
       (origin
         (method url-fetch)
@@ -4857,7 +4898,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1630v3sfvwwlimb2ja10c84ql6v1mw9bdfhvan7pbybkgi99h25p"))))
+            "0w8d07bkmjiarkx09579bl8zsq903mn8javc7qpi0ix4ink5x502"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)
@@ -4884,7 +4925,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.7")
+    (version "1.7.8")
     (source
       (origin
         (method url-fetch)
@@ -4894,7 +4935,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0c70n4aq0ba628wr88ih4740nci9d9f6y3v96sx376vvlm7q6vwr"))))
+            "1fr7mi4nbcxsa88qin9g2ipmzh595ydxy9qnabzl270laf6zmwnq"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)
@@ -5369,8 +5410,9 @@ The XCB util module provides the following libraries:
      `(("m4" ,m4)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-util-renderutil" ,xcb-util-renderutil)
+     `(("libxcb" ,libxcb)))
+    (propagated-inputs
+     `(("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-image" ,xcb-util-image)))
     (home-page "https://cgit.freedesktop.org/xcb/util-cursor/")
     (synopsis "Port of libxcursor")

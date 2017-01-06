@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -144,14 +144,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0f3yi3n4sl9myiay95yhv2a9an338qddfjrbv7da753ip66dkfz6"))))
+                "174q1qg7yg6w1hfvlfv720hr6hid4h5xzw15y3ycfpspllzldhcb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -164,7 +164,8 @@ the execution of system services, replacing similar functionality found in
 typical init systems.  It provides dependency-handling through a convenient
 interface and is based on GNU Guile.")
     (license license:gpl3+)
-    (home-page "http://www.gnu.org/software/shepherd/")))
+    (home-page "https://www.gnu.org/software/shepherd/")
+    (properties '((ftp-server . "alpha.gnu.org")))))
 
 (define-public dfc
   (package
@@ -364,7 +365,7 @@ login, passwd, su, groupadd, and useradd.")
        #:tests? #f))                              ; no tests
     (inputs `(("shadow" ,shadow)))
 
-    (home-page "http://sourceforge.net/projects/mingetty")
+    (home-page "https://sourceforge.net/projects/mingetty")
     (synopsis "Getty for the text console")
     (description
      "Small console getty that is started on the Linux text console,
@@ -719,7 +720,7 @@ by bandwidth they use.")
              `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc)))))
         %standard-phases)))
     ;; The clusterssh.sourceforge.net address requires login to view
-    (home-page "http://sourceforge.net/projects/clusterssh/")
+    (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
     (description
      "ClusterSSH controls a number of xterm windows via a single graphical
@@ -792,7 +793,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.17p1")
+    (version "1.8.19p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -802,7 +803,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1k2mn65l1kmsxm8wh0gjxy496xhbpiimbpm6yv6kw6snzc3xg466"))))
+                "14pwdwl03kdbbyjkvxrfx409x3c1fjqz8aqz2wgwddinhz7v3bxq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1335,8 +1336,6 @@ specified directories.")
                 (("/usr") out)
                 (("distro_ver = .*") "distro_ver = ''"))
               #t))))))
-   (inputs
-    `(("python-setuptools" ,python2-setuptools)))
    (home-page "https://github.com/shawn-sterling/graphios")
    (synopsis "Emit Nagios metrics to Graphite, Statsd, and Librato")
    (description
@@ -1359,8 +1358,7 @@ of supported upstream metrics systems simultaneously.")
          "1bfc2xiplpad6f2nwi48y0kps7xqnsll85dlz63cy8k5bysl6d20"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)
-       ("python2-pycrypto" ,python2-pycrypto)
+     `(("python2-pycrypto" ,python2-pycrypto)
        ("python2-httplib2" ,python2-httplib2)
        ("python2-passlib" ,python2-passlib)
        ("python2-nose" ,python2-nose)
@@ -1573,14 +1571,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.31")
+    (version "7.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0hiqb28950kn4bjsmw0ksfyss7j2qdmgrj3xsjf7073pq01lx7yb"))
+                "121i9mgyc28ra2825akd0ix5qyssv4xc2qlx296mam6hzxgnc54y"))
               (modules '((guix build utils)))
               (snippet
                '(map delete-file-recursively
@@ -1702,13 +1700,15 @@ throughput (in the same interval).")
                (base32
                 "04q2cn8c83f6z6wn1scla1ilrpi5ssjc64987hvmwfvwvb82bvkp"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
        ("python-psutil" ,python-psutil)
        ("python-six" ,python-six)))
+    (inputs
+     ;; Requires setuptools >= 17.1 due to some features used, while our
+     ;; python currently only includes 12.0. TODO: Remove this input.
+     `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/nvbn/thefuck")
     (synopsis "Correct mistyped console command")
     (description
@@ -1868,14 +1868,14 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
 (define-public sunxi-tools
   (package
     (name "sunxi-tools")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/linux-sunxi/"
                            "sunxi-tools/archive/v" version ".tar.gz"))
        (sha256
-        (base32 "06qd2b4dlzbmzfy4q9n8v5rkkbmgcfdbv4nkkcp4nysi10k7cpfs"))
+        (base32 "08iqwj95qw2s7ilhrdi2lkbc8dx64zk5lzz1qk587jr0lla81x41"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the

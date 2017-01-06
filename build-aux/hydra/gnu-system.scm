@@ -54,7 +54,6 @@
              (gnu packages compression)
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
-             (gnu packages commencement)
              (gnu packages package-management)
              (gnu system)
              (gnu system vm)
@@ -112,7 +111,7 @@ SYSTEM."
         gawk gnu-gettext hello guile-2.0 zlib gzip xz
         %bootstrap-binaries-tarball
         %binutils-bootstrap-tarball
-        %glibc-bootstrap-tarball
+        (%glibc-bootstrap-tarball)
         %gcc-bootstrap-tarball
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
@@ -124,13 +123,8 @@ SYSTEM."
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"
     "arm-linux-gnueabihf"
+    "i686-w64-mingw32"  
     "powerpc-linux-gnu"))
-
-(define (demo-os)
-  "Return the \"demo\" 'operating-system' structure."
-  (let* ((dir  (dirname (assoc-ref (current-source-location) 'filename)))
-         (file (string-append dir "/demo-os.scm")))
-    (read-operating-system file)))
 
 (define %guixsd-supported-systems
   '("x86_64-linux" "i686-linux"))
@@ -157,14 +151,7 @@ system.")
     (expt 2 20))
 
   (if (member system %guixsd-supported-systems)
-      (list (->job 'qemu-image
-                   (run-with-store store
-                     (mbegin %store-monad
-                       (set-guile-for-build (default-guile))
-                       (system-qemu-image (demo-os)
-                                          #:disk-image-size
-                                          (* 1400 MiB))))) ; 1.4 GiB
-            (->job 'usb-image
+      (list (->job 'usb-image
                    (run-with-store store
                      (mbegin %store-monad
                        (set-guile-for-build (default-guile))
@@ -241,7 +228,7 @@ all its dependencies, and ready to be installed on non-GuixSD distributions.")
                         (match (package-transitive-inputs package)
                           (((_ inputs _ ...) ...)
                            inputs))))
-                      %final-inputs))))
+                      (%final-inputs)))))
     (lambda (store package system)
       "Return a job for PACKAGE on SYSTEM, or #f if this combination is not
 valid."
@@ -279,16 +266,22 @@ valid."
       ;; 'mips64el-linux'.
       (string-contains target system))
 
-    (define (either proc1 proc2)
+    (define (pointless? target)
+      ;; Return #t if it makes no sense to cross-build to TARGET from SYSTEM.
+      (and (string-contains target "mingw")
+           (not (string=? "x86_64-linux" system))))
+
+    (define (either proc1 proc2 proc3)
       (lambda (x)
-        (or (proc1 x) (proc2 x))))
+        (or (proc1 x) (proc2 x) (proc3 x))))
 
     (append-map (lambda (target)
                   (map (lambda (package)
                          (package-cross-job store (job-name package)
                                             package target system))
                        %packages-to-cross-build))
-                (remove (either from-32-to-64? same?) %cross-targets)))
+                (remove (either from-32-to-64? same? pointless?)
+                        %cross-targets)))
 
   ;; Turn off grafts.  Grafting is meant to happen on the user's machines.
   (parameterize ((%graft? #f))

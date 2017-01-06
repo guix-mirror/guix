@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -544,7 +544,8 @@ a C program.")
                "1kwbx92ps0r7s2mqy7lxbxanslxdzj7dp7r7gmdkzv1j8yqf3kwf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-shared" "--enable-openmp")
+     '(#:configure-flags
+       '("--enable-shared" "--enable-openmp" "--enable-threads")
        #:phases (alist-cons-before
                  'build 'no-native
                  (lambda _
@@ -575,6 +576,23 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  Single-precision version."))))
+
+(define (pthread-variant p)
+  (package
+    (inherit p)
+    (name (string-append (package-name p) "-pthreads"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw)
+       ((#:configure-flags flags)
+        `(cons "--enable-threads" ,flags))))))
+
+;; FIXME: These packages are used temporarily by packages like Ardour until
+;; "--enable-flags" is added to the fftw and fftwf packages.
+(define-public fftw-with-threads
+  (pthread-variant fftw))
+
+(define-public fftwf-with-threads
+  (pthread-variant fftwf))
 
 (define-public fftw-openmpi
   (package (inherit fftw)

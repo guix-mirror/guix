@@ -46,7 +46,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (ice-9 match)
-  #:export (glibc))
+  #:export (glibc
+            libiconv-if-needed))
 
 ;;; Commentary:
 ;;;
@@ -681,14 +682,14 @@ with the Linux kernel.")
   ;; The Hurd's libc variant.
   (package (inherit glibc/linux)
     (name "glibc-hurd")
-    (version "2.19")
+    (version "2.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://alpha.gnu.org/gnu/hurd/glibc-"
-                                  version "-hurd+libpthread-20160518" ".tar.gz"))
+                                  version "-hurd+libpthread-20161218" ".tar.gz"))
               (sha256
                (base32
-                "12zmdjviybpsdb2kq4cg98rds7909f0cc96fzdahdfrzlxx1q0px"))))
+                "0vpdv05j6j3ria5bw8gp468i64gij94cslxkxj9xkfgi6p615b8p"))))
 
     ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
     ;; so both should be propagated.
@@ -737,6 +738,9 @@ with the Linux kernel.")
 
                        ;; We need this to get a working openpty() function.
                        "--enable-pt_chown"
+
+                       ;; <https://lists.gnu.org/archive/html/bug-hurd/2016-10/msg00033.html>
+                       "--disable-werror"
 
                        ;; nscd fails to build for GNU/Hurd:
                        ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.
@@ -956,15 +960,15 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2016g")
+    (version "2016j")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://www.iana.org/time-zones/repository/releases/tzdata"
+                   "https://www.iana.org/time-zones/repository/releases/tzdata"
                    version ".tar.gz"))
              (sha256
               (base32
-               "1lgbh49bsbysibzr7imjsh1xa7pqmimphxvvwh6kncj7pjr3fw9w"))))
+               "1j4xycpwhs57qnkcxwh3np8wnf3km69n3cf4w6p2yv2z247lxvpm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1012,8 +1016,8 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "0azsz436vd65bkdkdmjgsh7zhh0whnqqfliva45191krmm3hpy8z"))))))
-    (home-page "http://www.iana.org/time-zones")
+                            "1dxhrk4z0n2di8p0yd6q00pa6bwyz5xqbrfbasiz8785ni7zrvxr"))))))
+    (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
 contains code and data that represent the history of local time for many
@@ -1048,6 +1052,16 @@ that lack it.  iconv is used to convert between character encodings in a
 program.  It supports a wide variety of different encodings.")
     (home-page "http://www.gnu.org/software/libiconv/")
     (license lgpl3+)))
+
+(define* (libiconv-if-needed #:optional (target (%current-target-system)))
+  "Return either a libiconv package specification to include in a dependency
+list for platforms that have an incomplete libc, or the empty list.  If a
+package needs iconv ,@(libiconv-if-needed) should be added."
+  ;; POSIX C libraries provide iconv.  Platforms with an incomplete libc
+  ;; without iconv, such as MinGW, must return the then clause.
+  (if (target-mingw? target)
+      `(("libiconv" ,libiconv))
+      '()))
 
 (define-public (canonical-package package)
   ;; Avoid circular dependency by lazily resolving 'commencement'.

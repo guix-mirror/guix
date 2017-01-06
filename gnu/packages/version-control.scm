@@ -112,14 +112,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.10.2")
+   (version "2.11.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0wc64dzcxrzgi6kwcljz6y3cwm3ajdgf6aws7g58azbhvl1jk04l"))))
+              "02zx368id8rys0bh2sjrxz0ln2l2wm5nf1vhp1rj72clsilqszky"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -132,7 +132,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0vxaz23vf3ki0q5zgn6mxr9x1hjryqn1hsmgyrgdk6h3yqbs7c43"))))))
+            "1n18jnpi0z3skwc1ckrm7zdld6i3zvn0g95cg9r9pdn0564fglxk"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -140,6 +140,9 @@ as well as the classic centralized workflow.")
       ("perl" ,perl)
       ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
       ("zlib" ,zlib)
+
+      ;; For 'gitweb.cgi'
+      ("perl-cgi" ,perl-cgi)
 
       ;; For 'git-svn'.
       ("subversion" ,subversion)
@@ -256,6 +259,17 @@ as well as the classic centralized workflow.")
                                  '("perl-authen-sasl"
                                    "perl-net-smtp-ssl"
                                    "perl-io-socket-ssl")))))))
+
+              ;; Tell 'gitweb.cgi' where perl modules are.
+              (wrap-program (string-append out "/share/gitweb/gitweb.cgi")
+                `("PERL5LIB" ":" prefix
+                  ,(map (lambda (o) (string-append o "/lib/perl5/site_perl"))
+                        (list
+                         ,@(transitive-input-references
+                            'inputs
+                            (map (lambda (l)
+                                   (assoc l (inputs)))
+                                 '("perl-cgi")))))))
 
               ;; Tell 'git-submodule' where Perl is.
               (wrap-program git-sm
@@ -670,14 +684,14 @@ property manipulation.")
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.16")
+    (version "1.8.17")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "0imkxn25n6sbcgfldrx4z29npjprb1lxjm5fb89q4297161nx3zi"))))
+               "1450fkj1jmxyphqn6cd95z1ykwsabajm9jw4i412qpwss8w9a4fy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -691,7 +705,8 @@ property manipulation.")
              ;; nice if this fix ultimately made its way into libtool.
              (let ((coreutils (assoc-ref inputs "coreutils")))
                (substitute* "libtool"
-                 (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls"))))))
+                 (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))
+               #t)))
          (add-after 'install 'install-perl-bindings
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.
@@ -874,16 +889,14 @@ large, complex patch files.")
 (define-public cssc
   (package
     (name "cssc")
-    (version "1.3.0")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/" name "/CSSC-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0bkw6fjh20ppvn54smv05461lm1vcwvn02avx941c4acafmkl1cm"))
-              (patches (search-patches "cssc-gets-undeclared.patch"
-                                       "cssc-missing-include.patch"))))
+                "15191dh8hr46cvssmv4v52gymiiyk6ca9j1bfimlqakcqab6y51h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1156,8 +1169,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)
-       ;; for the tests
+     `(;; for the tests
        ("python2-six" ,python2-six)))
     (propagated-inputs
      `(("python2-dateutil" ,python2-dateutil-2)

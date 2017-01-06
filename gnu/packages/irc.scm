@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,9 +32,11 @@
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -47,6 +49,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -97,7 +100,7 @@ irssi, but graphical.")
 (define-public irssi
   (package
     (name "irssi")
-    (version "0.8.20")
+    (version "1.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/irssi/irssi/"
@@ -105,31 +108,29 @@ irssi, but graphical.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0njh43xmpad9h5g6fp1805hrix1mwbbnk7p6qmlw9apm47lc90kq"))))
+               "1f2gmr5nynagwi4wx3yprhzfpg4ww6r7ff395b0a48d0qqgkr2ka"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (ncurses (assoc-ref inputs "ncurses")))
+             (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
                (zero?
                 (system* "./configure"
                          (string-append "--prefix=" out)
-                         (string-append "--with-ncurses=" ncurses)
                          (string-append "--with-proxy")
                          (string-append "--with-socks")
                          (string-append "--with-bot")))))))))
     (inputs
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
-       ("openssl" ,openssl)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
+       ("openssl" ,openssl)
        ("perl" ,perl)))
-    (home-page "http://www.irssi.org/")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://irssi.org/")
     (synopsis "Terminal-based IRC client")
     (description
      "Irssi is a terminal based IRC client for UNIX systems.  It also supports
@@ -143,10 +144,10 @@ SILC and ICB protocols via plugins.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://weechat.org/files/src/weechat-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0lyqrymdjdvkzg8510l46c4zw8mjagnmri2i6m9y9qz0c1sfaq9h"))
+                "1qqnb9bdi15l30378rnmhf26ndacwi5hmq5vpz4lfyihk17xnryn"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
@@ -329,3 +330,91 @@ and extensible with plugins and scripts.")
 embedded web server, translations (fr, fi, it, hu, de), and many
 other enhancements and bug fixes.")
     (license license:bsd-3)))
+
+(define-public epic5
+  (package
+    (name "epic5")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.epicsol.org/pub/"
+                                  "epic/EPIC5-PRODUCTION/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ap73d5f4vccxjaaq249zh981z85106vvqmxfm4plvy76b40y9jm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-perl
+           (lambda _
+             (substitute* "regress/crash-irc"
+               (("perl5") (which "perl")))
+             #t))
+         (add-after 'unpack 'patch-bsdinstall
+           ;; If we just remove /bin/ some part of the bsdinstall breaks.
+           ;; Furthermore bsdinstalls has a reference to /etc/chmod here, which
+           ;; means if we leave /etc/ in, install fails.
+           (lambda _
+             (substitute* "bsdinstall"
+               (("/bin/strip") "strip")
+               (("/bin/cp") "cp")
+               (("/bin/chmod") "chmod")
+               (("/bin/chgrp") "chgrp")
+               (("/bin/mkdir") "mkdir")
+               (("/bin/rm") "rm")
+               (("/bin/mv") "mv")
+               (("/etc/") ""))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The tarball uses a very old version of autconf. It does not
+             ;; understand extra flags like `--enable-fast-install', so
+             ;; we need to invoke it with just what it understands.
+             (let ((out (assoc-ref outputs "out")))
+               ;; 'configure' doesn't understand '--host'.
+               ,@(if (%current-target-system)
+                     `((setenv "CHOST" ,(%current-target-system)))
+                     '())
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (setenv "SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         "--with-ipv6" "--with-libarchive"
+                         ;; We use libressl because openssl does not come
+                         ;; with the lib/libssl.a which is needed for epic5.
+                         ;; XXX: No matter which implementation is chosen,
+                         ;; epic5 fails to connect to tls ports of roundrobin
+                         ;; irc networks. This however is believed to be an
+                         ;; protocol issue at epic5 related to ircd.
+                         (string-append "--with-ssl="
+                                        (assoc-ref %build-inputs "libressl"))
+                         (string-append "--with-tcl="
+                                        (assoc-ref %build-inputs "tcl")
+                                        "/lib/tclConfig.sh")))))))))
+    (inputs
+     `(("libressl" ,libressl)
+       ("ncurses" ,ncurses)
+       ("libarchive" ,libarchive) ; CHANGELOG: "Support for loading zip files"
+       ("perl" ,perl)
+       ("tcl" ,tcl)
+       ("ruby" ,ruby)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://epicsol.org")
+    (synopsis "Epic5 IRC Client")
+    (description
+     "EPIC is a IRC client that has been under active development for
+over 20 years.  It is stable and mature, and offers an excellent ircII
+interface for those who are accustomed to the ircII way of doing things.")
+    (license (list license:bsd-3
+                   license:isc
+                   license:bsd-4
+                   ;; The epic license is equal to the standard three-clause
+                   ;; BSD license except that you are not permitted to remove the
+                   ;; "Redistribution is permitted" clause of the license if you
+                   ;; distribute binaries.
+                   (license:non-copyleft "http://epicsol.org/copyright")))))

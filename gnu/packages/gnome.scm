@@ -97,7 +97,6 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages tex)
@@ -682,14 +681,14 @@ update-desktop-database: updates the database containing a cache of MIME types
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
-    (version "1.6")
+    (version "1.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://freedesktop.org/~hadess/"
                                  "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
-               "0k637g047gci8g69bg4g19akylpfraxm40hd30j3i4v7cidziy5j"))))
+               "0bjd2j1rqrj150mr04j7ib71lfdlgbf235fg8d70g8mszqf7ik7a"))))
     (build-system gnu-build-system)
     (arguments
      ;; The build system appears not to be parallel-safe.
@@ -2141,7 +2140,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.54.1")
+    (version "2.56.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2149,7 +2148,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0cyn5pq4xl1gb8413h2p4d5wrn558dc054zhwmk4swrl40ijrd27"))))
+                "1r8zz270qdg92gbsvy61d51y1cj7hp059h2f4xpvqiw2vrqnn8fq"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2649,9 +2648,7 @@ services for numerous locations.")
          "1rvqisrh3lridsb8rvm7spvncyq206ly0245zgpbm8swi5fhfjp8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(;; Network manager not yet packaged.
-       #:configure-flags '("--disable-network-manager")
-       ;; Color management test can't reach the colord system service.
+     `(;; Color management test can't reach the colord system service.
        #:tests? #f))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2680,7 +2677,8 @@ services for numerous locations.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libwacom" ,libwacom)
        ("librsvg" ,librsvg)
-       ("xf86-input-wacom" ,xf86-input-wacom)))
+       ("xf86-input-wacom" ,xf86-input-wacom)
+       ("network-manager" ,network-manager)))
     (home-page "http://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
@@ -3868,7 +3866,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.25.0.1")
+    (version "0.25.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3876,7 +3874,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19h0ckrgv0c6sj85m6ankyqkmy453ph9kq6zhf7ys2k5xsrrd776"))))
+                "1bih5hr3pvpkx3fck55bnhngn4fl92ryjizc34wb8pwigbkxnaj1"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -4400,7 +4398,19 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))))
+                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))
+              (snippet
+              '(begin
+                 (use-modules (guix build utils))
+                 (substitute* "configure"
+                   ;; Replace libsystemd-login with libelogind.
+                   (("libsystemd-login") "libelogind"))
+                 (substitute* "src/devices/wwan/nm-modem-manager.c"
+                   (("systemd") "elogind"))
+                 (substitute* "src/nm-session-monitor.c"
+                   (("systemd") "elogind"))
+                 (substitute* "./src/nm-logging.c"
+                   (("systemd") "elogind"))))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -4410,7 +4420,9 @@ users.")
              (doc      (assoc-ref %outputs "doc"))
              (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
                                       "/sbin/dhclient")))
-         (list "--with-crypto=gnutls"
+         (list "--with-systemd-logind=yes" ;In GuixSD, this is provided by elogind.
+               "--with-consolekit=no"
+               "--with-crypto=gnutls"
                "--disable-config-plugin-ibft"
                "--sysconfdir=/etc"
                "--localstatedir=/var"
@@ -4475,7 +4487,8 @@ users.")
        ("polkit" ,polkit)
        ("ppp" ,ppp)
        ("readline" ,readline)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux)
+       ("elogind" ,elogind)))
     (synopsis "Network connection manager")
     (home-page "http://www.gnome.org/projects/NetworkManager/")
     (description
@@ -5275,13 +5288,20 @@ existing databases over the internet.")
               (sha256
                (base32
                 "1fj6wjvnjygzm9br3sw9gya6d18yly1rm69yaiar9spfbkvv4wai"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/tmp"
                            "--sysconfdir=/tmp")
        #:imported-modules ((guix build python-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%glib-or-gtk-build-system-modules)
        #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out               (assoc-ref outputs "out"))
+                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+                        (wrap-program (string-append out "/bin/gnome-tweak-tool")
+                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                      #t))
                   (add-after 'install 'wrap
                     (@@ (guix build python-build-system) wrap)))))
     (native-inputs
@@ -5289,9 +5309,10 @@ existing databases over the internet.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python-2)
-       ("python2-pygobject" ,python2-pygobject)))
-    (propagated-inputs
-     `(("libnotify" ,libnotify)
+       ("python2-pygobject" ,python2-pygobject)
+       ("gnome-desktop" ,gnome-desktop)
+       ("libsoup" ,libsoup)
+       ("libnotify" ,libnotify)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)))
@@ -5334,7 +5355,7 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20160605")
+    (version "20161119")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/horst3180/arc-theme"
@@ -5342,7 +5363,7 @@ functionality and behavior.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sq2031xda8jn2ws0x2bvhq77jfh7xy0c3kg86v6vm2kbrrss7y6"))))
+                "1kbhaxmydyip3vdw4kf8rk776jcd9wf0w7z6h2i4naxdn4rsnw54"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -5689,3 +5710,39 @@ only know by its Unicode name or code point.")
 with many options to write web sites, scripts and other code.
 Bluefish supports many programming and markup languages.")
     (license license:gpl3+)))
+
+(define-public gnome-system-monitor
+  (package
+    (name "gnome-system-monitor")
+    (version "3.20.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ya41b58syf8g5pc12gw1xm6jhdx3crap803bjwm086r7x2an8wv"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("libgtop" ,libgtop)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files.
+       ("gtk+" ,gtk+)
+       ("gtkmm" ,gtkmm)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)))
+    (home-page "https://wiki.gnome.org/Apps/SystemMonitor")
+    (synopsis "Process viewer and system resource monitor for GNOME")
+    (description
+     "GNOME System Monitor is a GNOME process viewer and system monitor with
+an attractive, easy-to-use interface.  It has features, such as a tree view
+for process dependencies, icons for processes, the ability to hide processes,
+graphical time histories of CPU/memory/swap usage and the ability to
+kill/reinice processes.")
+    (license license:gpl2+)))

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +61,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "2.63.0")
+    (version "2.76.0")
     (source
       (origin
         (method url-fetch)
@@ -70,7 +70,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1rwgv6rsmy3ljfwcpv42w203ghngw86s5kzb0yjm1zgsxmas2wh6"))
+          "1xfm586n6gm44mkyn25mbiyhj6w9ji9yl6fvmnr4zk1q6qcga3v8"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
@@ -83,7 +83,7 @@
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qt" ,qt) ; for qmake
+       ("qtbase" ,qtbase) ; for qmake
        ;; xdg-utils is supposed to be used for desktop integration, but it
        ;; also creates lots of messages
        ;; mkdir: cannot create directory '/homeless-shelter': Permission denied
@@ -118,14 +118,16 @@
        ("python2-mechanize" ,python2-mechanize)
        ("python2-netifaces" ,python2-netifaces)
        ("python2-pillow" ,python2-pillow)
-       ("python2-pyqt" ,python2-pyqt-5.5)
+       ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
-       ("qt" ,qt)
        ("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2
        #:test-target "check"
        #:tests? #f ; FIXME: enable once flake8 is packaged
+       ;; Calibre is using setuptools by itself, but the setup.py is not
+       ;; compatible with the shim wrapper (taken from pip) we are using.
+       #:use-setuptools? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'configure

@@ -74,7 +74,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.19.19")
+    (version "0.19.21")
     (source (origin
               (method url-fetch)
               (uri
@@ -83,8 +83,19 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "07af1m2lgblyiq0gcs26zv8n22wrhrpmf49xsm338h1n87d6r1dw"))))
+                "0c0p61p3jfh89pnqwd9nrw55krfvvnzhkpdq53g6njvg0aybh1c3"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-service-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (systemd (string-append out "/etc/systemd/system"))
+                    (systemd-user (string-append out "/etc/systemd/user")))
+               (install-file "systemd/system/mpd.service" systemd)
+               (install-file "systemd/user/mpd.service" systemd-user)
+               #t))))))
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
@@ -257,15 +268,10 @@ information about tracks being played to a scrobbler, such as Libre.FM.")
     (synopsis "Python MPD client library")
     (description "Python-mpd2 is a Python library which provides a client
 interface for the Music Player Daemon.")
-    (license license:lgpl3+)
-    (properties `((python2-variant . ,(delay python2-mpd2))))))
+    (license license:lgpl3+)))
 
 (define-public python2-mpd2
-  (let ((mpd2 (package-with-python2
-               (strip-python2-variant python-mpd2))))
-    (package (inherit mpd2)
-      (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ,@(package-native-inputs mpd2))))))
+  (package-with-python2 python-mpd2))
 
 (define-public sonata
   (package

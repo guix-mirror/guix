@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,6 +74,8 @@
   #:use-module (gnu packages slang)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -252,13 +255,15 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
-       ,@(if configuration-file
-             `(("kconfig" ,(configuration-file
-                            (system->linux-architecture
-                             (or (%current-target-system)
-                                 (%current-system)))
-                            #:variant (version-major+minor version))))
-             '())))
+       ,@(match (and configuration-file
+                     (configuration-file
+                      (system->linux-architecture
+                       (or (%current-target-system) (%current-system)))
+                      #:variant (version-major+minor version)))
+           (#f                                    ;no config for this platform
+            '())
+           ((? string? config)
+            `(("kconfig" ,config))))))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -337,26 +342,26 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.10"
-                    "04kwarmpz5adz64wwy0xpwzxsri7jrjkhbmjlwxsac69x9a26bkl"
+  (make-linux-libre "4.8.15"
+                    "0msgi44mh1ighfawysrzrljikwrapkvk418d6h0v45vj2i5rwln9"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.34"
-                    "04ng40l2av34bcfwjs5vliv15f0m8bl0sfw08imspiplxvajd6ca"
+  (make-linux-libre "4.4.39"
+                    "0aqi44xshib7lx9zjc0kj2v172ywa0iy2kb6z0whbiw3f841hv43"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.35"
-                    "05zvrld1digqwf9kqf5pxx0mxqmwpr5kamhnks6y4yfy7x7jynyk"
+  (make-linux-libre "4.1.37"
+                    "0q79cxmrz0j5wh7z1dc103q6q6qf7rqgjl7ka8lvn4vl32pr0kq1"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.10")
-(define %linux-libre-hash "04kwarmpz5adz64wwy0xpwzxsri7jrjkhbmjlwxsac69x9a26bkl")
+(define %linux-libre-version "4.8.15")
+(define %linux-libre-hash "0msgi44mh1ighfawysrzrljikwrapkvk418d6h0v45vj2i5rwln9")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -589,7 +594,7 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "006")
+    (version "008")
     (source
      (origin
       (method url-fetch)
@@ -597,10 +602,11 @@ slabtop, and skill.")
                           "usbutils-" version ".tar.xz"))
       (sha256
        (base32
-        "03pd57vv8c6x0hgjqcbrxnzi14h8hcghmapg89p8k5zpwpkvbdfr"))))
+        "132clk14j4nm8crln2jymdbbc2vhzar2j2hnxyh05m79pbq1lx24"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb" ,libusb)))
+     `(("libusb" ,libusb)
+       ("eudev" ,eudev)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
@@ -860,14 +866,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0wcha78c2sm8qqk5r3w83cvm8fp6fb1zpd35kmcm24kxhz007xks"))))
+               "0z0nnqp1707bm02dys2d16m88lsg5nd26bqaf14rl3za9sjifwhj"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -886,7 +892,8 @@ MIDI functionality to the Linux-based operating system.")
              ;; Don't try to mkdir /var/lib/alsa.
              (substitute* "Makefile"
                (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
-                "true\n")))))))
+                "true\n"))
+             #t)))))
     (inputs
      `(("libsamplerate" ,libsamplerate)
        ("ncurses" ,ncurses)
@@ -902,6 +909,68 @@ MIDI functionality to the Linux-based operating system.")
     ;; This is mostly GPLv2+ but a few files such as 'alsactl.c' are
     ;; GPLv2-only.
     (license license:gpl2)))
+
+(define-public alsa-plugins
+  (package
+    (name "alsa-plugins")
+    (version "1.1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1w81z5jlwqhd1l2m7qrq69lc4k9dnrg1wn52jsl2hrf3hbhd394f"))))
+    (build-system gnu-build-system)
+    ;; TODO: Split libavcodec and speex if possible. It looks like they can not
+    ;; be split, there are references to both in files.
+    ;; TODO: Remove OSS related plugins, they add support to run native
+    ;; ALSA applications on OSS however we do not offer OSS and OSS is
+    ;; obsolete.
+    (outputs '("out" "pulseaudio"))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'split
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Distribute the binaries to the various outputs.
+             (let* ((out (assoc-ref outputs "out"))
+                    (pua (assoc-ref outputs "pulseaudio"))
+                    (pualib (string-append pua "/lib/alsa-lib"))
+                    (puaconf (string-append pua "/share/alsa/alsa.conf.d")))
+               (mkdir-p puaconf)
+               (mkdir-p pualib)
+               (chdir (string-append out "/share"))
+               (for-each (lambda (file)
+                           (rename-file file (string-append puaconf "/" (basename file))))
+                         (find-files out "\\.(conf|example)"))
+               (for-each (lambda (file)
+                           (rename-file file (string-append pualib "/" (basename file))))
+                         (find-files out ".*pulse\\.(la|so)"))
+               (chdir "..")
+               ;; We have moved the files to output pulsaudio, the
+               ;; directory is now empty.
+               (delete-file-recursively (string-append out "/share"))
+               #t))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("speex" ,speex) ; libspeexdsp resampling plugin
+       ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
+       ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
+       ("pulseaudio" ,pulseaudio))) ; PulseAudio plugin
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.alsa-project.org/")
+    (synopsis "Plugins for the Advanced Linux Sound Architecture (ALSA)")
+    (description
+     "The Advanced Linux Sound Architecture (ALSA) provides audio and
+MIDI functionality to the Linux-based operating system.  This package enhances ALSA
+by providing additional plugins which include: upmixing, downmixing, jackd and
+pulseaudio support for native alsa applications, format conversion (s16 to a52), and
+external rate conversion.")
+    (license (list license:gpl2+
+                   ;; `rate/rate_samplerate.c': LGPL v2.1 or later.
+                   license:lgpl2.1+))))
 
 (define-public iptables
   (package
@@ -934,7 +1003,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.8.0")
+    (version "4.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -942,7 +1011,7 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "12dk5hn1zlraqk2p0z8dv2xgsz0x9v8l3vcvf51fzj0v8b45j2d3"))))
+                "1i0n071hiqxw1gisngw2jln3kcp9sh47n6fj5hdwqrvp7w20zwy0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -970,7 +1039,7 @@ packet filter.")
        ("flex" ,flex)
        ("bison" ,bison)))
     (home-page
-     "http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2")
+     "https://wiki.linuxfoundation.org/networking/iproute2")
     (synopsis
      "Utilities for controlling TCP/IP networking and traffic in Linux")
     (description
@@ -1208,7 +1277,7 @@ configuration and monitoring interfaces.")
 (define-public iw
   (package
     (name "iw")
-    (version "4.3")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1216,7 +1285,7 @@ configuration and monitoring interfaces.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "085jyvrxzarvn5jl0fk618jjxy50nqx7ifngszc4jxk6a4ddibd6"))))
+                "1klpvv98bnx1zm6aqalnri2vd7w80scmdaxr2qnblb6mz82whk1j"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libnl" ,libnl)))
@@ -1876,7 +1945,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2016.05.02")
+    (version "2016.06.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1884,7 +1953,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "07n6gcwfbddz3awbdflv3dhxjszsqq2lrdwih0a0ahcliac4qry9"))
+                "1dxqy7a7zpzya30ff00s8k1qgrlndrwys99gc0r8yg0vab1z3vfg"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(delete-file "regulatory.bin"))))
@@ -2157,7 +2226,7 @@ thanks to the use of namespaces.")
                             "CC=gcc"))
        #:phases (alist-delete 'configure %standard-phases)
        #:tests? #f))  ; no test suite
-    (home-page "http://sourceforge.net/projects/hdparm/")
+    (home-page "https://sourceforge.net/projects/hdparm/")
     (synopsis "Tune hard disk parameters for high performance")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
@@ -2223,7 +2292,7 @@ about ACPI devices.")
                (base32
                 "1vl7c6vc724v4jwki17czgj6lnrknnj1a6llm8gkl32i2gnam5j3"))))
     (build-system gnu-build-system)
-    (home-page "http://sourceforge.net/projects/acpid2/")
+    (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
     (description
      "acpid is designed to notify user-space programs of Advanced
@@ -2312,7 +2381,7 @@ capabilities of the Linux kernel.")
 (define-public libraw1394
   (package
     (name "libraw1394")
-    (version "2.1.0")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2320,7 +2389,7 @@ capabilities of the Linux kernel.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kwnf4ha45c04mhc4yla672aqmvqqihxix1gvblns5cd2pc2cc8b"))))
+                "0pm5b415j1qdzyw38wdv8h7ff4yx20831z1727mpsb6jc6bwdk03"))))
     (build-system gnu-build-system)
     (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Interface library for the Linux IEEE1394 drivers")
@@ -2348,7 +2417,7 @@ protocol in question.")
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
-    (home-page "http://sourceforge.net/projects/libavc1394/")
+    (home-page "https://sourceforge.net/projects/libavc1394/")
     (synopsis "AV/C protocol library for IEEE 1394")
     (description
      "Libavc1394 is a programming interface to the AV/C specification from
@@ -2513,7 +2582,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.40")
+    (version "5.43")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2521,7 +2590,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "09ywk3lvgis0nbi0d5z8d4qp5r33lzwnd6bdakacmbsm420qpnns"))))
+                "05cdnpz0w2lwq2x5ba87q1h2wgb4lfnpbnbh6p7499hx59fw1j8n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2573,55 +2642,21 @@ is flexible, efficient and uses a modular implementation.")
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
-    (version "1.1.0")
+    (version "1.2.5")
     (source (origin
               (method url-fetch)
-              (uri "https://docs.google.com/uc?export=download&\
-id=0B7CLI-REKbE3VTdaa0EzTkhYdU0")
+              (uri (string-append
+                    "https://github.com/relan/exfat/releases/download/v"
+                    version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0glmgwrf0nv09am54i6s35ksbvrywrwc51w6q32mv5by8475530r"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1i0sh0s6wnm4dqxli3drva871wgbbm57qjf592vnswna9hc6bvim"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("scons" ,scons)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("fuse" ,fuse)))
-    (arguments
-     '(#:tests? #f                                ;no test suite
-
-       ;; XXX: Factorize with 'exfat-utils'.
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'unpack 'scons-propagate-environment
-                             (lambda _
-                               ;; Modify the SConstruct file to arrange for
-                               ;; environment variables to be propagated.
-                               (substitute* "SConstruct"
-                                 (("^env = Environment\\(")
-                                  "env = Environment(ENV=os.environ, "))))
-                  (replace 'build
-                           (lambda _
-                             (zero? (system* "scons"))))
-                  (replace 'install
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             (let* ((out  (assoc-ref outputs "out"))
-                                    (bin  (string-append out "/bin"))
-                                    (man8 (string-append out
-                                                         "/share/man/man8")))
-                               (mkdir-p bin)
-                               (mkdir-p man8)
-                               (for-each (lambda (file)
-                                           (copy-file
-                                            file
-                                            (string-append man8 "/"
-                                                           (basename file))))
-                                         (find-files "." "\\.8$"))
-                               (zero? (system* "scons" "install"
-                                               (string-append "DESTDIR="
-                                                              bin)))))))))
-    (home-page "http://code.google.com/p/exfat/")
+    (home-page "https://github.com/relan/exfat")
     (synopsis "Mount exFAT file systems")
     (description
      "This package provides a FUSE-based file system that provides read and
@@ -2674,7 +2709,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.8.4")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2682,7 +2717,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1ib1ybpjhcymcycjiraz1vk01qlyvpwcg7mwfhmacdy3cvbfl9mz"))))
+                "18y88avadn4wb3xmczd6pfcjr7ik62dw4phk6fmkms2j8vmvl9z2"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2709,11 +2744,11 @@ and copy/paste text in the console and in xterm.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
                      ("xmlto" ,xmlto)
-                     ;; For building documentation
+                     ;; For building documentation.
                      ("libxml2" ,libxml2)
                      ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
-                     ;; For tests
+                     ;; For tests.
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
@@ -2863,7 +2898,7 @@ The package provides additional NTFS tools.")
     (description
      "Monitor a hardware random number generator, and supply entropy
 from that to the system kernel's @file{/dev/random} machinery.")
-    (home-page "http://sourceforge.net/projects/gkernel")
+    (home-page "https://sourceforge.net/projects/gkernel")
     ;; The source package is offered under the GPL2+, but the files
     ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
     (license (list license:gpl2 license:gpl2+))))
@@ -3037,14 +3072,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "144")
+    (version "146")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "03jyhsl0s59sfqykj5p6gkb03k4w1h9ay31yxym1dnzis5sq99pa"))
+                "0jjx4q1mfa380319cqz86nw5wv6jnbpvq2r8n0dyh87mhvrgb4wi"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet

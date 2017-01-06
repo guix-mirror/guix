@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -58,14 +58,14 @@ between various shells or commands.")
 (define-public trash-cli
   (package
     (name "trash-cli")
-    (version "0.12.9.14")
+    (version "0.17.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trash-cli" version))
        (sha256
         (base32
-         "1p4v2qx0sy47d9c9axszq04wns63s4b7rrhmsavg948sklqdaf54"))))
+         "019sjab29jkps8zkf8icihhf3ng4lx9y4p1lxjd3wbnnynphc4is"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -94,7 +94,7 @@ are already there.")
 (define-public direnv
   (package
     (name "direnv")
-    (version "2.9.0")
+    (version "2.10.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://github.com/direnv/" name
@@ -102,7 +102,7 @@ are already there.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "04v3v2sz9m6ivgbxcplxscj1dsvpaqpqnxgls4060naj3iz9sg82"))))
+               "1h5ywn0glw1kmxs3jwjv9fvnhha942c6k740p5ghvyns05ds9cqf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"

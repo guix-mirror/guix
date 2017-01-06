@@ -2,24 +2,32 @@
 # contributors reported by "git log" and "git shortlog" commands.
 
 Al McElrath <hello@yrns.org> <hello@atonesir.com>
+Alex Sassmannshausen <alex@pompo.co> <alex.sassmannshausen@gmail.com>
 Alexander I. Grafov <grafov@gmail.com>
 Alírio Eyng <alirioeyng@gmail.com>
 Amirouche Boubekki <amirouche@hypermove.net>
 Andreas Enge <andreas@enge.fr> <andreas.enge@inria.fr>
 Andreas Enge <andreas@enge.fr> <privat@xobs-novena>
 Andy Wingo <wingo@igalia.com> <wingo@pobox.com>
+Ben Woodcroft <donttrustben@gmail.com>
 Ben Woodcroft <donttrustben@gmail.com> <b.woodcroft@uq.edu.au>
 Ben Woodcroft <donttrustben@gmail.com> <donttrustben near gmail.com>
 Claes Wallin (韋嘉誠) <claes.wallin@greatsinodevelopment.com>
 Cyprien Nicolas <cyprien@nicolas.tf> <c.nicolas+gitorious@gmail.com>
+Daniel Pimentel <d4n1@d4n1.org> <d4n1@member.fsf.org>
 Danny Milosavljevic <dannym@scratchpost.org> <dannym+a@scratchpost.org>
+David Hashe <david.hashe@dhashe.com> <address@hidden>
 David Thompson <davet@gnu.org> <dthompson2@worcester.edu>
 David Thompson <davet@gnu.org> <dthompson@member.fsf.org>
 David Thompson <davet@gnu.org> <dthompson@vistahigherlearning.com>
 Deck Pickard <deck.r.pickard@gmail.com> <nebu@kipple>
 Eric Bavier <bavier@member.fsf.org> <ericbavier@gmail.com>
 Eric Dvorsak <eric@dvorsak.fr> <yenda1@gmail.com>
+George Clemmer <myglc2@gmail.com>
+Ivan Vilata i Balaguer <ivan@selidor.net>
+Jeff Mickey <j@codemac.net> <jm@igneous.io>
 John Darrington <jmd@gnu.org> <john@darrington.wattle.id.au>
+John J. Foerch <jjfoerch@earthlink.net>
 Joshua Grant <tadni@riseup.net> <gzg@riseup.net>
 Joshua Grant <tadni@riseup.net> <jgrant@parenthetical.io>
 Joshua Grant <tadni@riseup.net> <tadnimi@gmail.com>
@@ -27,6 +35,8 @@ Joshua Grant <tadni@riseup.net> <youlysses@riseup.net>
 Kei Kebreau <kei@openmailbox.org>
 Leo Famulari <leo@famulari.name> <lfamular@gmail.com>
 Ludovic Courtès <ludo@gnu.org> <ludovic.courtes@inria.fr>
+Marek Benc <dusxmt@gmx.com> <merkur32@gmail.com>
+Marius Bakke <mbakke@fastmail.com> <m.bakke@warwick.ac.uk>
 Mathieu Lirzin <mthl@gnu.org> <mthl@openmailbox.org>
 Mathieu Lirzin <mthl@gnu.org> <mathieu.lirzin@openmailbox.org>
 Nikita Karetnikov <nikita@karetnikov.org> <nikita.karetnikov@gmail.com>
@@ -35,13 +45,20 @@ ng0 <ng0@libertad.pw> <ngillmann@runbox.com>
 ng0 <ng0@libertad.pw> <niasterisk@grrlz.net>
 ng0 <ng0@libertad.pw> <ng@niasterisk.space>
 ng0 <ng0@libertad.pw>
-Pjotr Prins <pjotr.public01@thebird.nl>
-Pjotr Prins <pjotr.public01@thebird.nl> <pjotr.public12@thebird.nl>
+Pjotr Prins <pjotr.guix@thebird.nl> <pjotr.public01@thebird.nl>
+Pjotr Prins <pjotr.guix@thebird.nl> <pjotr.public12@thebird.nl>
+Pjotr Prins <pjotr.guix@thebird.nl> <pjotr.public12@email>
 Raimon Grau <raimonster@gmail.com> <raimon@3scale.net>
+Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 Raymond Nicholson <rain1@openmailbox.org>
+Rene Saavedra <rennes@openmailbox.org>
 Ricardo Wurmus <rekado@elephly.net>
 Ricardo Wurmus <rekado@elephly.net> <ricardo.wurmus@mdc-berlin.de>
 Sou Bunnbu (宋文武) <iyzsong@gmail.com>
+Sou Bunnbu (宋文武) <iyzsong@gmail.com> <iyzsong@member.fsf.org>
+Stefan Reichör <stefan@xsteve.at>
 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-Tomáš Čech <sleep_walker@gnu.org> <sleep_walker@suse.cz>
+Thomas Danckaert <thomas.danckaert@gmail.com> <post@thomasdanckaert.be>
 Tobias Geerinckx-Rice <me@tobias.gr> <tobias.geerinckx.rice@gmail.com>
+Tomáš Čech <sleep_walker@gnu.org> <sleep_walker@suse.cz>
+Vincent Legoll <vincent.legoll@gmail.com> <vincent.legoll@idgrilles.fr>

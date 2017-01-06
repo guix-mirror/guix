@@ -4,7 +4,7 @@
 
 (use-modules (gnu) (gnu system nss))
 (use-service-modules desktop)
-(use-package-modules certs)
+(use-package-modules certs gnome)
 
 (operating-system
   (host-name "antelope")
@@ -42,6 +42,7 @@
 
   ;; This is where we specify system-wide packages.
   (packages (cons* nss-certs         ;for HTTPS access
+                   gvfs              ;for user mounts
                    %base-packages))
 
   ;; Add GNOME and/or Xfce---we can choose at the log-in

@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -604,7 +605,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "9.0.02")
+    (version "9.0.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -612,7 +613,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ss6cp2bs8mzz3jqjbmmi877jfdb1jjcd29dvyk3i8qy7r0d44qm"))))
+                "0ybyraxi8pngibazfq4zlsqmg8kn5xlhvaiwnxb11znhfi61vi87"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
@@ -624,9 +625,9 @@ languages, plus Greek and Cyrillic.")
        #:tests? #f          ; no check target
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-                  (lambda _
-                    (setenv "CC" "gcc")))
+         (replace
+          'configure
+          (lambda _ (setenv "CC" "gcc") #t))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
@@ -897,4 +898,39 @@ powerline support.")
     (description
      "Source Code Pro is a set of monospaced OpenType fonts that have been
 designed to work well in user interface environments.")
+    (license license:silofl1.1)))
+
+(define-public font-fira-mono
+  (package
+    (name "font-fira-mono")
+    (version "3.206")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://carrois.com/downloads/fira_mono_3_2/"
+                                  "FiraMonoFonts"
+                                  (string-replace-substring version "." "")
+                                  ".zip"))
+              (sha256
+               (base32
+                "1z65x0dw5dq6rs6p9wyfrir50rlh95vgzsxr8jcd40nqazw4jhpi"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                     "/bin/unzip"))
+               (font-dir (string-append %output "/share/fonts/opentype")))
+           (mkdir-p font-dir)
+           (system* unzip
+                    "-j"
+                    (assoc-ref %build-inputs "source")
+                    "*.otf"
+                    "-d" font-dir)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://mozilla.github.io/Fira/")
+    (synopsis "Mozilla's monospace font")
+    (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))

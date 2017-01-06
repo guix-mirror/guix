@@ -2,7 +2,9 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,11 +31,15 @@
   #:use-module (gnu packages adns)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
@@ -208,7 +214,7 @@ interface, for the Transmission BitTorrent daemon.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.29.0")
+    (version "1.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -216,7 +222,7 @@ interface, for the Transmission BitTorrent daemon.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bn8j6yhjnsxlxr1cdxw39gphvsrk3qhvvq92rsirxjvwwix0r0s"))))
+                "1xiiqk4yiqr0c4hf05zkma9if13lp3wh37z1r0w60ahxs5k56v5z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"
@@ -231,7 +237,8 @@ interface, for the Transmission BitTorrent daemon.")
                 (string-append "// " text)))
              (substitute* "test/LpdMessageReceiverTest.cc"
                (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
-                (string-append "// " text))))))))
+                (string-append "// " text)))
+             #t)))))
     (native-inputs
      `(("cppunit" ,cppunit) ; for the tests
        ("pkg-config" ,pkg-config)))
@@ -251,3 +258,71 @@ interface, for the Transmission BitTorrent daemon.")
 download utility.  It supports HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink.
 Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
     (license l:gpl2+)))
+
+(define-public uget
+  (package
+    (name "uget")
+    (version "2.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/urlget/"
+                                  "uget%20%28stable%29/" version "/uget-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0919cf7lfk1djdl003cahqjvafdliv7v2l8r5wg95n4isqggdk75"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("curl" ,curl)
+       ("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("gstreamer" ,gstreamer)
+       ("libgcrypt" ,libgcrypt)
+       ("libnotify" ,libnotify)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://ugetdm.com/")
+    (synopsis "Universal download manager with GTK+ interface")
+    (description
+     "uGet is portable download manager with GTK+ interface supporting
+HTTP, HTTPS, BitTorrent and Metalink, supporting multi-connection
+downloads, download scheduling, download rate limiting.")
+    (license l:lgpl2.1+)))
+
+(define-public mktorrent
+  (package
+    (name "mktorrent")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mktorrent/mktorrent/"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17qi3nfky240pq6qcmf5qg324mxm83vk9r3nvsdhsvinyqm5d3kg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))          ; no configure script
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "NO_HASH_CHECK=1"
+                          "USE_LARGE_FILES=1"
+                          "USE_LONG_OPTIONS=1"
+                          "USE_PTHREADS=1")
+       #:tests? #f))                            ; no tests
+    (home-page "http://mktorrent.sourceforge.net/")
+    (synopsis "Utility to create BitTorrent metainfo files")
+    (description "mktorrent is a simple command-line utility to create
+BitTorrent @dfn{metainfo} files, often known simply as @dfn{torrents}, from
+both single files and whole directories.  It can add multiple trackers and web
+seed URLs, and set the @code{private} flag to disallow advertisement through
+the distributed hash table (DHT) and Peer Exchange.  Hashing is multi-threaded
+and will take advantage of multiple processor cores where possible.")
+    (license (list l:public-domain      ; sha1.*, used to build without OpenSSL
+                   l:gpl2+))))          ; with permission to link with OpenSSL

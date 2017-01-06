@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,13 +44,15 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
   #:use-module (gnu packages man)
-  #:use-module (gnu packages emacs)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages python)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages vim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 popen)
@@ -67,17 +69,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.11.0
+(define-public guix-0.12.0
   (package
     (name "guix")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1cwrbpv4dq7aczwksmcfw9w8r2bzrb5ld9zvjcr90i804hjpcb93"))))
+               "1jgy5mlygmhxdqhrp6vr8w83ndcm5mk64xfravr8l2d7hq8y40b2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -120,7 +122,7 @@
                    ;; XXX FIXME: These tests fail within the build container.
                    (lambda _
                      (substitute* "tests/syscalls.scm"
-                       (("^\\(test-assert \"(clone|setns|pivot-root)\"" all)
+                       (("^\\(test-(assert|equal) \"(clone|setns|pivot-root)\"" all)
                         (string-append "(test-skip 1)\n" all)))
                      (substitute* "tests/containers.scm"
                        (("^\\(test-(assert|equal)" all)
@@ -143,9 +145,11 @@
                      ;; Guile-JSON automatically.
                      (let* ((out    (assoc-ref outputs "out"))
                             (json   (assoc-ref inputs "guile-json"))
+                            (ssh    (assoc-ref inputs "guile-ssh"))
                             (gnutls (assoc-ref inputs "gnutls"))
                             (path   (string-append
                                      json "/share/guile/site/2.0:"
+                                     ssh "/share/guile/site/2.0:"
                                      gnutls "/share/guile/site/2.0")))
 
                        ;; Ignore user settings so that a bogus
@@ -159,7 +163,6 @@
 
                        #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-minimal)     ;for guix.el
 
                      ;; XXX: Keep the development inputs here even though
                      ;; they're unnecessary, just so that 'guix environment
@@ -203,8 +206,7 @@
     (propagated-inputs
      `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
        ("guile-json" ,guile-json)
-       ("geiser" ,geiser)                         ;for guix.el
-       ("emacs-magit-popup" ,emacs-magit-popup))) ;for "M-x guix" command
+       ("guile-ssh" ,guile-ssh)))
 
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")
@@ -222,9 +224,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "1f410017ff91458feda8c5788223d17696b71e36"))
-    (package (inherit guix-0.11.0)
-      (version (string-append "0.11.0-4." (string-take commit 4)))
+  (let ((commit "b291b3271a025dfe41e1a7fdfadd393373b0128d"))
+    (package (inherit guix-0.12.0)
+      (version (string-append "0.12.0-2." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -234,10 +236,10 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1mgzcbf1mry39wvvjflj76zggsshsip2pngxpaf2479yr3ri6v50"))
+                  "1hris387xn2wk4lcl20x1zyhiz96060w34xs1x13b4vmvkkvcpg4"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.11.0)
+       (substitute-keyword-arguments (package-arguments guix-0.12.0)
          ((#:configure-flags flags)
           ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
           ;; reference to Graphviz, whose closure is pretty big (too big for
@@ -478,13 +480,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "62")
+    (version "63")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "127b4gsw11hjbha5jpz5i42pc142h52pwzs1p792047y0j1yjg8z"))))
+                "12q5d2nszql1g4jf2ss863v0wpvvhrkaivqzhy6af9m9zwvw0p0k"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -495,26 +497,28 @@ transactions from C or Python.")
                     (lambda _
                       (substitute* "setup.py"
                         (("'python-magic',") ""))))
-                  ;; The test suite assumes we have pytest >= 2.9.0.
-                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=841146
-                  (add-after 'unpack 'disable-failing-test
-                    (lambda _
-                      (substitute* "tests/comparators/utils.py"
-                        (("skip\\(reason\\=\\\"requires \\{\\}\\\"\\.format\\(tool\\)\\)")
-                          "skipif(True, reason=\"Requires pytest >= 2.9\")"))))
-                  (add-before 'build 'disable-egg-zipping
-                    (lambda _
-                      ;; Leave the .egg file uncompressed.
-                      (let ((port (open-file "setup.cfg" "a")))
-                        (display "\n[easy_install]\nzip_ok = 0\n"
-                                 port)
-                        (close-port port)
-                        #t))))))
+                  (add-after 'unpack 'embed-tool-references
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "diffoscope/difference.py"
+                        (("@tool_required\\('colordiff'\\)") "")
+                        (("\\[\"colordiff\"")
+                         (string-append "[\"" (which "colordiff") "\"")))
+                      (substitute* "diffoscope/comparators/utils.py"
+                        (("@tool_required\\('xxd'\\)") "")
+                        (("\\['xxd',")
+                         (string-append "['" (which "xxd") "',")))
+                      (substitute* "diffoscope/comparators/elf.py"
+                        (("@tool_required\\('readelf'\\)") "")
+                        (("\\['readelf',")
+                         (string-append "['" (which "readelf") "',")))
+                      #t)))))
     (inputs `(("rpm" ,rpm)                        ;for rpm-python
               ("python-file" ,python-file)
               ("python-debian" ,python-debian)
               ("python-libarchive-c" ,python-libarchive-c)
               ("python-tlsh" ,python-tlsh)
+              ("colordiff" ,colordiff)
+              ("xxd" ,vim)
 
               ;; Below are modules used for tests.
               ("python-pytest" ,python-pytest)

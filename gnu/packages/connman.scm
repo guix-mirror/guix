@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Mathieu OTHACEHE <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,10 +25,13 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages tls)
@@ -49,7 +53,7 @@
     (arguments
      `(#:configure-flags
        (list "--enable-nmcompat"
-             ;; "--enable-polkit"
+             "--enable-polkit"
              "--enable-openconnect"
              "--enable-openvpn"
              "--enable-vpnc"
@@ -70,7 +74,7 @@
        ("glib" ,glib)
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
-       ;; ("polkit" ,polkit) ; pkg-config cannot find polkit.pc
+       ("polkit" ,polkit)        ;so connman can be used by unprivileged users
        ("readline" ,readline)
        ;; These inputs are needed for connman to include the interface to
        ;; these technologies so IF they are installed they can be used.
@@ -90,3 +94,78 @@ cases.  Connman implements DNS resolving and caching, DHCP clients for both
 IPv4 and IPv6, link-local IPv4 address handling and tethering (IP connection
 sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
     (license gpl2)))
+
+(define-public econnman
+  (package
+    (name "econnman")
+    (version "1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://download.enlightenment.org/rel/apps/"
+                            "econnman/econnman-" version ".tar.gz"))
+        (sha256
+         (base32
+          "057pwwavlvrrq26bncqnfrf449zzaim0zq717xv86av4n940gwv0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/econnman-bin")))
+               (wrap-program bin
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efl" ,efl)
+       ("python-2" ,python-2)
+       ("python2-efl" ,python2-efl)))
+    (home-page "https://www.enlightenment.org")
+    (synopsis "Connman User Interface written using the EFL")
+    (description
+     "An EFL user interface for the @code{connman} connection manager.")
+    (license lgpl3)))
+
+(define-public cmst
+  (package
+    (name "cmst")
+    (version "2016.10.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/andrew-bibb/cmst/releases/download/cmst-"
+             version "/cmst-" version ".tar.gz"))
+       (sha256
+        (base32 "1xpn4sqnxzpsjjwh9hva9sn55xlryiz2f2mwpyj2l31janj7a082"))))
+    (inputs
+     `(("qt" ,qt)))
+    (native-inputs
+     `(("qmake" ,qt)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero?
+              (system* "qmake"
+                       (string-append "PREFIX="
+                                      (assoc-ref outputs "out"))))))
+         (add-before 'install 'fix-Makefiles
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (find-files "." "Makefile")
+                 (("INSTALL_ROOT)")
+                  (string-append "INSTALL_ROOT)" out))
+                 (("/usr/bin") "/bin"))))))))
+    (home-page "https://github.com/andrew-bibb/cmst")
+    (synopsis "Qt frontend for Connman")
+    (description
+     "Cmst is a Qt based frontend for the @code{connman} connection manager.
+This package also provides a systemtray icon.")
+    (license x11)))

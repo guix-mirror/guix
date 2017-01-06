@@ -114,6 +114,13 @@ files."
                        (string-append #$guile-ssh "/lib/guile/2.0/site-ccache")
                        %load-compiled-path)))
 
+        ;; XXX: The 'guile-ssh' package prior to Guix commit 92b7258 was
+        ;; broken: libguile-ssh could not be found.  Work around that.
+        ;; FIXME: We want Guile-SSH 0.10.2 or later anyway.
+        #$(if (string-prefix? "0.9." (package-version guile-ssh))
+              #~(setenv "LTDL_LIBRARY_PATH" (string-append #$guile-ssh "/lib"))
+              #t)
+
         (build-guix #$output #$source
 
                     #:system #$%system

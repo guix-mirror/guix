@@ -23,7 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages bdw-gc)
@@ -44,20 +44,16 @@
 (define-public inkscape
   (package
     (name "inkscape")
-    (version "0.91")
+    (version "0.92.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://launchpad.net/inkscape/"
-                                  (version-major+minor version) ".x/"
-                                  version "/+download/inkscape-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://media.inkscape.org/dl/"
+                                  "resources/file/"
+                                  "inkscape-" version ".tar.bz2"))
               (sha256
                (base32
-                "086v01jy896dj86bq7plrf6si4p6gh6ga2v5417llgmminycz8rc"))
-              (patch-flags '("-p0"))
-              (patches
-               (search-patches "inkscape-drop-wait-for-targets.patch"))))
-    (build-system gnu-build-system)
+                "0mmssxnxsvb3bpm7ck5pqvwyacrz1nkyacs571jx8j04l1cw3d5q"))))
+    (build-system cmake-build-system)
     (inputs
      `(("aspell" ,aspell)
        ("gtkmm" ,gtkmm-2)
@@ -75,19 +71,11 @@
        ("boost" ,boost)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (arguments
-     `(;; Add '-std=c++11', required by recent versions of GLibmm & co.
-       ;; Use '-g0' to reduce disk usage during the build.
-       #:configure-flags '("CXXFLAGS=-g0 -O2 -fopenmp -std=c++11")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-test-includes
-           (lambda _
-             (substitute* "src/cxxtests.cpp"
-               (("\\.\\./\\.\\./src") "../src"))
-             #t)))))
+    ;; FIXME: tests require gmock
+    (arguments `(#:tests? #f))
     (home-page "http://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape

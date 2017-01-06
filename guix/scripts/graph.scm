@@ -37,6 +37,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (%package-node-type
+            %reverse-package-node-type
             %bag-node-type
             %bag-with-origins-node-type
             %bag-emerged-node-type
@@ -100,6 +101,25 @@ name."
    (identifier (lift1 object-address %store-monad))
    (label node-full-name)
    (edges (lift1 package-node-edges %store-monad))))
+
+
+;;;
+;;; Reverse package DAG.
+;;;
+
+(define %reverse-package-node-type
+  ;; For this node type we first need to compute the list of packages and the
+  ;; list of back-edges.  Since we want to do it only once, we use the
+  ;; promises below.
+  (let* ((packages   (delay (fold-packages cons '())))
+         (back-edges (delay (run-with-store #f    ;store not actually needed
+                              (node-back-edges %package-node-type
+                                               (force packages))))))
+    (node-type
+     (inherit %package-node-type)
+     (name "reverse-package")
+     (description "the reverse DAG of packages")
+     (edges (lift1 (force back-edges) %store-monad)))))
 
 
 ;;;
@@ -323,6 +343,7 @@ substitutes."
 (define %node-types
   ;; List of all the node types.
   (list %package-node-type
+        %reverse-package-node-type
         %bag-node-type
         %bag-with-origins-node-type
         %bag-emerged-node-type
@@ -337,6 +358,13 @@ substitutes."
             %node-types)
       (leave (_ "~a: unknown node type~%") name)))
 
+(define (lookup-backend name)
+  "Return the graph backend called NAME.  Raise an error if it is not found."
+  (or (find (lambda (backend)
+              (string=? (graph-backend-name backend) name))
+            %graph-backends)
+      (leave (_ "~a: unknown backend~%") name)))
+
 (define (list-node-types)
   "Print the available node types along with their synopsis."
   (display (_ "The available node types are:\n"))
@@ -346,6 +374,16 @@ substitutes."
                       (node-type-name type)
                       (node-type-description type)))
             %node-types))
+
+(define (list-backends)
+  "Print the available backends along with their synopsis."
+  (display (_ "The available backend types are:\n"))
+  (newline)
+  (for-each (lambda (backend)
+              (format #t "  - ~a: ~a~%"
+                      (graph-backend-name backend)
+                      (graph-backend-description backend)))
+            %graph-backends))
 
 
 ;;;
@@ -360,6 +398,14 @@ substitutes."
         (option '("list-types") #f #f
                 (lambda (opt name arg result)
                   (list-node-types)
+                  (exit 0)))
+        (option '(#\b "backend") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'backend (lookup-backend arg)
+                              result)))
+        (option '("list-backends") #f #f
+                (lambda (opt name arg result)
+                  (list-backends)
                   (exit 0)))
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
@@ -378,6 +424,10 @@ substitutes."
   (display (_ "Usage: guix graph PACKAGE...
 Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
   (display (_ "
+  -b, --backend=TYPE     produce a graph with the given backend TYPE"))
+  (display (_ "
+      --list-backends    list the available graph backends"))
+  (display (_ "
   -t, --type=TYPE        represent nodes of the given TYPE"))
   (display (_ "
       --list-types       list the available graph types"))
@@ -392,7 +442,8 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
   (show-bug-report-information))
 
 (define %default-options
-  `((node-type . ,%package-node-type)))
+  `((node-type . ,%package-node-type)
+    (backend   . ,%graphviz-backend)))
 
 
 ;;;
@@ -407,6 +458,7 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
                                  (lambda (arg result)
                                    (alist-cons 'argument arg result))
                                  %default-options))
+           (backend  (assoc-ref opts 'backend))
            (type     (assoc-ref opts 'node-type))
            (items    (filter-map (match-lambda
                                    (('argument . (? store-path? item))
@@ -429,7 +481,8 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
                                              items)))
               (export-graph (concatenate nodes)
                             (current-output-port)
-                            #:node-type type)))))))
+                            #:node-type type
+                            #:backend backend)))))))
   #t)
 
 ;;; graph.scm ends here

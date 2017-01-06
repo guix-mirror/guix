@@ -60,7 +60,13 @@
                         (string-append "\"" bin "/wmaker.inst")))
                      (substitute* '("src/defaults.c" "WPrefs.app/Menu.c")
                        (("\"wmsetbg")
-                        (string-append "\"" bin "/wmsetbg")))))
+                        (string-append "\"" bin "/wmsetbg")))
+                     ;; Add enough cells to the command character array to
+                     ;; allow passing our large path to the wmsetbg binary.
+                     ;; The path to wmsetbg in Guix requires 67 extra characters.
+                     (substitute* "src/defaults.c"
+                       (("len = strlen\\(text\\) \\+ 40;")
+                        (string-append "len = strlen(text) + 107;")))))
                  (alist-cons-after
                   'install 'wrap
                   (lambda* (#:key outputs #:allow-other-keys)

@@ -33,13 +33,13 @@
 (define-public links
   (package
     (name "links")
-    (version "2.13")
+    (version "2.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   name "-" version ".tar.bz2"))
               (sha256
-               (base32 "01a4mbpvf7450ymqarjkpmzrm0z2zyd9lvqwg7x9kcd36i9hjln2"))))
+               (base32 "1f24y83wa1vzzjq5kp857gjqdpnmf8pb29yw7fam0m8wxxw0c3gp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

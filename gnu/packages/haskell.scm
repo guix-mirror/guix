@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,33 +25,33 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages haskell)
-  #:use-module (ice-9 regex)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix utils)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system haskell)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages perl)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages sdl)
-  #:use-module (gnu packages bootstrap)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages libedit)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (ice-9 regex))
 
 (define ghc-bootstrap-x86_64-7.8.4
   (origin
@@ -2199,7 +2200,7 @@ removed.  Both IPv4 and IPv6 are supported.")
     (inputs
      `(("ghc-mtl" ,ghc-mtl)))
     (home-page
-     "http://sourceforge.net/projects/lazy-regex")
+     "https://sourceforge.net/projects/lazy-regex")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "@code{Text.Regex.Base} provides the interface API for
 regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
@@ -2222,7 +2223,7 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
-    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "POSIX regular expressions for Haskell")
     (description "This library provides the POSIX regex backend used by the
 Haskell library @code{regex-base}.")
@@ -2246,7 +2247,7 @@ Haskell library @code{regex-base}.")
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)
        ("ghc-regex-posix" ,ghc-regex-posix)))
-    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "This library provides one module layer over
 @code{regex-posix} to replace @code{Text.Regex}.")
@@ -2315,36 +2316,34 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
 (define-public ghc-trifecta
   (package
     (name "ghc-trifecta")
-    (version "1.5.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/trifecta/trifecta-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0fjhnsbafl3yw34pyhcsvrqy6a2mnhyqys6gna3rrlygs8ck7hpb"))))
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/trifecta/"
+                    "trifecta-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rbhv9m17k7l1zr70i0yw5da0qjgxmfh1da8brj0zdzwjn9ac0mk"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
-                               ; -package ansi-terminal-0.6.2.3"
     (inputs
-     `(("ghc-charset" ,ghc-charset)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-reducers" ,ghc-reducers)
+     `(("ghc-reducers" ,ghc-reducers)
        ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-charset" ,ghc-charset)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-doctest" ,ghc-doctest)
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-hashable" ,ghc-hashable)
+       ("ghc-lens" ,ghc-lens)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-parsers" ,ghc-parsers)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)))
     (home-page "https://github.com/ekmett/trifecta/")
@@ -6670,67 +6669,6 @@ constant-time:
 @end enumerate\n")
     (license license:bsd-3)))
 
-(define-public idris
-  (package
-    (name "idris")
-    (version "0.9.19.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/idris-"
-                           version "/idris-" version ".tar.gz"))
-       (sha256
-        (base32
-         "10641svdsjlxbxmbvylpia04cz5nn9486lpiay8ibqcrc1792qgc"))
-       (modules '((guix build utils)))
-       (snippet
-        '(substitute* "idris.cabal"
-           ;; Package description file has a too-tight version restriction,
-           ;; rendering it incompatible with GHC 7.10.2.  This is fixed
-           ;; upstream.  See
-           ;; <https://github.com/idris-lang/Idris-dev/issues/2734>.
-           (("vector < 0.11") "vector < 0.12")))))
-    (build-system haskell-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-cc-command
-                              (lambda _
-                                (setenv "CC" "gcc"))))))
-    (inputs
-     `(("gmp" ,gmp)
-       ("ncurses" ,ncurses)
-       ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-cheapskate" ,ghc-cheapskate)
-       ("ghc-fingertree" ,ghc-fingertree)
-       ("ghc-mtl" ,ghc-mtl)
-       ("ghc-network" ,ghc-network)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-parsers" ,ghc-parsers)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-split" ,ghc-split)
-       ("ghc-text" ,ghc-text)
-       ("ghc-trifecta" ,ghc-trifecta)
-       ("ghc-uniplate" ,ghc-uniplate)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-zip-archive" ,ghc-zip-archive)
-       ("ghc-zlib" ,ghc-zlib)))
-    (home-page "http://www.idris-lang.org")
-    (synopsis "General purpose language with full dependent types")
-    (description "Idris is a general purpose language with full dependent
-types.  It is compiled, with eager evaluation.  Dependent types allow types to
-be predicated on values, meaning that some aspects of a program's behaviour
-can be specified precisely in the type.  The language is closely related to
-Epigram and Agda.")
-    (license license:bsd-3)))
-
 (define-public ghc-base16-bytestring
   (package
     (name "ghc-base16-bytestring")
@@ -7993,5 +7931,173 @@ helper functions for Lists, Maybes, Tuples, Functions.")
     (description "This package provides a Haskell module for creating 2D and
 3D plots using gnuplot.")
     (license license:bsd-3)))
+
+(define-public ghc-hinotify
+  (package
+    (name "ghc-hinotify")
+    (version "0.3.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/hinotify/"
+                    "hinotify-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03c1f4d7x805zdiq2w26kl09xrfjw19saycdkhnixzv2qcr6xm1p"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/kolmodin/hinotify.git")
+    (synopsis "Haskell binding to inotify")
+    (description "This library provides a wrapper to the Linux kernel's inotify
+feature, allowing applications to subscribe to notifications when a file is
+accessed or modified.")
+    (license license:bsd-3)))
+
+(define-public ghc-fsnotify
+  (package
+    (name "ghc-fsnotify")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/fsnotify/"
+                    "fsnotify-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0asl313a52qx2w6dw25g845683xsl840bwjh118nkwi5v1xipkzb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-async" ,ghc-async)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-hinotify" ,ghc-hinotify)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-temporary-rc" ,ghc-temporary-rc)))
+    (home-page "https://github.com/haskell-fswatch/hfsnotify")
+    (synopsis "Cross platform library for file change notification.")
+    (description "Cross platform library for file creation, modification, and
+deletion notification. This library builds upon existing libraries for platform
+specific Windows, Mac, and Linux filesystem event notification.")
+    (license license:bsd-3)))
+
+(define-public ghc-tasty-rerun
+  (package
+    (name "ghc-tasty-rerun")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/tasty-rerun/"
+                    "tasty-rerun-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ycxg7whabgcxyzy6gr536x8ykzx45whh1wrbsc7c58zi862fczd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-reducers" ,ghc-reducers)
+       ("ghc-split" ,ghc-split)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-tasty" ,ghc-tasty)))
+    (home-page "http://github.com/ocharles/tasty-rerun")
+    (synopsis "Run tests by filtering the test tree")
+    (description "This package adds the ability to run tests by filtering the
+test tree based on the result of a previous test run.  You can use this to run
+only those tests that failed in the last run, or to only run the tests that have
+been added since previous test run.")
+  (license license:bsd-3)))
+
+(define-public ghc-ieee754
+  (package
+    (name "ghc-ieee754")
+    (version "0.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/ieee754/"
+                    "ieee754-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zvfnnd5nm5kgr60214cdyks0kqdqyzpwk5sdh0s60yr8b7fyjny"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/patperry/hs-ieee754")
+    (synopsis "Utilities for dealing with IEEE floating point numbers")
+    (description "Utilities for dealing with IEEE floating point numbers,
+ported from the Tango math library; approximate and exact equality comparisons
+for general types.")
+    (license license:bsd-3)))
+
+(define-public ghc-terminal-size
+  (package
+    (name "ghc-terminal-size")
+    (version "0.3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/terminal-size/"
+                    "terminal-size-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0n4nvj3dbj9gxfnprgish45asn9z4dipv9j98s8i7g2n8yb3xhmm"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/terminal-size")
+    (synopsis "Get terminal window height and width")
+    (description "Get terminal window height and width without ncurses
+dependency.")
+    (license license:bsd-3)))
+
+(define-public ghc-language-c
+  (package
+    (name "ghc-language-c")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "language-c/language-c-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08i2bl7jmmymn2sldzlbz6ig7lx3wfwhlpadzibs3fx72z08pmc6"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-syb" ,ghc-syb)))
+    (native-inputs
+     `(("ghc-happy" ,ghc-happy)
+       ("ghc-alex" ,ghc-alex)))
+    (home-page "http://visq.github.io/language-c/")
+    (synopsis "Analysis and generation of C code")
+    (description
+     "Language C is a Haskell library for the analysis and generation of C code.
+It features a complete, well-tested parser and pretty printer for all of C99
+and a large set of GNU extensions.")
+    (license license:bsd-3)))
+
+(define-public ghc-markdown-unlit
+  (package
+    (name "ghc-markdown-unlit")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://hackage/package/markdown-unlit/"
+                    "markdown-unlit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kj2bffl7ndd8ygwwa3r1mbpwbxbfhyfgnbla8k8g9i6ffp0qrbw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-silently" ,ghc-silently)
+       ("ghc-stringbuilder" ,ghc-stringbuilder)
+       ("ghc-temporary" ,ghc-temporary)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/sol/markdown-unlit#readme")
+    (synopsis "Literate Haskell support for Markdown")
+    (description "This package allows you to have a README.md that at the
+same time is a literate Haskell program.")
+    (license license:expat)))
 
 ;;; haskell.scm ends here

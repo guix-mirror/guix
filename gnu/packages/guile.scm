@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
@@ -146,8 +146,8 @@ without requiring the source code to be rewritten.")
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
              ("readline" ,readline)
-             ("bash" ,bash)))
-
+             ,@(libiconv-if-needed)
+             ,@(if (target-mingw?) '() `(("bash" ,bash)))))
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
        ;; reads `-lltdl -lunistring', adding them here will add the needed
@@ -176,8 +176,15 @@ without requiring the source code to be rewritten.")
                   ;; Tell (ice-9 popen) the file name of Bash.
                   (let ((bash (assoc-ref inputs "bash")))
                     (substitute* "module/ice-9/popen.scm"
+                      ;; If bash is #f allow fallback for user to provide
+                      ;; "bash" in PATH.  This happens when cross-building to
+                      ;; MinGW for which we do not have Bash yet.
                       (("/bin/sh")
-                       (string-append bash "/bin/bash")))))
+                       ,@(if (target-mingw?)
+                             '((if bash
+                                   (string-append bash "/bin/bash")
+                                   "bash"))
+                             '((string-append bash "/bin/bash")))))))
                 %standard-phases)))
 
    (native-search-paths
@@ -210,7 +217,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "2.1.4")
+    (version "2.1.5")
     (replacement #f)
     (source (origin
               (method url-fetch)
@@ -218,7 +225,7 @@ without requiring the source code to be rewritten.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1w8kyy8nz6489d092fix6lvgjrk0bww7i0c2k67ym4hq0kjl0r1j"))
+                "0r9y4hw17dlxahik4zsccfb2f3p2a07wqndfm251bgmam9hln6gi"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -227,7 +234,10 @@ without requiring the source code to be rewritten.")
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
     (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
-    (properties '((timeout . 72000)))  ; 20 hours
+    (properties '((timeout . 72000)               ;20 hours
+                  (upstream-name . "guile")
+                  (ftp-server . "alpha.gnu.org")
+                  (ftp-directory . "/gnu/guile")))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -408,16 +418,20 @@ many readers as needed).")
                                "--with-gnu-filesystem-hierarchy")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'post-install
+         (add-before 'build 'fix-libguile-ncurses-file-name
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (dir   (string-append out "/share/guile/site/"))
-                    (files (find-files dir ".scm")))
-               (substitute* files
-                 (("\"libguile-ncurses\"")
-                  (format #f "\"~a/lib/guile/2.0/libguile-ncurses\""
-                          out)))
-               #t))))))
+             (and (zero? (system* "make" "install"
+                                  "-C" "src/ncurses"
+                                  "-j" (number->string
+                                        (parallel-job-count))))
+                  (let* ((out   (assoc-ref outputs "out"))
+                         (dir   "src/ncurses")
+                         (files (find-files dir ".scm")))
+                    (substitute* files
+                      (("\"libguile-ncurses\"")
+                       (format #f "\"~a/lib/guile/2.0/libguile-ncurses\""
+                               out)))
+                    #t)))))))
     (home-page "https://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
@@ -669,7 +683,7 @@ See http://minikanren.org/ for more on miniKanren generally.")
 (define-public guile-irregex
   (package
     (name "guile-irregex")
-    (version "0.9.4")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -677,7 +691,7 @@ See http://minikanren.org/ for more on miniKanren generally.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0cmaqvqvyarcnnsyrl2p6vwyv1r3k1q7qw8p9zrlnz1vpbj7vb90"))))
+                "1ia3m7dp3lcxa048q0gqbiwwsyvn99baw6xkhb4bhhzn4k7bwyqq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1398,5 +1412,75 @@ type system, elevating types to first-class status.")
      "guile-aspell is a Guile Scheme library for comparing a string against a
 dictionary and suggesting spelling corrections.")
     (license gpl3+)))
+
+(define-public guile-bash
+  ;; This project is currently retired.  It was initially announced here:
+  ;; <https://lists.gnu.org/archive/html/guile-user/2015-02/msg00003.html>.
+  (let ((commit "1eabc563ca5692b3e08d84f1f0e6fd2283284469")
+        (revision "0"))
+    (package
+      (name "guile-bash")
+      (version (string-append "0.1.6-" revision "." (string-take commit 7)))
+      (home-page
+       "https://anonscm.debian.org/cgit/users/kaction-guest/retired/dev.guile-bash.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (commit commit)
+                      (url home-page)))
+                (sha256
+                 (base32
+                  "097vny990wp2qpjij6a5a5gwc6fxzg5wk56inhy18iki5v6pif1p"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "sh" "bootstrap")))))
+
+         #:configure-flags
+         ;; Add -I to match 'bash.pc' of Bash 4.4.
+         (list (string-append "CPPFLAGS=-I"
+                              (assoc-ref %build-inputs "bash:include")
+                              "/include/bash/include")
+
+               ;; The '.a' file is useless.
+               "--disable-static"
+
+               ;; Install 'lib/bash' as Bash 4.4 expects.
+               (string-append "--libdir=" (assoc-ref %outputs "out")
+                              "/lib/bash"))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("autoconf" ,(autoconf-wrapper))
+                       ("automake" ,automake)
+                       ("libtool" ,libtool)
+                       ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
+                       ("gettext" ,gettext-minimal)))
+      (inputs `(("guile" ,guile-2.0)
+                ("bash:include" ,bash "include")))
+      (synopsis "Extend Bash using Guile")
+      (description
+       "Guile-Bash provides a shared library and set of Guile modules,
+allowing you to extend Bash in Scheme.  Scheme interfaces allow you to access
+the following aspects of Bash:
+
+@itemize
+@item aliases;
+@item setting and getting Bash variables;
+@item creating dynamic variables;
+@item creating Bash functions with a Scheme implementation;
+@item reader macro for output capturing;
+@item reader macro for evaluating raw Bash commands.
+@end itemize
+
+To enable it, run:
+
+@example
+enable -f ~/.guix-profile/lib/bash/libguile-bash.so scm
+@end example
+
+and then run @command{scm example.scm}.")
+      (license gpl3+))))
 
 ;;; guile.scm ends here

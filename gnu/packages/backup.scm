@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,8 +67,7 @@
                                "duplicity-test_selection-tmp.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)
-       ("util-linux" ,util-linux)))     ;setsid command, for the tests
+     `(("util-linux" ,util-linux)))     ;setsid command, for the tests
     (inputs
      `(("python" ,python-2)
        ("librsync" ,librsync)
@@ -79,16 +79,17 @@
     (arguments
      `(#:python ,python-2               ;setup assumes Python 2
        #:test-target "test"
-       #:phases (alist-cons-before
-                 'check 'check-setup
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "testing/functional/__init__.py"
-                     (("/bin/sh") (which "sh")))
-                   (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
-                   (setenv "TZDIR"          ;some timestamp checks need TZDIR
-                           (string-append (assoc-ref inputs "tzdata")
-                                          "/share/zoneinfo")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "testing/functional/__init__.py"
+               (("/bin/sh") (which "sh")))
+             (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
+             (setenv "TZDIR"          ;some timestamp checks need TZDIR
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t)))))
     (home-page "http://duplicity.nongnu.org/index.html")
     (synopsis "Encrypted backup using rsync algorithm")
     (description
@@ -334,8 +335,6 @@ errors.")
         (base32
          "1nwmmh816f96h0ff1jxk95ad38ilbhbdl5dgibx1d4cl81dsi48d"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)))
     (inputs
      `(("python" ,python-2)
        ("librsync" ,librsync)))
@@ -401,13 +400,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.0.8")
+    (version "1.0.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "1fdfi0yzzdrrlml6780n4fh61sqm7pw6fcd1y67kfkvw8hy5c0k9"))
+                "1ciwp9yilcibk0x82y5nn8ps95jrm8rxvff8mjrlp7a2w100i1im"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
@@ -433,20 +432,29 @@ detection, and lossless compression.")
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
-           (lambda _
-             (zero?
-               (system* "py.test" "-v" "--pyargs" "borg.testsuite" "-k"
-                        (string-append
-                          ;; These tests need to write to '/var'.
-                          "not test_get_cache_dir "
-                          "and not test_get_keys_dir "
-                          ;; These tests assume there is a root user in
-                          ;; '/etc/passwd'.
-                          "and not test_access_acl "
-                          "and not test_default_acl "
-                          "and not test_non_ascii_acl "
-                          ;; This test needs the unpackaged pytest-benchmark.
-                          "and not benchmark")))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed package available for the test suite.
+             (add-installed-pythonpath inputs outputs)
+             ;; The tests should be run in an empty directory.
+             (mkdir-p "tests")
+             (with-directory-excursion "tests"
+               (zero?
+                 (system* "py.test" "-v" "--pyargs" "borg.testsuite" "-k"
+                          (string-append
+                            ;; These tests need to write to '/var'.
+                            "not test_get_cache_dir "
+                            "and not test_get_keys_dir "
+                            "and not test_get_security_dir "
+                            ;; These tests assume there is a root user in
+                            ;; '/etc/passwd'.
+                            "and not test_access_acl "
+                            "and not test_default_acl "
+                            "and not test_non_ascii_acl "
+                            ;; This test needs the unpackaged pytest-benchmark.
+                            "and not benchmark "
+                            ;; These tests assume the kernel supports FUSE.
+                            "and not test_fuse "
+                            "and not test_fuse_allow_damaged_files"))))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -532,3 +540,37 @@ changes are stored.")
     (home-page "https://attic-backup.org/")
     (license license:bsd-3)
     (properties `((superseded . ,borg)))))
+
+(define-public wimlib
+  (package
+    (name "wimlib")
+    (version "1.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wimlib.net/downloads/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mbz03smlc054i2m9q2sbqymml9m897kfs84q7g81i26y811p6wq"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)
+       ("libxml2" ,libxml2)
+       ("ntfs-3g" ,ntfs-3g)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags (list "--enable-test-support")))
+    (home-page "https://wimlib.net/")
+    (synopsis "WIM file manipulation library and utilities")
+    (description "wimlib is a C library and set of command-line utilities for
+creating, modifying, extracting, and mounting archives in the Windows Imaging
+Format (@dfn{WIM files}).  It can capture and apply WIMs directly from and to
+NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
+    ;; wimlib is dual-licenced under version 3 or later of either the GPL or
+    ;; LGPL, except those files explicitly marked as being released into the
+    ;; public domain (CC0) in their headers.
+    (license (list license:gpl3+
+                   license:lgpl3+
+                   license:cc0))))

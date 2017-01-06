@@ -79,12 +79,9 @@ it via /dev/hda.
 
 REFERENCES-GRAPHS can specify a list of reference-graph files as produced by
 the #:references-graphs parameter of 'derivation'."
-  (define image-file
-    (string-append "image." disk-image-format))
-
   (when make-disk-image?
     (unless (zero? (system* "qemu-img" "create" "-f" disk-image-format
-                            image-file
+                            output
                             (number->string disk-image-size)))
       (error "qemu-img failed")))
 
@@ -115,7 +112,7 @@ the #:references-graphs parameter of 'derivation'."
                                            builder)
                   (append
                    (if make-disk-image?
-                       `("-drive" ,(string-append "file=" image-file
+                       `("-drive" ,(string-append "file=" output
                                                   ",if=virtio"))
                        '())
                    ;; Only enable kvm if we see /dev/kvm exists.
@@ -126,11 +123,10 @@ the #:references-graphs parameter of 'derivation'."
                        '()))))
     (error "qemu failed" qemu))
 
-  (if make-disk-image?
-      (copy-file image-file output)
-      (begin
-        (mkdir output)
-        (copy-recursively "xchg" output))))
+  ;; When MAKE-DISK-IMAGE? is true, the image is in OUTPUT already.
+  (unless make-disk-image?
+    (mkdir output)
+    (copy-recursively "xchg" output)))
 
 
 ;;;

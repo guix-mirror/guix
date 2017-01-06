@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Coypright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
@@ -34,6 +35,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
@@ -107,7 +109,8 @@ tools have full access to view and control running applications.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lmjlzmghmr27y615px9hkm552x7ap6pmq9mfbzr6smp8y2b6g31"))))
+              "0lmjlzmghmr27y615px9hkm552x7ap6pmq9mfbzr6smp8y2b6g31"))
+            (patches (search-patches "cairo-CVE-2016-9082.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -165,7 +168,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.2.4")
+   (version "1.3.3")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -173,7 +176,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14g4kpph8hgplkm954daxiymxx0vicfq7b7svvdsx54g5bqvv7a4"))))
+               "1jdkdjvci5d6r26vimsz24hz3xqqrk5xq40n693jn4m42mqrh816"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -198,7 +201,7 @@ affine transformation (scale, rotation, shear, etc.).")
     "HarfBuzz is an OpenType text shaping engine.")
    (license (license:x11-style "file://COPYING"
                        "See 'COPYING' in the distribution."))
-   (home-page "http://www.freedesktop.org/wiki/Software/HarfBuzz/")))
+   (home-page "https://www.freedesktop.org/wiki/Software/HarfBuzz/")))
 
 (define-public pango
   (package
@@ -297,6 +300,23 @@ functions which were removed.")
 graph-like environments, e.g. modular synths or finite state machine
 diagrams.")
     (license license:gpl3+)))
+
+(define-public ganv-devel
+  (let ((commit "31685d283e9b811b61014f820c42807f4effa071")
+        (revision "1"))
+    (package
+      (inherit ganv)
+      (name "ganv")
+      (version (string-append "1.4.2-" revision "."
+                              (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://git.drobilla.net/ganv.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0xmbykdl42jn9cgzrqrys5lng67d26nk5xq10wkkvjqldiwdck56")))))))
 
 (define-public gtksourceview-2
   (package

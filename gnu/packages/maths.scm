@@ -227,14 +227,14 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.2.1")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "095hp01d8lkqdvv0p1k25kvbisgfdmvx1rzpyc2i8kl2n33kvlhk"))
+                "1yxdzqjwmi2aid650fa9zyr8llw069x7lm489wx9nnfdi6vh09an"))
               (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -425,40 +425,35 @@ singular value problems.")
                                 "See LICENSE in the distribution."))))
 
 (define-public gnuplot
-  ;; Gnuplot version 5.0.4 was updated in-place, resulting in a hash mismatch.
-  ;; This can be removed at the next version update.
-  (let ((upstream-version "5.0.4")
-        (guix-revision "1"))
-    (package
-      (name "gnuplot")
-      (version (string-append upstream-version "-" guix-revision))
-      (source
-       (origin
-        (method url-fetch)
-        (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
-                            upstream-version "/gnuplot-"
-                            upstream-version ".tar.gz"))
-        (sha256
-         (base32
-          "07n3w12dkcxjnhsvsliaqnkhajhi818v6q8mkpmpbplbf92vh70m"))))
-      (build-system gnu-build-system)
-      (inputs `(("readline" ,readline)
-                ("cairo" ,cairo)
-                ("pango" ,pango)
-                ("gd" ,gd)))
-      (native-inputs `(("pkg-config" ,pkg-config)
-                       ("texlive" ,texlive-minimal)))
-      (home-page "http://www.gnuplot.info")
-      (synopsis "Command-line driven graphing utility")
-      (description "Gnuplot is a portable command-line driven graphing
+  (package
+    (name "gnuplot")
+    (version "5.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
+                                  version "/gnuplot-"
+                                  version ".tar.gz"))
+       (sha256
+        (base32
+         "0lr065qdlgss8lmy31l7hkmnk9fp4lvqq9qgb1f1209f36zy1wr5"))))
+    (build-system gnu-build-system)
+    (inputs `(("readline" ,readline)
+              ("cairo" ,cairo)
+              ("pango" ,pango)
+              ("gd" ,gd)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("texlive" ,texlive-minimal)))
+    (home-page "http://www.gnuplot.info")
+    (synopsis "Command-line driven graphing utility")
+    (description "Gnuplot is a portable command-line driven graphing
 utility.  It was originally created to allow scientists and students to
 visualize mathematical functions and data interactively, but has grown to
 support many non-interactive uses such as web scripting.  It is also used as a
 plotting engine by third-party applications like Octave.")
-      ;;  X11 Style with the additional restriction that derived works may only be
-      ;;  distributed as patches to the original.
-      (license (license:fsf-free
-                "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright")))))
+    ;;  X11 Style with the additional restriction that derived works may only be
+    ;;  distributed as patches to the original.
+    (license (license:fsf-free
+              "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
 
 (define-public gctp
   (package
@@ -549,15 +544,20 @@ incompatible with HDF5.")
 (define-public hdf5
   (package
     (name "hdf5")
-    (version "1.8.17")
+    (version "1.8.18")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-"
-                          version "/src/hdf5-"
-                          version ".tar.bz2"))
+      (uri (list (string-append "http://www.hdfgroup.org/ftp/HDF5/releases/"
+                                "hdf5-" version "/src/hdf5-"
+                                version ".tar.bz2")
+                 (string-append "https://support.hdfgroup.org/ftp/HDF5/"
+                                "current"
+                                (apply string-append
+                                       (take (string-split version #\.) 2))
+                                "/src/hdf5-" version ".tar.bz2")))
       (sha256
-       (base32 "0sj8x0gfs5fb28gipnynb9wpkz113h8wq9sva9mxx66kv27xsdgw"))
+       (base32 "13542vrnl1p35n8vbq0wzk40vddmm33q5nh04j98c7r1yjnxxih1"))
       (patches (list (search-patch "hdf5-config-date.patch")))))
     (build-system gnu-build-system)
     (inputs
@@ -709,7 +709,7 @@ HDF5 file is encoded according to the HDF File Format Specification.")
 (define-public netcdf
   (package
     (name "netcdf")
-    (version "4.4.0")
+    (version "4.4.1.1")
     (source
      (origin
        (method url-fetch)
@@ -717,18 +717,21 @@ HDF5 file is encoded according to the HDF File Format Specification.")
                            "netcdf-" version ".tar.gz"))
        (sha256
         (base32
-         "0y6gdcplarwqqnrav2xg1xd6ih732rzzbmdw78v3rl5b8mwcnh0d"))
-       (patches (list (search-patch "netcdf-config-date.patch")))))
+         "1blc7ik5yin7i0ls2kag0a9xjk12m0dzx6v1x88az3ras3scci2d"))
+       (patches (search-patches "netcdf-date-time.patch"
+                                "netcdf-tst_h_par.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)
        ("doxygen" ,doxygen)
        ("graphviz" ,graphviz)))
     (inputs
-     `(("hdf5" ,hdf5)
-       ("zlib" ,zlib)))
+     `(("hdf4" ,hdf4-alt)
+       ("hdf5" ,hdf5)
+       ("zlib" ,zlib)
+       ("libjpeg" ,libjpeg)))
     (arguments
-     `(#:configure-flags '("--enable-doxygen" "--enable-dot")
+     `(#:configure-flags '("--enable-doxygen" "--enable-dot" "--enable-hdf4")
        #:parallel-tests? #f))           ;various race conditions
     (home-page "http://www.unidata.ucar.edu/software/netcdf/")
     (synopsis "Library for scientific data")
@@ -953,14 +956,14 @@ script files.")
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "2.14.1")
+    (version "2.15.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://gmsh.info/src/gmsh-"
                           version "-source.tgz"))
       (sha256
-       (base32 "1vsxp47j6srmy8kqb3p1z9pmlm42whhhz7r0vzpa2a86gga4zx17"))
+       (base32 "02h7fk4vv8qwnq3ymm409c5sp4nksd0m9h2vkxqmy42l0ic4nalr"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
@@ -1851,7 +1854,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.38.1")
+    (version "5.39.0")
     (source
      (origin
        (method url-fetch)
@@ -1859,7 +1862,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1p6646rvq43hk09msyp0dk50cqpkh07mf4x0bc2fqisqmcv6b1hf"))
+         "1cvignn5y6qzrby6qb885yc8zdcdqdr1d50vcvc3gapw2f0gk3zm"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1931,7 +1934,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "16.04.2")
+    (version "16.12.0")
     (source
      (origin
        (method url-fetch)
@@ -1939,7 +1942,7 @@ point numbers.")
                            version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fpqzk1921isiqrpgpf433ldq41924qs9sy99fl1zn5661b2l73n"))))
+         "01kas9viqabw5id6crbhz8ahjimmv78gqzizs5hgnj9kngrgrm1h"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
@@ -1989,14 +1992,14 @@ full text searching.")
 (define-public armadillo
   (package
     (name "armadillo")
-    (version "7.500.0")
+    (version "7.600.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1x98d32cgxbzbbma2ak6c37wnbpq13xxyxyd6jjvflv748mzi9ks"))))
+                "0bac9y46m61zxinj51l82w06v01ra9vw7a9j6rrwdjhznkkdb437"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ;no test target
     (inputs
@@ -2017,14 +2020,14 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
 
 (define-public armadillo-for-rcpparmadillo
   (package (inherit armadillo)
-    (version "7.500.0")
+    (version "7.600.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1x98d32cgxbzbbma2ak6c37wnbpq13xxyxyd6jjvflv748mzi9ks"))))))
+                "1dxgfd2r9lbh24nszvqm2lag439s0srxaf1l86f6ww6waqm5r8zk"))))))
 
 (define-public muparser
   ;; When switching download sites, muparser re-issued a 2.2.5 release with a

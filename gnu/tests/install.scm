@@ -199,8 +199,15 @@ IMAGE, a disk image.  The QEMU VM is has access to MEMORY-SIZE MiB of RAM."
   (mlet %store-monad ((system (current-system)))
     (return #~(let ((image #$image))
                 ;; First we need a writable copy of the image.
-                (format #t "copying image '~a'...~%" image)
-                (copy-file image "disk.img")
+                (format #t "creating writable image from '~a'...~%" image)
+                (unless (zero? (system* #+(file-append qemu-minimal
+                                                       "/bin/qemu-img")
+                                        "create" "-f" "qcow2"
+                                        "-o"
+                                        (string-append "backing_file=" image)
+                                        "disk.img"))
+                  (error "failed to create writable QEMU image" image))
+
                 (chmod "disk.img" #o644)
                 `(,(string-append #$qemu-minimal "/bin/"
                                   #$(qemu-command system))

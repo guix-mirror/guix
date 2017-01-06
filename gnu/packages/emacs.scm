@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -273,7 +273,7 @@ editor (without an X toolkit)" )
                                  "/geiser-" version ".tar.gz"))
              (sha256
               (base32
-               "1n772ysl1dmn0vy3gk230ymyjm14h93zw99y6h2rqp1ixy7v43dm"))))
+               "0phz9d8wjk4p13vqannv0003fwh8qqrp0gfzcs2hgq1mrmv1srss"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -298,36 +298,8 @@ metadata.")
     (license license:bsd-3)))
 
 (define-public geiser-next
-  ;; Geiser's upcoming version supports Chibi and Chez, while it was forgot to
-  ;; include some required files in 0.9.  When the next Geiser release comes
-  ;; out, we can remove this.
-  (let ((commit "16035b9fa475496f7f89a57fa81455057af749a0")
-        (revision "1"))
-    (package
-      (inherit geiser)
-      (name "geiser-next")
-      (version (string-append "0.9-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (file-name (string-append name "-" version ".tar.gz"))
-                (uri (git-reference
-                      (url "git://git.sv.gnu.org/geiser.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1rrafizrhjkai0msryjiz4c5dcdyihf0i2wmgiy8br74rwbxpyl5"))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ,@(package-native-inputs geiser)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments geiser)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'autogen
-               (lambda _
-                 (zero? (system* "sh" "autogen.sh")))))))))))
+  ;; This has become "geiser".
+  (deprecated-package "geiser-next" geiser))
 
 (define-public paredit
   (package
@@ -426,7 +398,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.6")
+    (version "2.5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -435,7 +407,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "14vypqj3wqym5yd0nggfm1xdgq5hv1kwxkg6i8ymlpxcdfxj45w7"))))
+                "0znfznyqr360ryi7za9szbz1l5236v2cig25s4k7kkw0w8828xzh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -451,7 +423,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.8.0")
+    (version "2.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -459,7 +431,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1znvb7inwinrhifqzwp4lp9j6yp1l25j7riczc0zmvcjbpl5yhfq"))))
+               "1w74vy46z922kfs7gjkrng7wjpi481calpasqmjzpn3hqvgsd5d1"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -587,7 +559,7 @@ support for Git-SVN.")
               (file-name (string-append "magit-popup-" version ".el"))
               (sha256
                (base32
-                "0lmw824zp8c0vhikfkiay9wn4nmaksz6mfy0fldvy4wlx5c26yh3"))))
+                "0s04jnskmggwn69ln05qfwwa32va0q5ri7dwx917wkqz17w5zi62"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -897,14 +869,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.1")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ay6631p3dr6xnhkm7skwn0gp317r1mxbip28m126w4zqf05cbh3"))
+                "1xa9y64g5z8gfnxk1c2rf3plfjhqn4r6j8dpiygnfs6w4giysn22"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -974,22 +946,19 @@ provides an optional IDE-like error list.")
                     (string-append "\"" mp3info "/bin/mp3info\"")))))))
          (add-before 'install 'pre-install
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The 'install' rule expects the target directory to exist.
+             ;; The 'install' rule expects the target directories to exist.
              (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
                     (man1 (string-append out "/share/man/man1")))
+               (mkdir-p bin)
                (mkdir-p man1)
                #t)))
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (target (string-append
-                             out "/bin/emms-print-metadata")))
+             (let ((out (assoc-ref outputs "out")))
                (symlink "emms-auto.el"
                         (string-append out "/share/emacs/site-lisp/"
-                                       "emms-autoloads.el"))
-               (mkdir-p (dirname target))
-               (copy-file "src/emms-print-metadata" target)
-               (chmod target #o555)))))
+                                       "emms-autoloads.el"))))))
        #:tests? #f))
     (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
@@ -1276,6 +1245,83 @@ and stored in memory.")
     (description "This package provides a modern list API library for Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-bui
+  (package
+    (name "emacs-bui")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/alezost/bui.el/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vsh1v99xxm6hhqp0vg9fbs230kawa7xb5dnd8fidf3vwm622aqh"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("dash" ,emacs-dash)))
+    (home-page "https://github.com/alezost/bui.el")
+    (synopsis "Buffer interface library for Emacs")
+    (description
+     "BUI (Buffer User Interface) is a library for making @code{list} and
+@code{info} interfaces to display an arbitrary data of the same
+type, for example: packages, buffers, files, etc.")
+    (license license:gpl3+)))
+
+(define-public emacs-guix
+  (package
+    (name "emacs-guix")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alezost/guix.el"
+                                  "/releases/download/v" version
+                                  "/emacs-guix-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nhx0c3xc16frpyqikaml73hjyn8a0jijq5ibq8a4zrjiw1pqxwy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (let ((guix        (assoc-ref %build-inputs "guix"))
+             (geiser      (assoc-ref %build-inputs "geiser"))
+             (dash        (assoc-ref %build-inputs "dash"))
+             (bui         (assoc-ref %build-inputs "bui"))
+             (magit-popup (assoc-ref %build-inputs "magit-popup"))
+             (site-lisp   "/share/emacs/site-lisp"))
+         (list (string-append "--with-guix-site-dir="
+                              guix "/share/guile/site/2.0")
+               (string-append "--with-geiser-lispdir=" geiser site-lisp)
+               (string-append "--with-dash-lispdir="
+                              dash site-lisp "/guix.d/dash-"
+                              ,(package-version emacs-dash))
+               (string-append "--with-bui-lispdir="
+                              bui site-lisp "/guix.d/bui-"
+                              ,(package-version emacs-bui))
+               (string-append "--with-popup-lispdir="
+                              magit-popup site-lisp "/guix.d/magit-popup-"
+                              ,(package-version emacs-magit-popup))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("emacs" ,emacs-minimal)))
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("guix" ,guix)))
+    (propagated-inputs
+     `(("geiser" ,geiser)
+       ("dash" ,emacs-dash)
+       ("bui" ,emacs-bui)
+       ("magit-popup" ,emacs-magit-popup)))
+    (home-page "https://github.com/alezost/guix.el")
+    (synopsis "Emacs interface for GNU Guix")
+    (description
+     "Emacs-Guix provides a visual interface, tools and features for the GNU
+Guix package manager.  Particularly, it allows you to do various package
+management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
+@code{M-x guix-help} command.")
+    (license license:gpl3+)))
+
 (define-public emacs-d-mode
   (package
     (name "emacs-d-mode")
@@ -1368,6 +1414,32 @@ strings.")
 files and directories.")
     (license license:gpl3+)))
 
+(define-public emacs-git-gutter
+  (package
+    (name "emacs-git-gutter")
+    (version "0.90")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/syohex/" name "/archive/"
+                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1nmhvhpq1l56mj2yq3ag23rw3x4xgnsy8szp30s26l0yjnkhc4qg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syohex/emacs-git-gutter")
+    (synopsis "See and manage hunks of text in a version control system")
+    (description
+     "This package is an Emacs minor mode for displaying and interacting with
+hunks of text managed in a version control system.  Added modified and deleted
+areas can be indicated with symbols on the edge of the buffer, and commands
+can be used to move between and perform actions on these hunks.
+
+Git, Mercurial, Subversion and Bazaar are supported, and many parts of the
+display and behaviour is easily customisable.")
+    (license license:gpl3+)))
+
 (define-public emacs-el-mock
   (package
     (name "emacs-el-mock")
@@ -1445,7 +1517,7 @@ mode, which displays information about Elasticsearch clusters.")
 (define-public emacs-expand-region
   (package
     (name "emacs-expand-region")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
@@ -1454,7 +1526,7 @@ mode, which displays information about Elasticsearch clusters.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1zfiaqyb3zqiyqjkpqsjw660j09805nqsg25q6ars2h8gs0rnvxb"))))
+         "08dy1f411sh9wwww53rjw80idcf3vpki6ba2arl4hl5jcw9651g0"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magnars/expand-region.el")
     (synopsis "Increase selected region by semantic units")
@@ -2257,7 +2329,7 @@ dark background.")
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
-    (version "1.8.0")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2266,7 +2338,7 @@ dark background.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xsqiklg0q4w6gj0js1hvsz4lkypvcx6c9kzb1mz232gwlqx1azw"))))
+                "12065r7h1s9v8lnq5mk3654dkw4cq60ky8aniqq5n2ivv6qd2d4q"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Fuco1/smartparens")
@@ -2286,7 +2358,7 @@ well as completely new features.")
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
-    (version "1.7.1")
+    (version "1.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2295,7 +2367,7 @@ well as completely new features.")
               (file-name (string-append "hl-todo-" version ".el"))
               (sha256
                (base32
-                "0flhz9vy8w1vvwwji92pi5k4659hl368bakj2qf2zfd26z8x583h"))))
+                "016ivl4s0ysrm1xbfi86j5xcs759fcb0mkspxw81x8mpi3yb46ya"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/hl-todo")
     (synopsis "Emacs mode to highlight TODO and similar keywords")
@@ -3220,14 +3292,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20161118")
+    (version "20161224")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "1w9g8r08kaiw9f4fjsj0hbffzq85rj734j5lxvbaafbnz7dbklk1"))))
+                "0b10bjypn0w5ja776f8sxl1qpvb61iyz1n3c74jx6fqwypv7dmgi"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")

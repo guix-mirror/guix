@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,9 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -134,6 +137,97 @@ high-volume and high-reliability applications. The name BIND stands for
     (home-page "https://www.isc.org/downloads/bind")
     (license (list license:isc))))
 
+(define-public dnscrypt-proxy
+  (package
+    (name "dnscrypt-proxy")
+    (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.dnscrypt.org/dnscrypt-proxy/"
+                    "dnscrypt-proxy-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1dz0knslf7ysc2xx33ljrdlqyr4b0fpm9ifrwvwgcjaxgh94l7m8"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Delete bundled libltdl. XXX: This package also bundles
+               ;; a modified libevent that cannot currently be removed.
+               '(delete-file-recursively "libltdl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autoreconf
+           (lambda _
+             ;; Re-generate build files due to unbundling ltdl.
+             ;; TODO: Prevent generating new libltdl and building it.
+             ;; The system version is still favored and referenced.
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("libltdl" ,libltdl)
+       ("libsodium" ,libsodium)))
+    (home-page "https://www.dnscrypt.org/")
+    (synopsis "Securely send DNS requests to a remote server")
+    (description
+     "@command{dnscrypt-proxy} is a tool for securing communications
+between a client and a DNS resolver.  It verifies that responses you get
+from a DNS provider was actually sent by that provider, and haven't been
+tampered with.  For optimal performance it is recommended to use this as
+a forwarder for a caching DNS resolver such as @command{dnsmasq}, but it
+can also be used as a normal DNS \"server\".  A list of public dnscrypt
+servers is included, and an up-to-date version is available at
+@url{https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv}.")
+    (license (list license:isc
+                   ;; Libevent and src/ext/queue.h is 3-clause BSD.
+                   license:bsd-3))))
+
+(define-public dnscrypt-wrapper
+  (package
+    (name "dnscrypt-wrapper")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cofyc/dnscrypt-wrapper/releases"
+                    "/download/v" version "/" name "-v" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1vhg4g0r687f51wcdn7z9w1hxapazx6vyh5rsr8wa48sljzd583g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       ;; TODO: Tests require ruby-cucumber and ruby-aruba.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'create-configure
+           (lambda _
+             (zero? (system* "make" "configure")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))
+    (inputs
+     `(("libevent" ,libevent)
+       ("libsodium" ,libsodium)))
+    (home-page "https://github.com/Cofyc/dnscrypt-wrapper")
+    (synopsis "Server-side dnscrypt proxy")
+    (description
+     "@command{dnscrypt-wrapper} is a tool to expose a name server over
+the @code{dnscrypt} protocol.  It can be used as an endpoint for the
+@command{dnscrypt-proxy} client to securely tunnel DNS requests between
+the two.")
+    (license (list license:isc
+                   ;; Bundled argparse is MIT. TODO: package and unbundle.
+                   license:expat
+                   ;; dns-protocol.h and rfc1035.{c,h} is gpl2 or gpl3 (either).
+                   license:gpl2
+                   license:gpl3))))
+
 (define-public libasr
   (package
     (name "libasr")
@@ -167,15 +261,17 @@ asynchronous fashion.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.1-6281")
+    (version "2.2.3")
     (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
-                           name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0vj71z7i9lfbnp93k28aplwldp5mfli0kvrbwmha6fjha6kcr910"))))
+     (let ((revision "6711"))
+       (origin
+         (method url-fetch)
+         (uri
+          (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
+                         name "-" version "-" revision ".tar.gz"))
+         (sha256
+          (base32
+           "0ikfm40gx0zjw3gnxsw3rn1k4wb8jacgklja3ygcj1knq6hy2zaa")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -189,6 +285,8 @@ asynchronous fashion.")
        #:configure-flags (list "--sysconfdir=/etc"      "--localstatedir=/var"
                                "--enable-shared"        "--disable-static"
                                "--enable-messages"      "--enable-ctrl"
+                               "--enable-nsec"          "--enable-nsec3"
+                               "--enable-tsig"          "--enable-caching"
                                ;; NSID is a rarely-used debugging aid, that also
                                ;; causes the build to fail. Just disable it.
                                "--disable-nsid")))

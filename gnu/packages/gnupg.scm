@@ -10,6 +10,8 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,9 +47,11 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages security-token)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
 
@@ -188,7 +192,7 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public npth
   (package
     (name "npth")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
       (method url-fetch)
@@ -197,7 +201,7 @@ specifications are building blocks of S/MIME and TLS.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "12n0nvhw4fzwp0k7gjv3rc6pdml0qiinbbfiz4ilg6pl5kdxvnvd"))))
+        "0am86vblapwz84254qpmhz0chk70g6qzh3wdxcs0gvba8d01ka5w"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnupg.org")
     (synopsis "Non-preemptive thread library")
@@ -213,20 +217,23 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.16")
+    (version "2.1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0i483m9q032a0s50f1izb213g4h5i7pcgn395m6hvl3sg2kadfa9"))))
+                "1js308b46ifx1gim0c9nivr5yxhans7iq1yvkf7zl2928gdm9p65"))
+              (patches
+               ;; This fixes a test failure on 32bit. Remove for next version.
+               ;; https://lists.gnu.org/archive/html/guix-devel/2016-12/msg00869.html
+               (search-patches "gnupg-test-segfault-on-32bit-arch.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("adns" ,adns)
-       ("bzip2" ,bzip2)
+     `(("bzip2" ,bzip2)
        ("curl" ,curl)
        ("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
@@ -347,7 +354,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
       (method url-fetch)
@@ -355,7 +362,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "17892sclz3yg45wbyqqrzzpq3l0icbnfl28f101b3062g8cy97dh"))))
+        "0csx3qnycwm0n90ql6gs65if5xi4gqyzzy21fxs2xqicghjrfq2r"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
@@ -363,7 +370,6 @@ libskba (working with X.509 certificates and CMS data).")
     (inputs
      `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
-    (arguments '(#:make-flags '("GPG=gpg2")))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
     (synopsis "Library providing simplified access to GnuPG functionality")
     (description
@@ -377,6 +383,33 @@ programming task, it is suggested that all software should try to use GPGME
 instead.  This way bug fixes or improvements can be done at a central place
 and every application benefits from this.")
     (license license:lgpl2.1+)))
+
+(define-public python-gpg
+  (package
+    (name "python-gpg")
+    (version (package-version gpgme))
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gpg" version))
+              (sha256
+               (base32
+                "1x74i6q713c0bckls7rdm8kgsmllf9qvy9x62jghszlhgjkyh9nd"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; No test suite.
+    (inputs
+     `(("gpgme" ,gpgme)))
+    (native-inputs
+     `(("swig" ,swig)))
+    (home-page (package-home-page gpgme))
+    (synopsis "Python bindings for GPGME GnuPG cryptography library")
+    (description "This package provides Python bindings to the GPGME GnuPG
+cryptographic library.  It is developed in the GPGME source code, and then
+distributed separately.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-gpg
+  (package-with-python2 python-gpg))
 
 (define-public python-pygpgme
   (package
@@ -414,12 +447,7 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
     (license license:lgpl2.1+)))
 
 (define-public python2-pygpgme
-  (let ((base (package-with-python2 python-pygpgme)))
-    (package
-      (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs base))))))
+  (package-with-python2 python-pygpgme))
 
 (define-public python-gnupg
   (package
@@ -462,35 +490,43 @@ and signature functionality from Python programs.")
   (package-with-python2 python-gnupg))
 
 (define-public pius
-  (package
-   (name "pius")
-   (version "2.2.2")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/jaymzh/pius/releases/download/v"
-                  version "/pius-" version ".tar.bz2"))
-            (sha256
-             (base32
-              "0k94mlr7l12mplph7pdgjbampqha47d8mfjq69n4xm80qwbn1rq1"))))
-   (build-system python-build-system)
-   (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
-             ("gpg" ,gnupg-2.0)))          ;2.1 fails to talk to gpg-agent 2.0
-   (arguments
-    `(#:tests? #f
-      #:python ,python-2                     ;uses the Python 2 'print' syntax
-      #:phases
-      (modify-phases %standard-phases
-        (add-before
-         'build 'set-gpg-file-name
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((gpg (string-append (assoc-ref inputs "gpg")
-                                      "/bin/gpg")))
-             (substitute* "libpius/constants.py"
-               (("/usr/bin/gpg2") gpg))))))))
-   (synopsis "Programs to simplify GnuPG key signing")
-   (description
-    "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
+  ;; pius 2.2.2 does not work with gpg-agent 2.1, so we take a newer
+  ;; commit.  When a new pius (> 2.2.2) is released, update this package
+  ;; and delete this message.
+  ;; More info: https://github.com/jaymzh/pius/issues/46
+  (let ((commit "891687ccb3d232a1fc0e7da7d22572c0318644cb")
+        (base-version "2.2.2"))     ; i.e. there were no releases
+                                    ; between BASE-VERSION and COMMIT
+    (package
+     (name "pius")
+     (version (string-append base-version "-0."
+                             (string-take commit 7)))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jaymzh/pius.git")
+                    (commit commit)))
+              (sha256
+               (base32
+                "0m2na4bnf1rv0zpf404l9ga6pwyf7ijldp4lw5irgh7gkmpllxr3"))))
+     (build-system python-build-system)
+     (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
+               ("gpg" ,gnupg)))
+     (arguments
+      `(#:tests? #f
+        #:python ,python-2                     ;uses the Python 2 'print' syntax
+        #:phases
+        (modify-phases %standard-phases
+          (add-before
+           'build 'set-gpg-file-name
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((gpg (string-append (assoc-ref inputs "gpg")
+                                        "/bin/gpg")))
+               (substitute* "libpius/constants.py"
+                 (("/usr/bin/gpg2") gpg))))))))
+     (synopsis "Programs to simplify GnuPG key signing")
+     (description
+      "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
 parties.  It is the main utility and makes it possible to quickly and easily
 sign each UID on a set of PGP keys.  It is designed to take the pain out of
 the sign-all-the-keys part of PGP Keysigning Party while adding security
@@ -498,8 +534,8 @@ to the process.
 
 pius-keyring-mgr and pius-party-worksheet help organisers of
 PGP keysigning parties.")
-   (license license:gpl2)
-   (home-page "https://www.phildev.net/pius/index.shtml")))
+     (license license:gpl2)
+     (home-page "https://www.phildev.net/pius/index.shtml"))))
 
 (define-public signing-party
   (package
@@ -590,14 +626,14 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry-tty
   (package
     (name "pinentry-tty")
-    (version "0.9.7")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1cp7wjqr6nx31mdclr61s2h84ijqjl0ph99kgj4vyawpjj1j1633"))))
+                "0ni7g4plq6x78p32al7m8h2zsakvg1rhfz0qbc3kdc7yq7nw4whn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-pinentry-tty")))

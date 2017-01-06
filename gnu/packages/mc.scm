@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,18 @@
               ("check" ,check)))
     (arguments
      `(#:configure-flags
-       '("--with-screen=ncurses" "--enable-aspell")))
+       '("--with-screen=ncurses" "--enable-aspell")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'fix-absolutism
+           (lambda _
+             ;; Modify files that contain absolute file names.
+             (substitute* "misc/mcedit.menu.in"
+               (("#! /bin/sh") (string-append "#!" (which "sh")))
+               (("/bin/bash") (which "bash")))
+             (substitute* "misc/ext.d/misc.sh.in"
+               (("/bin/cat") "cat"))
+             #t)))))
     (home-page "http://www.midnight-commander.org")
     (synopsis "Graphical file manager")
     (description

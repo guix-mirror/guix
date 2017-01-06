@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -1474,7 +1474,9 @@ always a positive integer."
         ;; ENOTTY is what we're after but 2012-and-earlier Linux versions
         ;; would return EINVAL instead in some cases:
         ;; <https://bugs.ruby-lang.org/issues/10494>.
-        (if (or (= errno ENOTTY) (= errno EINVAL))
+        ;; Furthermore, some FUSE file systems like unionfs return ENOSYS for
+        ;; that ioctl.
+        (if (memv errno (list ENOTTY EINVAL ENOSYS))
             (fall-back)
             (apply throw args))))))
 

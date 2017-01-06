@@ -35,13 +35,7 @@
                "1c5lv8qca21mndkx350wxv34qypqh6gb4rhzms4anr642clq3jg2"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (zero? (system* "py.test")))))))
-    (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     '(#:tests? #f)) ; The tests are not distributed in the PyPi release.
     (propagated-inputs
       ;; TODO: Add python-pam
      `(("python-requests" ,python-requests)))
@@ -60,24 +54,21 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.14.0")
+    (version "0.14.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
              (sha256
               (base32
-               "1mbh2gykx9sqsnyfa962ifxksx4afl2lb9rcsbd6rsh3gj2il898"))))
+               "044f01fjd8dpz4y9dm3qcc1a8cihcxxbr1sz6y6fkvglpb6k85y5"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
          ;; vdirsyncer requires itself to be installed in order to build
          ;; the manpage.
          (add-after 'install 'manpage
-           (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "PYTHONPATH"
-                     (string-append
-                       (getenv "PYTHONPATH")
-                       ":" (assoc-ref outputs "out")))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
              (zero? (system* "make" "--directory=docs/" "man"))
              (install-file
                "docs/_build/man/vdirsyncer.1"

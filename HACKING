@@ -4,6 +4,7 @@
 
 Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+Copyright © 2017 Leo Famulari <leo@famulari.name>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -42,6 +43,10 @@ configure Git to automatically sign commits, run:
 
   git config commit.gpgsign true
   git config user.signingkey CABBA6EA1DC0FF33
+
+You can prevent yourself from accidentally pushing unsigned commits to Savannah
+by using the pre-push Git hook called 'pre-push'. It's located at
+'etc/git/pre-push'.
 
 For anything else, please post to guix-devel@gnu.org and leave time for a
 review, without committing anything.  If you didn’t receive any reply

@@ -61,6 +61,7 @@ MODULES =					\
   guix/zlib.scm					\
   guix/build-system.scm				\
   guix/build-system/ant.scm			\
+  guix/build-system/cargo.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/asdf.scm			\
@@ -69,6 +70,7 @@ MODULES =					\
   guix/build-system/haskell.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
+  guix/build-system/ocaml.scm			\
   guix/build-system/waf.scm			\
   guix/build-system/r.scm			\
   guix/build-system/ruby.scm			\
@@ -83,6 +85,7 @@ MODULES =					\
   guix/ui.scm					\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
+  guix/build/cargo-build-system.scm		\
   guix/build/cmake-build-system.scm		\
   guix/build/emacs-build-system.scm		\
   guix/build/asdf-build-system.scm		\
@@ -93,6 +96,7 @@ MODULES =					\
   guix/build/gnu-dist.scm			\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
+  guix/build/ocaml-build-system.scm		\
   guix/build/r-build-system.scm			\
   guix/build/ruby-build-system.scm		\
   guix/build/waf-build-system.scm		\
@@ -112,6 +116,7 @@ MODULES =					\
   guix/build/graft.scm				\
   guix/build/bournish.scm			\
   guix/build/qt-utils.scm			\
+  guix/build/make-bootstrap.scm			\
   guix/search-paths.scm				\
   guix/packages.scm				\
   guix/import/utils.scm				\
@@ -155,8 +160,11 @@ MODULES =					\
 if HAVE_GUILE_JSON
 
 MODULES +=					\
+  guix/docker.scm	   			\
   guix/import/github.scm   			\
   guix/import/json.scm				\
+  guix/import/crate.scm				\
+  guix/scripts/import/crate.scm			\
   guix/import/pypi.scm				\
   guix/scripts/import/pypi.scm			\
   guix/import/cpan.scm				\
@@ -164,6 +172,14 @@ MODULES +=					\
   guix/import/gem.scm
 
 endif
+
+if HAVE_GUILE_SSH
+
+MODULES +=					\
+  guix/ssh.scm					\
+  guix/scripts/copy.scm
+
+endif HAVE_GUILE_SSH
 
 if BUILD_DAEMON_OFFLOAD
 
@@ -279,7 +295,8 @@ if HAVE_GUILE_JSON
 SCM_TESTS += 					\
   tests/pypi.scm				\
   tests/cpan.scm				\
-  tests/gem.scm
+  tests/gem.scm					\
+  tests/crate.scm
 
 endif
 
@@ -376,6 +393,8 @@ EXTRA_DIST =						\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/run-system-tests.scm			\
+  d3.v3.js						\
+  graph.js						\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
@@ -457,10 +476,6 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
 
-dist_emacsui_DATA = emacs/guix-main.scm
-nodist_emacsui_DATA = emacs/guix-helper.scm
-include emacs/local.mk
-
 # The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH= \
@@ -499,6 +514,7 @@ assert-no-store-file-names:
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
 	     --exclude=guix-prettify.el						\
+	     --exclude=ChangeLog						\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\
@@ -538,10 +554,6 @@ AM_V_DL_0 = @echo "  DL      " $@;
 AM_V_DOT = $(AM_V_DOT_$(V))
 AM_V_DOT_ = $(AM_V_DOT_$(AM_DEFAULT_VERBOSITY))
 AM_V_DOT_0 = @echo "  DOT     " $@;
-
-AM_V_EMACS = $(AM_V_EMACS_$(V))
-AM_V_EMACS_ = $(AM_V_EMACS_$(AM_DEFAULT_VERBOSITY))
-AM_V_EMACS_0 = @echo "  EMACS   " $@;
 
 AM_V_HELP2MAN = $(AM_V_HELP2MAN_$(V))
 AM_V_HELP2MAN_ = $(AM_V_HELP2MAN_$(AM_DEFAULT_VERBOSITY))

@@ -4,6 +4,8 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +38,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages wm)
@@ -161,8 +164,7 @@ insert mode and command mode where keybindings have different functions.")
                  (("'tput'")
                   (string-append "'" ncurses "/bin/tput'"))))
              #t)))))
-    (inputs `(("ncurses" ,ncurses)
-              ("python-setuptools" ,python-setuptools)))
+    (inputs `(("ncurses" ,ncurses)))
     (home-page "https://asciinema.org")
     (synopsis "Terminal session recorder")
     (description
@@ -262,6 +264,35 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
     (supported-systems (filter (cut string-suffix? "-linux" <>)
                                %supported-systems))))
 
+(define-public libtermkey
+  (package
+    (name "libtermkey")
+    (version "0.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.leonerd.org.uk/code/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1ds8gdr8p2dfr970z8kxgfz6x7m1jxmmfrb2aafab3wcni6al1f5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list
+                     "CC=gcc"
+                     (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:test-target "test"))
+    (inputs `(("ncurses", ncurses)))
+    (native-inputs `(("libtool", libtool)
+                     ("perl-test-harness" ,perl-test-harness)
+                     ("pkg-config", pkg-config)))
+    (synopsis "Keyboard entry processing library for terminal-based programs")
+    (description
+     "Libtermkey handles all the necessary logic to recognise special keys, UTF-8
+combining, and so on, with a simple interface.")
+    (home-page "http://www.leonerd.org.uk/code/libtermkey")
+    (license license:expat)))
+
 (define-public picocom
   (package
     (name "picocom")
@@ -295,4 +326,39 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
 configuration, testing, and debugging tool.  It has also serves well
 as a low-tech serial communications program to allow access to all
 types of devices that provide serial consoles.")
+    (license license:gpl2+)))
+
+(define-public beep
+  (package
+    (name "beep")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.johnath.com/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bgch6jq5cahakk3kbr9549iysf2dik09afixxy5brbxk1xfzb2r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'patch-makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile" (("/usr") (assoc-ref outputs "out")))
+             #t))
+         (add-before 'install 'create-output-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref %outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/man/man1"))))))))
+    (synopsis "Linux command-line utility to control the PC speaker")
+    (description "beep allows the user to control the PC speaker with precision,
+allowing different sounds to indicate different events.  While it can be run
+quite happily on the command line, its intended place of residence is within
+scripts, notifying the user when something interesting occurs.  Of course, it
+has no notion of what's interesing, but it's very good at that notifying part.")
+    (home-page "http://www.johnath.com/beep")
     (license license:gpl2+)))

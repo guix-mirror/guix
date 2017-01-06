@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,67 +72,69 @@
   "Bind-mount SOURCE at TARGET."
   (mount source target "" MS_BIND))
 
+(define (read-superblock device offset size magic?)
+  "Read a superblock of SIZE from OFFSET and DEVICE.  Return the raw
+superblock on success, and #f if no valid superblock was found.  MAGIC?
+takes a bytevector and returns #t when it's a valid superblock."
+  (call-with-input-file device
+    (lambda (port)
+      (seek port offset SEEK_SET)
+
+      (let ((block (make-bytevector size)))
+        (match (get-bytevector-n! port block 0 (bytevector-length block))
+          ((? eof-object?)
+           #f)
+          ((? number? len)
+           (and (= len (bytevector-length block))
+                (and (magic? block)
+                     block))))))))
+
+(define (sub-bytevector bv start size)
+  "Return a copy of the SIZE bytes of BV starting from offset START."
+  (let ((result (make-bytevector size)))
+    (bytevector-copy! bv start result 0 size)
+    result))
+
+(define (null-terminated-latin1->string bv)
+  "Return the volume name of SBLOCK as a string of at most 256 characters, or
+#f if SBLOCK has no volume name."
+    ;; This is a Latin-1, nul-terminated string.
+    (let ((bytes (take-while (negate zero?) (bytevector->u8-list bv))))
+      (if (null? bytes)
+          #f
+          (list->string (map integer->char bytes)))))
+
 
 ;;;
 ;;; Ext2 file systems.
 ;;;
 
+;; <http://www.nongnu.org/ext2-doc/ext2.html#DEF-SUPERBLOCK>.
+;; TODO: Use "packed structs" from Guile-OpenGL or similar.
+
 (define-syntax %ext2-endianness
   ;; Endianness of ext2 file systems.
   (identifier-syntax (endianness little)))
 
-;; Offset in bytes of interesting parts of an ext2 superblock.  See
-;; <http://www.nongnu.org/ext2-doc/ext2.html#DEF-SUPERBLOCK>.
-;; TODO: Use "packed structs" from Guile-OpenGL or similar.
-(define-syntax %ext2-sblock-magic       (identifier-syntax 56))
-(define-syntax %ext2-sblock-creator-os  (identifier-syntax 72))
-(define-syntax %ext2-sblock-uuid        (identifier-syntax 104))
-(define-syntax %ext2-sblock-volume-name (identifier-syntax 120))
+(define (ext2-superblock? sblock)
+  "Return #t when SBLOCK is an ext2 superblock."
+  (let ((magic (bytevector-u16-ref sblock 56 %ext2-endianness)))
+    (= magic #xef53)))
 
 (define (read-ext2-superblock device)
   "Return the raw contents of DEVICE's ext2 superblock as a bytevector, or #f
 if DEVICE does not contain an ext2 file system."
-  (define %ext2-magic
-    ;; The magic bytes that identify an ext2 file system.
-    #xef53)
-
-  (define superblock-size
-    ;; Size of the interesting part of an ext2 superblock.
-    264)
-
-  (define block
-    ;; The superblock contents.
-    (make-bytevector superblock-size))
-
-  (call-with-input-file device
-    (lambda (port)
-      (seek port 1024 SEEK_SET)
-
-      ;; Note: work around <http://bugs.gnu.org/17466>.
-      (and (eqv? superblock-size (get-bytevector-n! port block 0
-                                                    superblock-size))
-           (let ((magic (bytevector-u16-ref block %ext2-sblock-magic
-                                            %ext2-endianness)))
-             (and (= magic %ext2-magic)
-                  block))))))
+  (read-superblock device 1024 264 ext2-superblock?))
 
 (define (ext2-superblock-uuid sblock)
   "Return the UUID of ext2 superblock SBLOCK as a 16-byte bytevector."
-  (let ((uuid (make-bytevector 16)))
-    (bytevector-copy! sblock %ext2-sblock-uuid uuid 0 16)
-    uuid))
+  (sub-bytevector sblock 104 16))
 
 (define (ext2-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string of at most 16 characters, or
 #f if SBLOCK has no volume name."
-  (let ((bv (make-bytevector 16)))
-    (bytevector-copy! sblock %ext2-sblock-volume-name bv 0 16)
+  (null-terminated-latin1->string (sub-bytevector sblock 120 16)))
 
-    ;; This is a Latin-1, nul-terminated string.
-    (let ((bytes (take-while (negate zero?) (bytevector->u8-list bv))))
-      (if (null? bytes)
-          #f
-          (list->string (map integer->char bytes))))))
 
 
 ;;;
@@ -146,37 +149,22 @@ if DEVICE does not contain an ext2 file system."
   ;; Endianness of LUKS headers.
   (identifier-syntax (endianness big)))
 
-(define-syntax %luks-header-size
-  ;; Size in bytes of the LUKS header, including key slots.
-  (identifier-syntax 592))
-
-(define %luks-magic
-  ;; The 'LUKS_MAGIC' constant.
-  (u8-list->bytevector (append (map char->integer (string->list "LUKS"))
-                               (list #xba #xbe))))
-
-(define (sub-bytevector bv start size)
-  "Return a copy of the SIZE bytes of BV starting from offset START."
-  (let ((result (make-bytevector size)))
-    (bytevector-copy! bv start result 0 size)
-    result))
+(define (luks-superblock? sblock)
+  "Return #t when SBLOCK is a luks superblock."
+  (define %luks-magic
+    ;; The 'LUKS_MAGIC' constant.
+    (u8-list->bytevector (append (map char->integer (string->list "LUKS"))
+                                 (list #xba #xbe))))
+  (let ((magic   (sub-bytevector sblock 0 6))
+        (version (bytevector-u16-ref sblock 6 %luks-endianness)))
+    (and (bytevector=? magic %luks-magic)
+         (= version 1))))
 
 (define (read-luks-header file)
   "Read a LUKS header from FILE.  Return the raw header on success, and #f if
 not valid header was found."
-  (call-with-input-file file
-    (lambda (port)
-      (let ((header (make-bytevector %luks-header-size)))
-        (match (get-bytevector-n! port header 0 (bytevector-length header))
-          ((? eof-object?)
-           #f)
-          ((? number? len)
-           (and (= len (bytevector-length header))
-                (let ((magic   (sub-bytevector header 0 6)) ;XXX: inefficient
-                      (version (bytevector-u16-ref header 6 %luks-endianness)))
-                  (and (bytevector=? magic %luks-magic)
-                       (= version 1)
-                       header)))))))))
+  ;; Size in bytes of the LUKS header, including key slots.
+  (read-superblock file 0 592 luks-superblock?))
 
 (define (luks-header-uuid header)
   "Return the LUKS UUID from HEADER, as a 16-byte bytevector."
@@ -267,7 +255,7 @@ returns #t if that partition's volume name is LABEL."
                        ext2-superblock-uuid
                        bytevector=?))
 
-(define partition-luks-uuid-predicate
+(define luks-partition-uuid-predicate
   (partition-predicate read-luks-header
                        luks-header-uuid
                        bytevector=?))
@@ -289,7 +277,7 @@ or #f if none was found."
 (define (find-partition-by-luks-uuid uuid)
   "Return the first LUKS partition whose unique identifier is UUID (a bytevector),
 or #f if none was found."
-  (and=> (find (partition-luks-uuid-predicate uuid)
+  (and=> (find (luks-partition-uuid-predicate uuid)
                (disk-partitions))
          (cut string-append "/dev/" <>)))
 
@@ -464,6 +452,27 @@ form:
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
 FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
 run a file system check."
+
+  (define (mount-nfs source mount-point type flags options)
+    (let* ((idx (string-rindex source #\:))
+           (host-part (string-take source idx))
+           ;; Strip [] from around host if present
+           (host (match (string-split host-part (string->char-set "[]"))
+                 (("" h "") h)
+                 ((h) h)))
+           (aa (match (getaddrinfo host "nfs") ((x . _) x)))
+           (sa (addrinfo:addr aa))
+           (inet-addr (inet-ntop (sockaddr:fam sa)
+                                 (sockaddr:addr sa))))
+
+      ;; Mounting an NFS file system requires passing the address
+      ;; of the server in the addr= option
+      (mount source mount-point type flags
+             (string-append "addr="
+                            inet-addr
+                            (if options
+                                (string-append "," options)
+                                "")))))
   (match spec
     ((source title mount-point type (flags ...) options check?)
      (let ((source      (canonicalize-device-spec source title))
@@ -481,7 +490,11 @@ run a file system check."
              (call-with-output-file mount-point (const #t)))
            (mkdir-p mount-point))
 
-       (mount source mount-point type flags options)
+       (cond
+        ((string-prefix? "nfs" type)
+         (mount-nfs source mount-point type flags options))
+        (else
+         (mount source mount-point type flags options)))
 
        ;; For read-only bind mounts, an extra remount is needed, as per
        ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.

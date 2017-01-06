@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -214,6 +214,17 @@ available."
                        (delete-duplicates (concatenate refs) string=?))
                result))))))
 
+(define-syntax-rule (with-cache key exp ...)
+  "Cache the value of monadic expression EXP under KEY."
+  (mlet %state-monad ((cache (current-state)))
+    (match (vhash-assq key cache)
+      ((_ . result)                               ;cache hit
+       (return result))
+      (#f                                         ;cache miss
+       (mlet %state-monad ((result (begin exp ...)))
+         (set-current-state (vhash-consq key result cache))
+         (return result))))))
+
 (define* (cumulative-grafts store drv grafts
                             references
                             #:key
@@ -252,48 +263,39 @@ derivations to the corresponding set of grafts."
                                  #:system system))
           (state-return grafts))))
 
-  (define (return/cache cache value)
-    (mbegin %state-monad
-      (set-current-state (vhash-consq drv value cache))
-      (return value)))
-
-  (mlet %state-monad ((cache (current-state)))
-    (match (vhash-assq drv cache)
-      ((_ . grafts)                               ;hit
+  (with-cache drv
+    (match (non-self-references references drv outputs)
+      (()                                         ;no dependencies
        (return grafts))
-      (#f                                         ;miss
-       (match (non-self-references references drv outputs)
-         (()                                      ;no dependencies
-          (return/cache cache grafts))
-         (deps                                    ;one or more dependencies
-          (mlet %state-monad ((grafts (mapm %state-monad dependency-grafts deps)))
-            (let ((grafts (delete-duplicates (concatenate grafts) equal?)))
-              (match (filter (lambda (graft)
-                               (member (graft-origin-file-name graft) deps))
-                             grafts)
-                (()
-                 (return/cache cache grafts))
-                ((applicable ..1)
-                 ;; Use APPLICABLE, the subset of GRAFTS that is really
-                 ;; applicable to DRV, to avoid creating several identical
-                 ;; grafted variants of DRV.
-                 (let* ((new    (graft-derivation/shallow store drv applicable
-                                                          #:guile guile
-                                                          #:system system))
+      (deps                                       ;one or more dependencies
+       (mlet %state-monad ((grafts (mapm %state-monad dependency-grafts deps)))
+         (let ((grafts (delete-duplicates (concatenate grafts) equal?)))
+           (match (filter (lambda (graft)
+                            (member (graft-origin-file-name graft) deps))
+                          grafts)
+             (()
+              (return grafts))
+             ((applicable ..1)
+              ;; Use APPLICABLE, the subset of GRAFTS that is really
+              ;; applicable to DRV, to avoid creating several identical
+              ;; grafted variants of DRV.
+              (let* ((new    (graft-derivation/shallow store drv applicable
+                                                       #:guile guile
+                                                       #:system system))
 
-                        ;; Replace references to any of the outputs of DRV,
-                        ;; even if that's more than needed.  This is so that
-                        ;; the result refers only to the outputs of NEW and
-                        ;; not to those of DRV.
-                        (grafts (append (map (lambda (output)
-                                               (graft
-                                                 (origin drv)
-                                                 (origin-output output)
-                                                 (replacement new)
-                                                 (replacement-output output)))
-                                             (derivation-output-names drv))
-                                        grafts)))
-                   (return/cache cache grafts))))))))))))
+                     ;; Replace references to any of the outputs of DRV,
+                     ;; even if that's more than needed.  This is so that
+                     ;; the result refers only to the outputs of NEW and
+                     ;; not to those of DRV.
+                     (grafts (append (map (lambda (output)
+                                            (graft
+                                              (origin drv)
+                                              (origin-output output)
+                                              (replacement new)
+                                              (replacement-output output)))
+                                          (derivation-output-names drv))
+                                     grafts)))
+                (return grafts))))))))))
 
 (define* (graft-derivation store drv grafts
                            #:key (guile (%guile-for-build))
@@ -332,5 +334,9 @@ DRV itself to refer to those grafted dependencies."
 it otherwise.  It returns the previous setting."
   (lambda (store)
     (values (%graft? enable?) store)))
+
+;; Local Variables:
+;; eval: (put 'with-cache 'scheme-indent-function 1)
+;; End:
 
 ;;; grafts.scm ends here

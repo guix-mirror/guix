@@ -85,14 +85,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.5.1")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n1dispg63z1qiy8c1af3l9c4a9dks8y7xasff8xcywnn0rkkxnl"))))
+                "1qx623nyr49sxv49ilb0j85skgk1dhkr82vd577ywyjf7d96q84i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cairo" ,cairo)
@@ -211,7 +211,8 @@ the freedesktop.org XDG Base Directory specification.")
        ("shepherd" ,shepherd)                ;for 'halt' and 'reboot', invoked
                                              ;when pressing the power button
        ("dbus" ,dbus)
-       ("eudev" ,eudev)))
+       ("eudev" ,eudev)
+       ("acl" ,acl)))           ;to add individual users to ACLs on /dev nodes
     (home-page "https://github.com/wingo/elogind")
     (synopsis "User, seat, and session management service")
     (description "Elogind is the systemd project's \"logind\" service,
@@ -256,8 +257,7 @@ of a the system to know what users are logged in, and where.")
     (native-inputs
      `(("shared-mime-info" ,shared-mime-info) ;for tests
        ("hicolor-icon-theme" ,hicolor-icon-theme) ;for tests
-       ("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-nose" ,python-nose)))
     (home-page "http://freedesktop.org/wiki/Software/pyxdg")
     (synopsis "Implementations of freedesktop.org standards in Python")
     (description
@@ -451,17 +451,19 @@ Analysis and Reporting Technology) functionality.")
 (define-public udisks
   (package
     (name "udisks")
-    (version "2.1.7")
+    (version "2.1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://udisks.freedesktop.org/releases/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "119pr2zbff8vkwlhghim7d7ir24c1dil9hp4q49wm4f6pnrjpbmb"))))
+                "1nkxhnqh39c9pzvm4zfj50rgv6apqawdx09bv3sfaxrah4a6jhfs"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+     `(("docbook-xml" ,docbook-xml-4.3) ; to build the manpages
+       ("docbook-xsl" ,docbook-xsl)
+       ("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
@@ -480,13 +482,28 @@ Analysis and Reporting Technology) functionality.")
      `(#:tests? #f ; requiring system message dbus
        #:disallowed-references ("doc")            ;enforce separation of "doc"
        #:configure-flags
-       (list "--disable-man"
+       (list "--enable-man"
              "--localstatedir=/var"
              "--enable-fhs-media"     ;mount devices in /media, not /run/media
              (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/doc/udisks/html")
              (string-append "--with-udevdir=" %output "/lib/udev"))
+       #:make-flags
+       (let*  ((docbook-xsl-name-version ,(string-append
+                                           (package-name docbook-xsl) "-"
+                                           (package-version  docbook-xsl)))
+               (docbook-xsl-catalog-file (string-append
+                                          (assoc-ref %build-inputs "docbook-xsl")
+                                          "/xml/xsl/"
+                                          docbook-xsl-name-version
+                                          "/catalog.xml"))
+               (docbook-xml-catalog-file (string-append
+                                          (assoc-ref %build-inputs "docbook-xml")
+                                          "/xml/dtd/docbook/catalog.xml")))
+         ;; Reference the catalog files required to build the manpages.
+         (list (string-append "XML_CATALOG_FILES=" docbook-xsl-catalog-file " "
+                              docbook-xml-catalog-file)))
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -509,7 +526,7 @@ Analysis and Reporting Technology) functionality.")
                     "/run/current-system/profile/bin"
                     "/run/current-system/profile/sbin")))
                #t))))))
-    (home-page "http://www.freedesktop.org/wiki/Software/udisks/")
+    (home-page "https://www.freedesktop.org/wiki/Software/udisks/")
     (synopsis "Disk manager service")
     (description
      "UDisks provides interfaces to enumerate and perform operations on disks

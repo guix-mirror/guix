@@ -3,7 +3,8 @@
 ;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -32,6 +34,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
@@ -116,13 +119,13 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "7.07")
+   (version "7.08")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256 (base32
-                     "0rl33f1g42hxzqfv2a33gls8cb77q4w432xkims1dnfwhzagrv7k"))))
+                     "00wacb79l2c45f94gxs63b9z25wlciarasvjrb8jb8566wgyqi0w"))))
    (build-system gnu-build-system)
    (inputs
     `(("libxml2" ,libxml2)
@@ -149,7 +152,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.3.9")
+    (version "2.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -157,7 +160,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1hfwmdsp7s34qx34qgwrpp89h30744lbsks6y619cdh27bpnpwaj"))))
+                "167frlmmg2raffn9h7ww3agdwgfdl0wa5wm9fsgl0i6mz3md187k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
@@ -201,3 +204,61 @@ traversing network address translators (NATs) and firewalls.")
      "Tinc is a VPN that uses tunnelling and encryption to create a secure
 private network between hosts on the internet.")
     (license license:gpl2+)))
+
+(define-public sshuttle
+  (package
+    (name "sshuttle")
+    (version "0.78.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "0g1dpqigz02vafzh84z5990lnj9d95raknav0xmf0va7rr41d9q3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ;; For tests only.
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/sshuttle/sshuttle")
+    (synopsis "VPN that transparently forwards connections over SSH")
+    (description "sshuttle creates an encrypted virtual private network (VPN)
+connection to any remote server to which you have secure shell (SSH) access.
+The only requirement is a suitable version of Python on the server;
+administrative privileges are required only on the client.  Unlike most VPNs,
+sshuttle forwards entire sessions, not packets, using kernel transparent
+proxying.  This makes it faster and more reliable than SSH's own tunneling and
+port forwarding features.  It can forward both TCP and UDP traffic, including
+DNS domain name queries.")
+    (license license:lgpl2.0))) ; incorrectly identified as GPL in ‘setup.py’
+
+(define-public sshoot
+  (package
+    (name "sshoot")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "0a92lk8790dpp9j64vb6p4sazax0x3nby01lnfll7mxs1hx6n27q"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-argcomplete" ,python-argcomplete)
+       ("python-prettytable" ,python-prettytable)
+       ("python-pyyaml" ,python-pyyaml)))
+    ;; For tests only.
+    (native-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-pbr" ,python-pbr)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://bitbucket.org/ack/sshoot")
+    (synopsis "sshuttle VPN session manager")
+    (description "sshoot provides a command-line interface to manage multiple
+@command{sshuttle} virtual private networks.  It supports flexible profiles
+with configuration options for most of @command{sshuttle}’s features.")
+    (license license:gpl3+)))

@@ -3,6 +3,8 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +66,8 @@ dictionaries, including personal ones.")
 ;;;
 ;;; Dictionaries.
 ;;;
-;;; Use 'export ASPELL_CONF="dict-dir $HOME/.guix-profile/lib/aspell"' to use them.
+;;; Use 'export ASPELL_CONF="dict-dir $HOME/.guix-profile/lib/aspell"' to use
+;;; them.
 ;;;
 
 (define* (aspell-dictionary dict-name full-name
@@ -80,16 +83,17 @@ dictionaries, including personal ones.")
               (sha256 sha256)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero? (system* "./configure"))))
-                 %standard-phases)
-                #:make-flags (let ((out (assoc-ref %outputs "out")))
-                               (list (string-append "dictdir=" out "/lib/aspell")
-                                     (string-append "datadir=" out "/lib/aspell")))
-                #:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"))))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "dictdir=" out "/lib/aspell")
+               (string-append "datadir=" out "/lib/aspell")))
+       #:tests? #f))
     (native-inputs `(("aspell" ,aspell)
                      ("which" ,which)))
     (synopsis (string-append full-name " dictionary for GNU Aspell")) ; XXX: i18n
@@ -108,10 +112,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "2016.01.19-0"
+                     #:version "2016.11.20-0"
                      #:sha256
                      (base32
-                      "01h4cl4lngp6mcfbyb47cjrc2gspyg2519dvknd97ki896nx7vcn")))
+                      "1496jnhh2jvhkzcj0p4vy89bcs4g5wz6a76m33vw4dhchn5xm9jw")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"
@@ -163,3 +167,26 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))
+
+(define-public aspell-dict-sv
+  (aspell-dictionary "sv" "Swedish"
+                     #:version "0.51-0"
+                     #:prefix "aspell-"
+                     #:sha256
+                     (base32
+                      "02jwkjhr32kvyibnyzgx3smbnm576jwdzg3avdf6zxwckhy5fw4v")))
+
+(define-public aspell-dict-el
+  (aspell-dictionary "el" "Greek"
+                     #:version "0.08-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1ljcc30zg2v2h3w5h5jr5im41mw8jbsgvvhdd2cii2yzi8d0zxja")))
+
+(define-public aspell-dict-grc
+  (aspell-dictionary "grc" "Ancient Greek"
+                     #:version "0.02-0"
+                     #:sha256
+                     (base32
+                      "1zxr8958v37v260fkqd4pg37ns5h5kyqm54hn1hg70wq5cz8h512")))

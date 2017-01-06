@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (guix git-download)
@@ -50,6 +52,8 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages zip)
@@ -382,6 +386,154 @@ world.
 
 This package contains a small working part of the TeX Live distribution.")))
 
+(define-public perl-text-bibtex
+  (package
+    (name "perl-text-bibtex")
+    (version "0.77")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AM/AMBS/Text-BibTeX-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0kkfx8skk763pivz6h2ffy2zdp1lvy6d5sz0kjaj0mdbjffvnnb4"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-output-directory-to-rpath
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "inc/MyBuilder.pm"
+               (("-Lbtparse" line)
+                (string-append "-Wl,-rpath="
+                               (assoc-ref outputs "out") "/lib " line)))
+             #t))
+         (add-after 'unpack 'install-libraries-to-/lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Build.PL"
+               (("lib64") "lib"))
+             #t)))))
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-config-autoconf" ,perl-config-autoconf)
+       ("perl-extutils-libbuilder" ,perl-extutils-libbuilder)
+       ("perl-module-build" ,perl-module-build)))
+    (home-page "http://search.cpan.org/dist/Text-BibTeX")
+    (synopsis "Interface to read and parse BibTeX files")
+    (description "@code{Text::BibTeX} is a Perl library for reading, parsing,
+and processing BibTeX files.  @code{Text::BibTeX} gives you access to the data
+at many different levels: you may work with BibTeX entries as simple field to
+string mappings, or get at the original form of the data as a list of simple
+values (strings, macros, or numbers) pasted together.")
+    (license (package-license perl))))
+
+(define-public biber
+  (package
+    (name "biber-next")
+    (version "2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/plk/biber/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "158smzgjhjvyabdv97si5q88zjj5l8j1zbfnddvzy6fkpfhskgkp"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perl5lib (getenv "PERL5LIB")))
+               (wrap-program (string-append out "/bin/biber")
+                 `("PERL5LIB" ":" prefix
+                   (,(string-append perl5lib ":" out
+                                    "/lib/perl5/site_perl")))))
+             #t)))))
+    (inputs
+     `(("perl-autovivification" ,perl-autovivification)
+       ("perl-class-accessor" ,perl-class-accessor)
+       ("perl-data-dump" ,perl-data-dump)
+       ("perl-data-compare" ,perl-data-compare)
+       ("perl-data-uniqid" ,perl-data-uniqid)
+       ("perl-datetime-format-builder" ,perl-datetime-format-builder)
+       ("perl-datetime-calendar-julian" ,perl-datetime-calendar-julian)
+       ("perl-file-slurp" ,perl-file-slurp)
+       ("perl-ipc-cmd" ,perl-ipc-cmd)
+       ("perl-ipc-run3" ,perl-ipc-run3)
+       ("perl-list-allutils" ,perl-list-allutils)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-log-log4perl" ,perl-log-log4perl)
+       ;; We cannot use perl-unicode-collate here, because otherwise the
+       ;; hardcoded hashes in the tests would differ.  See
+       ;; https://mail-archive.com/debian-bugs-dist@lists.debian.org/msg1469249.html
+       ;;("perl-unicode-collate" ,perl-unicode-collate)
+       ("perl-unicode-normalize" ,perl-unicode-normalize)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("perl-encode-eucjpascii" ,perl-encode-eucjpascii)
+       ("perl-encode-jis2k" ,perl-encode-jis2k)
+       ("perl-encode-hanextra" ,perl-encode-hanextra)
+       ("perl-xml-libxml" ,perl-xml-libxml)
+       ("perl-xml-libxml-simple" ,perl-xml-libxml-simple)
+       ("perl-xml-libxslt" ,perl-xml-libxslt)
+       ("perl-xml-writer" ,perl-xml-writer)
+       ("perl-sort-key" ,perl-sort-key)
+       ("perl-text-csv" ,perl-text-csv)
+       ("perl-text-csv-xs" ,perl-text-csv-xs)
+       ("perl-text-roman" ,perl-text-roman)
+       ("perl-uri" ,perl-uri)
+       ("perl-text-bibtex" ,perl-text-bibtex)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-business-isbn" ,perl-business-isbn)
+       ("perl-business-issn" ,perl-business-issn)
+       ("perl-business-ismn" ,perl-business-ismn)
+       ("perl-lingua-translit" ,perl-lingua-translit)))
+    (native-inputs
+     `(("perl-config-autoconf" ,perl-config-autoconf)
+       ("perl-extutils-libbuilder" ,perl-extutils-libbuilder)
+       ("perl-module-build" ,perl-module-build)
+       ;; for tests
+       ("perl-file-which" ,perl-file-which)
+       ("perl-test-more" ,perl-test-most) ; FIXME: "more" would be sufficient
+       ("perl-test-differences" ,perl-test-differences)))
+    (home-page "http://biblatex-biber.sourceforge.net/")
+    (synopsis "Backend for the BibLaTeX citation management tool")
+    (description "Biber is a BibTeX replacement for users of biblatex.  Among
+other things it comes with full Unicode support.")
+    (license license:artistic2.0)))
+
+;; Our version of texlive comes with biblatex 3.4, which is only compatible
+;; with biber 2.5 according to the compatibility matrix in the biber
+;; documentation.
+(define-public biber-2.5
+  (package (inherit biber)
+    (name "biber")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/plk/biber/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "163sd343wkrzwnvj2003m2j0kz517jmjr4savw6f8bjxhj8fdrqv"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments biber)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'delete-failing-test
+             (lambda _
+               (delete-file "t/sort-order.t")
+               #t))))))
+    (inputs
+     `(("perl-date-simple" ,perl-date-simple)
+       ,@(package-inputs biber)))))
 
 (define-public rubber
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -60,7 +60,8 @@
             %gnu-updater
             %gnome-updater
             %kde-updater
-            %xorg-updater))
+            %xorg-updater
+            %kernel.org-updater))
 
 ;;; Commentary:
 ;;;
@@ -75,17 +76,17 @@
 ;;;
 
 (define %gnumaint-base-url
-  "http://cvs.savannah.gnu.org/viewvc/*checkout*/gnumaint/")
+  "http://cvs.savannah.gnu.org/viewvc/*checkout*/womb/gnumaint/")
 
 (define %package-list-url
   (string->uri
-   (string-append %gnumaint-base-url "gnupackages.txt?root=womb")))
+   (string-append %gnumaint-base-url "gnupackages.txt")))
 
 (define %package-description-url
   ;; This file contains package descriptions in recutils format.
   ;; See <https://lists.gnu.org/archive/html/guix-devel/2013-10/msg00071.html>.
   (string->uri
-   (string-append %gnumaint-base-url "pkgblurbs.txt?root=womb")))
+   (string-append %gnumaint-base-url "pkgblurbs.txt")))
 
 (define-record-type* <gnu-package-descriptor>
   gnu-package-descriptor
@@ -448,21 +449,26 @@ elpa.gnu.org, and all the GNOME packages."
        (not (gnome-package? package))
        (gnu-package? package)))
 
-(define (gnome-package? package)
-  "Return true if PACKAGE is a GNOME package, hosted on gnome.org."
-  (define gnome-uri?
-    (match-lambda
-      ((? string? uri)
-       (string-prefix? "mirror://gnome/" uri))
-      (_
-       #f)))
+(define (url-prefix-predicate prefix)
+  "Return a predicate that returns true when passed a package where one of its
+source URLs starts with PREFIX."
+  (lambda (package)
+    (define matching-uri?
+      (match-lambda
+        ((? string? uri)
+         (string-prefix? prefix uri))
+        (_
+         #f)))
 
-  (match (package-source package)
-    ((? origin? origin)
-     (match (origin-uri origin)
-       ((? gnome-uri?) #t)
-       (_              #f)))
-    (_ #f)))
+    (match (package-source package)
+      ((? origin? origin)
+       (match (origin-uri origin)
+         ((? matching-uri?) #t)
+         (_                 #f)))
+      (_ #f))))
+
+(define gnome-package?
+  (url-prefix-predicate "mirror://gnome/"))
 
 (define (latest-gnome-release package)
   "Return the latest release of PACKAGE, the name of a GNOME package."
@@ -504,48 +510,18 @@ elpa.gnu.org, and all the GNOME packages."
                        ;; checksums.
                        #:file->signature (const #f))))
 
-(define (kde-package? package)
-  "Return true if PACKAGE is a KDE package, developed by KDE.org."
-  (define kde-uri?
-    (match-lambda
-      ((? string? uri)
-       (string-prefix? "mirror://kde/" uri))
-      (_
-       #f)))
-
-  (match (package-source package)
-    ((? origin? origin)
-     (match (origin-uri origin)
-      ((? kde-uri?) #t)
-      (_             #f)))
-    (_ #f)))
 
 (define (latest-kde-release package)
   "Return the latest release of PACKAGE, the name of an KDE.org package."
   (let ((uri (string->uri (origin-uri (package-source package)))))
     (false-if-ftp-error
      (latest-ftp-release
-      (package-name package)
+      (or (assoc-ref (package-properties package) 'upstream-name)
+          (package-name package))
       #:server "mirrors.mit.edu"
       #:directory
       (string-append "/kde" (dirname (dirname (uri-path uri))))
       #:file->signature (const #f)))))
-
-(define (xorg-package? package)
-  "Return true if PACKAGE is an X.org package, developed by X.org."
-  (define xorg-uri?
-    (match-lambda
-      ((? string? uri)
-       (string-prefix? "mirror://xorg/" uri))
-      (_
-       #f)))
-
-  (match (package-source package)
-    ((? origin? origin)
-     (match (origin-uri origin)
-       ((? xorg-uri?) #t)
-       (_              #f)))
-    (_ #f)))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE, the name of an X.org package."
@@ -556,6 +532,22 @@ elpa.gnu.org, and all the GNOME packages."
       #:server "ftp.freedesktop.org"
       #:directory
       (string-append "/pub/xorg/" (dirname (uri-path uri)))))))
+
+(define (latest-kernel.org-release package)
+  "Return the latest release of PACKAGE, the name of a kernel.org package."
+  (let ((uri (string->uri (origin-uri (package-source package)))))
+    (false-if-ftp-error
+     (latest-ftp-release
+      (package-name package)
+      #:server "ftp.free.fr"                      ;a mirror reachable over FTP
+      #:directory (string-append "/mirrors/ftp.kernel.org"
+                                 (dirname (uri-path uri)))
+
+      ;; kernel.org provides "foo-x.y.tar.sign" files, which are signatures of
+      ;; the uncompressed tarball.
+      #:file->signature (lambda (tarball)
+                          (string-append (file-sans-extension tarball)
+                                         ".sign"))))))
 
 (define %gnu-updater
   (upstream-updater
@@ -575,14 +567,21 @@ elpa.gnu.org, and all the GNOME packages."
   (upstream-updater
     (name 'kde)
     (description "Updater for KDE packages")
-    (pred kde-package?)
+    (pred (url-prefix-predicate "mirror://kde/"))
     (latest latest-kde-release)))
 
 (define %xorg-updater
   (upstream-updater
    (name 'xorg)
    (description "Updater for X.org packages")
-   (pred xorg-package?)
+   (pred (url-prefix-predicate "mirror://xorg/"))
    (latest latest-xorg-release)))
+
+(define %kernel.org-updater
+  (upstream-updater
+   (name 'kernel.org)
+   (description "Updater for packages hosted on kernel.org")
+   (pred (url-prefix-predicate "mirror://kernel.org/"))
+   (latest latest-kernel.org-release)))
 
 ;;; gnu-maintenance.scm ends here

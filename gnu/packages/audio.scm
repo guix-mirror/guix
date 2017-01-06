@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -186,7 +186,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.4")
+    (version "5.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -196,14 +196,14 @@ streams from live audio.")
                ;; Ardour expects this file to exist at build time.  The revision
                ;; is the output of
                ;;    git describe HEAD | sed 's/^[A-Za-z]*+//'
-               '(call-with-output-file
+               `(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
-                    (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"5.4\" ; }"))))
+                    (format port ,(string-append "#include \"ardour/revision.h\"
+namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
               (sha256
                (base32
-                "1yrg0d86k9fqw7lmzjglilbadb4cjqxqkf6ii4bjs6rihj6b0qrf"))
+                "1a3whv2dhl073pkd803hcp53rdmm31adjwn40qi06lkjb7rgwrlh"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
@@ -238,8 +238,8 @@ namespace ARDOUR { const char* revision = \"5.4\" ; }"))))
        ("lv2" ,lv2)
        ("vamp" ,vamp)
        ("curl" ,curl)
-       ("fftw" ,fftw)
-       ("fftwf" ,fftwf)
+       ("fftw" ,fftw-with-threads)
+       ("fftwf" ,fftwf-with-threads)
        ("jack" ,jack-1)
        ("serd" ,serd)
        ("sord" ,sord)
@@ -1448,7 +1448,7 @@ connections between them.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libsndfile" ,libsndfile)))
-    (home-page "http://sourceforge.net/projects/bs2b/")
+    (home-page "https://sourceforge.net/projects/bs2b/")
     (synopsis "Bauer stereophonic-to-binaural DSP")
     (description
      "The Bauer stereophonic-to-binaural DSP (bs2b) library and plugins is
@@ -1493,9 +1493,10 @@ implementation of the Open Sound Control (OSC) protocol.")
                "13vry6xhxm7adnbyj28w1kpwrh0kf7nw83cz1yq74wl21faz2rzw"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ;no tests
+    (native-inputs
+     `(("python-cython" ,python-cython)))
     (inputs
-     `(("python-cython" ,python-cython)
-       ("liblo" ,liblo)))
+     `(("liblo" ,liblo)))
     (home-page "http://das.nasophon.de/pyliblo/")
     (synopsis "Python bindings for liblo")
     (description
@@ -1551,15 +1552,14 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.12.0")
+    (version "1.14.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://lv2plug.in/spec/lv2-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "1saq0vwqy5zjdkgc5ahs8kcabxfmff2mmg68fiqrkv8hiw9m6jks"))))
+               "0chxwys3vnn3nxc9x2vchm74s9sx0vfra6y893byy12ci61jc1dq"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -1653,9 +1653,16 @@ software.")
                      (setenv "LDFLAGS"
                              (string-append
                               "-L" (assoc-ref inputs "boost") "/lib "
-                              "-lboost_system")))))))
+                              "-lboost_system"))
+                     ;; Needed for gtkmm
+                     (substitute* '("src/wscript_build"
+                                    "examples/wscript_build")
+                       (("cxxflags.*= \\[" line)
+                        (string-append line "\"-std=c++11\", ")))
+                     #t)))))
     (inputs
      `(("boost" ,boost)
+       ("gtkmm" ,gtkmm-2)
        ("lv2" ,lv2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1797,6 +1804,23 @@ and ALSA.")
      "Raul (Real-time Audio Utility Library) is a C++ utility library primarily
 aimed at audio/musical applications.")
     (license license:gpl2+)))
+
+(define-public raul-devel
+  (let ((commit "f8bf77d3c3b77830aedafb9ebb5cdadfea7ed07a")
+        (revision "1"))
+    (package (inherit raul)
+      (name "raul")
+      (version (string-append "0.8.4-" revision "."
+                              (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://git.drobilla.net/raul.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1lby508fb0n8ks6iz959sh18fc37br39d6pbapwvbcw5nckdrxwj")))))))
 
 (define-public rubberband
   (package
@@ -2255,7 +2279,7 @@ can play and record audio files.")
         (base32 "1hmadwqfpg15vhwq9pa1sl5xslibrjpk6hpq2s9hfmx1s5l6ihfw"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no 'check' target
-    (home-page "http://sourceforge.net/p/soxr/wiki/Home/")
+    (home-page "https://sourceforge.net/p/soxr/wiki/Home/")
     (synopsis "One-dimensional sample-rate conversion library")
     (description
      "The SoX Resampler library (libsoxr) performs one-dimensional sample-rate
@@ -2675,7 +2699,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.4.11")
+    (version "0.4.12")
     (source
      (origin
        (method url-fetch)
@@ -2683,7 +2707,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0j765drdb7h3y5ipjv9sg1a0if6zh8cksbv3rdk5ppd7kxcrjnlb"))))
+         "0n9skdap1vnl6w52fx0gsrjlk7w3xgdwi62ycyf96h29rx059z6a"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))

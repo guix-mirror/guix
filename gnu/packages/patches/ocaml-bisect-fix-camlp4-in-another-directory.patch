@@ -1,0 +1,125 @@
+From 26cac62fe0154cf65c06faaee10805531e9dade8 Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Wed, 14 Dec 2016 14:14:59 +0100
+Subject: [PATCH] fix camlp4 in another directory
+
+---
+ Makefile        | 11 ++++++-----
+ configure       | 13 ++++++++++++-
+ myocamlbuild.ml |  2 +-
+ 3 files changed, 19 insertions(+), 7 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 4a8ce17..d94a6d5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -25,7 +25,7 @@ PATH_BUILD=$(PATH_BASE)/_build
+ PATH_OCAMLDOC=$(PATH_BASE)/ocamldoc
+ PATH_SRC=$(PATH_BASE)/src
+ PATH_TESTS=$(PATH_BASE)/tests
+-PATH_INSTALL=$(PATH_OCAML_PREFIX)/lib/ocaml/bisect
++PATH_INSTALL=$(PREFIX)/lib/ocaml/bisect
+
+
+ # DEFINITIONS
+@@ -33,7 +33,8 @@ PATH_INSTALL=$(PATH_OCAML_PREFIX)/lib/ocaml/bisect
+ PROJECT_NAME=bisect
+ OCAMLBUILD=$(PATH_OCAML_PREFIX)/bin/ocamlbuild
+ OCAMLBUILD_ENV=WARNINGS=$(WARNINGS) PATH_OCAML_PREFIX=$(PATH_OCAML_PREFIX)
+-OCAMLBUILD_FLAGS=-classic-display -no-links
++CAMLP4_INCLUDE=$(shell test -z $(CAMLP4_LIBDIR) || echo "-cflags -I,$(CAMLP4_LIBDIR)")
++OCAMLBUILD_FLAGS=-classic-display -no-links $(CAMLP4_INCLUDE)
+ MODULES_ODOCL=$(PROJECT_NAME).odocl
+ MODULES_MLPACK=$(PROJECT_NAME).mlpack
+ MODULES_MLPACK_PP=$(PROJECT_NAME)_pp.mlpack
+@@ -80,11 +81,11 @@ veryclean: clean
+	rm -f $(PATH_OCAMLDOC)/*.html $(PATH_OCAMLDOC)/*.css
+
+ install: FORCE
+-	cp $(PATH_BUILD)/src/report/report.byte $(PATH_OCAML_PREFIX)/bin/bisect-report; \
++	cp $(PATH_BUILD)/src/report/report.byte $(PREFIX)/bin/bisect-report; \
+	if [ "$(PPX)" = "TRUE" ]; then \
+-	  cp $(PATH_BUILD)/src/syntax/bisect_ppx.byte $(PATH_OCAML_PREFIX)/bin; \
++	  cp $(PATH_BUILD)/src/syntax/bisect_ppx.byte $(PREFIX)/bin; \
+	fi; \
+-	(test -x $(PATH_OCAML_PREFIX)/bin/ocamlopt && cp $(PATH_BUILD)/src/report/report.native $(PATH_OCAML_PREFIX)/bin/bisect-report.opt || true); \
++	(test -x $(PATH_OCAML_PREFIX)/bin/ocamlopt && cp $(PATH_BUILD)/src/report/report.native $(PREFIX)/bin/bisect-report.opt || true); \
+	if [ -x "$(PATH_OCAMLFIND)" ]; then \
+	  $(PATH_OCAMLFIND) query $(PROJECT_NAME) && $(PATH_OCAMLFIND) remove $(PROJECT_NAME) || true; \
+	  $(PATH_OCAMLFIND) install $(PROJECT_NAME) META -optional \
+diff --git a/configure b/configure
+index bb7ebf4..61a3095 100755
+--- a/configure
++++ b/configure
+@@ -21,7 +21,9 @@
+ # default values
+ ocamlbuild=`which ocamlbuild || echo '/usr/local/bin/ocamlbuild'`
+ bin_path=`dirname $ocamlbuild`
++prefix=''
+ ocaml_prefix=`dirname $bin_path`
++camlp4_prefix=`dirname $(dirname $(which camlp4of))`
+ ocamlfind=`which ocamlfind 2> /dev/null || echo ''`
+ native_dynlink='TRUE'
+ devel='FALSE'
+@@ -32,8 +34,12 @@ ppx='FALSE'
+ while [ $# -gt 0 ]
+ do
+     case "$1" in
++        -prefix)
++            prefix="$2"; shift;;
+         -ocaml-prefix)
+             ocaml_prefix="$2"; shift;;
++        -camlp4-prefix)
++            camlp4_prefix="$2"; shift;;
+         -ocamlfind)
+             ocamlfind="$2"; shift;;
+         -no-native-dynlink)
+@@ -45,7 +51,7 @@ do
+         -ppx)
+             ppx='TRUE';;
+         *)
+-            echo "usage: $0 [-ocaml-prefix <path>] [-ocamlfind <path>] [-no-native-dynlink] [-devel]";
++            echo "usage: $0 [-prefix <path>] [-ocaml-prefix <path>] [-ocamlfind <path>] [-no-native-dynlink] [-devel]";
+             exit 1;;
+         esac
+         shift
+@@ -57,6 +63,9 @@ if [ "$no_camlp4" = "TRUE" -a "$ppx" = "FALSE" ]; then
+   exit 1
+ fi
+
++# prefix default value
++test -z $prefix && prefix=$ocaml_prefix
++
+ # make options
+ make_quiet=`make -f - <<EOF
+ default: gnumake
+@@ -67,11 +76,13 @@ EOF`
+ # file creation
+ echo "# timestamp: `date`" > Makefile.config
+ echo "PATH_OCAML_PREFIX=$ocaml_prefix" >> Makefile.config
++echo "PATH_CAMLP4_PREFIX=$camlp4_prefix" >> Makefile.config
+ echo "PATH_OCAMLFIND=$ocamlfind" >> Makefile.config
+ echo "NATIVE_DYNLINK=$native_dynlink" >> Makefile.config
+ echo "WARNINGS=$devel" >> Makefile.config
+ echo "NO_CAMLP4=$no_camlp4" >> Makefile.config
+ echo "PPX=$ppx" >> Makefile.config
+ echo "MAKE_QUIET=$make_quiet" >> Makefile.config
++echo "PREFIX=$prefix" >> Makefile.config
+ echo "" >> Makefile.config
+ echo 'Makefile.config successfully created'
+diff --git a/myocamlbuild.ml b/myocamlbuild.ml
+index 8aa25fd..09a7d48 100644
+--- a/myocamlbuild.ml
++++ b/myocamlbuild.ml
+@@ -70,7 +70,7 @@ let () =
+     | After_rules ->
+         let camlp4of =
+           try
+-            let path_bin = Filename.concat (Sys.getenv "PATH_OCAML_PREFIX") "bin" in
++            let path_bin = Filename.concat (Sys.getenv "PATH_CAMLP4_PREFIX") "bin" in
+             Filename.concat path_bin "camlp4of"
+           with _ -> "camlp4of" in
+         flag ["ocaml"; "compile"; "pp_camlp4of"] (S[A"-pp"; A camlp4of]);
+--
+2.7.4
+

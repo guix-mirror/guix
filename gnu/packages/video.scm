@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -212,14 +213,14 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20160220-2245")
+    (version "20161205-2245")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/pub/x264/snapshots/"
+              (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
                                   "x264-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "12zyzbiihfhamf7yi4qqaj6k0nisnrydvfr36kxadvmsm7dg4sj3"))))
+                "0jjzdwag59kqlk09bb2pykm1ss8bw3p9q7bsks2kjgdwbj121a44"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -245,7 +246,7 @@ television and DVD.  It is also known as AC-3.")
                                                      (%current-system)))
                                  '("--disable-asm")
                                  '()))))
-    (home-page "http://www.videolan.org/developers/x264.html")
+    (home-page "https://www.videolan.org/developers/x264.html")
     (synopsis "H.264 video coding library")
     (description "libx264 is an advanced encoding library for creating
 H.264 (MPEG-4 AVC) video streams.")
@@ -441,14 +442,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1pxsy9s9n2nvz970rid3j3b45w6s7ziwnrbc16rny7k0bpd97kqy"))))
+               "1z7d5y5crhsl5fm74236rdwbkd4jj5frx1l4iizjfym1w4gvs09z"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -609,14 +610,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.8")
+    (version "2.8.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1691bmq8j56rcys09xwvzjq16z25m8vczj5a50gdn7ydm9qjykpr"))))
+               "1ca84kc715xm7wmbnj1z4jfhxj8c7rxhy4cqwrd8cnih0l196j1c"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -833,7 +834,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.22.0")
+    (version "0.23.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -841,11 +842,11 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1xl2a0nfbkcq00f41m50fmfz9hl7hzpk7cq7j38r38rp1s7sryf0"))
+                "1629v5l0rmphxra7chmfm7bnn59zc1mp529b9m2zqzaqf1czxvla"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
-     `(("perl" ,perl)
+     `(("perl" ,perl) ; for zsh completion file
        ("pkg-config" ,pkg-config)
        ("python-docutils" ,python-docutils)))
     ;; Missing features: libguess, Wayland, V4L2
@@ -969,7 +970,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.10.16")
+    (version "2016.12.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/"
@@ -977,7 +978,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0q6cxbp1xx8xmwn3xbxh6gcbgqjxy3slzfca4dbkk9xl2yy9rwqg"))))
+                "17m3dimgpn6139w95drc7zncfx2mskjx45qvmj74zhdqxnk3gnc5"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1398,7 +1399,7 @@ from various services and pipes them into a video playing application.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.2.0")
+    (version "6.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mltframework/mlt/"
@@ -1406,7 +1407,7 @@ from various services and pipes them into a video playing application.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zwzfgxrcbwkxnkiwv0a1rzxdnnaly90yyarl9wdw84nx11ffbnx"))))
+                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1830,3 +1831,31 @@ supported players in addition to this package.")
 of modern, widely supported codecs.")
     ;; Most under GPL version 2 or later, and portions under BSD 3 Clause
     (license (list license:gpl2+ license:bsd-3))))
+
+(define-public openh264
+  (package
+    (name "openh264")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cisco/"
+                                  name "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ix2fhk62i4q4kbnkl0gfk4x53vxqavsn0pck1pashr566zhglv5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("nasm" ,nasm)
+       ("python" ,python)))
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  ;; no configure script
+                  (delete 'configure))))
+    (home-page "http://www.openh264.org/")
+    (synopsis "H264 decoder library")
+    (description
+     "Openh264 is a library which can decode H264 video streams.")
+    (license license:bsd-2)))

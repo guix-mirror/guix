@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
@@ -30,7 +30,9 @@
   #:use-module (guix build utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gdb)
@@ -369,3 +371,351 @@ language.")
       (description "OpenOCD provides on-chip programming and debugging support
 with a layered architecture of JTAG interface and TAP support.")
       (license license:gpl2+))))
+
+;; The commits for all propeller tools are the latest versions as published
+;; here: https://github.com/dbetz/propeller-gcc
+
+(define propeller-binutils
+  (let ((xbinutils (cross-binutils "propeller-elf"))
+        (commit "3bfba30076f8ce160a2f42914fdb68f24445fd44")
+        (revision "1"))
+    (package
+      (inherit xbinutils)
+      (name "propeller-binutils")
+      (version (string-append "0.0.0-" revision "." (string-take commit 9)))
+      (source (origin (inherit (package-source xbinutils))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/totalspectrum/binutils-propeller.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "1v3rgxwj7b8817wy5ccf8621v75qcxvcxygk4acr3hbc6yqybr8h"))))
+      (arguments
+       `(;; FIXME: For some reason there are many test failures.  Some of them
+         ;; appear to be due to regular expression mismatch, but it's not
+         ;; obvious how to fix the failures.
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-/bin/sh-in-tests
+             (lambda _
+               (substitute* '("sim/testsuite/Makefile.in"
+                              "sim/testsuite/mips64el-elf/Makefile.in"
+                              "sim/testsuite/d10v-elf/Makefile.in"
+                              "sim/testsuite/sim/cris/asm/badarch1.ms")
+                 (("/bin/sh") (which "sh")))
+               #t)))
+         ,@(package-arguments xbinutils)))
+      (native-inputs
+       `(("bison" ,bison)
+         ("flex" ,flex)
+         ("texinfo" ,texinfo)
+         ("dejagnu" ,dejagnu)
+         ,@(package-native-inputs xbinutils))))))
+
+(define-public propeller-gcc
+  (let ((xgcc (cross-gcc "propeller-elf"
+                         propeller-binutils))
+        (commit "b4f45a4725e0b6d0af59e594c4e3e35ca4105867")
+        (revision "1"))
+    (package (inherit xgcc)
+      (name "propeller-gcc")
+      (version (string-append "6.0.0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/totalspectrum/gcc-propeller.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "0d9kdxm2fzanjqa7q5850kzbsfl0fqyaahxn74h6nkxxacwa11zb"))
+                (patches
+                 (append
+                  (origin-patches (package-source gcc-6))
+                  (search-patches "gcc-cross-environment-variables.patch")))))
+      (native-inputs
+       `(("flex" ,flex)
+         ,@(package-native-inputs xgcc)))
+      ;; All headers and cross libraries of the propeller toolchain are
+      ;; installed under the "propeller-elf" prefix.
+      (native-search-paths
+       (list (search-path-specification
+              (variable "CROSS_C_INCLUDE_PATH")
+              (files '("propeller-elf/include")))
+             (search-path-specification
+              (variable "CROSS_LIBRARY_PATH")
+              (files '("propeller-elf/lib")))))
+      (home-page "https://github.com/totalspectrum/gcc-propeller")
+      (synopsis "GCC for the Parallax Propeller"))))
+
+;; There is no release, so we take the latest version as referenced from here:
+;; https://github.com/dbetz/propeller-gcc
+(define-public proplib
+  (let ((commit "844741fe0ceb140ab2fdf9d0667f68c1c39c31da")
+        (revision "1"))
+    (package
+      (name "proplib")
+      (version (string-append "0.0.0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/totalspectrum/proplib.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "0q7irf1x8iqx07n7lzksax9armrdkizs49swsz76nbks0mw67wiv"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               (string-append "BUILD="  (getcwd) "/build"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'fix-Makefile
+             (lambda _
+               (substitute* "Makefile"
+                 ;; The GCC sources are not part of this package, so we cannot
+                 ;; install the out-of-tree license file.
+                 (("cp \\.\\..*") "")
+                 ;; Control the installation time of the headers.
+                 ((" install-includes") ""))
+               #t))
+           ;; The Makefile does not separate building from installation, so we
+           ;; have to create the target directories at build time.
+           (add-before 'build 'create-target-directories
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-dirs" make-flags))))
+           (add-before 'build 'set-cross-environment-variables
+             (lambda* (#:key outputs #:allow-other-keys)
+               (setenv "CROSS_LIBRARY_PATH"
+                       (string-append (assoc-ref outputs "out")
+                                      "/propeller-elf/lib:"
+                                      (or (getenv "CROSS_LIBRARY_PATH") "")))
+               (setenv "CROSS_C_INCLUDE_PATH"
+                       (string-append (assoc-ref outputs "out")
+                                      "/propeller-elf/include:"
+                                      (or (getenv "CROSS_C_INCLUDE_PATH") "")))
+               #t))
+           (add-after 'build 'build-tiny
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "tiny" make-flags))))
+           ;; The build of the tiny libraries depends on the includes to be
+           ;; available.  Since we set CROSS_C_INCLUDE_PATH to the output
+           ;; directory, we have to install the includes first.
+           (add-before 'build-tiny 'install-includes
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-includes" make-flags))))
+           (add-after 'install 'install-tiny
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-tiny" make-flags)))))))
+      (native-inputs
+       `(("propeller-gcc" ,propeller-gcc)
+         ("propeller-binutils" ,propeller-binutils)
+         ("perl" ,perl)))
+      (home-page "https://github.com/totalspectrum/proplib")
+      (synopsis "C library for the Parallax Propeller")
+      (description "This is a C library for the Parallax Propeller
+micro-controller.")
+      ;; Most of the code is released under the Expat license.  Some of the
+      ;; included code is public domain and some changes are BSD licensed.
+      (license license:expat))))
+
+(define-public propeller-toolchain
+  (package
+    (name "propeller-toolchain")
+    (version (package-version propeller-gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     `(("binutils" ,propeller-binutils)
+       ("libc" ,proplib)
+       ("gcc" ,propeller-gcc)))
+    (synopsis "Complete GCC tool chain for Propeller micro-controllers")
+    (description "This package provides a complete GCC tool chain for
+Propeller micro-controller development.")
+    (home-page (package-home-page propeller-gcc))
+    (license (package-license propeller-gcc))))
+
+(define-public openspin
+  (package
+    (name "openspin")
+    (version "1.00.78")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/parallaxinc/"
+                                  "OpenSpin/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1k2dbz1v604g4r2d9qhckg2m8dnhiya760mbsqfsg4waxal87yb7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'remove-timestamp
+           (lambda _
+             (substitute* "SpinSource/openspin.cpp"
+               ((" Compiled on.*$") "\\n\");"))
+             #t))
+         ;; Makefile does not include "install" target
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin")))
+               (mkdir-p bin)
+               (install-file "build/openspin" bin)
+               #t))))))
+    (home-page "https://github.com/parallaxinc/OpenSpin")
+    (synopsis "Spin/PASM compiler for the Parallax Propeller")
+    (description "OpenSpin is a compiler for the Spin/PASM language of the
+Parallax Propeller.  It was ported from Chip Gracey's original x86 assembler
+code.")
+    (license license:expat)))
+
+(define-public propeller-load
+  (let ((commit "ba9c0a7251cf751d8d292ae19ffa03132097c0c0")
+        (revision "1"))
+    (package
+      (name "propeller-load")
+      (version "3.4.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dbetz/propeller-load.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "1qv3xaapl9fmj3zn58b60sprp4rnvnlpci8ci0pdrzkw6fhvx3pg"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags
+         (list "OS=linux"
+               (string-append "TARGET=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (native-inputs
+       `(("openspin" ,openspin)
+         ("propeller-toolchain" ,propeller-toolchain)))
+      (home-page "https://github.com/dbetz/propeller-load")
+      (synopsis "Loader for Parallax Propeller micro-controllers")
+      (description "This package provides the tool @code{propeller-load} to
+upload binaries to a Parallax Propeller micro-controller.")
+      (license license:expat))))
+
+(define-public spin2cpp
+  (package
+    (name "spin2cpp")
+    (version "3.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/totalspectrum/spin2cpp/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00i8i0dspd5115ggkv5vx2xqb21l6y38wz0bakgby8n3b4k9xnk0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;; The tests assume that a micro-controller is connected.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'set-cross-environment-variables
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CROSS_LIBRARY_PATH"
+                     (string-append (assoc-ref inputs "propeller-toolchain")
+                                    "/propeller-elf/lib"))
+             (setenv "CROSS_C_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "propeller-toolchain")
+                                    "/propeller-elf/include"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin")))
+               (for-each (lambda (file)
+                           (install-file (string-append "build/" file)
+                                         bin))
+                         '("testlex" "spin2cpp" "fastspin")))
+             #t)))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("propeller-load" ,propeller-load)
+       ("propeller-toolchain" ,propeller-toolchain)))
+    (home-page "https://github.com/totalspectrum/spin2cpp")
+    (synopsis "Convert Spin code to C, C++, or PASM code")
+    (description "This is a set of tools for converting the Spin language for
+the Parallax Propeller micro-controller into C or C++ code, into PASM, or even
+directly into an executable binary.  The binaries produced use LMM PASM, so
+they are much faster than regular Spin bytecodes (but also quite a bit
+larger).")
+    (license license:expat)))
+
+(define-public spinsim
+  (let ((commit "66915a7ad1a3a2cf990a725bb341fab8d11eb620")
+        (revision "1"))
+    (package
+      (name "spinsim")
+      (version (string-append "0.75-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/parallaxinc/spinsim.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "1n9kdhlxsdx7bz6c80w8dhi96zp633gd6qs0x9i4ii8qv4i7sj5k"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out")
+                                         "/bin")))
+                 (install-file "build/spinsim" bin))
+               #t)))))
+      (home-page "https://github.com/parallaxinc/spinsim")
+      (synopsis "Spin simulator")
+      (description "This package provides the tool @code{spinsim}, a simulator
+and simple debugger for Spin programs written for a Parallax Propeller
+micro-controller.  Spinsim supports execution from cog memory and hub
+execution, but it does not support multi-tasking.  It supports about
+two-thirds of the opcodes in the P2 instruction set.")
+      (license license:expat))))
+
+(define-public propeller-development-suite
+  (package
+    (name "propeller-development-suite")
+    (version (package-version propeller-gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     `(("toolchain" ,propeller-toolchain)
+       ("openspin" ,openspin)
+       ("propeller-load" ,propeller-load)
+       ("spin2cpp" ,spin2cpp)
+       ("spinsim" ,spinsim)))
+    (synopsis "Complete development suite for Propeller micro-controllers")
+    (description "This meta-package provides a complete environment for the
+development with Parallax Propeller micro-controllers.  It includes the GCC
+toolchain, the loader, the Openspin compiler, the Spin2cpp tool, and the Spin
+simulator.")
+    (home-page (package-home-page propeller-gcc))
+    (license (package-license propeller-gcc))))

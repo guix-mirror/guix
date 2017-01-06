@@ -293,7 +293,7 @@ architecture.")
     "Ghostscript fonts provides fonts and font metrics customarily distributed with
 Ghostscript.  It currently includes the 35 standard PostScript fonts.")
    (license license:gpl2)
-   (home-page "http://sourceforge.net/projects/gs-fonts/")))
+   (home-page "https://sourceforge.net/projects/gs-fonts/")))
 
 (define-public libspectre
   (package

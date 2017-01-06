@@ -24,8 +24,10 @@
   #:use-module (ssh popen)
   #:use-module (ssh dist)
   #:use-module (ssh dist node)
+  #:use-module (ssh version)
   #:use-module (guix config)
   #:use-module (guix records)
+  #:use-module (guix ssh)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module ((guix serialization)
@@ -74,6 +76,10 @@
   (private-key     build-machine-private-key      ; file name
                    (default (user-openssh-private-key)))
   (host-key        build-machine-host-key)        ; string
+  (compression     build-machine-compression  ; string
+                   (default "zlib@openssh.com,zlib"))
+  (compression-level build-machine-compression-level ;integer
+                     (default 3))
   (daemon-socket   build-machine-daemon-socket    ; string
                    (default "/var/guix/daemon-socket/socket"))
   (parallel-builds build-machine-parallel-builds  ; number
@@ -168,86 +174,53 @@ private key from '~a': ~a")
         (session (make-session #:user (build-machine-user machine)
                                #:host (build-machine-name machine)
                                #:port (build-machine-port machine)
-                               #:timeout 5        ;seconds
+                               #:timeout 10       ;seconds
                                ;; #:log-verbosity 'protocol
                                #:identity (build-machine-private-key machine)
 
+                               ;; By default libssh reads ~/.ssh/known_hosts
+                               ;; and uses that to adjust its choice of cipher
+                               ;; suites, which changes the type of host key
+                               ;; that the server sends (RSA vs. Ed25519,
+                               ;; etc.).  Opt for something reproducible and
+                               ;; stateless instead.
+                               #:knownhosts "/dev/null"
+
                                ;; We need lightweight compression when
                                ;; exchanging full archives.
-                               #:compression "zlib"
-                               #:compression-level 3)))
-    (connect! session)
-
-    ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
-    ;; ed25519 keys and 'get-key-type' returns #f in that case.
-    (let-values (((server)   (get-server-public-key session))
-                 ((type key) (host-key->type+key
-                              (build-machine-host-key machine))))
-      (unless (and (or (not (get-key-type server))
-                       (eq? (get-key-type server) type))
-                   (string=? (public-key->string server) key))
-        ;; Key mismatch: something's wrong.  XXX: It could be that the server
-        ;; provided its Ed25519 key when we where expecting its RSA key.
-        (leave (_ "server at '~a' returned host key '~a' of type '~a' \
+                               #:compression
+                               (build-machine-compression machine)
+                               #:compression-level
+                               (build-machine-compression-level machine))))
+    (match (connect! session)
+      ('ok
+       ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
+       ;; ed25519 keys and 'get-key-type' returns #f in that case.
+       (let-values (((server)   (get-server-public-key session))
+                    ((type key) (host-key->type+key
+                                 (build-machine-host-key machine))))
+         (unless (and (or (not (get-key-type server))
+                          (eq? (get-key-type server) type))
+                      (string=? (public-key->string server) key))
+           ;; Key mismatch: something's wrong.  XXX: It could be that the server
+           ;; provided its Ed25519 key when we where expecting its RSA key.
+           (leave (_ "server at '~a' returned host key '~a' of type '~a' \
 instead of '~a' of type '~a'~%")
-               (build-machine-name machine)
-               (public-key->string server) (get-key-type server)
-               key type)))
+                  (build-machine-name machine)
+                  (public-key->string server) (get-key-type server)
+                  key type)))
 
-    (let ((auth (userauth-public-key! session private)))
-      (unless (eq? 'success auth)
-        (disconnect! session)
-        (leave (_ "SSH public key authentication failed for '~a': ~a~%")
-               (build-machine-name machine) (get-error session))))
+       (let ((auth (userauth-public-key! session private)))
+         (unless (eq? 'success auth)
+           (disconnect! session)
+           (leave (_ "SSH public key authentication failed for '~a': ~a~%")
+                  (build-machine-name machine) (get-error session))))
 
-    session))
-
-(define* (connect-to-remote-daemon session
-                                   #:optional
-                                   (socket-name "/var/guix/daemon-socket/socket"))
-  "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
-an SSH session.  Return a <nix-server> object."
-  (define redirect
-    ;; Code run in SESSION to redirect the remote process' stdin/stdout to the
-    ;; daemon's socket, à la socat.  The SSH protocol supports forwarding to
-    ;; Unix-domain sockets but libssh doesn't have an API for that, hence this
-    ;; hack.
-    `(begin
-       (use-modules (ice-9 match) (rnrs io ports))
-
-       (let ((sock   (socket AF_UNIX SOCK_STREAM 0))
-             (stdin  (current-input-port))
-             (stdout (current-output-port)))
-         (setvbuf stdin _IONBF)
-         (setvbuf stdout _IONBF)
-         (connect sock AF_UNIX ,socket-name)
-
-         (let loop ()
-           (match (select (list stdin sock) '() (list stdin stdout sock))
-             ((reads writes ())
-              (when (memq stdin reads)
-                (match (get-bytevector-some stdin)
-                  ((? eof-object?)
-                   (primitive-exit 0))
-                  (bv
-                   (put-bytevector sock bv))))
-              (when (memq sock reads)
-                (match (get-bytevector-some sock)
-                  ((? eof-object?)
-                   (primitive-exit 0))
-                  (bv
-                   (put-bytevector stdout bv))))
-              (loop))
-             (_
-              (primitive-exit 1)))))))
-
-  (let ((channel
-         (open-remote-pipe* session OPEN_BOTH
-                            ;; Sort-of shell-quote REDIRECT.
-                            "guile" "-c"
-                            (object->string
-                             (object->string redirect)))))
-    (open-connection #:port channel)))
+       session)
+      (x
+       ;; Connection failed or timeout expired.
+       (leave (_ "failed to connect to '~a': ~a~%")
+              (build-machine-name machine) (get-error session))))))
 
 
 ;;;
@@ -363,8 +336,9 @@ MACHINE."
   ;; Protect DRV from garbage collection.
   (add-temp-root store (derivation-file-name drv))
 
-  (send-files (cons (derivation-file-name drv) inputs)
-              store)
+  (with-store local
+    (send-files local (cons (derivation-file-name drv) inputs) store
+                #:log-port (current-output-port)))
   (format (current-error-port) "offloading '~a' to '~a'...~%"
           (derivation-file-name drv) (build-machine-name machine))
   (format (current-error-port) "@ build-remote ~a ~a~%"
@@ -379,92 +353,20 @@ MACHINE."
              ;; Use exit code 100 for a permanent build failure.  The daemon
              ;; interprets other non-zero codes as transient build failures.
              (primitive-exit 100)))
-    (build-derivations store (list drv)))
+    (parameterize ((current-build-output-port (build-log-port)))
+      (build-derivations store (list drv))))
 
-  (retrieve-files outputs store)
+  (retrieve-files* outputs store)
   (format (current-error-port) "done with offloaded '~a'~%"
           (derivation-file-name drv)))
 
-(define (store-import-channel session)
-  "Return an output port to which archives to be exported to SESSION's store
-can be written."
-  ;; Using the 'import-paths' RPC on a remote store would be slow because it
-  ;; makes a round trip every time 32 KiB have been transferred.  This
-  ;; procedure instead opens a separate channel to use the remote
-  ;; 'import-paths' procedure, which consumes all the data in a single round
-  ;; trip.
-  (define import
-    `(begin
-       (use-modules (guix))
-
-       (with-store store
-         (setvbuf (current-input-port) _IONBF)
-         (import-paths store (current-input-port)))))
-
-  (open-remote-output-pipe session
-                           (string-join
-                            `("guile" "-c"
-                              ,(object->string
-                                (object->string import))))))
-
-(define (store-export-channel session files)
-  "Return an input port from which an export of FILES from SESSION's store can
-be read."
-  ;; Same as above: this is more efficient than calling 'export-paths' on a
-  ;; remote store.
-  (define export
-    `(begin
-       (use-modules (guix))
-
-       (with-store store
-         (setvbuf (current-output-port) _IONBF)
-         (export-paths store ',files (current-output-port)))))
-
-  (open-remote-input-pipe session
-                          (string-join
-                           `("guile" "-c"
-                             ,(object->string
-                               (object->string export))))))
-
-(define (send-files files remote)
-  "Send the subset of FILES that's missing to REMOTE, a remote store."
-  (with-store store
-    ;; Compute the subset of FILES missing on SESSION, and send them in
-    ;; topologically sorted order so that they can actually be imported.
-    (let* ((sorted  (topologically-sorted store files))
-           (session (channel-get-session (nix-server-socket remote)))
-           (node    (make-node session))
-           (missing (node-eval node
-                               `(begin
-                                  (use-modules (guix)
-                                               (srfi srfi-1) (srfi srfi-26))
-
-                                  (with-store store
-                                    (remove (cut valid-path? store <>)
-                                            ',sorted)))))
-           (port    (store-import-channel session)))
-      (format #t (_ "sending ~a store files to '~a'...~%")
-              (length missing) (session-get session 'host))
-
-      (export-paths store missing port)
-
-      ;; Tell the remote process that we're done.  (In theory the
-      ;; end-of-archive mark of 'export-paths' would be enough, but in
-      ;; practice it's not.)
-      (channel-send-eof port)
-
-      ;; Wait for completion of the remote process.
-      (let ((result (zero? (channel-get-exit-status port))))
-        (close-port port)
-        result))))
-
-(define (retrieve-files files remote)
-  "Retrieve FILES from SESSION's store, and import them."
-  (let* ((session (channel-get-session (nix-server-socket remote)))
-         (host    (session-get session 'host))
-         (port    (store-export-channel session files)))
-    (format #t (_ "retrieving ~a files from '~a'...~%")
-            (length files) host)
+(define (retrieve-files* files remote)
+  "Retrieve FILES from REMOTE and import them using 'restore-file-set'."
+  (let-values (((port count)
+                (file-retrieval-port files remote)))
+    (format #t (N_ "retrieving ~a store item from '~a'...~%"
+                   "retrieving ~a store items from '~a'...~%" count)
+            count (remote-store-host remote))
 
     ;; We cannot use the 'import-paths' RPC here because we already
     ;; hold the locks for FILES.
@@ -489,37 +391,30 @@ be read."
 
 (define (machine-load machine)
   "Return the load of MACHINE, divided by the number of parallel builds
-allowed on MACHINE."
-  (let* ((session (open-ssh-session machine))
-         (pipe    (open-remote-pipe* session OPEN_READ
+allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
+  ;; Note: This procedure is costly since it creates a new SSH session.
+  (match (false-if-exception (open-ssh-session machine))
+    ((? session? session)
+     (let* ((pipe (open-remote-pipe* session OPEN_READ
                                      "cat" "/proc/loadavg"))
-         (line    (read-line pipe)))
-    (close-port pipe)
+            (line (read-line pipe)))
+       (close-port pipe)
 
-    (if (eof-object? line)
-        +inf.0    ;MACHINE does not respond, so assume it is infinitely loaded
-        (match (string-tokenize line)
-          ((one five fifteen . _)
-           (let* ((raw        (string->number five))
-                  (jobs       (build-machine-parallel-builds machine))
-                  (normalized (/ raw jobs)))
-             (format (current-error-port) "load on machine '~a' is ~s\
+       (if (eof-object? line)
+           +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
+           (match (string-tokenize line)
+             ((one five fifteen . _)
+              (let* ((raw        (string->number five))
+                     (jobs       (build-machine-parallel-builds machine))
+                     (normalized (/ raw jobs)))
+                (format (current-error-port) "load on machine '~a' is ~s\
  (normalized: ~s)~%"
-                     (build-machine-name machine) raw normalized)
-             normalized))
-          (_
-           +inf.0)))))           ;something's fishy about MACHINE, so avoid it
-
-(define (machine-power-factor m)
-  "Return a factor that aggregates the speed and load of M.  The higher the
-better."
-  (/ (build-machine-speed m)
-     (+ 1 (machine-load m))))
-
-(define (machine-less-loaded-or-faster? m1 m2)
-  "Return #t if M1 is either less loaded or faster than M2.  (This relation
-defines a total order on machines.)"
-  (> (machine-power-factor m1) (machine-power-factor m2)))
+                        (build-machine-name machine) raw normalized)
+                normalized))
+             (_
+              +inf.0)))))        ;something's fishy about MACHINE, so avoid it
+    (_
+     +inf.0)))                      ;failed to connect to MACHINE, so avoid it
 
 (define (machine-lock-file machine hint)
   "Return the name of MACHINE's lock file for HINT."
@@ -548,29 +443,39 @@ defines a total order on machines.)"
   ;;   5. Release the global machine-choice lock.
 
   (with-file-lock (machine-choice-lock-file)
-    (define machines+slots
+    (define machines+slots+loads
       (filter-map (lambda (machine)
+                    ;; Call 'machine-load' from here to make sure it is called
+                    ;; only once per machine (it is expensive).
                     (let ((slot (acquire-build-slot machine)))
-                      (and slot (list machine slot))))
+                      (and slot
+                           (list machine slot (machine-load machine)))))
                   machines))
 
     (define (undecorate pred)
       (lambda (a b)
         (match a
-          ((machine1 slot1)
+          ((machine1 slot1 load1)
            (match b
-             ((machine2 slot2)
-              (pred machine1 machine2)))))))
+             ((machine2 slot2 load2)
+              (pred machine1 load1 machine2 load2)))))))
 
-    (let loop ((machines+slots
-                (sort machines+slots
+    (define (machine-less-loaded-or-faster? m1 l1 m2 l2)
+      ;; Return #t if M1 is either less loaded or faster than M2, with L1
+      ;; being the load of M1 and L2 the load of M2.  (This relation defines a
+      ;; total order on machines.)
+      (> (/ (build-machine-speed m1) (+ 1 l1))
+         (/ (build-machine-speed m2) (+ 1 l2))))
+
+    (let loop ((machines+slots+loads
+                (sort machines+slots+loads
                       (undecorate machine-less-loaded-or-faster?))))
-      (match machines+slots
-        (((best slot) others ...)
+      (match machines+slots+loads
+        (((best slot load) others ...)
          ;; Return the best machine unless it's already overloaded.
-         (if (< (machine-load best) 2.)
+         (if (< load 2.)
              (match others
-               (((machines slots) ...)
+               (((machines slots loads) ...)
                 ;; Release slots from the uninteresting machines.
                 (for-each release-build-slot slots)
 
@@ -618,6 +523,96 @@ defines a total order on machines.)"
 
 
 ;;;
+;;; Installation tests.
+;;;
+
+(define (assert-node-repl node name)
+  "Bail out if NODE is not running Guile."
+  (match (node-guile-version node)
+    (#f
+     (leave (_ "Guile could not be started on '~a'~%")
+            name))
+    ((? string? version)
+     ;; Note: The version string already contains the word "Guile".
+     (info (_ "'~a' is running ~a~%")
+           name (node-guile-version node)))))
+
+(define (assert-node-has-guix node name)
+  "Bail out if NODE lacks the (guix) module, or if its daemon is not running."
+  (match (node-eval node
+                    '(begin
+                       (use-modules (guix))
+                       (with-store store
+                         (add-text-to-store store "test"
+                                            "Hello, build machine!"))))
+    ((? string? str)
+     (info (_ "Guix is usable on '~a' (test returned ~s)~%")
+           name str))
+    (x
+     (leave (_ "failed to use Guix module on '~a' (test returned ~s)~%")
+            name x))))
+
+(define %random-state
+  (delay
+    (seed->random-state (logxor (getpid) (car (gettimeofday))))))
+
+(define* (nonce #:optional (name (gethostname)))
+  (string-append name "-"
+                 (number->string (random 1000000 (force %random-state)))))
+
+(define (assert-node-can-import node name daemon-socket)
+  "Bail out if NODE refuses to import our archives."
+  (let ((session (node-session node)))
+    (with-store store
+      (let* ((item   (add-text-to-store store "export-test" (nonce)))
+             (remote (connect-to-remote-daemon session daemon-socket)))
+        (with-store local
+          (send-files local (list item) remote))
+
+        (if (valid-path? remote item)
+            (info (_ "'~a' successfully imported '~a'~%")
+                  name item)
+            (leave (_ "'~a' was not properly imported on '~a'~%")
+                   item name))))))
+
+(define (assert-node-can-export node name daemon-socket)
+  "Bail out if we cannot import signed archives from NODE."
+  (let* ((session (node-session node))
+         (remote  (connect-to-remote-daemon session daemon-socket))
+         (item    (add-text-to-store remote "import-test" (nonce name))))
+    (with-store store
+      (if (and (retrieve-files store (list item) remote)
+               (valid-path? store item))
+          (info (_ "successfully imported '~a' from '~a'~%")
+                item name)
+          (leave (_ "failed to import '~a' from '~a'~%")
+                 item name)))))
+
+(define (check-machine-availability machine-file pred)
+  "Check that each machine matching PRED in MACHINE-FILE is usable as a build
+machine."
+  (define (build-machine=? m1 m2)
+    (and (string=? (build-machine-name m1) (build-machine-name m2))
+         (= (build-machine-port m1) (build-machine-port m2))))
+
+  ;; A given build machine may appear several times (e.g., once for
+  ;; "x86_64-linux" and a second time for "i686-linux"); test them only once.
+  (let ((machines (filter pred
+                          (delete-duplicates (build-machines machine-file)
+                                             build-machine=?))))
+    (info (_ "testing ~a build machines defined in '~a'...~%")
+          (length machines) machine-file)
+    (let* ((names    (map build-machine-name machines))
+           (sockets  (map build-machine-daemon-socket machines))
+           (sessions (map open-ssh-session machines))
+           (nodes    (map make-node sessions)))
+      (for-each assert-node-repl nodes names)
+      (for-each assert-node-has-guix nodes names)
+      (for-each assert-node-can-import nodes names sockets)
+      (for-each assert-node-can-export nodes names sockets))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -634,6 +629,12 @@ defines a total order on machines.)"
   ;; seed file, and fails if it's owned by someone else.
   (and=> (passwd:dir (getpw (getuid)))
          (cut setenv "HOME" <>))
+
+  ;; We rely on protocol-level compression from libssh to optimize large data
+  ;; transfers.  Warn if it's missing.
+  (unless (zlib-support?)
+    (warning (_ "Guile-SSH lacks zlib support"))
+    (warning (_ "data transfers will *not* be compressed!")))
 
   (match args
     ((system max-silent-time print-build-trace? build-timeout)
@@ -660,6 +661,18 @@ defines a total order on machines.)"
                    (else
                     (leave (_ "invalid request line: ~s~%") line)))
              (loop (read-line)))))))
+    (("test" rest ...)
+     (with-error-handling
+       (let-values (((file pred)
+                     (match rest
+                       ((file regexp)
+                        (values file
+                                (compose (cut string-match regexp <>)
+                                         build-machine-name)))
+                       ((file) (values file (const #t)))
+                       (()     (values %machine-file (const #t)))
+                       (_      (leave (_ "wrong number of arguments~%"))))))
+         (check-machine-availability (or file %machine-file) pred))))
     (("--version")
      (show-version-and-exit "guix offload"))
     (("--help")

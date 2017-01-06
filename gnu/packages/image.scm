@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
@@ -7,7 +8,7 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
@@ -31,14 +32,18 @@
 (define-module (gnu packages image)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  ;; To provide gcc@5 and gcc@6, to work around <http://bugs.gnu.org/24703>.
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
@@ -59,6 +64,7 @@
 (define-public libpng
   (package
    (name "libpng")
+   (replacement libpng/fixed)
    (version "1.6.25")
    (source (origin
             (method url-fetch)
@@ -83,10 +89,19 @@ library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
 
+(define libpng/fixed
+  (package
+    (inherit libpng)
+    (source
+      (origin
+        (inherit (package-source libpng))
+        (patches (search-patches "libpng-CVE-2016-10087.patch"))))))
+
 (define-public libpng-1.2
   (package
     (inherit libpng)
-    (version "1.2.56")
+    (replacement #f)
+    (version "1.2.57")
     (source
      (origin
        (method url-fetch)
@@ -97,7 +112,7 @@ library.  It supports almost all PNG features and is extensible.")
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src"
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
-        (base32 "1ghd03p353x0vi4dk83n1nlldg11w7vqdk3f99rkgfb82ic59ki4"))))))
+        (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
 
 (define-public libjpeg
   (package
@@ -260,6 +275,9 @@ extracting icontainer icon files.")
                                              (assoc-ref %outputs "doc")
                                              "/share/doc/"
                                              ,name "-" ,version))))
+   ;; Build with a patched GCC to work around <http://bugs.gnu.org/24703>.
+   (native-inputs
+    `(("gcc@5" ,gcc-5)))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
@@ -321,28 +339,23 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
 (define-public leptonica
   (package
     (name "leptonica")
-    (version "1.72")
+    (version "1.74.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.leptonica.com/source/leptonica-"
-                           version ".tar.gz"))
+       (uri (string-append
+             "https://github.com/DanBloomberg/leptonica/archive/" version
+             ".tar.gz"))
+       (file-name (string-append "leptonica-" version ".tar.gz"))
        (sha256
-        (base32 "0mhzvqs0im04y1cpcc1yma70hgdac1frf33h73m9z3356bfymmbr"))
-       (modules '((guix build utils)))
-       ;; zlib and openjpg should be under Libs, not Libs.private.  See:
-       ;; https://code.google.com/p/tesseract-ocr/issues/detail?id=1436
-       (snippet
-        '(substitute* "lept.pc.in"
-           (("^(Libs\\.private: .*)@ZLIB_LIBS@(.*)" all pre post)
-            (string-append pre post))
-           (("^(Libs\\.private: .*)@JPEG_LIBS@(.*)" all pre post)
-            (string-append pre post))
-           (("^Libs: .*" all)
-            (string-append all " @ZLIB_LIBS@ @JPEG_LIBS@"))))))
+        (base32 "0i2a4vx9gizki0wgmv03xjz8j9d8agkvbag1a8m4kcw4asd4p87g"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gnuplot" ,gnuplot)))           ;needed for test suite
+     `(("gnuplot" ,gnuplot)             ;needed for test suite
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("giflib" ,giflib)
        ("libjpeg" ,libjpeg)
@@ -350,31 +363,22 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)))
     (propagated-inputs
+     ;; Linking a program with leptonica also requires these.
      `(("openjpeg" ,openjpeg)
        ("zlib" ,zlib)))
     (arguments
-     '(#:parallel-tests? #f ; XXX: cause fpix1_reg to fail
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         ;; Prevent make from trying to regenerate config.h.in.
-         (add-after
-          'unpack 'set-config-h-in-file-time
-          (lambda _
-            (set-file-time "config/config.h.in" (stat "configure"))))
-         (add-after
-          'unpack 'patch-reg-wrapper
-          (lambda _
-            (substitute* "prog/reg_wrapper.sh"
-              ((" /bin/sh ")
-               (string-append " " (which "sh") " "))
-              (("which gnuplot") (which "gnuplot")))))
-         (add-before
-          'check 'disable-failing-tests
-          ;; XXX: 2 of 9 tests from webpio_reg fails.
-          (lambda _
-            (substitute* "prog/webpio_reg.c"
-              ((".*DoWebpTest2.* 90.*") "")
-              ((".*DoWebpTest2.* 100.*") "")))))))
+         (add-after 'unpack 'autogen
+           (lambda _
+             (zero? (system* "sh" "autobuild"))))
+         (add-after 'unpack 'patch-reg-wrapper
+           (lambda _
+             (substitute* "prog/reg_wrapper.sh"
+               ((" /bin/sh ")
+                (string-append " " (which "sh") " "))
+               (("which gnuplot")
+                "true")))))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description
@@ -417,6 +421,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
+    (replacement openjpeg-2.1.2)
     (version "2.1.1")
     (source
       (origin
@@ -453,9 +458,27 @@ error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
+(define openjpeg-2.1.2
+  (package
+    (inherit openjpeg)
+    (name "openjpeg")
+    (version "2.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/uclouvain/openjpeg/archive/v"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
+        (patches
+          (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"))))))
+
 (define-public openjpeg-1
   (package (inherit openjpeg)
     (name "openjpeg")
+    (replacement #f)
     (version "1.5.2")
     (source
      (origin
@@ -557,7 +580,7 @@ compose, and analyze GIF images.")
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("bzip2" ,bzip2)))
-    (home-page "http://sourceforge.net/projects/enlightenment/")
+    (home-page "https://sourceforge.net/projects/enlightenment/")
     (synopsis
      "Loading, saving, rendering and manipulating image files")
     (description
@@ -763,6 +786,39 @@ channels.")
      "Libmng is the MNG (Multiple-image Network Graphics) reference library.")
     (license license:bsd-3)))
 
+(define-public exiv2
+  (package
+    (name "exiv2")
+    (version "0.25")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append "http://www.exiv2.org/exiv2-"
+                                       version ".tar.gz")
+                        (string-append "https://fossies.org/linux/misc/exiv2-"
+                                       version ".tar.gz")))
+             (sha256
+              (base32
+               "197g6vgcpyf9p2cwn5p5hb1r714xsk1v4p96f5pv1z8mi9vzq2y8"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))                    ; no `check' target
+    (propagated-inputs
+     `(("expat" ,expat)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "http://www.exiv2.org/")
+    (synopsis "Library and command-line utility to manage image metadata")
+    (description
+     "Exiv2 is a C++ library and a command line utility to manage image
+metadata.  It provides fast and easy read and write access to the Exif, IPTC
+and XMP metadata of images in various formats.")
+
+    ;; Files under `xmpsdk' are a copy of Adobe's XMP SDK, licensed under the
+    ;; 3-clause BSD license: <http://www.adobe.com/devnet/xmp/sdk/eula.html>.
+    ;; The core is GPLv2+:
+    ;;   <https://launchpad.net/ubuntu/precise/+source/exiv2/+copyright>.
+    (license license:gpl2+)))
+
 (define-public devil
   (package
     (name "devil")
@@ -819,15 +875,15 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "1.900.29")
+    (version "2.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "1h1575wdzq1p7y2xvy1gbiypai1iils5awhy4gadr78qpb9ykrra"))))
-    (build-system gnu-build-system)
+                "1s022mfxyw8jw60fgyj60lbm9h6bc4nk2751b0in8qsjwcl59n2l"))))
+    (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
@@ -992,3 +1048,43 @@ also converts external formats (BMP, GIF, PNM and TIFF) to optimized
 PNG, and performs PNG integrity checks and corrections.")
     (home-page "http://optipng.sourceforge.net/")
     (license license:zlib)))
+
+(define-public libjpeg-turbo
+  (package
+    (name "libjpeg-turbo")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v365hm6z6lddcqagjj15wflk66rqyw75m73cqzl65rh4lyrshj1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("nasm" ,nasm)))
+    (arguments
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env-on-MIPS
+           ;; This is borrowed from Debian's patchset for libjpeg
+           ;; https://sources.debian.net/data/main/libj/libjpeg-turbo/1:1.5.1-2/debian/patches/0001-Declare-env-on-MIPS-on-first-use-Courtesy-of-Aurelie.patch
+           (lambda _
+             (substitute* "simd/jsimd_mips.c"
+               (("env = getenv\\(\"JSIMD_FORCEDSPR2")
+                "char *env = getenv(\"JSIMD_FORCEDSPR2"))
+             #t)))))
+    (home-page "http://www.libjpeg-turbo.org/")
+    (synopsis "SIMD-accelerated JPEG image handling library")
+    (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
+JPEG compression and decompression using SIMD instructions: MMX on x86, SSE2 on
+x86-64, NEON on ARM, and AltiVec on PowerPC processors.  Even on other systems,
+its highly-optimized Huffman coding routines allow it to outperform libjpeg by
+a significant amount.
+libjpeg-turbo implements both the traditional libjpeg API and the less powerful
+but more straightforward TurboJPEG API, and provides a full-featured Java
+interface.  It supports color space extensions that allow it to compress from
+and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
+    (license (list license:bsd-3        ; jsimd*.[ch] and most of simd/
+                   license:ijg))))      ; the rest

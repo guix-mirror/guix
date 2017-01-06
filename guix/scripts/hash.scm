@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -116,6 +116,9 @@ and 'hexadecimal' can be used as well).\n"))
     (case (stat:type stat)
       ((directory)
        (member (basename file) '(".bzr" ".git" ".hg" ".svn" "CVS")))
+      ((regular)
+       ;; Git sub-modules have a '.git' file that is a regular text file.
+       (string=? (basename file) ".git"))
       (else
        #f)))
 

@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -92,7 +94,9 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0n2yx3gjlpr4kgqx845fj6amnmg25r2l6a7rzab5hxnpmar985hc"))))
+               "0n2yx3gjlpr4kgqx845fj6amnmg25r2l6a7rzab5hxnpmar985hc"))
+             (patches (search-patches "httpd-CVE-2016-8740.patch"))
+             (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -200,6 +204,68 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;   * The 'nginx-development-kit' module is mostly covered by bsd-3,
     ;;     except for two source files which are bsd-4 licensed.
     (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
+
+(define-public fcgi
+  (package
+    (name "fcgi")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Upstream has disappeared
+       (uri (string-append "https://sources.archlinux.org/other/packages/fcgi/"
+                           "fcgi-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f857wnl1d6jfrgfgfpz3zdaj8fch3vr13mnpcpvy8bang34bz36"))
+       (patches (search-patches "fcgi-2.4.0-poll.patch"
+                                "fcgi-2.4.0-gcc44-fixes.patch"))))
+    (build-system gnu-build-system)
+    ;; Parallel building is not supported.
+    (arguments `(#:parallel-build? #f))
+    (home-page "http://www.fastcgi.com")
+    (synopsis "Language-independent, high-performant extension to CGI")
+    (description "FastCGI is a language independent, scalable extension to CGI
+that provides high performance without the limitations of server specific
+APIs.")
+    ;; This package is released under the Open Market License, a variant of
+    ;; the Expat license, incompatible with the GPL.
+    (license (l:non-copyleft "file://LICENSE.TERMS"))))
+
+(define-public fcgiwrap
+  (package
+    (name "fcgiwrap")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gnosek/fcgiwrap/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07y6s4mm86cv7p1ljz94sxnqa89y9amn3vzwsnbq5hrl4vdy0zac"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fcgi" ,fcgi)))
+    (home-page "https://nginx.localdomain.pl/wiki/FcgiWrap")
+    (synopsis "Simple server for running CGI applications over FastCGI")
+    (description "Fcgiwrap is a simple server for running CGI applications
+over FastCGI.  It hopes to provide clean CGI support to Nginx (and other web
+servers that may need it).")
+    (license l:expat)))
 
 (define-public starman
   (package
@@ -461,7 +527,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.15.0")
+    (version "0.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -469,7 +535,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "0wm9i3qshfdasd5s5nrdihl4f5c6zrd1nkqrqjnh7zhhv1an755m"))))
+                "1srrd0iyz9p5xgl8q0hrzqg7p8cl9ar0cdb8f54hls4kllf3f80l"))))
     (build-system gnu-build-system)
     (inputs
      `(("icu4c" ,icu4c)
@@ -603,6 +669,34 @@ unavailable.")
 server).  It was primarily designed to be used by one person or a small group
 of people.")
     (license l:expat)))
+
+(define-public wwwoffle
+  (package
+    (name "wwwoffle")
+    (version "2.9j")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.gedanken.org.uk/software/"
+                                  "wwwoffle/download/wwwoffle-"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "1ihil1xq9dp21hf108khxbw6f3baq0w5c0j3af038y6lkmad4vdi"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-gnutls")
+       #:tests? #f))                         ; no test target
+    (native-inputs `(("flex" ,flex)))
+    (inputs `(("gnutls" ,gnutls)
+              ("libcrypt", libgcrypt)))
+    (home-page "https://www.gedanken.org.uk/software/wwwoffle/")
+    (synopsis "Caching web proxy optimized for intermittent internet links")
+    (description "WWWOFFLE is a proxy web server that is especially good for
+intermittent internet links.  It can cache HTTP, HTTPS, FTP, and finger
+protocols, and supports browsing and requesting pages while offline, indexing,
+modifying pages and incoming and outgoing headers, monitoring pages for
+changes, and much more.")
+    (license l:gpl2+)))
 
 (define-public libyaml
   (package
@@ -827,7 +921,7 @@ language known as SASS.")
 (define-public perl-apache-logformat-compiler
   (package
     (name "perl-apache-logformat-compiler")
-    (version "0.32")
+    (version "0.33")
     (source
      (origin
        (method url-fetch)
@@ -835,7 +929,7 @@ language known as SASS.")
                            "Apache-LogFormat-Compiler-" version ".tar.gz"))
        (sha256
         (base32
-         "0zyx4r2bxc6d48m70fhcq80nw0q9wnfz6qgn1g0r6bigqgdjq4dw"))))
+         "17blk3zhp05azgypn25ydxf3d7fyfgr9bxyiv7xkchhqma96vwqv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-http-message" ,perl-http-message)
@@ -902,26 +996,29 @@ action, which will forward to the first available view.")
 (define-public perl-catalyst-action-rest
   (package
     (name "perl-catalyst-action-rest")
-    (version "1.17")
+    (version "1.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+              (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                                   "Catalyst-Action-REST-" version ".tar.gz"))
               (sha256
                (base32
-                "1rnxmsd9dsqz4xc0g9ynafxi934jwp0nixbg92q3bc2h46xcccy8"))))
+                "1mpa64p61f3dp24xnhdraswch4sqj5vyv1iivcvvh5h0xi0haiy0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-config-general" ,perl-config-general)
+       ("perl-cpanel-json-xs" ,perl-cpanel-json-xs)
        ("perl-libwww" ,perl-libwww)
        ("perl-moose" ,perl-moose)
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-params-validate" ,perl-params-validate)
-       ("perl-uri-find" ,perl-uri-find)))
+       ("perl-uri-find" ,perl-uri-find)
+       ("perl-xml-simple" ,perl-xml-simple)))
     (home-page "http://search.cpan.org/dist/Catalyst-Action-REST")
     (synopsis "Automated REST Method Dispatching")
     (description "This Action handles doing automatic method dispatching for
@@ -1110,7 +1207,7 @@ Models.")
 (define-public perl-catalyst-plugin-accesslog
   (package
     (name "perl-catalyst-plugin-accesslog")
-    (version "1.05")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -1118,14 +1215,13 @@ Models.")
                            "Catalyst-Plugin-AccessLog-" version ".tar.gz"))
        (sha256
         (base32
-         "0hqvckaw91q5yc25a33bp0d4qqxlgkp7rxlvi8n8svxd1406r55s"))))
+         "0811rj45q4v2y8wka3wb9d5m4vbyhcmkvddf2wz4x69awzjbhgc7"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-datetime" ,perl-datetime)
        ("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (arguments `(#:tests? #f))          ;Unexpected http responses
     (home-page "http://search.cpan.org/dist/Catalyst-Plugin-AccessLog")
     (synopsis "Request logging from within Catalyst")
     (description "This Catalyst plugin enables you to create \"access logs\"
@@ -1251,7 +1347,7 @@ formats.")
 (define-public perl-catalyst-plugin-session
   (package
     (name "perl-catalyst-plugin-session")
-    (version "0.39")
+    (version "0.40")
     (source
      (origin
        (method url-fetch)
@@ -1259,7 +1355,7 @@ formats.")
                            "Catalyst-Plugin-Session-" version ".tar.gz"))
        (sha256
         (base32
-         "0m4a003qgz7848iyckwbigg2vw3kmfxggh1razrnzxrbz3n6x5gi"))))
+         "171vi9xcl775scjaw4fcfdmqvz0rb1nr0xxg2gb3ng6bjzpslhgv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -1269,6 +1365,7 @@ formats.")
        ("perl-moose" ,perl-moose)
        ("perl-moosex-emulate-class-accessor-fast"
         ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-mro-compat" ,perl-mro-compat)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-object-signature" ,perl-object-signature)
        ("perl-test-www-mechanize-psgi" ,perl-test-www-mechanize-psgi)))
@@ -1517,7 +1614,7 @@ table based report in a variety of formats (CSV, HTML, etc.).")
 (define-public perl-catalyst-view-json
   (package
     (name "perl-catalyst-view-json")
-    (version "0.35")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
@@ -1525,7 +1622,7 @@ table based report in a variety of formats (CSV, HTML, etc.).")
                            "Catalyst-View-JSON-" version ".tar.gz"))
        (sha256
         (base32
-         "184pyghlrkl7p387bnyvswi2d9myvdg4v3lax6xrd59shskvpmkm"))))
+         "0x943j1n2r0zqanyzdrs1xsnn8ayn2wqskn7h144xcqa6v6gcisl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-yaml" ,perl-yaml)))
@@ -1542,19 +1639,20 @@ stash data in JSON format.")
 (define-public perl-catalyst-view-tt
   (package
     (name "perl-catalyst-view-tt")
-    (version "0.42")
+    (version "0.44")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Catalyst-View-TT-" version ".tar.gz"))
      (sha256
       (base32
-       "18ciik9fqaqjfasa9wicbjrsl3gjhjc15xzaj3rif57an25cl178"))))
+       "06d1zg4nbb6kcyjbnyxrkf8z4zlscxr8650d94f7187jygfl8rvh"))))
   (build-system perl-build-system)
   (propagated-inputs
    `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
      ("perl-class-accessor" ,perl-class-accessor)
+     ("perl-data-dump" ,perl-data-dump)
      ("perl-mro-compat" ,perl-mro-compat)
      ("perl-path-class" ,perl-path-class)
      ("perl-template-timer" ,perl-template-timer)
@@ -1651,7 +1749,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.25")
+    (version "4.35")
     (source
      (origin
        (method url-fetch)
@@ -1659,7 +1757,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "06hk9zzvlix1yi95wlkb1ykdxgl6lscm7452gkwr2snsb8iybczg"))))
+         "07gwnlc7vq58fjwmfsrv0hfyirqqdrpjhf89caq34rjrkz2wsd0b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -1768,7 +1866,7 @@ for files and urls.")
 (define-public perl-encode-locale
   (package
     (name "perl-encode-locale")
-    (version "1.03")
+    (version "1.05")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1776,7 +1874,7 @@ for files and urls.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0m9d1vdphlyzybgmdanipwd9ndfvyjgk3hzw250r299jjgh3fqzp"))))
+               "1h8fvcdg3n20c2yp7107yhdkkx78534s9hnvn7ps8hpmf4ks0vqp"))))
     (build-system perl-build-system)
     (license (package-license perl))
     (synopsis "Perl locale encoding determination")
@@ -1843,7 +1941,7 @@ which can be used to parse directory listings.")
 (define-public perl-finance-quote
   (package
    (name "perl-finance-quote")
-   (version "1.37")
+   (version "1.38")
    (source
     (origin
       (method url-fetch)
@@ -1851,7 +1949,7 @@ which can be used to parse directory listings.")
                           "Finance-Quote-" version ".tar.gz"))
       (sha256
        (base32
-        "1b6pbh7f76fb5sa4f0lhx085xy55pprz5v7z7li7pqiyw7i4f4bf"))
+        "0zhqb27y4vdxn476s2kwm9zl2f970yjcyyybnjm9b406krr2fm59"))
       (patches (search-patches
                 "perl-finance-quote-unuse-mozilla-ca.patch"))))
    (build-system perl-build-system)
@@ -2019,7 +2117,7 @@ representing, creating, and extracting information from HTML syntax trees.")
 (define-public perl-html-parser
   (package
     (name "perl-html-parser")
-    (version "3.71")
+    (version "3.72")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2027,10 +2125,11 @@ representing, creating, and extracting information from HTML syntax trees.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "00nqzdgl7c3jilx7mil19k5jwcw3as14pvkjgxi97zyk94vqp4dy"))))
+               "12v05ywlnsi9lc17z32k9jxx3sj1viy7y1wpl7n4az76v7hwfa7c"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-html-tagset" ,perl-html-tagset)))
+     `(("perl-html-tagset" ,perl-html-tagset)
+       ("perl-http-message" ,perl-http-message)))
     (license (package-license perl))
     (synopsis "Perl HTML parser class")
     (description
@@ -2089,7 +2188,7 @@ you to separate design from the data.")
 (define-public perl-http-body
   (package
     (name "perl-http-body")
-    (version "1.19")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
@@ -2097,7 +2196,7 @@ you to separate design from the data.")
                            "HTTP-Body-" version ".tar.gz"))
        (sha256
         (base32
-         "0ahhksj0zg6wq6glpjkxdr3byd5riwvq2f5aw21n1jcsl71nll01"))))
+         "15vj488i62mdp4ps9k77h39prj70i7anb6b0j8nm7l9vbdc2q3gw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)))
@@ -2114,7 +2213,7 @@ and multipart/form-data.")
 (define-public perl-http-cookiejar
   (package
     (name "perl-http-cookiejar")
-    (version "0.006")
+    (version "0.008")
     (source
      (origin
        (method url-fetch)
@@ -2122,12 +2221,13 @@ and multipart/form-data.")
                            "HTTP-CookieJar-" version ".tar.gz"))
        (sha256
         (base32
-         "0c7l29ak6ba2j006ca00vnkxpyc1fvpikydjvsb24s50zf1mv7b2"))))
+         "0rfw6avcralggs7bf7n86flvhaahxjnqzvpwszp0sk4z4wwy01wm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
        ("perl-test-requires" ,perl-test-requires)
-       ("perl-time-mock" ,perl-time-mock)))
+       ("perl-time-mock" ,perl-time-mock)
+       ("perl-uri" ,perl-uri)))
     (inputs
      `(("perl-time-local" ,perl-time-local)
        ("perl-http-date" ,perl-http-date)))
@@ -2207,18 +2307,19 @@ used by the HTTP protocol (and then some more).")
 (define-public perl-http-message
   (package
     (name "perl-http-message")
-    (version "6.06")
+    (version "6.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Message-"
+                   "mirror://cpan/authors/id/E/ET/ETHER/HTTP-Message-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0qxdrcak97azjvqyx1anpb2ky6vp6vc37x0wcfjdqfajkh09fzh8"))))
+               "06yq6cjx4vzl4if4ykap77xsrrd8aa7ish90k7cqi8g6g83nicz7"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-date" ,perl-http-date)
+     `(("perl-encode-locale" ,perl-encode-locale)
+       ("perl-http-date" ,perl-http-date)
        ("perl-io-html" ,perl-io-html)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
        ("perl-uri" ,perl-uri)))
@@ -2226,7 +2327,7 @@ used by the HTTP protocol (and then some more).")
     (synopsis "Perl HTTP style message")
     (description
      "An HTTP::Message object contains some headers and a content body.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Message/")))
+    (home-page "http://search.cpan.org/~ether/HTTP-Message/")))
 
 (define-public perl-http-negotiate
   (package
@@ -2322,15 +2423,15 @@ environment from an HTTP::Request.")
 (define-public perl-http-server-simple
   (package
     (name "perl-http-server-simple")
-    (version "0.44")
+    (version "0.51")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JE/JESSE/"
+       (uri (string-append "mirror://cpan/authors/id/B/BP/BPS/"
                            "HTTP-Server-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "05klpfkss2a6i5ihmvcm27fyar0f2v4ispg2f49agab3va1gix6g"))))
+         "1yvd2g57z2kq00q5i3zzfi15k98qgbif3vghjsda6v612agmrp5r"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cgi" ,perl-cgi)))
@@ -2348,7 +2449,7 @@ http-based UI to your existing tools.")
 (define-public perl-http-tiny
   (package
     (name "perl-http-tiny")
-    (version "0.053")
+    (version "0.070")
     (source
      (origin
        (method url-fetch)
@@ -2356,12 +2457,13 @@ http-based UI to your existing tools.")
                            "HTTP-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "1bwy31xrcz5zfx1n3vc50vj1aqvzn5ccr7lgacl8wmi03a6w2af2"))))
+         "0cvp5yqrni6qydpsa8fpkbm82zfwmy9js8jsvyj8gs3dx78qbwvl"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-http-cookiejar" ,perl-http-cookiejar)
        ("perl-io-socket-ip" ,perl-io-socket-ip)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-net-ssleay" ,perl-net-ssleay)))
     (home-page "http://search.cpan.org/dist/HTTP-Tiny")
     (synopsis "HTTP/1.1 client")
@@ -2442,7 +2544,7 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.13")
+    (version "6.15")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2450,7 +2552,7 @@ select or poll.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1cpqjl59viw50bnbdyn8xzrwzg7g54b2rszw0fifacqrppp17gaz"))))
+               "08l3mpgcvm4ipn1zggymqgk402apf35xyds43i8c07hvq92rsd3g"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-encode-locale" ,perl-encode-locale)
@@ -2458,8 +2560,11 @@ select or poll.")
        ("perl-html-parser" ,perl-html-parser)
        ("perl-http-cookies" ,perl-http-cookies)
        ("perl-http-daemon" ,perl-http-daemon)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
        ("perl-http-negotiate" ,perl-http-negotiate)
        ("perl-net-http" ,perl-net-http)
+       ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)))
     (license (package-license perl))
     (synopsis "Perl modules for the WWW")
@@ -3172,11 +3277,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                    l:freebsd-doc)))) ; documentation
 
 (define-public python2-feedparser
-  (let ((base (package-with-python2
-               (strip-python2-variant python-feedparser))))
-    (package (inherit base)
-             (native-inputs
-              `(("python2-setuptools" ,python2-setuptools))))))
+  (package-with-python2 python-feedparser))
 
 (define-public r-httpuv
   (package
@@ -3205,13 +3306,13 @@ particularly easy to create complete web applications using httpuv alone.")
 (define-public r-jsonlite
   (package
     (name "r-jsonlite")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "jsonlite" version))
               (sha256
                (base32
-                "0mrfzh0mxxrhqdmxai434wvyd7skkw28vxr7pyls19yrg941g6r3"))))
+                "0k966hzp3qnwck7fgd76w49zrz39s7pqyywws17bhbcd8rh4csyb"))))
     (build-system r-build-system)
     (home-page "http://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
@@ -3229,13 +3330,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "1fkqf5ynd1g0932qwv5nr70bw42m8vxpc9rhi0qxmdamwqcw8qjn"))))
+                "1ixcl9xjc1k9zvl6v6bsw4kpramr1h53b4s46qg8kahkqy6kqd8a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -3288,13 +3389,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "1xh8aiaci5hi3r67ym7r37hm89m9vzywk292avnmaj125kq7w1d0"))))
+                "1df3pwl34rvdbr9sgr5h27q9bmqpckvpwq4frl3d1v614y3vfclj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -3340,13 +3441,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "0hyvyjzf5ja7kfhzmlfgp86hg1lxrriiwbnr6pxabwwslswj3cmj"))))
+                "0gbw5l0wnsw26fbr08gj9vgxrzxg8axvqxfshmd8g9khpgbdl0gr"))))
     (build-system r-build-system)
     (arguments
      `(#:phases

@@ -231,6 +231,85 @@ score, keyboard, guitar, drum and controller views.")
 many input formats and provides a customisable Vi-style user interface.")
      (license license:gpl2+)))
 
+(define-public denemo
+  (package
+    (name "denemo")
+    (version "2.0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/denemo/denemo-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1a7g38695g7jjypx25qp0dx0asrh72xwdj0mdhmb9pfyzlppq0wh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Denemo's documentation says to use this command to run its
+           ;; testsuite.
+           (lambda _
+             (zero? (system* "make" "-C" "tests" "check"))))
+         (add-before 'build 'set-lilypond
+           ;; This phase sets the default path for lilypond to its current
+           ;; location in the store.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((lilypond (string-append (assoc-ref inputs "lilypond")
+                                             "/bin/lilypond")))
+               (substitute* "src/core/prefops.c"
+                 (("g_string_new \\(\"lilypond\"\\);")
+                  (string-append "g_string_new (\""
+                                 lilypond
+                                 "\");"))))
+             #t))
+         (add-after 'install 'correct-filename
+           ;; "graft-derivation/shallow" from the (guix grafts) module runs in
+           ;; the C locale, expecting file names to be ASCII encoded. This
+           ;; phase renames a filename with a Unicode character in it to meet
+           ;; the aforementioned condition.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (chdir (string-append
+                       out
+                       "/share/denemo/templates/instruments/woodwind"))
+               (rename-file "Clarinet in B♭.denemo"
+                            "Clarinet in Bb.denemo"))
+             #t)))))
+    (native-inputs
+     `(("glib:bin", glib "bin")   ; for gtester
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("aubio" ,aubio)
+       ("evince" ,evince)
+       ("fftw" ,fftw)
+       ("fluidsynth" ,fluidsynth)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtk-doc" ,gtk-doc)
+       ("gtksourceview" ,gtksourceview)
+       ("guile" ,guile-2.0)
+       ("intltool" ,intltool)
+       ("librsvg" ,librsvg)
+       ("libsndfile" ,libsndfile)
+       ("libtool" ,libtool)
+       ("libxml2" ,libxml2)
+       ("lilypond", lilypond)
+       ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)
+       ("rubberband" ,rubberband)))
+    (synopsis "Graphical music notation, front-end to GNU Lilypond")
+    (description
+     "GNU Denemo is a music notation editor that provides a convenient
+interface to the powerful music engraving program Lilypond.  Music can be
+typed in using the computer keyboard, played in using a MIDI keyboard, or
+even input via a microphone connected to the sound card.  The final product
+is publication-quality music notation that is continuously generated in the
+background while you work.")
+    (home-page "http://www.denemo.org")
+    (license license:gpl3+)))
+
 (define-public hydrogen
   (package
     (name "hydrogen")
@@ -588,11 +667,12 @@ Guile.")
 
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
-  ;; system, so we take the last commit affecting the "sequencer" directory.
-  (let ((commit "1d9bd576f6bf7ea240af5f7a60260592750af0dd"))
+  ;; system, so we take the last commit.
+  (let ((commit "a22f33f486a5c6f75b60e36f66504c036c0f6f8c")
+        (revision "2"))
     (package
       (name "non-sequencer")
-      (version (string-append "1.9.5-" (string-take commit 7)))
+      (version (string-append "1.9.5-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -600,7 +680,7 @@ Guile.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0pkkw8q6d55j38xm7r4rwpdv1wy00a44h8c4wrn7vbgpq9nij46y"))
+                  "09q5x8i4f8mqnl8w6xnsq5zriy4bzdl4x2vq9n34a433rfrk84bg"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system waf-build-system)
       (arguments
@@ -637,6 +717,28 @@ MIDI I/O and the NTK GUI toolkit for its user interface.  Everything in Non
 Sequencer happens on-line, in real-time.  Music can be composed live, while the
 transport is rolling.")
       (license license:gpl2+))))
+
+(define-public non-session-manager
+  (package (inherit non-sequencer)
+    (name "non-session-manager")
+    (arguments
+     (substitute-keyword-arguments (package-arguments non-sequencer)
+       ((#:configure-flags flags)
+        `(cons "--project=session-manager"
+               (delete "--project=sequencer" ,flags)))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("ntk" ,ntk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://non.tuxfamily.org/nsm/")
+    (synopsis "Audio session management")
+    (description
+     "The Non Session Manager is an API and an implementation for audio
+session management.  NSM clients use a well-specified OSC protocol to
+communicate with the session management daemon.")
+    (license license:gpl2+)))
 
 (define-public solfege
   (package
@@ -1090,7 +1192,6 @@ Laurens Hammond and Don Leslie.")
      `(("rapicorn" ,rapicorn)
        ("guile" ,guile-1.8)
        ("python" ,python-2)
-       ("cython" ,python2-cython)
        ("libgnomecanvas" ,libgnomecanvas)
        ("libogg" ,libogg)
        ("libmad" ,libmad)
@@ -1101,6 +1202,7 @@ Laurens Hammond and Don Leslie.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")
+       ("cython" ,python2-cython)
        ("perl" ,perl)
        ("perl-xml-parser" ,perl-xml-parser)))
     (home-page "https://testbit.eu/wiki/Beast_Home")
@@ -1382,10 +1484,10 @@ using a system-independent interface.")
              #t)))))
     (inputs
      `(("portmidi" ,portmidi)
-       ("alsa-lib" ,alsa-lib)
-       ("python-cython" ,python-cython)))
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("python-cython" ,python-cython)
+       ("unzip" ,unzip)))
     (home-page "http://portmedia.sourceforge.net/portmidi/")
     (synopsis "Python bindings to PortMidi")
     (description
@@ -1405,6 +1507,7 @@ using a system-independent interface.")
                (base32
                 "1rnk8i8dlshzx16n2qxcsqcs7kywgyazzyzw2vy4vp2gsm9vs9ml"))))
     (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; no tests included
     (inputs
      `(("lilypond" ,lilypond)
        ("portmidi" ,portmidi)
@@ -1474,7 +1577,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "3.0.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1482,7 +1585,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "0p640hlw28264nzrnd2lm4bi5snas4fvh80p8lpxvph2hjw3sncl"))))
+                "1qijvlbv41lnqaqbp6gh1i42xzf1syviyxz8wr39xbz55cw7y0d8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1520,7 +1623,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.4.1")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1528,7 +1631,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "133sx42wb66g803pcrgdwph40wh94knvab3yfqkgm0001jv4v14y"))))
+                "10s1i18xlmvqfrnr0zn2mj2b28i7p62dlqzzzkmpaapqj1gsgpz5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1673,6 +1776,48 @@ JACK for audio and ALSA sequencer for MIDI as multimedia infrastructures and
 follows a traditional multi-track tape recorder control paradigm.")
     (license license:gpl2+)))
 
+(define-public ams-lv2
+  (package
+    (name "ams-lv2")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/blablack/ams-lv2/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1392spswkhfd38fggf584wb3m8aqpg7csfrs9zxnzyvhgmp0fgqk"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sse-flags
+           (lambda* (#:key system #:allow-other-keys)
+             (when (not (or (string-prefix? "x86_64" system)
+                            (string-prefix? "i686" system)))
+               (substitute* "wscript"
+                 (("'-msse', '-mfpmath=sse', ") ""))
+             #t))))
+       #:tests? #f)) ; no tests
+    (inputs
+     `(("lv2" ,lv2)
+       ("lvtk" ,lvtk)
+       ("gtkmm" ,gtkmm-2)
+       ("gtk" ,gtk+-2)
+       ("cairo" ,cairo)
+       ("fftw" ,fftw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://objectivewave.wordpress.com/ams-lv2/")
+    (synopsis "Port of Alsa Modular Synth internal modules into LV2")
+    (description "This set of LV2 plugins is a port of the internal modules
+found in Alsa Modular Synth.  These plugins are used to create modular
+synthesizers and contain: VCO, VCF, VCA, LFO, slew limiter, envelopes, sample
+and hold, etc.")
+    (license license:gpl2)))
+
 (define-public gxtuner
   (package
     (name "gxtuner")
@@ -1744,8 +1889,8 @@ analogue-like user interface.")
                #t)))))
       (inputs
        `(("lilv" ,lilv)
-         ("fftw" ,fftw)
-         ("fftwf" ,fftwf)
+         ("fftw" ,fftw-with-threads)
+         ("fftwf" ,fftwf-with-threads)
          ("lv2" ,lv2)
          ("jack" ,jack-1)
          ("readline" ,readline)))
@@ -1796,14 +1941,16 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public python-mutagen
   (package
     (name "python-mutagen")
-    (version "1.31")
+    (version "1.35.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mutagen" version))
               (sha256
                (base32
-                "16fnnhspniac2i7qswxafawsh2x2a803hmc6bn9k1zl5fxq1380a"))))
+                "0klk68c1n3285vvm2xzk8ii7mlqp1dxii04askan0gi1wlpagka9"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://bitbucket.org/lazka/mutagen")
     (synopsis "Read and write audio tags")
     (description "Mutagen is a Python module to handle audio metadata.  It
@@ -1821,14 +1968,18 @@ streams on an individual packet/page level.")
 (define-public python-musicbrainzngs
   (package
     (name "python-musicbrainzngs")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "musicbrainzngs" version))
               (sha256
                (base32
-                "12f48llmdf5rkiqxcb70k2k1dmhm8byq0ifazvlrca8dfnmqh4r8"))))
+                "1dddarpjawryll2wss65xq3v9q8ln8dan7984l5dxzqx88d2dvr8"))))
     (build-system python-build-system)
+    (arguments
+     '(;; The tests fail suffer from race conditions:
+       ;; https://github.com/alastair/python-musicbrainzngs/issues/211
+       #:tests? #f))
     (home-page "https://python-musicbrainzngs.readthedocs.org/")
     (synopsis "Python bindings for MusicBrainz NGS webservice")
     (description "Musicbrainzngs implements Python bindings of the MusicBrainz
@@ -1855,7 +2006,6 @@ MusicBrainz database.")
      `(;; Python 3 is not supported:
        ;; https://github.com/echonest/pyechonest/issues/42
        #:python ,python-2))
-    (native-inputs `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://github.com/echonest/pyechonest")
     (synopsis "Python interface to The Echo Nest APIs")
     (description "Pyechonest is a Python library for the Echo Nest API.  With
@@ -1877,13 +2027,13 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "1.5.1")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "10znd9xr1vs2ix519jkz3ccm90zciaddcdr2w2wrrh2jyy3bc59a"))))
+                "0bml11gfkxqd3i2jxkn5k2xllc4rvxjcyhs8an05gcyy1zp2bwvb"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
@@ -1898,58 +2048,50 @@ detailed track info including timbre, pitch, rhythm and loudness information.
     (synopsis "Python interface to Last.fm and Libre.fm")
     (description "A Python interface to Last.fm and other API-compatible
 websites such as Libre.fm.")
-    (license license:asl2.0)
-    (properties `((python2-variant . ,(delay python2-pylast))))))
+    (license license:asl2.0)))
 
 (define-public python2-pylast
-  (let ((pylast (package-with-python2
-                 (strip-python2-variant python-pylast))))
-    (package (inherit pylast)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs pylast))))))
+  (package-with-python2 python-pylast))
 
 (define-public beets
   (package
     (name "beets")
-    (version "1.3.19")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "1vi1dh3fr554bnm8y9pjy09hblw18v6cl2jppzwlp72afri1w93b"))))
+                "0sna2hx8sdaa36jnvw5a7m31wzfm717lw2ixh906fsfp43i74k5m"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2 is supported
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
            (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp"))))
          (replace 'check
            (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
-     `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
-       ("python2-flask" ,python2-flask)
-       ("python2-setuptools" ,python2-setuptools)
-       ("python2-mock" ,python2-mock)
-       ("python2-mpd2" ,python2-mpd2)
-       ("python2-nose" ,python2-nose)
-       ("python2-pathlib" ,python2-pathlib)
-       ("python2-pyxdg" ,python2-pyxdg)
-       ("python2-pyechonest" ,python2-pyechonest)
-       ("python2-pylast" ,python2-pylast)
-       ("python2-rarfile" ,python2-rarfile)
-       ("python2-responses" ,python2-responses)))
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-flask" ,python-flask)
+       ("python-mock" ,python-mock)
+       ("python-mpd2" ,python-mpd2)
+       ("python-nose" ,python-nose)
+       ("python-pathlib" ,python-pathlib)
+       ("python-pyxdg" ,python-pyxdg)
+       ("python-pylast" ,python-pylast)
+       ("python-rarfile" ,python-rarfile)
+       ("python-responses" ,python-responses)))
     ;; TODO: Install optional plugins and dependencies.
     (inputs
-     `(("python2-enum34" ,python2-enum34)
-       ("python2-jellyfish" ,python2-jellyfish)
-       ("python2-munkres" ,python2-munkres)
-       ("python2-musicbrainzngs" ,python2-musicbrainzngs)
-       ("python2-mutagen" ,python2-mutagen)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-unidecode" ,python2-unidecode)))
+     `(("python-discogs-client" ,python-discogs-client)
+       ("python-enum34" ,python-enum34)
+       ("python-jellyfish" ,python-jellyfish)
+       ("python-munkres" ,python-munkres)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)
+       ("python-mutagen" ,python-mutagen)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-unidecode" ,python-unidecode)))
     (home-page "http://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
@@ -2421,3 +2563,178 @@ a simulation of an analog Wah pedal with switchless activation."))))
 filters, crossovers, simple gain plugins without zipper noise, switch box
 plugins, a switch trigger, a toggle switch, and a peakmeter.")
       (license license:gpl2+))))
+
+(define-public ingen
+  (let ((commit "fd147d0b888090bfb897505852c1f25dbdf77e18")
+        (revision "1"))
+    (package
+      (name "ingen")
+      (version (string-append "0.0.0-" revision "."
+                              (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.drobilla.net/ingen.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1qmg79962my82c43vyrv5sxbqci9c7gc2s9bwaaqd0fcf08xcz1z"))))
+      (build-system waf-build-system)
+      (arguments
+       `(#:tests? #f ; no "check" target
+         #:configure-flags (list "--no-webkit")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-wscript
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "wscript"
+                   ;; FIXME: Our version of lv2specgen.py does not behave as
+                   ;; expected.  Maybe this requires a development version of
+                   ;; LV2.
+                   (("lv2specgen.py") "touch ingen.lv2/ingen.html; echo")
+                   ;; Add libraries to RUNPATH.
+                   (("^(.+)target.*= 'src/ingen/ingen'," line prefix)
+                    (string-append prefix
+                                   "linkflags=[\"-Wl,-rpath="
+                                   out "/lib" "\"]," line)))
+                 (substitute* '("src/wscript"
+                                "src/server/wscript")
+                   ;; Add libraries to RUNPATH.
+                   (("bld.env.PTHREAD_LINKFLAGS" line)
+                    (string-append line
+                                   " + [\"-Wl,-rpath=" out "/lib" "\"]")))
+                 (substitute* "src/client/wscript"
+                   ;; Add libraries to RUNPATH.
+                   (("^(.+)target.*= 'ingen_client'," line prefix)
+                    (string-append prefix
+                                   "linkflags=[\"-Wl,-rpath="
+                                   out "/lib" "\"]," line)))
+                 (substitute* "src/gui/wscript"
+                   ;; Add libraries to RUNPATH.
+                   (("^(.+)target.* = 'ingen_gui.*" line prefix)
+                    (string-append prefix
+                                   "linkflags=[\"-Wl,-rpath="
+                                   out "/lib" "\"]," line))))
+               #t)))))
+      (inputs
+       `(("boost" ,boost)
+         ("python-rdflib" ,python-rdflib)
+         ("python" ,python)
+         ("jack" ,jack-1)
+         ("lv2" ,lv2)
+         ("lilv" ,lilv)
+         ("raul" ,raul-devel)
+         ("ganv" ,ganv-devel)
+         ("suil" ,suil)
+         ("serd" ,serd)
+         ("sord" ,sord)
+         ("sratom" ,sratom)
+         ("gtkmm" ,gtkmm-2)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("python-pygments" ,python-pygments)))
+      (home-page "http://drobilla.net/software/ingen")
+      (synopsis "Modular audio processing system")
+      (description "Ingen is a modular audio processing system for JACK and
+LV2 based systems.  Ingen is built around LV2 technology and a strict
+separation of engine from user interface.  The engine is controlled
+exclusively through a protocol, and can execute as a headless process, with an
+in-process GUI, or as an LV2 plugin.  The GUI can run as a program which
+communicates over a Unix or TCP/IP socket, or as an embeddable LV2 GUI which
+communicates via LV2 ports.  Any saved Ingen graph can be loaded as an LV2
+plugin on any system where Ingen is installed.  This allows users to visually
+develop custom plugins for use in other applications without programming.")
+      (license license:agpl3+))))
+
+(define-public qmidiarp
+  (package
+    (name "qmidiarp")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/qmidiarp/qmidiarp/"
+                                  version "/qmidiarp-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1gkfv8ajgf86kbn6j5ilfc1zlz17gdi9yxzywqd6jwff4xlm75hx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-qt5"
+             "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("lv2" ,lv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://qmidiarp.sourceforge.net/")
+    (synopsis "MIDI arpeggiator")
+    (description "QMidiArp is an advanced MIDI arpeggiator, programmable step
+sequencer and LFO.  It can hold any number of arpeggiator, sequencer, or LFO
+modules running in parallel.")
+    (license license:gpl2+)))
+
+(define-public seq24
+  (package
+    (name "seq24")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/seq24/trunk/"
+                                  version "/+download/seq24-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "12dphdhnvfk1k0vmagi1v2lhyxjyj1j3cz6ksjw0ydcvid1x8ap2"))
+              (patches (search-patches "seq24-rename-mutex.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("gtkmm" ,gtkmm-2)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("lash" ,lash)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://edge.launchpad.net/seq24/")
+    (synopsis "Real-time MIDI sequencer")
+    (description "Seq24 is a real-time MIDI sequencer.  It was created to
+provide a very simple interface for editing and playing MIDI loops.")
+    (license license:gpl2+)))
+
+(define-public python-discogs-client
+  (package
+    (name "python-discogs-client")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "discogs-client" version))
+              (sha256
+               (base32
+                "053ld2psh0yj3z0kg6z5bn4y3cr562m727494n0ayhgzbkjbacly"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-oauthlib" ,python-oauthlib)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/discogs/discogs_client")
+    (synopsis "Official Python client for the Discogs API")
+    (description "This is the official Discogs API client for Python. It enables
+you to query the Discogs database for information on artists, releases, labels,
+users, Marketplace listings, and more.  It also supports OAuth 1.0a
+authorization, which allows you to change user data such as profile information,
+collections and wantlists, inventory, and orders.")
+    (license license:bsd-2)))
+
+(define-public python2-discogs-client
+  (package-with-python2 python-discogs-client))

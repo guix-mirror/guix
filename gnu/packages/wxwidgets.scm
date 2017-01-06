@@ -149,6 +149,9 @@ and many other languages.")
     (arguments
      `(#:python ,python-2
        #:tests? #f ; tests fail
+       ;; wxPython directly extends distutils command classes,
+       ;; we can't easily make setup.py use setuptools.
+       #:use-setuptools? #f
        #:configure-flags (list "WXPORT=gtk2"
                                "UNICODE=1")
        #:phases
@@ -181,8 +184,7 @@ and many other languages.")
              #t)))))
     (native-inputs
      `(("mesa" ,mesa) ; for glcanvas
-       ("pkg-config" ,pkg-config)
-       ("python2-setuptools" ,python2-setuptools)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+-2) ; for wxPython/src/helpers.cpp
        ("wxwidgets" ,wxwidgets-gtk2)))

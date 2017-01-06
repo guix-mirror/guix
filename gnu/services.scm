@@ -338,12 +338,14 @@ ACTIVATION-SCRIPT-TYPE."
                       (activate-/bin/sh
                        (string-append #$(canonical-package bash) "/bin/sh"))
 
+                      ;; Set up /run/current-system.  Among other things this
+                      ;; sets up locales, which the activation snippets
+                      ;; executed below may expect.
+                      (activate-current-system)
+
                       ;; Run the services' activation snippets.
                       ;; TODO: Use 'load-compiled'.
-                      (for-each primitive-load '#$actions)
-
-                      ;; Set up /run/current-system.
-                      (activate-current-system))))))
+                      (for-each primitive-load '#$actions))))))
 
 (define (gexps->activation-gexp gexps)
   "Return a gexp that runs the activation script containing GEXPS."

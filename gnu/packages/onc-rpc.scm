@@ -43,11 +43,19 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'remote-dangling-symlink
            (lambda _
+             (substitute* '("man/netconfig.5"
+                            "man/getnetconfig.3t"
+                            "man/getnetpath.3t"
+                            "man/rpc.3t"
+                            "src/getnetconfig.c"
+                            "tirpc/netconfig.h")
+               (("/etc/netconfig") (string-append %output "/etc/netconfig")))
+
              ;; Remove the dangling symlinks since it breaks the
              ;; 'patch-source-shebangs' file tree traversal.
              (delete-file "INSTALL"))))))
     (inputs `(("mit-krb5" ,mit-krb5)))
-    (home-page "http://sourceforge.net/projects/libtirpc/")
+    (home-page "https://sourceforge.net/projects/libtirpc/")
     (synopsis "Transport-independent Sun/ONC RPC implementation")
     (description
      "This package provides a library that implements the Sun/ONC RPC (remote

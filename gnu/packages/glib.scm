@@ -64,8 +64,7 @@
 (define dbus
   (package
     (name "dbus")
-    (replacement dbus-1.10.12)
-    (version "1.10.10")
+    (version "1.10.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +72,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0hwsfczhx2djmc9116vj5v230i7gpjihwh3vbljs1ldlk831v3wx"))
+                "10x0wvv2ly4lyyfd42k4xw0ar5qdbi9cksw3l5fcwf1y6mq8y8r3"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -131,21 +130,6 @@ daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
-
-(define dbus-1.10.12
-  (package
-    (inherit dbus)
-    (name "dbus")
-    (source
-      (let ((version "1.10.12"))
-        (origin
-          (inherit (package-source dbus))
-          (uri (string-append
-                "https://dbus.freedesktop.org/releases/dbus/dbus-"
-                version ".tar.gz"))
-          (sha256
-           (base32
-            "0pa71vf5c0d7k3gni06iascmplj0j5g70wbc833ayvi71d1pj2i1")))))))
 
 (define glib
   (package
@@ -471,7 +455,7 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.8.0")
+    (version "2.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -479,7 +463,7 @@ by GDBus included in Glib.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0lcnzzdq6718znfshs1hflpwqq6awbzwdyp4kv5lfaf54z880jbp"))))
+               "10cd54l4zihss9qxfhd2iip2k7mr292k37i54r2cpgv0c8sdchzq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))

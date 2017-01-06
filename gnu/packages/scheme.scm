@@ -323,20 +323,24 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.11.0")
+    (version "4.11.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://code.call-cc.org/releases/"
-                                 version "/chicken-" version ".tar.gz"))
-             (sha256
-              (base32
-               "12ddyiikqknpr8h6llsxbg2fz75xnayvcnsvr1cwv8xnjn7jpp73"))))
+              (method url-fetch)
+              (uri (string-append "http://code.call-cc.org/releases/"
+                                  version "/chicken-" version ".tar.gz"))
+              (uri (string-append "http://code.call-cc.org/dev-snapshots/"
+                                  "2016/09/12/chicken-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rwymbbmnwdyhdzilv9w75an989xw9kjf3x52iqdng3nphpflcga"))
+              (patches
+               (search-patches "chicken-CVE-2016-6830+CVE-2016-6831.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
-
+       
        ;; No `configure' script; run "make check" after "make install" as
        ;; prescribed by README.
        #:phases
@@ -344,14 +348,7 @@ mashups, office (web agendas, mail clients, ...), etc.")
          (delete 'configure)
          (delete 'check)
          (add-after 'install 'check
-           (assoc-ref %standard-phases 'check))
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             ;; The port tests fail with this error:
-             ;; Error: (line 294) invalid escape-sequence '\x o'
-             (substitute* "tests/runtests.sh"
-               (("\\$interpret -s port-tests\\.scm") ""))
-             #t)))
+           (assoc-ref %standard-phases 'check)))
 
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "PLATFORM=linux"
@@ -578,7 +575,7 @@ mixed.")
                       (list (string-append "PREFIX=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))
        #:test-target "test"))
-    (home-page "https://code.google.com/p/chibi-scheme/")
+    (home-page "https://github.com/ashinn/chibi-scheme")
     (synopsis "Small embeddable Scheme implementation")
     (description
      "Chibi-Scheme is a very small library with no external dependencies
