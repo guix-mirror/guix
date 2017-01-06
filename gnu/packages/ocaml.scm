@@ -914,6 +914,24 @@ JAR format.  It provides functions for reading from and writing to compressed
 files in these formats.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml4.01-camlzip
+  (let ((base (package-with-ocaml4.01 camlzip)))
+    (package
+      (inherit base)
+      (name "ocaml4.01-camlzip")
+      ;; Version 1.05 is the last version to support OCaml 4.01.0.
+      (version "1.05")
+      (source
+       (origin
+         (method url-fetch)
+         (uri
+          (string-append
+           "http://forge.ocamlcore.org/frs/download.php/1037/camlzip-"
+           version ".tar.gz"))
+         (sha256
+          (base32
+           "0syh72jk9s0qwjmmfrkqchaj98m020ii082jn38pwnmb6v3p02wk")))))))
+
 (define-public ocamlmod
   (package
     (name "ocamlmod")
