@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,12 +109,10 @@ in print.  With attention to detail for high resolution rendering.")
                      (mkdir-p doc-dir)
                      (chdir (string-append "ubuntu-font-family-" ,version))
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))
                      (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/" doc)))
+                                 (install-file doc doc-dir))
                                (find-files "." "\\.txt$"))))))
     (native-inputs `(("source" ,source)
                      ("unzip" ,unzip)))
@@ -165,19 +164,13 @@ TrueType (TTF) files.")
                      (mkdir-p doc-dir)
                      (chdir (string-append "dejavu-fonts-ttf-" ,version))
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/"
-                                                           (basename ttf))))
+                                 (install-file ttf font-dir))
                                (find-files "ttf" "\\.ttf$"))
                      (for-each (lambda (conf)
-                                 (copy-file conf
-                                            (string-append conf-dir "/"
-                                                           (basename conf))))
+                                 (install-file conf conf-dir))
                                (find-files "fontconfig" "\\.conf$"))
                      (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/"
-                                                           (basename doc))))
+                                 (install-file doc doc-dir))
                                (find-files "." "\\.txt$|^[A-Z][A-Z]*$"))))))
     (native-inputs `(("source" ,source)
                      ("tar" ,tar)
@@ -229,12 +222,10 @@ provide serif, sans and monospaced variants.")
                      (mkdir-p doc-dir)
                      (chdir (string-append "ttf-bitstream-vera-" ,version))
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))
                      (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/" doc)))
+                                 (install-file doc doc-dir))
                                (find-files "." "\\.TXT$"))))))
     (native-inputs `(("source" ,source)
                      ("tar" ,tar)
@@ -294,9 +285,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
                        (system* "make" "ttftar")
                        (mkdir-p font-dir)
                        (for-each (lambda (file)
-                                   (copy-file file
-                                              (string-append font-dir "/"
-                                                             (basename file))))
+                                   (install-file file font-dir))
                                  (filter
                                    (lambda (file) (string-suffix? "ttf" file))
                                    (find-files "." "")))))))
@@ -348,14 +337,10 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
            (mkdir-p doc-dir)
            (chdir (string-append "liberation-fonts-ttf-" ,version))
            (for-each (lambda (ttf)
-                       (copy-file ttf
-                                  (string-append font-dir "/"
-                                                 (basename ttf))))
+                       (install-file ttf font-dir))
                      (find-files "." "\\.ttf$"))
            (for-each (lambda (doc)
-                       (copy-file doc
-                                  (string-append doc-dir "/"
-                                                 (basename doc))))
+                       (install-file doc doc-dir))
                      '("AUTHORS" "ChangeLog" "LICENSE" "README" "TODO"))))))
     (native-inputs
      `(("source" ,source)
@@ -501,8 +486,7 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
            (mkdir-p font-dir)
            (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
            (chdir "wqy-zenhei")
-           (copy-file "wqy-zenhei.ttc"
-                      (string-append font-dir "wqy-zenhei.ttc"))))))
+           (install-file "wqy-zenhei.ttc" font-dir)))))
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
@@ -585,12 +569,10 @@ Heros, Pagella, Schola, Termes.")
            (mkdir-p doc-dir)
            (chdir (string-append "AnonymousPro-" ,version ".001"))
            (for-each (lambda (ttf)
-                       (copy-file ttf
-                                  (string-append font-dir "/" ttf)))
+                       (install-file ttf font-dir))
                      (find-files "." "\\.ttf$"))
            (for-each (lambda (doc)
-                       (copy-file doc
-                                  (string-append doc-dir "/" doc)))
+                       (install-file doc doc-dir))
                      (find-files "." "\\.txt$"))))))
     (native-inputs
      `(("unzip" ,unzip)))
@@ -688,12 +670,10 @@ utilities to ease adding new glyphs to the font.")
 
                      (mkdir-p font-dir)
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))
                      (for-each (lambda (otf)
-                                 (copy-file otf
-                                            (string-append font-dir "/" otf)))
+                                 (install-file otf font-dir))
                                (find-files "." "\\.otf$"))))))
     (native-inputs `(("unzip" ,unzip)))
     (home-page "https://www.google.com/get/noto/")
@@ -735,14 +715,10 @@ symbols unable to be displayed properly.")
            (mkdir-p doc-dir)
            (chdir (string-append "un-fonts"))
            (for-each (lambda (ttf)
-                       (copy-file ttf
-                                  (string-append font-dir "/"
-                                                 (basename ttf))))
+                       (install-file ttf font-dir))
                      (find-files "." "\\.ttf$"))
            (for-each (lambda (doc)
-                       (copy-file doc
-                                  (string-append doc-dir "/"
-                                                 (basename doc))))
+                       (install-file doc doc-dir))
                      '("COPYING" "README"))))))
     (native-inputs
      `(("tar" ,tar)
@@ -840,8 +816,7 @@ glyph designs, not just an added slant.")
 
                      (mkdir-p font-dir)
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))))))
     (native-inputs
      `(("source" ,source)
