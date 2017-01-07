@@ -152,7 +152,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.13.1")
+    (version "4.12")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -160,7 +160,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "1arkg08l6zlp8v44shqbk2c8qzwd913lgh60fb3yfxls6d8ifk2y"))))
+               "1pk98bmc5xzbl62q5wf2d6mryf0v95z6rsmxz27nclwiaqg0mcg0"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("perl" ,perl)))
