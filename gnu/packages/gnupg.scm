@@ -434,7 +434,8 @@ distributed separately.")
        ;; Unfortunately, we have to disable some tests due to some gpg-agent
        ;; goofiness... see:
        ;;   https://bugs.launchpad.net/pygpgme/+bug/999949
-       (patches (search-patches "pygpgme-disable-problematic-tests.patch"))))
+       (patches (search-patches "pygpgme-disable-problematic-tests.patch"
+                                "python-pygpgme-fix-pinentry-tests.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
