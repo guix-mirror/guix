@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -238,56 +238,73 @@ warning and #f as the result."
                 (else
                  (apply throw args))))))))
 
-(define (partition-predicate read field =)
+(define (partition-field-reader read field)
+  "Return a procedure that takes a device and returns the value of a FIELD in
+the partition superblock or #f."
+  (let ((read (ENOENT-safe read)))
+    (lambda (device)
+      (let ((sblock (read device)))
+        (and sblock
+             (field sblock))))))
+
+(define (read-partition-field device partition-field-readers)
+  "Returns the value of a FIELD in the partition superblock of DEVICE or #f. It
+takes a list of PARTITION-FIELD-READERS and returns the result of the first
+partition field reader that returned a value."
+  (match (filter-map (cut apply <> (list device)) partition-field-readers)
+    ((field . _) field)
+    (_ #f)))
+
+(define %partition-label-readers
+  (list (partition-field-reader read-ext2-superblock
+                                ext2-superblock-volume-name)))
+
+(define %partition-uuid-readers
+  (list (partition-field-reader read-ext2-superblock
+                                ext2-superblock-uuid)))
+
+(define read-partition-label
+  (cut read-partition-field <> %partition-label-readers))
+
+(define read-partition-uuid
+  (cut read-partition-field <> %partition-uuid-readers))
+
+(define (partition-predicate reader =)
   "Return a predicate that returns true if the FIELD of partition header that
 was READ is = to the given value."
-  (let ((read (ENOENT-safe read)))
-    (lambda (expected)
-      "Return a procedure that, when applied to a partition name such as \"sda1\",
-returns #t if that partition's volume name is LABEL."
-      (lambda (part)
-        (let* ((device (string-append "/dev/" part))
-               (sblock (read device)))
-          (and sblock
-               (let ((actual (field sblock)))
-                 (and actual
-                      (= actual expected)))))))))
+  (lambda (expected)
+    (lambda (device)
+      (let ((actual (reader device)))
+        (and actual
+             (= actual expected))))))
 
 (define partition-label-predicate
-  (partition-predicate read-ext2-superblock
-                       ext2-superblock-volume-name
-                       string=?))
+  (partition-predicate read-partition-label string=?))
 
 (define partition-uuid-predicate
-  (partition-predicate read-ext2-superblock
-                       ext2-superblock-uuid
-                       bytevector=?))
+  (partition-predicate read-partition-uuid bytevector=?))
 
 (define luks-partition-uuid-predicate
-  (partition-predicate read-luks-header
-                       luks-header-uuid
-                       bytevector=?))
+  (partition-predicate
+   (partition-field-reader read-luks-header luks-header-uuid)
+   bytevector=?))
 
-(define (find-partition-by-label label)
-  "Return the first partition found whose volume name is LABEL, or #f if none
+(define (find-partition predicate)
+  "Return the first partition found that matches PREDICATE, or #f if none
 were found."
-  (and=> (find (partition-label-predicate label)
-               (disk-partitions))
-         (cut string-append "/dev/" <>)))
+  (lambda (expected)
+    (find (predicate expected)
+          (map (cut string-append "/dev/" <>)
+               (disk-partitions)))))
 
-(define (find-partition-by-uuid uuid)
-  "Return the first partition whose unique identifier is UUID (a bytevector),
-or #f if none was found."
-  (and=> (find (partition-uuid-predicate uuid)
-               (disk-partitions))
-         (cut string-append "/dev/" <>)))
+(define find-partition-by-label
+  (find-partition partition-label-predicate))
 
-(define (find-partition-by-luks-uuid uuid)
-  "Return the first LUKS partition whose unique identifier is UUID (a bytevector),
-or #f if none was found."
-  (and=> (find (luks-partition-uuid-predicate uuid)
-               (disk-partitions))
-         (cut string-append "/dev/" <>)))
+(define find-partition-by-uuid
+  (find-partition partition-uuid-predicate))
+
+(define find-partition-by-luks-uuid
+  (find-partition luks-partition-uuid-predicate))
 
 
 ;;;
