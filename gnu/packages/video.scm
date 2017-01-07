@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -904,7 +904,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -913,7 +913,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "10zizf926a82c753a80bi49rb5c4yqjyd6zin4xgmggspfxngncj"))))
+         "1hn3mpsxbrwf2m0nz4vzji4i6i896y8kqjb9kijqpk04cnrs3fgz"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
