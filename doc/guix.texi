@@ -208,6 +208,7 @@ Services
 * Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
@@ -8120,6 +8121,7 @@ declaration.
 * Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
@@ -12353,6 +12355,364 @@ Whether the server should add its configuration to response.
 
 @end table
 @end deftp
+
+@node VPN Services
+@subsubsection VPN Services
+@cindex VPN (virtual private network)
+@cindex virtual private network (VPN)
+
+The @code{(gnu services vpn)} module provides services related to
+@dfn{virtual private networks} (VPNs).  It provides a @emph{client} service for
+your machine to connect to a VPN, and a @emph{servire} service for your machine
+to host a VPN.  Both services use @uref{https://openvpn.net/, OpenVPN}.
+
+@deffn {Scheme Procedure} openvpn-client-service @
+       [#:config (openvpn-client-configuration)]
+
+Return a service that runs @command{openvpn}, a VPN daemon, as a client.
+@end deffn
+
+@deffn {Scheme Procedure} openvpn-server-service @
+       [#:config (openvpn-server-configuration)]
+
+Return a service that runs @command{openvpn}, a VPN daemon, as a server.
+
+Both can be run simultaneously.
+@end deffn
+
+@c %automatically generated documentation
+
+Available @code{openvpn-client-configuration} fields are:
+
+@deftypevr @code{openvpn-client-configuration} parameter package openvpn
+The OpenVPN package.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string pid-file
+The OpenVPN pid file.
+
+Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter proto proto
+The protocol (UDP or TCP) used to open a channel between clients and
+servers.
+
+Defaults to @samp{udp}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter dev dev
+The device type used to represent the VPN connection.
+
+Defaults to @samp{tun}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string ca
+The certificate authority to check connections against.
+
+Defaults to @samp{"/etc/openvpn/ca.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string cert
+The certificate of the machine the daemon is running on.  It should be
+signed by the authority given in @code{ca}.
+
+Defaults to @samp{"/etc/openvpn/client.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string key
+The key of the machine the daemon is running on.  It must be the key whose
+certificate is @code{cert}.
+
+Defaults to @samp{"/etc/openvpn/client.key"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean comp-lzo?
+Whether to use the lzo compression algorithm.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean persist-key?
+Don't re-read key files across SIGUSR1 or --ping-restart.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean persist-tun?
+Don't close and reopen TUN/TAP device or run up/down scripts across
+SIGUSR1 or --ping-restart restarts.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter number verbosity
+Verbosity level.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter tls-auth-client tls-auth
+Add an additional layer of HMAC authentication on top of the TLS control
+channel to protect against DoS attacks.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter key-usage verify-key-usage?
+Whether to check the server certificate has server usage extension.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter bind bind?
+Bind to a specific local port number.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter resolv-retry resolv-retry?
+Retry resolving server address.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter openvpn-remote-list remote
+A list of remote servers to connect to.
+
+Defaults to @samp{()}.
+
+Available @code{openvpn-remote-configuration} fields are:
+
+@deftypevr @code{openvpn-remote-configuration} parameter string name
+Server name.
+
+Defaults to @samp{"my-server"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-remote-configuration} parameter number port
+Port number the server listens to.
+
+Defaults to @samp{1194}.
+
+@end deftypevr
+
+@end deftypevr
+@c %end of automatic openvpn-client documentation
+
+@c %automatically generated documentation
+
+Available @code{openvpn-server-configuration} fields are:
+
+@deftypevr @code{openvpn-server-configuration} parameter package openvpn
+The OpenVPN package.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string pid-file
+The OpenVPN pid file.
+
+Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter proto proto
+The protocol (UDP or TCP) used to open a channel between clients and
+servers.
+
+Defaults to @samp{udp}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter dev dev
+The device type used to represent the VPN connection.
+
+Defaults to @samp{tun}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string ca
+The certificate authority to check connections against.
+
+Defaults to @samp{"/etc/openvpn/ca.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string cert
+The certificate of the machine the daemon is running on.  It should be
+signed by the authority given in @code{ca}.
+
+Defaults to @samp{"/etc/openvpn/client.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string key
+The key of the machine the daemon is running on.  It must be the key whose
+certificate is @code{cert}.
+
+Defaults to @samp{"/etc/openvpn/client.key"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean comp-lzo?
+Whether to use the lzo compression algorithm.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean persist-key?
+Don't re-read key files across SIGUSR1 or --ping-restart.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean persist-tun?
+Don't close and reopen TUN/TAP device or run up/down scripts across
+SIGUSR1 or --ping-restart restarts.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number verbosity
+Verbosity level.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter tls-auth-server tls-auth
+Add an additional layer of HMAC authentication on top of the TLS control
+channel to protect against DoS attacks.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number port
+Specifies the port number on which the server listens.
+
+Defaults to @samp{1194}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter ip-mask server
+An ip and mask specifying the subnet inside the virtual network.
+
+Defaults to @samp{"10.8.0.0 255.255.255.0"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter cidr6 server-ipv6
+A CIDR notation specifying the IPv6 subnet inside the virtual network.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string dh
+The Diffie-Hellman parameters file.
+
+Defaults to @samp{"/etc/openvpn/dh2048.pem"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string ifconfig-pool-persist
+The file that records client IPs.
+
+Defaults to @samp{"/etc/openvpn/ipp.txt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter gateway redirect-gateway?
+When true, the server will act as a gateway for its clients.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean client-to-client?
+When true, clients are alowed to talk to each other inside the VPN.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter keepalive keepalive
+Causes ping-like messages to be sent back and forth over the link so
+that each side knows when the other side has gone down.  @code{keepalive}
+requires a pair.  The first element is the period of the ping sending,
+and the second element is the timeout before considering the other side
+down.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number max-clients
+The maximum number of clients.
+
+Defaults to @samp{100}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string status
+The status file.  This file shows a small report on current connection.
+It is trunkated and rewritten every minute.
+
+Defaults to @samp{"/var/run/openvpn/status"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter openvpn-ccd-list client-config-dir
+The list of configuration for some clients.
+
+Defaults to @samp{()}.
+
+Available @code{openvpn-ccd-configuration} fields are:
+
+@deftypevr @code{openvpn-ccd-configuration} parameter string name
+Client name.
+
+Defaults to @samp{"client"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask iroute
+Client own network
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask ifconfig-push
+Client VPN IP.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@end deftypevr
+
+
+@c %end of automatic openvpn-server documentation
+
 
 @node Network File System
 @subsubsection Network File System

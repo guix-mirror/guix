@@ -424,6 +424,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
   %D%/services/version-control.scm              \
+  %D%/services/vpn.scm				\
   %D%/services/web.scm				\
   %D%/services/xorg.scm				\
 						\
