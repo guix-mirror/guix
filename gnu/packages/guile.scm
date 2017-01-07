@@ -525,6 +525,46 @@ format is also supported.")
                                    (,modules)))
                                #t))))))))))))
 
+(define-public guile-ics
+  (package
+    (name "guile-ics")
+    (version "0.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/artyom-poptsov/guile-ics")
+                    (commit "v0.1.1")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1pvg6j48inpbq47hq00yh5hhl2qd2srvrx5yjl7w7ky1jsjadp86"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'autoreconf
+                              (lambda _
+                                ;; Repository comes with a broken symlink
+                                (delete-file "README")
+                                (symlink "README.org" "README")
+                                (zero? (system* "autoreconf" "-fi")))))))
+    (native-inputs
+     `(("autoconf" ,(autoconf-wrapper))
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)
+       ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0) ("which" ,which)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
+    (home-page "https://github.com/artyom-poptsov/guile-ics")
+    (synopsis "Guile parser library for the iCalendar format")
+    (description
+     "Guile-ICS is an iCalendar (RFC5545) format parser library written in
+pure Scheme.  The library can be used to read and write iCalendar data.
+
+The library is shipped with documentation in Info format and usage examples.")
+    (license gpl3+)))
+
 (define-public guile-lib
   (package
     (name "guile-lib")
