@@ -554,14 +554,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "qmake" (string-append "PREFIX=" out))))))
+               ;; Valid QT_BUILD_PARTS variables are:
+               ;; libs tools tests examples demos docs translations
+               (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools tests"
+                               (string-append "PREFIX=" out))))))
          (add-before 'install 'fix-Makefiles
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out    (assoc-ref outputs "out"))
                    (qtbase (assoc-ref inputs "qtbase")))
                (substitute* (find-files "." "Makefile")
                             (((string-append "INSTALL_ROOT)" qtbase))
-                             (string-append "INSTALL_ROOT)" out)))))))))))
+                             (string-append "INSTALL_ROOT)" out)))
+               #t)))
+            (add-before 'check 'set-display
+              (lambda _
+                (setenv "QT_QPA_PLATFORM" "offscreen")
+                #t)))))))
 
 (define-public qtimageformats
   (package (inherit qtsvg)
@@ -603,6 +611,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "09z49jm70f5i0gcdz9a16z00pg96x8pz7vri5wpirh3fqqn0qnjz"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
@@ -621,6 +632,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1rgqnpg64gn5agmvjwy0am8hp5fpxl3cdkixr1yrsdxi5a6961d8"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs `(("perl" ,perl)))
     (inputs `(("qtbase" ,qtbase)))))
 
@@ -637,6 +651,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "0mjxfwnplpx60jc6y94krg00isddl9bfwc7dayl981njb4qds4zx"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -681,6 +698,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1laj0slwibs0bg69kgrdhc9k1s6yisq3pcsr0r9rhbkzisv7aajw"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
@@ -721,7 +741,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (snippet
               '(begin
                  (delete-file-recursively
-                   "examples/multimedia/spectrum/3rdparty")))))
+                   "examples/multimedia/spectrum/3rdparty")
+                 ;; We also prevent the spectrum example from being built.
+                 (substitute* "examples/multimedia/multimedia.pro"
+                   (("spectrum") "#"))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -831,6 +857,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "17zkzffzwbg6aqhsggs23cmwzq4y45m938842lsc423hfm7fdsgr"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
@@ -851,6 +880,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1b6zqa5690b8lqms7rrhb8rcq0xg5hp117v3m08qngbcd0i706b4"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
@@ -890,6 +922,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "17cyfyqzjbm9dhq9pjscz36y84y16rmxwk6h826gjfprddrimsvg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -907,6 +942,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1v77ydy4k15lksp3bi2kgha2h7m79g4n7c2qhbr09xnvpb8ars7j"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -924,6 +962,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1j2drnx7zp3w6cgvy7bn00fyk5v7vw1j1hidaqcg78lzb6zgls1c"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -988,7 +1029,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "135kknqdmib2cjryfmvfgv7a2qx9pyba3m7i7nkbc5d742r4mbcx"))
              (modules '((guix build utils)))
              (snippet
-              '(delete-file-recursively "tests/3rdparty"))))
+              '(begin
+                 (delete-file-recursively "tests/3rdparty")
+                 ;; the scion test refers to the bundled 3rd party test code.
+                 (substitute* "tests/auto/auto.pro"
+                   (("scion") "#"))))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -1026,6 +1071,19 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (modules '((guix build utils)))
              (snippet
               '(delete-file-recursively "examples/canvas3d/3rdparty"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+      ;; Building the tests depends on the bundled 3rd party javascript files,
+      ;; and the test phase fails to import QtCanvas3D, causing the phase to
+      ;; fail, so we skip building them for now.
+      ((#:phases phases)
+       `(modify-phases ,phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools"
+                               (string-append "PREFIX=" out))))))))
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs `())
     (inputs
      `(("qtbase" ,qtbase)
@@ -1044,6 +1102,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1qrzcddwff2hxsbxrraff16j4abah2zkra2756s1mvydj9lyxzl5"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -1061,6 +1122,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1y00p0wyj5cw9c2925y537vpmmg9q3kpf7qr1s7sv67dvvf8bzqv"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
