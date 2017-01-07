@@ -135,6 +135,14 @@ if DEVICE does not contain an ext2 file system."
 #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 120 16)))
 
+(define (check-ext2-file-system device)
+  "Return the health of an ext2 file system on DEVICE."
+  (match (status:exit-val
+          (system* "e2fsck" "-v" "-p" "-C" "0" device))
+    (0 'pass)
+    (1 'errors-corrected)
+    (2 'reboot-required)
+    (_ 'fatal-error)))
 
 
 ;;;
@@ -400,26 +408,33 @@ the following:
 
 (define (check-file-system device type)
   "Run a file system check of TYPE on DEVICE."
-  (define fsck
-    (string-append "fsck." type))
+  (define check-procedure
+    (cond
+     ((string-prefix? "ext" type) check-ext2-file-system)
+     (else #f)))
 
-  (let ((status (system* fsck "-v" "-p" "-C" "0" device)))
-    (match (status:exit-val status)
-      (0
-       #t)
-      (1
-       (format (current-error-port) "'~a' corrected errors on ~a; continuing~%"
-               fsck device))
-      (2
-       (format (current-error-port) "'~a' corrected errors on ~a; rebooting~%"
-               fsck device)
-       (sleep 3)
-       (reboot))
-      (code
-       (format (current-error-port) "'~a' exited with code ~a on ~a; \
-spawning Bourne-like REPL~%"
-               fsck code device)
-       (start-repl %bournish-language)))))
+  (if check-procedure
+      (match (check-procedure device)
+        ('pass
+         #t)
+        ('errors-corrected
+         (format (current-error-port)
+                 "File system check corrected errors on ~a; continuing~%"
+                 device))
+        ('reboot-required
+         (format (current-error-port)
+                 "File system check corrected errors on ~a; rebooting~%"
+                 device)
+         (sleep 3)
+         (reboot))
+        ('fatal-error
+         (format (current-error-port)
+                 "File system check on ~a failed; spawning Bourne-like REPL~%"
+                 device)
+         (start-repl %bournish-language)))
+      (format (current-error-port)
+              "No file system check procedure for ~a; skipping~%"
+              device)))
 
 (define (mount-flags->bit-mask flags)
   "Return the number suitable for the 'flags' argument of 'mount' that
