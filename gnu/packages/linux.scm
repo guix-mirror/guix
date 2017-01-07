@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3297,4 +3298,41 @@ interface to the variable facility of UEFI boot firmware.")
 Extensible Firmware Interface (EFI) Boot Manager.  This application can
 create and destroy boot entries, change the boot order, change the next
 running boot option, and more.")
+    (license license:gpl2+)))
+
+(define-public sysstat
+  (package
+    (name "sysstat")
+    (version "11.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://perso.orange.fr/sebastien.godard/"
+                                  "sysstat-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0f8gk1hma3bk198ziwrhh5jhisnbbgc1v4rxhny58n0zjzw0gm0z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite.
+       ;; Without this flag, it tries to install the man pages with group 'root'
+       ;; and fails because /etc/passwd lacks an entry for the root user.
+       #:configure-flags
+       (list "--disable-file-attr"
+             (string-append "conf_dir=" (assoc-ref %outputs "out") "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build process tries to create '/var/lib/sa', so we skip that
+         ;; instruction.
+         (add-after 'build 'skip-touching-var
+           (lambda _
+             (substitute* "Makefile"
+               (("mkdir -p \\$\\(DESTDIR\\)\\$\\(SA_DIR\\)")
+                ""))
+             #t)))))
+    (home-page "http://sebastien.godard.pagesperso-orange.fr/")
+    (synopsis "Performance monitoring tools for Linux")
+    (description "The sysstat utilities are a collection of performance
+monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
+@code{tapestat}, @code{cifsiostat}, @code{pidstat}, @code{sar}, @code{sadc},
+@code{sadf} and @code{sa}.")
     (license license:gpl2+)))
