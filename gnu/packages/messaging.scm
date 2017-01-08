@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +39,7 @@
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cyrus-sasl)
@@ -546,22 +547,30 @@ end-to-end encryption support; XML console.")
                                               (if (string-prefix? "lua" label)
                                                   directory #f)))
                                            inputs)))
-                    (path  (string-join
-                            (map (lambda (path)
-                                   (string-append path "/share/lua/5.1/?.lua;"
-                                                  path "/share/lua/5.1/?/?.lua"))
-                                 (cons out deps))
-                            ";"))
-                    (cpath (string-join
-                            (map (lambda (path)
-                                   (string-append path "/lib/lua/5.1/?.so;"
-                                                  path "/lib/lua/5.1/?/?.so"))
-                                 (cons out deps))
-                            ";")))
+                    (lua-path (string-join
+                               (map (lambda (path)
+                                      (string-append
+                                       path "/share/lua/5.1/?.lua;"
+                                       path "/share/lua/5.1/?/?.lua"))
+                                    (cons out deps))
+                               ";"))
+                    (lua-cpath (string-join
+                                (map (lambda (path)
+                                       (string-append
+                                        path "/lib/lua/5.1/?.so;"
+                                        path "/lib/lua/5.1/?/?.so"))
+                                     (cons out deps))
+                                ";"))
+                    (openssl (assoc-ref inputs "openssl"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (path (map (lambda (dir)
+                                 (string-append dir "/bin"))
+                               (list openssl coreutils))))
                (for-each (lambda (file)
                            (wrap-program file
-                             `("LUA_PATH"  ";" = (,path))
-                             `("LUA_CPATH" ";" = (,cpath))))
+                             `("LUA_PATH"  ";" = (,lua-path))
+                             `("LUA_CPATH" ";" = (,lua-cpath))
+                             `("PATH" ":" prefix ,path)))
                          (find-files bin ".*"))
                #t))))))
     (inputs
