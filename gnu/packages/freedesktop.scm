@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@pobox.com>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -42,11 +42,13 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages polkit)
@@ -804,4 +806,36 @@ share connections to real-time communication services without conflicting.")
      "This is a GTK+ convenience library for interacting with colord.  It is
 useful for both applications which need colour management and applications that
 wish to perform colour calibration.")
+    (license license:lgpl2.1+)))
+
+(define-public libfprint
+  (package
+    (name "libfprint")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://people.freedesktop.org/~hadess/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1giwh2z63mn45galsjb59rhyrvgwcy01hvvp4g01iaa2snvzr0r5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list (string-append "--with-udev-rules-dir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("nss" ,nss)
+       ("glib" ,glib)
+       ("eudev" ,eudev)
+       ("pixman" ,pixman)))
+    (home-page "https://www.freedesktop.org/wiki/Software/fprint/libfprint/")
+    (synopsis "Library to access fingerprint readers")
+    (description
+     "libfprint is a library designed to make it easy for application
+developers to add support for consumer fingerprint readers to their
+software.")
     (license license:lgpl2.1+)))
