@@ -536,6 +536,14 @@ end-to-end encryption support; XML console.")
              (substitute* "configure"
                (("exit 1") ""))
              #t))
+         (add-after 'unpack 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; prosodyctl needs to read the configuration file.
+               (("^INSTALLEDCONFIG =.*") "INSTALLEDCONFIG = /etc/prosody\n")
+               ;; prosodyctl needs a place to put auto-generated certificates.
+               (("^INSTALLEDDATA =.*") "INSTALLEDDATA = /var/lib/prosody\n"))
+             #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure all executables in "bin" find the required Lua
