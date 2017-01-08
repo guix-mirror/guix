@@ -122,8 +122,7 @@ financial calculations or scheduled transactions.")
      (origin
        (method url-fetch)
        (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=01&release=201&file=01&dummy=gwenhywfar-"
-                           version ".tar.gz"))
+                           "package=01&release=201&file=01"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -162,8 +161,7 @@ applications and libraries.  It is used by AqBanking.")
      (origin
        (method url-fetch)
        (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=03&release=206&file=01&dummy=aqbanking-"
-                           version ".tar.gz"))
+                           "package=03&release=206&file=01"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
