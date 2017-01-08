@@ -3049,44 +3049,40 @@ features such as filtering and fine grained logging.")
     (license license:expat)))
 
 (define-public ruby-yard
-  ;; Use git reference because gem is >100 commits out of date and the tests
-  ;; do not pass with the released gem.
-  (let ((commit "d816482a0d4850506c3bcccc9434550c536c28c6"))
-    (package
-      (name "ruby-yard")
-      (version (string-append "0.9.5-1." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/lsegal/yard.git")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "1j16c85x22if7y0fzi3c900p9wzkx2riq1y7vsj92a0zvwsxai4i"))
-         (patches (search-patches "ruby-yard-fix-skip-of-markdown-tests.patch"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:test-target "spec"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-HOME-and-disable-failing-test
-             (lambda _
-               ;; $HOME needs to be set to somewhere writeable for tests to run
-               (setenv "HOME" "/tmp")
-               #t)))))
-      (native-inputs
-       `(("ruby-rspec" ,ruby-rspec-2)
-         ("ruby-rack" ,ruby-rack)))
-      (synopsis "Documentation generation tool for Ruby")
-      (description
-       "YARD is a documentation generation tool for the Ruby programming
+  (package
+    (name "ruby-yard")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Tests do not pass if we build from the distributed gem.
+       (uri (string-append "https://github.com/lsegal/yard/archive/v"
+                           version "tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rsz4bghgx7fryzyhlz8wlnd2m9xgyvf1xhrq58mnzfrrfm41bdg"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; $HOME needs to be set to somewhere writeable for tests to run
+             (setenv "HOME" "/tmp")
+             ;; Run tests without using 'rake' to avoid dependencies.
+             (zero? (system* "rspec")))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Documentation generation tool for Ruby")
+    (description
+     "YARD is a documentation generation tool for the Ruby programming
 language.  It enables the user to generate consistent, usable documentation
 that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
-      (home-page "http://yardoc.org")
-      (license license:expat))))
+    (home-page "http://yardoc.org")
+    (license license:expat)))
 
 (define-public ruby-clap
   (package
