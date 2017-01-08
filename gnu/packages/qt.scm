@@ -634,7 +634,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "1rgqnpg64gn5agmvjwy0am8hp5fpxl3cdkixr1yrsdxi5a6961d8"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
-       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'disable-network-tests
+             (lambda _ (substitute* "tests/auto/auto.pro"
+                         (("qxmlquery") "# qxmlquery")
+                         (("xmlpatterns") "# xmlpatterns"))
+               #t))))))
     (native-inputs `(("perl" ,perl)))
     (inputs `(("qtbase" ,qtbase)))))
 
