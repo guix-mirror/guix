@@ -3057,7 +3057,7 @@ features such as filtering and fine grained logging.")
        (method url-fetch)
        ;; Tests do not pass if we build from the distributed gem.
        (uri (string-append "https://github.com/lsegal/yard/archive/v"
-                           version "tar.gz"))
+                           version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
