@@ -355,11 +355,11 @@ Arial, Times New Roman, and Courier New.
 There are three sets:
 
 @enumerate
-@enum Sans (a substitute for Arial, Albany, Helvetica, Nimbus Sans L, and
+@item Sans (a substitute for Arial, Albany, Helvetica, Nimbus Sans L, and
 Bitstream Vera Sans);
-@enum Serif (a substitute for Times New Roman, Thorndale, Nimbus Roman, and
+@item Serif (a substitute for Times New Roman, Thorndale, Nimbus Roman, and
 Bitstream Vera Serif);
-@enum Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
+@item Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
 and Bitstream Vera Sans Mono).
 @end enumerate
 
