@@ -414,6 +414,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
   %D%/services/mcron.scm			\
+  %D%/services/messaging.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\

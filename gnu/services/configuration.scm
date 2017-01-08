@@ -28,10 +28,13 @@
   #:use-module (srfi srfi-35)
   #:export (configuration-field
             configuration-field-name
+            configuration-field-type
             configuration-missing-field
             configuration-field-error
             configuration-field-serializer
             configuration-field-getter
+            configuration-field-default-value-thunk
+            configuration-field-documentation
             serialize-configuration
             define-configuration
             validate-configuration
