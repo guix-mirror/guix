@@ -839,3 +839,33 @@ wish to perform colour calibration.")
 developers to add support for consumer fingerprint readers to their
 software.")
     (license license:lgpl2.1+)))
+
+(define-public fprintd
+  (package
+    (name "fprintd")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://people.freedesktop.org/~hadess/fprintd-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "05915i0bv7q62fqrs5diqwr8dz3pwqa1c1ivcgggkjyw0xk4ldp5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libfprint" ,libfprint)
+       ("dbus-glib" ,dbus-glib)
+       ("polkit" ,polkit)
+       ("linux-pam" ,linux-pam)))                 ;for pam_fprintd
+    (home-page "https://www.freedesktop.org/wiki/Software/fprint/fprintd/")
+    (synopsis "D-Bus daemon that exposes fingerprint reader functionality")
+    (description
+     "fprintd is a D-Bus daemon that offers functionality of libfprint, a
+library to access fingerprint readers, over the D-Bus interprocess
+communication bus.  This daemon layer above libfprint solves problems related
+to applications simultaneously competing for fingerprint readers.")
+    (license license:gpl2+)))
