@@ -4997,7 +4997,7 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "3.20")
+    (version "3.22.1")
     (source
      (origin
        (method url-fetch)
@@ -5006,7 +5006,7 @@ is complete it provides a graphical representation of each selected folder.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "09viag7q53lfwrp074a1w7j0r8izlwpi10xbwjgbf5jwbqb6wv6n"))))
+         "09gfdrm1kaz2knyghhjb0ka1kklgbcbnqgy4c90bg0v3n899ij5z"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)))
