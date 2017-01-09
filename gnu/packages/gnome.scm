@@ -3456,7 +3456,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.28.3")
+    (version "1.30.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3464,7 +3464,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "05xxy0ids310qy24vmkyl3hc6mq05p39aa8mkr5fzxkhhnv4r325"))))
+                "0xgis1kgglnazy1vm66xiqyz8yvvmiad3h0g3agg7ryai6aa495q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; XXX: requiring `pidof'
@@ -3483,6 +3483,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("glib" ,glib)
        ("libarchive" ,libarchive)
        ("libbluray" ,libbluray)
+       ("libcap" ,libcap)
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libgcrypt" ,libgcrypt)
        ("libgphoto2" ,libgphoto2)
@@ -3493,6 +3494,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("nettle" ,nettle) ; XXX: required by libarchive.pc
+       ("polkit" ,polkit)
        ("udisks" ,udisks)))
     (home-page "https://wiki.gnome.org/gvfs/")
     (synopsis "Userspace virtual file system for GIO")
