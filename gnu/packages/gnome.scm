@@ -5720,7 +5720,7 @@ Bluefish supports many programming and markup languages.")
 (define-public gnome-system-monitor
   (package
     (name "gnome-system-monitor")
-    (version "3.20.1")
+    (version "3.22.2")
     (source
      (origin
        (method url-fetch)
@@ -5729,7 +5729,7 @@ Bluefish supports many programming and markup languages.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1ya41b58syf8g5pc12gw1xm6jhdx3crap803bjwm086r7x2an8wv"))))
+         "10n9bl2q9xxnd6mfi4scfw5x0xyyzvnblz26q9gl8vks2nbv19b8"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums.
