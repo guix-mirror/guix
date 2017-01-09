@@ -70,7 +70,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.20.0")
+   (version "2.22.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -78,7 +78,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1w1q29yfxcq67j7fyqrfm0l0n1vy4zn539c0sf4ga9d0qkv50fj9"))))
+              "1dj47ndvspa7lghw1jvjhv3v08q5f9ab5rb395mcgjbl975gajfk"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
