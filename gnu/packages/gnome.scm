@@ -4061,7 +4061,7 @@ configuration program to choose applications starting on login.")
 (define-public gjs
   (package
     (name "gjs")
-    (version "1.44.0")
+    (version "1.46.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4069,7 +4069,7 @@ configuration program to choose applications starting on login.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "106fgpr4y99sj68l72pnfa2za11ps4bn6p9z28fr79j7mpv61jc8"))
+                "1m2ssa6qsipbp8lz4xbhf0nhadhv0xkdpmz1jcvl9187lwgmk0r2"))
               (modules '((guix build utils)))
               (snippet '(substitute* "test/run-with-dbus"
                           (("/bin/rm") "rm")))))
@@ -4080,6 +4080,10 @@ configuration program to choose applications starting on login.")
          (add-before
           'check 'pre-check
           (lambda _
+            ;; The test suite requires a running X server.
+            (system "Xvfb :1 &")
+            (setenv "DISPLAY" ":1")
+
             ;; For the missing /etc/machine-id.
             (setenv "DBUS_FATAL_WARNINGS" "0")
 
