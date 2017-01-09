@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -241,7 +241,7 @@ package provides the TrueType (TTF) files.")
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.0.24")
+    (version "0.0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -249,7 +249,7 @@ package provides the TrueType (TTF) files.")
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "0r4jnc2x9yncf40lixjb1pqgpq8rzbi2fz33pshlqzjgx2d69bcw"))))
+                "0zvkd8cm1cg2919v1js9qmzwa02sjl7qajj3gcvgqvai1fm2i8hl"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
