@@ -1052,7 +1052,7 @@ extensive documentation, including API reference and a tutorial.")
 (define-public gtkmm-2
   (package (inherit gtkmm)
     (name "gtkmm")
-    (version "2.24.4")
+    (version "2.24.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1060,7 +1060,7 @@ extensive documentation, including API reference and a tutorial.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
+               "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
     (arguments
      '(#:configure-flags '("CPPFLAGS=-std=c++11"))) ; required by libsigc++
     (native-inputs `(("pkg-config" ,pkg-config)))
