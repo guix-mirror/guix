@@ -43,14 +43,14 @@
 (define-public imagemagick
   (package
     (name "imagemagick")
-    (version "7.0.4-3")
+    (version "6.9.7-0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1i4z8lw2i4vk9gg5av50k2maf2nx6rzdm7l8jg0c5lc2788fl2dw"))))
+               "0c6ff1am2mhc0dc26h50l78yx6acwqymwpwgkxgx69cb6jfpwrdx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
