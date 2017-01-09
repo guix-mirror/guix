@@ -2332,7 +2332,7 @@ more fun.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.20.2")
+    (version "3.22.1")
     (source
      (origin
        (method url-fetch)
@@ -2341,7 +2341,7 @@ more fun.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "08ssch8h1y85wyhddkyr7ab4v8dnsn17z4ayyc5ff78gfdh30f7m"))))
+         "1m5h3ck7wcvq1kfap05jwhnbpp3kmikc2qy822gnsbdjdqrm41xh"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
