@@ -5224,7 +5224,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.20.2")
+    (version "3.22.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5232,7 +5232,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vny8fclwglapdyxd2g9fbwdlk5hhnb993k2hvq3rf0hcgswycpi"))))
+                "03wivk7hbyqrqcrd7jg0m2xj6q13248la2184qkf7zncnj72g5ih"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -5241,7 +5241,8 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
      `(("bdb" ,bdb)
        ("desktop-file-utils" ,desktop-file-utils)
        ("evolution-data-server" ,evolution-data-server)
-       ("gnome-online-accounts" ,gnome-online-accounts)))
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
     (synopsis "GNOME's calendar application")
     (description
