@@ -4455,7 +4455,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.4.2")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4463,7 +4463,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))
+                "029k2f1arx1m5hppmr778i9yg34jj68nmji3i89qs06c33rpi4w2"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
