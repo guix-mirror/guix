@@ -4973,6 +4973,35 @@ GTK-VNC implements client side RFB protocol and authentication extensions such
 as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
     (license license:lgpl2.1+)))
 
+(define-public gnome-autoar
+  (package
+    (name "gnome-autoar")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1jcs6jgysg9n3zi3d1l4iqddzmczfdcvz7vkxn607p32nl8bhp7n"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gnome-common" ,gnome-common)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libarchive" ,libarchive)))  ; XXX document why
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("nettle" ,nettle))) ; XXX: required by libarchive.pc
+    (synopsis "Archives integration support for GNOME")
+    (home-page "https://git.gnome.org/browse/gnome-autoar/")
+    (description
+     "GNOME Autoar is a library which makes creating and extracting archives
+easy, safe, and automatic.")
+    (license license:lgpl2.1+)))
+
 (define-public nautilus
   (package
     (name "nautilus")
