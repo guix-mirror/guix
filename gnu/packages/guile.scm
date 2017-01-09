@@ -1559,7 +1559,8 @@ and then run @command{scm example.scm}.")
                   (add-before 'configure 'setenv
                     (lambda _
                       ;; quiet warnings
-                      (setenv "GUILE_AUTO_COMPILE" "0"))))))
+                      (setenv "GUILE_AUTO_COMPILE" "0")
+                      #t)))))
     (home-page "https://gnu.org/s/8sync/")
     (synopsis "Asynchronous actor model library for Guile")
     (description
