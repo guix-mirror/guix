@@ -3511,7 +3511,7 @@ DAV, and others.")
 (define-public gusb
   (package
     (name "gusb")
-    (version "0.2.6")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/hughsie/libgusb/archive/"
@@ -3521,7 +3521,7 @@ DAV, and others.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "0h9dzaza81b0mx5jfh5cnc31xdynl0jsxgwvl6vqyhy8mnwfi5nr"))))
+                "1500mgpidmnjfkcz1fzqkbqv547iy1cvr8bwf3k9vqgqcjx3844n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-genmarshal, etc.
