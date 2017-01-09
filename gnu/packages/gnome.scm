@@ -712,15 +712,15 @@ database is translated at Transifex.")
 (define-public hicolor-icon-theme
   (package
     (name "hicolor-icon-theme")
-    (version "0.12")
+    (version "0.15")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://icon-theme.freedesktop.org/releases/"
-                          "hicolor-icon-theme-" version ".tar.gz"))
+                          "hicolor-icon-theme-" version ".tar.xz"))
       (sha256
        (base32
-        "0wzc7g4ldb2l8zc0x2785ck808c03i857jji942ikakyc68adp4y"))))
+        "1k1kf2c5zbqh31nglc3nxs9j6wr083k9kjyql8p22ccc671mmi4w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
