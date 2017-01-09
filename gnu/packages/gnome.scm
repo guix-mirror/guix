@@ -681,14 +681,14 @@ update-desktop-database: updates the database containing a cache of MIME types
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
-    (version "1.7")
+    (version "1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://freedesktop.org/~hadess/"
                                  "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
-               "0bjd2j1rqrj150mr04j7ib71lfdlgbf235fg8d70g8mszqf7ik7a"))))
+               "1sc96lv9dp1lkvs8dh3ngm3hbjb274d363dl9avhb61il3qmxx9a"))))
     (build-system gnu-build-system)
     (arguments
      ;; The build system appears not to be parallel-safe.
