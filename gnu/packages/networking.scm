@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;;
@@ -430,7 +430,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.13")
+    (version "5.2.14")
     (source
      (origin
        (method url-fetch)
@@ -438,7 +438,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0r3bbxpwsxssa99d8dcjnp79mw1cjwqxgmqjm1537q277jwsk0yc"))))
+         "1lmh7168yby1ma8r1svgvmv9hbgjyniy9c64r6lby3zdmd0sy7d4"))))
     (build-system gnu-build-system)
     ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
