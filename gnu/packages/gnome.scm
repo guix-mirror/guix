@@ -2803,6 +2803,8 @@ throughout GNOME for API documentation).")
        (sha256
         (base32
          "03f0ha3qk7ca0nnkkcr1garrm1n1vvfqhkz9lwjm592fnv6ii9rr"))))
+    ;; NOTE: mutter exports a bundled fork of cogl, so when making changes to
+    ;; cogl, corresponding changes may be appropriate in mutter as well.
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums
@@ -2870,6 +2872,8 @@ without stepping on each others toes.")
        (sha256
         (base32
          "01nfjd4k7j2n3agpx2d9ncff86nfsqv4n23465rb9zmk4iw4wlb7"))))
+    ;; NOTE: mutter exports a bundled fork of clutter, so when making changes
+    ;; to clutter, corresponding changes may be appropriate in mutter as well.
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;9 MiB of gtk-doc HTML pages
@@ -4193,7 +4197,7 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.20.3")
+    (version "3.22.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4201,32 +4205,69 @@ to display dialog boxes from the commandline and shell scripts.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "05pr78vgq52bkkqpbfnp9mxw14ij2wk91l2yfa69dpjbvxqm4b0l"))))
+                "18lj80klfnkwh0cb3ab0i1vfvzbp0zjl73x9d7pna4dsdhsmi6ym"))))
+     ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
+     ;; versions of cogl and clutter.  As a result, many of the inputs,
+     ;; propagated-inputs, and configure flags used in cogl and clutter are
+     ;; needed here as well.
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        ;; XXX: build fails with [-Werror]:
        ;;    backends/meta-cursor-renderer.c:112:5: error:
        ;;      implicit declaration of function ?roundf?
-       '("--enable-compile-warnings=minimum")))
+       (list "--enable-compile-warnings=minimum"
+
+             "--disable-wayland"           ; TODO enable wayland
+             ;; "--enable-native-backend"  ; TODO enable the native backend
+
+             ;; The following flags are needed for the bundled clutter
+             "--enable-x11-backend=yes"
+
+             ;; the remaining flags are needed for the bundled cogl
+             "--enable-cogl-gst"
+             (string-append "--with-gl-libname="
+                            (assoc-ref %build-inputs "mesa")
+                            "/lib/libGL.so"))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     ;; libmutter.pc refers to all these.
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+     `(;; libmutter.pc refers to these:
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
-       ("clutter" ,clutter)))
+       ;; mutter-clutter-1.0.pc and mutter-cogl-1.0.pc refer to these:
+       ("atk" ,atk)
+       ("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libinput" ,libinput)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxdamage" ,libxdamage)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("pango" ,pango)
+       ("udev" ,eudev)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("xinput" ,xinput)))
     (inputs
      `(("gnome-desktop" ,gnome-desktop)
        ("libcanberra-gtk" ,libcanberra)
+       ("libgudev" ,libgudev)
        ("libice" ,libice)
        ("libsm" ,libsm)
-       ("libxkbcommon" ,libxkbcommon)
        ("libxkbfile" ,libxkbfile)
-       ("mesa-headers" ,mesa-headers)
+       ("libxrandr" ,libxrandr)
        ("startup-notification" ,startup-notification)
        ("upower-glib" ,upower)
        ("xkeyboard-config" ,xkeyboard-config)
