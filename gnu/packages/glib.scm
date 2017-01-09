@@ -565,7 +565,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.20.0")
+    (version "3.22.0")
     (source
      (origin
        (method url-fetch)
@@ -574,7 +574,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "0ikzh3l7g1gjh8jj8vg6mdvrb25svp63gxcam4m0i404yh0lgari"))))
+         "1ryblpc4wbhxcwf7grgib4drrab5xi6p78ihhrx0zj7g13xrrch8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
