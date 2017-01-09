@@ -156,12 +156,12 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "5.6.10")
+    (version "5.6.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=03&release=206&file=01"))
+                           "package=03&release=208&file=01"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
