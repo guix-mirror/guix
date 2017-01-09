@@ -3108,7 +3108,7 @@ as possible!")
 (define-public grilo
   (package
     (name "grilo")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
@@ -3117,7 +3117,7 @@ as possible!")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0q5wcvnckpfks48hy0gvlfdmvqm67vnblm3912rssmkgc1ysil8z"))))
+         "0nvzr2gfk2mpzf99442zawv0n5yjcyy50rqkrvdsibknbm56hvzj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
@@ -3130,6 +3130,7 @@ as possible!")
        ("libxml2" ,libxml2)
        ;; XXX TODO: Add oauth
        ("libsoup" ,libsoup)
+       ("nettle" ,nettle)
        ("totem-pl-parser" ,totem-pl-parser)))
     (arguments
      `(#:phases
