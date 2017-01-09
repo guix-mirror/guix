@@ -2789,7 +2789,7 @@ throughout GNOME for API documentation).")
 (define-public cogl
   (package
     (name "cogl")
-    (version "1.22.0")
+    (version "1.22.2")
     (source
      (origin
        (method url-fetch)
@@ -2798,7 +2798,7 @@ throughout GNOME for API documentation).")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "14daxqrid5039xmq9yl4pk86awng1n9zgl6ysblhc4gw2ifzp7b8"))))
+         "03f0ha3qk7ca0nnkkcr1garrm1n1vvfqhkz9lwjm592fnv6ii9rr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums
