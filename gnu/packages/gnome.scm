@@ -3657,7 +3657,7 @@ principles are simplicity and standards compliance.")
 (define-public d-feet
   (package
     (name "d-feet")
-    (version "0.3.10")
+    (version "0.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3665,7 +3665,7 @@ principles are simplicity and standards compliance.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0nb31bvwnj7pcpm85g8bvgjc6s5kbqy8g4qp7pzqf8w6rdgxzw48"))))
+                "1hmrijm4d9vwzx2r8qzzsy8ccpj79l1y6cc569n9jjzqcq699p53"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:out-of-source? #f ; tests need to run in the source directory.
