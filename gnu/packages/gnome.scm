@@ -2528,14 +2528,14 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.3")
+    (version "0.99.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://upower.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0f6x9mi1jzgqdpycaikyhjljnw3aacsl3gxndyg0dfqkq6y9jwb9"))
+                "1c1ph1j1fnrf3vipxb7ncmdfc36dpvcvpsv8n8lmal7grjk2b8ww"))
               (patches (search-patches "upower-builddir.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
