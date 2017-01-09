@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
@@ -38,6 +38,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -134,7 +135,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.48.2")
+   (version "2.50.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -142,7 +143,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1x6kwrk1zyd3csv0ca3pmwc4bnkc33agn95cds15h6nbi4apappj"))
+              "1xgvmiqbhla6grpmbidqs3bl6zrb9mjknfsh7r4hb3163xy76s5y"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -152,6 +153,7 @@ shared NFS home directories.")
     `(("pcre" ,pcre))) ; in the Requires.private field of glib-2.0.pc
    (inputs
     `(("coreutils" ,coreutils)
+      ("util-linux" ,util-linux)  ; for libmount
       ("libffi" ,libffi)
       ("zlib" ,zlib)
       ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
