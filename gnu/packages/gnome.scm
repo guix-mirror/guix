@@ -1663,7 +1663,7 @@ engineering.")
 (define-public gnome-themes-standard
   (package
     (name "gnome-themes-standard")
-    (version "3.20.2")
+    (version "3.22.2")
     (source
      (origin
        (method url-fetch)
@@ -1672,7 +1672,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "05br99z67f82i18nljpxnwssfnaqp7mph61w3hq0i44z5i5rq3cx"))))
+         "19bxw69ms46px5xgvwbjlhq2vkmrqfx2az49q63w2wxqb76icidk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
