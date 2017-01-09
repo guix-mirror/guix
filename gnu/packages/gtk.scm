@@ -425,8 +425,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.34.0")
-   (replacement gdk-pixbuf/fixed)
+   (version "2.36.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -434,7 +433,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0yc8indbl3hf18z6x6kjg59xp9sngm1d8vmz4c7bs6g27qw5npnm"))))
+              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -475,35 +474,11 @@ in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
 
-(define gdk-pixbuf/fixed
-  (package (inherit gdk-pixbuf)
-    (name "gdk-pixbuf")
-    (version "2.36.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))))
-    (replacement #f)))
-
-(define-syntax-rule (package/inherit p overrides ...)
-  "Like (package (inherit P) OVERRIDES ...), except that the same
-transformation is done to the package replacement, if any.  P must be a bare
-identifier, and will be bound to either P or its replacement when evaluating
-OVERRIDES."
-  (let loop ((p p))
-    (package (inherit p)
-      overrides ...
-      (replacement (and=> (package-replacement p) loop)))))
-
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
 ;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
 ;; closure size.
 (define-public gdk-pixbuf+svg
-  (package/inherit gdk-pixbuf
+  (package (inherit gdk-pixbuf)
     (name "gdk-pixbuf+svg")
     (inputs
      `(("librsvg" ,librsvg)
