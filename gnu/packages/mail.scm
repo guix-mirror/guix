@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
@@ -250,7 +250,7 @@ operating systems.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "2.6.20")
+    (version "2.6.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -258,7 +258,7 @@ operating systems.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0rfzbgsh8ira5p76kdghygl5i3fvmmx4wbw5rp7f8ajc4vxp18g0"))))
+                "0fjmsphvz8srsmcdl4v13p2z4jp2migaybyny444hal4snbr0py2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
