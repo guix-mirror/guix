@@ -734,7 +734,7 @@ database is translated at Transifex.")
 (define-public libnotify
   (package
     (name "libnotify")
-    (version "0.7.6")
+    (version "0.7.7")
     (source
      (origin
       (method url-fetch)
@@ -743,7 +743,7 @@ database is translated at Transifex.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0dyq8zgjnnzcah31axnx6afb21kl7bks1gvrg4hjh3nk02j1rxhf"))))
+        "017wgq9n00hx39n0hm784zn18hl721hbaijda868cm96bcqwxd4w"))))
     (build-system gnu-build-system)
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
