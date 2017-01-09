@@ -602,14 +602,14 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
 (define-public desktop-file-utils
   (package
     (name "desktop-file-utils")
-    (version "0.22")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/" name
                                   "/releases/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ianvr2a69yjv4rpyv30w7yjsmnsb23crrka5ndqxycj4rkk4dc4"))))
+                "119kj2w0rrxkhg4f9cf5waa55jz1hj8933vh47vcjipcplql02bc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
