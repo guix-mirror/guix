@@ -3090,7 +3090,7 @@ GNOME Games, but it may be used by others.")
 (define-public gnome-klotski
   (package
     (name "gnome-klotski")
-    (version "3.20.2")
+    (version "3.22.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3098,7 +3098,7 @@ GNOME Games, but it may be used by others.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14w40a1gjlg4l1vhcy0qcf3scmwm2v3vhxnxj269pfqlv8s7alaw"))))
+                "04ragvrz29sydi2kf1zk2aimi3b3hn34jrndfd2lx6h8l45anq3q"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -3108,7 +3108,7 @@ GNOME Games, but it may be used by others.")
        ("xmllint" ,libxml2)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("libgames-support" ,libgames-support)
+       ("libgnome-games-support" ,libgnome-games-support)
        ("librsvg" ,librsvg)))
     (home-page "https://wiki.gnome.org/Apps/Klotski")
     (synopsis "Sliding block puzzles")
