@@ -2260,7 +2260,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.20.1")
+    (version "3.22.2")
     (source
      (origin
        (method url-fetch)
@@ -2269,7 +2269,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0frb1r0f55giz7yqxl9920vvzqlirdivz54ygc9d85r8v63fh5aq"))))
+         "1wia0nj5i244m6pq3lridvk3vx9yipsa9l921nsskd97115mnyza"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -2286,6 +2286,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
        ("xmllint" ,libxml2)))
     (inputs
      `(("gtk+" ,gtk+)
+       ("libgnome-games-support" ,libgnome-games-support)
        ("librsvg" ,librsvg)))
     (home-page "https://wiki.gnome.org/Apps/Mines")
     (synopsis "Minesweeper game")
