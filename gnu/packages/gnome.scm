@@ -89,6 +89,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -1777,7 +1778,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.44.2")
+    (version "0.46.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1785,7 +1786,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0j899ccrkzh7208w29c835m1yms0cas5cxkck8x6l4xv2i45ksm1"))))
+                "1ipmnfazvhzjp5pjw90mmxbkizivnh7gnlqqml94lw2rqa5wy048"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: fails to compile tests with the default flags.
@@ -1804,7 +1805,8 @@ libraries written in C.")
        ("xmllint" ,libxml2)))
     (propagated-inputs
      `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
-       ("gnutls" ,gnutls)))                       ;ditto
+       ("gnutls" ,gnutls)                         ;ditto
+       ("pcre2" ,pcre2)))                         ;ditto
     (home-page "http://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
