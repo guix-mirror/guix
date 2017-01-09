@@ -5068,7 +5068,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.20.2")
+    (version "3.22.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5076,11 +5076,11 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bnalv0ljdjzqzvh3rfyg7r4z8vdbq1gdard5q68riqdi2dnfvld"))))
+                "1cv5xsah04svxx0b6di7iah9gcwk6na2c6lp442pal9v2ybrw76f"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
-       '("--disable-tracker" "--disable-selinux") ; XXX: not packaged
+       '("--disable-selinux") ; XXX: not packaged
        ;; XXX: FAIL: check-nautilus
        ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
        #:tests? #f))
@@ -5094,6 +5094,9 @@ shared object databases, search tools and indexing.")
        ("gvfs" ,gvfs)
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
+       ("gnome-autoar" ,gnome-autoar)
+       ("nettle" ,nettle)    ; XXX required by libarchive.pc via gnome-autoar
+       ("tracker" ,tracker)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
        ;;
        ;; Don't propagate it to reduces "profile pollution" of the 'gnome' meta
