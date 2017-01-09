@@ -2765,7 +2765,7 @@ which are easy to play with the aid of a mouse.")
 (define-public devhelp
   (package
     (name "devhelp")
-    (version "3.20.0")
+    (version "3.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2773,7 +2773,7 @@ which are easy to play with the aid of a mouse.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "078zr92xs5ifp862v1vdmw1j9m6gr9zk5hjbk5065vxjwb17acx2"))))
+                "1c7zqn8apm1lnpsp74bd880rga2vi5wxfjghqdgwqf6j28pf1jjr"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
