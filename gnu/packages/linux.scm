@@ -705,6 +705,8 @@ slabtop, and skill.")
     (version (package-version e2fsprogs))
     (build-system trivial-build-system)
     (source #f)
+    (inputs
+     `(("e2fsprogs" ,e2fsprogs/static)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -713,23 +715,18 @@ slabtop, and skill.")
                       (ice-9 ftw)
                       (srfi srfi-26))
 
-         (let ((source (string-append (assoc-ref %build-inputs "e2fsprogs")
-                                      "/sbin"))
+         (let ((e2fsck (string-append (assoc-ref %build-inputs "e2fsprogs")
+                                      "/sbin/e2fsck"))
                (bin    (string-append (assoc-ref %outputs "out") "/sbin")))
            (mkdir-p bin)
            (with-directory-excursion bin
-             (for-each (lambda (file)
-                         (copy-file (string-append source "/" file)
-                                    file)
-                         (remove-store-references file)
-                         (chmod file #o555))
-                       (scandir source (cut string-prefix? "fsck." <>))))))))
-    (inputs `(("e2fsprogs" ,e2fsprogs/static)))
-    (synopsis "Statically-linked fsck.* commands from e2fsprogs")
-    (description
-     "This package provides statically-linked command of fsck.ext[234] taken
-from the e2fsprogs package.  It is meant to be used in initrds.")
+             (copy-file e2fsck "e2fsck")
+             (remove-store-references "e2fsck")
+             (chmod "e2fsck" #o555))))))
     (home-page (package-home-page e2fsprogs))
+    (synopsis "Statically-linked e2fsck command from e2fsprogs")
+    (description "This package provides statically-linked e2fsck command taken
+from the e2fsprogs package.  It is meant to be used in initrds.")
     (license (package-license e2fsprogs))))
 
 (define-public extundelete
