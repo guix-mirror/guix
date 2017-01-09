@@ -478,7 +478,7 @@ in the GNOME project.")
 (define gdk-pixbuf/fixed
   (package (inherit gdk-pixbuf)
     (name "gdk-pixbuf")
-    (version "2.36.2")
+    (version "2.36.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -486,7 +486,7 @@ in the GNOME project.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0p9jbns5crvkvrq5qbd4k2z6g0b10r507cnhmrq5kdb8gpb2l21s"))))
+                "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))))
     (replacement #f)))
 
 (define-syntax-rule (package/inherit p overrides ...)
