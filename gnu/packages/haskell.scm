@@ -3052,7 +3052,7 @@ use HUnit assertions as QuickCheck properties.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.8.1")
+    (version "2.8.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3063,7 +3063,7 @@ use HUnit assertions as QuickCheck properties.")
              ".tar.gz"))
        (sha256
         (base32
-         "0fvnfl30fxmj5q920l13641ar896d53z0z6z66m7c1366lvalwvh"))))
+         "1ai6k5v0bibaxq8xffcblc6rwmmk6gf8vjyd9p2h3y6vwbhlvilq"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
