@@ -194,8 +194,7 @@ living in the same process.")
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
-     `(("guile" ,guile-2.0)
-       ("perl" ,perl)))
+     `(("guile" ,guile-2.0)))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
