@@ -970,15 +970,15 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.12.15")
+    (version "2017.01.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://youtube-dl.org/downloads/"
+              (uri (string-append "https://yt-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "17m3dimgpn6139w95drc7zncfx2mskjx45qvmj74zhdqxnk3gnc5"))))
+                "0clr6vj9lg96fffc9xv2apr7an6lljnli1b8clfj4dap1i0d34v4"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1006,7 +1006,7 @@ access to mpv's powerful playback capabilities.")
     (description
      "Youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
-    (home-page "https://youtube-dl.org")
+    (home-page "https://yt-dl.org")
     (license license:public-domain)))
 
 (define-public libbluray
