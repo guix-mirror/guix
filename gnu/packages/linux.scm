@@ -622,9 +622,15 @@ slabtop, and skill.")
                "1ix0b83zgw5n0p2grh2961c6796m92yr2jqc2sbr23x3lfsp8r71"))
              (modules '((guix build utils)))
              (snippet
-              '(substitute* "MCONFIG.in"
-                 (("INSTALL_SYMLINK = /bin/sh")
-                  "INSTALL_SYMLINK = sh")))))
+              '(begin
+                 (substitute* "MCONFIG.in"
+                   (("INSTALL_SYMLINK = /bin/sh")
+                    "INSTALL_SYMLINK = sh"))
+
+                 ;; Do not include a timestamp in libext2fs.info.gz.
+                 (substitute* "doc/Makefile.in"
+                   (("gzip -9")
+                    "gzip -9n"))))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
