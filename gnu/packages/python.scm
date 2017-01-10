@@ -3463,14 +3463,14 @@ association studies (GWAS) on extremely large data sets.")
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.24.2")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
         (base32
-         "0shnafv9zc483wmcr4fzgvirg1qzz42xpdqd4a3ad39sdj1qbbia"))))
+         "0wf5rp0fvrw7j3j18dvwjq6xqlbm611wd55aphrfpps0v1gxh3ny"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
