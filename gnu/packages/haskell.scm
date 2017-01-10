@@ -8133,4 +8133,33 @@ Rust syntax.  It is intended to be useful for two different purposes:
 @end enumerate\n")
       (license license:gpl2+))))
 
+(define-public ghc-wave
+  (package
+    (name "ghc-wave")
+    (version "0.1.4")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://hackage.haskell.org/package/wave/wave-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1g5nmqfk6p25v9ismwz4i66ay91bd1qh39xwj0hm4z6a5mw8frk8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-data-default-class"
+        ,ghc-data-default-class)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/mrkkrp/wave")
+    (synopsis "Work with WAVE and RF64 files in Haskell")
+    (description "This package allows you to work with WAVE and RF64
+files in Haskell.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
