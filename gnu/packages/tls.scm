@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
@@ -139,6 +139,7 @@ living in the same process.")
   (package
     (name "gnutls")
     (version "3.5.4")
+    (replacement gnutls-3.5.8)
     (source (origin
              (method url-fetch)
              (uri
@@ -210,6 +211,20 @@ required structures.")
     (license license:lgpl2.1+)
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
+
+(define gnutls-3.5.8                              ;fixes GNUTLS-SA-2017-{1,2}
+  (package
+    (inherit gnutls)
+    (version "3.5.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnutls/v"
+                                  (version-major+minor version)
+                                  "/gnutls-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1zyl2z63s68hx1dpxqx0lykmlf3rwrzlrf44sq3h7dvjmr1z55qf"))))
+    (replacement #f)))
 
 (define-public openssl
   (package
