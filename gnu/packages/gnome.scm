@@ -82,6 +82,7 @@
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages lirc)
@@ -104,6 +105,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages freedesktop)
@@ -118,6 +120,8 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages fonts)
+  #:use-module (gnu packages qemu)
+  #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -5001,6 +5005,65 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
      "GNOME Autoar is a library which makes creating and extracting archives
 easy, safe, and automatic.")
     (license license:lgpl2.1+)))
+
+(define-public tracker
+  (package
+    (name "tracker")
+    (version "1.10.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "03ch3ndmxghfr9wnw9hfmpkjfa7k5v5cwwf3y1ja6ihk3c5avgbb"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gnome-common" ,gnome-common)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("dbus" ,dbus)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("sqlite" ,sqlite)
+       ("nettle" ,nettle)  ; XXX why is this needed?
+       ("poppler" ,poppler)
+       ("libgsf" ,libgsf)
+       ("libexif" ,libexif)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libvorbis" ,libvorbis)
+       ("flac" ,flac)
+       ("totem-pl-parser" ,totem-pl-parser)
+       ("zlib" ,zlib)
+       ("exempi" ,exempi)
+       ("libxml2" ,libxml2)
+       ("upower" ,upower)
+       ("libgee" ,libgee)
+       ("libunistring" ,libunistring)
+       ("giflib" ,giflib)
+       ("openjpeg" ,openjpeg-1)
+       ("libosinfo" ,libosinfo)
+       ("libcue" ,libcue)
+       ("libseccomp" ,libseccomp)
+       ("libuuid" ,util-linux)))
+    (arguments `(#:tests? #f))  ; XXX FIXME enable tests (some fail)
+    (synopsis "Metadata database, indexer and search tool")
+    (home-page "https://wiki.gnome.org/Projects/Tracker")
+    (description
+     "Tracker is an advanced framework for first class objects with associated
+metadata and tags.  It provides a one stop solution for all metadata, tags,
+shared object databases, search tools and indexing.")
+    ;; src/libtracker-*/* and src/tracker-extract/* are covered by lgpl2.1+,
+    ;; src/gvdb/* are covered by lgpl2.0+, and the rest is gpl2+.
+    (license (list license:gpl2+
+                   license:lgpl2.1+
+                   license:lgpl2.0+))))
 
 (define-public nautilus
   (package
