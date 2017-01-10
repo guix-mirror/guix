@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,6 +98,57 @@ library.  It supports almost all PNG features and is extensible.")
       (origin
         (inherit (package-source libpng))
         (patches (search-patches "libpng-CVE-2016-10087.patch"))))))
+
+(define-public libpng-apng
+  (package
+    (inherit libpng)
+    (replacement #f) ;libpng's replacement doesn't apply here
+    (name "libpng-apng")
+    (version (package-version libpng))
+    (source
+     (origin
+       (inherit (package-source libpng))
+       (patches (search-patches "libpng-CVE-2016-10087.patch"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-apng
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (apply-patch file)
+               (zero? (system* "patch" "-p1" "--force"
+                               "--input" file)))
+             (let ((apng.gz (assoc-ref inputs "apng")))
+               (format #t "Applying APNG patch '~a'...~%"
+                       apng.gz)
+               (system (string-append "gunzip < " apng.gz " > the-patch"))
+               (and (apply-patch "the-patch")
+                    (for-each apply-patch
+                              (find-files "\\.patch"))))
+           #t))
+         (add-before 'configure 'no-checks
+           (lambda _
+             (substitute* "Makefile.in"
+               (("^scripts/symbols.chk") "")
+               (("check: scripts/symbols.chk") ""))
+             (zero? (system* "libtool"))
+             #t)))))
+    (inputs
+     `(("apng" ,(origin
+                  (method url-fetch)
+                  (uri
+                   (string-append "mirror://sourceforge/libpng-apng/libpng16/"
+                                  version "/libpng-" version "-apng.patch.gz"))
+                  (sha256
+                   (base32
+                    "026r0gbkf6d6v54wca02cdxln8sj4m2c1yk62sj2aasv2ki2ffh5"))))))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (synopsis "APNG patch for libpng")
+    (description
+     "APNG (Animated Portable Network Graphics) is an unofficial
+extension of the APNG (Portable Network Graphics) format.
+APNG patch provides APNG support to libpng.")
+    (home-page "https://sourceforge.net/projects/libpng-apng/")))
 
 (define-public libpng-1.2
   (package
