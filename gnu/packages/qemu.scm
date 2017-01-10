@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -237,6 +237,7 @@ server and embedded PowerPC, and S390 guests.")
         ,(origin
            (method url-fetch)
            (uri "http://linux-usb.cvs.sourceforge.net/viewvc/linux-usb/htdocs/usb.ids?revision=1.539")
+           (file-name "usb.ids")
            (sha256
             (base32
              "0w9ila7662lzpx416lqy69zx6gfwq2xiigwd5fdyqcrg3dj07m80"))))))
