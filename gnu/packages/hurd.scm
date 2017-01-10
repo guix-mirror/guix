@@ -35,6 +35,10 @@
   (and (string-suffix? "-gnu" triplet)
        (not (string-contains triplet "linux"))))
 
+(define (gnumach-source-url version)
+  (string-append "mirror://gnu/gnumach/gnumach-"
+                 version ".tar.gz"))
+
 (define-public gnumach-headers
   (package
     (name "gnumach-headers")
@@ -42,8 +46,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/gnumach/gnumach-"
-                          version ".tar.gz"))
+      (uri (gnumach-source-url version))
       (sha256
        (base32
         "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f"))))
