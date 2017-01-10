@@ -1,0 +1,60 @@
+Fix heap-based buffer overflow in combineSeparateSamples16bits():
+
+http://bugzilla.maptools.org/show_bug.cgi?id=2621
+
+2016-12-03 Even Rouault <even.rouault at spatialys.com>
+
+        * tools/tiffcrop.c: add 3 extra bytes at end of strip buffer in
+        readSeparateStripsIntoBuffer() to avoid read outside of heap allocated
+buffer.
+        Reported by Agostina Sarubo.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2621
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <--  ChangeLog
+new revision: 1.1179; previous revision: 1.1178
+/cvs/maptools/cvsroot/libtiff/tools/tiffcrop.c,v  <--  tools/tiffcrop.c
+new revision: 1.48; previous revision: 1.47
+
+Index: libtiff/tools/tiffcrop.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/tools/tiffcrop.c,v
+retrieving revision 1.47
+retrieving revision 1.48
+diff -u -r1.47 -r1.48
+--- libtiff/tools/tiffcrop.c	3 Dec 2016 11:35:56 -0000	1.47
++++ libtiff/tools/tiffcrop.c	3 Dec 2016 12:19:32 -0000	1.48
+@@ -1,4 +1,4 @@
+-/* $Id: tiffcrop.c,v 1.47 2016-12-03 11:35:56 erouault Exp $ */
++/* $Id: tiffcrop.c,v 1.48 2016-12-03 12:19:32 erouault Exp $ */
+ 
+ /* tiffcrop.c -- a port of tiffcp.c extended to include manipulations of
+  * the image data through additional options listed below
+@@ -4815,10 +4815,17 @@
+   nstrips = TIFFNumberOfStrips(in);
+   strips_per_sample = nstrips /spp;
+ 
++  /* Add 3 padding bytes for combineSeparateSamples32bits */
++  if( (size_t) stripsize > 0xFFFFFFFFU - 3U )
++  {
++      TIFFError("readSeparateStripsIntoBuffer", "Integer overflow when calculating buffer size.");
++      exit(-1);
++  }
++
+   for (s = 0; (s < spp) && (s < MAX_SAMPLES); s++)
+     {
+     srcbuffs[s] = NULL;
+-    buff = _TIFFmalloc(stripsize);
++    buff = _TIFFmalloc(stripsize + 3);
+     if (!buff)
+       {
+       TIFFError ("readSeparateStripsIntoBuffer", 
+@@ -4827,6 +4834,9 @@
+         _TIFFfree (srcbuffs[i]);
+       return 0;
+       }
++    buff[stripsize] = 0;
++    buff[stripsize+1] = 0;
++    buff[stripsize+2] = 0;
+     srcbuffs[s] = buff;
+     }
+ 

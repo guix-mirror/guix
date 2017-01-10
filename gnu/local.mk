@@ -683,6 +683,21 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10092.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10093.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10094.patch		\
+  %D%/packages/patches/libtiff-assertion-failure.patch		\
+  %D%/packages/patches/libtiff-divide-by-zero-ojpeg.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero-tiffcp.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero-tiffcrop.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero.patch		\
+  %D%/packages/patches/libtiff-heap-overflow-pixarlog-luv.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tif-dirread.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tiffcp.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tiffcrop.patch	\
+  %D%/packages/patches/libtiff-invalid-read.patch		\
+  %D%/packages/patches/libtiff-null-dereference.patch		\
+  %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libupnp-CVE-2016-6255.patch		\
