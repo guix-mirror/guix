@@ -173,7 +173,8 @@ and vice versa.")
               (uri (string-append "https://github.com/cracklib/cracklib/"
                                   "releases/download/" name "-" version "/"
                                   name "-" version ".tar.gz"))
-              (patches (search-patches "cracklib-CVE-2016-6318.patch"))
+              (patches (search-patches "cracklib-CVE-2016-6318.patch"
+                                       "cracklib-fix-buffer-overflow.patch"))
               (sha256
                (base32
                 "0hrkb0prf7n92w6rxgq0ilzkk6rkhpys2cfqkrbzswp27na7dkqp"))))
