@@ -940,7 +940,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -948,7 +948,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "1a65ai93ygras5bi7wc0s5i3zqslzqlnw3klq3sdnp2p0d6hjjqn"))))
+                "1s47biv6d68nblpz6d3aklsar1xxxcilzr4y77v3hz2w1wbz2b5m"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
