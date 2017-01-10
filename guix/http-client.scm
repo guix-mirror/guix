@@ -276,7 +276,12 @@ Raise an '&http-get-error' condition if downloading fails."
                               (code code)
                               (reason (response-reason-phrase resp)))
                              (&message
-                              (message "download failed"))))))))))
+                              (message
+                               (format
+                                #f
+                                (_ "~a: HTTP download failed: ~a (~s)")
+                                (uri->string uri) code
+                                (response-reason-phrase resp))))))))))))
 
 
 ;;;
