@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
@@ -640,6 +640,11 @@ slabtop, and skill.")
        #:configure-flags '("--disable-libblkid"
                            "--disable-libuuid" "--disable-uuidd"
                            "--disable-fsck"
+
+                           ;; Use symlinks instead of hard links for
+                           ;; 'fsck.extN' etc.  This makes the resulting nar
+                           ;; smaller and is preserved across copies.
+                           "--enable-symlink-install"
 
                            ;; Install libext2fs et al.
                            "--enable-elf-shlibs")
