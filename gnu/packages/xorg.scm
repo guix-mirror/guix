@@ -355,7 +355,7 @@ provided.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-appdefaultdir="
-                            %output "/lib/X11/app-defaults"))))
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libxaw" ,libxaw)
        ("libxmu" ,libxmu)
