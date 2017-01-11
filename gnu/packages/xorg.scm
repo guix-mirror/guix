@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -335,6 +335,7 @@ provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
 
+(define %app-defaults-dir "/lib/X11/app-defaults")
 
 (define-public editres
   (package
@@ -3982,23 +3983,9 @@ protocol.")
                 "1grir464hy52a71r3mpm9mzvkf7nwr3vk0b1vc27pd3gp588a38p"))))
     (build-system gnu-build-system)
     (arguments
-     ;; By default, it tries to install XFontSel file in
-     ;; "/gnu/store/<libxt>/share/X11/app-defaults": it defines this
-     ;; directory from 'libxt' (using 'pkg-config').  To put this file
-     ;; inside output dir and to use it properly, we need to configure
-     ;; --with-appdefaultdir and to wrap 'xfontsel' binary.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
-       `(#:configure-flags
-         (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfontsel
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfontsel")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libx11" ,libx11)
        ("libxaw" ,libxaw)
