@@ -4015,19 +4015,9 @@ Font Description (XLFD) full name for a font.")
                 "0n97iqqap9wyxjan2n520vh4rrf5bc0apsw2k9py94dqzci258y1"))))
     (build-system gnu-build-system)
     (arguments
-     ;; The same 'app-defaults' problem as with 'xfontsel' package.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
        `(#:configure-flags
          (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfd
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfd")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+                              %output ,%app-defaults-dir))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("libx11" ,libx11)
