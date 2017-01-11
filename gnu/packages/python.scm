@@ -12331,3 +12331,47 @@ possible on all supported Python versions.")
 
 (define-public python2-xopen
   (package-with-python2 python-xopen))
+
+(define-public python2-cheetah
+  (package
+    (name "python2-cheetah")
+    (version "2.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Cheetah" version))
+        (sha256
+          (base32
+            "0l5mm4lnysjkzpjr95q5ydm9xc8bv43fxmr79ypybrf1y0lq4c5y"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-markdown" ,python2-markdown)))
+    (home-page "https://pythonhosted.org/Cheetah/")
+    (synopsis "Template engine")
+    (description "Cheetah is a text-based template engine and Python code
+generator.
+
+Cheetah can be used as a standalone templating utility or referenced as
+a library from other Python applications.  It has many potential uses,
+but web developers looking for a viable alternative to ASP, JSP, PHP and
+PSP are expected to be its principle user group.
+
+Features:
+@enumerate
+@item Generates HTML, SGML, XML, SQL, Postscript, form email, LaTeX, or any other
+   text-based format.
+@item Cleanly separates content, graphic design, and program code.
+@item Blends the power and flexibility of Python with a simple template language
+   that non-programmers can understand.
+@item Gives template writers full access to any Python data structure, module,
+   function, object, or method in their templates.
+@item Makes code reuse easy by providing an object-orientated interface to
+   templates that is accessible from Python code or other Cheetah templates.
+   One template can subclass another and selectively reimplement sections of it.
+@item Provides a simple, yet powerful, caching mechanism that can dramatically
+   improve the performance of a dynamic website.
+@item Compiles templates into optimized, yet readable, Python code.
+@end enumerate")
+    (license (license:x11-style "file://LICENSE"))))
