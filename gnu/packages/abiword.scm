@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -56,7 +57,7 @@
          (search-patches "abiword-wmf-version-lookup-fix.patch"
                          "abiword-explictly-cast-bools.patch"))))
 
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments                   ;; NOTE: rsvg is disabled, since Abiword
       `(#:configure-flags        ;; supports it directly, and its BS is broken.
         (list
