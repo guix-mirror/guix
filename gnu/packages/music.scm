@@ -2179,7 +2179,7 @@ with a number of bugfixes and changes to improve IT playback.")
 (define-public moc
   (package
     (name "moc")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.daper.net/pub/soft/"
@@ -2187,7 +2187,13 @@ with a number of bugfixes and changes to improve IT playback.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1wn4za08z64bhsgfhr9c0crfyvy8c3b6a337wx7gz19am5srqh8v"))))
+                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
+               '(substitute* "main.c"
+                  (("printf \\(\"            Built : %s\", __DATE__\\);") "")
+                  (("printf \\(\" %s\", __TIME__\\);") "")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
