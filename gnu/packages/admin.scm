@@ -471,7 +471,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "9")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "4")      ; for patch release, e.g. "4"
+         (bind-release-version "5")      ; for patch release, e.g. "4"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -587,7 +587,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1qpi23lrs6jfxqx8dakbqfyg3hvrzq5ldchg6my19xcvx8515mgx"))))
+                      "1yn15chkfqf4d7961ip2x10jm27a9wqymz2xqh0a2g89arrirkaw"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
