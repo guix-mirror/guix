@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,7 @@
 (define-module (guix scripts perform-download)
   #:use-module (guix ui)
   #:use-module (guix derivations)
-  #:use-module ((guix store) #:select (derivation-path?))
+  #:use-module ((guix store) #:select (derivation-path? store-path?))
   #:use-module (guix build download)
   #:use-module (ice-9 match)
   #:export (guix-perform-download))
@@ -41,10 +41,13 @@
     (module-use! module (resolve-interface '(guix base32)))
     module))
 
-(define (perform-download drv)
-  "Perform the download described by DRV, a fixed-output derivation."
+(define (perform-download drv output)
+  "Perform the download described by DRV, a fixed-output derivation, to
+OUTPUT.
+
+Note: We don't read the value of 'out' in DRV since the actual output is
+different from that when we're doing a 'bmCheck' or 'bmRepair' build."
   (derivation-let drv ((url "url")
-                       (output "out")
                        (executable "executable")
                        (mirrors "mirrors")
                        (content-addressed-mirrors "content-addressed-mirrors"))
@@ -93,18 +96,20 @@ of GnuTLS over HTTPS, before we have built GnuTLS.  See
 <http://bugs.gnu.org/22774>."
   (with-error-handling
     (match args
-      (((? derivation-path? drv))
+      (((? derivation-path? drv) (? store-path? output))
        ;; This program must be invoked by guix-daemon under an unprivileged
        ;; UID to prevent things downloading from 'file:///etc/shadow' or
        ;; arbitrary code execution via the content-addressed mirror
        ;; procedures.  (That means we exclude users who did not pass
        ;; '--build-users-group'.)
        (assert-low-privileges)
-       (perform-download (call-with-input-file drv read-derivation)))
+       (perform-download (call-with-input-file drv read-derivation)
+                         output))
       (("--version")
        (show-version-and-exit))
       (x
-       (leave (_ "fixed-output derivation name expected~%"))))))
+       (leave
+        (_ "fixed-output derivation and output file name expected~%"))))))
 
 ;; Local Variables:
 ;; eval: (put 'derivation-let 'scheme-indent-function 2)

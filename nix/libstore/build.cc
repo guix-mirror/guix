@@ -2271,8 +2271,17 @@ void DerivationGoal::runChild()
                 logType = ltFlat;
 
 		auto buildDrv = lookupBuiltinBuilder(drv.builder);
-                if (buildDrv != NULL)
-                    buildDrv(drv, drvPath);
+                if (buildDrv != NULL) {
+		    /* Check what the output file name is.  When doing a
+		       'bmCheck' build, the output file name is different from
+		       that specified in DRV due to hash rewriting.  */
+		    Path output = drv.outputs["out"].path;
+		    auto redirected = redirectedOutputs.find(output);
+		    if (redirected != redirectedOutputs.end())
+			output = redirected->second;
+
+                    buildDrv(drv, drvPath, output);
+		}
                 else
                     throw Error(format("unsupported builtin function '%1%'") % string(drv.builder, 8));
                 _exit(0);
@@ -2742,6 +2751,8 @@ Path DerivationGoal::addHashRewrite(const Path & path)
     rewritesToTmp[h1] = h2;
     rewritesFromTmp[h2] = h1;
     redirectedOutputs[path] = p;
+    printMsg(lvlChatty, format("output '%1%' redirected to '%2%'")
+	     % path % p);
     return p;
 }
 
