@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -500,11 +500,13 @@ returned by `config.guess'."
   ;; cross-building to.
   (make-parameter #f))
 
-(define (package-name->name+version spec)
+(define* (package-name->name+version spec
+                                     #:optional (delimiter #\@))
   "Given SPEC, a package name like \"foo@0.9.1b\", return two values: \"foo\"
 and \"0.9.1b\".  When the version part is unavailable, SPEC and #f are
-returned.  Both parts must not contain any '@'."
-  (match (string-rindex spec #\@)
+returned.  Both parts must not contain any '@'.  Optionally, DELIMITER can be
+a character other than '@'."
+  (match (string-rindex spec delimiter)
     (#f  (values spec #f))
     (idx (values (substring spec 0 idx)
                  (substring spec (1+ idx))))))
