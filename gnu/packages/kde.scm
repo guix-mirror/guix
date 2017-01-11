@@ -98,15 +98,18 @@
              (let* ((out  (assoc-ref outputs "out"))
                     (kdevplatform (assoc-ref inputs "kdevplatform"))
                     (kio (assoc-ref inputs "kio"))
+                    (kcmutils (assoc-ref inputs "kcmutils"))
                     (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
                     (qtdeclarative (assoc-ref inputs "qtdeclarative"))
-                    (plugins "/lib/plugins")
+                    (profile "$HOME/.guix-profile")
                     (qml "/qml"))
                (wrap-program (string-append out "/bin/kdevelop")
+                 `("XDG_DATA_DIRS" ":" prefix
+                   ,(map (lambda (s) (string-append s "/share"))
+                         (list profile out kdevplatform kcmutils)))
                  `("QT_PLUGIN_PATH" ":" prefix
-                   (,(string-append out plugins)
-                    ,(string-append kdevplatform plugins)
-                    ,(string-append kio plugins)))
+                   ,(map (lambda (s) (string-append s "/lib/plugins"))
+                         (list profile out kdevplatform kio)))
                  `("QML2_IMPORT_PATH" ":" prefix
                    (,(string-append qtquickcontrols qml)
                     ,(string-append qtdeclarative qml))))))))))
