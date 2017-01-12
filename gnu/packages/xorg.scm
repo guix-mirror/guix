@@ -5594,6 +5594,35 @@ user-friendly mechanism to start the X server.")
 Intrinsics (Xt) Library.")
     (license license:x11)))
 
+(define-public xmag
+  (package
+    (name "xmag")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19bsg5ykal458d52v0rvdx49v54vwxwqg8q36fdcsv9p2j8yri87"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Display or capture a magnified part of a X11 screen")
+    (description "Xmag displays and captures a magnified snapshot of a portion
+of an X11 screen.")
+    (license license:x11)))
+
 (define-public xmessage
   (package
     (name "xmessage")
