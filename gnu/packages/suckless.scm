@@ -43,7 +43,9 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages gawk))
+  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages libbsd))
 
 (define-public dwm
   (package
@@ -623,3 +625,51 @@ fullrune(s,n) ? chartorune(p,s): 0.
 as -1, to be used instead of U+FFFD.
 @end itemize\n")
       (license license:expat))))
+
+;; No release tarballs so far.
+(define-public lchat
+  (let ((revision "1")
+        (commit "bbde23732f8c7769b982f0c1bda9b99fbf93f932"))
+    (package
+      (name "lchat")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/younix/lchat")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "00q3rc0aa5416jvjvrj71x1wnr0331kxhvjjs7pyxgnq4xf36k63"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; No tests
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No configure script
+           (add-before 'build 'libbsd
+             (lambda _
+               (substitute* "Makefile"
+                 (("-lutf") "-lutf -lbsd"))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "lchat" bin)
+                 #t))))))
+      (inputs
+       `(("grep" ,grep)
+         ("ncurses" ,ncurses)
+         ("libutf" ,libutf)
+         ("libbsd" ,libbsd)))
+      (home-page "https://github.com/younix/lchat")
+      (synopsis "Line chat is a frontend for the irc client ii from suckless")
+      (description
+       "Lchat (line chat) is the little and small brother of cii.
+It is a front end for ii-like chat programs.  It uses tail(1) -f to get the
+chat output in background.")
+      (license license:isc))))
