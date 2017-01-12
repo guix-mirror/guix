@@ -544,3 +544,33 @@ initially intended to be used on musl based Linux distributions.
   into the resulting binary.
 @end itemize\n")
     (license license:isc)))
+
+(define-public colors
+  (package
+    (name "colors")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lckmqpgj89841splng0sszbls2ag71ggkgr1wsv9y3v6y87589z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (inputs
+     `(("libpng" ,libpng)))
+    (home-page "http://git.2f30.org/colors/")
+    (synopsis "Extract colors from pictures")
+    (description
+     "Extract colors from PNG files.  It is similar to
+strings(1) but for pictures.  For a given input file it outputs a
+colormap to stdout.")
+    (license license:isc)))
