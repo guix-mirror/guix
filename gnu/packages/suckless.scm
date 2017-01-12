@@ -503,3 +503,44 @@ factorisation, but you can force its output.
 You can adjust the number of decimals with the @code{SCALE}
 environment variable.")
     (license license:wtfpl2))))
+
+(define-public fortify-headers
+  (package
+    (name "fortify-headers")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cacdczpjb49c4i1168g541wnl3i3gbpv2m2wbnmw5wddlyhgkdg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/fortify-headers/")
+    (synopsis "Standalone fortify-source implementation")
+    (description
+     "This is a standalone implementation of fortify source.  It provides
+compile time buffer checks.  It is libc-agnostic and simply overlays the
+system headers by using the @code{#include_next} extension found in GCC.  It was
+initially intended to be used on musl based Linux distributions.
+
+@itemize
+@item It is portable, works on *BSD, Linux, Solaris and possibly others.
+@item It will only trap non-conformant programs.  This means that fortify
+  level 2 is treated in the same way as level 1.
+@item Avoids making function calls when undefined behaviour has already been
+  invoked.  This is handled by using __builtin_trap().
+@item Support for out-of-bounds read interfaces, such as send(), write(),
+  fwrite() etc.
+@item No ABI is enforced.  All of the fortify check functions are inlined
+  into the resulting binary.
+@end itemize\n")
+    (license license:isc)))
