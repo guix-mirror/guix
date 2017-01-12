@@ -282,3 +282,36 @@ few minutes.")
     (description
      "Xbattmon is a simple battery monitor for X.")
     (license license:isc)))
+
+(define-public wificurse
+  (package
+    (name "wificurse")
+    (version "0.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "067ghr1xly5ca41kc83xila1p5hpq0bxfcmc8jvxi2ggm6wrhavn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list
+                     (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/wificurse/")
+    (synopsis "Wifi DoS attack tool")
+    (description
+     "Wificurses listens for beacons sent from wireless access points
+in the range of your wireless station.  Once received the program
+extracts the BSSID of the AP and transmits deauthentication packets
+using the broadcast MAC address.  This results to the disconnection
+of all clients connected to the AP at the time of the attack.  This
+is essencially a WiFi DoS attack tool created for educational
+purposes only.  It works only in Linux and requires wireless card
+drivers capable of injecting packets in wireless networks.")
+    (license license:gpl3+)))
