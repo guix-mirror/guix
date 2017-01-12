@@ -42,7 +42,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages gawk))
 
 (define-public dwm
   (package
@@ -574,3 +575,51 @@ initially intended to be used on musl based Linux distributions.
 strings(1) but for pictures.  For a given input file it outputs a
 colormap to stdout.")
     (license license:isc)))
+
+;; No new releases were made at github, this repository is more active than
+;; the one at http://git.suckless.org/libutf/ and it is
+;; done by the same developer.
+(define-public libutf
+  (let ((revision "1")
+        (commit "ff4c60635e1f455b0a0b4200f8183fbd5a88225b"))
+    (package
+      (name "libutf")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cls/libutf")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1ih5vjavilzggyr1j1z6w1z12c2fs5fg77cfnv7ami5ivsy3kg3d"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; No tests
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)))) ; No configure script
+      (inputs
+       `(("gawk" ,gawk)))
+      (home-page "https://github.com/cls/libutf")
+      (synopsis "Plan 9 compatible UTF-8 library")
+      (description
+       "This is a C89 UTF-8 library, with an API compatible with that of
+Plan 9's libutf, but with a number of improvements:
+
+@itemize
+@item Support for runes beyond the Basic Multilingual Plane.
+@item utflen and utfnlen cannot overflow on 32- or 64-bit machines.
+@item chartorune treats all invalid codepoints as though Runeerror.
+@item fullrune, utfecpy, and utfnlen do not overestimate the length
+of malformed runes.
+@item An extra function, charntorune(p,s,n), equivalent to
+fullrune(s,n) ? chartorune(p,s): 0.
+@item Runeerror may be set to an alternative replacement value, such
+as -1, to be used instead of U+FFFD.
+@end itemize\n")
+      (license license:expat))))
