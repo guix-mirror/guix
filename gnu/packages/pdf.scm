@@ -6,10 +6,11 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Coypright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Coypright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -480,6 +481,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
+    (replacement mupdf/fixed)
     (version "1.10a")
     (source
       (origin
@@ -537,6 +539,18 @@ The library ships with a rudimentary X11 viewer, and a set of command
 line tools for batch rendering (pdfdraw), rewriting files (pdfclean),
 and examining the file structure (pdfshow).")
     (license license:agpl3+)))
+
+(define mupdf/fixed
+  (package
+    (inherit mupdf)
+    (source
+      (origin
+        (inherit (package-source mupdf))
+        (patches
+          (append
+            (origin-patches (package-source mupdf))
+            (search-patches "mupdf-mujs-CVE-2016-10132.patch"
+                            "mupdf-mujs-CVE-2016-10133.patch")))))))
 
 (define-public qpdf
   (package
