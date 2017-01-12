@@ -345,3 +345,31 @@ is essencially a WiFi DoS attack tool created for educational
 purposes only.  It works only in Linux and requires wireless card
 drivers capable of injecting packets in wireless networks.")
     (license license:gpl3+)))
+
+(define-public skroll
+  (package
+    (name "skroll")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0km6bjfz4ssb1z0xwld6iiixnn7d255ax8yjs3zkdm42z8q9yl0f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://2f30.org")
+    (synopsis "Commandline utility which scrolls text")
+    (description
+     "Skroll is a small utility that you can use to make a text scroll.
+Pipe text to it, and it will scroll a given number of letters from right to
+left.")
+    (license license:wtfpl2)))
