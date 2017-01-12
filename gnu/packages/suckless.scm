@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -257,3 +257,28 @@ allows you to write down the presentation for a quick lightning talk within a
 few minutes.")
     (home-page "http://tools.suckless.org/sent")
     (license license:x11)))
+
+(define-public xbattmon
+  (package
+    (name "xbattmon")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0n2rrjq03pgqrdkl7cz5snsfdanf4s58w9h6dbvnl7p8bbd3j2kn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))))
+    (inputs
+     `(("libx11" ,libx11)))
+    (home-page "http://git.2f30.org/xbattmon/")
+    (synopsis "Simple battery monitor for X")
+    (description
+     "Xbattmon is a simple battery monitor for X.")
+    (license license:isc)))
