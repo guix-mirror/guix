@@ -335,7 +335,7 @@ provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
 
-(define %app-defaults-dir "/lib/X11/app-defaults")
+(define-public %app-defaults-dir "/lib/X11/app-defaults")
 
 (define-public editres
   (package

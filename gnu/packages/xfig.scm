@@ -65,6 +65,8 @@
                     (let ((imake (assoc-ref inputs "imake"))
                           (out   (assoc-ref outputs "out")))
                       (substitute* "Imakefile"
+                        (("XCOMM XAPPLOADDIR = /home/user/xfig *")
+                         (string-append "XAPPLOADDIR = " out %app-defaults-dir))
                         (("XCOMM (BINDIR = )[[:graph:]]*" _ front)
                          (string-append front out "/bin"))
                         (("(PNGLIBDIR = )[[:graph:]]*" _ front)
@@ -98,7 +100,8 @@
                         (("(MANPATH = )[[:graph:]]*" _ front)
                          (string-append front out "/share/man"))
                         (("(CONFDIR = )([[:graph:]]*)" _ front default)
-                         (string-append front out default))))))
+                         (string-append front out default))))
+                    #t))
          (add-after
           'install 'install/libs
           (lambda _
@@ -118,14 +121,7 @@
                   (dump-port in out)
                   (close-pipe in)
                   (close-port out)))
-              (zero? (system* "make" "install.doc")))))
-         (add-after
-          'install 'wrap-xfig
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (wrap-program (string-append out "/bin/xfig")
-                `("XAPPLRESDIR" suffix
-                  (,(string-append out "/etc/X11/app-defaults"))))))))))
+              (zero? (system* "make" "install.doc"))))))))
     (home-page "http://xfig.org/")
     (synopsis "Interactive drawing tool")
     (description
