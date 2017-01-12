@@ -5594,6 +5594,37 @@ user-friendly mechanism to start the X server.")
 Intrinsics (Xt) Library.")
     (license license:x11)))
 
+(define-public xmessage
+  (package
+    (name "xmessage")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jmcac1xbwplbxfl75sr6w3zqhx1khpdzlqippjsr31cjp1rjc48"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Displays a message or query in a window")
+    (description
+     "Xmessage displays a message or query in a window.   The user can click
+on a button to dismiss it or can select one of several buttons
+to answer a question.  Xmessage can also exit after a specified time.")
+    (license license:x11)))
+
 (define-public xterm
   (package
     (name "xterm")
