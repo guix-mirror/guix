@@ -28,14 +28,14 @@
 (define-public ed
   (package
     (name "ed")
-    (version "1.13")
+    (version "1.14.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/ed/ed-"
                                  version ".tar.lz"))
              (sha256
               (base32
-               "1ly7i1iw02vbcd0zrx084z577ngxnarffmkm45dg6vndad5carnd"))))
+               "0ajm69pma7gigddlrq2qi4dsllz9vhm8gqwpkcdagdd2yaw7xfgz"))))
     (build-system gnu-build-system)
     (native-inputs `(("lzip" ,lzip)))
     (arguments
@@ -45,8 +45,9 @@
          (add-before 'patch-source-shebangs 'patch-test-suite
                      (lambda _
                        (substitute* "testsuite/check.sh"
-                         (("/bin/sh") (which "sh"))))))))
-    (home-page "http://www.gnu.org/software/ed/")
+                         (("/bin/sh") (which "sh")))
+                       #t)))))
+    (home-page "https://www.gnu.org/software/ed/")
     (synopsis "Line-oriented text editor")
     (description
      "Ed is a line-oriented text editor: rather than offering an overview of
