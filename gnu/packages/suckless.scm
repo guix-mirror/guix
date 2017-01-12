@@ -40,7 +40,8 @@
   #:use-module (gnu packages mpd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages cups))
+  #:use-module (gnu packages cups)
+  #:use-module (gnu packages ncurses))
 
 (define-public dwm
   (package
@@ -434,3 +435,35 @@ It has no feature, and does nothing else.  Just set your default
 printer in client.conf(5) and start printing.  No need for a local
 cups server to be installed.")
     (license license:wtfpl2)))
+
+(define-public noice
+  (package
+    (name "noice")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ldkbb71z6k4yzj4kpg3s94ijj1c1kx9dfcjz393py09scfyg5hr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No configure script
+         (add-before 'build 'curses
+           (lambda _
+             (substitute* "Makefile"
+               (("lcurses") "lncurses")))))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "http://git.2f30.org/noice/")
+    (synopsis "Small file browser")
+    (description
+     "Noice is a small curses-based file browser.")
+    (license license:bsd-2)))
