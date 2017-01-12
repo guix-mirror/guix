@@ -597,7 +597,7 @@ slabtop, and skill.")
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
-       ("eudev" ,eudev)))
+       ("eudev" ,eudev-with-hwdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
@@ -1739,6 +1739,21 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
+
+(define-public eudev-with-hwdb
+  ;; TODO: Merge with 'eudev'.
+  (package
+    (inherit eudev)
+    (name "eudev-with-hwdb")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'build-hwdb
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
+                      ;; similar tools to display product names.
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* (string-append out "/bin/udevadm")
+                                        "hwdb" "--update"))))))))))
 
 (define-public lvm2
   (package
