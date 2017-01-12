@@ -5335,6 +5335,36 @@ draggable titlebars and borders.")
 Intrinsics (Xt) Library.")
     (license license:x11)))
 
+(define-public twm
+  (package
+    (name "twm")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1s1r00x8add3f27xjqxg6q7mwplwrb72gakbh4y6j052as25wchw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxt" ,libxt)
+       ("libxmu" ,libxmu)
+       ("libxext" ,libxext)
+       ("xproto" ,xproto)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Tab Window Manager for the X Window System")
+    (description "Twm is a window manager for the X Window System.
+It provides titlebars, shaped windows, several forms of icon management,
+user-defined macro functions, click-to-type and pointer-driven
+keyboard focus, and user-specified key and pointer button bindings.")
+    (license license:x11)))
 
 (define-public xcb-util
   (package
