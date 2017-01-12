@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -224,9 +224,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "b291b3271a025dfe41e1a7fdfadd393373b0128d"))
+  (let ((commit "eefd042e60d9fc1d092b44bf80ecbfe65b291e46"))
     (package (inherit guix-0.12.0)
-      (version (string-append "0.12.0-2." (string-take commit 4)))
+      (version (string-append "0.12.0-3." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -236,7 +236,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1hris387xn2wk4lcl20x1zyhiz96060w34xs1x13b4vmvkkvcpg4"))
+                  "1g0042x80q73pb9y39aqbkajl4bacls5c0im9aljmjnsb80fsh8d"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.12.0)
