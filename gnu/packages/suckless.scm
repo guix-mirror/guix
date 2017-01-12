@@ -27,6 +27,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
@@ -467,3 +468,38 @@ cups server to be installed.")
     (description
      "Noice is a small curses-based file browser.")
     (license license:bsd-2)))
+
+;;; We want some commits that are more recent than the latest release, 0.2
+(define-public human
+  (let ((commit "50c80e6ba12823184b6866e06b955dbd2ccdc5d7")
+        (revision "1"))
+    (package
+      (name "human")
+      (version (string-append "0.2-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.2f30.org/human.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "18xngm4h9vsyip52zwd79rrp1irzg6rs462lpbp61amf7hj955gn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/human/")
+    (synopsis "Convert bytes to human readable formats")
+    (description
+     "Human is a small program which translate numbers into a
+human readable format.  By default, it tries to detect the best
+factorisation, but you can force its output.
+You can adjust the number of decimals with the @code{SCALE}
+environment variable.")
+    (license license:wtfpl2))))
