@@ -38,7 +38,9 @@
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages mpd)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups))
 
 (define-public dwm
   (package
@@ -399,3 +401,36 @@ left.")
     (description
      "Sbm is a simple bandwidth monitor.")
     (license license:isc)))
+
+(define-public prout
+  (package
+    (name "prout")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s6c3ygg1h1fyxkh8gd7nzjk6qhnwsb4535d2k780kxnwns5fzas"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (inputs
+     `(("cups-minimal" ,cups-minimal)
+       ("zlib" ,zlib)))
+    (home-page "http://git.2f30.org/prout/")
+    (synopsis "Smaller lp command")
+    (description
+     "Prout (PRint OUT) is a small utility one can use to send
+documents to a printer.
+It has no feature, and does nothing else.  Just set your default
+printer in client.conf(5) and start printing.  No need for a local
+cups server to be installed.")
+    (license license:wtfpl2)))
