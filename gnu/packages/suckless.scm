@@ -36,7 +36,9 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages webkit)
-  #:use-module (gnu packages fontutils))
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages mpd)
+  #:use-module (gnu packages linux))
 
 (define-public dwm
   (package
@@ -113,6 +115,34 @@ optimising the environment for the application in use and the task performed.")
      "A dynamic menu for X, originally designed for dwm.  It manages large
 numbers of user-defined menu items efficiently.")
     (license license:x11)))
+
+(define-public spoon
+  (package
+    (name "spoon")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10c5i7ykpy7inzzfiw1dh0srpkljycr3blxhvd8160wsvplbws48"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxkbfile" ,libxkbfile)
+       ("alsa-lib" ,alsa-lib)
+       ("libmpdclient" ,libmpdclient)))
+    (home-page "http://git.2f30.org/spoon/")
+    (synopsis "Set dwm status")
+    (description
+     "Spoon can be used to set the dwm status.")
+    (license license:isc)))
 
 (define-public slock
   (package
