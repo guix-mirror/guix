@@ -373,3 +373,29 @@ drivers capable of injecting packets in wireless networks.")
 Pipe text to it, and it will scroll a given number of letters from right to
 left.")
     (license license:wtfpl2)))
+
+(define-public sbm
+  (package
+    (name "sbm")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nks5mkh5wn30kyjzlkjlgi31bv1wq52kbp0r6nzbyfnvfdlywik"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/sbm/")
+    (synopsis "Simple bandwidth monitor")
+    (description
+     "Sbm is a simple bandwidth monitor.")
+    (license license:isc)))
