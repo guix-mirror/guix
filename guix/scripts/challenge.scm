@@ -180,28 +180,35 @@ taken since we do not import the archives."
                  local))))
 
 (define* (summarize-report comparison-report
-                           #:key (hash->string
-                                  bytevector->nix-base32-string))
+                           #:key
+                           (hash->string bytevector->nix-base32-string)
+                           verbose?)
   "Write to the current error port a summary of REPORT, a <comparison-report>
-object."
+object.  When VERBOSE?, display matches in addition to mismatches and
+inconclusive reports."
+  (define (report-hashes item local narinfos)
+    (if local
+        (report (_ "  local hash: ~a~%") (hash->string local))
+        (report (_ "  no local build for '~a'~%") item))
+    (for-each (lambda (narinfo)
+                (report (_ "  ~50a: ~a~%")
+                        (uri->string (narinfo-uri narinfo))
+                        (hash->string
+                         (narinfo-hash->sha256 (narinfo-hash narinfo)))))
+              narinfos))
+
   (match comparison-report
     (($ <comparison-report> item 'mismatch local (narinfos ...))
      (report (_ "~a contents differ:~%") item)
-     (if local
-         (report (_ "  local hash: ~a~%") (hash->string local))
-         (report (_ "  no local build for '~a'~%") item))
-     (for-each (lambda (narinfo)
-                 (report (_ "  ~50a: ~a~%")
-                         (uri->string (narinfo-uri narinfo))
-                         (hash->string
-                          (narinfo-hash->sha256 (narinfo-hash narinfo)))))
-               narinfos))
+     (report-hashes item local narinfos))
     (($ <comparison-report> item 'inconclusive #f narinfos)
      (warning (_ "could not challenge '~a': no local build~%") item))
     (($ <comparison-report> item 'inconclusive locals ())
      (warning (_ "could not challenge '~a': no substitutes~%") item))
-    (($ <comparison-report> item 'match)
-     #t)))
+    (($ <comparison-report> item 'match local (narinfos ...))
+     (when verbose?
+       (report (_ "~a contents match:~%") item)
+       (report-hashes item local narinfos)))))
 
 
 ;;;
@@ -214,6 +221,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
   (display (_ "
       --substitute-urls=URLS
                          compare build results with those at URLS"))
+  (display (_ "
+      -v, --verbose      show details about successful comparisons"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -237,6 +246,11 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                           (alist-cons 'substitute-urls
                                       (string-tokenize arg)
                                       (alist-delete 'substitute-urls result))
+                          rest)))
+         (option '("verbose" #\v) #f #f
+                 (lambda (opt name arg result . rest)
+                   (apply values
+                          (alist-cons 'verbose? #t result)
                           rest)))))
 
 (define %default-options
@@ -256,7 +270,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                                    (_ #f))
                                  opts))
            (system   (assoc-ref opts 'system))
-           (urls     (assoc-ref opts 'substitute-urls)))
+           (urls     (assoc-ref opts 'substitute-urls))
+           (verbose? (assoc-ref opts 'verbose?)))
       (leave-on-EPIPE
        (with-store store
          ;; Disable grafts since substitute servers normally provide only
@@ -275,7 +290,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                (mlet* %store-monad ((items   (mapm %store-monad
                                                    ensure-store-item files))
                                     (reports (compare-contents items urls)))
-                 (for-each summarize-report reports)
+                 (for-each (cut summarize-report <> #:verbose? verbose?)
+                           reports)
 
                  (exit (cond ((any comparison-report-mismatch? reports) 2)
                              ((every comparison-report-match? reports) 0)

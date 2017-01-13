@@ -6412,6 +6412,11 @@ The one option that matters is:
 Consider @var{urls} the whitespace-separated list of substitute source
 URLs to compare to.
 
+@item --verbose
+@itemx -v
+Show details about matches (identical contents) in addition to
+information about mismatches.
+
 @end table
 
 @node Invoking guix copy
