@@ -36,6 +36,7 @@
   (guard (c ((and (http-get-error? c)
                   (= 404 (http-get-error-code c)))
              #f))                       ;"expected" if package is unknown
+    ;; Note: github.com returns 403 if we omit a 'User-Agent' header.
     (let* ((port   (http-fetch url))
            (result (json->scm port)))
       (close-port port)
