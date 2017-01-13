@@ -332,39 +332,36 @@ Report bugs to: ~a.") %guix-bug-report-address)
 General help using GNU software: <http://www.gnu.org/gethelp/>"))
   (newline))
 
+(define (augmented-system-error-handler file)
+  "Return a 'system-error' handler that mentions FILE in its message."
+  (lambda (key proc fmt args errno)
+    ;; Augment the FMT and ARGS with information about TARGET (this
+    ;; information is missing as of Guile 2.0.11, making the exception
+    ;; uninformative.)
+    (apply throw key proc "~A: ~S"
+           (list (strerror (car errno)) file)
+           (list errno))))
+
+(define-syntax-rule (error-reporting-wrapper proc (args ...) file)
+  "Wrap PROC such that its 'system-error' exceptions are augmented to mention
+FILE."
+  (let ((real-proc (@ (guile) proc)))
+    (lambda (args ...)
+      (catch 'system-error
+        (lambda ()
+          (real-proc args ...))
+        (augmented-system-error-handler file)))))
+
 (set! symlink
   ;; We 'set!' the global binding because (gnu build ...) modules and similar
   ;; typically don't use (guix ui).
-  (let ((real-symlink (@ (guile) symlink)))
-    (lambda (target link)
-      "This is a 'symlink' replacement that provides proper error reporting."
-      (catch 'system-error
-        (lambda ()
-          (real-symlink target link))
-        (lambda (key proc fmt args errno)
-          ;; Augment the FMT and ARGS with information about LINK (this
-          ;; information is missing as of Guile 2.0.11, making the exception
-          ;; uninformative.)
-          (apply throw key proc "~A: ~S"
-                 (list (strerror (car errno)) link)
-                 (list errno)))))))
+  (error-reporting-wrapper symlink (source target) target))
 
 (set! copy-file
   ;; Note: here we use 'set!', not #:replace, because UIs typically use
   ;; 'copy-recursively', which doesn't use (guix ui).
-  (let ((real-copy-file (@ (guile) copy-file)))
-    (lambda (source target)
-      "This is a 'copy-file' replacement that provides proper error reporting."
-      (catch 'system-error
-        (lambda ()
-          (real-copy-file source target))
-        (lambda (key proc fmt args errno)
-          ;; Augment the FMT and ARGS with information about TARGET (this
-          ;; information is missing as of Guile 2.0.11, making the exception
-          ;; uninformative.)
-          (apply throw key proc "~A: ~S"
-                 (list (strerror (car errno)) target)
-                 (list errno)))))))
+  (error-reporting-wrapper copy-file (source target) target))
+
 
 (define (make-regexp* regexp . flags)
   "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
