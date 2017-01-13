@@ -1,7 +1,8 @@
 #!@EMACS@ --script
-;;; indent-package.el --- Run Emacs to indent a package definition.
+;;; indent-code.el --- Run Emacs to indent a package definition.
 
 ;; Copyright © 2017 Alex Kost <alezost@gmail.com>
+;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 
 ;; This file is part of GNU Guix.
 
@@ -20,8 +21,8 @@
 
 ;;; Commentary:
 
-;; This scripts indents the given package definition in the specified file
-;; using Emacs.
+;; This scripts indents the given file or package definition in the specified
+;; file using Emacs.
 
 ;;; Code:
 
@@ -35,6 +36,7 @@
 
 (pcase command-line-args-left
   (`(,file-name ,package-name)
+   ;; Indent the definition of PACKAGE-NAME in FILE-NAME.
    (find-file file-name)
    (goto-char (point-min))
    (if (re-search-forward (concat "^(define\\(-public\\) +"
@@ -47,7 +49,14 @@
          (message "Done!"))
      (error "Package '%s' not found in '%s'"
             package-name file-name)))
+  (`(,file-name)
+   ;; Indent all of FILE-NAME.
+   (find-file file-name)
+   (let ((indent-tabs-mode nil))
+     (indent-region (point-min) (point-max))
+     (save-buffer)
+     (message "Done!")))
   (x
-   (error "Usage: indent-package.el FILE PACKAGE")))
+   (error "Usage: indent-code.el FILE [PACKAGE]")))
 
-;;; indent-package.el ends here
+;;; indent-code.el ends here

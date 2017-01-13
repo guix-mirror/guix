@@ -128,4 +128,4 @@ stamp-h[0-9]
 tmp
 /doc/os-config-lightweight-desktop.texi
 /nix/scripts/download
-/etc/indent-package.el
+/etc/indent-code.el

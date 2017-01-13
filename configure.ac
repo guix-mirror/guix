@@ -245,6 +245,6 @@ AC_CONFIG_FILES([scripts/guix], [chmod +x scripts/guix])
 AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
 AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],
   [chmod +x pre-inst-env])
-AC_CONFIG_FILES([etc/indent-package.el], [chmod +x etc/indent-package.el])
+AC_CONFIG_FILES([etc/indent-code.el], [chmod +x etc/indent-code.el])
 
 AC_OUTPUT
