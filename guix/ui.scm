@@ -362,6 +362,9 @@ FILE."
   ;; 'copy-recursively', which doesn't use (guix ui).
   (error-reporting-wrapper copy-file (source target) target))
 
+(set! canonicalize-path
+  (error-reporting-wrapper canonicalize-path (file) file))
+
 
 (define (make-regexp* regexp . flags)
   "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
