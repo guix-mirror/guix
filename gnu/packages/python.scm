@@ -2945,33 +2945,44 @@ reStructuredText.")
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "1.2.3")
+    (version "1.4.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/S/Sphinx/Sphinx-"
-             version ".tar.gz"))
+       (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
+         "0zvh8wwhm6gy21rr0cg42znsy4zzv2mnsxxk9gmn5y1ycn7rgbs1"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Missing dependencies.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-jinja2" ,python-jinja2)
+     `(("python-imagesize" ,python-imagesize)
+       ("python-sphinx-alabaster-theme"
+        ,python-sphinx-alabaster-theme)
+       ("python-babel" ,python-babel)
+       ("python-snowballstemmer" ,python-snowballstemmer)
        ("python-docutils" ,python-docutils)
-       ("python-pygments" ,python-pygments)))
+       ("python-jinja2" ,python-jinja2)
+       ("python-pygments" ,python-pygments)
+       ("python-six" ,python-six)))
     (home-page "http://sphinx-doc.org/")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
 for Python projects or other documents consisting of multiple reStructuredText
 sources.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-sphinx))))))
 
 (define-public python2-sphinx
-  (package-with-python2 python-sphinx))
+  (let ((base (package-with-python2 (strip-python2-variant python-sphinx))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-mock" ,python2-mock)
+                       ,@(package-native-inputs base)))
+      (propagated-inputs `(("python2-pytz" ,python2-pytz)
+                       ,@(package-propagated-inputs base))))))
 
 (define-public python-sphinx-rtd-theme
   (package
