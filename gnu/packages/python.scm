@@ -1321,7 +1321,7 @@ Python 3.3+.")
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
     (home-page "https://fedorahosted.org/dogtail/")
-    (synopsis "GUI test tool and automation framework written in ​Python")
+    (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
 It uses Accessibility (a11y) technologies to communicate with desktop
