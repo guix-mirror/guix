@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,8 +69,15 @@
         (built-derivations (list drv))
         (mlet %store-monad ((hash (query-path-hash* out)))
           (with-derivation-narinfo* drv (sha256 => hash)
-            (>>= (discrepancies (list out) (%test-substitute-urls))
-                 (lift1 null? %store-monad))))))))
+            (>>= (compare-contents (list out) (%test-substitute-urls))
+                 (match-lambda
+                   ((report)
+                    (return
+                     (and (string=? out (comparison-report-item report))
+                          (bytevector=?
+                           (comparison-report-local-sha256 report)
+                           hash)
+                          (comparison-report-match? report))))))))))))
 
 (test-assertm "one discrepancy"
   (let ((text (random-text)))
@@ -90,19 +97,56 @@
                                                        (modulo (+ b 1) 128))
                                    w)))
           (with-derivation-narinfo* drv (sha256 => wrong-hash)
-            (>>= (discrepancies (list out) (%test-substitute-urls))
+            (>>= (compare-contents (list out) (%test-substitute-urls))
                  (match-lambda
-                   ((discrepancy)
+                   ((report)
                     (return
-                     (and (string=? out (discrepancy-item discrepancy))
+                     (and (string=? out (comparison-report-item (pk report)))
+                          (eq? 'mismatch (comparison-report-result report))
                           (bytevector=? hash
-                                        (discrepancy-local-sha256
-                                         discrepancy))
-                          (match (discrepancy-narinfos discrepancy)
+                                        (comparison-report-local-sha256
+                                         report))
+                          (match (comparison-report-narinfos report)
                             ((bad)
                              (bytevector=? wrong-hash
                                            (narinfo-hash->sha256
                                             (narinfo-hash bad))))))))))))))))
+
+(test-assertm "inconclusive: no substitutes"
+  (mlet* %store-monad ((drv  (gexp->derivation "foo" #~(mkdir #$output)))
+                       (out -> (derivation->output-path drv))
+                       (_    (built-derivations (list drv)))
+                       (hash (query-path-hash* out)))
+    (>>= (compare-contents (list out) (%test-substitute-urls))
+         (match-lambda
+           ((report)
+            (return
+             (and (string=? out (comparison-report-item report))
+                  (comparison-report-inconclusive? report)
+                  (null? (comparison-report-narinfos report))
+                  (bytevector=? (comparison-report-local-sha256 report)
+                                hash))))))))
+
+(test-assertm "inconclusive: no local build"
+  (let ((text (random-text)))
+    (mlet* %store-monad ((drv (gexp->derivation "something"
+                                                #~(list #$output #$text)))
+                         (out -> (derivation->output-path drv))
+                         (hash -> (sha256 #vu8())))
+      (with-derivation-narinfo* drv (sha256 => hash)
+        (>>= (compare-contents (list out) (%test-substitute-urls))
+             (match-lambda
+               ((report)
+                (return
+                 (and (string=? out (comparison-report-item report))
+                      (comparison-report-inconclusive? report)
+                      (not (comparison-report-local-sha256 report))
+                      (match (comparison-report-narinfos report)
+                        ((narinfo)
+                         (bytevector=? (narinfo-hash->sha256
+                                        (narinfo-hash narinfo))
+                                       hash))))))))))))
+
 
 (test-end)
 
