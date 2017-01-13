@@ -21,8 +21,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu)
-  #:use-module (gnu packages python))
+  #:use-module (guix build-system gnu))
 
 (define-public mtools
   (package

@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -625,6 +626,25 @@ to appear to originate from the caller of the clan.  This is necessary in
 cases where the clan modules are not classes derived from each other, and thus
 the Carp.pm module doesn't help.")
     (license (package-license perl))))
+
+(define-public perl-cddb-get
+  (package
+    (name "perl-cddb-get")
+    (version "2.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/F/FO/FONKIE/CDDB_get-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1jfrwvfasylcafbvb0jjm94ad4v6k99a7rf5i4qwzhg4m0gvmk5x"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/CDDB_get")
+    (synopsis "Read the CDDB entry for an audio CD in your drive")
+    (description "This module can retrieve information from the CDDB.")
+    ;; Either GPLv2 or the "Artistic" license.
+    (license (list gpl2 artistic2.0))))
 
 (define-public perl-class-accessor
   (package
@@ -1303,7 +1323,7 @@ Password Generator\".")
                                              ,(package-version perl)
                                              "/czplib/"))
             #t)))))
-    (home-page "http://sourceforge.net/projects/czplib/")
+    (home-page "https://sourceforge.net/projects/czplib/")
     (synopsis "Library for genomic analysis")
     (description "Chaolin Zhang's Perl Library (czplib) contains assorted
 functions and data structures for processing and analysing genomic and
@@ -4993,6 +5013,30 @@ compiler.")
 change) lexical variables in any subroutine which called you.  It will only
 show those variables which are in scope at the point of the call.  PadWalker
 is particularly useful for debugging.")
+    (license (package-license perl))))
+
+(define-public perl-parallel-forkmanager
+  (package
+    (name "perl-parallel-forkmanager")
+    (version "1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/Y/YA/YANICK/Parallel-ForkManager-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wm4wp6p3ah5z212jl12728z68nmxmfr0f03z1jpvdzffnc2xppi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warn" ,perl-test-warn)))
+    (home-page "http://search.cpan.org/dist/Parallel-ForkManager")
+    (synopsis "Simple parallel processing fork manager")
+    (description "@code{Parallel::ForkManager} is intended for use in
+operations that can be done in parallel where the number of
+processes to be forked off should be limited.")
     (license (package-license perl))))
 
 (define-public perl-params-util

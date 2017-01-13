@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,14 +44,15 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
   #:use-module (gnu packages man)
-  #:use-module (gnu packages emacs)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages python)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages vim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 popen)
@@ -68,17 +69,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.11.0
+(define-public guix-0.12.0
   (package
     (name "guix")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1cwrbpv4dq7aczwksmcfw9w8r2bzrb5ld9zvjcr90i804hjpcb93"))))
+               "1jgy5mlygmhxdqhrp6vr8w83ndcm5mk64xfravr8l2d7hq8y40b2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -121,7 +122,7 @@
                    ;; XXX FIXME: These tests fail within the build container.
                    (lambda _
                      (substitute* "tests/syscalls.scm"
-                       (("^\\(test-assert \"(clone|setns|pivot-root)\"" all)
+                       (("^\\(test-(assert|equal) \"(clone|setns|pivot-root)\"" all)
                         (string-append "(test-skip 1)\n" all)))
                      (substitute* "tests/containers.scm"
                        (("^\\(test-(assert|equal)" all)
@@ -162,7 +163,6 @@
 
                        #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-minimal)     ;for guix.el
 
                      ;; XXX: Keep the development inputs here even though
                      ;; they're unnecessary, just so that 'guix environment
@@ -206,9 +206,7 @@
     (propagated-inputs
      `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
        ("guile-json" ,guile-json)
-       ("guile-ssh" ,guile-ssh)
-       ("geiser" ,geiser)                         ;for guix.el
-       ("emacs-magit-popup" ,emacs-magit-popup))) ;for "M-x guix" command
+       ("guile-ssh" ,guile-ssh)))
 
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")
@@ -226,9 +224,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "8d125cfc2e5cb0825bb40893ec3e940f85f1b235"))
-    (package (inherit guix-0.11.0)
-      (version (string-append "0.11.0-8." (string-take commit 4)))
+  (let ((commit "eefd042e60d9fc1d092b44bf80ecbfe65b291e46"))
+    (package (inherit guix-0.12.0)
+      (version (string-append "0.12.0-3." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -238,10 +236,10 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0h73m1zad67qqn7ygypcqscicvqj31wwkxsr85d5lr77v6bx7b6z"))
+                  "1g0042x80q73pb9y39aqbkajl4bacls5c0im9aljmjnsb80fsh8d"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.11.0)
+       (substitute-keyword-arguments (package-arguments guix-0.12.0)
          ((#:configure-flags flags)
           ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
           ;; reference to Graphviz, whose closure is pretty big (too big for
@@ -498,12 +496,29 @@ transactions from C or Python.")
                   (add-after 'unpack 'dependency-on-python-magic
                     (lambda _
                       (substitute* "setup.py"
-                        (("'python-magic',") "")))))))
+                        (("'python-magic',") ""))))
+                  (add-after 'unpack 'embed-tool-references
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "diffoscope/difference.py"
+                        (("@tool_required\\('colordiff'\\)") "")
+                        (("\\[\"colordiff\"")
+                         (string-append "[\"" (which "colordiff") "\"")))
+                      (substitute* "diffoscope/comparators/utils.py"
+                        (("@tool_required\\('xxd'\\)") "")
+                        (("\\['xxd',")
+                         (string-append "['" (which "xxd") "',")))
+                      (substitute* "diffoscope/comparators/elf.py"
+                        (("@tool_required\\('readelf'\\)") "")
+                        (("\\['readelf',")
+                         (string-append "['" (which "readelf") "',")))
+                      #t)))))
     (inputs `(("rpm" ,rpm)                        ;for rpm-python
               ("python-file" ,python-file)
               ("python-debian" ,python-debian)
               ("python-libarchive-c" ,python-libarchive-c)
               ("python-tlsh" ,python-tlsh)
+              ("colordiff" ,colordiff)
+              ("xxd" ,vim)
 
               ;; Below are modules used for tests.
               ("python-pytest" ,python-pytest)

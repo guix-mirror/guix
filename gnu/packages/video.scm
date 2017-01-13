@@ -3,11 +3,11 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -610,14 +610,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.9")
+    (version "2.8.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1s3011q7sxyb55n3r8aiv7xh53bwxjdxa83s2ilqhq5rygrrgg8i"))))
+               "1ca84kc715xm7wmbnj1z4jfhxj8c7rxhy4cqwrd8cnih0l196j1c"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -834,7 +834,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.22.0")
+    (version "0.23.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -842,11 +842,11 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1xl2a0nfbkcq00f41m50fmfz9hl7hzpk7cq7j38r38rp1s7sryf0"))
+                "1629v5l0rmphxra7chmfm7bnn59zc1mp529b9m2zqzaqf1czxvla"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
-     `(("perl" ,perl)
+     `(("perl" ,perl) ; for zsh completion file
        ("pkg-config" ,pkg-config)
        ("python-docutils" ,python-docutils)))
     ;; Missing features: libguess, Wayland, V4L2
@@ -904,7 +904,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -913,7 +913,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "10zizf926a82c753a80bi49rb5c4yqjyd6zin4xgmggspfxngncj"))))
+         "1hn3mpsxbrwf2m0nz4vzji4i6i896y8kqjb9kijqpk04cnrs3fgz"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -970,15 +970,15 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.10.16")
+    (version "2017.01.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://youtube-dl.org/downloads/"
+              (uri (string-append "https://yt-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0q6cxbp1xx8xmwn3xbxh6gcbgqjxy3slzfca4dbkk9xl2yy9rwqg"))))
+                "0clr6vj9lg96fffc9xv2apr7an6lljnli1b8clfj4dap1i0d34v4"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1006,7 +1006,7 @@ access to mpv's powerful playback capabilities.")
     (description
      "Youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
-    (home-page "https://youtube-dl.org")
+    (home-page "https://yt-dl.org")
     (license license:public-domain)))
 
 (define-public libbluray
@@ -1399,7 +1399,7 @@ from various services and pipes them into a video playing application.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.2.0")
+    (version "6.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mltframework/mlt/"
@@ -1407,7 +1407,7 @@ from various services and pipes them into a video playing application.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zwzfgxrcbwkxnkiwv0a1rzxdnnaly90yyarl9wdw84nx11ffbnx"))))
+                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests

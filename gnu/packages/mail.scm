@@ -103,53 +103,54 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.0")
+    (version "3.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0h7cx4cd3niycx7pl0p2358cx2smwm5sb3l9bpb8czkdl6v115c8"))))
+               "1dpylyg79avi7brpkcmzaq7bqqkz45flp0ws6f2c8b1gyz4hdnzm"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; TODO: Add `--with-sql'.
-       #:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda _
-                   ;; Use the right file name for `cat'.
-                   (substitute* "testsuite/lib/mailutils.exp"
-                     (("/bin/cat")
-                      (which "cat")))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Use the right file name for `cat'.
+             (substitute* "testsuite/lib/mailutils.exp"
+               (("/bin/cat")
+                (which "cat")))
 
-                   ;; Tests try to invoke 'maidag' such that it looks up the
-                   ;; 'root' user, which does not exist in the build
-                   ;; environment.
-                   (substitute* "maidag/tests/testsuite"
-                     (("root <")         "nobody <")
-                     (("spool/root")     "spool/nobody")
-                     (("root@localhost") "nobody@localhost"))
+             ;; Tests try to invoke 'maidag' such that it looks up the
+             ;; 'root' user, which does not exist in the build
+             ;; environment.
+             (substitute* "maidag/tests/testsuite"
+               (("root <")         "nobody <")
+               (("spool/root")     "spool/nobody")
+               (("root@localhost") "nobody@localhost"))
 
-                   ;; The 'pipeact.at' tests generate a shell script; make
-                   ;; sure it uses the right shell.
-                   (substitute* '("sieve/tests/testsuite"
-                                  "mh/tests/testsuite")
-                     (("#! /bin/sh")
-                      (string-append "#!" (which "sh"))))
+             ;; The 'pipeact.at' tests generate a shell script; make
+             ;; sure it uses the right shell.
+             (substitute* '("sieve/tests/testsuite"
+                            "mh/tests/testsuite")
+               (("#! /bin/sh")
+                (string-append "#!" (which "sh"))))
 
-                   (substitute* "mh/tests/testsuite"
-                     (("moreproc: /bin/cat")
-                      (string-append "moreproc: " (which "cat"))))
+             (substitute* "mh/tests/testsuite"
+               (("moreproc: /bin/cat")
+                (string-append "moreproc: " (which "cat"))))
 
-                   ;; XXX: The comsatd tests rely on being able to open
-                   ;; /dev/tty, but that gives ENODEV in the build
-                   ;; environment.  Thus, ignore test failures here.
-                   (substitute* "comsat/tests/Makefile.in"
-                     (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
-                      (string-append "-" all)))
+             ;; XXX: The comsatd tests rely on being able to open
+             ;; /dev/tty, but that gives ENODEV in the build
+             ;; environment.  Thus, ignore test failures here.
+             (substitute* "comsat/tests/Makefile.in"
+               (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
+                (string-append "-" all)))
 
-                   #t)
-                 %standard-phases)
+             #t)))
+       ;; TODO: Add `--with-sql'.
+       #:configure-flags '("--sysconfdir=/etc")
        #:parallel-tests? #f))
     (inputs
      `(("dejagnu" ,dejagnu)
@@ -158,15 +159,11 @@
        ("guile" ,guile-2.0)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
-
-       ;; With Readline 6.3, examples/pop3client.c fails to build because it
-       ;; uses the now undefined 'CPPFunction' type.
-       ("readline" ,readline-6.2)
-
+       ("readline" ,readline)
        ("linux-pam" ,linux-pam)
        ("libltdl" ,libltdl)
        ("gdbm" ,gdbm)))
-    (home-page "http://www.gnu.org/software/mailutils/")
+    (home-page "https://www.gnu.org/software/mailutils/")
     (synopsis "Utilities and library for reading and serving mail")
     (description
      "GNU Mailutils is a collection of programs for managing, viewing and
@@ -214,14 +211,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.7.1")
+    (version "1.7.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1pyns0xw52s4yma1a93pdcl4dirs55q2m1hd7w1r11nlhf7giip9"))
+               "1yazrl82s9fxmamnlvwmsxhwrxnwv6kwakgfmawda8ndhwb50lqm"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -308,13 +305,14 @@ Extension (MIME).")
                 "1d56n2m9inm8gnzm88aa27xl2a7sp7aff3484vmflpqkinjqf0p1"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda _
-                   (substitute* "src/tests/t.frame"
-                     (("GREP=/bin/grep")
-                      (string-append "GREP=" (which "grep") "\n"))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             (substitute* "src/tests/t.frame"
+               (("GREP=/bin/grep")
+                (string-append "GREP=" (which "grep") "\n")))
+             #t)))))
     (native-inputs `(("flex" ,flex)))
     (inputs `(("bdb" ,bdb)))
     (home-page "http://bogofilter.sourceforge.net/")
@@ -382,24 +380,20 @@ repository and Maildir/IMAP as LOCAL repository.")
 (define-public mu
   (package
     (name "mu")
-    (version "0.9.16")
+    (version "0.9.18")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/djcb/mu/archive/v"
+              (uri (string-append "https://github.com/djcb/mu/releases/"
+                                  "download/" version "/mu-"
                                   version ".tar.gz"))
-              (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "0p7hqri1r1x6750x138cc29mh81kdav2dcim26y58s8an206h25g"))))
+                "02g82zvxfgn17wzy846bfxj0izjj7yklhwdnhwxy1y2kin4fqnb5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("emacs" ,emacs-minimal)
-       ("libtool" ,libtool)
-       ("texinfo" ,texinfo)))
+       ("emacs" ,emacs-minimal)))
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
@@ -415,18 +409,15 @@ repository and Maildir/IMAP as LOCAL repository.")
                            (guix build emacs-utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-configure.ac
+         (add-after 'unpack 'patch-configure
            ;; By default, elisp code goes to "share/emacs/site-lisp/mu4e",
            ;; so our Emacs package can't find it.  Setting "--with-lispdir"
            ;; configure flag doesn't help because "mu4e" will be added to
            ;; the lispdir anyway, so we have to modify "configure.ac".
            (lambda _
-             (substitute* "configure.ac"
-               (("^ +lispdir=.*") ""))
+             (substitute* "configure"
+               (("^ +lispdir=\"\\$\\{lispdir\\}/mu4e/\".*") ""))
              #t))
-         (add-after 'patch-configure.ac 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vi"))))
          (add-before 'check 'check-tz-setup
            (lambda* (#:key inputs #:allow-other-keys)
              ;; For mu/test/test-mu-query.c
@@ -537,14 +528,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.23.3")
+    (version "0.23.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "10hqjnl5aavf9clfmx3y832jyz58fplmc3f58pip9dq30b7sap8g"))))
+                "0ry2k9sdwd1vw8cf6svch8wk98523s07mwxvsf7b8kghqnrr89n6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -675,7 +666,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "4.49.0")
+    (version "4.52.0")
     (source
      (origin
        (method url-fetch)
@@ -683,7 +674,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1m0yzxd05fklwbmjj1n2q4sx397c1j5qi9a0r5fv3h8pplz4lv0w"))))
+         "0pzplrlxwbxydvfw4kkwn60l40hk1h5sxawaa6pi0k75c220k4ni"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -799,7 +790,7 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.6.5")
+    (version "1.6.6")
     (source
      (origin
        (method url-fetch)
@@ -807,7 +798,7 @@ which can add many functionalities to the base client.")
                            "/msmtp-" version ".tar.xz"))
        (sha256
         (base32
-         "01jh9ba49bih8zsh40myw6qq1ll210q1vw0jg865vrn7jc3dd83n"))))
+         "0ppvww0sb09bnsrpqnvlrn8vx231r24xn2iiwpy020mxc8gxn5fs"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -845,7 +836,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.87")
+    (version "4.87.1")
     (source
      (origin
        (method url-fetch)
@@ -855,7 +846,7 @@ delivery.")
                                  version ".tar.bz2")))
        (sha256
         (base32
-         "1jbxn13shq90kpn0s73qpjnx5xm8jrpwhcwwgqw5s6sdzw6iwsbl"))))
+         "050m2gjzpc6vyik458h1j0vi8bxplkzjsyndkyd2y394i569kdyl"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -1260,7 +1251,7 @@ program's primary purpose.")
        ("libtool" ,libtool)))
     (inputs
      `(("libesmtp" ,libesmtp)))
-    (home-page "http://sourceforge.net/projects/esmtp/")
+    (home-page "https://sourceforge.net/projects/esmtp/")
     (synopsis "Relay-only mail transfer agent (MTA)")
     (description "Esmtp is a simple relay-only mail transfer agent built using
 libESMTP.  It sends e-mail via a remote SMTP server using credentials from the
@@ -1351,36 +1342,27 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.9.0")
+    (version "0.11.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0y83rji4f270hbb41m4jpr0z3yzvpvbsl32mpg9d38hlydw8fk1s"))))
+                "1v66khq5w17xdbkpb00pf9xbl84dlzx4lq286fvzskb949b3y4yn"))))
     (build-system python-build-system)
     (arguments
-      `(#:python ,python-2 ; only python-2 is supported.
-        #:phases
+      `(#:phases
         (modify-phases %standard-phases
-          (add-before 'build 'disable-egg-compression
-            ;; Do not compress the egg.
-            (lambda _
-              (let ((port (open-file "setup.cfg" "a")))
-                (display "\n[easy_install]\nzip_ok = 0\n"
-                         port)
-                (close-port port)
-                #t)))
           (add-after 'install 'install-doc
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (doc (string-append out "/share/doc/khard")))
                 (copy-recursively "misc/khard" doc)))))))
     (propagated-inputs
-     `(("python2-vobject" ,python2-vobject)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-atomicwrites" ,python2-atomicwrites)
-       ("python2-configobj" ,python2-configobj)))
+     `(("python-vobject" ,python-vobject)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-atomicwrites" ,python-atomicwrites)
+       ("python-configobj" ,python-configobj)))
     (synopsis "Console address book using CardDAV")
     (description "Khard is an address book for the console.  It creates, reads,
 modifies and removes CardDAV address book entries at your local machine.  For

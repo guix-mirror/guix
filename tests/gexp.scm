@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +90,16 @@
             (eq? p coreutils)))
          (equal? `(display ,(derivation->output-path
                              (package-derivation %store coreutils)))
+                 (gexp->sexp* exp)))))
+
+(test-assert "one input package, dotted list"
+  (let ((exp (gexp (coreutils . (ungexp coreutils)))))
+    (and (gexp? exp)
+         (match (gexp-inputs exp)
+           (((p "out"))
+            (eq? p coreutils)))
+         (equal? `(coreutils . ,(derivation->output-path
+                                 (package-derivation %store coreutils)))
                  (gexp->sexp* exp)))))
 
 (test-assert "one input origin"
@@ -277,6 +287,14 @@
                           (ungexp %bootstrap-guile)))))
     (list (gexp-inputs exp) '<> (gexp-native-inputs exp))))
 
+(test-equal "ungexp + ungexp-native, nested, special mixture"
+  `(() <> ((,coreutils "out")))
+
+  ;; (gexp-native-inputs exp) used to return '(), wrongfully.
+  (let* ((foo (gexp (foo (ungexp-native coreutils))))
+         (exp (gexp (bar (ungexp foo)))))
+    (list (gexp-inputs exp) '<> (gexp-native-inputs exp))))
+
 (test-assert "input list"
   (let ((exp   (gexp (display
                       '(ungexp (list %bootstrap-guile coreutils)))))
@@ -327,7 +345,8 @@
                  `(list ,@(cons 5 outputs))))))
 
 (test-assert "input list splicing + ungexp-native-splicing"
-  (let* ((inputs (list (gexp-input glibc "debug") %bootstrap-guile))
+  (let* ((inputs (list (gexp-input glibc "debug" #:native? #t)
+                       %bootstrap-guile))
          (exp    (gexp (list (ungexp-native-splicing (cons (+ 2 3) inputs))))))
     (and (lset= equal?
                 `((,glibc "debug") (,%bootstrap-guile "out"))

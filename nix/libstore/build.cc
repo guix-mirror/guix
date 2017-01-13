@@ -1680,7 +1680,11 @@ void DerivationGoal::startBuilder()
             % drv.platform % settings.thisSystem % drvPath);
     }
 
-    useChroot = settings.useChroot;
+    /* Note: built-in builders are *not* running in a chroot environment so
+       that we can easily implement them in Guile without having it as a
+       derivation input (they are running under a separate build user,
+       though).  */
+    useChroot = settings.useChroot && !isBuiltin(drv);
 
     /* Construct the environment passed to the builder. */
     env.clear();
@@ -2048,12 +2052,7 @@ void DerivationGoal::runChild()
         commonChildInit(builderOut);
 
 #if CHROOT_ENABLED
-	/* Note: built-in builders are *not* running in a chroot environment
-	   so that we can easily implement them in Guile without having it as
-	   a derivation input (they are running under a separate build user,
-	   though).  */
-
-        if (useChroot && !isBuiltin(drv)) {
+        if (useChroot) {
             /* Initialise the loopback interface. */
             AutoCloseFD fd(socket(PF_INET, SOCK_DGRAM, IPPROTO_IP));
             if (fd == -1) throw SysError("cannot open IP socket");
@@ -2272,8 +2271,17 @@ void DerivationGoal::runChild()
                 logType = ltFlat;
 
 		auto buildDrv = lookupBuiltinBuilder(drv.builder);
-                if (buildDrv != NULL)
-                    buildDrv(drv, drvPath);
+                if (buildDrv != NULL) {
+		    /* Check what the output file name is.  When doing a
+		       'bmCheck' build, the output file name is different from
+		       that specified in DRV due to hash rewriting.  */
+		    Path output = drv.outputs["out"].path;
+		    auto redirected = redirectedOutputs.find(output);
+		    if (redirected != redirectedOutputs.end())
+			output = redirected->second;
+
+                    buildDrv(drv, drvPath, output);
+		}
                 else
                     throw Error(format("unsupported builtin function '%1%'") % string(drv.builder, 8));
                 _exit(0);
@@ -2743,6 +2751,8 @@ Path DerivationGoal::addHashRewrite(const Path & path)
     rewritesToTmp[h1] = h2;
     rewritesFromTmp[h2] = h1;
     redirectedOutputs[path] = p;
+    printMsg(lvlChatty, format("output '%1%' redirected to '%2%'")
+	     % path % p);
     return p;
 }
 

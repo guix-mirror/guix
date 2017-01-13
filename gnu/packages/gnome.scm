@@ -2648,9 +2648,7 @@ services for numerous locations.")
          "1rvqisrh3lridsb8rvm7spvncyq206ly0245zgpbm8swi5fhfjp8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(;; Network manager not yet packaged.
-       #:configure-flags '("--disable-network-manager")
-       ;; Color management test can't reach the colord system service.
+     `(;; Color management test can't reach the colord system service.
        #:tests? #f))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2679,7 +2677,8 @@ services for numerous locations.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libwacom" ,libwacom)
        ("librsvg" ,librsvg)
-       ("xf86-input-wacom" ,xf86-input-wacom)))
+       ("xf86-input-wacom" ,xf86-input-wacom)
+       ("network-manager" ,network-manager)))
     (home-page "http://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
@@ -3867,7 +3866,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.25.0.1")
+    (version "0.25.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3875,7 +3874,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19h0ckrgv0c6sj85m6ankyqkmy453ph9kq6zhf7ys2k5xsrrd776"))))
+                "1bih5hr3pvpkx3fck55bnhngn4fl92ryjizc34wb8pwigbkxnaj1"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -4399,7 +4398,19 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))))
+                "016jc21mwjxvnfiblp5lji55sr8aq6w8a08fsjmqvnpnvm3y6r58"))
+              (snippet
+              '(begin
+                 (use-modules (guix build utils))
+                 (substitute* "configure"
+                   ;; Replace libsystemd-login with libelogind.
+                   (("libsystemd-login") "libelogind"))
+                 (substitute* "src/devices/wwan/nm-modem-manager.c"
+                   (("systemd") "elogind"))
+                 (substitute* "src/nm-session-monitor.c"
+                   (("systemd") "elogind"))
+                 (substitute* "./src/nm-logging.c"
+                   (("systemd") "elogind"))))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -4409,7 +4420,9 @@ users.")
              (doc      (assoc-ref %outputs "doc"))
              (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
                                       "/sbin/dhclient")))
-         (list "--with-crypto=gnutls"
+         (list "--with-systemd-logind=yes" ;In GuixSD, this is provided by elogind.
+               "--with-consolekit=no"
+               "--with-crypto=gnutls"
                "--disable-config-plugin-ibft"
                "--sysconfdir=/etc"
                "--localstatedir=/var"
@@ -4474,7 +4487,8 @@ users.")
        ("polkit" ,polkit)
        ("ppp" ,ppp)
        ("readline" ,readline)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux)
+       ("elogind" ,elogind)))
     (synopsis "Network connection manager")
     (home-page "http://www.gnome.org/projects/NetworkManager/")
     (description
@@ -5274,13 +5288,20 @@ existing databases over the internet.")
               (sha256
                (base32
                 "1fj6wjvnjygzm9br3sw9gya6d18yly1rm69yaiar9spfbkvv4wai"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/tmp"
                            "--sysconfdir=/tmp")
        #:imported-modules ((guix build python-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%glib-or-gtk-build-system-modules)
        #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out               (assoc-ref outputs "out"))
+                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+                        (wrap-program (string-append out "/bin/gnome-tweak-tool")
+                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                      #t))
                   (add-after 'install 'wrap
                     (@@ (guix build python-build-system) wrap)))))
     (native-inputs
@@ -5288,9 +5309,10 @@ existing databases over the internet.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python-2)
-       ("python2-pygobject" ,python2-pygobject)))
-    (propagated-inputs
-     `(("libnotify" ,libnotify)
+       ("python2-pygobject" ,python2-pygobject)
+       ("gnome-desktop" ,gnome-desktop)
+       ("libsoup" ,libsoup)
+       ("libnotify" ,libnotify)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)))
@@ -5333,7 +5355,7 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20160605")
+    (version "20161119")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/horst3180/arc-theme"
@@ -5341,7 +5363,7 @@ functionality and behavior.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sq2031xda8jn2ws0x2bvhq77jfh7xy0c3kg86v6vm2kbrrss7y6"))))
+                "1kbhaxmydyip3vdw4kf8rk776jcd9wf0w7z6h2i4naxdn4rsnw54"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

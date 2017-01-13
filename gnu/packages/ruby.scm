@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,13 +180,13 @@ a focus on simplicity and productivity.")
 (define-public ruby-hoe
   (package
     (name "ruby-hoe")
-    (version "3.15.2")
+    (version "3.16.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "hoe" version))
               (sha256
                (base32
-                "1riyf9j9vp7dzgpw5xj9xx1vqkdmg6lr7qiprmn91hcdp81kaszp"))) )
+                "03r8nsw4n4mnia9iqiqk9kqhvrl96m2i81j4yg8cpnppd8vk7vlb"))))
     (build-system ruby-build-system)
     (synopsis "Ruby project management helper")
     (description
@@ -1479,13 +1479,13 @@ with processes on remote servers, via SSH2.")
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
-    (version "5.7.0")
+    (version "5.10.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "minitest" version))
               (sha256
                (base32
-                "0rxqfakp629mp3vwda7zpgb57lcns5znkskikbfd0kriwv8i1vq8"))))
+                "1yk2m8sp0p5m1niawa3ncg157a4i0594cg7z91rzjxv963rzrwab"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -1912,13 +1912,13 @@ to reproduce user environments.")
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.6.8")
+    (version "1.7.0.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "17pjhvm4yigriizxbbpx266nnh6nckdm33m3j4ws9dcg99daz91p"))))
+                "10xahg0fwydh27psm8bv429mdja2ks6x83vxizq26ib8wvs05mv3"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -3049,44 +3049,40 @@ features such as filtering and fine grained logging.")
     (license license:expat)))
 
 (define-public ruby-yard
-  ;; Use git reference because gem is >100 commits out of date and the tests
-  ;; do not pass with the released gem.
-  (let ((commit "d816482a0d4850506c3bcccc9434550c536c28c6"))
-    (package
-      (name "ruby-yard")
-      (version (string-append "0.9.5-1." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/lsegal/yard.git")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "1j16c85x22if7y0fzi3c900p9wzkx2riq1y7vsj92a0zvwsxai4i"))
-         (patches (search-patches "ruby-yard-fix-skip-of-markdown-tests.patch"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:test-target "spec"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-HOME-and-disable-failing-test
-             (lambda _
-               ;; $HOME needs to be set to somewhere writeable for tests to run
-               (setenv "HOME" "/tmp")
-               #t)))))
-      (native-inputs
-       `(("ruby-rspec" ,ruby-rspec-2)
-         ("ruby-rack" ,ruby-rack)))
-      (synopsis "Documentation generation tool for Ruby")
-      (description
-       "YARD is a documentation generation tool for the Ruby programming
+  (package
+    (name "ruby-yard")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Tests do not pass if we build from the distributed gem.
+       (uri (string-append "https://github.com/lsegal/yard/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rsz4bghgx7fryzyhlz8wlnd2m9xgyvf1xhrq58mnzfrrfm41bdg"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; $HOME needs to be set to somewhere writeable for tests to run
+             (setenv "HOME" "/tmp")
+             ;; Run tests without using 'rake' to avoid dependencies.
+             (zero? (system* "rspec")))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Documentation generation tool for Ruby")
+    (description
+     "YARD is a documentation generation tool for the Ruby programming
 language.  It enables the user to generate consistent, usable documentation
 that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
-      (home-page "http://yardoc.org")
-      (license license:expat))))
+    (home-page "http://yardoc.org")
+    (license license:expat)))
 
 (define-public ruby-clap
   (package
@@ -3304,14 +3300,14 @@ neither too verbose nor too minimal.")
 (define-public ruby-sqlite3
   (package
     (name "ruby-sqlite3")
-    (version "1.3.12")
+    (version "1.3.13")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sqlite3" version))
        (sha256
         (base32
-         "0hld87rvwyy31xsxzhicv2lj3g3kmvmwfxj09kw13g6lacdjz4bx"))))
+         "01ifzp8nwzqppda419c9wcvr8n82ysmisrs0hph9pdmv1lpa4f5i"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases

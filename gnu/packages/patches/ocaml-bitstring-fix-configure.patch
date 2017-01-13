@@ -1,0 +1,53 @@
+From 0aaddfceeea3e89df196ab1846da54d09713a512 Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Thu, 15 Dec 2016 21:17:31 +0100
+Subject: [PATCH] fix configure
+
+---
+ Makefile.in | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index d040f4c..85e0b38 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -32,6 +32,7 @@ BISECT_REPORT	= @BISECT_REPORT@
+ BYTESWAP_H	= @BYTESWAP_H@
+
+ OCAMLLIB	= @OCAMLLIB@
++BISECTLIB	= $(shell if test -z $${BISECTLIB}; then echo $(OCAMLLIB); else echo $${BISECTLIB}; fi)
+ top_srcdir	= @top_srcdir@
+
+ pkg_cil		= @OCAML_PKG_cil@
+@@ -47,9 +48,9 @@ OCAMLOPTPACKAGES = $(OCAMLCPACKAGES)
+ OCAMLOPTLIBS	= -linkpkg
+
+ ifneq ($(enable_coverage),no)
+-OCAMLCFLAGS     += -I +bisect -pp 'camlp4o $(OCAMLLIB)/bisect/instrument.cma'
++OCAMLCFLAGS     += -I +bisect -pp 'camlp4o $(BISECTLIB)/bisect/instrument.cma'
+ OCAMLCLIBS	+= -I +bisect bisect.cma
+-OCAMLOPTFLAGS   += -I +bisect -pp 'camlp4o $(OCAMLLIB)/bisect/instrument.cma'
++OCAMLOPTFLAGS   += -I +bisect -pp 'camlp4o $(BISECTLIB)/bisect/instrument.cma'
+ OCAMLOPTLIBS	+= -I +bisect bisect.cmxa
+ endif
+
+@@ -110,7 +111,7 @@ bitstring_persistent.cmi: bitstring_persistent.mli
+	  -I +camlp4 -pp camlp4of -c $<
+
+ pa_bitstring.cmo: pa_bitstring.ml bitstring.cma bitstring_persistent.cma
+-	$(OCAMLFIND) ocamlc bitstring.cma -I +camlp4 dynlink.cma camlp4lib.cma \
++	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) bitstring.cma -I +camlp4 dynlink.cma camlp4lib.cma \
+	  -pp camlp4of -c $< -o $@
+
+ bitstring-objinfo: bitstring_objinfo.cmo bitstring.cma bitstring_persistent.cma
+@@ -133,7 +134,7 @@ byteswap.h: byteswap.in.h
+ ifeq ($(enable_coverage),no)
+ PP	= -pp 'camlp4o bitstring.cma bitstring_persistent.cma pa_bitstring.cmo'
+ else
+-PP	= -pp 'camlp4o $(OCAMLLIB)/bisect/bisect.cma bitstring.cma bitstring_persistent.cma pa_bitstring.cmo'
++PP	= -pp 'camlp4o $(BISECTLIB)/bisect/bisect.cma bitstring.cma bitstring_persistent.cma pa_bitstring.cmo'
+ endif
+
+ check: test
+--
+2.11.0

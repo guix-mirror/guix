@@ -1,0 +1,67 @@
+Fix an integer overflow in TIFFReadEncodedStrip() that led to division-by-zero:
+
+http://bugzilla.maptools.org/show_bug.cgi?id=2596
+
+2016-12-02 Even Rouault <even.rouault at spatialys.com>
+
+        * libtiff/tif_read.c, libtiff/tiffiop.h: fix uint32 overflow in
+        TIFFReadEncodedStrip() that caused an integer division by zero.
+        Reported by Agostino Sarubbo.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2596
+
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <--  ChangeLog
+new revision: 1.1173; previous revision: 1.1172
+/cvs/maptools/cvsroot/libtiff/libtiff/tif_read.c,v  <--  libtiff/tif_read.c
+new revision: 1.50; previous revision: 1.49
+/cvs/maptools/cvsroot/libtiff/libtiff/tiffiop.h,v  <--  libtiff/tiffiop.h
+new revision: 1.90; previous revision: 1.89
+
+Index: libtiff/libtiff/tif_read.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tif_read.c,v
+retrieving revision 1.49
+retrieving revision 1.50
+diff -u -r1.49 -r1.50
+--- libtiff/libtiff/tif_read.c	10 Jul 2016 18:00:21 -0000	1.49
++++ libtiff/libtiff/tif_read.c	2 Dec 2016 21:56:56 -0000	1.50
+@@ -1,4 +1,4 @@
+-/* $Id: tif_read.c,v 1.49 2016-07-10 18:00:21 erouault Exp $ */
++/* $Id: tif_read.c,v 1.50 2016-12-02 21:56:56 erouault Exp $ */
+ 
+ /*
+  * Copyright (c) 1988-1997 Sam Leffler
+@@ -346,7 +346,7 @@
+ 	rowsperstrip=td->td_rowsperstrip;
+ 	if (rowsperstrip>td->td_imagelength)
+ 		rowsperstrip=td->td_imagelength;
+-	stripsperplane=((td->td_imagelength+rowsperstrip-1)/rowsperstrip);
++	stripsperplane= TIFFhowmany_32_maxuint_compat(td->td_imagelength, rowsperstrip);
+ 	stripinplane=(strip%stripsperplane);
+ 	plane=(uint16)(strip/stripsperplane);
+ 	rows=td->td_imagelength-stripinplane*rowsperstrip;
+Index: libtiff/libtiff/tiffiop.h
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tiffiop.h,v
+retrieving revision 1.89
+retrieving revision 1.90
+diff -u -r1.89 -r1.90
+--- libtiff/libtiff/tiffiop.h	23 Jan 2016 21:20:34 -0000	1.89
++++ libtiff/libtiff/tiffiop.h	2 Dec 2016 21:56:56 -0000	1.90
+@@ -1,4 +1,4 @@
+-/* $Id: tiffiop.h,v 1.89 2016-01-23 21:20:34 erouault Exp $ */
++/* $Id: tiffiop.h,v 1.90 2016-12-02 21:56:56 erouault Exp $ */
+ 
+ /*
+  * Copyright (c) 1988-1997 Sam Leffler
+@@ -250,6 +250,10 @@
+ #define TIFFhowmany_32(x, y) (((uint32)x < (0xffffffff - (uint32)(y-1))) ? \
+ 			   ((((uint32)(x))+(((uint32)(y))-1))/((uint32)(y))) : \
+ 			   0U)
++/* Variant of TIFFhowmany_32() that doesn't return 0 if x close to MAXUINT. */
++/* Caution: TIFFhowmany_32_maxuint_compat(x,y)*y might overflow */
++#define TIFFhowmany_32_maxuint_compat(x, y) \
++			   (((uint32)(x) / (uint32)(y)) + ((((uint32)(x) % (uint32)(y)) != 0) ? 1 : 0))
+ #define TIFFhowmany8_32(x) (((x)&0x07)?((uint32)(x)>>3)+1:(uint32)(x)>>3)
+ #define TIFFroundup_32(x, y) (TIFFhowmany_32(x,y)*(y))
+ #define TIFFhowmany_64(x, y) ((((uint64)(x))+(((uint64)(y))-1))/((uint64)(y)))

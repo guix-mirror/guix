@@ -8,7 +8,8 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
@@ -64,6 +65,7 @@
 (define-public libpng
   (package
    (name "libpng")
+   (replacement libpng/fixed)
    (version "1.6.25")
    (source (origin
             (method url-fetch)
@@ -88,10 +90,19 @@ library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
 
+(define libpng/fixed
+  (package
+    (inherit libpng)
+    (source
+      (origin
+        (inherit (package-source libpng))
+        (patches (search-patches "libpng-CVE-2016-10087.patch"))))))
+
 (define-public libpng-1.2
   (package
     (inherit libpng)
-    (version "1.2.56")
+    (replacement #f)
+    (version "1.2.57")
     (source
      (origin
        (method url-fetch)
@@ -102,7 +113,7 @@ library.  It supports almost all PNG features and is extensible.")
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src"
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
-        (base32 "1ghd03p353x0vi4dk83n1nlldg11w7vqdk3f99rkgfb82ic59ki4"))))))
+        (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
 
 (define-public libjpeg
   (package
@@ -248,6 +259,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
+   (replacement libtiff/fixed)
    (version "4.0.7")
    (source (origin
             (method url-fetch)
@@ -279,6 +291,28 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
+
+(define libtiff/fixed
+  (package
+    (inherit libtiff)
+    (source
+      (origin
+        (inherit (package-source libtiff))
+        (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
+                                 "libtiff-null-dereference.patch"
+                                 "libtiff-heap-overflow-tif-dirread.patch"
+                                 "libtiff-heap-overflow-pixarlog-luv.patch"
+                                 "libtiff-divide-by-zero.patch"
+                                 "libtiff-divide-by-zero-ojpeg.patch"
+                                 "libtiff-tiffcp-underflow.patch"
+                                 "libtiff-invalid-read.patch"
+                                 "libtiff-CVE-2016-10092.patch"
+                                 "libtiff-heap-overflow-tiffcrop.patch"
+                                 "libtiff-divide-by-zero-tiffcrop.patch"
+                                 "libtiff-CVE-2016-10093.patch"
+                                 "libtiff-divide-by-zero-tiffcp.patch"
+                                 "libtiff-assertion-failure.patch"
+                                 "libtiff-CVE-2016-10094.patch"))))))
 
 (define-public libwmf
   (package
@@ -329,28 +363,23 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
 (define-public leptonica
   (package
     (name "leptonica")
-    (version "1.72")
+    (version "1.74.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.leptonica.com/source/leptonica-"
-                           version ".tar.gz"))
+       (uri (string-append
+             "https://github.com/DanBloomberg/leptonica/archive/" version
+             ".tar.gz"))
+       (file-name (string-append "leptonica-" version ".tar.gz"))
        (sha256
-        (base32 "0mhzvqs0im04y1cpcc1yma70hgdac1frf33h73m9z3356bfymmbr"))
-       (modules '((guix build utils)))
-       ;; zlib and openjpg should be under Libs, not Libs.private.  See:
-       ;; https://code.google.com/p/tesseract-ocr/issues/detail?id=1436
-       (snippet
-        '(substitute* "lept.pc.in"
-           (("^(Libs\\.private: .*)@ZLIB_LIBS@(.*)" all pre post)
-            (string-append pre post))
-           (("^(Libs\\.private: .*)@JPEG_LIBS@(.*)" all pre post)
-            (string-append pre post))
-           (("^Libs: .*" all)
-            (string-append all " @ZLIB_LIBS@ @JPEG_LIBS@"))))))
+        (base32 "0i2a4vx9gizki0wgmv03xjz8j9d8agkvbag1a8m4kcw4asd4p87g"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gnuplot" ,gnuplot)))           ;needed for test suite
+     `(("gnuplot" ,gnuplot)             ;needed for test suite
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("giflib" ,giflib)
        ("libjpeg" ,libjpeg)
@@ -358,31 +387,22 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)))
     (propagated-inputs
+     ;; Linking a program with leptonica also requires these.
      `(("openjpeg" ,openjpeg)
        ("zlib" ,zlib)))
     (arguments
-     '(#:parallel-tests? #f ; XXX: cause fpix1_reg to fail
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         ;; Prevent make from trying to regenerate config.h.in.
-         (add-after
-          'unpack 'set-config-h-in-file-time
-          (lambda _
-            (set-file-time "config/config.h.in" (stat "configure"))))
-         (add-after
-          'unpack 'patch-reg-wrapper
-          (lambda _
-            (substitute* "prog/reg_wrapper.sh"
-              ((" /bin/sh ")
-               (string-append " " (which "sh") " "))
-              (("which gnuplot") (which "gnuplot")))))
-         (add-before
-          'check 'disable-failing-tests
-          ;; XXX: 2 of 9 tests from webpio_reg fails.
-          (lambda _
-            (substitute* "prog/webpio_reg.c"
-              ((".*DoWebpTest2.* 90.*") "")
-              ((".*DoWebpTest2.* 100.*") "")))))))
+         (add-after 'unpack 'autogen
+           (lambda _
+             (zero? (system* "sh" "autobuild"))))
+         (add-after 'unpack 'patch-reg-wrapper
+           (lambda _
+             (substitute* "prog/reg_wrapper.sh"
+               ((" /bin/sh ")
+                (string-append " " (which "sh") " "))
+               (("which gnuplot")
+                "true")))))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description
@@ -584,7 +604,7 @@ compose, and analyze GIF images.")
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("bzip2" ,bzip2)))
-    (home-page "http://sourceforge.net/projects/enlightenment/")
+    (home-page "https://sourceforge.net/projects/enlightenment/")
     (synopsis
      "Loading, saving, rendering and manipulating image files")
     (description
@@ -879,14 +899,14 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.6")
+    (version "2.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "0g6fl8rrbspa9vpswixmpxrg71l19kqgc2b5cak7vmwxphj01wbk"))))
+                "1s022mfxyw8jw60fgyj60lbm9h6bc4nk2751b0in8qsjwcl59n2l"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")

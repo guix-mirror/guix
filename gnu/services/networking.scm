@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -633,7 +633,12 @@ configuration file."
       (let ((file-name "/etc/wicd/dhclient.conf.template.default"))
         (unless (file-exists? file-name)
           (copy-file (string-append #$wicd file-name)
-                     file-name)))))
+                     file-name)))
+
+      ;; Wicd invokes 'wpa_supplicant', which needs this directory for its
+      ;; named socket files.
+      (mkdir-p "/var/run/wpa_supplicant")
+      (chmod "/var/run/wpa_supplicant" #o750)))
 
 (define (wicd-shepherd-service wicd)
   "Return a shepherd service for WICD."

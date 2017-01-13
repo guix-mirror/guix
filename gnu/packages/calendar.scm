@@ -88,6 +88,7 @@ data units.")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "khal" version))
+             (patches (search-patches "khal-disable-failing-tests.patch"))
              (sha256
               (base32
                "03vy4dp9n43w51mwqjjy08dr5nj7wxqnb085visz3j43vzm42p1f"))))

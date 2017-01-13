@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -102,14 +102,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.6")
+   (version "1.14.8")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://cairographics.org/releases/cairo-"
+            (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lmjlzmghmr27y615px9hkm552x7ap6pmq9mfbzr6smp8y2b6g31"))
+              "082ypjlh03ss5616amgjp9ap3xwwccyh2knyyrj1a4d4x65dkwni"))
             (patches (search-patches "cairo-CVE-2016-9082.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
@@ -150,7 +150,7 @@ Bézier splines, transforming and compositing translucent images, and
 antialiased text rendering.  All drawing operations can be transformed by any
 affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
-   (home-page "http://cairographics.org/")))
+   (home-page "https://cairographics.org/")))
 
 (define-public cairo-xcb
   (package
@@ -168,7 +168,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.3.3")
+   (version "1.3.4")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -176,7 +176,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1jdkdjvci5d6r26vimsz24hz3xqqrk5xq40n693jn4m42mqrh816"))))
+               "0ava7y24797k5ps3ghq2ccjjds97ri1gx32v6546a6pgmpyad2ki"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -426,6 +426,7 @@ highlighting and other features typical of a source code editor.")
   (package
    (name "gdk-pixbuf")
    (version "2.34.0")
+   (replacement gdk-pixbuf/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -474,11 +475,35 @@ in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
 
+(define gdk-pixbuf/fixed
+  (package (inherit gdk-pixbuf)
+    (name "gdk-pixbuf")
+    (version "2.36.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))))
+    (replacement #f)))
+
+(define-syntax-rule (package/inherit p overrides ...)
+  "Like (package (inherit P) OVERRIDES ...), except that the same
+transformation is done to the package replacement, if any.  P must be a bare
+identifier, and will be bound to either P or its replacement when evaluating
+OVERRIDES."
+  (let loop ((p p))
+    (package (inherit p)
+      overrides ...
+      (replacement (and=> (package-replacement p) loop)))))
+
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
 ;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
 ;; closure size.
 (define-public gdk-pixbuf+svg
-  (package (inherit gdk-pixbuf)
+  (package/inherit gdk-pixbuf
     (name "gdk-pixbuf+svg")
     (inputs
      `(("librsvg" ,librsvg)
@@ -929,15 +954,14 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
 (define-public cairomm
   (package
     (name "cairomm")
-    (version "1.12.0")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/cairomm/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "https://www.cairographics.org/releases/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rmgs6zjj2vaxh9hsa0944m23fdn1psycqh7bi984qd8jj1xljm5"))))
+                "16fmigxsaz85c3lgcls7biwyz8zy8c8h3jndfm54cxxas3a7zi25"))))
     (build-system gnu-build-system)
     (arguments
      ;; The examples lack -lcairo.
@@ -948,7 +972,7 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
        ("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
        ("cairo" ,cairo)))
-    (home-page "http://cairographics.org/")
+    (home-page "https://cairographics.org/")
     (synopsis "C++ bindings to the Cairo 2D graphics library")
     (description
      "Cairomm provides a C++ programming interface to the Cairo 2D graphics

@@ -100,7 +100,7 @@ irssi, but graphical.")
 (define-public irssi
   (package
     (name "irssi")
-    (version "0.8.20")
+    (version "1.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/irssi/irssi/"
@@ -108,31 +108,29 @@ irssi, but graphical.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0njh43xmpad9h5g6fp1805hrix1mwbbnk7p6qmlw9apm47lc90kq"))))
+               "1f2gmr5nynagwi4wx3yprhzfpg4ww6r7ff395b0a48d0qqgkr2ka"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (ncurses (assoc-ref inputs "ncurses")))
+             (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
                (zero?
                 (system* "./configure"
                          (string-append "--prefix=" out)
-                         (string-append "--with-ncurses=" ncurses)
                          (string-append "--with-proxy")
                          (string-append "--with-socks")
                          (string-append "--with-bot")))))))))
     (inputs
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
-       ("openssl" ,openssl)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
+       ("openssl" ,openssl)
        ("perl" ,perl)))
-    (home-page "http://www.irssi.org/")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://irssi.org/")
     (synopsis "Terminal-based IRC client")
     (description
      "Irssi is a terminal based IRC client for UNIX systems.  It also supports
@@ -146,10 +144,10 @@ SILC and ICB protocols via plugins.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://weechat.org/files/src/weechat-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0lyqrymdjdvkzg8510l46c4zw8mjagnmri2i6m9y9qz0c1sfaq9h"))
+                "1qqnb9bdi15l30378rnmhf26ndacwi5hmq5vpz4lfyihk17xnryn"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)

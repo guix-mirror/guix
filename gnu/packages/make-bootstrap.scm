@@ -337,10 +337,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; GNU libc's essential shared libraries, dynamic linker, and headers,
   ;; with all references to store directories stripped.  As a result,
   ;; libc.so is unusable and need to be patched for proper relocation.
-  (define (hurd-triplet? triplet)
-    (and (string-suffix? "-gnu" triplet)
-         (not (string-contains triplet "linux"))))
-
   (let ((glibc (glibc-for-bootstrap)))
     (package (inherit glibc)
       (name "glibc-stripped")

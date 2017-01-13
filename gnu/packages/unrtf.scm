@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix gexp)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages base))
@@ -35,6 +36,7 @@
              (method url-fetch)
              (uri (string-append "mirror://gnu/unrtf/unrtf-"
                                  version ".tar.gz"))
+             (patches (search-patches "unrtf-CVE-2016-10091.patch"))
              (sha256
               (base32
                "1pcdzf2h1prn393dkvg93v80vh38q0v817xnbwrlwxbdz4k7i8r2"))

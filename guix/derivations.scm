@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,7 +121,7 @@
 ;;; Nix derivations, as implemented in Nix's `derivations.cc'.
 ;;;
 
-(define-record-type <derivation>
+(define-immutable-record-type <derivation>
   (make-derivation outputs inputs sources system builder args env-vars
                    file-name)
   derivation?
@@ -453,19 +454,22 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
        (loop (read drv-port)
              (cons (ununquote exp) result))))))
 
-(define read-derivation
-  (let ((cache (make-weak-value-hash-table 200)))
-    (lambda (drv-port)
-      "Read the derivation from DRV-PORT and return the corresponding
+(define %derivation-cache
+  ;; Maps derivation file names to <derivation> objects.
+  ;; XXX: This is redundant with 'atts-cache' in the store.
+  (make-weak-value-hash-table 200))
+
+(define (read-derivation drv-port)
+  "Read the derivation from DRV-PORT and return the corresponding
 <derivation> object."
-      ;; Memoize that operation because `%read-derivation' is quite expensive,
-      ;; and because the same argument is read more than 15 times on average
-      ;; during something like (package-derivation s gdb).
-      (let ((file (and=> (port-filename drv-port) basename)))
-        (or (and file (hash-ref cache file))
-            (let ((drv (%read-derivation drv-port)))
-              (hash-set! cache file drv)
-              drv))))))
+  ;; Memoize that operation because `%read-derivation' is quite expensive,
+  ;; and because the same argument is read more than 15 times on average
+  ;; during something like (package-derivation s gdb).
+  (let ((file (port-filename drv-port)))
+    (or (and file (hash-ref %derivation-cache file))
+        (let ((drv (%read-derivation drv-port)))
+          (hash-set! %derivation-cache file drv)
+          drv))))
 
 (define-inlinable (write-sequence lst write-item port)
   ;; Write each element of LST with WRITE-ITEM to PORT, separating them with a
@@ -520,9 +524,9 @@ that form."
   (define (write-input input port)
     (match input
       (($ <derivation-input> path sub-drvs)
-       (display "(" port)
-       (write path port)
-       (display "," port)
+       (display "(\"" port)
+       (display path port)
+       (display "\"," port)
        (write-string-list sub-drvs)
        (display ")" port))))
 
@@ -545,7 +549,7 @@ that form."
      (write-list inputs write-input port)
      (display "," port)
      (write-string-list sources)
-     (format port ",~s,~s," system builder)
+     (simple-format port ",\"~a\",\"~a\"," system builder)
      (write-string-list args)
      (display "," port)
      (write-list env-vars write-env-var port)
@@ -814,14 +818,6 @@ output should not be used."
             e
             outputs)))
 
-  (define (set-file-name drv file)
-    ;; Set FILE as the 'file-name' field of DRV.
-    (match drv
-      (($ <derivation> outputs inputs sources system builder
-          args env-vars)
-       (make-derivation outputs inputs sources system builder
-                        args env-vars file))))
-
   (define input->derivation-input
     (match-lambda
       (((? derivation? drv))
@@ -866,10 +862,12 @@ output should not be used."
                                       system builder args env-vars #f))
          (drv        (add-output-paths drv-masked)))
 
-    (let ((file (add-text-to-store store (string-append name ".drv")
-                                   (derivation->string drv)
-                                   (map derivation-input-path inputs))))
-      (set-file-name drv file))))
+    (let* ((file (add-text-to-store store (string-append name ".drv")
+                                    (derivation->string drv)
+                                    (map derivation-input-path inputs)))
+           (drv* (set-field drv (derivation-file-name) file)))
+      (hash-set! %derivation-cache file drv*)
+      drv*)))
 
 (define* (map-derivation store drv mapping
                          #:key (system (%current-system)))

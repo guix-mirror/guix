@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;;
@@ -497,15 +497,15 @@ experience.")
 (define-public awesome
   (package
     (name "awesome")
-    (version "3.5.9")
+    (version "4.0")
     (source
      (origin (method url-fetch)
              (uri (string-append
-                   "https://awesome.naquadah.org/download/awesome-"
-                   version ".tar.xz"))
+                   "https://github.com/awesomeWM/awesome-releases/raw/"
+                   "master/awesome-" version ".tar.xz"))
              (sha256
               (base32
-               "0kynair1ykr74b39a4gcm2y24viial64337cf26nhlc7azjbby67"))
+               "0czkcz67sab63gf5m2p2pgg05yinjx60hfb9rfyzdkkg28q9f02w"))
              (modules '((guix build utils)
                         (srfi srfi-19)))
              (snippet
@@ -538,6 +538,7 @@ experience.")
               ("libxcb" ,libxcb)
               ("libxcursor" ,libxcursor)
               ("libxdg-basedir" ,libxdg-basedir)
+              ("libxkbcommon" ,libxkbcommon)
               ("lua" ,lua)
               ("lua-lgi",lua-lgi)
               ("pango" ,pango)
@@ -547,6 +548,7 @@ experience.")
               ("xcb-util-image" ,xcb-util-image)
               ("xcb-util-keysyms" ,xcb-util-keysyms)
               ("xcb-util-renderutil" ,xcb-util-renderutil)
+              ("xcb-util-xrm" ,xcb-util-xrm)
               ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
      `(;; Let compression happen in our 'compress-documentation' phase so that

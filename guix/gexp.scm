@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -669,41 +669,34 @@ references; otherwise, return only non-native references."
                    result)
            result))
       (($ <gexp-input> (? gexp? exp) _ #f)
-       (if native?
-           (append (gexp-inputs exp #:native? #t)
-                   result)
-           (append (gexp-inputs exp)
-                   result)))
+       (append (gexp-inputs exp #:native? native?)
+               result))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
            (cons `(,str) result)
            result))
-      (($ <gexp-input> (? struct? thing) output)
-       (if (lookup-compiler thing)
+      (($ <gexp-input> (? struct? thing) output n?)
+       (if (and (eqv? n? native?) (lookup-compiler thing))
            ;; THING is a derivation, or a package, or an origin, etc.
            (cons `(,thing ,output) result)
            result))
       (($ <gexp-input> (lst ...) output n?)
-       (fold-right add-reference-inputs result
-                   ;; XXX: For now, automatically convert LST to a list of
-                   ;; gexp-inputs.
-                   (map (match-lambda
-                         ((? gexp-input? x) x)
-                         (x (%gexp-input x "out" (or n? native?))))
-                        lst)))
+       (if (eqv? native? n?)
+           (fold-right add-reference-inputs result
+                       ;; XXX: For now, automatically convert LST to a list of
+                       ;; gexp-inputs.
+                       (map (match-lambda
+                              ((? gexp-input? x) x)
+                              (x (%gexp-input x "out" (or n? native?))))
+                            lst))
+           result))
       (_
        ;; Ignore references to other kinds of objects.
        result)))
 
-  (define (native-input? x)
-    (and (gexp-input? x)
-         (gexp-input-native? x)))
-
   (fold-right add-reference-inputs
               '()
-              (if native?
-                  (filter native-input? (gexp-references exp))
-                  (remove native-input? (gexp-references exp)))))
+              (gexp-references exp)))
 
 (define gexp-native-inputs
   (cut gexp-inputs <> #:native? #t))
@@ -819,9 +812,9 @@ environment."
            (cons exp result))
           ((ungexp-native-splicing _ ...)
            (cons exp result))
-          ((exp0 exp ...)
+          ((exp0 . exp)
            (let ((result (loop #'exp0 result)))
-             (fold loop result #'(exp ...))))
+             (loop  #'exp result)))
           (_
            result))))
 
@@ -853,9 +846,9 @@ environment."
       (match (assoc exp substs)
         ((_ id)
          id)
-        (_
-         #'(syntax-error "error: no 'ungexp' substitution"
-                         #'ref))))
+        (_                                        ;internal error
+         (with-syntax ((exp exp))
+           #'(syntax-error "error: no 'ungexp' substitution" exp)))))
 
     (define (substitute-ungexp-splicing exp substs)
       (syntax-case exp ()
@@ -867,7 +860,7 @@ environment."
                         #,(substitute-references #'(rest ...) substs))))
            (_
             #'(syntax-error "error: no 'ungexp-splicing' substitution"
-                            #'ref))))))
+                            exp))))))
 
     (define (substitute-references exp substs)
       ;; Return a variant of EXP where all the cars of SUBSTS have been
@@ -882,9 +875,9 @@ environment."
          (substitute-ungexp-splicing exp substs))
         (((ungexp-native-splicing _ ...) rest ...)
          (substitute-ungexp-splicing exp substs))
-        ((exp0 exp ...)
+        ((exp0 . exp)
          #`(cons #,(substitute-references #'exp0 substs)
-                 #,(substitute-references #'(exp ...) substs)))
+                 #,(substitute-references #'exp substs)))
         (x #''x)))
 
     (syntax-case s (ungexp output)

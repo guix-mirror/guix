@@ -1,0 +1,53 @@
+#!@EMACS@ --script
+;;; indent-package.el --- Run Emacs to indent a package definition.
+
+;; Copyright © 2017 Alex Kost <alezost@gmail.com>
+
+;; This file is part of GNU Guix.
+
+;; GNU Guix is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; GNU Guix is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This scripts indents the given package definition in the specified file
+;; using Emacs.
+
+;;; Code:
+
+;; Load Scheme indentation rules from the current directory.
+(with-temp-buffer
+  (scheme-mode)
+  (let ((default-directory (file-name-as-directory "."))
+        (enable-local-variables :all))
+    (hack-dir-local-variables)
+    (hack-local-variables-apply)))
+
+(pcase command-line-args-left
+  (`(,file-name ,package-name)
+   (find-file file-name)
+   (goto-char (point-min))
+   (if (re-search-forward (concat "^(define\\(-public\\) +"
+                                  package-name)
+                          nil t)
+       (let ((indent-tabs-mode nil))
+         (beginning-of-defun)
+         (indent-sexp)
+         (save-buffer)
+         (message "Done!"))
+     (error "Package '%s' not found in '%s'"
+            package-name file-name)))
+  (x
+   (error "Usage: indent-package.el FILE PACKAGE")))
+
+;;; indent-package.el ends here

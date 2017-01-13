@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,16 +41,19 @@
 (define-public dwm
   (package
     (name "dwm")
-    (version "6.0")
+    (version "6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://dl.suckless.org/dwm/dwm-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "0mpbivy9j80l1jqq4bd4g4z8s5c54fxrjj44avmfwncjwqylifdj"))))
+              (base32 "1zkmwb6df6m254shx06ly90c0q4jl70skk1pvkixpb7hcxhwbxn2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
+       #:make-flags (list (string-append "FREETYPEINC="
+                                         (assoc-ref %build-inputs "freetype")
+                                         "/include/freetype2"))
        #:phases
        (alist-replace
         'configure
@@ -65,7 +69,9 @@
                      (string-append "DESTDIR=" out) "PREFIX="))))
          %standard-phases))))
     (inputs
-     `(("libx11" ,libx11)
+     `(("freetype" ,freetype)
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)
        ("libxinerama" ,libxinerama)))
     (home-page "http://dwm.suckless.org/")
     (synopsis "Dynamic window manager")
@@ -78,23 +84,28 @@ optimising the environment for the application in use and the task performed.")
 (define-public dmenu
   (package
     (name "dmenu")
-    (version "4.5")
+    (version "4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/dmenu-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0l58jpxrr80fmyw5pgw5alm5qry49aw6y049745wl991v2cdcb08"))))
+                "1cwnvamqqlgczvd5dv5rsgqbhv8kp0ddjnhmavb3q732i8028yja"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
        #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+                          (string-append "PREFIX=" %output)
+                          (string-append "FREETYPEINC="
+                                         (assoc-ref %build-inputs "freetype")
+                                         "/include/freetype2"))
        #:phases
        (alist-delete 'configure %standard-phases)))
     (inputs
-     `(("libx11" ,libx11)
+     `(("freetype" ,freetype)
+       ("libxft" ,libxft)
+       ("libx11" ,libx11)
        ("libxinerama" ,libxinerama)))
     (home-page "http://tools.suckless.org/dmenu/")
     (synopsis "Dynamic menu")
@@ -106,15 +117,14 @@ numbers of user-defined menu items efficiently.")
 (define-public slock
   (package
     (name "slock")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/slock-"
                                   version ".tar.gz"))
-              (patches (search-patches "slock-CVE-2016-6866.patch"))
               (sha256
                (base32
-                "065xa9hl7zn0lv2f7yjxphqsa35rg6dn9hv10gys0sh4ljpa7d5s"))))
+                "0sif752303dg33f14k6pgwq2jp1hjyhqv6x4sy3sj281qvdljf5m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests

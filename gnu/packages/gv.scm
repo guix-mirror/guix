@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -40,8 +40,25 @@
             (sha256 (base32
                      "0q8s43z14vxm41pfa8s5h9kyyzk1fkwjhkiwbf2x70alm6rv6qi1"))))
    (build-system gnu-build-system)
-   (propagated-inputs `(("ghostscript" ,ghostscript/x)))
-   (inputs `(("libx11" ,libx11)
+   (arguments
+    '(#:phases (modify-phases %standard-phases
+                 (add-before 'configure 'set-gs-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Set the value of 'GV.gsInterpreter' in the generated
+                     ;; 'gv_system.ad' file.
+                     (let ((gs (assoc-ref inputs "ghostscript")))
+                       (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                        (substitute* "src/Makefile.in"
+                          (("GV\\.gsInterpreter:([[:blank:]]+)gs" _ blank)
+                           (string-append "GV.gsInterpreter:" blank
+                                          gs "/bin/gs"))
+                          (("GV\\.gsCmd([[:alpha:]]+):([[:blank:]]+)gs" _
+                            command blank)
+                           (string-append "GV.gsCmd" command ":"
+                                          blank gs "/bin/gs"))))
+                       #t))))))
+   (inputs `(("ghostscript" ,ghostscript/x)
+             ("libx11" ,libx11)
              ("libxaw3d" ,libxaw3d)
              ("libxinerama" ,libxinerama)
              ("libxpm" ,libxpm)

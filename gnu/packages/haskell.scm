@@ -7,7 +7,8 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,33 +26,34 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages haskell)
-  #:use-module (ice-9 regex)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix utils)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system haskell)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages perl)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages sdl)
-  #:use-module (gnu packages bootstrap)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages libedit)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (ice-9 regex))
 
 (define ghc-bootstrap-x86_64-7.8.4
   (origin
@@ -2200,7 +2202,7 @@ removed.  Both IPv4 and IPv6 are supported.")
     (inputs
      `(("ghc-mtl" ,ghc-mtl)))
     (home-page
-     "http://sourceforge.net/projects/lazy-regex")
+     "https://sourceforge.net/projects/lazy-regex")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "@code{Text.Regex.Base} provides the interface API for
 regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
@@ -2223,7 +2225,7 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
-    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "POSIX regular expressions for Haskell")
     (description "This library provides the POSIX regex backend used by the
 Haskell library @code{regex-base}.")
@@ -2247,7 +2249,7 @@ Haskell library @code{regex-base}.")
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)
        ("ghc-regex-posix" ,ghc-regex-posix)))
-    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "This library provides one module layer over
 @code{regex-posix} to replace @code{Text.Regex}.")
@@ -3050,7 +3052,7 @@ use HUnit assertions as QuickCheck properties.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.8.1")
+    (version "2.8.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3061,7 +3063,7 @@ use HUnit assertions as QuickCheck properties.")
              ".tar.gz"))
        (sha256
         (base32
-         "0fvnfl30fxmj5q920l13641ar896d53z0z6z66m7c1366lvalwvh"))))
+         "1ai6k5v0bibaxq8xffcblc6rwmmk6gf8vjyd9p2h3y6vwbhlvilq"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
@@ -4571,7 +4573,7 @@ just a @code{Semigroup} are added.")
 (define-public ghc-semigroups
   (package
     (name "ghc-semigroups")
-    (version "0.17.0.1")
+    (version "0.18.2")
     (source
      (origin
        (method url-fetch)
@@ -4581,7 +4583,7 @@ just a @code{Semigroup} are added.")
              ".tar.gz"))
        (sha256
         (base32
-         "0gvpfi7s6ys4qha3y9a1zl1a15gf9cgg33wjb94ghg82ivcxnc3r"))))
+         "1r6hsn3am3dpf4rprrj4m04d9318v9iq02bin0pl29dg4a3gzjax"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-nats" ,ghc-nats)
@@ -6669,87 +6671,6 @@ constant-time:
 @end enumerate\n")
     (license license:bsd-3)))
 
-(define-public idris
-  ;; TODO: IDRIS_LIBRARY_PATH only accepts a single path and not a colon
-  ;; separated list.
-  ;; TODO: When installing idris the location of the standard libraries
-  ;; cannot be specified.
-  ;; NOTE: Creating an idris build system:
-  ;; Idris packages can be packaged and installed using a trivial
-  ;; build system.
-  ;; (zero? (system* (string-append idris "/bin/idris")
-  ;;                                "--ibcsubdir"
-  ;;                                (string-append out "/idris/libs/lightyear")
-  ;;                                "--install" "lightyear.ipkg")
-  ;; (native-search-paths
-  ;;   (list (search-path-specification
-  ;;          (variable "IDRIS_LIBRARY_PATH")
-  ;;          (files '("idris/libs")))))
-  (package
-    (name "idris")
-    (version "0.12.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://hackage.haskell.org/package/"
-                    "idris-" version "/idris-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ijrbgzaahw9aagn4al55nqcggrg9ajlrkq2fjc1saq3xdd3v7rs"))))
-    (build-system haskell-build-system)
-    (arguments
-     `(;; FIXME: runhaskell Setup.hs test doesn't set paths required by test
-       ;; suite.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-cc-command
-           (lambda _
-             (setenv "CC" "gcc"))))))
-    (inputs
-     `(("gmp" ,gmp)
-       ("ncurses" ,ncurses)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-async" ,ghc-async)
-       ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-cheapskate" ,ghc-cheapskate)
-       ("ghc-fingertree" ,ghc-fingertree)
-       ("ghc-fsnotify" ,ghc-fsnotify)
-       ("ghc-ieee754" ,ghc-ieee754)
-       ("ghc-mtl" ,ghc-mtl)
-       ("ghc-network" ,ghc-network)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-parsers" ,ghc-parsers)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-split" ,ghc-split)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-rerun" ,ghc-tasty-rerun)
-       ("ghc-terminal-size" ,ghc-terminal-size)
-       ("ghc-text" ,ghc-text)
-       ("ghc-trifecta" ,ghc-trifecta)
-       ("ghc-uniplate" ,ghc-uniplate)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-zip-archive" ,ghc-zip-archive)
-       ("ghc-zlib" ,ghc-zlib)))
-    (home-page "http://www.idris-lang.org")
-    (synopsis "General purpose language with full dependent types")
-    (description "Idris is a general purpose language with full dependent
-types.  It is compiled, with eager evaluation.  Dependent types allow types to
-be predicated on values, meaning that some aspects of a program's behaviour
-can be specified precisely in the type.  The language is closely related to
-Epigram and Agda.")
-    (license license:bsd-3)))
-
 (define-public ghc-base16-bytestring
   (package
     (name "ghc-base16-bytestring")
@@ -8127,6 +8048,118 @@ for general types.")
     (synopsis "Get terminal window height and width")
     (description "Get terminal window height and width without ncurses
 dependency.")
+    (license license:bsd-3)))
+
+(define-public ghc-language-c
+  (package
+    (name "ghc-language-c")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "language-c/language-c-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08i2bl7jmmymn2sldzlbz6ig7lx3wfwhlpadzibs3fx72z08pmc6"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-syb" ,ghc-syb)))
+    (native-inputs
+     `(("ghc-happy" ,ghc-happy)
+       ("ghc-alex" ,ghc-alex)))
+    (home-page "http://visq.github.io/language-c/")
+    (synopsis "Analysis and generation of C code")
+    (description
+     "Language C is a Haskell library for the analysis and generation of C code.
+It features a complete, well-tested parser and pretty printer for all of C99
+and a large set of GNU extensions.")
+    (license license:bsd-3)))
+
+(define-public ghc-markdown-unlit
+  (package
+    (name "ghc-markdown-unlit")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://hackage/package/markdown-unlit/"
+                    "markdown-unlit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kj2bffl7ndd8ygwwa3r1mbpwbxbfhyfgnbla8k8g9i6ffp0qrbw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-silently" ,ghc-silently)
+       ("ghc-stringbuilder" ,ghc-stringbuilder)
+       ("ghc-temporary" ,ghc-temporary)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/sol/markdown-unlit#readme")
+    (synopsis "Literate Haskell support for Markdown")
+    (description "This package allows you to have a README.md that at the
+same time is a literate Haskell program.")
+    (license license:expat)))
+
+(define-public corrode
+  (let ((commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
+    (package
+      (name "corrode")
+      (version (string-append "0.0.1-" (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jameysharp/corrode.git")
+               (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
+         (file-name
+          (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
+      (build-system haskell-build-system)
+      (inputs
+       `(("ghc-language-c" ,ghc-language-c)
+         ("ghc-markdown-unlit" ,ghc-markdown-unlit)))
+      (home-page "https://github.com/jameysharp/corrode")
+      (synopsis "Automatic semantics-preserving translation from C to Rust")
+      (description
+       "This program reads a C source file and prints an equivalent module in
+Rust syntax.  It is intended to be useful for two different purposes:
+
+@enumerate
+@item Partial automation for migrating legacy code that was implemented in C.
+@item A new, complementary approach to static analysis for C programs.
+@end enumerate\n")
+      (license license:gpl2+))))
+
+(define-public ghc-wave
+  (package
+    (name "ghc-wave")
+    (version "0.1.4")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://hackage.haskell.org/package/wave/wave-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1g5nmqfk6p25v9ismwz4i66ay91bd1qh39xwj0hm4z6a5mw8frk8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-data-default-class"
+        ,ghc-data-default-class)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/mrkkrp/wave")
+    (synopsis "Work with WAVE and RF64 files in Haskell")
+    (description "This package allows you to work with WAVE and RF64
+files in Haskell.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -278,6 +278,27 @@
                (string-contains (nix-protocol-error-message c) "failed")))
       (build-derivations %store (list drv))
       #f)))
+
+(unless (force %http-server-socket)
+  (test-skip 1))
+(test-assert "'download' built-in builder, check mode"
+  ;; Make sure rebuilding the 'builtin:download' derivation in check mode
+  ;; works.  See <http://bugs.gnu.org/25089>.
+  (let* ((text (random-text))
+         (drv (derivation %store "world"
+                          "builtin:download" '()
+                          #:env-vars `(("url"
+                                        . ,(object->string (%local-url))))
+                          #:hash-algo 'sha256
+                          #:hash (sha256 (string->utf8 text)))))
+    (and (with-http-server 200 text
+           (build-derivations %store (list drv)))
+         (with-http-server 200 text
+           (build-derivations %store (list drv)
+                              (build-mode check)))
+         (string=? (call-with-input-file (derivation->output-path drv)
+                     get-string-all)
+                   text))))
 
 (test-equal "derivation-name"
   "foo-0.0"
@@ -1109,3 +1130,7 @@
          (call-with-input-file out get-string-all))))
 
 (test-end)
+
+;; Local Variables:
+;; eval: (put 'with-http-server 'scheme-indent-function 2)
+;; End:

@@ -468,7 +468,7 @@ XBINUTILS and the cross tool chain."
 
           (native-inputs `(("cross-gcc" ,xgcc)
                            ("cross-binutils" ,xbinutils)
-                           ,@(if (string-match (or "i586-pc-gnu" "i586-gnu") target)
+                           ,@(if (hurd-triplet? target)
                                  `(("cross-mig"
                                     ,@(assoc-ref (package-native-inputs xheaders)
                                                  "cross-mig")))

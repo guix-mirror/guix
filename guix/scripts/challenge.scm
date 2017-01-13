@@ -118,7 +118,7 @@ taken since we do not import the archives."
               (select-reference item narinfos urls)
               (narinfo-hash->sha256 (narinfo-hash first))))))
       (()
-       (leave (_ "no substitutes for '~a'~%") item))))
+       (warning (_ "no substitutes for '~a'; cannot conclude~%") item))))
 
   (mlet* %store-monad ((local     (mapm %store-monad
                                         query-locally-built-hash items))

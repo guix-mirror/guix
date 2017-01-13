@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,3 +93,36 @@ stable and well documented interface.")
                     ;; festival_client.{c,h} carries an expat-style license.
                     "See src/modules/festival_client.c in the distribution.")
                    license:gpl3+)))) ; doc/texinfo.tex -- with TeX exception.
+
+(define-public sonic
+  (package
+    (name "sonic")
+    (version "0.2.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/waywardgeek/sonic/archive/"
+                                 "release-" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "11a0q9wkgbb9ymf52v7dvybfhj8hprgr67zs1xcng143fvjpr0n7"))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:tests? #f ; No test suite.
+        #:make-flags
+         (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+        #:phases
+        (modify-phases %standard-phases
+          (delete 'configure)))) ; No ./configure script.
+    (synopsis "Speed up or slow down speech")
+    (description "Sonic implements a simple algorithm for speeding up or slowing
+down speech.  However, it's optimized for speed ups of over 2X, unlike previous
+algorithms for changing speech rate.  Sonic is a C library designed to be easily
+integrated into streaming voice applications such as text-to-speech (TTS) back
+ends.
+
+The primary motivation behind Sonic is to enable the blind and visually impaired
+to improve their productivity with speech engines, like eSpeak.  Sonic can also
+be used by the sighted.")
+    (home-page "https://github.com/waywardgeek/sonic")
+    (license license:asl2.0)))

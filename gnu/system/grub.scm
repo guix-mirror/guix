@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -177,9 +177,9 @@ STORE-MOUNT-POINT is its mount point; these are used to determine where the
 background image and fonts must be searched for.  SYSTEM must be the target
 system string---e.g., \"x86_64-linux\"."
   (define setup-gfxterm-body
-    ;; Intel systems need to be switched into graphics mode, whereas most
-    ;; other modern architectures have no other mode and therefore don't need
-    ;; to be switched.
+    ;; Intel and EFI systems need to be switched into graphics mode, whereas
+    ;; most other modern architectures have no other mode and therefore don't
+    ;; need to be switched.
     (if (string-match "^(x86_64|i[3-6]86)-" system)
         "
   # Leave 'gfxmode' to 'auto'.
@@ -188,6 +188,15 @@ system string---e.g., \"x86_64-linux\"."
   insmod video_bochs
   insmod video_cirrus
   insmod gfxterm
+
+  if [ \"${grub_platform}\" == efi ]; then
+    # This is for (U)EFI systems (these modules are unavailable in the
+    # non-EFI GRUB.)  If we don't load them, GRUB boots in \"blind mode\",
+    # which isn't convenient.
+    insmod efi_gop
+    insmod efi_uga
+  fi
+
   terminal_output gfxterm
 "
         ""))

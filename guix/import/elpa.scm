@@ -89,7 +89,13 @@ NAMES (strings)."
   "Fetch URL, store the content in a temporary file and call PROC with that
 file.  Returns the value returned by PROC.  On error call ERROR-THUNK and
 return its value or leave if it's false."
-  (proc (http-fetch/cached (string->uri url))))
+  (catch #t
+    (lambda ()
+      (proc (http-fetch/cached (string->uri url))))
+    (lambda (key . args)
+      (if error-thunk
+          (error-thunk)
+          (leave (_ "~A: download failed~%") url)))))
 
 (define (is-elpa-package? name elpa-pkg-spec)
   "Return true if the string NAME corresponds to the name of the package
@@ -222,7 +228,7 @@ type '<elpa-package>'."
                         (bytevector->nix-base32-string (file-sha256 tarball))
                         "failed to download package")))))
        (build-system emacs-build-system)
-       ,@(maybe-inputs 'inputs dependencies)
+       ,@(maybe-inputs 'propagated-inputs dependencies)
        (home-page ,(elpa-package-home-page pkg))
        (synopsis ,(elpa-package-synopsis pkg))
        (description ,(elpa-package-description pkg))

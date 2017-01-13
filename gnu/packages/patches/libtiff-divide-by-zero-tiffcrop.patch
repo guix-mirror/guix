@@ -1,0 +1,57 @@
+Fix divide-by-zero in readSeparateStripsIntoBuffer():
+
+http://bugzilla.maptools.org/show_bug.cgi?id=2619
+
+2016-12-03 Even Rouault <even.rouault at spatialys.com>
+
+        * tools/tiffcrop.c: fix integer division by zero when BitsPerSample is
+missing.
+        Reported by Agostina Sarubo.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2619
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <--  ChangeLog
+new revision: 1.1180; previous revision: 1.1179
+/cvs/maptools/cvsroot/libtiff/tools/tiffcrop.c,v  <--  tools/tiffcrop.c
+new revision: 1.49; previous revision: 1.48
+
+Index: libtiff/tools/tiffcrop.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/tools/tiffcrop.c,v
+retrieving revision 1.48
+retrieving revision 1.49
+diff -u -r1.48 -r1.49
+--- libtiff/tools/tiffcrop.c	3 Dec 2016 12:19:32 -0000	1.48
++++ libtiff/tools/tiffcrop.c	3 Dec 2016 13:00:04 -0000	1.49
+@@ -1,4 +1,4 @@
+-/* $Id: tiffcrop.c,v 1.48 2016-12-03 12:19:32 erouault Exp $ */
++/* $Id: tiffcrop.c,v 1.49 2016-12-03 13:00:04 erouault Exp $ */
+ 
+ /* tiffcrop.c -- a port of tiffcp.c extended to include manipulations of
+  * the image data through additional options listed below
+@@ -1164,7 +1164,7 @@
+   tdata_t  obuf;
+ 
+   (void) TIFFGetFieldDefaulted(out, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
+-  (void) TIFFGetField(out, TIFFTAG_BITSPERSAMPLE, &bps);
++  (void) TIFFGetFieldDefaulted(out, TIFFTAG_BITSPERSAMPLE, &bps);
+   bytes_per_sample = (bps + 7) / 8;
+   if( width == 0 ||
+       (uint32)bps * (uint32)spp > TIFF_UINT32_MAX / width ||
+@@ -4760,7 +4760,7 @@
+   int i, bytes_per_sample, bytes_per_pixel, shift_width, result = 1;
+   uint32 j;
+   int32  bytes_read = 0;
+-  uint16 bps, planar;
++  uint16 bps = 0, planar;
+   uint32 nstrips;
+   uint32 strips_per_sample;
+   uint32 src_rowsize, dst_rowsize, rows_processed, rps;
+@@ -4780,7 +4780,7 @@
+     }
+ 
+   memset (srcbuffs, '\0', sizeof(srcbuffs));
+-  TIFFGetField(in, TIFFTAG_BITSPERSAMPLE, &bps);
++  TIFFGetFieldDefaulted(in, TIFFTAG_BITSPERSAMPLE, &bps);
+   TIFFGetFieldDefaulted(in, TIFFTAG_PLANARCONFIG, &planar);
+   TIFFGetFieldDefaulted(in, TIFFTAG_ROWSPERSTRIP, &rps);
+   if (rps > length)

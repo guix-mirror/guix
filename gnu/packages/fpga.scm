@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,9 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ghostscript)
@@ -114,7 +117,7 @@ For synthesis, the compiler generates netlists in the desired format.")
 (define-public yosys
   (package
     (name "yosys")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -122,7 +125,7 @@ For synthesis, the compiler generates netlists in the desired format.")
                               name "-" version ".tar.gz"))
               (sha256
                 (base32
-                   "02j0c0m9dfyjccynalf0aggj6gy20k7iphpkg5cn6sdirlkv8gmx"))
+                   "0vkfdn4phvkjqlnpqlr6q5f97bgjc3312vj5jf0vf85zqv88dy9x"))
               (file-name (string-append name "-" version "-checkout.tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -136,6 +139,13 @@ For synthesis, the compiler generates netlists in the desired format.")
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'fix-paths
+           (lambda _
+             (substitute* "./passes/cmds/show.cc"
+               (("exec xdot") (string-append "exec " (which "xdot")))
+               (("dot -") (string-append (which "dot") " -"))
+               (("fuser") (which "fuser")))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs (make-flags '()) #:allow-other-keys)
              (zero? (apply system* "make" "config-gcc" make-flags))))
@@ -172,7 +182,6 @@ For synthesis, the compiler generates netlists in the desired format.")
                         (("iverilog_bin=\".*\"") (string-append "iverilog_bin=\""
                                                                 iverilog "\"")))
                      #t))))))
-    ;; TODO add xdot [patch the path to it here] as soon as I find out where it is.
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)
@@ -185,6 +194,9 @@ For synthesis, the compiler generates netlists in the desired format.")
      `(("tcl" ,tcl)
        ("readline" ,readline)
        ("libffi" ,libffi)
+       ("graphviz" ,graphviz)
+       ("psmisc" ,psmisc)
+       ("xdot" ,xdot)
        ("abc" ,abc)))
     (home-page "http://www.clifford.at/yosys/")
     (synopsis "FPGA Verilog RTL synthesizer")

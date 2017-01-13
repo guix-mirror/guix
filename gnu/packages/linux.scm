@@ -1,13 +1,13 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -17,6 +17,8 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +74,8 @@
   #:use-module (gnu packages slang)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -242,13 +246,15 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
-       ,@(if configuration-file
-             `(("kconfig" ,(configuration-file
-                            (system->linux-architecture
-                             (or (%current-target-system)
-                                 (%current-system)))
-                            #:variant (version-major+minor version))))
-             '())))
+       ,@(match (and configuration-file
+                     (configuration-file
+                      (system->linux-architecture
+                       (or (%current-target-system) (%current-system)))
+                      #:variant (version-major+minor version)))
+           (#f                                    ;no config for this platform
+            '())
+           ((? string? config)
+            `(("kconfig" ,config))))))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -327,26 +333,26 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.14"
-                    "06rh1j2m4x6kv7prgg2pakw81b7w75dxrl31ch1psf44yqy51q6q"
+  (make-linux-libre "4.9.3"
+                    "1jd2rz58lcha9ac35glr26lc6hfi49fvpiwshgpd6ygf4irrs82w"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.38"
-                    "038mzv5dj7cj5vywiafniai2f56wh7k2yirv0ac61nvg2v25r2jk"
+  (make-linux-libre "4.4.42"
+                    "1jd43yvycizgqdmwp9rpj7gpjy37mah8jlqaiskjb0hivyk495yz"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.36"
-                    "0wy7xpqjwn1aprbzrbqgjskcg8qj2mczkv3rcisxf8gcdifz61qh"
+  (make-linux-libre "4.1.37"
+                    "0q79cxmrz0j5wh7z1dc103q6q6qf7rqgjl7ka8lvn4vl32pr0kq1"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.14")
-(define %linux-libre-hash "06rh1j2m4x6kv7prgg2pakw81b7w75dxrl31ch1psf44yqy51q6q")
+(define %linux-libre-version "4.9.3")
+(define %linux-libre-hash "1jd2rz58lcha9ac35glr26lc6hfi49fvpiwshgpd6ygf4irrs82w")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -579,7 +585,7 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "006")
+    (version "008")
     (source
      (origin
       (method url-fetch)
@@ -587,10 +593,11 @@ slabtop, and skill.")
                           "usbutils-" version ".tar.xz"))
       (sha256
        (base32
-        "03pd57vv8c6x0hgjqcbrxnzi14h8hcghmapg89p8k5zpwpkvbdfr"))))
+        "132clk14j4nm8crln2jymdbbc2vhzar2j2hnxyh05m79pbq1lx24"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb" ,libusb)))
+     `(("libusb" ,libusb)
+       ("eudev" ,eudev-with-hwdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
@@ -615,9 +622,15 @@ slabtop, and skill.")
                "1ix0b83zgw5n0p2grh2961c6796m92yr2jqc2sbr23x3lfsp8r71"))
              (modules '((guix build utils)))
              (snippet
-              '(substitute* "MCONFIG.in"
-                 (("INSTALL_SYMLINK = /bin/sh")
-                  "INSTALL_SYMLINK = sh")))))
+              '(begin
+                 (substitute* "MCONFIG.in"
+                   (("INSTALL_SYMLINK = /bin/sh")
+                    "INSTALL_SYMLINK = sh"))
+
+                 ;; Do not include a timestamp in libext2fs.info.gz.
+                 (substitute* "doc/Makefile.in"
+                   (("gzip -9")
+                    "gzip -9n"))))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -633,6 +646,11 @@ slabtop, and skill.")
        #:configure-flags '("--disable-libblkid"
                            "--disable-libuuid" "--disable-uuidd"
                            "--disable-fsck"
+
+                           ;; Use symlinks instead of hard links for
+                           ;; 'fsck.extN' etc.  This makes the resulting nar
+                           ;; smaller and is preserved across copies.
+                           "--enable-symlink-install"
 
                            ;; Install libext2fs et al.
                            "--enable-elf-shlibs")
@@ -699,6 +717,8 @@ slabtop, and skill.")
     (version (package-version e2fsprogs))
     (build-system trivial-build-system)
     (source #f)
+    (inputs
+     `(("e2fsprogs" ,e2fsprogs/static)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -707,23 +727,18 @@ slabtop, and skill.")
                       (ice-9 ftw)
                       (srfi srfi-26))
 
-         (let ((source (string-append (assoc-ref %build-inputs "e2fsprogs")
-                                      "/sbin"))
+         (let ((e2fsck (string-append (assoc-ref %build-inputs "e2fsprogs")
+                                      "/sbin/e2fsck"))
                (bin    (string-append (assoc-ref %outputs "out") "/sbin")))
            (mkdir-p bin)
            (with-directory-excursion bin
-             (for-each (lambda (file)
-                         (copy-file (string-append source "/" file)
-                                    file)
-                         (remove-store-references file)
-                         (chmod file #o555))
-                       (scandir source (cut string-prefix? "fsck." <>))))))))
-    (inputs `(("e2fsprogs" ,e2fsprogs/static)))
-    (synopsis "Statically-linked fsck.* commands from e2fsprogs")
-    (description
-     "This package provides statically-linked command of fsck.ext[234] taken
-from the e2fsprogs package.  It is meant to be used in initrds.")
+             (copy-file e2fsck "e2fsck")
+             (remove-store-references "e2fsck")
+             (chmod "e2fsck" #o555))))))
     (home-page (package-home-page e2fsprogs))
+    (synopsis "Statically-linked e2fsck command from e2fsprogs")
+    (description "This package provides statically-linked e2fsck command taken
+from the e2fsprogs package.  It is meant to be used in initrds.")
     (license (package-license e2fsprogs))))
 
 (define-public extundelete
@@ -850,14 +865,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0wcha78c2sm8qqk5r3w83cvm8fp6fb1zpd35kmcm24kxhz007xks"))))
+               "0z0nnqp1707bm02dys2d16m88lsg5nd26bqaf14rl3za9sjifwhj"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -876,7 +891,8 @@ MIDI functionality to the Linux-based operating system.")
              ;; Don't try to mkdir /var/lib/alsa.
              (substitute* "Makefile"
                (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
-                "true\n")))))))
+                "true\n"))
+             #t)))))
     (inputs
      `(("libsamplerate" ,libsamplerate)
        ("ncurses" ,ncurses)
@@ -892,6 +908,68 @@ MIDI functionality to the Linux-based operating system.")
     ;; This is mostly GPLv2+ but a few files such as 'alsactl.c' are
     ;; GPLv2-only.
     (license license:gpl2)))
+
+(define-public alsa-plugins
+  (package
+    (name "alsa-plugins")
+    (version "1.1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1w81z5jlwqhd1l2m7qrq69lc4k9dnrg1wn52jsl2hrf3hbhd394f"))))
+    (build-system gnu-build-system)
+    ;; TODO: Split libavcodec and speex if possible. It looks like they can not
+    ;; be split, there are references to both in files.
+    ;; TODO: Remove OSS related plugins, they add support to run native
+    ;; ALSA applications on OSS however we do not offer OSS and OSS is
+    ;; obsolete.
+    (outputs '("out" "pulseaudio"))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'split
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Distribute the binaries to the various outputs.
+             (let* ((out (assoc-ref outputs "out"))
+                    (pua (assoc-ref outputs "pulseaudio"))
+                    (pualib (string-append pua "/lib/alsa-lib"))
+                    (puaconf (string-append pua "/share/alsa/alsa.conf.d")))
+               (mkdir-p puaconf)
+               (mkdir-p pualib)
+               (chdir (string-append out "/share"))
+               (for-each (lambda (file)
+                           (rename-file file (string-append puaconf "/" (basename file))))
+                         (find-files out "\\.(conf|example)"))
+               (for-each (lambda (file)
+                           (rename-file file (string-append pualib "/" (basename file))))
+                         (find-files out ".*pulse\\.(la|so)"))
+               (chdir "..")
+               ;; We have moved the files to output pulsaudio, the
+               ;; directory is now empty.
+               (delete-file-recursively (string-append out "/share"))
+               #t))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("speex" ,speex) ; libspeexdsp resampling plugin
+       ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
+       ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
+       ("pulseaudio" ,pulseaudio))) ; PulseAudio plugin
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.alsa-project.org/")
+    (synopsis "Plugins for the Advanced Linux Sound Architecture (ALSA)")
+    (description
+     "The Advanced Linux Sound Architecture (ALSA) provides audio and
+MIDI functionality to the Linux-based operating system.  This package enhances ALSA
+by providing additional plugins which include: upmixing, downmixing, jackd and
+pulseaudio support for native alsa applications, format conversion (s16 to a52), and
+external rate conversion.")
+    (license (list license:gpl2+
+                   ;; `rate/rate_samplerate.c': LGPL v2.1 or later.
+                   license:lgpl2.1+))))
 
 (define-public iptables
   (package
@@ -1589,7 +1667,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "22")
+    (version "23")
     (source (origin
               (method url-fetch)
               (uri
@@ -1597,7 +1675,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "10lzfkmnpq6a43a3gkx7x633njh216w0bjwz31rv8a1jlgg1sfxs"))
+                "0mc12sx06p8il1ym3hdmgxxb37apn9yv7xij26gddjdfkx8xa0yk"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1661,6 +1739,21 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
+
+(define-public eudev-with-hwdb
+  ;; TODO: Merge with 'eudev'.
+  (package
+    (inherit eudev)
+    (name "eudev-with-hwdb")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'build-hwdb
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
+                      ;; similar tools to display product names.
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* (string-append out "/bin/udevadm")
+                                        "hwdb" "--update"))))))))))
 
 (define-public lvm2
   (package
@@ -1866,7 +1959,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2016.05.02")
+    (version "2016.06.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1874,7 +1967,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "07n6gcwfbddz3awbdflv3dhxjszsqq2lrdwih0a0ahcliac4qry9"))
+                "1dxqy7a7zpzya30ff00s8k1qgrlndrwys99gc0r8yg0vab1z3vfg"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(delete-file "regulatory.bin"))))
@@ -2147,7 +2240,7 @@ thanks to the use of namespaces.")
                             "CC=gcc"))
        #:phases (alist-delete 'configure %standard-phases)
        #:tests? #f))  ; no test suite
-    (home-page "http://sourceforge.net/projects/hdparm/")
+    (home-page "https://sourceforge.net/projects/hdparm/")
     (synopsis "Tune hard disk parameters for high performance")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
@@ -2213,7 +2306,7 @@ about ACPI devices.")
                (base32
                 "1vl7c6vc724v4jwki17czgj6lnrknnj1a6llm8gkl32i2gnam5j3"))))
     (build-system gnu-build-system)
-    (home-page "http://sourceforge.net/projects/acpid2/")
+    (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
     (description
      "acpid is designed to notify user-space programs of Advanced
@@ -2302,7 +2395,7 @@ capabilities of the Linux kernel.")
 (define-public libraw1394
   (package
     (name "libraw1394")
-    (version "2.1.0")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2310,7 +2403,7 @@ capabilities of the Linux kernel.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kwnf4ha45c04mhc4yla672aqmvqqihxix1gvblns5cd2pc2cc8b"))))
+                "0pm5b415j1qdzyw38wdv8h7ff4yx20831z1727mpsb6jc6bwdk03"))))
     (build-system gnu-build-system)
     (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Interface library for the Linux IEEE1394 drivers")
@@ -2338,7 +2431,7 @@ protocol in question.")
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
-    (home-page "http://sourceforge.net/projects/libavc1394/")
+    (home-page "https://sourceforge.net/projects/libavc1394/")
     (synopsis "AV/C protocol library for IEEE 1394")
     (description
      "Libavc1394 is a programming interface to the AV/C specification from
@@ -2630,7 +2723,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.8.5")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2638,7 +2731,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1vq83a8sz8dnshbyaghacqvcwv2n1kh53yjv87rxx9dc4b0b2iyj"))))
+                "18y88avadn4wb3xmczd6pfcjr7ik62dw4phk6fmkms2j8vmvl9z2"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2665,11 +2758,11 @@ and copy/paste text in the console and in xterm.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
                      ("xmlto" ,xmlto)
-                     ;; For building documentation
+                     ;; For building documentation.
                      ("libxml2" ,libxml2)
                      ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
-                     ;; For tests
+                     ;; For tests.
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
@@ -2679,6 +2772,36 @@ easy administration.")
     ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
     ;; GPL2: Everything else.
     (license (list license:gpl2 license:gpl2+))))
+
+(define-public btrfs-progs/static
+  (package
+    (name "btrfs-progs-static")
+    (version (package-version btrfs-progs))
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs
+     `(("btrfs-progs:static" ,btrfs-progs "static")))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+
+         (let* ((btrfs  (assoc-ref %build-inputs "btrfs-progs:static"))
+                (out    (assoc-ref %outputs "out"))
+                (source (string-append btrfs "/bin/btrfs.static"))
+                (target (string-append out "/bin/btrfs")))
+           (mkdir-p (dirname target))
+           (copy-file source target)
+           (remove-store-references target)
+           (chmod target #o555)))))
+    (home-page (package-home-page btrfs-progs))
+    (synopsis "Statically-linked btrfs command from btrfsprogs")
+    (description "This package provides statically-linked command of btrfs taken
+from the btrfsprogs package.  It is meant to be used in initrds.")
+    (license (package-license btrfs-progs))))
 
 (define-public freefall
   (package
@@ -2819,7 +2942,7 @@ The package provides additional NTFS tools.")
     (description
      "Monitor a hardware random number generator, and supply entropy
 from that to the system kernel's @file{/dev/random} machinery.")
-    (home-page "http://sourceforge.net/projects/gkernel")
+    (home-page "https://sourceforge.net/projects/gkernel")
     ;; The source package is offered under the GPL2+, but the files
     ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
     (license (list license:gpl2 license:gpl2+))))
@@ -2993,14 +3116,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "144")
+    (version "147")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "03jyhsl0s59sfqykj5p6gkb03k4w1h9ay31yxym1dnzis5sq99pa"))
+                "10xxmqpd348ifbs7w8j0m53agp28r6imv237ha3kmhp632hmyf1d"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3201,4 +3324,41 @@ interface to the variable facility of UEFI boot firmware.")
 Extensible Firmware Interface (EFI) Boot Manager.  This application can
 create and destroy boot entries, change the boot order, change the next
 running boot option, and more.")
+    (license license:gpl2+)))
+
+(define-public sysstat
+  (package
+    (name "sysstat")
+    (version "11.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://perso.orange.fr/sebastien.godard/"
+                                  "sysstat-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0f8gk1hma3bk198ziwrhh5jhisnbbgc1v4rxhny58n0zjzw0gm0z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite.
+       ;; Without this flag, it tries to install the man pages with group 'root'
+       ;; and fails because /etc/passwd lacks an entry for the root user.
+       #:configure-flags
+       (list "--disable-file-attr"
+             (string-append "conf_dir=" (assoc-ref %outputs "out") "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build process tries to create '/var/lib/sa', so we skip that
+         ;; instruction.
+         (add-after 'build 'skip-touching-var
+           (lambda _
+             (substitute* "Makefile"
+               (("mkdir -p \\$\\(DESTDIR\\)\\$\\(SA_DIR\\)")
+                ""))
+             #t)))))
+    (home-page "http://sebastien.godard.pagesperso-orange.fr/")
+    (synopsis "Performance monitoring tools for Linux")
+    (description "The sysstat utilities are a collection of performance
+monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
+@code{tapestat}, @code{cifsiostat}, @code{pidstat}, @code{sar}, @code{sadc},
+@code{sadf} and @code{sa}.")
     (license license:gpl2+)))

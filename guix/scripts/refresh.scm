@@ -209,7 +209,8 @@ unavailable optional dependencies such as Guile-JSON."
                  ((guix import cpan) => %cpan-updater)
                  ((guix import pypi) => %pypi-updater)
                  ((guix import gem) => %gem-updater)
-                 ((guix import github) => %github-updater)))
+                 ((guix import github) => %github-updater)
+                 ((guix import crate) => %crate-updater)))
 
 (define (lookup-updater-by-name name)
   "Return the updater called NAME."

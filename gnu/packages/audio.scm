@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -223,6 +223,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
        ("boost" ,boost)
        ("atkmm" ,atkmm)
        ("cairomm" ,cairomm)
+       ("eudev" ,eudev)
        ("gtkmm" ,gtkmm-2)
        ("glibmm" ,glibmm)
        ("libart-lgpl" ,libart-lgpl)
@@ -238,8 +239,8 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
        ("lv2" ,lv2)
        ("vamp" ,vamp)
        ("curl" ,curl)
-       ("fftw" ,fftw-with-threads)
-       ("fftwf" ,fftwf-with-threads)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
        ("jack" ,jack-1)
        ("serd" ,serd)
        ("sord" ,sord)
@@ -1448,7 +1449,7 @@ connections between them.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libsndfile" ,libsndfile)))
-    (home-page "http://sourceforge.net/projects/bs2b/")
+    (home-page "https://sourceforge.net/projects/bs2b/")
     (synopsis "Bauer stereophonic-to-binaural DSP")
     (description
      "The Bauer stereophonic-to-binaural DSP (bs2b) library and plugins is
@@ -2279,7 +2280,7 @@ can play and record audio files.")
         (base32 "1hmadwqfpg15vhwq9pa1sl5xslibrjpk6hpq2s9hfmx1s5l6ihfw"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no 'check' target
-    (home-page "http://sourceforge.net/p/soxr/wiki/Home/")
+    (home-page "https://sourceforge.net/p/soxr/wiki/Home/")
     (synopsis "One-dimensional sample-rate conversion library")
     (description
      "The SoX Resampler library (libsoxr) performs one-dimensional sample-rate
@@ -2699,7 +2700,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.4.11")
+    (version "0.4.12")
     (source
      (origin
        (method url-fetch)
@@ -2707,7 +2708,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0j765drdb7h3y5ipjv9sg1a0if6zh8cksbv3rdk5ppd7kxcrjnlb"))))
+         "0n9skdap1vnl6w52fx0gsrjlk7w3xgdwi62ycyf96h29rx059z6a"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))

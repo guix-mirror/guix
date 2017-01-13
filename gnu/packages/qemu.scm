@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -69,17 +69,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.7.0")
+    (version "2.8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0lqyz01z90nvxpc3nx4djbci7hx62cwvs5zwd6phssds0sap6vij"))
-             (patches (search-patches "qemu-CVE-2016-8576.patch"
-                                      "qemu-CVE-2016-8577.patch"
-                                      "qemu-CVE-2016-8578.patch"))))
+               "0qjy3rcrn89n42y5iz60kgr0rrl29hpnj8mq2yvbc1wrcizmvzfs"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -106,6 +103,8 @@
                 (apply system*
                        `("./configure"
                          ,(string-append "--cc=" (which "gcc"))
+                         ;; Some architectures insist on using HOST_CC
+                         ,(string-append "--host-cc=" (which "gcc"))
                          "--disable-debug-info" ; save build space
                          "--enable-virtfs"      ; just to be sure
                          ,(string-append "--prefix=" out)
@@ -124,7 +123,7 @@
          (add-before 'check 'make-gtester-verbose
            (lambda _
              ;; Make GTester verbose to facilitate investigation upon failure.
-             (setenv "V" "1")))
+             (setenv "V" "1") #t))
          (add-before 'check 'disable-test-qga
            (lambda _
              (substitute* "tests/Makefile.include"
@@ -230,14 +229,15 @@ server and embedded PowerPC, and S390 guests.")
        ("pci.ids"
         ,(origin
            (method url-fetch)
-           (uri "http://pciids.sourceforge.net/v2.2/pci.ids")
+           (uri "https://raw.githubusercontent.com/pciutils/pciids/f9477789526f9d380bc57aa92e357c521738d5dd/pci.ids")
            (sha256
             (base32
-             "0h8v0lrlrxkfnjiwnwiq86zyvb8qa2n3844dp1m01lh2nb2fliqw"))))
+             "0g6dbwlamagxqxvng67xng3w2x56c0np4md1v1p1jn32qw518az0"))))
        ("usb.ids"
         ,(origin
            (method url-fetch)
            (uri "http://linux-usb.cvs.sourceforge.net/viewvc/linux-usb/htdocs/usb.ids?revision=1.539")
+           (file-name "usb.ids")
            (sha256
             (base32
              "0w9ila7662lzpx416lqy69zx6gfwq2xiigwd5fdyqcrg3dj07m80"))))))

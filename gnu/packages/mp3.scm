@@ -392,7 +392,7 @@ Ogg, MP3, or FLAC formats.  Its goal is to be easy to use, requiring only
 a few mouse clicks to convert an entire album.  It supports CDDB lookups
 for album and track information.")
    (license license:gpl2)
-   (home-page "http://sourceforge.net/projects/ripperx/")))
+   (home-page "https://sourceforge.net/projects/ripperx/")))
 
 (define-public libmpcdec
   (package
@@ -458,7 +458,7 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.7.9")
+    (version "0.7.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -466,7 +466,7 @@ compression format (.mpc files).")
                   version ".tar.gz"))
              (sha256
               (base32
-               "08mzhqg3k63d244cgwd0y1xrb8x9m6b99ykyskpnwyxl4wxrgrzp"))))
+               "0wjicszs64ksj2y5jbk09yjd08znc1qnarlq8ssmx13f2d4x59wq"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))

@@ -2,13 +2,13 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;;
@@ -34,6 +34,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
@@ -301,14 +303,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.0")
+    (version "4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zzcwn6pk8qfasalqkxg8vrhacksfa50xsq4xifw7yfjqyn8fj4h"))))
+                "0hsaxcka0ks76k23sb65c46i53hjm465sgxyn3m3301diqlgwga0"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -428,7 +430,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.13")
+    (version "5.2.14")
     (source
      (origin
        (method url-fetch)
@@ -436,7 +438,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0r3bbxpwsxssa99d8dcjnp79mw1cjwqxgmqjm1537q277jwsk0yc"))))
+         "1lmh7168yby1ma8r1svgvmv9hbgjyniy9c64r6lby3zdmd0sy7d4"))))
     (build-system gnu-build-system)
     ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
@@ -467,7 +469,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.2")
+    (version "2.2.3")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -476,7 +478,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1csm035ayfzn1xzzsmzcjk2ixx39d70aykr4nh0a88chk9gfzb7r"))))
+         "0fsrvl6sp772g2q2j24h10h9lfda6q67x7wahjjm8849i2gciflp"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)
@@ -548,6 +550,38 @@ HTTP(S) request, and receive the reply headers.  It is somewhat similar to
 by firewalls or when you want to monitor the response time of the actual web
 application stack itself.")
     (license license:gpl2)))        ; with permission to link with OpenSSL
+
+(define-public httpstat
+  (package
+    (name "httpstat")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpstat" version))
+       (sha256
+        (base32
+         "1chw2nk56vaq87aba012a270k9na06hfx1pfbsrc3jfvlc2kb9hb"))))
+    (build-system python-build-system)
+    (inputs `(("curl" ,curl)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-curl-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "httpstat.py"
+               (("ENV_CURL_BIN.get\\('curl'\\)")
+                (string-append "ENV_CURL_BIN.get('"
+                               (assoc-ref inputs "curl")
+                               "/bin/curl')"))))))))
+    (home-page "https://github.com/reorx/httpstat")
+    (synopsis "Visualize curl statistics")
+    (description
+     "@command{httpstat} is a tool to visualize statistics from the
+@command{curl} HTTP client.  It acts as a wrapper for @command{curl} and
+prints timing information for each step of the HTTP request (DNS lookup,
+TCP connection, TLS handshake and so on) in the terminal.")
+    (license license:expat)))
 
 (define-public bwm-ng
   (package

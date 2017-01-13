@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages guile))
@@ -128,3 +130,33 @@ standard.")
              (chmod port #o777)))
          #t)))
     (synopsis "Wrapper providing the 'cc' command for TCC")))
+
+(define-public pcc
+  (package
+    (name "pcc")
+    (version "20170109")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pcc.ludd.ltu.se/ftp/pub/pcc/pcc-"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "1p34w496095mi0473f815w6wbi57zxil106mg7pj6sg6gzpjcgww"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "make" "-C" "cc/cpp" "test")))))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (synopsis "Portable C compiler")
+    (description
+     "PCC is a portable C compiler.  The project goal is to write a C99
+compiler while still keeping it small, simple, fast and understandable.")
+    (home-page "http://pcc.ludd.ltu.se")
+    ;; PCC incorporates code under various BSD licenses; for new code bsd-2 is
+    ;; preferred.  See http://pcc.ludd.ltu.se/licenses/ for more details.
+    (license (list license:bsd-2 license:bsd-3))))

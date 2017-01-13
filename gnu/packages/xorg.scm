@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -335,6 +335,7 @@ provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
 
+(define-public %app-defaults-dir "/lib/X11/app-defaults")
 
 (define-public editres
   (package
@@ -354,7 +355,7 @@ provided.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-appdefaultdir="
-                            %output "/lib/X11/app-defaults"))))
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libxaw" ,libxaw)
        ("libxmu" ,libxmu)
@@ -1458,7 +1459,7 @@ treat it as part of their software base when porting.")
 (define-public libxpm
   (package
     (name "libxpm")
-    (version "3.5.11")
+    (version "3.5.12")
     (source
       (origin
         (method url-fetch)
@@ -1468,7 +1469,7 @@ treat it as part of their software base when porting.")
                ".tar.bz2"))
         (sha256
           (base32
-            "07041q4k8m4nirzl7lrqn8by2zylx0xvh6n0za301qqs3njszgf5"))))
+            "1v5xaiw4zlhxspvx76y3hq4wpxv7mpj6parqnwdqvpj8vbinsspx"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
@@ -2399,7 +2400,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.3")
+    (version "1.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2407,10 +2408,10 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0iil4pnla0kjdx52ay7igq65sx32sjbzn1wx9q3v74m5g7712m16"))))
+         "1cc00876lqvyadsfmj3sh1h2i0r3qfar98izdfar5f8q41w2009j"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python)))
-    (home-page "http://www.freedesktop.org/wiki/Software/libevdev/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
     (synopsis "Wrapper library for evdev devices")
     (description
      "libevdev is a wrapper library for evdev devices. it moves the common
@@ -3145,7 +3146,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
 (define-public xf86-video-qxl
   (package
     (name "xf86-video-qxl")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3153,7 +3154,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                 "xf86-video-qxl-" version ".tar.bz2"))
               (sha256
                (base32
-                "018ic9ddxfnjcv2yss0mwk1gq6rmip1hrgi2wxwqkbqx1cpx4yp5"))))
+                "14jc24znnahhmz4kqalafmllsg8awlz0y6gpgdpk5ih38ph851mi"))))
     (build-system gnu-build-system)
     (inputs
       `(("fontsproto" ,fontsproto)
@@ -3436,7 +3437,7 @@ X server.")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "13.1.0")
+    (version "13.2.1")
     (source
       (origin
         (method url-fetch)
@@ -3446,14 +3447,16 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1k50whwnkzxam2ihc1sw456dx0pvr76naycm4qhyjxqv9d72879w"))))
+           "0azn3g0vcki47n5jddagk2rmbwdvp845k8p7d2r56zxs3w8ggxz2"))))
     (build-system gnu-build-system)
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("mesa" ,mesa)            ; for xatracker
-              ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("mesa" ,mesa)                   ; for xatracker
+       ("xorg-server" ,xorg-server)))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+     `(("eudev" ,eudev)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "VMware SVGA video driver for X server")
     (description
@@ -3980,23 +3983,9 @@ protocol.")
                 "1grir464hy52a71r3mpm9mzvkf7nwr3vk0b1vc27pd3gp588a38p"))))
     (build-system gnu-build-system)
     (arguments
-     ;; By default, it tries to install XFontSel file in
-     ;; "/gnu/store/<libxt>/share/X11/app-defaults": it defines this
-     ;; directory from 'libxt' (using 'pkg-config').  To put this file
-     ;; inside output dir and to use it properly, we need to configure
-     ;; --with-appdefaultdir and to wrap 'xfontsel' binary.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
-       `(#:configure-flags
-         (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfontsel
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfontsel")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libx11" ,libx11)
        ("libxaw" ,libxaw)
@@ -4026,19 +4015,9 @@ Font Description (XLFD) full name for a font.")
                 "0n97iqqap9wyxjan2n520vh4rrf5bc0apsw2k9py94dqzci258y1"))))
     (build-system gnu-build-system)
     (arguments
-     ;; The same 'app-defaults' problem as with 'xfontsel' package.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
        `(#:configure-flags
          (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfd
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfd")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+                              %output ,%app-defaults-dir))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("libx11" ,libx11)
@@ -5302,7 +5281,8 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))))
+           "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))
+        (patches (search-patches "libxt-guix-search-paths.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;2 MiB of man pages + XML
@@ -5355,6 +5335,36 @@ draggable titlebars and borders.")
 Intrinsics (Xt) Library.")
     (license license:x11)))
 
+(define-public twm
+  (package
+    (name "twm")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1s1r00x8add3f27xjqxg6q7mwplwrb72gakbh4y6j052as25wchw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxt" ,libxt)
+       ("libxmu" ,libxmu)
+       ("libxext" ,libxext)
+       ("xproto" ,xproto)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Tab Window Manager for the X Window System")
+    (description "Twm is a window manager for the X Window System.
+It provides titlebars, shaped windows, several forms of icon management,
+user-defined macro functions, click-to-type and pointer-driven
+keyboard focus, and user-specified key and pointer button bindings.")
+    (license license:x11)))
 
 (define-public xcb-util
   (package
@@ -5612,6 +5622,66 @@ user-friendly mechanism to start the X server.")
     (description
      "Xaw is the X 3D Athena Widget Set based on the X Toolkit
 Intrinsics (Xt) Library.")
+    (license license:x11)))
+
+(define-public xmag
+  (package
+    (name "xmag")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19bsg5ykal458d52v0rvdx49v54vwxwqg8q36fdcsv9p2j8yri87"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Display or capture a magnified part of a X11 screen")
+    (description "Xmag displays and captures a magnified snapshot of a portion
+of an X11 screen.")
+    (license license:x11)))
+
+(define-public xmessage
+  (package
+    (name "xmessage")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jmcac1xbwplbxfl75sr6w3zqhx1khpdzlqippjsr31cjp1rjc48"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Displays a message or query in a window")
+    (description
+     "Xmessage displays a message or query in a window.   The user can click
+on a button to dismiss it or can select one of several buttons
+to answer a question.  Xmessage can also exit after a specified time.")
     (license license:x11)))
 
 (define-public xterm

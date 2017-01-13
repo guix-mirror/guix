@@ -187,9 +187,6 @@ facilities to directly operate on the syntax tree, such as raising an
 s-expression or wrapping it, swallowing or rejecting the following
 s-expression, etc.
 
-GNU Guix also comes with a minor mode that provides some additional
-functionality for Scheme buffers (@pxref{Emacs Development}).
-
 
 @node Coding Style
 @section Coding Style
@@ -240,6 +237,8 @@ especially when matching lists.
 @node Formatting Code
 @subsection Formatting Code
 
+@cindex formatting code
+@cindex coding style
 When writing Scheme code, we follow common wisdom among Scheme
 programmers.  In general, we follow the
 @url{http://mumble.net/~campbell/scheme/style.txt, Riastradh's Lisp
@@ -249,8 +248,20 @@ please do read it.
 
 Some special forms introduced in Guix, such as the @code{substitute*}
 macro, have special indentation rules.  These are defined in the
-@file{.dir-locals.el} file, which Emacs automatically uses.  If you do
-not use Emacs, please make sure to let your editor know the rules.
+@file{.dir-locals.el} file, which Emacs automatically uses.
+
+@cindex indentation, of code
+@cindex formatting, of code
+If you do not use Emacs, please make sure to let your editor knows these
+rules.  To automatically indent a package definition, you can also run:
+
+@example
+./etc/indent-package.el gnu/packages/@var{file}.scm @var{package}
+@end example
+
+@noindent
+This automatically indents the definition of @var{package} in
+@file{gnu/packages/@var{file}.scm} by running Emacs in batch mode.
 
 We require all top-level procedures to carry a docstring.  This
 requirement can be relaxed for simple private procedures in the
@@ -361,6 +372,11 @@ Bundling unrelated changes together makes reviewing harder and slower.
 Examples of unrelated changes include the addition of several packages,
 or a package update along with fixes to that package.
 
+@item
+Please follow our code formatting rules, possibly running the
+@command{etc/indent-package.el} script to do that automatically for you
+(@pxref{Formatting Code}).
+
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
@@ -368,4 +384,4 @@ a subject.  You may use your email client or the @command{git
 send-email} command.  We prefer to get patches in plain text messages,
 either inline or as MIME attachments.  You are advised to pay attention if
 your email client changes anything like line breaks or indentation which
-could could potentially break the patches.
+could potentially break the patches.

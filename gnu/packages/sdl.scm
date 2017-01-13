@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2013, 2015, 2017 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -29,8 +29,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages fcitx)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages ibus)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
@@ -97,6 +100,16 @@ joystick, and graphics hardware.")
              (sha256
               (base32
                "11c75qj1qxmx67iwkvf9z4x69phk301pdn86zzr6jncnap7kh824"))))
+    (inputs
+     ;; SDL2 needs to be built with ibus support otherwise some systems
+     ;; experience a bug where input events are doubled.
+     ;;
+     ;; For more information, see: https://dev.solus-project.com/T1721
+     (append `(("dbus" ,dbus)
+               ("fcitx" ,fcitx) ; helps with CJK input
+               ("glib" ,glib)
+               ("ibus" ,ibus))
+             (package-inputs sdl)))
     (license bsd-3)))
 
 (define-public libmikmod

@@ -1623,7 +1623,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.4.1")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1631,7 +1631,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "133sx42wb66g803pcrgdwph40wh94knvab3yfqkgm0001jv4v14y"))))
+                "10s1i18xlmvqfrnr0zn2mj2b28i7p62dlqzzzkmpaapqj1gsgpz5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1889,8 +1889,8 @@ analogue-like user interface.")
                #t)))))
       (inputs
        `(("lilv" ,lilv)
-         ("fftw" ,fftw-with-threads)
-         ("fftwf" ,fftwf-with-threads)
+         ("fftw" ,fftw)
+         ("fftwf" ,fftwf)
          ("lv2" ,lv2)
          ("jack" ,jack-1)
          ("readline" ,readline)))
@@ -1941,13 +1941,13 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public python-mutagen
   (package
     (name "python-mutagen")
-    (version "1.35.1")
+    (version "1.36")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mutagen" version))
               (sha256
                (base32
-                "0klk68c1n3285vvm2xzk8ii7mlqp1dxii04askan0gi1wlpagka9"))))
+                "1kabb9b81hgvpd3wcznww549vss12b1xlvpnxg1r6n4c7gikgvnp"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -2058,48 +2058,42 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.1")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "14yn88xrcinpdg3ic285ar0wmwldzyjfd3ll6clmp3z3r4iqffip"))))
+                "0r743a2pv1iyw50jsdl01v2ml3pdkhdp920a5d1wsacak48vwgxr"))))
     (build-system python-build-system)
     (arguments
-     `(;; Python 3 support is still "alpha", and the upstream maintainers ask
-       ;; packagers not to use it yet:
-       ;; https://github.com/beetbox/beets/releases/tag/v1.4.1
-       ;; TODO Check this again for the next release.
-       #:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
            (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp"))))
          (replace 'check
            (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
-     `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
-       ("python2-flask" ,python2-flask)
-       ("python2-mock" ,python2-mock)
-       ("python2-mpd2" ,python2-mpd2)
-       ("python2-nose" ,python2-nose)
-       ("python2-pathlib" ,python2-pathlib)
-       ("python2-pyxdg" ,python2-pyxdg)
-       ("python2-pyechonest" ,python2-pyechonest)
-       ("python2-pylast" ,python2-pylast)
-       ("python2-rarfile" ,python2-rarfile)
-       ("python2-responses" ,python2-responses)))
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-flask" ,python-flask)
+       ("python-mock" ,python-mock)
+       ("python-mpd2" ,python-mpd2)
+       ("python-nose" ,python-nose)
+       ("python-pathlib" ,python-pathlib)
+       ("python-pyxdg" ,python-pyxdg)
+       ("python-pylast" ,python-pylast)
+       ("python-rarfile" ,python-rarfile)
+       ("python-responses" ,python-responses)))
     ;; TODO: Install optional plugins and dependencies.
     (inputs
-     `(("python2-discogs-client" ,python2-discogs-client)
-       ("python2-enum34" ,python2-enum34)
-       ("python2-jellyfish" ,python2-jellyfish)
-       ("python2-munkres" ,python2-munkres)
-       ("python2-musicbrainzngs" ,python2-musicbrainzngs)
-       ("python2-mutagen" ,python2-mutagen)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-unidecode" ,python2-unidecode)))
+     `(("python-discogs-client" ,python-discogs-client)
+       ("python-enum34" ,python-enum34)
+       ("python-jellyfish" ,python-jellyfish)
+       ("python-munkres" ,python-munkres)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)
+       ("python-mutagen" ,python-mutagen)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-unidecode" ,python-unidecode)))
     (home-page "http://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
@@ -2187,7 +2181,7 @@ with a number of bugfixes and changes to improve IT playback.")
 (define-public moc
   (package
     (name "moc")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.daper.net/pub/soft/"
@@ -2195,7 +2189,13 @@ with a number of bugfixes and changes to improve IT playback.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1wn4za08z64bhsgfhr9c0crfyvy8c3b6a337wx7gz19am5srqh8v"))))
+                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
+               '(substitute* "main.c"
+                  (("printf \\(\"            Built : %s\", __DATE__\\);") "")
+                  (("printf \\(\" %s\", __TIME__\\);") "")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

@@ -235,7 +235,7 @@ create smooth, animated user interfaces.")
        #:tests? #f))
 
     ;; This used to be at <http://slim.berlios.de/>.
-    (home-page "http://sourceforge.net/projects/slim.berlios/")
+    (home-page "https://sourceforge.net/projects/slim.berlios/")
     (synopsis "Desktop-independent graphical login manager for X11")
     (description
      "SLiM is a Desktop-independent graphical login manager for X11, derived

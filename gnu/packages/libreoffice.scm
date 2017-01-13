@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,7 +145,7 @@ CSV, CSS and XML.")
      `(#:configure-flags '("--disable-werror"
                            ;; Avoid undefined library references
                            "LDFLAGS=-lboost_system")))
-    (home-page "http://sourceforge.net/p/libwpd/wiki/librevenge/")
+    (home-page "https://sourceforge.net/p/libwpd/wiki/librevenge/")
     (synopsis "Document importer for office suites")
     (description "Librevenge is a base library for writing document import
 filters.  It has interfaces for text documents, vector graphics,
@@ -275,7 +276,7 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; fails without the following flag.
           (string-append "--with-boost="
                          (assoc-ref %build-inputs "boost")))))
-    (home-page "http://sourceforge.net/projects/libcmis/")
+    (home-page "https://sourceforge.net/projects/libcmis/")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
 allows C++ applications to connect to any ECM behaving as a CMIS server such
@@ -561,7 +562,7 @@ Microsoft Visio documents of all versions.")
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
      `(#:configure-flags '("--disable-werror")))
-    (home-page "http://sourceforge.net/p/libwpd/wiki/libodfgen/")
+    (home-page "https://sourceforge.net/p/libwpd/wiki/libodfgen/")
     (synopsis "ODF (Open Document Format) library")
     (description "Libodfgen is a library for generating documents in the
 Open Document Format (ODF).  It provides generator implementations for all
@@ -592,7 +593,7 @@ text documents, vector drawings, presentations and spreadsheets.")
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
      `(#:configure-flags '("--disable-werror")))
-    (home-page "http://sourceforge.net/p/libmwaw/wiki/Home/")
+    (home-page "https://sourceforge.net/p/libmwaw/wiki/Home/")
     (synopsis "Import library for some old Macintosh text documents")
     (description "Libmwaw contains some import filters for old Macintosh
 text documents (MacWrite, ClarisWorks, ... ) and for some graphics and
@@ -631,21 +632,24 @@ Works word processor file format.")
 (define-public hunspell
   (package
     (name "hunspell")
-    (version "1.3.3")
+    (version "1.5.4")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/Hunspell/" version "/"
-                          name "-" version ".tar.gz"))
+      (uri (string-append "https://github.com/hunspell/hunspell/archive/v"
+                          version ".tar.gz"))
       (sha256 (base32
-               "0v14ff9s37vkh45diaddndcrj0hmn67arh8xh8k79q9c1vgc1cm7"))))
+               "0ngwk18dwd8p5a5f20h2jlgrz9wbc1k189mmmprb2zmqwfi02b45"))
+      (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)))
     (home-page "http://hunspell.sourceforge.net/")
     (synopsis "Spell checker")
     (description "Hunspell is a spell checker and morphological analyzer
 library and program designed for languages with rich morphology and complex
 word compounding or character encoding.")
-    ;; triple license, including "mpl1.1 or later"
+    ;; Triple license, including "mpl1.1 or later".
     (license (list mpl1.1 gpl2+ lgpl2.1+))))
 
 (define-public hyphen
@@ -710,7 +714,7 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.1.5.2")
+    (version "5.1.6.2")
     (source
      (origin
       (method url-fetch)
@@ -719,7 +723,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "http://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "1qg0dj0zwh5ifhmvv4k771nmyqddz4ifn75s9mr1p0nyix8zks8x"))))
+               "150xb76pc3889gfy4jrnq8sidymm1aihkm5pzy8b1fdy51zip804"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after

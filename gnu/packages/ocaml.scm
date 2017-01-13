@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,31 +24,43 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ocaml)
-  #:use-module ((guix licenses) #:hide (zlib))
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix svn-download)
-  #:use-module (guix utils)
-  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages emacs)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages tex)
-  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages lynx)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages python)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tex)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages version-control)
-  #:use-module (gnu packages curl))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ocaml)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix svn-download)
+  #:use-module (guix utils))
+
+;; A shortcut for files from ocaml forge. Downloaded files are computed from
+;; their number, not their name.
+(define (ocaml-forge-uri name version file-number)
+  (string-append "https://forge.ocamlcore.org/frs/download.php/"
+                 (number->string file-number) "/" name "-" version
+                 ".tar.gz"))
 
 (define-public ocaml
   (package
@@ -62,12 +75,18 @@
               (sha256
                (base32
                 "1qwwvy8nzd87hk8rd9sm667nppakiapnx4ypdwcrlnav2dz6kil3"))
-              (patches (search-patches "ocaml-CVE-2015-8869.patch"))))
+              (patches
+               (search-patches
+                "ocaml-CVE-2015-8869.patch"
+                "ocaml-Add-a-.file-directive.patch"))))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification
             (variable "OCAMLPATH")
-            (files (list (string-append "lib/ocaml"))))))
+            (files (list "lib/ocaml" "lib/ocaml/site-lib")))
+           (search-path-specification
+            (variable "CAML_LD_LIBRARY_PATH")
+            (files (list "lib/ocaml/site-lib/stubslibs")))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
@@ -83,58 +102,59 @@
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh-references
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let* ((sh (string-append (assoc-ref inputs "bash")
-                                                "/bin/sh"))
-                             (quoted-sh (string-append "\"" sh "\"")))
-                        (with-fluids ((%default-port-encoding #f))
-                          (for-each (lambda (file)
-                                      (substitute* file
-                                        (("\"/bin/sh\"")
-                                         (begin
-                                           (format (current-error-port) "\
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((sh (string-append (assoc-ref inputs "bash")
+                                       "/bin/sh"))
+                    (quoted-sh (string-append "\"" sh "\"")))
+               (with-fluids ((%default-port-encoding #f))
+                 (for-each
+                  (lambda (file)
+                    (substitute* file
+                      (("\"/bin/sh\"")
+                       (begin
+                         (format (current-error-port) "\
 patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
-                                                   file quoted-sh)
-                                           quoted-sh))))
-                                    (find-files "." "\\.ml$"))
-                          #t))))
+                                 file quoted-sh)
+                         quoted-sh))))
+                  (find-files "." "\\.ml$"))
+                 #t))))
          (replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (mandir (string-append out "/share/man")))
-                      ;; Custom configure script doesn't recognize
-                      ;; --prefix=<PREFIX> syntax (with equals sign).
-                      (zero? (system* "./configure"
-                                      "--prefix" out
-                                      "--mandir" mandir)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mandir (string-append out "/share/man")))
+               ;; Custom configure script doesn't recognize
+               ;; --prefix=<PREFIX> syntax (with equals sign).
+               (zero? (system* "./configure"
+                               "--prefix" out
+                               "--mandir" mandir)))))
          (replace 'build
-                  (lambda _
-                    (zero? (system* "make" "-j" (number->string
-                                                 (parallel-job-count))
-                                    "world.opt"))))
+           (lambda _
+             (zero? (system* "make" "-j" (number->string
+                                          (parallel-job-count))
+                             "world.opt"))))
          (delete 'check)
          (add-after 'install 'check
-                    (lambda _
-                      (with-directory-excursion "testsuite"
-                        (zero? (system* "make" "all")))))
+           (lambda _
+             (with-directory-excursion "testsuite"
+               (zero? (system* "make" "all")))))
          (add-before 'check 'prepare-socket-test
-                     (lambda _
-                       (format (current-error-port)
-                               "Spawning local test web server on port 8080~%")
-                       (when (zero? (primitive-fork))
-                         (run-server (lambda (request request-body)
-                                       (values '((content-type . (text/plain)))
-                                               "Hello!"))
-                                     'http '(#:port 8080)))
-                       (let ((file "testsuite/tests/lib-threads/testsocket.ml"))
-                         (format (current-error-port)
-                                 "Patching ~a to use localhost port 8080~%"
-                                 file)
-                         (substitute* file
-                           (("caml.inria.fr") "localhost")
-                           (("80") "8080")
-                           (("HTTP1.0") "HTTP/1.0"))
-                         #t))))))
+           (lambda _
+             (format (current-error-port)
+                     "Spawning local test web server on port 8080~%")
+             (when (zero? (primitive-fork))
+               (run-server (lambda (request request-body)
+                             (values '((content-type . (text/plain)))
+                                     "Hello!"))
+                           'http '(#:port 8080)))
+             (let ((file "testsuite/tests/lib-threads/testsocket.ml"))
+               (format (current-error-port)
+                       "Patching ~a to use localhost port 8080~%"
+                       file)
+               (substitute* file
+                 (("caml.inria.fr") "localhost")
+                 (("80") "8080")
+                 (("HTTP1.0") "HTTP/1.0"))
+               #t))))))
     (home-page "https://ocaml.org/")
     (synopsis "The OCaml programming language")
     (description
@@ -145,7 +165,7 @@ functional, imperative and object-oriented styles of programming.")
     ;; The compiler is distributed under qpl1.0 with a change to choice of
     ;; law: the license is governed by the laws of France.  The library is
     ;; distributed under lgpl2.0.
-    (license (list qpl lgpl2.0))))
+    (license (list license:qpl license:lgpl2.0))))
 
 (define-public opam
   (package
@@ -210,7 +230,7 @@ simultaneous compiler installations, flexible package constraints, and a
 Git-friendly development workflow.")
 
     ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
-    (license lgpl3)))
+    (license license:lgpl3)))
 
 (define-public camlp4
   (package
@@ -230,6 +250,10 @@ Git-friendly development workflow.")
     (inputs `(("ocaml" ,ocaml)))
     (arguments
      '(#:tests? #f                                ;no documented test target
+       ;; a race-condition will lead byte and native targets to  mkdir _build
+       ;; which  fails on the second attempt.
+       #:parallel-build? #f
+       #:make-flags '("all")
        #:phases (modify-phases %standard-phases
                   (replace
                    'configure
@@ -237,9 +261,19 @@ Git-friendly development workflow.")
                      ;; This is a home-made 'configure' script.
                      (let ((out (assoc-ref outputs "out")))
                        (zero? (system* "./configure"
-                                       (string-append "--libdir=" out "/lib")
+                                       (string-append "--libdir=" out
+                                                      "/lib/ocaml/site-lib")
                                        (string-append "--bindir=" out "/bin")
-                                       (string-append "--pkgdir=" out)))))))))
+                                       (string-append "--pkgdir=" out
+                                                      "/lib/ocaml/site-lib"))))))
+                  (add-after 'install 'install-meta
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "camlp4/META.in"
+                          (("directory = .*")
+                            (string-append "directory = \"" out
+                                           "/lib/ocaml/site-lib/camlp4\"\n")))
+                        (zero? (system* "make" "install-META"))))))))
     (home-page "https://github.com/ocaml/camlp4")
     (synopsis "Write parsers in OCaml")
     (description
@@ -252,7 +286,7 @@ syntax of OCaml.")
 
     ;; This is LGPLv2 with an exception that allows packages statically-linked
     ;; against the library to be released under any terms.
-    (license lgpl2.0)))
+    (license license:lgpl2.0)))
 
 (define-public camlp5
   (package
@@ -293,7 +327,7 @@ syntax of OCaml.")
 tools for syntax (Stream Parsers and Grammars) and the ability to modify the
 concrete syntax of the language (Quotations, Syntax Extensions).")
     ;; Most files are distributed under bsd-3, but ocaml_stuff/* is under qpl.
-    (license (list bsd-3 qpl))))
+    (license (list license:bsd-3 license:qpl))))
 
 (define-public hevea
   (package
@@ -324,7 +358,7 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
     (description
      "HeVeA is a LaTeX to HTML translator that generates modern HTML 5.  It is
 written in Objective Caml.")
-    (license qpl)))
+    (license license:qpl)))
 
 (define-public coq
   (package
@@ -340,9 +374,11 @@ written in Objective Caml.")
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
+       ("findlib" ,ocaml-findlib)
        ("hevea" ,hevea)))
     (inputs
      `(("ocaml" ,ocaml)
+       ("lablgtk" ,lablgtk)
        ("camlp5" ,camlp5)))
     (arguments
      `(#:phases
@@ -355,7 +391,8 @@ written in Objective Caml.")
                (zero? (system* "./configure"
                                "-prefix" out
                                "-mandir" mandir
-                               "-browser" browser)))))
+                               "-browser" browser
+                               "-coqide" "opt")))))
          (replace 'build
            (lambda _
              (zero? (system* "make" "-j" (number->string
@@ -374,7 +411,7 @@ development of computer programs consistent with their formal specification.
 It is developed using Objective Caml and Camlp5.")
     ;; The code is distributed under lgpl2.1.
     ;; Some of the documentation is distributed under opl1.0+.
-    (license (list lgpl2.1 opl1.0+))))
+    (license (list license:lgpl2.1 license:opl1.0+))))
 
 (define-public proof-general
   (package
@@ -452,7 +489,7 @@ It is developed using Objective Caml and Camlp5.")
      "Proof General is a major mode to turn Emacs into an interactive proof
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public ocaml-menhir
   (package
@@ -488,24 +525,23 @@ Knuth’s LR(1) parser construction technique.")
     ;; The file src/standard.mly and all files listed in src/mnehirLib.mlpack
     ;; that have an *.ml or *.mli extension are GPL licensed. All other files
     ;; are QPL licensed.
-    (license (list gpl2+ qpl))))
+    (license (list license:gpl2+ license:qpl))))
 
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.3")
-    (source
-      (origin
-        (method url-fetch)
-          (uri (string-append "https://forge.ocamlcore.org/frs/download.php/"
-                              "1479/lablgtk-2.18.3.tar.gz"))
-          (sha256
-            (base32
-              "1bybn3jafxf4cx25zvn8h2xj9agn1xjbn7j3ywxxqx6az7rfnnwp"))))
+    (version "2.18.5")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1627))
+              (sha256
+               (base32
+                "0cyj6sfdvzx8hw7553lhgwc0krlgvlza0ph3dk9gsxy047dm3wib"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
        ("ocaml" ,ocaml)
+       ("findlib" ,ocaml-findlib)
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add inputs gtkgl-2.0, libpanelapplet-2.0, gtkspell-2.0,
     ;; and gtk+-quartz-2.0 once available.
@@ -520,21 +556,24 @@ Knuth’s LR(1) parser construction technique.")
      `(#:tests? #f ; no check target
 
        ;; opt: also install cmxa files
-       #:make-flags (list "all" "opt")
+       #:make-flags (list "all" "opt"
+                          (string-append "FINDLIBDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/ocaml"))
        ;; Occasionally we would get "Error: Unbound module GtkThread" when
        ;; compiling 'gtkThInit.ml', with 'make -j'.  So build sequentially.
        #:parallel-build? #f
 
        #:phases
          (modify-phases %standard-phases
-           (replace 'install
+           (add-before 'install 'prepare-install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
                      (ocaml (assoc-ref inputs "ocaml")))
                  ;; Install into the output and not the ocaml directory.
+                 (mkdir-p (string-append out "/lib/ocaml"))
                  (substitute* "config.make"
                    ((ocaml) out))
-                 (system* "make" "old-install")
                  #t))))))
     (home-page "http://lablgtk.forge.ocamlcore.org/")
     (synopsis "GTK+ bindings for OCaml")
@@ -547,7 +586,7 @@ gdk-pixbuf, the GLArea widget (in combination with LablGL), gnomecanvas,
 gnomeui, gtksourceview, gtkspell,
 libglade (and it an generate OCaml code from .glade files),
 libpanel, librsvg and quartz.")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public unison
   (package
@@ -668,7 +707,7 @@ a collection of files and directories to be stored on different hosts
 (or different disks on the same host), modified separately, and then
 brought up to date by propagating the changes in each replica
 to the other.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public ocaml-findlib
   (package
@@ -702,7 +741,12 @@ to the other.")
                         "-config" (string-append out "/etc/ocamfind.conf")
                         "-mandir" (string-append out "/share/man")
                         "-sitelib" (string-append out "/lib/ocaml/site-lib")
-                        "-with-toolbox")))))))
+                        "-with-toolbox"))))
+                  (add-after 'install 'remove-camlp4
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file-recursively
+                          (string-append out "/lib/ocaml/site-lib/camlp4"))))))))
     (home-page "http://projects.camlcity.org/projects/findlib.html")
     (synopsis "Management tool for OCaml libraries")
     (description
@@ -716,4 +760,461 @@ dependency information about multiple packages.  There is also a tool that
 allows the user to enter queries on the command-line.  In order to simplify
 compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
-    (license x11)))
+    (license license:x11)))
+
+;; note that some tests may hang for no obvious reason.
+(define-public ocaml-ounit
+  (package
+    (name "ocaml-ounit")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "ounit" version 1258))
+              (sha256
+               (base32
+                "118xsadrx84pif9vaq13hv4yh22w9kmr0ypvhrs0viir1jr0ajjd"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("libxml2" ,libxml2))) ; for xmllint
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests are done during build.
+         (delete 'check))))
+    (home-page "http://ounit.forge.ocamlcore.org")
+    (synopsis "Unit testing framework for OCaml")
+    (description "Unit testing framework for OCaml.  It is similar to JUnit and
+other XUnit testing frameworks.")
+    (license license:expat)))
+
+(define-public camlzip
+  (package
+    (name "camlzip")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1616))
+              (sha256
+               (base32
+                "0m6gyjw46w3qnhxfsyqyag42znl5lwargks7w7rfchr9jzwpff68"))))
+    (build-system ocaml-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'fix-install-name
+           (lambda* (#:key #:allow-other-keys)
+             (substitute* "Makefile"
+               (("install zip") "install camlzip")))))
+       #:install-target "install-findlib"
+       #:make-flags
+       (list "all" "allopt"
+             (string-append "INSTALLDIR=" (assoc-ref %outputs "out")
+                            "/lib/ocaml"))))
+    (home-page "http://forge.ocamlcore.org/projects/camlzip")
+    (synopsis "Provides easy access to compressed files")
+    (description "Provides easy access to compressed files in ZIP, GZIP and
+JAR format.  It provides functions for reading from and writing to compressed
+files in these formats.")
+    (license license:lgpl2.1+)))
+
+(define-public ocamlmod
+  (package
+    (name "ocamlmod")
+    (version "0.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1544))
+              (sha256
+               (base32
+                "1w0w8lfyymvk300dv13gvhrddpcyknvyp4g2yvq2vaw7khkhjs9g"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests are done during build.
+         (delete 'check))))
+    (home-page "https://forge.ocamlcore.org/projects/ocamlmod")
+    (synopsis "Generate modules from OCaml source files")
+    (description "Generate modules from OCaml source files.")
+    (license license:lgpl2.1+))) ; with an exception
+
+(define-public ocaml-zarith
+  (package
+    (name "ocaml-zarith")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "zarith" version 1574))
+              (sha256
+               (base32
+                "0l36hzmfbvdai2kcgynh13vfdim5x2grnaw61fxqalyjm90c3di3"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("gmp" ,gmp)))
+    (arguments
+     `(#:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key #:allow-other-keys)
+             (zero? (system* "./configure")))))))
+    (home-page "https://forge.ocamlcore.org/projects/zarith/")
+    (synopsis "Implements arbitrary-precision integers")
+    (description "Implements arithmetic and logical operations over
+arbitrary-precision integers.  It uses GMP to efficiently implement arithmetic
+over big integers. Small integers are represented as Caml unboxed integers,
+for speed and space economy.")
+    (license license:lgpl2.1+))) ; with an exception
+
+(define-public ocaml-frontc
+  (package
+    (name "ocaml-frontc")
+    (version "3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.irit.fr/recherches/ARCHI/MARCH/"
+                                  "frontc/Frontc-" version ".tgz"))
+              (sha256
+               (base32
+                "16dz153s92dgbw1rrfwbhscy73did87kfmjwyh3qpvs748h1sc4g"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'install-meta
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-output-to-file
+                   (string-append out "/lib/ocaml/frontc/META")
+                 (lambda _
+                   (display
+                    (string-append
+                     "description = \"Parser for the C language\"
+version = \"" ,version "\"
+requires = \"unix\"
+archive(byte) = \"frontc.cma\"
+archive(native) = \"frontc.cmxa\""))))
+               (symlink (string-append out "/lib/ocaml/frontc")
+                        (string-append out "/lib/ocaml/FrontC"))))))
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          "OCAML_SITE=$(LIB_DIR)/ocaml/")))
+    (home-page "https://www.irit.fr/FrontC")
+    (synopsis "C parser and lexer library")
+    (description "FrontC is an OCAML library providing a C parser and lexer.
+The result is a syntactic tree easy to process with usual OCAML tree management.
+It provides support for ANSI C syntax, old-C K&R style syntax and the standard
+GNU CC attributes.  It provides also a C pretty printer as an example of use.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml-qtest
+  (package
+    (name "ocaml-qtest")
+    (version "2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/vincent-hugot/iTeML/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n7x5l6h4j44f75wzgzjsjkq349i4gj707w1hr7fx84igxxfr6vl"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("findlib" ,ocaml-findlib)))
+    (propagated-inputs
+     `(("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:tests? #f ; No test target.
+       #:make-flags
+       (list (string-append "BIN=" (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/vincent-hugot/iTeML")
+    (synopsis "Inline (Unit) Tests for OCaml")
+    (description "Qtest extracts inline unit tests written using a special
+syntax in comments.  Those tests are then run using the oUnit framework and the
+qcheck library.  The possibilities range from trivial tests -- extremely simple
+to use -- to sophisticated random generation of test cases.")
+    (license license:lgpl3+)))
+
+(define-public ocaml-stringext
+  (package
+    (name "ocaml-stringext")
+    (version "1.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rgrinberg/stringext"
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "19g6lfn03iki9f8h91hi0yiqn0b3wkxyq08b3y23wgv6jw6mssfh"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("qtest" ,ocaml-qtest)))
+    (home-page "https://github.com/rgrinberg/stringext")
+    (synopsis "Extra string functions for OCaml")
+    (description "Provides a single module named Stringext that provides a grab
+bag of often used but missing string functions from the stdlib.  E.g, split,
+full_split, cut, rcut, etc..")
+    ;; the only mention of a license in this project is in its `opam' file
+    ;; where it says `mit'.
+    (license license:expat)))
+
+
+(define-public ocaml-bisect
+  (package
+    (name "ocaml-bisect")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "bisect" version 1051))
+              (sha256
+               (base32
+                "0kcg2rh0qlkfpbv3nhcb75n62b04gbrz0zasq15ynln91zd5qrg0"))
+              (patches
+               (search-patches
+                "ocaml-bisect-fix-camlp4-in-another-directory.patch"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("libxml2" ,libxml2)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("camlp4" ,camlp4)))
+    (arguments
+     `(#:test-target "tests"
+       #:make-flags
+       (list "all" (string-append "CAMLP4_LIBDIR="
+                                  (assoc-ref %build-inputs "camlp4")
+                                  "/lib/ocaml/site-lib/camlp4"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "./configure" "-prefix"
+                             (assoc-ref outputs "out"))))))))
+    (home-page "http://bisect.x9c.fr")
+    (synopsis "Code coverage tool for the OCaml language")
+    (description "Bisect is a code coverage tool for the OCaml language.  It is
+a camlp4-based tool that allows to instrument your application before running
+tests.  After application execution, it is possible to generate a report in HTML
+format that is the replica of the application source code annotated with code
+coverage information.")
+    (license license:gpl3+)))
+
+(define-public ocaml-bitstring
+  (package
+    (name "ocaml-bitstring")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xguerin/bitstring"
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0miw4banfpmx4kxrckpqr57b1fcmsqdmspyjx6gqjd4kghm4l7xj"))
+              (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("time" ,time)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bisect" ,ocaml-bisect)))
+    (propagated-inputs
+     `(("camlp4" ,camlp4)))
+    (arguments
+     `(#:configure-flags
+       (list "CAMLP4OF=camlp4of" "--enable-coverage")
+       #:make-flags
+       (list (string-append "BISECTLIB="
+                            (assoc-ref %build-inputs "bisect")
+                            "/lib/ocaml/site-lib")
+             (string-append "OCAMLCFLAGS=-g -I "
+                            (assoc-ref %build-inputs "camlp4")
+                            "/lib/ocaml/site-lib/camlp4 -I "
+                            "$(BISECTLIB)/bisect")
+             (string-append "OCAMLOPTFLAGS=-g -I "
+                            (assoc-ref %build-inputs "camlp4")
+                            "/lib/ocaml/site-lib/camlp4 -I "
+                            "$(BISECTLIB)/bisect"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("@abs_top_builddir@")
+                (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
+             (substitute* "configure"
+               (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
+                                            "/bin/sh")))))
+         (add-after 'install 'link-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out
+                                          "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out
+                                        "/lib/ocaml/site-lib/bitstring")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dllbitstring.so")
+                        (string-append stubs "/dllbitstring.so"))))))))
+    (home-page "https://github.com/xguerin/bitstring")
+    (synopsis "Bitstrings and bitstring matching for OCaml")
+    (description "Adds Erlang-style bitstrings and matching over bitstrings as
+a syntax extension and library for OCaml.  You can use this module to both parse
+and generate binary formats, files and protocols.  Bitstring handling is added
+as primitives to the language, making it exceptionally simple to use and very
+powerful.")
+    (license license:isc)))
+
+(define-public ocaml-result
+  (package
+    (name "ocaml-result")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/janestreet/result"
+                                  "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pgpfsgvhxnh0i37fkvp9j8nadns9hz9iqgabj4dr519j2gr1xvw"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/janestreet/result")
+    (synopsis "Compatibility Result module")
+    (description "Uses the new result type defined in OCaml >= 4.03 while
+staying compatible with older version of OCaml should use the Result module
+defined in this library.")
+    (license license:bsd-3)))
+
+(define-public ocaml-topkg
+  (package
+    (name "ocaml-topkg")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/topkg/releases/"
+                                  "topkg-" version ".tbz"))
+              (sha256
+               (base32
+                "18rrh6fmf708z7dd30amljmcgaypj3kk49jrmrj68r4wnw8004j8"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("result" ,ocaml-result)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags '("build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/topkg")
+    (synopsis "Transitory OCaml software packager")
+    (description "Topkg is a packager for distributing OCaml software. It
+provides an API to describe the files a package installs in a given build
+configuration and to specify information about the package's distribution,
+creation and publication procedures.")
+    (license license:isc)))
+
+(define-public ocaml-rresult
+  (package
+    (name "ocaml-rresult")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/rresult/releases/"
+                                  "rresult-" version ".tbz"))
+              (sha256
+               (base32
+                "1xxycxhdhaq8p9vhwi93s2mlxjwgm44fcxybx5vghzgbankz9yhm"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("topkg" ,ocaml-topkg)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags '("build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/rresult")
+    (synopsis "Result value combinators for OCaml")
+    (description "Handle computation results and errors in an explicit and
+declarative manner, without resorting to exceptions.  It defines combinators
+to operate on the result type available from OCaml 4.03 in the standard
+library.")
+    (license license:isc)))
+
+(define-public ocaml-mtime
+  (package
+    (name "ocaml-mtime")
+    (version "0.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/mtime/releases/"
+                                  "mtime-" version ".tbz"))
+              (sha256
+               (base32
+                "1hfx4ny2dkw6jf3jppz0640dafl5xgn8r2si9kpwzhmibal8qrah"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("topkg" ,ocaml-topkg)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags
+       '("native=true" "native-dynlink=true" "jsoo=false")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/mtime")
+    (synopsis "Monotonic wall-clock time for OCaml")
+    (description "Access monotonic wall-clock time.  It allows to measure time
+spans without being subject to operating system calendar time adjustments.")
+    (license license:isc)))
+
+(define-public ocaml-cmdliner
+  (package
+    (name "ocaml-cmdliner")
+    (version "0.9.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
+                                  "cmdliner-" version ".tbz"))
+              (sha256
+               (base32
+                "0hdxlkgiwjml9dpaa80282a8350if7mc1m6yz2mrd7gci3fszykx"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("opam" ,opam)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags '("native=true" "native-dynlink=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://erratique.ch/software/cmdliner")
+    (synopsis "Declarative definition of command line interfaces for OCaml")
+    (description "Cmdliner is a module for the declarative definition of command
+line interfaces.  It provides a simple and compositional mechanism to convert
+command line arguments to OCaml values and pass them to your functions.  The
+module automatically handles syntax errors, help messages and UNIX man page
+generation. It supports programs with single or multiple commands and respects
+most of the POSIX and GNU conventions.")
+    (license license:bsd-3)))

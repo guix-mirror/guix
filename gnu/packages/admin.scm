@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -362,7 +362,7 @@ login, passwd, su, groupadd, and useradd.")
        #:tests? #f))                              ; no tests
     (inputs `(("shadow" ,shadow)))
 
-    (home-page "http://sourceforge.net/projects/mingetty")
+    (home-page "https://sourceforge.net/projects/mingetty")
     (synopsis "Getty for the text console")
     (description
      "Small console getty that is started on the Linux text console,
@@ -471,7 +471,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "9")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "4")      ; for patch release, e.g. "4"
+         (bind-release-version "5")      ; for patch release, e.g. "4"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -587,7 +587,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1qpi23lrs6jfxqx8dakbqfyg3hvrzq5ldchg6my19xcvx8515mgx"))))
+                      "1yn15chkfqf4d7961ip2x10jm27a9wqymz2xqh0a2g89arrirkaw"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -717,7 +717,7 @@ by bandwidth they use.")
              `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc)))))
         %standard-phases)))
     ;; The clusterssh.sourceforge.net address requires login to view
-    (home-page "http://sourceforge.net/projects/clusterssh/")
+    (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
     (description
      "ClusterSSH controls a number of xterm windows via a single graphical
@@ -790,7 +790,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.17p1")
+    (version "1.8.19p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -800,7 +800,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1k2mn65l1kmsxm8wh0gjxy496xhbpiimbpm6yv6kw6snzc3xg466"))))
+                "14pwdwl03kdbbyjkvxrfx409x3c1fjqz8aqz2wgwddinhz7v3bxq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1568,14 +1568,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.31")
+    (version "7.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0hiqb28950kn4bjsmw0ksfyss7j2qdmgrj3xsjf7073pq01lx7yb"))
+                "121i9mgyc28ra2825akd0ix5qyssv4xc2qlx296mam6hzxgnc54y"))
               (modules '((guix build utils)))
               (snippet
                '(map delete-file-recursively

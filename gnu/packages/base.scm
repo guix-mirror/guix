@@ -679,14 +679,14 @@ with the Linux kernel.")
   ;; The Hurd's libc variant.
   (package (inherit glibc/linux)
     (name "glibc-hurd")
-    (version "2.19")
+    (version "2.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://alpha.gnu.org/gnu/hurd/glibc-"
-                                  version "-hurd+libpthread-20160518" ".tar.gz"))
+                                  version "-hurd+libpthread-20161218" ".tar.gz"))
               (sha256
                (base32
-                "12zmdjviybpsdb2kq4cg98rds7909f0cc96fzdahdfrzlxx1q0px"))))
+                "0vpdv05j6j3ria5bw8gp468i64gij94cslxkxj9xkfgi6p615b8p"))))
 
     ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
     ;; so both should be propagated.
@@ -721,6 +721,9 @@ with the Linux kernel.")
 
                        ;; We need this to get a working openpty() function.
                        "--enable-pt_chown"
+
+                       ;; <https://lists.gnu.org/archive/html/bug-hurd/2016-10/msg00033.html>
+                       "--disable-werror"
 
                        ;; nscd fails to build for GNU/Hurd:
                        ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.

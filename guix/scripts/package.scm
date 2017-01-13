@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -200,7 +200,8 @@ specified in MANIFEST, a manifest object."
                      (profile-derivation manifest
                                          #:hooks (if bootstrap?
                                                      '()
-                                                     %default-profile-hooks))))
+                                                     %default-profile-hooks)
+                                         #:locales? (not bootstrap?))))
          (prof     (derivation->output-path prof-drv)))
     (show-what-to-build store (list prof-drv)
                         #:use-substitutes? use-substitutes?
@@ -576,11 +577,12 @@ upgrading, #f otherwise."
 (define (store-item->manifest-entry item)
   "Return a manifest entry for ITEM, a \"/gnu/store/...\" file name."
   (let-values (((name version)
-                (package-name->name+version (store-path-package-name item))))
+                (package-name->name+version (store-path-package-name item)
+                                            #\-)))
     (manifest-entry
       (name name)
       (version version)
-      (output #f)
+      (output "out")                              ;XXX: wild guess
       (item item))))
 
 (define (options->installable opts manifest transaction)

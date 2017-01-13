@@ -55,7 +55,7 @@
              ;; 'patch-source-shebangs' file tree traversal.
              (delete-file "INSTALL"))))))
     (inputs `(("mit-krb5" ,mit-krb5)))
-    (home-page "http://sourceforge.net/projects/libtirpc/")
+    (home-page "https://sourceforge.net/projects/libtirpc/")
     (synopsis "Transport-independent Sun/ONC RPC implementation")
     (description
      "This package provides a library that implements the Sun/ONC RPC (remote

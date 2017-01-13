@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -37,7 +37,6 @@ DOT_VECTOR_GRAPHICS =				\
 EXTRA_DIST +=					\
   %D%/htmlxref.cnf				\
   %D%/contributing.texi				\
-  %D%/emacs.texi				\
   %D%/fdl-1.3.texi				\
   $(DOT_FILES)					\
   $(DOT_VECTOR_GRAPHICS)			\

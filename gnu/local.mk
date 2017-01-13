@@ -7,7 +7,7 @@
 # Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 # Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
-# Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 #
 # This file is part of GNU Guix.
@@ -183,6 +183,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/hurd.scm				\
   %D%/packages/ibus.scm				\
   %D%/packages/icu4c.scm			\
+  %D%/packages/idris.scm			\
   %D%/packages/idutils.scm			\
   %D%/packages/image.scm			\
   %D%/packages/image-viewers.scm	\
@@ -271,6 +272,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/networking.scm			\
   %D%/packages/nfs.scm                          \
   %D%/packages/nickle.scm                       \
+  %D%/packages/nim.scm  			\
   %D%/packages/ninja.scm			\
   %D%/packages/node.scm				\
   %D%/packages/noweb.scm			\
@@ -321,6 +323,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rsync.scm			\
   %D%/packages/ruby.scm				\
   %D%/packages/rush.scm				\
+  %D%/packages/rust.scm				\
   %D%/packages/samba.scm			\
   %D%/packages/sawfish.scm			\
   %D%/packages/scanner.scm			\
@@ -412,6 +415,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
   %D%/services/mcron.scm			\
+  %D%/services/messaging.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\
@@ -450,6 +454,7 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/tests.scm					\
   %D%/tests/base.scm				\
+  %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
   %D%/tests/mail.scm				\
   %D%/tests/ssh.scm
@@ -495,6 +500,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-drop-unrar.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
+  %D%/packages/patches/chicken-CVE-2016-6830+CVE-2016-6831.patch	\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clang-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
@@ -505,6 +511,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
+  %D%/packages/patches/cracklib-fix-buffer-overflow.patch	\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/csound-header-ordering.patch		\
@@ -586,6 +593,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
+  %D%/packages/patches/gnupg-test-segfault-on-32bit-arch.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
@@ -633,10 +641,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
-  %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
+  %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
+  %D%/packages/patches/khal-disable-failing-tests.patch		\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
@@ -671,12 +680,29 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
+  %D%/packages/patches/libpng-CVE-2016-10087.patch		\
   %D%/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10092.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10093.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10094.patch		\
+  %D%/packages/patches/libtiff-assertion-failure.patch		\
+  %D%/packages/patches/libtiff-divide-by-zero-ojpeg.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero-tiffcp.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero-tiffcrop.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero.patch		\
+  %D%/packages/patches/libtiff-heap-overflow-pixarlog-luv.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tif-dirread.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tiffcp.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tiffcrop.patch	\
+  %D%/packages/patches/libtiff-invalid-read.patch		\
+  %D%/packages/patches/libtiff-null-dereference.patch		\
+  %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libupnp-CVE-2016-6255.patch		\
+  %D%/packages/patches/libupnp-CVE-2016-8863.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libwebp-CVE-2016-9085.patch		\
   %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
@@ -691,6 +717,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
+  %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
+  %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
@@ -722,6 +750,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
+  %D%/packages/patches/multiqc-fix-git-subprocess-error.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
@@ -740,7 +769,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
+  %D%/packages/patches/ocaml-bisect-fix-camlp4-in-another-directory.patch	\
+  %D%/packages/patches/ocaml-bitstring-fix-configure.patch \
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
+  %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openexr-missing-samples.patch		\
@@ -749,7 +781,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openjpeg-CVE-2016-9850-CVE-2016-9851.patch		\
   %D%/packages/patches/openjpeg-use-after-free-fix.patch	\
   %D%/packages/patches/openocd-nrf52.patch			\
-  %D%/packages/patches/openssh-memory-exhaustion.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
@@ -806,7 +837,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3.4-fix-tests.patch		\
   %D%/packages/patches/python-3.5-fix-tests.patch		\
-  %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
@@ -816,10 +846,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pyopenssl-skip-network-test.patch	\
+  %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
-  %D%/packages/patches/qemu-CVE-2016-8576.patch			\
-  %D%/packages/patches/qemu-CVE-2016-8577.patch			\
-  %D%/packages/patches/qemu-CVE-2016-8578.patch			\
+  %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
@@ -834,7 +863,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-puma-ignore-broken-test.patch       \
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
-  %D%/packages/patches/ruby-yard-fix-skip-of-markdown-tests.patch \
   %D%/packages/patches/sed-hurd-path-max.patch			\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
@@ -847,7 +875,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-sigusr1.patch			\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
-  %D%/packages/patches/slock-CVE-2016-6866.patch		\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   %D%/packages/patches/soprano-find-clucene.patch		\
   %D%/packages/patches/steghide-fixes.patch			\
@@ -875,6 +902,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\
   %D%/packages/patches/totem-debug-format-fix.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
+  %D%/packages/patches/unrtf-CVE-2016-10091.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
   %D%/packages/patches/unzip-CVE-2014-8141.patch		\

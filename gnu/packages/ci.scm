@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +34,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -185,8 +186,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "7248c0038f3d0bfcf6c469d534efb4a13952c112")
-        (revision "1"))
+  (let ((commit "d0a5801e397335bb44d8033e5deddf02c1cc99c2")
+        (revision "3"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -198,12 +199,18 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0hkwh2pcz3wzg1n533ch2w7vwr97yr369q4ki0yqk99wfipjrydw"))))
+                  "0sa94dgp9w6av7i0a570fv9a9yq03jkxdrm5d75h6szsp1kiyw2i"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
+           (add-after 'unpack 'disable-repo-tests
+             (λ _
+               ;; Disable tests that use a connection to the Guix daemon.
+               (substitute* "Makefile.am"
+                 (("tests/repo.scm \\\\") "\\"))
+               #t))
+           (add-before 'configure 'bootstrap
              (lambda _ (zero? (system* "sh" "bootstrap"))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -211,22 +218,30 @@ their dependencies.")
                (let* ((out    (assoc-ref outputs "out"))
                       (json   (assoc-ref inputs "guile-json"))
                       (sqlite (assoc-ref inputs "guile-sqlite3"))
+                      (git    (assoc-ref inputs "git"))
                       (guix   (assoc-ref inputs "guix"))
                       (mods   (string-append json "/share/guile/site/2.0:"
                                              sqlite "/share/guile/site/2.0:"
                                              guix "/share/guile/site/2.0")))
+                 ;; Make sure 'cuirass' can find the 'git' and 'evaluate'
+                 ;; commands, as well as the relevant Guile modules.
                  (wrap-program (string-append out "/bin/cuirass")
+                   `("PATH" ":" prefix (,(string-append out "/bin")
+                                        ,(string-append git "/bin")))
                    `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))))))))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))
+                 #t))))))
       (inputs
        `(("guile" ,guile-2.0)
          ("guile-json" ,guile-json)
          ("guile-sqlite3" ,guile-sqlite3)
-         ("guix" ,guix)))
+         ("guix" ,guix)
+         ("git" ,git)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
       (synopsis "Continuous integration system")
       (description
        "Cuirass is a continuous integration tool using GNU Guix.  It is

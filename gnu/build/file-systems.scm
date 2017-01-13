@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,67 +72,114 @@
   "Bind-mount SOURCE at TARGET."
   (mount source target "" MS_BIND))
 
+(define (read-superblock device offset size magic?)
+  "Read a superblock of SIZE from OFFSET and DEVICE.  Return the raw
+superblock on success, and #f if no valid superblock was found.  MAGIC?
+takes a bytevector and returns #t when it's a valid superblock."
+  (call-with-input-file device
+    (lambda (port)
+      (seek port offset SEEK_SET)
+
+      (let ((block (make-bytevector size)))
+        (match (get-bytevector-n! port block 0 (bytevector-length block))
+          ((? eof-object?)
+           #f)
+          ((? number? len)
+           (and (= len (bytevector-length block))
+                (and (magic? block)
+                     block))))))))
+
+(define (sub-bytevector bv start size)
+  "Return a copy of the SIZE bytes of BV starting from offset START."
+  (let ((result (make-bytevector size)))
+    (bytevector-copy! bv start result 0 size)
+    result))
+
+(define (null-terminated-latin1->string bv)
+  "Return the volume name of SBLOCK as a string of at most 256 characters, or
+#f if SBLOCK has no volume name."
+    ;; This is a Latin-1, nul-terminated string.
+    (let ((bytes (take-while (negate zero?) (bytevector->u8-list bv))))
+      (if (null? bytes)
+          #f
+          (list->string (map integer->char bytes)))))
+
 
 ;;;
 ;;; Ext2 file systems.
 ;;;
 
+;; <http://www.nongnu.org/ext2-doc/ext2.html#DEF-SUPERBLOCK>.
+;; TODO: Use "packed structs" from Guile-OpenGL or similar.
+
 (define-syntax %ext2-endianness
   ;; Endianness of ext2 file systems.
   (identifier-syntax (endianness little)))
 
-;; Offset in bytes of interesting parts of an ext2 superblock.  See
-;; <http://www.nongnu.org/ext2-doc/ext2.html#DEF-SUPERBLOCK>.
-;; TODO: Use "packed structs" from Guile-OpenGL or similar.
-(define-syntax %ext2-sblock-magic       (identifier-syntax 56))
-(define-syntax %ext2-sblock-creator-os  (identifier-syntax 72))
-(define-syntax %ext2-sblock-uuid        (identifier-syntax 104))
-(define-syntax %ext2-sblock-volume-name (identifier-syntax 120))
+(define (ext2-superblock? sblock)
+  "Return #t when SBLOCK is an ext2 superblock."
+  (let ((magic (bytevector-u16-ref sblock 56 %ext2-endianness)))
+    (= magic #xef53)))
 
 (define (read-ext2-superblock device)
   "Return the raw contents of DEVICE's ext2 superblock as a bytevector, or #f
 if DEVICE does not contain an ext2 file system."
-  (define %ext2-magic
-    ;; The magic bytes that identify an ext2 file system.
-    #xef53)
-
-  (define superblock-size
-    ;; Size of the interesting part of an ext2 superblock.
-    264)
-
-  (define block
-    ;; The superblock contents.
-    (make-bytevector superblock-size))
-
-  (call-with-input-file device
-    (lambda (port)
-      (seek port 1024 SEEK_SET)
-
-      ;; Note: work around <http://bugs.gnu.org/17466>.
-      (and (eqv? superblock-size (get-bytevector-n! port block 0
-                                                    superblock-size))
-           (let ((magic (bytevector-u16-ref block %ext2-sblock-magic
-                                            %ext2-endianness)))
-             (and (= magic %ext2-magic)
-                  block))))))
+  (read-superblock device 1024 264 ext2-superblock?))
 
 (define (ext2-superblock-uuid sblock)
   "Return the UUID of ext2 superblock SBLOCK as a 16-byte bytevector."
-  (let ((uuid (make-bytevector 16)))
-    (bytevector-copy! sblock %ext2-sblock-uuid uuid 0 16)
-    uuid))
+  (sub-bytevector sblock 104 16))
 
 (define (ext2-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string of at most 16 characters, or
 #f if SBLOCK has no volume name."
-  (let ((bv (make-bytevector 16)))
-    (bytevector-copy! sblock %ext2-sblock-volume-name bv 0 16)
+  (null-terminated-latin1->string (sub-bytevector sblock 120 16)))
 
-    ;; This is a Latin-1, nul-terminated string.
-    (let ((bytes (take-while (negate zero?) (bytevector->u8-list bv))))
-      (if (null? bytes)
-          #f
-          (list->string (map integer->char bytes))))))
+(define (check-ext2-file-system device)
+  "Return the health of an ext2 file system on DEVICE."
+  (match (status:exit-val
+          (system* "e2fsck" "-v" "-p" "-C" "0" device))
+    (0 'pass)
+    (1 'errors-corrected)
+    (2 'reboot-required)
+    (_ 'fatal-error)))
+
+
+;;;
+;;; Btrfs file systems.
+;;;
+
+;; <https://btrfs.wiki.kernel.org/index.php/On-disk_Format#Superblock>.
+
+(define-syntax %btrfs-endianness
+  ;; Endianness of btrfs file systems.
+  (identifier-syntax (endianness little)))
+
+(define (btrfs-superblock? sblock)
+  "Return #t when SBLOCK is a btrfs superblock."
+  (bytevector=? (sub-bytevector sblock 64 8)
+                (string->utf8 "_BHRfS_M")))
+
+(define (read-btrfs-superblock device)
+  "Return the raw contents of DEVICE's btrfs superblock as a bytevector, or #f
+if DEVICE does not contain a btrfs file system."
+  (read-superblock device 65536 4096 btrfs-superblock?))
+
+(define (btrfs-superblock-uuid sblock)
+  "Return the UUID of a btrfs superblock SBLOCK as a 16-byte bytevector."
+  (sub-bytevector sblock 32 16))
+
+(define (btrfs-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 256 characters, or
+#f if SBLOCK has no volume name."
+  (null-terminated-latin1->string (sub-bytevector sblock 299 256)))
+
+(define (check-btrfs-file-system device)
+  "Return the health of a btrfs file system on DEVICE."
+  (match (status:exit-val
+          (system* "btrfs" "device" "scan"))
+    (0 'pass)
+    (_ 'fatal-error)))
 
 
 ;;;
@@ -146,37 +194,22 @@ if DEVICE does not contain an ext2 file system."
   ;; Endianness of LUKS headers.
   (identifier-syntax (endianness big)))
 
-(define-syntax %luks-header-size
-  ;; Size in bytes of the LUKS header, including key slots.
-  (identifier-syntax 592))
-
-(define %luks-magic
-  ;; The 'LUKS_MAGIC' constant.
-  (u8-list->bytevector (append (map char->integer (string->list "LUKS"))
-                               (list #xba #xbe))))
-
-(define (sub-bytevector bv start size)
-  "Return a copy of the SIZE bytes of BV starting from offset START."
-  (let ((result (make-bytevector size)))
-    (bytevector-copy! bv start result 0 size)
-    result))
+(define (luks-superblock? sblock)
+  "Return #t when SBLOCK is a luks superblock."
+  (define %luks-magic
+    ;; The 'LUKS_MAGIC' constant.
+    (u8-list->bytevector (append (map char->integer (string->list "LUKS"))
+                                 (list #xba #xbe))))
+  (let ((magic   (sub-bytevector sblock 0 6))
+        (version (bytevector-u16-ref sblock 6 %luks-endianness)))
+    (and (bytevector=? magic %luks-magic)
+         (= version 1))))
 
 (define (read-luks-header file)
   "Read a LUKS header from FILE.  Return the raw header on success, and #f if
 not valid header was found."
-  (call-with-input-file file
-    (lambda (port)
-      (let ((header (make-bytevector %luks-header-size)))
-        (match (get-bytevector-n! port header 0 (bytevector-length header))
-          ((? eof-object?)
-           #f)
-          ((? number? len)
-           (and (= len (bytevector-length header))
-                (let ((magic   (sub-bytevector header 0 6)) ;XXX: inefficient
-                      (version (bytevector-u16-ref header 6 %luks-endianness)))
-                  (and (bytevector=? magic %luks-magic)
-                       (= version 1)
-                       header)))))))))
+  ;; Size in bytes of the LUKS header, including key slots.
+  (read-superblock file 0 592 luks-superblock?))
 
 (define (luks-header-uuid header)
   "Return the LUKS UUID from HEADER, as a 16-byte bytevector."
@@ -242,56 +275,77 @@ warning and #f as the result."
                 (else
                  (apply throw args))))))))
 
-(define (partition-predicate read field =)
+(define (partition-field-reader read field)
+  "Return a procedure that takes a device and returns the value of a FIELD in
+the partition superblock or #f."
+  (let ((read (ENOENT-safe read)))
+    (lambda (device)
+      (let ((sblock (read device)))
+        (and sblock
+             (field sblock))))))
+
+(define (read-partition-field device partition-field-readers)
+  "Returns the value of a FIELD in the partition superblock of DEVICE or #f. It
+takes a list of PARTITION-FIELD-READERS and returns the result of the first
+partition field reader that returned a value."
+  (match (filter-map (cut apply <> (list device)) partition-field-readers)
+    ((field . _) field)
+    (_ #f)))
+
+(define %partition-label-readers
+  (list (partition-field-reader read-ext2-superblock
+                                ext2-superblock-volume-name)
+        (partition-field-reader read-btrfs-superblock
+                                btrfs-superblock-volume-name)))
+
+(define %partition-uuid-readers
+  (list (partition-field-reader read-ext2-superblock
+                                ext2-superblock-uuid)
+        (partition-field-reader read-btrfs-superblock
+                                btrfs-superblock-uuid)))
+
+(define read-partition-label
+  (cut read-partition-field <> %partition-label-readers))
+
+(define read-partition-uuid
+  (cut read-partition-field <> %partition-uuid-readers))
+
+(define (partition-predicate reader =)
   "Return a predicate that returns true if the FIELD of partition header that
 was READ is = to the given value."
-  (let ((read (ENOENT-safe read)))
-    (lambda (expected)
-      "Return a procedure that, when applied to a partition name such as \"sda1\",
-returns #t if that partition's volume name is LABEL."
-      (lambda (part)
-        (let* ((device (string-append "/dev/" part))
-               (sblock (read device)))
-          (and sblock
-               (let ((actual (field sblock)))
-                 (and actual
-                      (= actual expected)))))))))
+  (lambda (expected)
+    (lambda (device)
+      (let ((actual (reader device)))
+        (and actual
+             (= actual expected))))))
 
 (define partition-label-predicate
-  (partition-predicate read-ext2-superblock
-                       ext2-superblock-volume-name
-                       string=?))
+  (partition-predicate read-partition-label string=?))
 
 (define partition-uuid-predicate
-  (partition-predicate read-ext2-superblock
-                       ext2-superblock-uuid
-                       bytevector=?))
+  (partition-predicate read-partition-uuid bytevector=?))
 
-(define partition-luks-uuid-predicate
-  (partition-predicate read-luks-header
-                       luks-header-uuid
-                       bytevector=?))
+(define luks-partition-uuid-predicate
+  (partition-predicate
+   (partition-field-reader read-luks-header luks-header-uuid)
+   bytevector=?))
 
-(define (find-partition-by-label label)
-  "Return the first partition found whose volume name is LABEL, or #f if none
+(define (find-partition predicate)
+  "Return the first partition found that matches PREDICATE, or #f if none
 were found."
-  (and=> (find (partition-label-predicate label)
-               (disk-partitions))
-         (cut string-append "/dev/" <>)))
+  (lambda (expected)
+    (find (predicate expected)
+          (map (cut string-append "/dev/" <>)
+               (disk-partitions)))))
 
-(define (find-partition-by-uuid uuid)
-  "Return the first partition whose unique identifier is UUID (a bytevector),
-or #f if none was found."
-  (and=> (find (partition-uuid-predicate uuid)
-               (disk-partitions))
-         (cut string-append "/dev/" <>)))
+(define find-partition-by-label
+  (find-partition partition-label-predicate))
 
-(define (find-partition-by-luks-uuid uuid)
-  "Return the first LUKS partition whose unique identifier is UUID (a bytevector),
-or #f if none was found."
-  (and=> (find (partition-luks-uuid-predicate uuid)
-               (disk-partitions))
-         (cut string-append "/dev/" <>)))
+(define find-partition-by-uuid
+  (find-partition partition-uuid-predicate))
+
+(define find-partition-by-luks-uuid
+  (find-partition luks-partition-uuid-predicate))
 
 
 ;;;
@@ -412,26 +466,34 @@ the following:
 
 (define (check-file-system device type)
   "Run a file system check of TYPE on DEVICE."
-  (define fsck
-    (string-append "fsck." type))
+  (define check-procedure
+    (cond
+     ((string-prefix? "ext" type) check-ext2-file-system)
+     ((string-prefix? "btrfs" type) check-btrfs-file-system)
+     (else #f)))
 
-  (let ((status (system* fsck "-v" "-p" "-C" "0" device)))
-    (match (status:exit-val status)
-      (0
-       #t)
-      (1
-       (format (current-error-port) "'~a' corrected errors on ~a; continuing~%"
-               fsck device))
-      (2
-       (format (current-error-port) "'~a' corrected errors on ~a; rebooting~%"
-               fsck device)
-       (sleep 3)
-       (reboot))
-      (code
-       (format (current-error-port) "'~a' exited with code ~a on ~a; \
-spawning Bourne-like REPL~%"
-               fsck code device)
-       (start-repl %bournish-language)))))
+  (if check-procedure
+      (match (check-procedure device)
+        ('pass
+         #t)
+        ('errors-corrected
+         (format (current-error-port)
+                 "File system check corrected errors on ~a; continuing~%"
+                 device))
+        ('reboot-required
+         (format (current-error-port)
+                 "File system check corrected errors on ~a; rebooting~%"
+                 device)
+         (sleep 3)
+         (reboot))
+        ('fatal-error
+         (format (current-error-port)
+                 "File system check on ~a failed; spawning Bourne-like REPL~%"
+                 device)
+         (start-repl %bournish-language)))
+      (format (current-error-port)
+              "No file system check procedure for ~a; skipping~%"
+              device)))
 
 (define (mount-flags->bit-mask flags)
   "Return the number suitable for the 'flags' argument of 'mount' that

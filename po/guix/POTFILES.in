@@ -24,6 +24,7 @@ guix/scripts/edit.scm
 guix/scripts/size.scm
 guix/scripts/graph.scm
 guix/scripts/challenge.scm
+guix/scripts/copy.scm
 guix/gnu-maintenance.scm
 guix/scripts/container.scm
 guix/scripts/container/exec.scm

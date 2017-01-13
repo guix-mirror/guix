@@ -122,8 +122,7 @@ financial calculations or scheduled transactions.")
      (origin
        (method url-fetch)
        (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=01&release=201&file=01&dummy=gwenhywfar-"
-                           version ".tar.gz"))
+                           "package=01&release=201&file=01"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -157,17 +156,16 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "5.6.10")
+    (version "5.6.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=03&release=206&file=01&dummy=aqbanking-"
-                           version ".tar.gz"))
+                           "package=03&release=208&file=01"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1x0isvpk43rq2zlyyb9p0kgjmqv7yq07vgkiprw3f5sjkykvxw6d"))))
+         "08jbwmiv6f3v8iqdr44x4szna496fqcjfi6mlx04cnbx91m70lh6"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's

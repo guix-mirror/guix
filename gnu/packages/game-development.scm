@@ -140,7 +140,7 @@ provide connectivity for client applications written in any language.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -148,7 +148,7 @@ provide connectivity for client applications written in any language.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0c9gykxmq0sk0yyfdq81g9psd922scqzn5asskjydj84d80f5z7p"))))
+                "0csrwf7k3fxv6bv580w6wxjk1q2j9mj9k0xba3nb1ms6jiz1bvzk"))))
     (build-system gnu-build-system)
     (inputs `(("qt" ,qt)
               ("zlib" ,zlib)))

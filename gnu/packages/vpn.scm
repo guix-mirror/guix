@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -119,13 +119,13 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "7.07")
+   (version "7.08")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256 (base32
-                     "0rl33f1g42hxzqfv2a33gls8cb77q4w432xkims1dnfwhzagrv7k"))))
+                     "00wacb79l2c45f94gxs63b9z25wlciarasvjrb8jb8566wgyqi0w"))))
    (build-system gnu-build-system)
    (inputs
     `(("libxml2" ,libxml2)
@@ -152,7 +152,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.3.9")
+    (version "2.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -160,7 +160,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1hfwmdsp7s34qx34qgwrpp89h30744lbsks6y619cdh27bpnpwaj"))))
+                "167frlmmg2raffn9h7ww3agdwgfdl0wa5wm9fsgl0i6mz3md187k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))

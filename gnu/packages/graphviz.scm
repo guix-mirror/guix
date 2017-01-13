@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 (define-module (gnu packages graphviz)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk)
@@ -30,11 +32,14 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages swig)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ epl1.0)))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ epl1.0 lgpl3+)))
 
 (define-public graphviz
   (package
@@ -148,3 +153,46 @@ interfaces for other technical domains.")
      "Library intended to provide a set of useful functions to deal with
 3D surfaces meshed with interconnected triangles.")
     (license lgpl2.0+)))
+
+(define-public xdot
+  (package
+    (name "xdot")
+    (version "0.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "xdot" version))
+      (sha256
+       (base32
+        "1q0f3pskb09saw1qkd2s6vmk80rq5zjhq8l93dfr2x6r04r0q46j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; We wrap xdot, so that we don't propagate gtk+ and graphviz
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out") "/bin/xdot")
+               `("GI_TYPELIB_PATH" ":" prefix
+                 (,(string-append
+                    (assoc-ref inputs "gtk+") "/lib/girepository-1.0"
+                    ":" (assoc-ref inputs "pango") "/lib/girepository-1.0"
+                    ":" (assoc-ref inputs "gdk-pixbuf") "/lib/girepository-1.0"
+                    ":" (assoc-ref inputs "atk") "/lib/girepository-1.0")))
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "graphviz") "/bin"))))
+             #t)))))
+    (inputs
+     `(("atk" ,atk)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("graphviz" ,graphviz)
+       ("gtk+" ,gtk+)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://pypi.python.org/pypi/xdot")
+    (synopsis "Interactive viewer for graphviz dot files")
+    (description "Xdot is an interactive viewer for graphs written in
+@code{graphviz}’s dot language.  Internally, it uses the xdot output format as
+an intermediate format,and @code{gtk} and @code{cairo} for rendering.  Xdot can
+be used either as a standalone application, or as a python library.")
+    (license lgpl3+)))

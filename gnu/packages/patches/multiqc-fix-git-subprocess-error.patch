@@ -1,0 +1,16 @@
+Without this patch, the incorrect exception is caught when 'git' is not in
+PATH.  See https://github.com/ewels/MultiQC/pull/377.
+
+diff --git a/multiqc/utils/config.py b/multiqc/utils/config.py
+index 01fa554..4a11793 100755
+--- a/multiqc/utils/config.py
++++ b/multiqc/utils/config.py
+@@ -28,7 +28,7 @@ try:
+     git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'], stderr=subprocess.STDOUT)
+     git_hash_short = git_hash[:7]
+     version = '{} ({})'.format(version, git_hash_short)
+-except subprocess.CalledProcessError:
++except (subprocess.CalledProcessError, FileNotFoundError):
+     pass
+ os.chdir(cwd)
+ 

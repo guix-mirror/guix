@@ -649,7 +649,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.14")
+    (version "0.4.15")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -658,7 +658,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "11fzdh4icx2yvjfz1skdql0d0wxpzdr006k993v33x72s0q2ig7f"))))
+                "12kxklcd1b5n0f369zf3xxhvkrizxj4d9xv0dh8crfqiymaym0zm"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -690,7 +690,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.14")
+    (version "0.4.15")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -699,7 +699,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0m3hhk5icx4y4gd970z7ya2013fq4vvqbjljmck62ik03baf8g90"))))
+                "1ag3jcj7kpq3ph12zirk1c0mj9i0g50wmw932f8gi11liq8yd12n"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -968,7 +968,7 @@ Collect herrings and other goodies while sliding down the hill, but avoid fish
 bones.
 
 This game is based on the GPL version of the famous game TuxRacer.")
-    (home-page "http://sourceforge.net/projects/extremetuxracer/")
+    (home-page "https://sourceforge.net/projects/extremetuxracer/")
     (license license:gpl2+)))
 
 (define-public supertuxkart
@@ -1254,7 +1254,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.6.8.14")
+    (version "1.6.12.24")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1262,7 +1262,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "1mah4w6ng0j76cjzbw8y9m2ds5f1w5ka9b1k3gzgvxh4yaphqnff"))))
+                "1g64pid26vcv1ay002bzz6ymabwrmy3wmklywpcgpvrhynm6f2cq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2753,7 +2753,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.5.0")
+   (version "0.5.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
@@ -2761,7 +2761,7 @@ with the \"Stamp\" tool within Tux Paint.")
                                 version "-Source.tar.gz"))
             (sha256
              (base32
-              "0fx7c7m6mfanqy7kln7yf6abb5l3r68picf32js2yls11jj0vbng"))))
+              "1i8avad7w7ikj870z519j383ldy29r6f956bs38cbr8wk513pp69"))))
    (arguments
     '(#:tests? #f
       #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"

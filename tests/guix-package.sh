@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -38,6 +38,14 @@ trap 'rm -f "$profile" "$profile-"[0-9]* "$tmpfile"; rm -rf "$module_dir" t-home
 # Use `-e' with a non-package expression.
 if guix package --bootstrap -e +;
 then false; else true; fi
+
+# Install a store item and make sure the version and output in the manifest
+# are correct.
+guix package --bootstrap -p "$profile" -i `guix build guile-bootstrap`
+test "`guix package -A guile-bootstrap | cut -f 1-2`" \
+     = "`guix package -p "$profile" -I | cut -f 1-2`"
+test "`guix package -p "$profile" -I | cut -f 3`" = "out"
+rm "$profile"
 
 guix package --bootstrap -p "$profile" -i guile-bootstrap
 test -L "$profile" && test -L "$profile-1-link"

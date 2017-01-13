@@ -210,7 +210,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.16")
+    (version "5.7.17")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -222,7 +222,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "198qhd9bdm0fnpp307mgby2aar92yzya0937kxi7bcpdfjcvada9"))))
+               "0lcn9cm36n14g22bcppq5vf4nxbrl3khvlsp9hsixqdfb3l27gyf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -285,7 +285,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.19")
+    (version "10.1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -293,7 +293,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "108s4mimdbmgmmn5pcr9a405j70cyny9adzv49s75lg22krp74sv"))))
+                "1fd0kfw94iyprf0466kjw5mwmj4ky0i997lz6499jkb79pr86kn2"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags

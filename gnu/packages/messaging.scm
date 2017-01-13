@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,10 +34,12 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cyrus-sasl)
@@ -399,14 +401,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.6.3")
+    (version "1.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "09xqi5fs40x6nj9gq99bnw1a7saq96bvqxknxx0ilq7yfvg4c733"))))
+                "070d6b1i3jy66m4ci4ypxkg4pbwqbzbzss1y1ycgq2w62zmrf423"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tries to download GoogleTest with wget
@@ -534,6 +536,14 @@ end-to-end encryption support; XML console.")
              (substitute* "configure"
                (("exit 1") ""))
              #t))
+         (add-after 'unpack 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; prosodyctl needs to read the configuration file.
+               (("^INSTALLEDCONFIG =.*") "INSTALLEDCONFIG = /etc/prosody\n")
+               ;; prosodyctl needs a place to put auto-generated certificates.
+               (("^INSTALLEDDATA =.*") "INSTALLEDDATA = /var/lib/prosody\n"))
+             #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure all executables in "bin" find the required Lua
@@ -545,22 +555,30 @@ end-to-end encryption support; XML console.")
                                               (if (string-prefix? "lua" label)
                                                   directory #f)))
                                            inputs)))
-                    (path  (string-join
-                            (map (lambda (path)
-                                   (string-append path "/share/lua/5.1/?.lua;"
-                                                  path "/share/lua/5.1/?/?.lua"))
-                                 (cons out deps))
-                            ";"))
-                    (cpath (string-join
-                            (map (lambda (path)
-                                   (string-append path "/lib/lua/5.1/?.so;"
-                                                  path "/lib/lua/5.1/?/?.so"))
-                                 (cons out deps))
-                            ";")))
+                    (lua-path (string-join
+                               (map (lambda (path)
+                                      (string-append
+                                       path "/share/lua/5.1/?.lua;"
+                                       path "/share/lua/5.1/?/?.lua"))
+                                    (cons out deps))
+                               ";"))
+                    (lua-cpath (string-join
+                                (map (lambda (path)
+                                       (string-append
+                                        path "/lib/lua/5.1/?.so;"
+                                        path "/lib/lua/5.1/?/?.so"))
+                                     (cons out deps))
+                                ";"))
+                    (openssl (assoc-ref inputs "openssl"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (path (map (lambda (dir)
+                                 (string-append dir "/bin"))
+                               (list openssl coreutils))))
                (for-each (lambda (file)
                            (wrap-program file
-                             `("LUA_PATH"  ";" = (,path))
-                             `("LUA_CPATH" ";" = (,cpath))))
+                             `("LUA_PATH"  ";" = (,lua-path))
+                             `("LUA_CPATH" ";" = (,lua-cpath))
+                             `("PATH" ":" prefix ,path)))
                          (find-files bin ".*"))
                #t))))))
     (inputs
@@ -622,49 +640,98 @@ protocols.")
       (license license:gpl3+)
       (home-page "https://tox.chat"))))
 
+;; Some tox clients move to c-toxcore, which seems to be where all the
+;; recent development happens. It is run by the same developers as toxcore,
+;; forked into a group namespace.
+(define-public c-toxcore
+  (package
+    (name "c-toxcore")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/TokTok/c-toxcore/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dybpz44pi0zm8djppjna0r8yh5wvl3l885dv2f1wp5366bk59n3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("check" ,check)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsodium" ,libsodium)
+       ("opus" ,opus)
+       ("libvpx" ,libvpx)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           ;; The tarball source is not bootstrapped.
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))
+       #:tests? #f)) ; FIXME: Testsuite fails, needs internet connection.
+    (synopsis "Library for the Tox encrypted messenger protocol")
+    (description
+     "Official fork of the C library implementation of the Tox
+encrypted messenger protocol.")
+    (license license:gpl3+)
+    (home-page "https://tox.chat")))
+
 (define-public utox
   (package
    (name "utox")
-   (version "0.9.8")
+   (version "0.11.0")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "https://github.com/GrayHatter/uTox/archive/v"
+     (uri (string-append "https://github.com/uTox/uTox/archive/v"
                          version ".tar.gz"))
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "13hfqbwzcgvfbvf9yjm62aqsvxnpqppb50c88sys43m7022yqcsy"))))
-   (build-system gnu-build-system)
+       "15s4iwjk1s0kihjqn0f07c9618clbphpr827mds3xddkiwnjz37v"))))
+   (build-system cmake-build-system)
    (arguments
-    '(#:make-flags (list (string-append "PREFIX=" %output)
-                         "CC=gcc")
-      #:tests? #f ; No tests
+    '(#:tests? #f ; No test phase.
       #:phases
       (modify-phases %standard-phases
-        ;; No configure script
-        (delete 'configure))))
+        (add-after 'unpack 'fix-freetype-include
+          (lambda _
+            (substitute* "CMakeLists.txt"
+              (("/usr/include/freetype2")
+               (string-append (assoc-ref %build-inputs "freetype")
+                              "/include/freetype2")))))
+        (add-before 'install 'patch-cmake-find-utox
+          (lambda _
+            (substitute* "../build/cmake_install.cmake"
+              (("/uTox-0.11.0/utox")
+               "/build/utox")))))))
    (inputs
+    ;; TODO: Fix the file chooser dialog; which input does it need?
     `(("dbus" ,dbus)
       ("filteraudio" ,filteraudio)
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("libsodium" ,libsodium)
-      ("libtoxcore" ,libtoxcore)
+      ("c-toxcore" ,c-toxcore)
       ("libvpx" ,libvpx)
       ("libx11" ,libx11)
       ("libxext" ,libxext)
       ("libxrender" ,libxrender)
       ("openal" ,openal)
       ("v4l-utils" ,v4l-utils)))
-   (native-inputs
-    `(("pkg-config" ,pkg-config)))
    (synopsis "Lightweight Tox client")
-   (description "A  lightweight Tox client.  Tox is a distributed and secure
+   (description
+    "Utox is a lightweight Tox client.  Tox is a distributed and secure
 instant messenger with audio and video chat capabilities.")
    (home-page "http://utox.org/")
    (license license:gpl3)))
- 
+
 (define-public qtox
   (package
     (name "qtox")

@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -545,7 +545,7 @@ as well as pick-place files.")
                                         (getenv "CPLUS_INCLUDE_PATH")))
                  #t)))
            (add-after 'install 'install-guile-bindings
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Install the Guile bindings (the build system only installs
                ;; libao.so.)
                (let* ((out    (assoc-ref outputs "out"))
@@ -574,6 +574,14 @@ as well as pick-place files.")
 
                    (install-file "bin/ao-guile"
                                  (string-append out "/bin"))
+
+                   ;; Allow Ao to dlopen the relevant GL libraries.  Otherwise
+                   ;; it fails with:
+                   ;;   Couldn't find current GLX or EGL context.
+                   (let ((mesa (assoc-ref inputs "mesa")))
+                     (wrap-program (string-append out "/bin/ao-guile")
+                       `("LD_LIBRARY_PATH" ":" prefix
+                         (,(string-append mesa "/lib")))))
                    #t)))))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
@@ -583,6 +591,7 @@ as well as pick-place files.")
          ("libpng" ,libpng)
          ("glfw" ,glfw)
          ("libepoxy" ,libepoxy)
+         ("mesa" ,mesa)
          ("eigen" ,eigen)
          ("glm" ,glm)
          ("guile" ,guile-2.0)))

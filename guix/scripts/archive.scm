@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,13 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 binary-ports)
-  #:export (guix-archive))
+  #:export (guix-archive
+            options->derivations+files))
+
+;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
+;; See <http://bugs.gnu.org/12202>.
+(module-autoload! (current-module)
+                  '(guix docker) '(build-docker-image))
 
 
 ;;;
@@ -50,7 +57,8 @@
 
 (define %default-options
   ;; Alist of default option values.
-  `((system . ,(%current-system))
+  `((format . "nar")
+    (system . ,(%current-system))
     (substitutes? . #t)
     (graft? . #t)
     (max-silent-time . 3600)
@@ -61,6 +69,8 @@
 Export/import one or more packages from/to the store.\n"))
   (display (_ "
       --export           export the specified files/packages to stdout"))
+  (display (_ "
+      --format=FMT       export files/packages in the specified format FMT"))
   (display (_ "
   -r, --recursive        combined with '--export', include dependencies"))
   (display (_ "
@@ -116,6 +126,9 @@ Export/import one or more packages from/to the store.\n"))
          (option '("export") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'export #t result)))
+         (option '(#\f "format") #t #f
+                 (lambda (opt name arg result . rest)
+                   (alist-cons 'format arg result)))
          (option '(#\r "recursive") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'export-recursive? #t result)))
@@ -245,8 +258,21 @@ resulting archive to the standard output port."
 
     (if (or (assoc-ref opts 'dry-run?)
             (build-derivations store drv))
-        (export-paths store files (current-output-port)
-                      #:recursive? (assoc-ref opts 'export-recursive?))
+        (match (assoc-ref opts 'format)
+          ("nar"
+           (export-paths store files (current-output-port)
+                         #:recursive? (assoc-ref opts 'export-recursive?)))
+          ("docker"
+           (match files
+             ((file)
+              (let ((system (assoc-ref opts 'system)))
+                (format #t "~a\n"
+                        (build-docker-image file #:system system))))
+             (_
+              ;; TODO: Remove this restriction.
+              (leave (_ "only a single item can be exported to Docker~%")))))
+          (format
+           (leave (_ "~a: unknown archive format~%") format)))
         (leave (_ "unable to export the given packages~%")))))
 
 (define (generate-key-pair parameters)

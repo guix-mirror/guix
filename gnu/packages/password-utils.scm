@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,8 +34,8 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
@@ -172,7 +173,8 @@ and vice versa.")
               (uri (string-append "https://github.com/cracklib/cracklib/"
                                   "releases/download/" name "-" version "/"
                                   name "-" version ".tar.gz"))
-              (patches (search-patches "cracklib-CVE-2016-6318.patch"))
+              (patches (search-patches "cracklib-CVE-2016-6318.patch"
+                                       "cracklib-fix-buffer-overflow.patch"))
               (sha256
                (base32
                 "0hrkb0prf7n92w6rxgq0ilzkk6rkhpys2cfqkrbzswp27na7dkqp"))))
@@ -216,7 +218,7 @@ random passwords that pass the checks.")
 (define-public assword
   (package
     (name "assword")
-    (version "0.8")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -225,10 +227,9 @@ random passwords that pass the checks.")
                      "assword_" version ".orig.tar.gz")))
               (sha256
                (base32
-                "0dl4wizbi0r21wxzykm8s445xbvqim5nabi799dmpkdnnh8i546i"))))
+                "0l6170y6my1gprqkazvzabgjkrkr9v2q7z48vjflna4r323yqira"))))
     (arguments
-     `(#:python ,python-2
-       ;; irritatingly, tests do run but not there are two problems:
+     `(;; irritatingly, tests do run but not there are two problems:
        ;;  - "import gtk" fails for unknown reasons here despite it the
        ;;    program working (indeed, I've found I have to do a logout and log
        ;;    back in in after an install order for some mumbo jumbo environment
@@ -242,17 +243,21 @@ random passwords that pass the checks.")
          (add-after 'install 'manpage
            (lambda* (#:key outputs #:allow-other-keys)
              (and
+              ;; Without this substitution, it fails with
+              ;; ImportError: No module named 'gpg'
+              (substitute* "Makefile"
+                (("PYTHONPATH=.") ""))
               (zero? (system* "make" "assword.1"))
               (install-file
                "assword.1"
                (string-append (assoc-ref outputs "out") "/share/man/man1"))))))))
     (build-system python-build-system)
     (native-inputs
-     `(("help2man" ,help2man)))
+     `(("txt2man" ,txt2man)))
     (inputs
-     `(("python2-xdo" ,python2-xdo)
-       ("python2-pygpgme" ,python2-pygpgme)
-       ("python2-pygtk" ,python2-pygtk)))
+     `(("python-xdo" ,python-xdo)
+       ("python-gpg" ,python-gpg)
+       ("python-pygobject" ,python-pygobject)))
     (propagated-inputs
      `(("xclip" ,xclip)))
     (home-page "https://finestructure.net/assword/")
@@ -317,18 +322,17 @@ through the pass command.")
 (define-public argon2
   (package
     (name "argon2")
-    (version "20160406")
+    (version "20161029")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append
-         "https://codeload.github.com/P-H-C/phc-winner-"
-         name "/tar.gz/" version))
+        (string-append "https://github.com/P-H-C/phc-winner-argon2/archive/"
+                       version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0g6wa94sh639xl1qc8z21q43r1mp8y77r1zf8nwx5pfsxd8fmyzv"))))
+         "1rymikbysasdadm325jx69i0q19d9srqkny69jwmhswlidr4j07y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

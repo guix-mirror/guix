@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -364,14 +364,14 @@ Go.  It also includes runtime support libraries for these languages.")
 (define-public gcc-6
   (package
     (inherit gcc-5)
-    (version "6.2.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1idpf43988v1a6i8lw9ak1r7igcfg1bm5kn011iydlr2qygmhi4r"))
+                "17xjz30jb65hcf714vn9gcxvrrji8j20xm7n33qg1ywhyzryfsph"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
@@ -494,8 +494,11 @@ as the 'native-search-paths' field."
               %generic-search-paths))
 
 (define-public gfortran
-  (custom-gcc gcc "gfortran" '("fortran")
-              %generic-search-paths))
+  ;; Note: Update this when GCC changes!  We cannot use
+  ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
+  ;; that is not 'eq?' with GFORTRAN-4.9, and thus 'fold-packages' would
+  ;; report two gfortran@4.9 that are in fact identical.
+  gfortran-4.9)
 
 (define-public gfortran-5
   (custom-gcc gcc-5 "gfortran" '("fortran")
