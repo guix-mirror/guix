@@ -4974,7 +4974,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.18.4")
+    (version "1.19.1")
     (source
       (origin
         (method url-fetch)
@@ -4983,7 +4983,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1j1i3n5xy1wawhk95kxqdc54h34kg7xp4nnramba2q8xqfr5k117"))))
+          "1yx7cnlhl14hsdq5lg0740s4nxqxkmaav38x428llv1zkprjrbkr"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -5012,12 +5012,13 @@ over Xlib, including:
         ("dbus" ,dbus)
         ("dmxproto" ,dmxproto)
         ("libdmx" ,libdmx)
+        ("libepoxy" ,libepoxy)
         ("libgcrypt" ,libgcrypt)
         ("libxau" ,libxau)
         ("libxaw" ,libxaw)
         ("libxdmcp" ,libxdmcp)
         ("libxfixes" ,libxfixes)
-        ("libxfont" ,libxfont)
+        ("libxfont2" ,libxfont2)
         ("libxkbfile" ,libxkbfile)
         ("libxrender" ,libxrender)
         ("libxres" ,libxres)
