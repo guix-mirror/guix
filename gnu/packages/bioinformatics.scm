@@ -7995,3 +7995,29 @@ immunoprecipitation and target enrichment on small gene panels.  Thereby,
 CopywriteR constitutes a widely applicable alternative to available copy
 number detection tools.")
     (license license:gpl2)))
+
+(define-public r-sva
+  (package
+    (name "r-sva")
+    (version "3.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "sva" version))
+       (sha256
+        (base32
+         "1wc1fjm6dzlsqqagm43y57w8jh8nsh0r0m8z1p6ximcb5gxqh7hn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genefilter" ,r-genefilter)))
+    (home-page "http://bioconductor.org/packages/sva")
+    (synopsis "Surrogate variable analysis")
+    (description
+     "This package contains functions for removing batch effects and other
+unwanted variation in high-throughput experiment.  It also contains functions
+for identifying and building surrogate variables for high-dimensional data
+sets.  Surrogate variables are covariates constructed directly from
+high-dimensional data like gene expression/RNA sequencing/methylation/brain
+imaging data that can be used in subsequent analyses to adjust for unknown,
+unmodeled, or latent sources of noise.")
+    (license license:artistic2.0)))
