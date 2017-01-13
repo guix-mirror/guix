@@ -66,7 +66,7 @@
                           (out   (assoc-ref outputs "out")))
                       (substitute* "Imakefile"
                         (("XCOMM XAPPLOADDIR = /home/user/xfig *")
-                         (string-append "XAPPLOADDIR = " out %app-defaults-dir))
+                         (string-append "XAPPLOADDIR = " out ,%app-defaults-dir))
                         (("XCOMM (BINDIR = )[[:graph:]]*" _ front)
                          (string-append front out "/bin"))
                         (("(PNGLIBDIR = )[[:graph:]]*" _ front)
