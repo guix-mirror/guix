@@ -404,7 +404,14 @@ Resources file.")
     (method url-fetch)
     (uri (string-append "mirror://xorg/individual/font/" font "-"
                         version ".tar.bz2"))
-    (sha256 hash)))
+    (sha256 hash)
+    (modules '((guix build utils)))
+    (snippet
+     ;; Do not include timestamps in '.pcf.gz' files.
+     '(substitute* "Makefile.in"
+        (("^COMPRESS = (.*)$" _ rest)
+         (string-append "COMPRESS = " (string-trim-right rest)
+                        " --no-name\n"))))))
 
 (define-syntax-rule (xorg-font-origin font version hash)
   "Expand to the 'origin' form for the given Xorg font package."
