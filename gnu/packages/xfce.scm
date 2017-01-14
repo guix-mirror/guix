@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -661,7 +662,7 @@ devices and folders.")
 (define-public xfce4-terminal
   (package
     (name "xfce4-terminal")
-    (version "0.6.3")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/" name "/"
@@ -669,14 +670,14 @@ devices and folders.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "023y0lkfijifh05yz8grimxadqpi98mrivr00sl18nirq8b4fbwi"))))
+                "1w8jvi9nw00aki825mm8f7wpkhxxicw4f6j9v4ka71z8p2ry9rj0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("libxfce4ui" ,libxfce4ui)
-       ("vte" ,vte/gtk+-2)))
+       ("vte" ,vte)))
     (home-page "http://www.xfce.org/")
     (synopsis "Xfce terminal emulator")
     (description
