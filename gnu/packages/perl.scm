@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5012,6 +5013,30 @@ compiler.")
 change) lexical variables in any subroutine which called you.  It will only
 show those variables which are in scope at the point of the call.  PadWalker
 is particularly useful for debugging.")
+    (license (package-license perl))))
+
+(define-public perl-parallel-forkmanager
+  (package
+    (name "perl-parallel-forkmanager")
+    (version "1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/Y/YA/YANICK/Parallel-ForkManager-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wm4wp6p3ah5z212jl12728z68nmxmfr0f03z1jpvdzffnc2xppi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warn" ,perl-test-warn)))
+    (home-page "http://search.cpan.org/dist/Parallel-ForkManager")
+    (synopsis "Simple parallel processing fork manager")
+    (description "@code{Parallel::ForkManager} is intended for use in
+operations that can be done in parallel where the number of
+processes to be forked off should be limited.")
     (license (package-license perl))))
 
 (define-public perl-params-util

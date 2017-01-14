@@ -3954,6 +3954,31 @@ such that the arrangement of points within a category reflects the density of
 data at that region, and avoids over-plotting.")
     (license license:gpl2+)))
 
+(define-public r-ggthemes
+  (package
+    (name "r-ggthemes")
+    (version "3.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ggthemes" version))
+              (sha256
+               (base32
+                "1qdxg2siwsiq32fmgcxn4vihgxad9v8q0aqigl7a94c26bwxs7y2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-colorspace" ,r-colorspace)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://cran.rstudio.com/web/packages/ggthemes")
+    (synopsis "Extra themes, scales and geoms for @code{ggplot2}")
+    (description "This package provides extra themes and scales for
+@code{ggplot2} that replicate the look of plots by Edward Tufte and
+Stephen Few in Fivethirtyeight, The Economist, Stata, Excel, and The
+Wall Street Journal, among others.  This package also provides
+@code{geoms} for Tufte's box plot and range frame.")
+    (license license:gpl2)))
+
 (define-public r-statmod
   (package
     (name "r-statmod")

@@ -165,7 +165,7 @@ applications and libraries.  It is used by AqBanking.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1x0isvpk43rq2zlyyb9p0kgjmqv7yq07vgkiprw3f5sjkykvxw6d"))))
+         "08jbwmiv6f3v8iqdr44x4szna496fqcjfi6mlx04cnbx91m70lh6"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's

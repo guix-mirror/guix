@@ -6412,6 +6412,11 @@ The one option that matters is:
 Consider @var{urls} the whitespace-separated list of substitute source
 URLs to compare to.
 
+@item --verbose
+@itemx -v
+Show details about matches (identical contents) in addition to
+information about mismatches.
+
 @end table
 
 @node Invoking guix copy
@@ -10328,6 +10333,30 @@ For MariaDB, the root password is empty.
 
 @item @code{port} (default: @code{3306})
 TCP port on which the database server listens for incoming connections.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} redis-service-type
+This is the service type for the @uref{https://redis.io/, Redis}
+key/value store, whose value is a @code{redis-configuration} object.
+@end defvr
+
+@deftp {Data Type} redis-configuration
+Data type representing the configuration of redis.
+
+@table @asis
+@item @code{redis} (default: @code{redis})
+The Redis package to use.
+
+@item @code{bind} (default: @code{"127.0.0.1"})
+Network interface on which to listen.
+
+@item @code{port} (default: @code{6379})
+Port on which to accept connections on, a value of 0 will disable
+listining on a TCP socket.
+
+@item @code{working-directory} (default: @code{"/var/lib/redis"})
+Directory in which to store the database and related files.
 @end table
 @end deftp
 

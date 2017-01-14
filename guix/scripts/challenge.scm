@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,12 +37,17 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:use-module (web uri)
-  #:export (discrepancies
+  #:export (compare-contents
 
-            discrepancy?
-            discrepancy-item
-            discrepancy-local-sha256
-            discrepancy-narinfos
+            comparison-report?
+            comparison-report-item
+            comparison-report-result
+            comparison-report-local-sha256
+            comparison-report-narinfos
+
+            comparison-report-match?
+            comparison-report-mismatch?
+            comparison-report-inconclusive?
 
             guix-challenge))
 
@@ -61,13 +66,38 @@
 (define ensure-store-item                         ;XXX: move to (guix ui)?
   (@@ (guix scripts size) ensure-store-item))
 
-;; Representation of a hash mismatch for ITEM.
-(define-record-type <discrepancy>
-  (discrepancy item local-sha256 narinfos)
-  discrepancy?
-  (item         discrepancy-item)                   ;string, /gnu/store/… item
-  (local-sha256 discrepancy-local-sha256)           ;bytevector | #f
-  (narinfos     discrepancy-narinfos))              ;list of <narinfo>
+;; Representation of a comparison report for ITEM.
+(define-record-type <comparison-report>
+  (%comparison-report item result local-sha256 narinfos)
+  comparison-report?
+  (item         comparison-report-item)    ;string, /gnu/store/… item
+  (result       comparison-report-result)  ;'match | 'mismatch | 'inconclusive
+  (local-sha256 comparison-report-local-sha256)   ;bytevector | #f
+  (narinfos     comparison-report-narinfos))      ;list of <narinfo>
+
+(define-syntax comparison-report
+  ;; Some sort of a an enum to make sure 'result' is correct.
+  (syntax-rules (match mismatch inconclusive)
+    ((_ item 'match rest ...)
+     (%comparison-report item 'match rest ...))
+    ((_ item 'mismatch rest ...)
+     (%comparison-report item 'mismatch rest ...))
+    ((_ item 'inconclusive rest ...)
+     (%comparison-report item 'inconclusive rest ...))))
+
+(define (comparison-report-predicate result)
+  "Return a predicate that returns true when pass a REPORT that has RESULT."
+  (lambda (report)
+    (eq? (comparison-report-result report) result)))
+
+(define comparison-report-mismatch?
+  (comparison-report-predicate 'mismatch))
+
+(define comparison-report-match?
+  (comparison-report-predicate 'match))
+
+(define comparison-report-inconclusive?
+  (comparison-report-predicate 'inconclusive))
 
 (define (locally-built? store item)
   "Return true if ITEM was built locally."
@@ -88,10 +118,10 @@ Otherwise return #f."
 (define-syntax-rule (report args ...)
   (format (current-error-port) args ...))
 
-(define (discrepancies items servers)
+(define (compare-contents items servers)
   "Challenge the substitute servers whose URLs are listed in SERVERS by
 comparing the hash of the substitutes of ITEMS that they serve.  Return the
-list of discrepancies.
+list of <comparison-report> objects.
 
 This procedure does not authenticate narinfos from SERVERS, nor does it verify
 that they are signed by an authorized public keys.  The reason is that, by
@@ -100,11 +130,7 @@ taken since we do not import the archives."
   (define (compare item reference)
     ;; Return a procedure to compare the hash of ITEM with REFERENCE.
     (lambda (narinfo url)
-      (if (not narinfo)
-          (begin
-            (warning (_ "~a: no substitute at '~a'~%")
-                     item url)
-            #t)
+      (or (not narinfo)
           (let ((value (narinfo-hash->sha256 (narinfo-hash narinfo))))
             (bytevector=? reference value)))))
 
@@ -116,9 +142,7 @@ taken since we do not import the archives."
          ((url urls ...)
           (if (not first)
               (select-reference item narinfos urls)
-              (narinfo-hash->sha256 (narinfo-hash first))))))
-      (()
-       (leave (_ "no substitutes for '~a'~%") item))))
+              (narinfo-hash->sha256 (narinfo-hash first))))))))
 
   (mlet* %store-monad ((local     (mapm %store-monad
                                         query-locally-built-hash items))
@@ -130,42 +154,61 @@ taken since we do not import the archives."
                                                         vhash))
                                           vlist-null
                                           remote)))
-    (return (filter-map (lambda (item local)
-                          (let ((narinfos (vhash-fold* cons '() item narinfos)))
-                            (define reference
-                              (or local
-                                  (begin
-                                    (warning (_ "no local build for '~a'~%") item)
-                                    (select-reference item narinfos servers))))
+    (return (map (lambda (item local)
+                   (match (vhash-fold* cons '() item narinfos)
+                     (()                          ;no substitutes
+                      (comparison-report item 'inconclusive local '()))
+                     ((narinfo)
+                      (if local
+                          (if ((compare item local) narinfo (first servers))
+                              (comparison-report item 'match
+                                                 local (list narinfo))
+                              (comparison-report item 'mismatch
+                                                 local (list narinfo)))
+                          (comparison-report item 'inconclusive
+                                             local (list narinfo))))
+                     ((narinfos ...)
+                      (let ((reference
+                             (or local (select-reference item narinfos
+                                                         servers))))
+                        (if (every (compare item reference) narinfos servers)
+                            (comparison-report item 'match
+                                               local narinfos)
+                            (comparison-report item 'mismatch
+                                               local narinfos))))))
+                 items
+                 local))))
 
-                            (if (every (compare item reference)
-                                       narinfos servers)
-                                #f
-                                (discrepancy item local narinfos))))
-                        items
-                        local))))
+(define* (summarize-report comparison-report
+                           #:key
+                           (hash->string bytevector->nix-base32-string)
+                           verbose?)
+  "Write to the current error port a summary of REPORT, a <comparison-report>
+object.  When VERBOSE?, display matches in addition to mismatches and
+inconclusive reports."
+  (define (report-hashes item local narinfos)
+    (if local
+        (report (_ "  local hash: ~a~%") (hash->string local))
+        (report (_ "  no local build for '~a'~%") item))
+    (for-each (lambda (narinfo)
+                (report (_ "  ~50a: ~a~%")
+                        (uri->string (narinfo-uri narinfo))
+                        (hash->string
+                         (narinfo-hash->sha256 (narinfo-hash narinfo)))))
+              narinfos))
 
-(define* (summarize-discrepancy discrepancy
-                                #:key (hash->string
-                                       bytevector->nix-base32-string))
-  "Write to the current error port a summary of DISCREPANCY, a <discrepancy>
-object that denotes a hash mismatch."
-  (match discrepancy
-    (($ <discrepancy> item local (narinfos ...))
+  (match comparison-report
+    (($ <comparison-report> item 'mismatch local (narinfos ...))
      (report (_ "~a contents differ:~%") item)
-     (if local
-         (report (_ "  local hash: ~a~%") (hash->string local))
-         (warning (_ "no local build for '~a'~%") item))
-
-     (for-each (lambda (narinfo)
-                 (if narinfo
-                     (report (_ "  ~50a: ~a~%")
-                             (uri->string (narinfo-uri narinfo))
-                             (hash->string
-                              (narinfo-hash->sha256 (narinfo-hash narinfo))))
-                     (report (_ "  ~50a: unavailable~%")
-                             (uri->string (narinfo-uri narinfo)))))
-               narinfos))))
+     (report-hashes item local narinfos))
+    (($ <comparison-report> item 'inconclusive #f narinfos)
+     (warning (_ "could not challenge '~a': no local build~%") item))
+    (($ <comparison-report> item 'inconclusive locals ())
+     (warning (_ "could not challenge '~a': no substitutes~%") item))
+    (($ <comparison-report> item 'match local (narinfos ...))
+     (when verbose?
+       (report (_ "~a contents match:~%") item)
+       (report-hashes item local narinfos)))))
 
 
 ;;;
@@ -178,6 +221,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
   (display (_ "
       --substitute-urls=URLS
                          compare build results with those at URLS"))
+  (display (_ "
+      -v, --verbose      show details about successful comparisons"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -201,6 +246,11 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                           (alist-cons 'substitute-urls
                                       (string-tokenize arg)
                                       (alist-delete 'substitute-urls result))
+                          rest)))
+         (option '("verbose" #\v) #f #f
+                 (lambda (opt name arg result . rest)
+                   (apply values
+                          (alist-cons 'verbose? #t result)
                           rest)))))
 
 (define %default-options
@@ -220,7 +270,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                                    (_ #f))
                                  opts))
            (system   (assoc-ref opts 'system))
-           (urls     (assoc-ref opts 'substitute-urls)))
+           (urls     (assoc-ref opts 'substitute-urls))
+           (verbose? (assoc-ref opts 'verbose?)))
       (leave-on-EPIPE
        (with-store store
          ;; Disable grafts since substitute servers normally provide only
@@ -236,13 +287,15 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                                 #:use-substitutes? #f)
 
              (run-with-store store
-               (mlet* %store-monad ((items  (mapm %store-monad
-                                                  ensure-store-item files))
-                                    (issues (discrepancies items urls)))
-                 (for-each summarize-discrepancy issues)
-                 (unless (null? issues)
-                   (exit 2))
-                 (return (null? issues)))
+               (mlet* %store-monad ((items   (mapm %store-monad
+                                                   ensure-store-item files))
+                                    (reports (compare-contents items urls)))
+                 (for-each (cut summarize-report <> #:verbose? verbose?)
+                           reports)
+
+                 (exit (cond ((any comparison-report-mismatch? reports) 2)
+                             ((every comparison-report-match? reports) 0)
+                             (else 1))))
                #:system system))))))))
 
 ;;; challenge.scm ends here

@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +74,8 @@
             x11 x11-style
             zpl2.1
             zlib
-            fsf-free))
+            fsf-free
+            wtfpl2))
 
 (define-record-type <license>
   (license name uri comment)
@@ -449,6 +450,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Unlicense"
            "https://unlicense.org/"
            "https://www.gnu.org/licenses/license-list.html#Unlicense"))
+
+(define wtfpl2
+  (license "WTFPL 2"
+           "http://www.wtfpl.net"
+           "http://www.wtfpl.net/about/"))
 
 (define x11
   (license "X11"

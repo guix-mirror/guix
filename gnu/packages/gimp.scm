@@ -38,8 +38,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages imagemagick))
+  #:use-module (gnu packages xorg))
 
 (define-public babl
   (package

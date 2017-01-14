@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,11 @@
             mysql-service
             mysql-service-type
             mysql-configuration
-            mysql-configuration?))
+            mysql-configuration?
+
+            redis-configuration
+            redis-configuration?
+            redis-service-type))
 
 ;;; Commentary:
 ;;;
@@ -287,3 +292,77 @@ database server.
 The optional @var{config} argument specifies the configuration for
 @command{mysqld}, which should be a @code{<mysql-configuration>} object."
   (service mysql-service-type config))
+
+
+;;;
+;;; Redis
+;;;
+
+(define-record-type* <redis-configuration>
+  redis-configuration make-redis-configuration
+  redis-configuration?
+  (redis             redis-configuration-redis ;<package>
+                     (default redis))
+  (bind              redis-configuration-bind
+                     (default "127.0.0.1"))
+  (port              redis-configuration-port
+                     (default 6379))
+  (working-directory redis-configuration-working-directory
+                     (default "/var/lib/redis"))
+  (config-file       redis-configuration-config-file
+                     (default #f)))
+
+(define (default-redis.conf bind port working-directory)
+  (mixed-text-file "redis.conf"
+                   "bind " bind "\n"
+                   "port " (number->string port) "\n"
+                   "dir " working-directory "\n"
+                   "daemonize no\n"))
+
+(define %redis-accounts
+  (list (user-group (name "redis") (system? #t))
+        (user-account
+         (name "redis")
+         (group "redis")
+         (system? #t)
+         (comment "Redis server user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define redis-activation
+  (match-lambda
+    (($ <redis-configuration> redis bind port working-directory config-file)
+     #~(begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+
+         (let ((user (getpwnam "redis")))
+           (mkdir-p #$working-directory)
+           (chown #$working-directory (passwd:uid user) (passwd:gid user)))))))
+
+(define redis-shepherd-service
+  (match-lambda
+    (($ <redis-configuration> redis bind port working-directory config-file)
+     (let ((config-file
+            (or config-file
+                (default-redis.conf bind port working-directory))))
+       (list (shepherd-service
+              (provision '(redis))
+              (documentation "Run the Redis daemon.")
+              (requirement '(user-processes syslogd))
+              (start #~(make-forkexec-constructor
+                        '(#$(file-append redis "/bin/redis-server")
+                          #$config-file)
+                        #:user "redis"
+                        #:group "redis"))
+              (stop #~(make-kill-destructor))))))))
+
+(define redis-service-type
+  (service-type (name 'redis)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          redis-shepherd-service)
+                       (service-extension activation-service-type
+                                          redis-activation)
+                       (service-extension account-service-type
+                                          (const %redis-accounts))))))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,7 +121,7 @@
 ;;; Nix derivations, as implemented in Nix's `derivations.cc'.
 ;;;
 
-(define-record-type <derivation>
+(define-immutable-record-type <derivation>
   (make-derivation outputs inputs sources system builder args env-vars
                    file-name)
   derivation?
@@ -817,14 +818,6 @@ output should not be used."
             e
             outputs)))
 
-  (define (set-file-name drv file)
-    ;; Set FILE as the 'file-name' field of DRV.
-    (match drv
-      (($ <derivation> outputs inputs sources system builder
-          args env-vars)
-       (make-derivation outputs inputs sources system builder
-                        args env-vars file))))
-
   (define input->derivation-input
     (match-lambda
       (((? derivation? drv))
@@ -872,9 +865,9 @@ output should not be used."
     (let* ((file (add-text-to-store store (string-append name ".drv")
                                     (derivation->string drv)
                                     (map derivation-input-path inputs)))
-           (drv  (set-file-name drv file)))
-      (hash-set! %derivation-cache file drv)
-      drv)))
+           (drv* (set-field drv (derivation-file-name) file)))
+      (hash-set! %derivation-cache file drv*)
+      drv*)))
 
 (define* (map-derivation store drv mapping
                          #:key (system (%current-system)))

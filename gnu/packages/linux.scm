@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -333,14 +333,14 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.9.2"
-                    "08gd5ja5gdhzpwzbjhipwmh4myp0hj13k1wsl1xvplszh3p9b076"
+  (make-linux-libre "4.9.3"
+                    "1jd2rz58lcha9ac35glr26lc6hfi49fvpiwshgpd6ygf4irrs82w"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.41"
-                    "1kl1m0riq90xldcf7lvjzdyz57w1wmnm93j0r0v8xz7n66m5nkp8"
+  (make-linux-libre "4.4.42"
+                    "1jd43yvycizgqdmwp9rpj7gpjy37mah8jlqaiskjb0hivyk495yz"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -351,8 +351,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.9.2")
-(define %linux-libre-hash "08gd5ja5gdhzpwzbjhipwmh4myp0hj13k1wsl1xvplszh3p9b076")
+(define %linux-libre-version "4.9.3")
+(define %linux-libre-hash "1jd2rz58lcha9ac35glr26lc6hfi49fvpiwshgpd6ygf4irrs82w")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -597,7 +597,7 @@ slabtop, and skill.")
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
-       ("eudev" ,eudev)))
+       ("eudev" ,eudev-with-hwdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
@@ -1739,6 +1739,21 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
+
+(define-public eudev-with-hwdb
+  ;; TODO: Merge with 'eudev'.
+  (package
+    (inherit eudev)
+    (name "eudev-with-hwdb")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'build-hwdb
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
+                      ;; similar tools to display product names.
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* (string-append out "/bin/udevadm")
+                                        "hwdb" "--update"))))))))))
 
 (define-public lvm2
   (package
@@ -3101,14 +3116,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "146")
+    (version "147")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "0jjx4q1mfa380319cqz86nw5wv6jnbpvq2r8n0dyh87mhvrgb4wi"))
+                "10xxmqpd348ifbs7w8j0m53agp28r6imv237ha3kmhp632hmyf1d"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet

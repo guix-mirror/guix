@@ -854,6 +854,18 @@ software.")
                (base32
                 "05915i0bv7q62fqrs5diqwr8dz3pwqa1c1ivcgggkjyw0xk4ldp5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'set-sysconfdir
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Work around a bug whereby the 'SYSCONFDIR' macro
+                      ;; expands literally to '${prefix}/etc'.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "src/main.c"
+                          (("SYSCONFDIR, \"fprintd.conf\"")
+                           (string-append "\"" out "/etc\", "
+                                          "\"fprintd.conf\"")))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))

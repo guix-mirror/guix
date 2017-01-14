@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -335,6 +335,7 @@ provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
 
+(define-public %app-defaults-dir "/lib/X11/app-defaults")
 
 (define-public editres
   (package
@@ -354,7 +355,7 @@ provided.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-appdefaultdir="
-                            %output "/lib/X11/app-defaults"))))
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libxaw" ,libxaw)
        ("libxmu" ,libxmu)
@@ -3982,23 +3983,9 @@ protocol.")
                 "1grir464hy52a71r3mpm9mzvkf7nwr3vk0b1vc27pd3gp588a38p"))))
     (build-system gnu-build-system)
     (arguments
-     ;; By default, it tries to install XFontSel file in
-     ;; "/gnu/store/<libxt>/share/X11/app-defaults": it defines this
-     ;; directory from 'libxt' (using 'pkg-config').  To put this file
-     ;; inside output dir and to use it properly, we need to configure
-     ;; --with-appdefaultdir and to wrap 'xfontsel' binary.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
-       `(#:configure-flags
-         (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfontsel
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfontsel")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libx11" ,libx11)
        ("libxaw" ,libxaw)
@@ -4028,19 +4015,9 @@ Font Description (XLFD) full name for a font.")
                 "0n97iqqap9wyxjan2n520vh4rrf5bc0apsw2k9py94dqzci258y1"))))
     (build-system gnu-build-system)
     (arguments
-     ;; The same 'app-defaults' problem as with 'xfontsel' package.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
        `(#:configure-flags
          (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfd
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfd")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+                              %output ,%app-defaults-dir))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("libx11" ,libx11)
@@ -5358,6 +5335,36 @@ draggable titlebars and borders.")
 Intrinsics (Xt) Library.")
     (license license:x11)))
 
+(define-public twm
+  (package
+    (name "twm")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1s1r00x8add3f27xjqxg6q7mwplwrb72gakbh4y6j052as25wchw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxt" ,libxt)
+       ("libxmu" ,libxmu)
+       ("libxext" ,libxext)
+       ("xproto" ,xproto)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Tab Window Manager for the X Window System")
+    (description "Twm is a window manager for the X Window System.
+It provides titlebars, shaped windows, several forms of icon management,
+user-defined macro functions, click-to-type and pointer-driven
+keyboard focus, and user-specified key and pointer button bindings.")
+    (license license:x11)))
 
 (define-public xcb-util
   (package
@@ -5615,6 +5622,66 @@ user-friendly mechanism to start the X server.")
     (description
      "Xaw is the X 3D Athena Widget Set based on the X Toolkit
 Intrinsics (Xt) Library.")
+    (license license:x11)))
+
+(define-public xmag
+  (package
+    (name "xmag")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19bsg5ykal458d52v0rvdx49v54vwxwqg8q36fdcsv9p2j8yri87"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Display or capture a magnified part of a X11 screen")
+    (description "Xmag displays and captures a magnified snapshot of a portion
+of an X11 screen.")
+    (license license:x11)))
+
+(define-public xmessage
+  (package
+    (name "xmessage")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jmcac1xbwplbxfl75sr6w3zqhx1khpdzlqippjsr31cjp1rjc48"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Displays a message or query in a window")
+    (description
+     "Xmessage displays a message or query in a window.   The user can click
+on a button to dismiss it or can select one of several buttons
+to answer a question.  Xmessage can also exit after a specified time.")
     (license license:x11)))
 
 (define-public xterm

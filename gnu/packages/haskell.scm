@@ -3052,7 +3052,7 @@ use HUnit assertions as QuickCheck properties.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.8.1")
+    (version "2.8.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3063,7 +3063,7 @@ use HUnit assertions as QuickCheck properties.")
              ".tar.gz"))
        (sha256
         (base32
-         "0fvnfl30fxmj5q920l13641ar896d53z0z6z66m7c1366lvalwvh"))))
+         "1ai6k5v0bibaxq8xffcblc6rwmmk6gf8vjyd9p2h3y6vwbhlvilq"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
@@ -4573,7 +4573,7 @@ just a @code{Semigroup} are added.")
 (define-public ghc-semigroups
   (package
     (name "ghc-semigroups")
-    (version "0.17.0.1")
+    (version "0.18.2")
     (source
      (origin
        (method url-fetch)
@@ -4583,7 +4583,7 @@ just a @code{Semigroup} are added.")
              ".tar.gz"))
        (sha256
         (base32
-         "0gvpfi7s6ys4qha3y9a1zl1a15gf9cgg33wjb94ghg82ivcxnc3r"))))
+         "1r6hsn3am3dpf4rprrj4m04d9318v9iq02bin0pl29dg4a3gzjax"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-nats" ,ghc-nats)
@@ -8132,5 +8132,34 @@ Rust syntax.  It is intended to be useful for two different purposes:
 @item A new, complementary approach to static analysis for C programs.
 @end enumerate\n")
       (license license:gpl2+))))
+
+(define-public ghc-wave
+  (package
+    (name "ghc-wave")
+    (version "0.1.4")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://hackage.haskell.org/package/wave/wave-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1g5nmqfk6p25v9ismwz4i66ay91bd1qh39xwj0hm4z6a5mw8frk8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-data-default-class"
+        ,ghc-data-default-class)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/mrkkrp/wave")
+    (synopsis "Work with WAVE and RF64 files in Haskell")
+    (description "This package allows you to work with WAVE and RF64
+files in Haskell.")
+    (license license:bsd-3)))
 
 ;;; haskell.scm ends here

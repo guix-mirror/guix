@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -27,6 +27,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
@@ -36,7 +37,15 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages webkit)
-  #:use-module (gnu packages fontutils))
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages mpd)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages libbsd))
 
 (define-public dwm
   (package
@@ -113,6 +122,34 @@ optimising the environment for the application in use and the task performed.")
      "A dynamic menu for X, originally designed for dwm.  It manages large
 numbers of user-defined menu items efficiently.")
     (license license:x11)))
+
+(define-public spoon
+  (package
+    (name "spoon")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10c5i7ykpy7inzzfiw1dh0srpkljycr3blxhvd8160wsvplbws48"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxkbfile" ,libxkbfile)
+       ("alsa-lib" ,alsa-lib)
+       ("libmpdclient" ,libmpdclient)))
+    (home-page "http://git.2f30.org/spoon/")
+    (synopsis "Set dwm status")
+    (description
+     "Spoon can be used to set the dwm status.")
+    (license license:isc)))
 
 (define-public slock
   (package
@@ -257,3 +294,382 @@ allows you to write down the presentation for a quick lightning talk within a
 few minutes.")
     (home-page "http://tools.suckless.org/sent")
     (license license:x11)))
+
+(define-public xbattmon
+  (package
+    (name "xbattmon")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0n2rrjq03pgqrdkl7cz5snsfdanf4s58w9h6dbvnl7p8bbd3j2kn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))))
+    (inputs
+     `(("libx11" ,libx11)))
+    (home-page "http://git.2f30.org/xbattmon/")
+    (synopsis "Simple battery monitor for X")
+    (description
+     "Xbattmon is a simple battery monitor for X.")
+    (license license:isc)))
+
+(define-public wificurse
+  (package
+    (name "wificurse")
+    (version "0.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "067ghr1xly5ca41kc83xila1p5hpq0bxfcmc8jvxi2ggm6wrhavn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list
+                     (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/wificurse/")
+    (synopsis "Wifi DoS attack tool")
+    (description
+     "Wificurses listens for beacons sent from wireless access points
+in the range of your wireless station.  Once received the program
+extracts the BSSID of the AP and transmits deauthentication packets
+using the broadcast MAC address.  This results to the disconnection
+of all clients connected to the AP at the time of the attack.  This
+is essencially a WiFi DoS attack tool created for educational
+purposes only.  It works only in Linux and requires wireless card
+drivers capable of injecting packets in wireless networks.")
+    (license license:gpl3+)))
+
+(define-public skroll
+  (package
+    (name "skroll")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0km6bjfz4ssb1z0xwld6iiixnn7d255ax8yjs3zkdm42z8q9yl0f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://2f30.org")
+    (synopsis "Commandline utility which scrolls text")
+    (description
+     "Skroll is a small utility that you can use to make a text scroll.
+Pipe text to it, and it will scroll a given number of letters from right to
+left.")
+    (license license:wtfpl2)))
+
+(define-public sbm
+  (package
+    (name "sbm")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nks5mkh5wn30kyjzlkjlgi31bv1wq52kbp0r6nzbyfnvfdlywik"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/sbm/")
+    (synopsis "Simple bandwidth monitor")
+    (description
+     "Sbm is a simple bandwidth monitor.")
+    (license license:isc)))
+
+(define-public prout
+  (package
+    (name "prout")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s6c3ygg1h1fyxkh8gd7nzjk6qhnwsb4535d2k780kxnwns5fzas"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (inputs
+     `(("cups-minimal" ,cups-minimal)
+       ("zlib" ,zlib)))
+    (home-page "http://git.2f30.org/prout/")
+    (synopsis "Smaller lp command")
+    (description
+     "Prout (PRint OUT) is a small utility one can use to send
+documents to a printer.
+It has no feature, and does nothing else.  Just set your default
+printer in client.conf(5) and start printing.  No need for a local
+cups server to be installed.")
+    (license license:wtfpl2)))
+
+(define-public noice
+  (package
+    (name "noice")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ldkbb71z6k4yzj4kpg3s94ijj1c1kx9dfcjz393py09scfyg5hr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No configure script
+         (add-before 'build 'curses
+           (lambda _
+             (substitute* "Makefile"
+               (("lcurses") "lncurses")))))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "http://git.2f30.org/noice/")
+    (synopsis "Small file browser")
+    (description
+     "Noice is a small curses-based file browser.")
+    (license license:bsd-2)))
+
+;;; We want some commits that are more recent than the latest release, 0.2
+(define-public human
+  (let ((commit "50c80e6ba12823184b6866e06b955dbd2ccdc5d7")
+        (revision "1"))
+    (package
+      (name "human")
+      (version (string-append "0.2-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.2f30.org/human.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "18xngm4h9vsyip52zwd79rrp1irzg6rs462lpbp61amf7hj955gn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/human/")
+    (synopsis "Convert bytes to human readable formats")
+    (description
+     "Human is a small program which translate numbers into a
+human readable format.  By default, it tries to detect the best
+factorisation, but you can force its output.
+You can adjust the number of decimals with the @code{SCALE}
+environment variable.")
+    (license license:wtfpl2))))
+
+(define-public fortify-headers
+  (package
+    (name "fortify-headers")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cacdczpjb49c4i1168g541wnl3i3gbpv2m2wbnmw5wddlyhgkdg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "http://git.2f30.org/fortify-headers/")
+    (synopsis "Standalone fortify-source implementation")
+    (description
+     "This is a standalone implementation of fortify source.  It provides
+compile time buffer checks.  It is libc-agnostic and simply overlays the
+system headers by using the @code{#include_next} extension found in GCC.  It was
+initially intended to be used on musl based Linux distributions.
+
+@itemize
+@item It is portable, works on *BSD, Linux, Solaris and possibly others.
+@item It will only trap non-conformant programs.  This means that fortify
+  level 2 is treated in the same way as level 1.
+@item Avoids making function calls when undefined behaviour has already been
+  invoked.  This is handled by using __builtin_trap().
+@item Support for out-of-bounds read interfaces, such as send(), write(),
+  fwrite() etc.
+@item No ABI is enforced.  All of the fortify check functions are inlined
+  into the resulting binary.
+@end itemize\n")
+    (license license:isc)))
+
+(define-public colors
+  (package
+    (name "colors")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lckmqpgj89841splng0sszbls2ag71ggkgr1wsv9y3v6y87589z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (inputs
+     `(("libpng" ,libpng)))
+    (home-page "http://git.2f30.org/colors/")
+    (synopsis "Extract colors from pictures")
+    (description
+     "Extract colors from PNG files.  It is similar to
+strings(1) but for pictures.  For a given input file it outputs a
+colormap to stdout.")
+    (license license:isc)))
+
+;; No new releases were made at github, this repository is more active than
+;; the one at http://git.suckless.org/libutf/ and it is
+;; done by the same developer.
+(define-public libutf
+  (let ((revision "1")
+        (commit "ff4c60635e1f455b0a0b4200f8183fbd5a88225b"))
+    (package
+      (name "libutf")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cls/libutf")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1ih5vjavilzggyr1j1z6w1z12c2fs5fg77cfnv7ami5ivsy3kg3d"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; No tests
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)))) ; No configure script
+      (inputs
+       `(("gawk" ,gawk)))
+      (home-page "https://github.com/cls/libutf")
+      (synopsis "Plan 9 compatible UTF-8 library")
+      (description
+       "This is a C89 UTF-8 library, with an API compatible with that of
+Plan 9's libutf, but with a number of improvements:
+
+@itemize
+@item Support for runes beyond the Basic Multilingual Plane.
+@item utflen and utfnlen cannot overflow on 32- or 64-bit machines.
+@item chartorune treats all invalid codepoints as though Runeerror.
+@item fullrune, utfecpy, and utfnlen do not overestimate the length
+of malformed runes.
+@item An extra function, charntorune(p,s,n), equivalent to
+fullrune(s,n) ? chartorune(p,s): 0.
+@item Runeerror may be set to an alternative replacement value, such
+as -1, to be used instead of U+FFFD.
+@end itemize\n")
+      (license license:expat))))
+
+;; No release tarballs so far.
+(define-public lchat
+  (let ((revision "1")
+        (commit "bbde23732f8c7769b982f0c1bda9b99fbf93f932"))
+    (package
+      (name "lchat")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/younix/lchat")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "00q3rc0aa5416jvjvrj71x1wnr0331kxhvjjs7pyxgnq4xf36k63"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; No tests
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No configure script
+           (add-before 'build 'libbsd
+             (lambda _
+               (substitute* "Makefile"
+                 (("-lutf") "-lutf -lbsd"))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "lchat" bin)
+                 #t))))))
+      (inputs
+       `(("grep" ,grep)
+         ("ncurses" ,ncurses)
+         ("libutf" ,libutf)
+         ("libbsd" ,libbsd)))
+      (home-page "https://github.com/younix/lchat")
+      (synopsis "Line chat is a frontend for the irc client ii from suckless")
+      (description
+       "Lchat (line chat) is the little and small brother of cii.
+It is a front end for ii-like chat programs.  It uses tail(1) -f to get the
+chat output in background.")
+      (license license:isc))))
