@@ -371,13 +371,13 @@ Notable examples are GTK+, GStreamer and Webkit.")
 (define-public lua-lpeg
   (package
     (name "lua-lpeg")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "13mz18s359wlkwm9d9iqlyyrrwjc6iqfpa99ai0icam2b3khl68h"))))
+               (base32 "0sq25z3r324a324ky73izgq9mbf66j2xvjp0fxf227rwxalzgnb2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
