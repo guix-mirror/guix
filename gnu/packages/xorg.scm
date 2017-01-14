@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -399,21 +399,24 @@ Resources file.")
     (description "Xorg font encoding files.")
     (license license:public-domain)))
 
+(define (%xorg-font-origin font version hash)
+  (origin
+    (method url-fetch)
+    (uri (string-append "mirror://xorg/individual/font/" font "-"
+                        version ".tar.bz2"))
+    (sha256 hash)))
+
+(define-syntax-rule (xorg-font-origin font version hash)
+  "Expand to the 'origin' form for the given Xorg font package."
+  (%xorg-font-origin font version (base32 hash)))
 
 (define-public font-adobe100dpi
   (package
     (name "font-adobe100dpi")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-adobe-100dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))))
+    (source (xorg-font-origin
+             "font-adobe-100dpi" version
+             "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
@@ -436,16 +439,9 @@ Resources file.")
   (package
     (name "font-adobe75dpi")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-adobe-75dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))))
+    (source (xorg-font-origin
+             "font-adobe-75dpi" version
+             "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
@@ -472,16 +468,9 @@ Resources file.")
   (package
     (name "font-alias")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-alias-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))))
+    (source (xorg-font-origin
+             name version
+             "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -513,16 +502,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-arabic-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-arabic-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1x246dfnxnmflzf0qzy62k8jdpkb6jkgspcjgbk8jcq9lw99npah"))))
+    (source (xorg-font-origin
+             name version
+             "1x246dfnxnmflzf0qzy62k8jdpkb6jkgspcjgbk8jcq9lw99npah"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -550,16 +532,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-cronyx-cyrillic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-cronyx-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0ai1v4n61k8j9x2a1knvfbl2xjxk3xxmqaq3p9vpqrspc69k31kf"))))
+    (source (xorg-font-origin
+             name version
+             "0ai1v4n61k8j9x2a1knvfbl2xjxk3xxmqaq3p9vpqrspc69k31kf"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -583,16 +558,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-dec-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-dec-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0yzza0l4zwyy7accr1s8ab7fjqkpwggqydbm2vc19scdby5xz7g1"))))
+    (source (xorg-font-origin
+             name version
+             "0yzza0l4zwyy7accr1s8ab7fjqkpwggqydbm2vc19scdby5xz7g1"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -612,16 +580,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-isas-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-isas-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0rx8q02rkx673a7skkpnvfkg28i8gmqzgf25s9yi0lar915sn92q"))))
+    (source (xorg-font-origin
+             name version
+             "0rx8q02rkx673a7skkpnvfkg28i8gmqzgf25s9yi0lar915sn92q"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -642,16 +603,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-micro-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-micro-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1dldxlh54zq1yzfnrh83j5vm0k4ijprrs5yl18gm3n9j1z0q2cws"))))
+    (source (xorg-font-origin
+             name version
+             "1dldxlh54zq1yzfnrh83j5vm0k4ijprrs5yl18gm3n9j1z0q2cws"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -668,16 +622,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-misc-cyrillic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-misc-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0q2ybxs8wvylvw95j6x9i800rismsmx4b587alwbfqiw6biy63z4"))))
+    (source (xorg-font-origin
+             name version
+             "0q2ybxs8wvylvw95j6x9i800rismsmx4b587alwbfqiw6biy63z4"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -694,16 +641,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-misc-ethiopic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-misc-ethiopic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "19cq7iq0pfad0nc2v28n681fdq3fcw1l1hzaq0wpkgpx7bc1zjsk"))))
+    (source (xorg-font-origin
+             name version
+             "19cq7iq0pfad0nc2v28n681fdq3fcw1l1hzaq0wpkgpx7bc1zjsk"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -724,16 +664,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-misc-misc")
     (version "1.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-misc-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "150pq6n8n984fah34n3k133kggn9v0c5k07igv29sxp1wi07krxq"))))
+    (source (xorg-font-origin
+             name version
+             "150pq6n8n984fah34n3k133kggn9v0c5k07igv29sxp1wi07krxq"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -754,16 +687,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-mutt-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-mutt-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "13qghgr1zzpv64m0p42195k1kc77pksiv059fdvijz1n6kdplpxx"))))
+    (source (xorg-font-origin
+             name version
+             "13qghgr1zzpv64m0p42195k1kc77pksiv059fdvijz1n6kdplpxx"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -780,16 +706,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-schumacher-misc")
     (version "1.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-schumacher-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0nkym3n48b4v36y4s927bbkjnsmicajarnf6vlp7wxp0as304i74"))))
+    (source (xorg-font-origin
+             name version
+             "0nkym3n48b4v36y4s927bbkjnsmicajarnf6vlp7wxp0as304i74"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -810,16 +729,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-screen-cyrillic")
     (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-screen-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0yayf1qlv7irf58nngddz2f1q04qkpr5jwp4aja2j5gyvzl32hl2"))))
+    (source (xorg-font-origin
+             name version
+             "0yayf1qlv7irf58nngddz2f1q04qkpr5jwp4aja2j5gyvzl32hl2"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -836,16 +748,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-sony-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-sony-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1xfgcx4gsgik5mkgkca31fj3w72jw9iw76qyrajrsz1lp8ka6hr0"))))
+    (source (xorg-font-origin
+             name version
+             "1xfgcx4gsgik5mkgkca31fj3w72jw9iw76qyrajrsz1lp8ka6hr0"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -862,16 +767,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-sun-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-sun-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1q6jcqrffg9q5f5raivzwx9ffvf7r11g6g0b125na1bhpz5ly7s8"))))
+    (source (xorg-font-origin
+             name version
+             "1q6jcqrffg9q5f5raivzwx9ffvf7r11g6g0b125na1bhpz5ly7s8"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -911,16 +809,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-winitzki-cyrillic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-winitzki-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "181n1bgq8vxfxqicmy1jpm1hnr6gwn1kdhl6hr4frjigs1ikpldb"))))
+    (source (xorg-font-origin
+             name version
+             "181n1bgq8vxfxqicmy1jpm1hnr6gwn1kdhl6hr4frjigs1ikpldb"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -937,16 +828,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-xfree86-type1")
     (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-xfree86-type1-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))))
+    (source (xorg-font-origin
+             name version
+             "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
