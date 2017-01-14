@@ -649,6 +649,8 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
+   ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
+   ;;       mate.scm will also need to be updated.
    (version "3.22.6")
    (source (origin
             (method url-fetch)
