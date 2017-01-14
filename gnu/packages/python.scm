@@ -3723,62 +3723,60 @@ transcendental functions).")
        ("texinfo" ,texinfo)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'build 'configure-environment
-        (lambda* (#:key outputs inputs #:allow-other-keys)
-          (let ((cairo (assoc-ref inputs "cairo"))
-                (gtk+ (assoc-ref inputs "gtk+")))
-            ;; Setting these directories in the 'basedirlist' of 'setup.cfg'
-            ;; has not effect.
-            (setenv "LD_LIBRARY_PATH"
-                    (string-append cairo "/lib:" gtk+ "/lib"))
-            (setenv "HOME" (getcwd))
-            (call-with-output-file "setup.cfg"
-              (lambda (port)
-                (format port "[directories]~%
+       (modify-phases %standard-phases
+         (add-before 'build 'configure-environment
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((cairo (assoc-ref inputs "cairo"))
+                   (gtk+ (assoc-ref inputs "gtk+")))
+               ;; Setting these directories in the 'basedirlist' of 'setup.cfg'
+               ;; has not effect.
+               (setenv "LD_LIBRARY_PATH"
+                       (string-append cairo "/lib:" gtk+ "/lib"))
+               (setenv "HOME" (getcwd))
+               (call-with-output-file "setup.cfg"
+                 (lambda (port)
+                   (format port "[directories]~%
 basedirlist = ~a,~a~%
  [rc_options]~%
 backend = TkAgg~%"
-                        (assoc-ref inputs "tcl")
-                        (assoc-ref inputs "tk"))))))
-        (alist-cons-after
-         'install 'install-doc
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                  (doc (string-append data "/doc/" ,name "-" ,version))
-                  (info (string-append data "/info"))
-                  (html (string-append doc "/html")))
-             ;; Make installed package available for building the
-             ;; documentation
-             (add-installed-pythonpath inputs outputs)
-             (with-directory-excursion "doc"
-               ;; Produce pdf in 'A4' format.
-               (substitute* (find-files "." "conf\\.py")
-                 (("latex_paper_size = 'letter'")
-                  "latex_paper_size = 'a4'"))
-               (mkdir-p html)
-               (mkdir-p info)
-               ;; The doc recommends to run the 'html' target twice.
-               (system* "python" "make.py" "html")
-               (system* "python" "make.py" "html")
-               (copy-recursively "build/html" html)
-               (system* "python" "make.py" "latex")
-               (system* "python" "make.py" "texinfo")
-               (symlink (string-append html "/_images")
-                        (string-append info "/matplotlib-figures"))
-               (with-directory-excursion "build/texinfo"
-                 (substitute* "matplotlib.texi"
-                   (("@image\\{([^,]*)" all file)
-                    (string-append "@image{matplotlib-figures/" file)))
+                           (assoc-ref inputs "tcl")
+                           (assoc-ref inputs "tk")))))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (info (string-append data "/info"))
+                    (html (string-append doc "/html")))
+               ;; Make installed package available for building the
+               ;; documentation
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "doc"
+                 ;; Produce pdf in 'A4' format.
+                 (substitute* (find-files "." "conf\\.py")
+                   (("latex_paper_size = 'letter'")
+                    "latex_paper_size = 'a4'"))
+                 (mkdir-p html)
+                 (mkdir-p info)
+                 ;; The doc recommends to run the 'html' target twice.
+                 (system* "python" "make.py" "html")
+                 (system* "python" "make.py" "html")
+                 (copy-recursively "build/html" html)
+                 (system* "python" "make.py" "latex")
+                 (system* "python" "make.py" "texinfo")
                  (symlink (string-append html "/_images")
-                          "./matplotlib-figures")
-                 (system* "makeinfo" "--no-split"
-                          "-o" "matplotlib.info" "matplotlib.texi"))
-               (copy-file "build/texinfo/matplotlib.info"
-                          (string-append info "/matplotlib.info"))
-               (copy-file "build/latex/Matplotlib.pdf"
-                          (string-append doc "/Matplotlib.pdf")))))
-        %standard-phases))))
+                          (string-append info "/matplotlib-figures"))
+                 (with-directory-excursion "build/texinfo"
+                   (substitute* "matplotlib.texi"
+                     (("@image\\{([^,]*)" all file)
+                      (string-append "@image{matplotlib-figures/" file)))
+                   (symlink (string-append html "/_images")
+                            "./matplotlib-figures")
+                   (system* "makeinfo" "--no-split"
+                            "-o" "matplotlib.info" "matplotlib.texi"))
+                 (copy-file "build/texinfo/matplotlib.info"
+                            (string-append info "/matplotlib.info"))
+                 (copy-file "build/latex/Matplotlib.pdf"
+                            (string-append doc "/Matplotlib.pdf")))))))))
     (home-page "http://matplotlib.org")
     (synopsis "2D plotting library for Python")
     (description
