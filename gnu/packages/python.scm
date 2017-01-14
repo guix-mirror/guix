@@ -3740,7 +3740,8 @@ basedirlist = ~a,~a~%
  [rc_options]~%
 backend = TkAgg~%"
                            (assoc-ref inputs "tcl")
-                           (assoc-ref inputs "tk")))))))
+                           (assoc-ref inputs "tk"))))
+               #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
@@ -3779,7 +3780,8 @@ backend = TkAgg~%"
                  (copy-file "build/texinfo/matplotlib.info"
                             (string-append info "/matplotlib.info"))
                  (copy-file "build/latex/Matplotlib.pdf"
-                            (string-append doc "/Matplotlib.pdf")))))))))
+                            (string-append doc "/Matplotlib.pdf")))
+                 #t))))))
     (home-page "http://matplotlib.org")
     (synopsis "2D plotting library for Python")
     (description
