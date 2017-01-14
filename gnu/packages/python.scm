@@ -3755,6 +3755,9 @@ backend = TkAgg~%"
                  (substitute* (find-files "." "conf\\.py")
                    (("latex_paper_size = 'letter'")
                     "latex_paper_size = 'a4'"))
+                 (substitute* "users/intro.rst"
+                   ;; Fix reST markup error (see <https://github.com/sphinx-doc/sphinx/issues/3044>)
+                   (("[[][*][]]") "[#]"))
                  (mkdir-p html)
                  (mkdir-p info)
                  ;; The doc recommends to run the 'html' target twice.
