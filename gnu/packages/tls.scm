@@ -5,6 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -470,13 +471,13 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.9.3")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
-        (base32
-         "16a02bb0apnk1bm68bcabdmmwd6rnvnjzanrmcb46bpbapwz3vx6"))))
+       (base32
+        "04d2464klbhvrsrlmca10qxyd968qz7xizdppr53cihnlfq2y77m"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -519,13 +520,13 @@ security, and applying best practice development processes.")
 (define-public certbot
   (package
     (name "certbot")
-    (version "0.9.3")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1c7k4lfq5j78d1rvrwrb9082ngwibz92cwkf4kazaa9b76w9q538"))))
+                "0hx71ba7w8kf8hpg1wy5zf8ggczb57g3kcsdg83kxjpqnfnrkmp0"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
