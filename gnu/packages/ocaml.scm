@@ -804,10 +804,19 @@ other XUnit testing frameworks.")
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'install 'fix-install-name
-           (lambda* (#:key #:allow-other-keys)
-             (substitute* "Makefile"
-               (("install zip") "install camlzip")))))
+         (add-after 'install 'install-camlzip
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/lib/ocaml/site-lib/camlzip")))
+               (mkdir-p dir)
+               (call-with-output-file (string-append dir "/META")
+                 (lambda (port)
+                   (format port "version=\"1.06\"\n")
+                   (format port "requires=\"unix\"\n")
+                   (format port "archive(byte)=\"zip.cma\"\n")
+                   (format port "archive(native)=\"zip.cmxa\"\n")
+                   (format port "archive(native,plugin)=\"zip.cmxs\"\n")
+                   (format port "directory=\"../zip\"\n")))))))
        #:install-target "install-findlib"
        #:make-flags
        (list "all" "allopt"
