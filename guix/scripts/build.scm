@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -344,8 +344,8 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:keep-failed? (assoc-ref opts 'keep-failed?)
                      #:keep-going? (assoc-ref opts 'keep-going?)
                      #:rounds (assoc-ref opts 'rounds)
-                     #:build-cores (or (assoc-ref opts 'cores) 0)
-                     #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
+                     #:build-cores (assoc-ref opts 'cores)
+                     #:max-build-jobs (assoc-ref opts 'max-jobs)
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
                      #:substitute-urls (assoc-ref opts 'substitute-urls)
@@ -462,7 +462,6 @@ options handled by 'set-build-options-from-command-line', and listed in
     (substitutes? . #t)
     (build-hook? . #t)
     (print-build-trace? . #t)
-    (max-silent-time . 3600)
     (verbosity . 0)))
 
 (define (show-help)
