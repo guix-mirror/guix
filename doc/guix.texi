@@ -2274,11 +2274,14 @@ traverses @emph{all the files in the store}, this command can take a
 long time, especially on systems with a slow disk drive.
 
 @cindex repairing the store
+@cindex corruption, recovering from
 Using @option{--verify=repair} or @option{--verify=contents,repair}
 causes the daemon to try to repair corrupt store items by fetching
 substitutes for them (@pxref{Substitutes}).  Because repairing is not
 atomic, and thus potentially dangerous, it is available only to the
-system administrator.
+system administrator.  A lightweight alternative, when you know exactly
+which items in the store are corrupt, is @command{guix build --repair}
+(@pxref{Invoking guix build}).
 
 @item --optimize
 @cindex deduplication
@@ -4858,6 +4861,14 @@ background information and tools.
 When used in conjunction with @option{--keep-failed}, the differing
 output is kept in the store, under @file{/gnu/store/@dots{}-check}.
 This makes it easy to look for differences between the two results.
+
+@item --repair
+@cindex repairing store items
+@cindex corruption, recovering from
+Attempt to repair the specified store items, if they are corrupt, by
+re-downloading or rebuilding them.
+
+This operation is not atomic and thus restricted to @code{root}.
 
 @item --derivations
 @itemx -d
