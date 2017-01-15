@@ -1440,6 +1440,26 @@ Git, Mercurial, Subversion and Bazaar are supported, and many parts of the
 display and behaviour is easily customisable.")
     (license license:gpl3+)))
 
+(define-public emacs-git-timemachine
+  (package
+    (name "emacs-git-timemachine")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pidu/git-timemachine/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l4g0r69wfrnjsywv03v4bpdd53byg6zdx6mzabfxyymss3kvisa"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/pidu/git-timemachine")
+    (synopsis "Step through historic versions of Git-controlled files")
+    (description "This package enables you to step through historic versions
+of files under Git version control from within Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-el-mock
   (package
     (name "emacs-el-mock")
