@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -64,19 +64,17 @@
                                          (assoc-ref %build-inputs "freetype")
                                          "/include/freetype2"))
        #:phases
-       (alist-replace
-        'configure
-        (lambda _
-         (substitute* "Makefile" (("\\$\\{CC\\}") "gcc"))
-         #t)
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-           (zero?
-            (system* "make" "install"
-                     (string-append "DESTDIR=" out) "PREFIX="))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile" (("\\$\\{CC\\}") "gcc"))
+             #t))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (zero?
+               (system* "make" "install"
+                        (string-append "DESTDIR=" out) "PREFIX="))))))))
     (inputs
      `(("freetype" ,freetype)
        ("libx11" ,libx11)
