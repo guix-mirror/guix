@@ -507,7 +507,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.15.2")
+   (version "3.16.2")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -519,11 +519,11 @@ for example from a shell script.")
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append "https://sqlite.org/2016/sqlite-autoconf-"
+                   (string-append "https://sqlite.org/2017/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0j9i1zrwxc7dfd6xr3xagal3incrlalsrk96havnas1qp5im1cq7"))))
+              "059n4s9qd35qpbd4g29y9ay99a6f68ad7k65g430rxb6jcz0rk35"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
