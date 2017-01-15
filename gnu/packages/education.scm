@@ -161,22 +161,23 @@ of categories with some of the activities available in that category.
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-new-version-check
-          (lambda _
-            ;; Make new version check to default to false.
-            ;; TODO: Remove the checkbox from the dialog and the check itself
-            (substitute* '("widget/settingspages.cpp" "widget/mainwindow.cpp")
-              (("settings.value(\"check_new_version\", true)")
-               "settings.value(\"check_new_version\", false)"))))
+           (lambda _
+             ;; Make new version check to default to false.
+             ;; TODO: Remove the checkbox from the dialog and the check itself
+             (substitute* '("widget/settingspages.cpp" "widget/mainwindow.cpp")
+               (("settings.value(\"check_new_version\", true)")
+                "settings.value(\"check_new_version\", false)"))
+             #t))
          (replace 'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              ;; Make program honor $PREFIX
-              (substitute* "tipp10.pro"
-                (("\\.path = /usr/") (string-append ".path = " out "/")))
-              (substitute* "def/defines.h"
-                (("\"/usr/") (string-append "\"" out "/")))
-              ;; Recreate Makefile
-              (zero? (system* "qmake"))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Make program honor $PREFIX
+               (substitute* "tipp10.pro"
+                 (("\\.path = /usr/") (string-append ".path = " out "/")))
+               (substitute* "def/defines.h"
+                 (("\"/usr/") (string-append "\"" out "/")))
+               ;; Recreate Makefile
+               (zero? (system* "qmake"))))))))
     (inputs
      `(("qt4" ,qt-4)
        ("sqlite" ,sqlite)))
