@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -118,3 +118,30 @@ guile -c "
                            (clear-failed-paths store (list out))
                            (null? (query-failed-paths store)))))))
     #:guile-for-build (%guile-for-build)) "
+
+kill "$daemon_pid"
+
+
+# Make sure the daemon's default 'build-cores' setting is honored.
+
+guix-daemon --listen="$socket" --disable-chroot --cores=42 &
+daemon_pid=$!
+
+GUIX_DAEMON_SOCKET="$socket" \
+guile -c '
+  (use-modules (guix) (gnu packages) (guix tests))
+
+  (with-store store
+    (let* ((build  (add-text-to-store store "build.sh"
+                                      "echo $NIX_BUILD_CORES > $out"))
+           (bash   (add-to-store store "bash" #t "sha256"
+                                 (search-bootstrap-binary "bash"
+                                                          (%current-system))))
+           (drv    (derivation store "the-thing" bash
+                               `("-e" ,build)
+                               #:inputs `((,bash) (,build))
+                               #:env-vars `(("x" . ,(random-text))))))
+      (and (build-derivations store (list drv))
+           (exit
+            (= 42 (pk (call-with-input-file (derivation->output-path drv)
+                        read)))))))'

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,7 +138,7 @@
             direct-store-path
             log-file))
 
-(define %protocol-version #x10f)
+(define %protocol-version #x161)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -537,14 +537,14 @@ encoding conversion errors."
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
                             rounds                ;number of build rounds
-                            (max-build-jobs 1)
+                            max-build-jobs
                             timeout
-                            (max-silent-time 3600)
+                            max-silent-time
                             (use-build-hook? #t)
                             (build-verbosity 0)
                             (log-type 0)
                             (print-build-trace #t)
-                            (build-cores (current-processor-count))
+                            build-cores
                             (use-substitutes? #t)
 
                             ;; Client-provided substitute URLs.  If it is #f,
@@ -570,20 +570,36 @@ encoding conversion errors."
                           ...)))))
     (write-int (operation-id set-options) socket)
     (send (boolean keep-failed?) (boolean keep-going?)
-          (boolean fallback?) (integer verbosity)
-          (integer max-build-jobs) (integer max-silent-time))
+          (boolean fallback?) (integer verbosity))
+    (when (< (nix-server-minor-version server) #x61)
+      (let ((max-build-jobs (or max-build-jobs 1))
+            (max-silent-time (or max-silent-time 3600)))
+        (send (integer max-build-jobs) (integer max-silent-time))))
     (when (>= (nix-server-minor-version server) 2)
       (send (boolean use-build-hook?)))
     (when (>= (nix-server-minor-version server) 4)
       (send (integer build-verbosity) (integer log-type)
             (boolean print-build-trace)))
-    (when (>= (nix-server-minor-version server) 6)
-      (send (integer build-cores)))
+    (when (and (>= (nix-server-minor-version server) 6)
+               (< (nix-server-minor-version server) #x61))
+      (let ((build-cores (or build-cores (current-processor-count))))
+        (send (integer build-cores))))
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
       (let ((pairs `(,@(if timeout
                            `(("build-timeout" . ,(number->string timeout)))
+                           '())
+                     ,@(if max-silent-time
+                           `(("build-max-silent-time"
+                              . ,(number->string max-silent-time)))
+                           '())
+                     ,@(if max-build-jobs
+                           `(("build-max-jobs"
+                              . ,(number->string max-build-jobs)))
+                           '())
+                     ,@(if build-cores
+                           `(("build-cores" . ,(number->string build-cores)))
                            '())
                      ,@(if substitute-urls
                            `(("substitute-urls"
