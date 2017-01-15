@@ -38,6 +38,8 @@
   #:use-module (ice-9 match)
   #:export (service-extension
             service-extension?
+            service-extension-target
+            service-extension-compute
 
             service-type
             service-type?
