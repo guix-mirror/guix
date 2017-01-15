@@ -27,7 +27,7 @@
 (define-public fio
   (package
     (name "fio")
-    (version "2.15")
+    (version "2.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -35,7 +35,7 @@
                        "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ggma9c48717z2wz8j9f7jcgb3xqk8qawjl6c9hnabxxry94y130"))))
+                "1v5n5hq500aidwfzmbm3k5d3mhh6ffwbgzq7nys838azga4xd3bx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; No tests.
