@@ -74,7 +74,26 @@
             (let ((out (assoc-ref outputs "out")))
               (zero?
                (system* "make" "install"
-                        (string-append "DESTDIR=" out) "PREFIX="))))))))
+                        (string-append "DESTDIR=" out) "PREFIX=")))))
+        (add-after 'build 'install-xsession
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Add a .desktop file to xsessions.
+            (let* ((output (assoc-ref outputs "out"))
+                   (xsessions (string-append output "/share/xsessions")))
+              (mkdir-p xsessions)
+              (with-output-to-file
+                  (string-append xsessions "/dwm.desktop")
+                (lambda _
+                  (format #t
+                    "[Desktop Entry]~@
+                     Name=dwm~@
+                     Comment=Dynamic Window Manager~@
+                     Exec=~a/bin/dwm~@
+                     TryExec=~@*~a/bin/dwm~@
+                     Icon=~@
+                     Type=Application~%"
+                    output)))
+              #t))))))
     (inputs
      `(("freetype" ,freetype)
        ("libx11" ,libx11)
