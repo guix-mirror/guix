@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -182,17 +182,12 @@ of categories with some of the activities available in that category.
        ("sqlite" ,sqlite)))
     (home-page "https://www.tipp10.com/")
     (synopsis "Touch typing tutor")
-    (description "Tipp10 is a touch typing tutor for Windows, Mac OS and
-Linux.  The ingenious thing about the software is its intelligence feature:
-Characters that are mistyped are repeated more frequently.  Beginners will
-find their way around right away so they can start practicing without a hitch.
+    (description "Tipp10 is a touch typing tutor.  The ingenious thing about
+the software is its intelligence feature: characters that are mistyped are
+repeated more frequently.  Beginners will find their way around right away so
+they can start practicing without a hitch.
 
 Useful support functions and an extensive progress tracker, topical lessons
 and the ability to create your own practice lessons make learning to type
-easy.
-
-Note: To change the language settings choose Datei (File) →
-Grundeinstellungen (Generell Settings) → Sprache (Language) and change from
-Deutsch to English. The you have restart the program to have the change take
-effect.")
+easy.")
     (license license:gpl2)))
