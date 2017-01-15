@@ -24,7 +24,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages storage))
 
 (define-public fio
   (package
@@ -85,7 +86,8 @@
                #t))))))
     (outputs '("out" "utils"))
     (inputs
-     `(("libaio" ,libaio)
+     `(("ceph" ,ceph "lib")
+       ("libaio" ,libaio)
        ("gnuplot" ,gnuplot)
        ("zlib" ,zlib)
        ("python-numpy" ,python2-numpy)
