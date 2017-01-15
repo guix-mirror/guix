@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
@@ -1429,6 +1429,29 @@ allows easily move between them.")
     (synopsis "Emacs string manipulation library")
     (description "This package provides an Emacs library for manipulating
 strings.")
+    (license license:gpl3+)))
+
+(define-public emacs-sx
+  (package
+    (name "emacs-sx")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/vermiculus/sx.el/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("let-alist" ,let-alist)))
+    (home-page "https://github.com/vermiculus/sx.el/")
+    (synopsis "Emacs StackExchange client")
+    (description
+     "Emacs StackExchange client.  Ask and answer questions on
+Stack Overflow, Super User, and other StackExchange sites.")
     (license license:gpl3+)))
 
 (define-public emacs-f
