@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -842,19 +842,19 @@ masters from remote CVS hosts.")
 (define-public vc-dwim
   (package
     (name "vc-dwim")
-    (version "1.7")
+    (version "1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/vc-dwim/vc-dwim-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "094pjwshvazlgagc254in2xvrp93vhcj0kb5ms17qs7sch99x9z2"))))
+               "0d5sqafc40l878m8wjr35jxmalj4kam1m6ph60v08ng4ml5g7931"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("inetutils" ,inetutils))) ; for `hostname', used in the tests
     (native-inputs `(("emacs" ,emacs-minimal))) ; for `ctags'
-    (home-page "http://www.gnu.org/software/vc-dwim/")
+    (home-page "https://www.gnu.org/software/vc-dwim/")
     (synopsis "Version-control-agnostic ChangeLog diff and commit tool")
     (description
      "The vc-dwim package contains two tools, \"vc-dwim\" and \"vc-chlog\".
