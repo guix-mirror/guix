@@ -221,7 +221,8 @@ available."
       ((_ . result)                               ;cache hit
        (return result))
       (#f                                         ;cache miss
-       (mlet %state-monad ((result (begin exp ...)))
+       (mlet %state-monad ((result (begin exp ...))
+                           (cache  (current-state)))
          (mbegin %state-monad
            (set-current-state (vhash-consq key result cache))
            (return result)))))))
