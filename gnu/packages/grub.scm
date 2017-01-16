@@ -24,7 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module ((guix licenses) #:select (gpl3+))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages flex)
@@ -122,7 +122,7 @@ then goes on to load the rest of the operating system.  As a multiboot
 bootloader, GRUB handles the presence of multiple operating systems installed
 on the same computer; upon booting the computer, the user is presented with a
 menu to select one of the installed operating systems.")
-    (license gpl3+)
+    (license license:gpl3+)
     (properties '((cpe-name . "grub2")))))
 
 (define-public grub-efi
