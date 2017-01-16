@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,11 +95,39 @@
   (dependencies     file-system-dependencies      ; list of <file-system>
                     (default '())))               ; or <mapped-device>
 
-(define-inlinable (file-system-needed-for-boot? fs)
-  "Return true if FS has the 'needed-for-boot?' flag set, or if it's the root
-file system."
+(define %not-slash
+  (char-set-complement (char-set #\/)))
+
+(define (file-prefix? file1 file2)
+  "Return #t if FILE1 denotes the name of a file that is a parent of FILE2,
+where both FILE1 and FILE2 are absolute file name.  For example:
+
+  (file-prefix? \"/gnu\" \"/gnu/store\")
+  => #t
+
+  (file-prefix? \"/gn\" \"/gnu/store\")
+  => #f
+"
+  (and (string-prefix? "/" file1)
+       (string-prefix? "/" file2)
+       (let loop ((file1 (string-tokenize file1 %not-slash))
+                  (file2 (string-tokenize file2 %not-slash)))
+         (match file1
+           (()
+            #t)
+           ((head1 tail1 ...)
+            (match file2
+              ((head2 tail2 ...)
+               (and (string=? head1 head2) (loop tail1 tail2)))
+              (()
+               #f)))))))
+
+(define (file-system-needed-for-boot? fs)
+  "Return true if FS has the 'needed-for-boot?' flag set, or if it holds the
+store--e.g., if FS is the root file system."
   (or (%file-system-needed-for-boot? fs)
-      (string=? "/" (file-system-mount-point fs))))
+      (and (file-prefix? (file-system-mount-point fs) (%store-prefix))
+           (not (memq 'bind-mount (file-system-flags fs))))))
 
 (define (file-system->spec fs)
   "Return a list corresponding to file-system FS that can be passed to the
