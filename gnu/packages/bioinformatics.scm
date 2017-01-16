@@ -8280,3 +8280,27 @@ The package contains the original code written by the ISB, and a subset of the
 proteowizard library for mzML and mzIdentML.  The netCDF reading code has
 previously been used in XCMS.")
     (license license:artistic2.0)))
+
+(define-public r-affyio
+  (package
+    (name "r-affyio")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affyio" version))
+       (sha256
+        (base32
+         "1svsl4mpk06xm505pap913x69ywks99262krag8y4ygpllj7dfyy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/bmbolstad/affyio")
+    (synopsis "Tools for parsing Affymetrix data files")
+    (description
+     "This package provides routines for parsing Affymetrix data files based
+upon file format information.  The primary focus is on accessing the CEL and
+CDF file formats.")
+    (license license:lgpl2.0+)))
