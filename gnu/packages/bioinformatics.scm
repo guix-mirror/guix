@@ -8228,3 +8228,23 @@ statistics-sensitive non-linear iterative peak-clipping algorithm (SNIP), peak
 alignment using warping functions, handling of replicated measurements as well
 as allowing spectra with different resolutions.")
     (license license:gpl3+)))
+
+(define-public r-protgenerics
+  (package
+    (name "r-protgenerics")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ProtGenerics" version))
+       (sha256
+        (base32
+         "0hb3vrrvfx6lcfalmjxm8dmigfmi5nba0pzjfgsrzd35c8mbfc6f"))))
+    (properties `((upstream-name . "ProtGenerics")))
+    (build-system r-build-system)
+    (home-page "https://github.com/lgatto/ProtGenerics")
+    (synopsis "S4 generic functions for proteomics infrastructure")
+    (description
+     "This package provides S4 generic functions needed by Bioconductor
+proteomics packages.")
+    (license license:artistic2.0)))
