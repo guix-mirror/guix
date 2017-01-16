@@ -8202,3 +8202,29 @@ solution for binary trait.  The package rareMETALS2 offers improved features
 for analyzing gene-level association tests in meta-analyses for binary
 trait.")
     (license license:gpl3)))
+
+(define-public r-maldiquant
+  (package
+    (name "r-maldiquant")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MALDIquant" version))
+       (sha256
+        (base32
+         "067xbmy10mpsvmv77g62chd7wwhdhcfn5hmp5fisbnz2h5rq0q60"))))
+    (properties `((upstream-name . "MALDIquant")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/MALDIquant")
+    (synopsis "Quantitative analysis of mass spectrometry data")
+    (description
+     "This package provides a complete analysis pipeline for matrix-assisted
+laser desorption/ionization-time-of-flight (MALDI-TOF) and other
+two-dimensional mass spectrometry data.  In addition to commonly used plotting
+and processing methods it includes distinctive features, namely baseline
+subtraction methods such as morphological filters (TopHat) or the
+statistics-sensitive non-linear iterative peak-clipping algorithm (SNIP), peak
+alignment using warping functions, handling of replicated measurements as well
+as allowing spectra with different resolutions.")
+    (license license:gpl3+)))
