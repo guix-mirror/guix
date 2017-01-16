@@ -64,21 +64,21 @@
         "18dighcs333gsvajvvgqp8l4cx7h1x7yx9gd5xacnk80spyykrf3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Zlib's home-made `configure' fails when passed
-                   ;; extra flags like `--enable-fast-install', so we need to
-                   ;; invoke it with just what it understand.
-                   (let ((out (assoc-ref outputs "out")))
-                     ;; 'configure' doesn't understand '--host'.
-                     ,@(if (%current-target-system)
-                           `((setenv "CHOST" ,(%current-target-system)))
-                           '())
-                     (zero?
-                      (system* "./configure"
-                               (string-append "--prefix=" out)))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Zlib's home-made `configure' fails when passed
+             ;; extra flags like `--enable-fast-install', so we need to
+             ;; invoke it with just what it understand.
+             (let ((out (assoc-ref outputs "out")))
+               ;; 'configure' doesn't understand '--host'.
+               ,@(if (%current-target-system)
+                     `((setenv "CHOST" ,(%current-target-system)))
+                     '())
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)))))))))
     (home-page "http://zlib.net/")
     (synopsis "Compression library")
     (description
