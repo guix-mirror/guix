@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
+;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -1740,3 +1740,62 @@ the GNU Mailman 3 REST API.")
 
 (define-public python2-mailmanclient
   (package-with-python2 python-mailmanclient))
+
+(define-public mlmmj
+  (package
+    (name "mlmmj")
+    (version "1.2.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://mlmmj.org/releases/mlmmj-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "1piwvcxkqadjwk5x8jicaiyz9nngmaj3w13ghdqgaki32xd7zk9v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl))) ; For "contrib/web/"
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       ;; mlmmj-receive-strip is a replacement for mlmmj-receive
+       ;; It opens the files control/mimedeny and control/mimestrip to get a list
+       ;; of mimetypes for parts of multipart/mime messages that should be denied
+       ;; or stripped. The parts then get stripped directly when the mail is
+       ;; received. mlmmj-receive-strip also appends an extra header
+       ;; X-ThisMailContainsUnwantedMimeParts: Y when the mail contains unwanted
+       ;; mime parts
+       (list "--enable-receive-strip")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'install-contrib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/mlmmj"))
+                    (contrib (string-append share "/contrib/web"))
+                    (texts (string-append share "/listtexts")))
+               (copy-recursively "contrib/web/" contrib)
+               (copy-recursively "listtexts" texts)
+               (rename-file texts (string-append share "/texts"))
+               #t))))))
+    (home-page "http://mlmmj.org")
+    (synopsis "Mailing list managing made joyful")
+    (description
+     "Mlmmj is a simple and slim mailing list manager (MLM) inspired by ezmlm.
+It works with many different Mail Transport Agents (MTAs) and is simple for a
+system adminstrator to install, configure and integrate with other software.
+As it uses very few resources, and requires no daemons, it is ideal for
+installation on systems where resources are limited.  Its features include:
+@enumerate
+@item Archive, Custom headers / footer,
+@item Fully automated bounce handling (similar to ezmlm),
+@item Complete requeueing functionality, Moderation functionality, Subject prefix,
+@item Subscribers only posting, Regular expression access control,
+@item Functionality to retrieve old posts, Web interface, Digests,
+@item No-mail subscription, VERP support,
+@item Delivery Status Notification (RFC1891) support,
+@item Rich and customisable texts for automated operations.
+@end enumerate\n")
+    (license license:expat)))
