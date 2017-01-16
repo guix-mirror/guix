@@ -8330,3 +8330,36 @@ CDF file formats.")
      "This package contains functions for exploratory oligonucleotide array
 analysis.")
     (license license:lgpl2.0+)))
+
+(define-public r-vsn
+  (package
+    (name "r-vsn")
+    (version "3.42.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "vsn" version))
+       (sha256
+        (base32
+         "0mgl0azys2g90simf8wx6jdwd7gyg3m4pf12n6w6507jixm2cg97"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-limma" ,r-limma)))
+    (home-page "http://bioconductor.org/packages/release/bioc/html/vsn.html")
+    (synopsis "Variance stabilization and calibration for microarray data")
+    (description
+     "The package implements a method for normalising microarray intensities,
+and works for single- and multiple-color arrays.  It can also be used for data
+from other technologies, as long as they have similar format.  The method uses
+a robust variant of the maximum-likelihood estimator for an
+additive-multiplicative error model and affine calibration.  The model
+incorporates data calibration step (a.k.a.  normalization), a model for the
+dependence of the variance on the mean intensity and a variance stabilizing
+data transformation.  Differences between transformed intensities are
+analogous to \"normalized log-ratios\".  However, in contrast to the latter,
+their variance is independent of the mean, and they are usually more sensitive
+and specific in detecting differential transcription.")
+    (license license:artistic2.0)))
