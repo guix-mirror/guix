@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -51,7 +51,7 @@
 (define-public zlib
   (package
     (name "zlib")
-    (version "1.2.8")
+    (version "1.2.11")
     (source
      (origin
       (method url-fetch)
@@ -61,7 +61,7 @@
                                  version ".tar.gz")))
       (sha256
        (base32
-        "039agw5rqvqny92cpkrfn243x2gd4xn13hs3xi6isk55d2vqqr9n"))))
+        "18dighcs333gsvajvvgqp8l4cx7h1x7yx9gd5xacnk80spyykrf3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-replace
