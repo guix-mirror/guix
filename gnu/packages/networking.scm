@@ -879,15 +879,15 @@ sockets in Perl.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.11")
+    (version "4.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rofl0r/" name "/releases/"
                                   "download/v" version "/" name "-" version
-                                  ".tar.bz2"))
+                                  ".tar.xz"))
               (sha256
                (base32
-                "1dkncdzw852488gkh5zhn4b5i03qyj8rgh1wcvcva7yd12c19i6w"))))
+                "0kiss3ih6cwayzvqi5cx4kw4vh7r2kfxlbgk56v1f1066ncm8aj8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
