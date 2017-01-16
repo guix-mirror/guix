@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -750,14 +751,14 @@ messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
 (define-public telepathy-mission-control
   (package
     (name "telepathy-mission-control")
-    (version "5.16.3")
+    (version "5.16.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://telepathy.freedesktop.org/releases/"
-                                  name "/" name "-" version ".tar.bz2"))
+                                  name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0zcbx69k0d3p2pjh3g7sa3q2zkd5xchxkqsmlfn3fwxaz0pmsmvi"))))
+                "1jz6wwgsfxixha6ys2hbzbk5faqnj9kh2m5qdlgx5anqgandsscp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
