@@ -8363,3 +8363,33 @@ analogous to \"normalized log-ratios\".  However, in contrast to the latter,
 their variance is independent of the mean, and they are usually more sensitive
 and specific in detecting differential transcription.")
     (license license:artistic2.0)))
+
+(define-public r-mzid
+  (package
+    (name "r-mzid")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "mzID" version))
+       (sha256
+        (base32
+         "1zn896cpfvqp1qmq5c4vcj933hb8rxwb6gkck1wqvr7393rpqy1q"))))
+    (properties `((upstream-name . "mzID")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-iterators" ,r-iterators)
+       ("r-plyr" ,r-plyr)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-xml" ,r-xml)))
+    (home-page "http://bioconductor.org/packages/mzID")
+    (synopsis "Parser for mzIdentML files")
+    (description
+     "This package provides a parser for mzIdentML files implemented using the
+XML package.  The parser tries to be general and able to handle all types of
+mzIdentML files with the drawback of having less pretty output than a vendor
+specific parser.")
+    (license license:gpl2+)))
