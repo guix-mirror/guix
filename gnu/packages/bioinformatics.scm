@@ -8171,3 +8171,34 @@ unmodeled, or latent sources of noise.")
 data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
     ;; Any version of the GPL is acceptable
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-raremetals2
+  (package
+    (name "r-raremetals2")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://genome.sph.umich.edu/w/images/"
+                           "b/b7/RareMETALS2_" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z5ljcgvnm06ja9lm85a3cniq7slxcy37aqqkxrdidr79an5fs4s"))))
+    (properties `((upstream-name . "RareMETALS2")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-seqminer" ,r-seqminer)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-compquadform" ,r-compquadform)
+       ("r-getopt" ,r-getopt)))
+    (home-page "http://genome.sph.umich.edu/wiki/RareMETALS2")
+    (synopsis "Analyze gene-level association tests for binary trait")
+    (description
+     "The R package rareMETALS2 is an extension of the R package rareMETALS.
+It was designed to meta-analyze gene-level association tests for binary trait.
+While rareMETALS offers a near-complete solution for meta-analysis of
+gene-level tests for quantitative trait, it does not offer the optimal
+solution for binary trait.  The package rareMETALS2 offers improved features
+for analyzing gene-level association tests in meta-analyses for binary
+trait.")
+    (license license:gpl3)))
