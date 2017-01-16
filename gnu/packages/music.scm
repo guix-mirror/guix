@@ -1683,6 +1683,35 @@ synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
     (license license:gpl2)))
 
+(define-public libgig
+  (package
+    (name "libgig")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.linuxsampler.org/packages/"
+                                  "libgig-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wr8mwjmqpnyz6bx9757lspiii1zzn8zfbqsvn2ipzpgqkxv6kaz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libuuid" ,util-linux)
+       ("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://linuxsampler.org/libgig/")
+    (synopsis "C++ library for working with Gigasampler (.gig) files")
+    (description
+     "Libgig is a C++ library for loading, modifying existing and creating new
+Gigasampler (.gig) files and DLS (Downloadable Sounds) Level 1/2 files, KORG
+sample based instruments (.KSF and .KMP files), SoundFont v2 (.sf2) files and
+AKAI sampler data.  The package includes a couple of command line tools based
+on the library.")
+    ;; The library and tools are released under the GPL, except the AKAI
+    ;; classes which are released under the LGPL.
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public jack-keyboard
   (package
     (name "jack-keyboard")
