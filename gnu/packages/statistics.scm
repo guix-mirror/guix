@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -4031,3 +4031,24 @@ dispersion modeling and Tweedie power-law families.")
     (description "This R package provides access to the code and data sets
 published by the statistics blog FiveThirtyEight.")
     (license license:expat)))
+
+(define-public r-compquadform
+  (package
+    (name "r-compquadform")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CompQuadForm" version))
+       (sha256
+        (base32
+         "0bsgbdblxpv57mbwnf51xyiydp2bqyxkg4zzwqki85cv5xqlrq1n"))))
+    (properties `((upstream-name . "CompQuadForm")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/CompQuadForm")
+    (synopsis "Distribution function of quadratic forms in normal variables")
+    (description
+     "This package provides functions to compute the distribution function of
+quadratic forms in normal variables using Imhof's method, Davies's algorithm,
+Farebrother's algorithm or Liu et al.'s algorithm.")
+    (license license:gpl2+)))
