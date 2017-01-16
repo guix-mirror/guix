@@ -272,7 +272,7 @@ reading and editing of existing PDF files.")
 (define-public zathura-cb
   (package
     (name "zathura-cb")
-    (version "0.1.5")
+    (version "0.1.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -280,7 +280,7 @@ reading and editing of existing PDF files.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1zbazysdjwwnzw01qlnzyixwmsi8rqskc76mp81qcr3rpl96jprp"))))
+                "1fim4mpm8l2g3msj1vg70ks3c9lrwllv3yh4jv8l9f8k3r19b3l8"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libarchive" ,libarchive)
