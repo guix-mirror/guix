@@ -8149,3 +8149,25 @@ high-dimensional data like gene expression/RNA sequencing/methylation/brain
 imaging data that can be used in subsequent analyses to adjust for unknown,
 unmodeled, or latent sources of noise.")
     (license license:artistic2.0)))
+
+(define-public r-seqminer
+  (package
+    (name "r-seqminer")
+    (version "5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seqminer" version))
+       (sha256
+        (base32
+         "0y0gc5lws3hdxasjb84m532ics6imb7qg9sl1zy62h503jh4j9gw"))))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://seqminer.genomic.codes")
+    (synopsis "Read nucleotide sequence data (VCF, BCF, and METAL formats)")
+    (description
+     "This package provides tools to integrate nucleotide sequencing
+data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
+    ;; Any version of the GPL is acceptable
+    (license (list license:gpl2+ license:gpl3+))))
