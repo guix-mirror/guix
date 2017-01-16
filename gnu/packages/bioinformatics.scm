@@ -8422,3 +8422,44 @@ accurate missing value estimation.  A set of methods for printing and plotting
 the results is also provided.  All PCA methods make use of the same data
 structure (pcaRes) to provide a common interface to the PCA results.")
     (license license:gpl3+)))
+
+(define-public r-msnbase
+  (package
+    (name "r-msnbase")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MSnbase" version))
+       (sha256
+        (base32
+         "0jjjs29dcwsjaxzfqxy98ycpg3rwxzzchkj77my3cjgdc00sm66n"))))
+    (properties `((upstream-name . "MSnbase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-digest" ,r-digest)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-impute" ,r-impute)
+       ("r-iranges" ,r-iranges)
+       ("r-maldiquant" ,r-maldiquant)
+       ("r-mzid" ,r-mzid)
+       ("r-mzr" ,r-mzr)
+       ("r-pcamethods" ,r-pcamethods)
+       ("r-plyr" ,r-plyr)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-vsn" ,r-vsn)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/lgatto/MSnbase")
+    (synopsis "Base functions and classes for MS-based proteomics")
+    (description
+     "This package provides basic plotting, data manipulation and processing
+of MS-based proteomics data.")
+    (license license:artistic2.0)))
