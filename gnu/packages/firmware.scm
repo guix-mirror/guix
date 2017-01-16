@@ -29,7 +29,8 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python))
 
 (define-public ath9k-htc-firmware
   (package
@@ -175,3 +176,44 @@ driver.")
 Broadcom/AirForce chipset BCM43xx with Wireless-Core Revision 5.  It is used
 by the b43-open driver of Linux-libre.")
     (license license:gpl2)))
+
+(define-public seabios
+  (package
+    (name "seabios")
+    (version "1.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://code.coreboot.org/p/seabios/downloads/get/"
+                                  "seabios-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jyjl719drnl1v0gf0l5q6qjjmkyqcqkka6s28dfdi0yqsxdsqsh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python-2" ,python-2)))
+    (arguments
+     `(#:tests? #f ; No check target.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (setenv "CC" "gcc")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (fmw (string-append out "/share/firmware")))
+               (mkdir-p fmw)
+               (copy-file "out/bios.bin" (string-append fmw "/bios.bin"))))))))
+    (home-page "https://www.seabios.org/SeaBIOS")
+    (synopsis "x86 BIOS implementation")
+    (description "SeaBIOS is an open source implementation of a 16bit x86 BIOS.
+SeaBIOS can run in an emulator or it can run natively on X86 hardware with the
+use of coreboot.")
+    ;; Dual licensed.
+    (license (list license:gpl3+ license:lgpl3+
+                   ;; src/fw/acpi-dsdt.dsl is lgpl2
+                   license:lgpl2.1
+                   ;; src/fw/lzmadecode.c and src/fw/lzmadecode.h are lgpl3+ and
+                   ;; cpl with a linking exception.
+                   license:cpl1.0))))
