@@ -25,10 +25,13 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 
@@ -217,3 +220,83 @@ use of coreboot.")
                    ;; src/fw/lzmadecode.c and src/fw/lzmadecode.h are lgpl3+ and
                    ;; cpl with a linking exception.
                    license:cpl1.0))))
+
+;; OVMF is part of the edk2 source tree.
+(define edk2-commit "13a50a6fe1dcfa6600c38456ee24e0f9ecf51b5f")
+(define edk2-version (git-version "20170116" "1" edk2-commit))
+(define edk2-origin
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/tianocore/edk2")
+          (commit edk2-commit)))
+    (file-name (git-file-name "edk2" edk2-version))
+    (sha256
+     (base32
+      "1gy2332kdqk8bjzpcsripx10896rbvgl0ic7r344kmpiwdgm948b"))))
+
+(define-public ovmf
+  (package
+    (name "ovmf")
+    (version edk2-version)
+    (source edk2-origin)
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("acpica" ,acpica)
+       ("nasm" ,nasm)
+       ("python-2" ,python-2)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:tests? #f ; No check target.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (let* ((cwd (getcwd))
+                    (tools (string-append cwd "/BaseTools"))
+                    (bin (string-append tools "/BinWrappers/PosixLike")))
+               (setenv "WORKSPACE" cwd)
+               (setenv "EDK_TOOLS_PATH" tools)
+               (setenv "PATH" (string-append (getenv "PATH") ":" bin))
+               (system* "bash" "edksetup.sh" "BaseTools")
+               (substitute* "Conf/target.txt"
+                 (("^TARGET[ ]*=.*$") "TARGET = RELEASE\n")
+                 (("^TOOL_CHAIN_TAG[ ]*=.*$") "TOOL_CHAIN_TAG = GCC49\n")
+                 (("^MAX_CONCURRENT_THREAD_NUMBER[ ]*=.*$")
+                  (format #f "MAX_CONCURRENT_THREAD_NUMBER = ~a~%"
+                          (number->string (parallel-job-count)))))
+               ;; Build build support.
+               (setenv "BUILD_CC" "gcc")
+               (zero? (system* "make" "-C" (string-append tools "/Source/C"))))))
+         (add-after 'build 'build-ia32
+           (lambda _
+             (substitute* "Conf/target.txt"
+               (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = IA32\n")
+               (("^ACTIVE_PLATFORM[ ]*=.*$")
+                "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgIa32.dsc\n"))
+             (zero? (system* "build"))))
+         (add-after 'build 'build-x64
+           (lambda _
+             (substitute* "Conf/target.txt"
+               (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
+               (("^ACTIVE_PLATFORM[ ]*=.*$")
+                "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
+             (zero? (system* "build"))))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (fmw (string-append out "/share/firmware")))
+               (mkdir-p fmw)
+               (copy-file "Build/OvmfIa32/RELEASE_GCC49/FV/OVMF.fd"
+                          (string-append fmw "/ovmf_ia32.bin"))
+               (copy-file "Build/OvmfX64/RELEASE_GCC49/FV/OVMF.fd"
+                          (string-append fmw "/ovmf_x64.bin")))
+             #t)))))
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (home-page "http://www.tianocore.org")
+    (synopsis "UEFI firmware for QEMU")
+    (description "OVMF is an EDK II based project to enable UEFI support for
+Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
+    (license (list license:expat
+                   license:bsd-2 license:bsd-3 license:bsd-4))))
