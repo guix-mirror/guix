@@ -140,7 +140,7 @@ high-volume and high-reliability applications. The name BIND stands for
 (define-public dnscrypt-proxy
   (package
     (name "dnscrypt-proxy")
-    (version "1.8.1")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -148,7 +148,7 @@ high-volume and high-reliability applications. The name BIND stands for
                     "dnscrypt-proxy-" version ".tar.bz2"))
               (sha256
                (base32
-                "1dz0knslf7ysc2xx33ljrdlqyr4b0fpm9ifrwvwgcjaxgh94l7m8"))
+                "1xb199hpzfj53kmbkkn3awymjh8f44yzkmaj7q5ibb67b5p9fq7d"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled libltdl. XXX: This package also bundles
