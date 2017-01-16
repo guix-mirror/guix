@@ -1198,7 +1198,7 @@ write GNOME applications.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.6")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -1206,7 +1206,7 @@ write GNOME applications.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "03wsxj27hvcbs3x96nah7j3paclifwlfag8kdph4kldl48srp9pb"))))
+                "1r9jbhf9n40zj4ddqv1q5spijpjm683nxg4hr5lnir4a551s7rlq"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)))
     (inputs `(("gtk+" ,gtk+)
