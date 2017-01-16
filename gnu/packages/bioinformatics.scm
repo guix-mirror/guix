@@ -8304,3 +8304,29 @@ previously been used in XCMS.")
 upon file format information.  The primary focus is on accessing the CEL and
 CDF file formats.")
     (license license:lgpl2.0+)))
+
+(define-public r-affy
+  (package
+    (name "r-affy")
+    (version "1.52.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affy" version))
+       (sha256
+        (base32
+         "1snq71ligf0wvaxa6zfrl13ydw0zfhspmhdyfk8q3ba3np4cz344"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affyio" ,r-affyio)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "http://bioconductor.org/packages/affy")
+    (synopsis "Methods for affymetrix oligonucleotide arrays")
+    (description
+     "This package contains functions for exploratory oligonucleotide array
+analysis.")
+    (license license:lgpl2.0+)))
