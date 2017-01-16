@@ -8463,3 +8463,42 @@ structure (pcaRes) to provide a common interface to the PCA results.")
      "This package provides basic plotting, data manipulation and processing
 of MS-based proteomics data.")
     (license license:artistic2.0)))
+
+(define-public r-msnid
+  (package
+    (name "r-msnid")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MSnID" version))
+       (sha256
+        (base32
+         "0fkk3za39cxi0jyxmagmycjdslr2xf6vg3ylz14jyffqi0blw9d5"))))
+    (properties `((upstream-name . "MSnID")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-data-table" ,r-data-table)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dplyr" ,r-dplyr)
+       ("r-foreach" ,r-foreach)
+       ("r-iterators" ,r-iterators)
+       ("r-msnbase" ,r-msnbase)
+       ("r-mzid" ,r-mzid)
+       ("r-mzr" ,r-mzr)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-r-cache" ,r-r-cache)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "http://bioconductor.org/packages/MSnID")
+    (synopsis "Utilities for LC-MSn proteomics identifications")
+    (description
+     "This package extracts MS/MS ID data from mzIdentML (leveraging the mzID
+package) or text files.  After collating the search results from multiple
+datasets it assesses their identification quality and optimize filtering
+criteria to achieve the maximum number of identifications while not exceeding
+a specified false discovery rate.  It also contains a number of utilities to
+explore the MS/MS results and assess missed and irregular enzymatic cleavages,
+mass measurement accuracy, etc.")
+    (license license:artistic2.0)))
