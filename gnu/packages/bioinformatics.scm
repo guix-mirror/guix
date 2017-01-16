@@ -8393,3 +8393,32 @@ XML package.  The parser tries to be general and able to handle all types of
 mzIdentML files with the drawback of having less pretty output than a vendor
 specific parser.")
     (license license:gpl2+)))
+
+(define-public r-pcamethods
+  (package
+    (name "r-pcamethods")
+    (version "1.66.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "pcaMethods" version))
+       (sha256
+        (base32
+         "18mawhxw57pgpn87qha4mwki24gqja7wpqha8q496476vyap11xw"))))
+    (properties `((upstream-name . "pcaMethods")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/hredestig/pcamethods")
+    (synopsis "Collection of PCA methods")
+    (description
+     "This package provides Bayesian PCA, Probabilistic PCA, Nipals PCA,
+Inverse Non-Linear PCA and the conventional SVD PCA.  A cluster based method
+for missing value estimation is included for comparison.  BPCA, PPCA and
+NipalsPCA may be used to perform PCA on incomplete data as well as for
+accurate missing value estimation.  A set of methods for printing and plotting
+the results is also provided.  All PCA methods make use of the same data
+structure (pcaRes) to provide a common interface to the PCA results.")
+    (license license:gpl3+)))
