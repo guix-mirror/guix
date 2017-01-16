@@ -2722,6 +2722,69 @@ several alignment strategies enable effective alignment of RNA-seq reads, in
 particular, reads spanning multiple exons.")
     (license license:gpl3+)))
 
+(define-public hisat2
+  (package
+    (name "hisat2")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       ;; FIXME: a better source URL is
+       ;; (string-append "ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2"
+       ;;                "/downloads/hisat2-" version "-source.zip")
+       ;; with hash "0lywnr8kijwsc2aw10dwxic0n0yvip6fl3rjlvc8zzwahamy4x7g"
+       ;; but it is currently unavailable.
+       (uri "https://github.com/infphilo/hisat2/archive/cba6e8cb.tar.gz")
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mf2hdsyv7cd97xm9mp9a4qws02yrj95y6w6f6cdwnq0klp81r50"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags (list "CC=gcc" "CXX=g++" "allall")
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-deterministic
+           (lambda _
+             (substitute* "Makefile"
+               (("`date`") "0"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (doc (string-append out "/share/doc/hisat2/")))
+               (for-each
+                (cut install-file <> bin)
+                (find-files "."
+                            "hisat2(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))
+               (mkdir-p doc)
+               (install-file "doc/manual.inc.html" doc))
+             #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)                 ; needed for archive from ftp
+       ("perl" ,perl)
+       ("pandoc" ,ghc-pandoc)))         ; for documentation
+    (home-page "http://ccb.jhu.edu/software/hisat2/index.shtml")
+    (synopsis "Graph-based alignment of genomic sequencing reads")
+    (description "HISAT2 is a fast and sensitive alignment program for mapping
+next-generation sequencing reads (both DNA and RNA) to a population of human
+genomes (as well as to a single reference genome).  In addition to using one
+global @dfn{graph FM} (GFM) index that represents a population of human
+genomes, HISAT2 uses a large set of small GFM indexes that collectively cover
+the whole genome.  These small indexes, combined with several alignment
+strategies, enable rapid and accurate alignment of sequencing reads.  This new
+indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
+    ;; HISAT2 contains files from Bowtie2, which is released under
+    ;; GPLv2 or later.  The HISAT2 source files are released under
+    ;; GPLv3 or later.
+    (license license:gpl3+)))
+
 (define-public hmmer
   (package
     (name "hmmer")
