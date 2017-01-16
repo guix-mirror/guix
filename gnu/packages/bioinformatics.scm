@@ -468,6 +468,47 @@ frames} (ORFs) using ribosome profiling (ribo-seq) data.  This package
 provides the Ribotaper pipeline.")
     (license license:gpl3+)))
 
+(define-public ribodiff
+  (package
+    (name "ribodiff")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ratschlab/RiboDiff/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wpbwmfv05wdjxv7ikm664f7s7p7cqr8jnw99zrda0q67rl50aaj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Generate an installable executable script wrapper.
+         (add-after 'unpack 'patch-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("^(.*)packages=.*" line prefix)
+                (string-append line "\n"
+                               prefix "scripts=['scripts/TE.py'],\n")))
+             #t)))))
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("python-matplotlib" ,python2-matplotlib)
+       ("python-scipy" ,python2-scipy)
+       ("python-statsmodels" ,python2-statsmodels)))
+    (home-page "http://public.bmi.inf.ethz.ch/user/zhongy/RiboDiff/")
+    (synopsis "Detect translation efficiency changes from ribosome footprints")
+    (description "RiboDiff is a statistical tool that detects the protein
+translational efficiency change from Ribo-Seq (ribosome footprinting) and
+RNA-Seq data.  It uses a generalized linear model to detect genes showing
+difference in translational profile taking mRNA abundance into account.  It
+facilitates us to decipher the translational regulation that behave
+independently with transcriptional regulation.")
+    (license license:gpl3+)))
+
 (define-public bioawk
   (package
     (name "bioawk")
