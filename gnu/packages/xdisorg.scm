@@ -852,7 +852,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.35")
+    (version "5.36")
     (source
      (origin
        (method url-fetch)
@@ -861,7 +861,7 @@ color temperature should be set to match the lamps in your room.")
                        version ".tar.gz"))
        (sha256
         (base32
-         "08kbb0ry7ih436ab4i5g6lnhaaz13zkcdmbdibrn4j5gm5qq8v0y"))))
+         "0v60mdhvv42jla5hljp77igng11kxpah5fs9j7ci65kz0hw552vb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no check target
