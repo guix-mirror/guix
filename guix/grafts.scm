@@ -222,8 +222,9 @@ available."
        (return result))
       (#f                                         ;cache miss
        (mlet %state-monad ((result (begin exp ...)))
-         (set-current-state (vhash-consq key result cache))
-         (return result))))))
+         (mbegin %state-monad
+           (set-current-state (vhash-consq key result cache))
+           (return result)))))))
 
 (define* (cumulative-grafts store drv grafts
                             references
