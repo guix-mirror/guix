@@ -10487,6 +10487,51 @@ to provide a high-level synchronous API on top of the libev event loop.")
 (define-public python2-gevent
   (package-with-python2 python-gevent))
 
+(define-public python-geventhttpclient
+  (package
+    (name "python-geventhttpclient")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "geventhttpclient" version))
+              (sha256
+               (base32
+                "07d0q3wzmml75227r6y6mrl5a0zpf4v9gj0ni5rhbyzmaj4az1xx"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-compiled files.
+                  (for-each delete-file (find-files "src/geventhttpclient"
+                                                    ".*\\.pyc"))
+                  #t))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-network-tests
+           (lambda _
+             (delete-file "src/geventhttpclient/tests/test_client.py")
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "py.test" "src/geventhttpclient/tests" "-v")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-gevent" ,python-gevent)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/gwik/geventhttpclient")
+    (synopsis "HTTP client library for gevent")
+    (description "@code{python-geventhttpclient} is a high performance,
+concurrent HTTP client library for python using @code{gevent}.")
+    (license license:expat)))
+
+(define-public python2-geventhttpclient
+  (package-with-python2 python-geventhttpclient))
+
 (define-public python-twisted
   (package
     (name "python-twisted")
