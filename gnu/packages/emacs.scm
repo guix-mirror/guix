@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -1064,6 +1066,44 @@ within a specified width.  It is useful for displaying long track titles.")
 an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
+    (license license:gpl3+)))
+
+(define-public emacs-ag
+  (package
+    (name "emacs-ag")
+    (version "0.47")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Wilfred/ag.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rlmp6wnyhqfg86dbz17r914msp58favn4kd4yrdwyia265a4lar"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (emacs-substitute-variables "ag.el"
+               ("ag-executable"
+                (string-append (assoc-ref inputs "the-silver-searcher")
+                               "/bin/ag")))
+             #t)))))
+    (inputs
+     `(("the-silver-searcher" ,the-silver-searcher)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("s" ,emacs-s)))
+    (home-page "https://github.com/Wilfred/ag.el")
+    (synopsis "Front-end for ag (the-silver-searcher) for Emacs")
+    (description "This package provides the ability to use the silver
+searcher, a code searching tool, sometimes abbreviated to @code{ag}.  Features
+include version control system awareness, use of Perl compatible regular
+expressions, editing the search results directly and searching file names
+rather than the contents of files.")
     (license license:gpl3+)))
 
 (define-public emacs-async
