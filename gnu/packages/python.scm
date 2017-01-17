@@ -2467,13 +2467,13 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.9.1")
+    (version "2.12.4")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "0zsqrzlybf25xscgi7ja4s48y2abf9wvjkn47wh984qgs1fq2xy5"))))
+               "0d5fwxmw4ibynk3imph3n4n84m0n3ib1vj339fxhkqri0qd4767d"))))
     ;; TODO: unbundle urllib3 and chardet.
     (build-system python-build-system)
     (arguments
