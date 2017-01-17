@@ -4004,3 +4004,30 @@ generalized linear model functions that implement secure convergence,
 dispersion modeling and Tweedie power-law families.")
     ;; Statmod is distributed under either license
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-fivethirtyeight
+  (package
+    (name "r-fivethirtyeight")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mran.microsoft.com/src/contrib/"
+                           "fivethirtyeight_" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fcc8rq745nsghp27dk0lgih90y4zx8hrzcvsn6ih786yv7qxhvl"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-dplyr" ,r-dplyr)
+       ("r-readr" ,r-readr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-magrittr" ,r-magrittr)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://mran.microsoft.com/package/fivethirtyeight/")
+    (synopsis "Data and code behind the stories at FiveThirtyEight")
+    (description "This R package provides access to the code and data sets
+published by the statistics blog FiveThirtyEight.")
+    (license license:expat)))
