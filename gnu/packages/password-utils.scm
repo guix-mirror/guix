@@ -294,7 +294,17 @@ any X11 window.")
                               '("coreutils" "getopt" "git" "gnupg" "pwgen"
                                 "sed" "tree" "which" "xclip"))))
                (wrap-program (string-append out "/bin/pass")
-                 `("PATH" ":" prefix (,(string-join path ":"))))))))
+                 `("PATH" ":" prefix (,(string-join path ":"))))
+               #t)))
+         (add-after 'wrap-path 'install-shell-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref outputs "out"))
+                    (bashcomp (string-append out "/etc/bash_completion.d")))
+               ;; TODO: install fish and zsh completions.
+               (mkdir-p bashcomp)
+               (copy-file "src/completion/pass.bash-completion"
+                          (string-append bashcomp "/pass"))
+               #t))))
        #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
        ;; Parallel tests may cause a race condition leading to a
        ;; timeout in some circumstances.
