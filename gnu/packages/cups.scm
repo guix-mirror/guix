@@ -88,7 +88,6 @@
      `(#:make-flags (list (string-append "PREFIX=" %output))
        #:configure-flags
        `("--disable-driverless" ; TODO: enable this
-         "--disable-mutool"     ; depends on yet another PDF library (mupdf)
          ,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
@@ -115,6 +114,7 @@
        ("libjpeg"      ,libjpeg)
        ("libpng"       ,libpng)
        ("libtiff"      ,libtiff)
+       ("mupdf"        ,mupdf)
        ("glib"         ,glib)
        ("qpdf"         ,qpdf)
        ("poppler"      ,poppler)
