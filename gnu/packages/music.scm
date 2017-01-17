@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -842,7 +842,7 @@ your own lessons.")
 (define-public powertabeditor
   (package
     (name "powertabeditor")
-    (version "2.0.0-alpha8")
+    (version "2.0.0-alpha9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -851,27 +851,20 @@ your own lessons.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gaa2x209v3azql8ak3r1n9a9qbxjx2ssirvwdxwklv2lmfqkm82"))
+                "1zjdz1qpkl83xr6dkap8airqcyjs3mxc5dzfyhrrvkyr7dics7ii"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Remove bundled sources for external libraries
                   (delete-file-recursively "external")
+                  ;; Use only system libraries
                   (substitute* "CMakeLists.txt"
-                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") "")
-                    (("add_subdirectory\\(external\\)") ""))
-                  (substitute* "test/CMakeLists.txt"
-                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") ""))
-
-                  ;; Add install target
-                  (substitute* "source/CMakeLists.txt"
-                    (("qt5_use_modules")
-                     (string-append
-                      "install(TARGETS powertabeditor "
-                      "RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)\n"
-                      "install(FILES data/tunings.json DESTINATION "
-                      "${CMAKE_INSTALL_PREFIX}/share/powertabeditor/)\n"
-                      "qt5_use_modules")))
+                    (("include\\( PTE_ThirdParty \\)")
+                     "\
+include(third_party/Qt)
+include(third_party/boost)
+add_library( Catch INTERFACE IMPORTED )
+add_library( rapidjson INTERFACE IMPORTED )"))
                   #t))))
     (build-system cmake-build-system)
     (arguments
@@ -882,42 +875,45 @@ your own lessons.")
        ;; CMake appears to lose the RUNPATH for some reason, so it has to be
        ;; explicitly set with CMAKE_INSTALL_RPATH.
        (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
-             "-DCMAKE_ENABLE_PRECOMPILED_HEADERS=OFF" ; if ON pte_tests cannot be built
              (string-append "-DCMAKE_INSTALL_RPATH="
                             (string-join (map (match-lambda
                                                 ((name . directory)
                                                  (string-append directory "/lib")))
-                                              %build-inputs) ";")))
+                                              %build-inputs) ";"))
+             "-DPTE_DATA_DIR=share/powertabeditor")
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'check
-          (lambda _
-            (zero? (system* "bin/pte_tests"
-                            ;; Exclude this failing test
-                            "~Formats/PowerTabOldImport/Directions"))))
-         (add-before
-          'configure 'fix-tests
-          (lambda _
-            ;; Tests cannot be built with precompiled headers
-            (substitute* "test/CMakeLists.txt"
-              (("cotire\\(pte_tests\\)") ""))
-            #t))
-         (add-before
-          'configure 'remove-third-party-libs
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; Link with required static libraries, because we're not
-            ;; using the bundled version of withershins.
-            (substitute* '("source/CMakeLists.txt"
-                           "test/CMakeLists.txt")
-              (("target_link_libraries\\((powertabeditor|pte_tests)" _ target)
-               (string-append "target_link_libraries(" target " "
-                              (assoc-ref inputs "binutils")
-                              "/lib/libbfd.a "
-                              (assoc-ref inputs "libiberty")
-                              "/lib/libiberty.a "
-                              "dl")))
-            #t)))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "bin/pte_tests"
+                             ;; FIXME: one test fails.
+                             "exclude:Formats/PowerTabOldImport/Directions"))))
+         (add-after 'unpack 'set-target-directories
+           (lambda _
+             (substitute* "cmake/PTE_Executable.cmake"
+               (("set\\( install_dir.*")
+                "set( install_dir bin )\n"))
+             (substitute* "cmake/PTE_Paths.cmake"
+               (("set\\( PTE_DATA_DIR .*")
+                "set( PTE_DATA_DIR share/powertabeditor )\n"))
+             ;; Tests hardcode the data directory as "data"
+             (substitute* "test/CMakeLists.txt"
+               (("\\$\\{PTE_DATA_DIR\\}") "data"))
+             #t))
+         (add-before 'configure 'remove-third-party-libs
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Link with required static libraries, because we're not
+             ;; using the bundled version of withershins.
+             (substitute* "source/build/CMakeLists.txt"
+               (("withershins" line)
+                (string-append line "\n"
+                               (assoc-ref inputs "binutils")
+                               "/lib/libbfd.a\n"
+                               (assoc-ref inputs "libiberty")
+                               "/lib/libiberty.a\n"
+                               "dl\n"
+                               "z\n")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("alsa-lib" ,alsa-lib)
