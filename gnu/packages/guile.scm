@@ -613,14 +613,14 @@ for Guile\".")
 (define-public guile-json
   (package
     (name "guile-json")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0l8a34l92nrdszy7ykycfvr8y0n0yi5qb3ccliycvpvf9mzk5n8d"))
+                "1qmjg7lbgciw95fkdzvlp9f68vv17kdjky42ywfzd4ffzwww0lgc"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure everything goes under .../site/X.Y, like Guile's
