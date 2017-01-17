@@ -504,6 +504,51 @@ ko (Korean) locales for @code{fontconfig}.")
     ;; GPLv2 with font embedding exception
     (license license:gpl2)))
 
+(define-public font-wqy-microhei
+  (package
+    (name "font-wqy-microhei")
+    (version "0.2.0-beta")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/wqy/wqy-microhei/"
+                                  version "/wqy-microhei-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gi1yxqph8xx869ichpzzxvx6y50wda5hi77lrpacdma4f0aq0i8"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
+                                    (assoc-ref %build-inputs "gzip") "/bin"))
+               (font-dir (string-append (assoc-ref %outputs "out")
+                                        "/share/fonts/wenquanyi/")))
+           (setenv "PATH" PATH)
+           (mkdir-p font-dir)
+           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (chdir "wqy-microhei")
+           (copy-file "wqy-microhei.ttc"
+                      (string-append font-dir "wqy-microhei.ttc"))))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (home-page "http://wenq.org/wqy2/")
+    (synopsis "CJK font")
+    (description
+     "WenQuanYi Micro Hei is a Sans-Serif style (also known as Hei, Gothic or
+Dotum among the Chinese/Japanese/Korean users) high quality CJK outline font.
+It was derived from \"Droid Sans Fallback\" and \"Droid Sans\" released by
+Google Inc.  This font contains all the unified CJK Han glyphs in the range of
+U+4E00-U+9FC3 defined in Unicode Standard 5.1, together with many other
+languages unicode blocks, including Latins, Extended Latins, Hanguls and
+Kanas.  The font file is extremely compact (~4M) compared with most known CJK
+fonts.")
+    ;; This font is licensed under Apache2.0 or GPLv3 with font embedding
+    ;; exceptions.
+    (license license:gpl3)))
+
 (define-public font-tex-gyre
   (package
     (name "font-tex-gyre")
