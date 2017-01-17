@@ -20,7 +20,7 @@ Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
-Copyright @copyright{} 2015, 2016 Leo Famulari@*
+Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
@@ -2349,6 +2349,20 @@ Download the source tarball of Guix from @var{url}.
 
 By default, the tarball is taken from its canonical address at
 @code{gnu.org}, for the stable branch of Guix.
+
+With some Git servers, this can be used to deploy any version of Guix.
+For example, to download and deploy version 0.12.0 of Guix from the
+canonical Git repo:
+
+@example
+guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
+@end example
+
+It can also be used to deploy arbitrary Git revisions:
+
+@example
+guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
+@end example
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
