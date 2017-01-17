@@ -32,8 +32,10 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages lynx)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -44,6 +46,7 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -804,10 +807,19 @@ other XUnit testing frameworks.")
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'install 'fix-install-name
-           (lambda* (#:key #:allow-other-keys)
-             (substitute* "Makefile"
-               (("install zip") "install camlzip")))))
+         (add-after 'install 'install-camlzip
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/lib/ocaml/site-lib/camlzip")))
+               (mkdir-p dir)
+               (call-with-output-file (string-append dir "/META")
+                 (lambda (port)
+                   (format port "version=\"1.06\"\n")
+                   (format port "requires=\"unix\"\n")
+                   (format port "archive(byte)=\"zip.cma\"\n")
+                   (format port "archive(native)=\"zip.cmxa\"\n")
+                   (format port "archive(native,plugin)=\"zip.cmxs\"\n")
+                   (format port "directory=\"../zip\"\n")))))))
        #:install-target "install-findlib"
        #:make-flags
        (list "all" "allopt"
@@ -1218,3 +1230,216 @@ module automatically handles syntax errors, help messages and UNIX man page
 generation. It supports programs with single or multiple commands and respects
 most of the POSIX and GNU conventions.")
     (license license:bsd-3)))
+
+(define-public ocaml-fmt
+  (package
+    (name "ocaml-fmt")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
+                            version ".tbz"))
+        (sha256 (base32
+                  "16y7ibndnairb53j8a6qgipyqwjxncn4pl9jiw5bxjfjm59108px"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (propagated-inputs `(("result" ,ocaml-result)
+                         ("cmdliner" ,ocaml-cmdliner)))
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build" "--with-base-unix" "true"
+                                     "--with-cmdliner" "true")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (home-page "http://erratique.ch/software/fmt")
+    (synopsis "OCaml Format pretty-printer combinators")
+    (description "Fmt exposes combinators to devise Format pretty-printing
+functions.")
+    (license license:isc)))
+
+(define-public ocaml-astring
+  (package
+    (name "ocaml-astring")
+    (version "0.8.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://erratique.ch/software/astring/releases/astring-"
+                            version ".tbz"))
+        (sha256 (base32
+                  "0ixjwc3plrljvj24za3l9gy0w30lsbggp8yh02lwrzw61ls4cri0"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (home-page "http://erratique.ch/software/astring")
+    (synopsis "Alternative String module for OCaml")
+    (description "Astring exposes an alternative String module for OCaml.  This
+module balances minimality and expressiveness for basic, index-free, string
+processing and provides types and functions for substrings, string sets and
+string maps.  The String module exposed by Astring has exception safe functions,
+removes deprecated and rarely used functions, alters some signatures and names,
+adds a few missing functions and fully exploits OCaml's newfound string
+immutability.")
+    (license license:isc)))
+
+(define-public ocaml-alcotest
+  (package
+    (name "ocaml-alcotest")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/alcotest/releases/"
+                                  "download/" version "/alcotest-" version ".tbz"))
+              (sha256
+                (base32
+                  "0g5lzk0gpfx4q8hyhr460gr4lab5wakfxsmhfwvb3yinxwzs95gc"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:build-flags (list "build")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (native-inputs `(("opam" ,opam)
+                     ("topkg" ,ocaml-topkg)))
+    (propagated-inputs `(("fmt" ,ocaml-fmt)
+                         ("astring" ,ocaml-astring)))
+    (home-page "https://github.com/mirage/alcotest")
+    (synopsis "Lightweight OCaml test framework")
+    (description "Alcotest exposes simple interface to perform unit tests.  It
+exposes a simple TESTABLE module type, a check function to assert test
+predicates and a run function to perform a list of unit -> unit test callbacks.
+Alcotest provides a quiet and colorful output where only faulty runs are fully
+displayed at the end of the run (with the full logs ready to inspect), with a
+simple (yet expressive) query language to select the tests to run.")
+    (license license:isc)))
+
+(define-public ocaml-ppx-tools
+  (package
+    (name "ocaml-ppx-tools")
+    (version "5.0+4.02.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/alainfrisch/ppx_tools/archive/"
+                            version ".tar.gz"))
+        (sha256 (base32
+                  "0rjg4rngi8k9873z4zq95zn9hj8qyw1vcrf11y15aqasfpqq16rc"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:phases (modify-phases %standard-phases (delete 'configure))
+                 #:tests? #f))
+    (home-page "https://github.com/alainfrisch/ppx_tools")
+    (synopsis "Tools for authors of ppx rewriters and other syntactic tools")
+    (description "Tools for authors of ppx rewriters and other syntactic tools.")
+    (license license:expat)))
+
+(define-public ocaml-react
+  (package
+    (name "ocaml-react")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://erratique.ch/software/react/releases/react-"
+                            version ".tbz"))
+        (sha256 (base32
+                  "0knhgbngphv5sp1yskfd97crf169qhpc0igr6w7vqw0q36lswyl8"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("opam" ,opam)))
+    (arguments `(#:tests? #f
+                 #:build-flags (list "native=true" "native-dynlink=true")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (home-page "http://erratique.ch/software/react")
+    (synopsis "Declarative events and signals for OCaml")
+    (description "React is an OCaml module for functional reactive programming
+(FRP).  It provides support to program with time varying values: declarative
+events and signals.  React doesn't define any primitive event or signal, it
+lets the client choose the concrete timeline.")
+    (license license:bsd-3)))
+
+(define-public ocaml-ssl
+  (package
+    (name "ocaml-ssl")
+    (version "0.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/savonet/ocaml-ssl/archive/"
+                            version ".tar.gz"))
+        (sha256 (base32
+                  "1ds5gzyzpcgwn7h40dmjkll7g990cr82ay05b2a7nrclvv6fdpg8"))))
+    (build-system ocaml-build-system)
+    (arguments `(#:tests? #f
+                 #:make-flags (list "OCAMLFIND_LDCONF=ignore")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-before 'configure 'bootstrap
+                     (lambda* (#:key #:allow-other-keys)
+                       (system* "./bootstrap")
+                       (substitute* "src/OCamlMakefile"
+                         (("/bin/sh") (which "bash")))
+                       (substitute* "configure"
+                         (("/bin/sh") (which "bash"))))))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("which" ,which)))
+    (propagated-inputs `(("openssl" ,openssl)))
+    (home-page "https://github.com/savonet/ocaml-ssl/")
+    (synopsis "OCaml bindings for OpenSSL")
+    (description "OCaml bindings for OpenSSL.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml-lwt
+  (package
+    (name "ocaml-lwt")
+    (version "2.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/ocsigen/lwt/archive/" version
+                            ".tar.gz"))
+        (sha256 (base32
+                  "1gbw0g8a5a4b16diqrmlhc8ilnikrm4w3jjm1zq310maqg8z0zxz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-ssl" "--enable-glib" "--enable-react"
+             "--enable-ppx")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-some-checks
+           (lambda* (#:key #:allow-other-keys)
+             (substitute* "tests/unix/main.ml"
+               (("Test_mcast.suite;") ""))))
+         (add-after 'install 'link-stubs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out "/lib/ocaml/site-lib/lwt")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dlllwt-glib_stubs.so")
+                        (string-append stubs "/dlllwt-glib_stubs.so"))
+               (symlink (string-append lib "/dlllwt-unix_stubs.so")
+                        (string-append stubs "/dlllwt-unix_stubs.so"))))))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("ppx-tools" ,ocaml-ppx-tools)))
+    (inputs `(("libev" ,libev)
+              ("glib" ,glib)))
+    (propagated-inputs `(("result" ,ocaml-result)
+                         ("ocaml-ssl" ,ocaml-ssl)
+                         ("ocaml-react" ,ocaml-react)))
+    (home-page "https://github.com/ocsigen/lwt")
+    (synopsis "Cooperative threads and I/O in monadic style")
+    (description "Lwt provides typed, composable cooperative threads.  These
+make it easy to run normally-blocking I/O operations concurrently in a single
+process.  Also, in many cases, Lwt threads can interact without the need for
+locks or other synchronization primitives.")
+    (license license:lgpl2.1)))

@@ -4157,6 +4157,34 @@ SQLAlchemy Database Toolkit for Python.")
 (define-public python2-alembic
   (package-with-python2 python-alembic))
 
+(define-public python-autopep8
+  (package
+  (name "python-autopep8")
+  (version "1.2.4")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (pypi-uri "autopep8" version))
+     (sha256
+      (base32
+       "18parm383lfn42a00wklv3qf20p4v277f1x3cn58x019dqk1xqrq"))))
+  (build-system python-build-system)
+  (propagated-inputs
+    `(("python-pep8" ,python-pep8)))
+  (home-page "https://github.com/hhatto/autopep8")
+  (synopsis "Format Python code according to the PEP 8 style guide")
+  (description
+    "@code{autopep8} automatically formats Python code to conform to
+the PEP 8 style guide.  It uses the pycodestyle utility to determine
+what parts of the code needs to be formatted.  @code{autopep8} is
+capable of fixing most of the formatting issues that can be reported
+by pycodestyle.")
+  (license (license:non-copyleft
+            "https://github.com/hhatto/autopep8/blob/master/LICENSE"))))
+
+(define-public python2-autopep8
+  (package-with-python2 python-autopep8))
+
 (define-public python-distutils-extra
   (package
     (name "python-distutils-extra")

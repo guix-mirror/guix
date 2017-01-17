@@ -890,8 +890,10 @@ Guile's foreign function interface.")
       (name "guile-sqlite3")
       (version (string-append "0.0-0." (string-take commit 7)))
 
-      ;; XXX: Gitorious being dead, this is not a reliable home page.
-      (home-page "https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/")
+      ;; XXX: This used to be available read-only at
+      ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
+      ;; eventually disappeared, so we have our own copy here.
+      (home-page "https://notabug.org/civodul/guile-sqlite3.git")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference

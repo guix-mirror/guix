@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
@@ -2976,7 +2976,7 @@ writing to stdout and other handles.")
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
-    (version "0.3.11")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -2986,13 +2986,15 @@ writing to stdout and other handles.")
              version ".tar.gz"))
        (sha256
         (base32
-         "041s6963czs1pz0fc9cx17lgd6p83czqy2nxji7bhxqxwl2j15h2"))))
+         "1wwvkzpams7i0j7nk5qj8vvhj8x5zcbgbgrpczszgvshva4bkmfx"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
        ("ghc-text" ,ghc-text)))
     (home-page
      "https://github.com/aslatter/qc-instances")

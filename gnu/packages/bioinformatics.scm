@@ -5159,6 +5159,30 @@ sequence.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
+(define-public r-centipede
+  (package
+    (name "r-centipede")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.r-forge.r-project.org/"
+                                  "src/contrib/CENTIPEDE_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hsx6qgwr0i67fhy9257zj7s0ppncph2hjgbia5nn6nfmj0ax6l9"))))
+    (build-system r-build-system)
+    (home-page "http://centipede.uchicago.edu/")
+    (synopsis "Predict transcription factor binding sites")
+    (description
+     "CENTIPEDE applies a hierarchical Bayesian mixture model to infer regions
+of the genome that are bound by particular transcription factors.  It starts
+by identifying a set of candidate binding sites, and then aims to classify the
+sites according to whether each site is bound or not bound by a transcription
+factor.  CENTIPEDE is an unsupervised learning algorithm that discriminates
+between two different types of motif instances using as much relevant
+information as possible.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-vegan
   (package
     (name "r-vegan")

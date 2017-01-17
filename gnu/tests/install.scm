@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -257,8 +257,7 @@ build (current-guix) and then store a couple of full system images.")
                            (device "store-fs")
                            (title 'label)
                            (mount-point "/gnu")
-                           (type "ext4")
-                           (needed-for-boot? #t)) ;definitely!
+                           (type "ext4"))
                          %base-file-systems))
     (users %base-user-accounts)
     (services (cons (service marionette-service-type
