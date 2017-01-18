@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -74,7 +74,12 @@ test `readlink "$gcroot"` = "$expected"
 guix environment --bootstrap -r "$gcroot" --ad-hoc guile-bootstrap \
      -- guile -c 1
 test `readlink "$gcroot"` = "$expected"
+rm "$gcroot"
 
+# Same with an absolute file name.
+guix environment --bootstrap -r "$PWD/$gcroot" --ad-hoc guile-bootstrap \
+     -- guile -c 1
+test `readlink "$gcroot"` = "$expected"
 
 case "`uname -m`" in
     x86_64)
