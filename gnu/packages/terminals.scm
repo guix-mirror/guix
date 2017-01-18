@@ -396,3 +396,37 @@ has no notion of what's interesing, but it's very good at that notifying part.")
 on curses or any other library.  It also doesn't use global variables, so it
 should be thread-safe.")
     (license license:lgpl3+)))
+
+(define-public libvterm
+  (package
+    (name "libvterm")
+    (version "0+bzr681")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.leonerd.org.uk/code/libvterm/"
+                           "libvterm-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s56c8p1qz6frkcri0hg4qyydv2wcccj6n2xmz1dwcdqn38ldsmb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("libtool" ,libtool)
+       ("perl" ,perl)))
+    (home-page "http://www.leonerd.org.uk/code/libvterm/")
+    (synopsis "VT220/xterm/ECMA-48 terminal emulator library")
+    (description "Libvterm is an abstract C99 library which implements a VT220
+or xterm-like terminal emulator.  It doesn't use any particular graphics
+toolkit or output system, instead it invokes callback function pointers that
+its embedding program should provide it to draw on its behalf.  It avoids
+calling @code{malloc} during normal running state, allowing it to be used in
+embedded kernel situations.")
+    (license license:expat)))
