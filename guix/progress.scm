@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,8 +38,11 @@
             progress-reporter/silent
             progress-reporter/file
             progress-reporter/bar
+            progress-reporter/trace
 
             display-download-progress
+            erase-current-line
+            progress-bar
             byte-count->string
             current-terminal-columns
 
@@ -220,6 +223,10 @@ throughput."
                  log-port)
         (force-output log-port))))
 
+(define %progress-interval
+  ;; Default interval between subsequent outputs for rate-limited displays.
+  (make-time time-monotonic 200000000 0))
+
 (define* (progress-reporter/file file size
                                  #:optional (log-port (current-output-port))
                                  #:key (abbreviation basename))
@@ -238,8 +245,7 @@ ABBREVIATION used to shorten FILE for display."
      (start render)
      ;; Report the progress every 300ms or longer.
      (report
-      (let ((rate-limited-render
-             (rate-limited render (make-time time-monotonic 300000000 0))))
+      (let ((rate-limited-render (rate-limited render %progress-interval)))
         (lambda (value)
           (set! transferred value)
           (rate-limited-render))))
@@ -278,6 +284,32 @@ tasks is performed.  Write PREFIX at the beginning of the line."
              (display prefix port)
              (newline port))
            (force-output port)))))
+
+(define* (progress-reporter/trace file url size
+                                  #:optional (log-port (current-output-port)))
+  "Like 'progress-reporter/file', but instead of returning human-readable
+progress reports, write \"build trace\" lines to be processed elsewhere."
+  (define (report-progress transferred)
+    (define message
+      (format #f "@ download-progress ~a ~a ~a ~a~%"
+              file url (or size "-") transferred))
+
+    (display message log-port)                    ;should be atomic
+    (flush-output-port log-port))
+
+  (progress-reporter
+   (start (lambda ()
+            (display (format #f "@ download-started ~a ~a ~a~%"
+                             file url (or size "-"))
+                     log-port)))
+   (report (rate-limited report-progress %progress-interval))
+   (stop (lambda ()
+           (report-progress size)
+           (display (format #f "@ download-succeeded ~a ~a ~a~%"
+                            file url
+                            (or (and=> (stat file #f) stat:size)
+                                size))
+                    log-port)))))
 
 ;; TODO: replace '(@ (guix build utils) dump-port))'.
 (define* (dump-port* in out

@@ -45,6 +45,9 @@
   #:use-module (srfi srfi-37)
   #:autoload   (gnu packages) (specification->package %package-module-path)
   #:autoload   (guix download) (download-to-store)
+  #:use-module (guix status)
+  #:use-module ((guix progress) #:select (current-terminal-columns))
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:export (%standard-build-options
             set-build-options-from-command-line
             set-build-options-from-command-line*
@@ -390,6 +393,8 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
                      #:print-build-trace (assoc-ref opts 'print-build-trace?)
+                     #:print-extended-build-trace?
+                     (assoc-ref opts 'print-extended-build-trace?)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define set-build-options-from-command-line*
@@ -499,6 +504,7 @@ options handled by 'set-build-options-from-command-line', and listed in
     (substitutes? . #t)
     (build-hook? . #t)
     (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
     (verbosity . 0)))
 
 (define (show-help)
@@ -733,11 +739,12 @@ needed."
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
-        (parameterize ((current-build-output-port
+        (parameterize ((current-terminal-columns (terminal-columns))
+                       (current-build-output-port
                         (if quiet?
                             (%make-void-port "w")
-                            (build-output-port #:verbose? #t
-                                               #:port (duplicate-port (current-error-port) "w")))))
+                            (build-event-output-port
+                             (build-status-updater print-build-event)))))
           (let* ((mode  (assoc-ref opts 'build-mode))
                  (drv   (options->derivations store opts))
                  (urls  (map (cut string-append <> "/log")

@@ -48,6 +48,7 @@ OUTPUT.
 Note: Unless OUTPUT is #f, we don't read the value of 'out' in DRV since the
 actual output is different from that when we're doing a 'bmCheck' or
 'bmRepair' build."
+  ;; TODO: Use 'trace-progress-proc' when possible.
   (derivation-let drv ((url "url")
                        (output* "out")
                        (executable "executable")
