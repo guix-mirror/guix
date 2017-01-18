@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -58,7 +58,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)

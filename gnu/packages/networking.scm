@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
@@ -53,7 +53,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)

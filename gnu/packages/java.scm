@@ -47,7 +47,7 @@
   #:use-module (gnu packages wget)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)

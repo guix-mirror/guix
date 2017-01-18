@@ -1,8 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,11 +21,17 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages mit-krb5)
+(define-module (gnu packages kerberos)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
-  #:use-module (guix licenses)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages tls)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -81,6 +89,43 @@
 Kerberos is a network authentication protocol designed to provide strong
 authentication for client/server applications by using secret-key
 cryptography.")
-    (license (non-copyleft "file://NOTICE"
-                           "See NOTICE in the distribution."))
+    (license (license:non-copyleft "file://NOTICE"
+                                   "See NOTICE in the distribution."))
     (home-page "http://web.mit.edu/kerberos/")))
+
+(define-public shishi
+  (package
+    (name "shishi")
+    (version "1.0.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/shishi/shishi-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "032qf72cpjdfffq1yq54gz3ahgqf2ijca4vl31sfabmjzq9q370d"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("libidn" ,libidn)
+       ("linux-pam" ,linux-pam-1.2)
+       ("zlib" ,zlib)
+       ;; libgcrypt 1.6 fails because of the following test:
+       ;;  #include <gcrypt.h>
+       ;; /* GCRY_MODULE_ID_USER was added in 1.4.4 and gc-libgcrypt.c
+       ;;    will fail on startup if we don't have 1.4.4 or later, so
+       ;;    test for it early. */
+       ;; #if !defined GCRY_MODULE_ID_USER
+       ;; error too old libgcrypt
+       ;; #endif
+       ("libgcrypt" ,libgcrypt-1.5)
+       ("libtasn1" ,libtasn1)))
+    (home-page "http://www.gnu.org/software/shishi/")
+    (synopsis "Implementation of the Kerberos 5 network security system")
+    (description
+     "GNU Shishi is a free implementation of the Kerberos 5 network security
+system.  It is used to allow non-secure network nodes to communicate in a
+secure manner through client-server mutual authentication via tickets.")
+    (license license:gpl3+)))

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -199,6 +199,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/julia.scm			\
   %D%/packages/kde.scm              \
   %D%/packages/kde-frameworks.scm		\
+  %D%/packages/kerberos.scm			\
   %D%/packages/key-mon.scm			\
   %D%/packages/kodi.scm				\
   %D%/packages/language.scm			\
@@ -252,7 +253,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mingw.scm			\
   %D%/packages/mg.scm				\
   %D%/packages/microcom.scm			\
-  %D%/packages/mit-krb5.scm			\
   %D%/packages/moe.scm				\
   %D%/packages/monitoring.scm			\
   %D%/packages/mono.scm				\
@@ -339,7 +339,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
   %D%/packages/shellutils.scm			\
-  %D%/packages/shishi.scm			\
   %D%/packages/skarnet.scm			\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
