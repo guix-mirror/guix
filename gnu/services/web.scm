@@ -36,6 +36,10 @@
             nginx-server-configuration?
             nginx-upstream-configuration
             nginx-upstream-configuration?
+            nginx-location-configuration
+            nginx-location-configuration?
+            nginx-named-location-configuration
+            nginx-named-location-configuration?
             nginx-service
             nginx-service-type))
 
@@ -56,6 +60,8 @@
                        (default (list 'default)))
   (root                nginx-server-configuration-root
                        (default "/srv/http"))
+  (locations           nginx-server-configuration-locations
+                       (default '()))
   (index               nginx-server-configuration-index
                        (default (list "index.html")))
   (ssl-certificate     nginx-server-configuration-ssl-certificate
@@ -70,6 +76,20 @@
   nginx-upstream-configuration?
   (name                nginx-upstream-configuration-name)
   (servers             nginx-upstream-configuration-servers))
+
+(define-record-type* <nginx-location-configuration>
+  nginx-location-configuration make-nginx-location-configuration
+  nginx-location-configuration?
+  (uri                 nginx-location-configuration-uri
+                       (default #f))
+  (body                nginx-location-configuration-body))
+
+(define-record-type* <nginx-named-location-configuration>
+  nginx-named-location-configuration make-nginx-named-location-configuration
+  nginx-named-location-configuration?
+  (name                nginx-named-location-configuration-name
+                       (default #f))
+  (body                nginx-named-location-configuration-body))
 
 (define-record-type* <nginx-configuration>
   nginx-configuration make-nginx-configuration
@@ -97,6 +117,19 @@ of index files."
   (map (match-lambda
         ((? string? str) (string-append str " ")))
        names)))
+
+(define nginx-location-config
+  (match-lambda
+    (($ <nginx-location-configuration> uri body)
+     (string-append
+      "      location " uri " {\n"
+      "        " (string-join body "\n    ") "\n"
+      "      }\n"))
+    (($ <nginx-named-location-configuration> name body)
+     (string-append
+      "      location @" name " {\n"
+      "        " (string-join body "\n    ") "\n"
+      "      }\n"))))
 
 (define (default-nginx-server-config server)
   (string-append
@@ -126,7 +159,11 @@ of index files."
    "      index " (config-index-strings (nginx-server-configuration-index server)) ";\n"
    "      server_tokens " (if (nginx-server-configuration-server-tokens? server)
                               "on" "off") ";\n"
-    "    }\n"))
+   "\n"
+   (string-join
+    (map nginx-location-config (nginx-server-configuration-locations server))
+    "\n")
+   "    }\n"))
 
 (define (nginx-upstream-config upstream)
   (string-append

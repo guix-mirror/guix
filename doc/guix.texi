@@ -12380,6 +12380,11 @@ default server for connections matching no other server.
 @item @code{root} (default: @code{"/srv/http"})
 Root of the website nginx will serve.
 
+@item @code{locations} (default: @code{'()})
+A list of @dfn{nginx-location-configuration} or
+@dfn{nginx-named-location-configuration} records to use within this
+server block.
+
 @item @code{index} (default: @code{(list "index.html")})
 Index files to look for when clients ask for a directory.  If it cannot be found,
 Nginx will send the list of files in the directory.
@@ -12771,6 +12776,44 @@ specified as a IP address (e.g. @samp{127.0.0.1}), domain name
 prefix @samp{unix:}.  For addresses using an IP address or domain name,
 the default port is 80, and a different port can be specified
 explicitly.
+
+@end table
+@end deftp
+
+@deftp {Data Type} nginx-location-configuration
+Data type representing the configuration of an nginx @code{location}
+block.  This type has the following parameters:
+
+@table @asis
+@item @code{uri}
+URI which this location block matches.
+
+@anchor{nginx-location-configuration body}
+@item @code{body}
+Body of the location block, specified as a string. This can contain many
+configuration directives.  For example, to pass requests to a upstream
+server group defined using an @code{nginx-upstream-configuration} block,
+the following directive would be specified in the body @samp{proxy_pass
+http://upstream-name;}.
+
+@end table
+@end deftp
+
+@deftp {Data Type} nginx-named-location-configuration
+Data type representing the configuration of an nginx named location
+block.  Named location blocks are used for request redirection, and not
+used for regular request processing.  This type has the following
+parameters:
+
+@table @asis
+@item @code{name}
+Name to identify this location block.
+
+@item @code{body}
+@xref{nginx-location-configuration body}, as the body for named location
+blocks can be used in a similar way to the
+@code{nginx-location-configuration body}.  One restriction is that the
+body of a named location block cannot contain location blocks.
 
 @end table
 @end deftp
