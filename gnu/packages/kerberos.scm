@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +30,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -129,3 +131,57 @@ cryptography.")
 system.  It is used to allow non-secure network nodes to communicate in a
 secure manner through client-server mutual authentication via tickets.")
     (license license:gpl3+)))
+
+(define-public heimdal
+  (package
+    (name "heimdal")
+    (version "1.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.h5l.org/dist/src/heimdal-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19gypf9vzfrs2bw231qljfl4cqc1riyg0ai0xmm1nd1wngnpphma"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "configure"
+                  (("User=.*$") "User=Guix\n")
+                  (("Date=.*$") "Date=2017\n")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list
+                          ;; Work around a linker error.
+                          "CFLAGS=-pthread"
+
+                          ;; Avoid 7 MiB of .a files.
+                          "--disable-static"
+
+                          ;; Do not build libedit.
+                          (string-append
+                           "--with-readline-lib="
+                           (assoc-ref %build-inputs "readline") "/lib")
+                          (string-append
+                           "--with-readline-include="
+                           (assoc-ref %build-inputs "readline") "/include"))
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'skip-tests
+                    (lambda _
+                      ;; The test simply runs 'ftp --version && ftp --help'
+                      ;; but that fails in the chroot because 'ftp' tries to
+                      ;; do a service lookup before printing the help/version.
+                      (substitute* "appl/ftp/ftp/Makefile.in"
+                        (("^CHECK_LOCAL =.*")
+                         "CHECK_LOCAL = no-check-local\n"))
+                      #t)))))
+    (native-inputs `(("e2fsprogs" ,e2fsprogs)))   ;for 'compile_et'
+    (inputs `(("readline" ,readline)
+              ("bdb" ,bdb)
+              ("e2fsprogs" ,e2fsprogs)))          ;for libcom_err
+    (home-page "http://www.h5l.org/")
+    (synopsis "Kerberos 5 network authentication")
+    (description
+     "Heimdal is an implementation of Kerberos 5 network authentication
+service.")
+    (license license:bsd-3)))
