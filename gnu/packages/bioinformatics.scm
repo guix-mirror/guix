@@ -8024,7 +8024,9 @@ replacement for strverscmp.")
        ("python-pyyaml" ,python-pyyaml)
        ("python-click" ,python-click)
        ("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)))
+       ("python-numpy" ,python-numpy)
+       ;; MultQC checks for the presence of nose at runtime.
+       ("python-nose" ,python-nose)))
     (home-page "http://multiqc.info")
     (synopsis "Aggregate bioinformatics analysis reports")
     (description
