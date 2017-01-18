@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -362,3 +363,36 @@ scripts, notifying the user when something interesting occurs.  Of course, it
 has no notion of what's interesing, but it's very good at that notifying part.")
     (home-page "http://www.johnath.com/beep")
     (license license:gpl2+)))
+
+(define-public unibilium
+  (package
+    (name "unibilium")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mauke/unibilium/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1n7a0jrlwhn9nnkna76sbnjrr808m0pmzbiwznmp7rhmjl4z2fk2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       ;; FIXME: tests require "prove"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (home-page "https://github.com/mauke/unibilium")
+    (synopsis "Terminfo parsing library")
+    (description "Unibilium is a basic C terminfo library.  It doesn't depend
+on curses or any other library.  It also doesn't use global variables, so it
+should be thread-safe.")
+    (license license:lgpl3+)))
