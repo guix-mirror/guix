@@ -12,9 +12,10 @@
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -952,6 +953,61 @@ non-linear applications and it provides great support for visualizing results.
 Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
+
+(define-public opencascade-oce
+  (package
+    (name "opencascade-oce")
+    (version "0.17.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://github.com/tpaviot/oce/archive/OCE-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0vpmnb0k5y2f7lpmwx9pg9yfq24zjvnsak5alzacncfm1hv9b6cd"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+        (list "-DOCE_TESTING:BOOL=ON"
+              "-DOCE_USE_TCL_TEST_FRAMEWORK:BOOL=ON"
+              "-DOCE_DRAW:BOOL=ON"
+              (string-append "-DOCE_INSTALL_PREFIX:PATH="
+                        (assoc-ref %outputs "out"))
+              "-UCMAKE_INSTALL_RPATH")))
+    (inputs
+      `(("freetype" ,freetype)
+        ("glu" ,glu)
+        ("libxmu" ,libxmu)
+        ("mesa" ,mesa)
+        ("tcl" ,tcl)
+        ("tk" ,tk)))
+    (native-inputs
+      `(("python" ,python-wrapper)))
+    (home-page "https://github.com/tpaviot/oce")
+    (synopsis "Libraries for 3D modeling and numerical simulation")
+    (description
+     "Open CASCADE is a set of libraries for the development of applications
+dealing with 3D CAD data or requiring industrial 3D capabilities.  It includes
+C++ class libraries providing services for 3D surface and solid modeling, CAD
+data exchange, and visualization.  It is used for development of specialized
+software dealing with 3D models in design (CAD), manufacturing (CAM),
+numerical simulation (CAE), measurement equipment (CMM), and quality
+control (CAQ) domains.
+
+This is the ``Community Edition'' (OCE) of Open CASCADE, which gathers
+patches, improvements, and experiments contributed by users over the official
+Open CASCADE library.")
+    (license (list license:lgpl2.1; OCE libraries, with an exception for the
+                                  ; use of header files; see
+                                  ; OCCT_LGPL_EXCEPTION.txt
+                   license:public-domain; files
+                                  ; src/Standard/Standard_StdAllocator.hxx and
+                                  ; src/NCollection/NCollection_StdAllocator.hxx
+                   license:expat; file src/OpenGl/OpenGl_glext.h
+                   license:bsd-3)))); test framework gtest
 
 (define-public gmsh
   (package
