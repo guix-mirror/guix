@@ -3091,7 +3091,7 @@ This driver is intended for ATI Rage 128 based cards.")
 (define-public xf86-video-savage
   (package
     (name "xf86-video-savage")
-    (version "2.3.8")
+    (version "2.3.9")
     (source
       (origin
         (method url-fetch)
@@ -3101,7 +3101,7 @@ This driver is intended for ATI Rage 128 based cards.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0qzshncynjdmyhavhqw4x5ha3gwbygi0zbsy158fpg1jcnla9kpx"))))
+           "11pcrsdpdrwk0mrgv83s5nsx8a9i4lhmivnal3fjbrvi3zdw94rc"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
