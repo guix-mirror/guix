@@ -67,6 +67,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -2945,18 +2946,23 @@ reStructuredText.")
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "1.4.8")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "0zvh8wwhm6gy21rr0cg42znsy4zzv2mnsxxk9gmn5y1ycn7rgbs1"))))
+         "1i8p9idnli4gr0y4x67yakbdk5w6a0xjzhrg6bg51y9d1fi7fslf"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Missing dependencies.
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Requires Internet access.
+             (delete-file "tests/test_build_linkcheck.py")
+             (zero? (system* "make" "test")))))))
     (propagated-inputs
      `(("python-imagesize" ,python-imagesize)
        ("python-sphinx-alabaster-theme"
@@ -2967,6 +2973,12 @@ reStructuredText.")
        ("python-jinja2" ,python-jinja2)
        ("python-pygments" ,python-pygments)
        ("python-six" ,python-six)))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("python-html5lib" ,python-html5lib)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-requests" ,python-requests)))
     (home-page "http://sphinx-doc.org/")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
@@ -2980,6 +2992,7 @@ sources.")
     (package
       (inherit base)
       (native-inputs `(("python2-mock" ,python2-mock)
+                       ("python2-enum34" ,python2-enum34)
                        ,@(package-native-inputs base)))
       (propagated-inputs `(("python2-pytz" ,python2-pytz)
                        ,@(package-propagated-inputs base))))))
