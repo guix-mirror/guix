@@ -2953,7 +2953,7 @@ kernel mode setting (KMS).")
 (define-public xf86-video-nv
   (package
     (name "xf86-video-nv")
-    (version "2.1.20")
+    (version "2.1.21")
     (source
       (origin
         (method url-fetch)
@@ -2963,8 +2963,7 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-           "1gqh1khc4zalip5hh2nksgs7i3piqq18nncgmsx9qvzi05azd5c3"))
-        (patches (search-patches "xf86-video-nv-remove-mibstore.patch"))))
+           "0bdk3pc5y0n7p53q4gc2ff7bw16hy5hwdjjxkm5j3s7hdyg6960z"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
