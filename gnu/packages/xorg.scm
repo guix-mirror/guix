@@ -3272,7 +3272,7 @@ X server.")
 (define-public xf86-video-trident
   (package
     (name "xf86-video-trident")
-    (version "1.3.7")
+    (version "1.3.8")
     (source
       (origin
         (method url-fetch)
@@ -3282,7 +3282,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1bhkwic2acq9za4yz4bwj338cwv5mdrgr2qmgkhlj3bscbg1imgc"))))
+           "0gxcar434kx813fxdpb93126lhmkl3ikabaljhcj5qn3fkcijlcy"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
