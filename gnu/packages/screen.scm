@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -35,13 +35,13 @@
 (define-public screen
   (package
     (name "screen")
-    (version "4.4.0")
+    (version "4.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "12r12xwhsg59mlprikbbmn60gh8lqhrvyar7mlxg4fwsfma2lwpg"))))
+              (base32 "1c7grw03a9iwvqbxfd6hmjb681rp8gb55zsxm7b3apqqcb1sghq1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("makeinfo" ,texinfo)))
@@ -53,7 +53,7 @@
        ;; By default, screen supports 16 colors, but we want 256 when
        ;; ~/.screenrc contains 'term xterm-256color'.
        '("--enable-colors256")))
-    (home-page "http://www.gnu.org/software/screen/")
+    (home-page "https://www.gnu.org/software/screen/")
     (synopsis "Full-screen window manager providing multiple terminals")
     (description
      "GNU Screen is a terminal window manager that multiplexes a single
