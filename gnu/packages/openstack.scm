@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages openstack)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -549,6 +550,47 @@ in transmittable and storable formats, such as JSON and MessagePack.")
 
 (define-public python2-oslo.serialization
   (package-with-python2 python-oslo.serialization))
+
+(define-public python-reno
+  (package
+    (name "python-reno")
+    (version "2.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "reno" version))
+        (sha256
+          (base32 "1i2wnn5fnm3jm5774pahg000q0lma5i913hml91bbbm2mybphndd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'init-git
+           (lambda _
+             ;; reno expects a git repo
+             (zero? (system* "git" "init")))))))
+    (propagated-inputs
+      `(("python-babel" ,python-babel)
+        ("python-dulwich" ,python-dulwich)
+        ("python-pyyaml" ,python-pyyaml)
+        ("python-six" ,python-six)))
+    (native-inputs
+      `(("python-testtools" ,python-testtools)
+        ("python-pbr" ,python-pbr)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testrepository" ,python-testrepository)
+        ("python-mock" ,python-mock)
+        ("python-oslotest" ,python-oslotest)
+        ("gnupg" ,gnupg)
+        ("git" ,git)))
+    (home-page "http://docs.openstack.org/developer/reno/")
+    (synopsis "Release notes manager")
+    (description "Reno is a tool for storing release notes in a git repository
+and building documentation from them.")
+    (license asl2.0)))
+
+(define-public python2-reno
+  (package-with-python2 python-reno))
 
 (define-public python-oslosphinx
   (package
