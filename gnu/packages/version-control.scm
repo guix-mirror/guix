@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1240,14 +1240,14 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
 (define-public stagit
   (package
     (name "stagit")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.2f30.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0z5r06wqrfnsz24ci4hjqbd62svclvhkgzaq9npsyjcp6jnf7izc"))))
+                "0ym1dwzn2z23hcg53qh1m1g5pfibrfnnlp3sm3z1v4mhz0pgaj56"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
