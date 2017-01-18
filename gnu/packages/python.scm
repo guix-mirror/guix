@@ -10545,6 +10545,27 @@ concurrent HTTP client library for python using @code{gevent}.")
 (define-public python2-geventhttpclient
   (package-with-python2 python-geventhttpclient))
 
+(define-public python-fastimport
+  (package
+    (name "python-fastimport")
+    (version "0.9.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fastimport" version))
+        (sha256
+          (base32 "1aqjsin4rmqm7ln4j0p73fzxifws6c6ikgyhav7r137m2ixsxl43"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jelmer/python-fastimport")
+    (synopsis "VCS fastimport parser and generator in Python")
+    (description "This package provides a parser for and generator of the Git
+@url{https://www.kernel.org/pub/software/scm/git/docs/git-fast-import.html,fastimport}
+format.")
+    (license license:gpl2+)))
+
+(define-public python2-fastimport
+  (package-with-python2 python-fastimport))
+
 (define-public python-twisted
   (package
     (name "python-twisted")
