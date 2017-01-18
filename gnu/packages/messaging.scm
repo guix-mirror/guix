@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -1119,5 +1119,37 @@ MUDs and also the psyced implementation of the Protocol for SYnchronous
 Conferencing (PSYC).  psycLPC is a fork of LDMud with some new features and
 many bug fixes.")
     (license license:gpl2))))
+
+(define-public loudmouth
+  (package
+    (name "loudmouth")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mcabber.com/files/loudmouth/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0b6kd5gpndl9nzis3n6hcl0ldz74bnbiypqgqa1vgb0vrcar8cjl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("libidn" ,libidn)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("check" ,check)
+       ("glib" ,glib "bin") ; gtester
+       ("gtk-doc" ,gtk-doc)))
+    (home-page "https://mcabber.com/")
+    (description
+     "Loudmouth is a lightweight and easy-to-use C library for programming
+with the XMPP (formerly known as Jabber) protocol.  It is designed to be
+easy to get started with and yet extensible to let you do anything the XMPP
+protocol allows.")
+    (synopsis "Asynchronous XMPP library")
+    ;; The files have LGPL2.0+ headers, but COPYING specifies LGPL2.1.
+    (license license:lgpl2.0+)))
 
 ;;; messaging.scm ends here
