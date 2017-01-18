@@ -291,7 +291,8 @@ used to apply commands with arbitrarily long arguments.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "13lspazc7xkviy93qz7ks9jv4sldvgmwpq36ghrbrqpq93br8phm"))))
+              "13lspazc7xkviy93qz7ks9jv4sldvgmwpq36ghrbrqpq93br8phm"))
+            (patches (search-patches "coreutils-fix-cross-compilation.patch"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
