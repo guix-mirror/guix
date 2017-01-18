@@ -943,7 +943,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
-  %D%/packages/patches/xf86-video-glint-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-intel-compat-api.patch	\
   %D%/packages/patches/xf86-video-intel-glibc-2.20.patch	\

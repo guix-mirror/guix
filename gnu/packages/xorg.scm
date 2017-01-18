@@ -2720,7 +2720,7 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
 (define-public xf86-video-glint
   (package
     (name "xf86-video-glint")
-    (version "1.2.8")
+    (version "1.2.9")
     (source
       (origin
         (method url-fetch)
@@ -2730,8 +2730,7 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
                ".tar.bz2"))
         (sha256
           (base32
-           "08a2aark2yn9irws9c78d9q44dichr03i9zbk61jgr54ncxqhzv5"))
-        (patches (search-patches "xf86-video-glint-remove-mibstore.patch"))))
+           "1lkpspvrvrp9s539bhfdjfh4andaqyk63l6zjn8m3km95smk6a45"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
