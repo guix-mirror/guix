@@ -12734,3 +12734,49 @@ Features:
 @item Compiles templates into optimized, yet readable, Python code.
 @end enumerate")
     (license (license:x11-style "file://LICENSE"))))
+
+(define-public python-dulwich
+  (package
+    (name "python-dulwich")
+    (version "0.16.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (list (string-append "https://www.dulwich.io/releases/"
+                            "dulwich-" version ".tar.gz")
+                   (pypi-uri "dulwich" version)))
+        (sha256
+          (base32 "0fl47vzfgc3w3rmhn8naii905cjqcp0vc68iyvymxp7567hh6als"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The tests use Popen with a custom environment which doesn't
+             ;; include PATH.
+             (substitute* "dulwich/tests/compat/utils.py"
+               (("'git'") (string-append "'"
+                                         (which "git")
+                                         "'")))
+             (substitute* '("dulwich/tests/test_repository.py"
+                            "dulwich/tests/test_hooks.py")
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             (setenv "TEST_RUNNER" "unittest")
+             (setenv "PYTHONHASHSEED" "random")
+             #t)))))
+    (propagated-inputs
+     `(("python-fastimport" ,python-fastimport)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-geventhttpclient" ,python-geventhttpclient)
+       ("git" ,git)))
+    (home-page "https://www.dulwich.io/")
+    (synopsis "Git implementation in Python")
+    (description "Dulwich is an implementation of the Git file formats and
+protocols written in pure Python.")
+    ;; Can be used with either license.
+    (license (list license:asl2.0 license:gpl2+))))
+
+(define-public python2-dulwich
+  (package-with-python2 python-dulwich))
