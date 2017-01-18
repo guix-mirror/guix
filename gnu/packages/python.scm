@@ -1983,17 +1983,36 @@ subprocess and see the output as well as any file modifications.")
 (define-public python-testtools
   (package
     (name "python-testtools")
-    (version "1.0.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testtools/testtools-"
-             version ".tar.gz"))
+       (uri (pypi-uri "testtools" version))
        (sha256
         (base32
-         "1dyml28ykpl5jb9khdmcdvhy1cxqingys6qvj2k04fzlaj6z3bbx"))))
+         "1vw8yljnd75d396hhw6s2hrf4cclzy845ifd5am0lxsl235z3i8c"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-module-imports
+           (lambda _
+             (substitute* "setup.py"
+               (("'unittest2>=0.8.0',") ""))
+             (substitute* '("testtools/testcase.py"
+                            "testtools/testsuite.py"
+                            "testtools/run.py"
+                            "testtools/tests/test_run.py"
+                            "testtools/tests/test_testsuite.py"
+                            "testtools/tests/test_deferredruntest.py")
+               ;; unittest2 is a backport of Python2.7 features to Python 2.4.
+               (("import unittest2 as unittest") "import unittest")
+               (("import unittest2") "import unittest as unittest2")
+               (("from unittest2 import") "from unittest import"))
+             (substitute* "testtools/tests/test_testresult.py"
+               ;; NUL in source code is not allowed (raises ValueError).
+               (("\\x00\\x04") "\\x04"))
+             #t)))))
     (propagated-inputs
      `(("python-mimeparse" ,python-mimeparse)
        ("python-extras" ,python-extras)))
