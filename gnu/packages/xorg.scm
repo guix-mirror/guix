@@ -3144,7 +3144,7 @@ Xorg X server.")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.8")
+    (version "0.10.9")
     (source
       (origin
         (method url-fetch)
@@ -3154,7 +3154,7 @@ Xorg X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1znkqwdyd6am23xbsfjzamq125j5rrylg5mzqky4scv9gxbz5wy8"))))
+           "03f1abjjf68y8y1iz768rn95va9d33wmbwfbsqrgl6k0gi0bf9jj"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86dgaproto" ,xf86dgaproto)
