@@ -152,11 +152,11 @@ guidelines}.")
            "0njmh40i1lg5mzn9hc2ax83adj6dli455j6xifilrw27c4wlkjzx"))))
     (build-system python-build-system)
     (arguments
-     ;; TODO: Requires newer version of testtools (>=1.4.0).
+     ;; TODO: Resolve dependency cycle and re-enable.
      '(#:tests? #f))
     (native-inputs
       `(("python-fixtures" ,python-fixtures)
-        ("python-oslosphinx" ,python-oslosphinx)
+        ; TODO re-add ("python-oslosphinx" ,python-oslosphinx)
         ("python-pbr" ,python-pbr)
         ("python-sphinx" ,python-sphinx)
         ("python-testtools" ,python-testtools)))
