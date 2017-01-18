@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;;
@@ -50,6 +50,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages fribidi)
@@ -601,3 +602,39 @@ experience.")
 dynamic and extensible using the Lua programming language.")
     (license license:gpl2+)
     (home-page "https://awesome.naquadah.org/")))
+
+(define-public menumaker
+  (package
+    (name "menumaker")
+    (version "0.99.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/menumaker/"
+                           "menumaker-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mm4cvg3kphkkd8nwrhcg6d9nm5ar7mgc0wf6fxk6zck1l7xn8ky"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python" ,python)))
+    (synopsis "Heuristics-driven menu generator")
+    (description
+     "MenuMaker is a menu generation utility for a number of X window
+managers and desktop environments.  It is capable of finding lots of
+installed programs and generating a root menu consistent across all
+supported window managers, so one will get (almost) the same menu in
+all of them.  Currently supported window managers include:
+
+@enumerate
+@item BlackBox
+@item Deskmenu
+@item FluxBox
+@item IceWM
+@item OpenBox
+@item PekWM
+@item WindowMaker
+@item XFCE
+@end enumerate\n")
+    (home-page "http://menumaker.sourceforge.net/")
+    (license license:bsd-2)))
