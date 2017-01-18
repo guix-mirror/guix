@@ -37,6 +37,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
@@ -1151,5 +1152,40 @@ protocol allows.")
     (synopsis "Asynchronous XMPP library")
     ;; The files have LGPL2.0+ headers, but COPYING specifies LGPL2.1.
     (license license:lgpl2.0+)))
+
+(define-public mcabber
+  (package
+    (name "mcabber")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mcabber.com/files/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "02nfn5r7cjpnacym95l6bvczii232v3x2gi79gfa9syc7w0brdk3"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list "--enable-otr"
+                               "--enable-aspell")))
+    (inputs
+     `(("gpgme" ,gpgme)
+       ("libotr" ,libotr)
+       ("aspell" ,aspell)
+       ("libidn" ,libidn)
+       ("glib" ,glib)
+       ("ncurses" ,ncurses)
+       ("loudmouth" ,loudmouth)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://mcabber.com")
+    (description
+     "Mcabber is a small XMPP (Jabber) console client, which includes features
+such as SASL and TLS support, @dfn{Multi-User Chat} (MUC) support, logging,
+command-completion, OpenPGP encryption, @dfn{Off-the-Record Messaging} (OTR)
+support, and more.")
+    (synopsis "Small XMPP console client")
+    (license license:gpl2+)))
 
 ;;; messaging.scm ends here
