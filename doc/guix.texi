@@ -12323,6 +12323,7 @@ The @code{(gnu services web)} module provides the following service:
        [#:log-directory ``/var/log/nginx''] @
        [#:run-directory ``/var/run/nginx''] @
        [#:server-list '()] @
+       [#:upstream-list '()] @
        [#:config-file @code{#f}]
 
 Return a service that runs @var{nginx}, the nginx web server.
@@ -12334,8 +12335,10 @@ arguments should match what is in @var{config-file} to ensure that the
 directories are created when the service is activated.
 
 As an alternative to using a @var{config-file}, @var{server-list} can be
-used to specify the list of @dfn{server blocks} required on the host.  For
-this to work, use the default value for @var{config-file}.
+used to specify the list of @dfn{server blocks} required on the host and
+@var{upstream-list} can be used to specify a list of @dfn{upstream
+blocks} to configure.  For this to work, use the default value for
+@var{config-file}.
 
 @end deffn
 
@@ -12752,6 +12755,25 @@ Defaults to @samp{#f}.
 
 @c %end of automatic openvpn-server documentation
 
+
+@deftp {Data Type} nginx-upstream-configuration
+Data type representing the configuration of an nginx @code{upstream}
+block.  This type has the following parameters:
+
+@table @asis
+@item @code{name}
+Name for this group of servers.
+
+@item @code{servers}
+Specify the addresses of the servers in the group.  The address can be
+specified as a IP address (e.g. @samp{127.0.0.1}), domain name
+(e.g. @samp{backend1.example.com}) or a path to a UNIX socket using the
+prefix @samp{unix:}.  For addresses using an IP address or domain name,
+the default port is 80, and a different port can be specified
+explicitly.
+
+@end table
+@end deftp
 
 @node Network File System
 @subsubsection Network File System
