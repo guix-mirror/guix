@@ -28,6 +28,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
@@ -53,11 +54,16 @@
                (base32
                 "15lzih6671gh9knzpl8mxchiml7z5lfqzr7jm2r0rjhrxs6nk4jb"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)))
     (arguments
      `(#:phases
        (alist-delete 'configure %standard-phases)
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+                          "CC=gcc"
+                          "COPTS=\"-DHAVE_DBUS\"")
        ;; No 'check' target.
        #:tests? #f))
     (home-page "http://www.thekelleys.org.uk/dnsmasq/doc.html")
