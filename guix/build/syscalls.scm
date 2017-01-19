@@ -900,6 +900,15 @@ bytevector BV at INDEX."
   ;; The most terrible interface, live from Scheme.
   (syscall->procedure int "ioctl" (list int unsigned-long '*)))
 
+(define (bytes->string bytes)
+  "Read BYTES, a list of bytes, and return the null-terminated string decoded
+from there, or #f if that would be an empty string."
+  (match (take-while (negate zero?) bytes)
+    (()
+     #f)
+    (non-zero
+     (list->string (map integer->char non-zero)))))
+
 (define (bytevector->string-list bv stride len)
   "Return the null-terminated strings found in BV every STRIDE bytes.  Read at
 most LEN bytes from BV."
@@ -911,9 +920,7 @@ most LEN bytes from BV."
        (reverse result))
       (_
        (loop (drop bytes stride)
-             (cons (list->string (map integer->char
-                                      (take-while (negate zero?) bytes)))
-                   result))))))
+             (cons (bytes->string bytes) result))))))
 
 (define* (network-interface-names #:optional sock)
   "Return the names of existing network interfaces.  This is typically limited
