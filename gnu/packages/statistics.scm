@@ -4076,3 +4076,24 @@ Farebrother's algorithm or Liu et al.'s algorithm.")
 ggplot2 package to combine multiple ggplot2 plots into one and label them with
 letters, as is often required for scientific publications.")
     (license license:gpl2)))
+
+(define-public r-mixtools
+  (package
+    (name "r-mixtools")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mixtools" version))
+       (sha256
+        (base32
+         "133rr17ywmlhsc6457hs8qxi8ng443ql9ashxpwc8875gjhv1x32"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-segmented" ,r-segmented)))
+    (home-page "http://cran.r-project.org/web/packages/mixtools")
+    (synopsis "Tools for analyzing finite mixture models")
+    (description
+     "This package provides a collection of R functions for analyzing finite
+mixture models.")
+    (license license:gpl2+)))
