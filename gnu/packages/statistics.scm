@@ -4097,3 +4097,29 @@ letters, as is often required for scientific publications.")
      "This package provides a collection of R functions for analyzing finite
 mixture models.")
     (license license:gpl2+)))
+
+(define-public r-lars
+  (package
+    (name "r-lars")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lars" version))
+       (sha256
+        (base32
+         "0blj44wqrx6lmym1m9v6wkz8zxzbjax2zl6swgdczci0ixb5nx34"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://www-stat.stanford.edu/~hastie/Papers/#LARS")
+    (synopsis "Least angle regression software")
+    (description
+     "Least Angle Regression (\"LAR\") is a model selection algorithm; a
+useful and less greedy version of traditional forward selection methods.  A
+simple modification of the LAR algorithm implements Tibshirani's Lasso; the
+Lasso modification of LARS calculates the entire Lasso path of coefficients
+for a given problem at the cost of a single least squares fit.  Another LARS
+modification efficiently implements epsilon Forward Stagewise linear
+regression.")
+    (license license:gpl2)))
