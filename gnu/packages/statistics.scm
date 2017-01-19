@@ -4123,3 +4123,24 @@ for a given problem at the cost of a single least squares fit.  Another LARS
 modification efficiently implements epsilon Forward Stagewise linear
 regression.")
     (license license:gpl2)))
+
+(define-public r-fastica
+  (package
+    (name "r-fastica")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastICA" version))
+       (sha256
+        (base32
+         "0ykk78fsk5da2g16i4wji85bvji7nayjvkfp07hyaxq9d15jmf0r"))))
+    (properties `((upstream-name . "fastICA")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/fastICA")
+    (synopsis "FastICA algorithms to perform ICA and projection pursuit")
+    (description
+     "This package provides an implementation of the FastICA algorithm to
+perform @dfn{independent component analysis} (ICA) and projection pursuit.")
+    ;; Any GPL version.
+    (license license:gpl3+)))
