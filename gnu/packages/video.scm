@@ -1485,7 +1485,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.16.6")
+    (version "17.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1493,7 +1493,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00vwdnf0gnwp029sznsr0s4lcky3brxbmpy0ch7igjpk5sf6mkqp"))))
+                "02cfhpkcsq718zwhwwsm48gjggf95qr38hqpi0kwrvsy18ll0msm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1513,9 +1513,11 @@ be used for realtime video capture via Linux-specific APIs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
        ("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("jack" ,jack-1)
        ("jansson" ,jansson)
@@ -1525,6 +1527,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)
+       ("speex" ,speex)
        ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")
