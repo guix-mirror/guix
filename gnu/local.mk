@@ -457,7 +457,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
   %D%/tests/mail.scm				\
-  %D%/tests/ssh.scm
+  %D%/tests/ssh.scm				\
+  %D%/tests/web.scm
 
 
 patchdir = $(guilemoduledir)/%D%/packages/patches
