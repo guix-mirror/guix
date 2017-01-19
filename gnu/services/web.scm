@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -94,12 +94,18 @@
 (define-record-type* <nginx-configuration>
   nginx-configuration make-nginx-configuration
   nginx-configuration?
-  (nginx         nginx-configuration-nginx)         ;<package>
-  (log-directory nginx-configuration-log-directory) ;string
-  (run-directory nginx-configuration-run-directory) ;string
-  (server-blocks nginx-configuration-server-blocks) ;list
-  (upstream-blocks nginx-configuration-upstream-blocks) ;list
-  (file          nginx-configuration-file))         ;string | file-like
+  (nginx         nginx-configuration-nginx          ;<package>
+                 (default nginx))
+  (log-directory nginx-configuration-log-directory  ;string
+                 (default "/var/log/nginx"))
+  (run-directory nginx-configuration-run-directory  ;string
+                 (default "/var/run/nginx"))
+  (server-blocks nginx-configuration-server-blocks
+                 (default '()))          ;list of <nginx-server-configuration>
+  (upstream-blocks nginx-configuration-upstream-blocks
+                   (default '()))      ;list of <nginx-upstream-configuration>
+  (file          nginx-configuration-file         ;#f | string | file-like
+                 (default #f)))
 
 (define (config-domain-strings names)
  "Return a string denoting the nginx config representation of NAMES, a list
