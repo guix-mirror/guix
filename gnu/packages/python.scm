@@ -3601,6 +3601,36 @@ transcendental functions).")
 (define-public python2-numexpr
   (package-with-python2 python-numexpr))
 
+(define-public python-cycler
+  (package
+    (name "python-cycler")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "cycler" version))
+              (sha256
+               (base32
+                "1n69n23fak1gjxlrbhqisi2b9pv3ckrfj98llx3p53953082syyd"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: The current version requires 'coveralls' which we don't have.
+     ;; Enable this for the next release which uses 'python-pytest'.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "http://matplotlib.org/cycler/")
+    (synopsis "Composable keyword argument iterator")
+    (description
+     "When using @code{matplotlib} and plotting more than one line, it is
+common to want to be able to want to be able to cycle over one or more artist
+styles; but the plotting logic can quickly become involved.
+To address this and enable easy cycling over arbitrary @code{kwargs}, the
+@code{Cycler} class was developed.")
+    (license license:bsd-3)))
+
+(define-public python2-cycler
+  (package-with-python2 python-cycler))
+
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
