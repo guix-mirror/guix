@@ -621,6 +621,7 @@ See also @url{http://prosody.im/doc/modules/mod_muc}."
                   (serialize-prosody-configuration config)))))
          (config-file (plain-file "prosody.cfg.lua" config-str)))
     #~(begin
+        (use-modules (guix build utils))
         (define %user (getpw "prosody"))
 
         (mkdir-p #$config-dir)
