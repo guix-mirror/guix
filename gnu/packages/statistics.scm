@@ -4233,3 +4233,27 @@ all data handling, while the M-step can be supplied by the user to easily
 define new models.  Existing drivers implement mixtures of standard linear
 models, generalized linear models and model-based clustering.")
     (license license:gpl2+)))
+
+(define-public r-mclust
+  (package
+    (name "r-mclust")
+    (version "5.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mclust" version))
+       (sha256
+        (base32
+         "19cbg7p5h2b6h9mvcx9rjppyd3awma18ymaljakbnclpvhwbqpwd"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://www.stat.washington.edu/mclust/")
+    (synopsis "Gaussian mixture modelling for model-based clustering etc.")
+    (description
+     "This package provides Gaussian finite mixture models fitted via EM
+algorithm for model-based clustering, classification, and density estimation,
+including Bayesian regularization, dimension reduction for visualisation,
+and resampling-based inference.")
+    (license license:gpl2+)))
+
