@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -339,6 +339,11 @@ ACTIVATION-SCRIPT-TYPE."
                       ;; Make sure /bin/sh is valid and current.
                       (activate-/bin/sh
                        (string-append #$(canonical-package bash) "/bin/sh"))
+
+                      ;; Make sure the user accounting database exists.  If it
+                      ;; does not exist, 'setutxent' does not create it and
+                      ;; thus there is no accounting at all.
+                      (close-port (open-file "/var/run/utmpx" "a0"))
 
                       ;; Set up /run/current-system.  Among other things this
                       ;; sets up locales, which the activation snippets
