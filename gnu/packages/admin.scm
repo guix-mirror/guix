@@ -270,15 +270,16 @@ client and server, a telnet client and server, and an rsh client and server.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.2.1")
+    (version "4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://pkg-shadow.alioth.debian.org/releases/"
-                    name "-" version ".tar.xz"))
+                    "https://github.com/shadow-maint/shadow/releases/"
+                    "download/" version "/shadow-" version ".tar.xz"))
+              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"))
               (sha256
                (base32
-                "0h9x1zdbq0pqmygmc1x459jraiqw4gqz8849v268crk78z8r621v"))))
+                "0g7hf55ar2pafg5g3ldx0fwzjk36wf4xb21p4ndanbjm3c2a9ab1"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Assume System V `setpgrp (void)', which is the default on GNU
