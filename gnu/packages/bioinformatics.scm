@@ -8609,6 +8609,85 @@ contains a number of utilities to explore the MS/MS results and assess missed
 and irregular enzymatic cleavages, mass measurement accuracy, etc.")
     (license license:artistic2.0)))
 
+(define-public r-seurat
+  ;; Source releases are only made for new x.0 versions.  All newer versions
+  ;; are only released as pre-built binaries.  At the time of this writing the
+  ;; latest binary release is 1.4.0.12, which is equivalent to this commit.
+  (let ((commit "fccb77d1452c35ee47e47ebf8e87bddb59f3b08d")
+        (revision "1"))
+    (package
+      (name "r-seurat")
+      (version (string-append "1.4.0.12-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/satijalab/seurat")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "101wq3aqrdmbfi3lqmq4iivk9iwbf10d4z216ss25hf7n9091cyl"))
+                ;; Delete pre-built jar.
+                (snippet
+                 '(begin (delete-file "inst/java/ModularityOptimizer.jar")
+                         #t))))
+      (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'build-jar
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((classesdir "tmp-classes"))
+                 (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+                 (mkdir classesdir)
+                 (and (zero? (apply system* `("javac" "-d" ,classesdir
+                                              ,@(find-files "java" "\\.java$"))))
+                      (zero? (system* "jar"
+                                      "-cf" "inst/java/ModularityOptimizer.jar"
+                                      "-C" classesdir ".")))))))))
+      (native-inputs
+       `(("jdk" ,icedtea "jdk")))
+      (propagated-inputs
+       `(("r-ape" ,r-ape)
+         ("r-caret" ,r-caret)
+         ("r-cowplot" ,r-cowplot)
+         ("r-dplyr" ,r-dplyr)
+         ("r-fastica" ,r-fastica)
+         ("r-fnn" ,r-fnn)
+         ("r-fpc" ,r-fpc)
+         ("r-gdata" ,r-gdata)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-gplots" ,r-gplots)
+         ("r-gridextra" ,r-gridextra)
+         ("r-igraph" ,r-igraph)
+         ("r-irlba" ,r-irlba)
+         ("r-lars" ,r-lars)
+         ("r-mixtools" ,r-mixtools)
+         ("r-pbapply" ,r-pbapply)
+         ("r-plyr" ,r-plyr)
+         ("r-ranger" ,r-ranger)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcppeigen" ,r-rcppeigen)
+         ("r-rcppprogress" ,r-rcppprogress)
+         ("r-reshape2" ,r-reshape2)
+         ("r-rocr" ,r-rocr)
+         ("r-rtsne" ,r-rtsne)
+         ("r-stringr" ,r-stringr)
+         ("r-tclust" ,r-tclust)
+         ("r-tsne" ,r-tsne)
+         ("r-vgam" ,r-vgam)))
+      (home-page "http://www.satijalab.org/seurat")
+      (synopsis "Seurat is an R toolkit for single cell genomics")
+      (description
+       "This package is an R package designed for QC, analysis, and
+exploration of single cell RNA-seq data.  It easily enables widely-used
+analytical techniques, including the identification of highly variable genes,
+dimensionality reduction; PCA, ICA, t-SNE, standard unsupervised clustering
+algorithms; density clustering, hierarchical clustering, k-means, and the
+discovery of differentially expressed genes and markers.")
+      (license license:gpl3))))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
