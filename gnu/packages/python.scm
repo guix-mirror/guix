@@ -3951,7 +3951,7 @@ functions.")
            (lambda _
              (substitute* "scipy/integrate/tests/test_quadpack.py"
                (("libm.so") "libm.so.6"))
-             #t)
+             #t))
          (add-before 'build 'configure-openblas
            (lambda* (#:key inputs #:allow-other-keys)
              (call-with-output-file "site.cfg"
@@ -3970,7 +3970,7 @@ atlas_libs = openblas
                          (assoc-ref inputs "openblas")
                          (assoc-ref inputs "openblas")
                          (assoc-ref inputs "openblas"))))
-             #t)
+             #t))
            (delete 'check)
            (add-after 'install 'install-doc
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -4004,7 +4004,7 @@ atlas_libs = openblas
                ;; Tests can only be run after the library has been installed and not
                ;; within the source directory.
                (with-directory-excursion "/tmp"
-                 (zero? (system* "python" "-c" "import scipy; scipy.test()"))))))))))
+                 (zero? (system* "python" "-c" "import scipy; scipy.test()"))))))))
     (home-page "http://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
