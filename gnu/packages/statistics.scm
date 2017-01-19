@@ -4704,3 +4704,26 @@ classification and regression models.")
 computations taking place in C++ code, and support for interrupting those computations
 even in multithreaded code, typically using OpenMP.")
     (license license:gpl3+)))
+
+(define-public r-mnormt
+  (package
+    (name "r-mnormt")
+    (version "1.5-5")
+    (source
+     (origin
+       (method url-fetch)
+        (uri (cran-uri "mnormt" version))
+        (sha256
+          (base32
+           "1b34xxrnf35khsx82mhvmk96sgfr2flyasaah7qkb2976pwxay7z"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://azzalini.stat.unipd.it/SW/Pkg-mnormt")
+    (synopsis "Multivariate normal and \"t\" distributions")
+    (description
+     "This package provides functions for computing the density and the
+distribution function of multivariate normal and \"t\" random variables, and
+for generating random vectors sampled from these distributions.  Probabilities
+are computed via non-Monte Carlo methods.")
+    (license license:gpl2+)))
