@@ -123,8 +123,9 @@ SYSTEM."
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"
     "arm-linux-gnueabihf"
-    "i686-w64-mingw32"  
-    "powerpc-linux-gnu"))
+    "powerpc-linux-gnu"
+    "i586-pc-gnu"                                 ;aka. GNU/Hurd
+    "i686-w64-mingw32"))
 
 (define %guixsd-supported-systems
   '("x86_64-linux" "i686-linux"))
