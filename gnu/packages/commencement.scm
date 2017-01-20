@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -447,14 +447,8 @@ the bootstrap environment."
 (define ld-wrapper-boot0
   ;; We need this so binaries on Hurd will have libmachuser and libhurduser
   ;; in their RUNPATH, otherwise validate-runpath will fail.
-  ;;
-  ;; XXX: Work around <http://bugs.gnu.org/24832> by fixing the name and
-  ;; triplet on GNU/Linux.  For GNU/Hurd, use the right triplet.
-  (make-ld-wrapper (string-append "ld-wrapper-" "x86_64-guix-linux-gnu")
-                   #:target (lambda (system)
-                              (if (string-suffix? "-linux" system)
-                                  "x86_64-guix-linux-gnu"
-                                  (boot-triplet system)))
+  (make-ld-wrapper "ld-wrapper-boot0"
+                   #:target boot-triplet
                    #:binutils binutils-boot0
                    #:guile %bootstrap-guile
                    #:bash (car (assoc-ref %boot0-inputs "bash"))))
