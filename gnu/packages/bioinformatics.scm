@@ -8496,11 +8496,11 @@ of mass spectrometry based proteomics data.")
     (home-page "http://bioconductor.org/packages/MSnID")
     (synopsis "Utilities for LC-MSn proteomics identifications")
     (description
-     "This package extracts MS/MS ID data from mzIdentML (leveraging the mzID
-package) or text files.  After collating the search results from multiple
-datasets it assesses their identification quality and optimize filtering
-criteria to achieve the maximum number of identifications while not exceeding
-a specified false discovery rate.  It also contains a number of utilities to
-explore the MS/MS results and assess missed and irregular enzymatic cleavages,
-mass measurement accuracy, etc.")
+     "This package extracts @dfn{tandem mass spectrometry} (MS/MS) ID data
+from mzIdentML (leveraging the mzID package) or text files.  After collating
+the search results from multiple datasets it assesses their identification
+quality and optimize filtering criteria to achieve the maximum number of
+identifications while not exceeding a specified false discovery rate.  It also
+contains a number of utilities to explore the MS/MS results and assess missed
+and irregular enzymatic cleavages, mass measurement accuracy, etc.")
     (license license:artistic2.0)))
