@@ -46,7 +46,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages base)
+  #:use-module (srfi srfi-1))
 
 (define-public libtasn1
   (package
@@ -226,6 +227,19 @@ required structures.")
                (base32
                 "1zyl2z63s68hx1dpxqx0lykmlf3rwrzlrf44sq3h7dvjmr1z55qf"))))
     (replacement #f)))
+
+(define-public gnutls/guile-2.2
+  ;; GnuTLS for Guile 2.2.  This is supported by GnuTLS >= 3.5.5.
+  (package
+    (inherit gnutls-3.5.8)
+    (name "guile2.2-gnutls")
+    (arguments
+     ;; Remove '--with-guile-site-dir=…/2.0'.
+     (substitute-keyword-arguments (package-arguments gnutls-3.5.8)
+       ((#:configure-flags flags)
+        `(cdr ,flags))))
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs gnutls-3.5.8))))))
 
 (define-public openssl
   (package
