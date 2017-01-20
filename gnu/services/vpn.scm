@@ -46,11 +46,11 @@
 
 (define (uglify-field-name name)
   (match name
-         ('verbosity "verb")
-         (_ (let ((str (symbol->string name)))
-              (if (string-suffix? "?" str)
-                  (substring str 0 (1- (string-length str)))
-                  str)))))
+    ('verbosity "verb")
+    (_ (let ((str (symbol->string name)))
+         (if (string-suffix? "?" str)
+             (substring str 0 (1- (string-length str)))
+             str)))))
 
 (define (serialize-field field-name val)
   (if (eq? field-name 'pid-file)
@@ -108,8 +108,8 @@
 (define (serialize-tls-auth role location)
   (serialize-field 'tls-auth
                    (string-append location " " (match role
-                                                      ('server "0")
-                                                      ('client "1")))))
+                                                 ('server "0")
+                                                 ('client "1")))))
 (define (tls-auth? val)
   (or (eq? val #f)
       (string? val)))
@@ -230,10 +230,10 @@ client.  Each file is named after the name of the client."
                          (for-each
                           (lambda (ccd)
                             (match ccd
-                                   ((name config-string)
-                                    (call-with-output-file
-                                        (string-append #$output "/" name)
-                                      (lambda (port) (display config-string port))))))
+                              ((name config-string)
+                               (call-with-output-file
+                                   (string-append #$output "/" name)
+                                 (lambda (port) (display config-string port))))))
                           '#$files))))))
 
 (define-syntax define-split-configuration
@@ -378,53 +378,53 @@ is trunkated and rewritten every minute.")
            (lambda ()
              (serialize-configuration config
                                       (match role
-                                             ('server
-                                              openvpn-server-configuration-fields)
-                                             ('client
-                                              openvpn-client-configuration-fields))))))
+                                        ('server
+                                         openvpn-server-configuration-fields)
+                                        ('client
+                                         openvpn-client-configuration-fields))))))
         (ccd-dir (match role
-                        ('server (create-ccd-directory
-                                  (openvpn-server-configuration-client-config-dir
-                                   config)))
-                        ('client #f))))
+                   ('server (create-ccd-directory
+                             (openvpn-server-configuration-client-config-dir
+                              config)))
+                   ('client #f))))
     (computed-file "openvpn.conf"
                    #~(begin
                        (use-modules (ice-9 match))
                        (call-with-output-file #$output
                          (lambda (port)
                            (match '#$role
-                                  ('server (display "" port))
-                                  ('client (display "client\n" port)))
+                             ('server (display "" port))
+                             ('client (display "client\n" port)))
                            (display #$config-str port)
                            (match '#$role
-                                  ('server (display
-                                            (string-append "client-config-dir "
-                                                           #$ccd-dir "\n") port))
-                                  ('client (display "" port)))))))))
+                             ('server (display
+                                       (string-append "client-config-dir "
+                                                      #$ccd-dir "\n") port))
+                             ('client (display "" port)))))))))
 
 (define (openvpn-shepherd-service role)
   (lambda (config)
     (let* ((config-file (openvpn-config-file role config))
            (pid-file ((match role
-                             ('server openvpn-server-configuration-pid-file)
-                             ('client openvpn-client-configuration-pid-file))
+                        ('server openvpn-server-configuration-pid-file)
+                        ('client openvpn-client-configuration-pid-file))
                       config))
            (openvpn ((match role
-                            ('server openvpn-server-configuration-openvpn)
-                            ('client openvpn-client-configuration-openvpn))
+                       ('server openvpn-server-configuration-openvpn)
+                       ('client openvpn-client-configuration-openvpn))
                      config))
            (log-file (match role
-                            ('server "/var/log/openvpn-server.log")
-                            ('client "/var/log/openvpn-client.log"))))
+                       ('server "/var/log/openvpn-server.log")
+                       ('client "/var/log/openvpn-client.log"))))
       (list (shepherd-service
              (documentation (string-append "Run the OpenVPN "
                                            (match role
-                                                  ('server "server")
-                                                  ('client "client"))
+                                             ('server "server")
+                                             ('client "client"))
                                            " daemon."))
              (provision (match role
-                               ('server '(vpn-server))
-                               ('client '(vpn-client))))
+                          ('server '(vpn-server))
+                          ('client '(vpn-client))))
              (requirement '(networking))
              (start #~(make-forkexec-constructor
                        (list (string-append #$openvpn "/sbin/openvpn")
