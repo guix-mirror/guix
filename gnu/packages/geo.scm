@@ -32,6 +32,43 @@
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
 
+(define-public geos
+  (package
+    (name "geos")
+    (version "3.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.osgeo.org/geos/geos-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "1icz31kd5sml2kdxhjznvmv33zfr6nig9l0i6bdcz9q9g8x4wbja"))))
+    (build-system gnu-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (add-after
+                    'unpack 'patch-test-shebangs
+                    (lambda _
+                      (substitute* '("tests/xmltester/testrunner.sh"
+                                     "tests/geostest/testrunner.sh")
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "https://geos.osgeo.org/")
+    (synopsis "Geometry Engine for Geographic Information Systems")
+    (description
+     "GEOS provides a spatial object model and fundamental geometric
+functions.  It is a C++ port of the Java Topology Suite (JTS).  As such,
+it aims to contain the complete functionality of JTS in C++.  This
+includes all the OpenGIS Simple Features for SQL spatial predicate
+functions and spatial operators, as well as specific JTS enhanced
+topology functions.")
+    (license (list license:lgpl2.1+          ; Main distribution.
+                   license:zlib              ; tests/xmltester/tinyxml/*
+                   license:public-domain)))) ; include/geos/timeval.h
+
 ;;; FIXME GNOME Maps only runs within GNOME. On i3, it fails with this error:
 ;;; (org.gnome.Maps:8568): GLib-GIO-ERROR **: Settings schema
 ;;; 'org.gnome.desktop.interface' is not installed
