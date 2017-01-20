@@ -8463,7 +8463,7 @@ structure (pcaRes) to provide a common interface to the PCA results.")
     (synopsis "Base functions and classes for MS-based proteomics")
     (description
      "This package provides basic plotting, data manipulation and processing
-of MS-based proteomics data.")
+of mass spectrometry based proteomics data.")
     (license license:artistic2.0)))
 
 (define-public r-msnid
