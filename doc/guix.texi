@@ -8758,11 +8758,41 @@ and @command{wicd-curses} user interfaces.
 @end deffn
 
 @cindex NetworkManager
-@deffn {Scheme Procedure} network-manager-service @
-       [#:network-manager @var{network-manager}]
-Return a service that runs NetworkManager, a network connection manager
-attempting to keep network connectivity active when available.
-@end deffn
+
+@defvr {Scheme Variable} network-manager-service-type
+This is the service type for the
+@uref{https://wiki.gnome.org/Projects/NetworkManager, NetworkManager}
+service. The value for this service type is a
+@code{network-manager-configuration} record.
+@end defvr
+
+@deftp {Data Type} network-manager-configuration
+Data type representing the configuration of NetworkManager.
+
+@table @asis
+@item @code{network-manager} (default: @code{network-manager})
+The NetworkManager package to use.
+
+@item @code{dns} (default: @code{"default"})
+Processing mode for DNS, which affects how NetworkManager uses the
+@code{resolv.conf} configuration file.
+
+@table @samp
+@item default
+NetworkManager will update @code{resolv.conf} to reflect the nameservers
+provided by currently active connections.
+
+@item dnsmasq
+NetworkManager will run @code{dnsmasq} as a local caching nameserver,
+using a "split DNS" configuration if you are connected to a VPN, and
+then update @code{resolv.conf} to point to the local nameserver.
+
+@item none
+NetworkManager will not modify @code{resolv.conf}.
+@end table
+
+@end table
+@end deftp
 
 @cindex Connman
 @deffn {Scheme Procedure} connman-service @
