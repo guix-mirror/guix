@@ -78,6 +78,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/code.scm				\
   %D%/packages/commencement.scm			\
   %D%/packages/compression.scm			\
+  %D%/packages/compton.scm 			\
   %D%/packages/conkeror.scm			\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
