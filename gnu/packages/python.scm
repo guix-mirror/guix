@@ -3016,6 +3016,24 @@ sources.")
       (propagated-inputs `(("python2-pytz" ,python2-pytz)
                        ,@(package-propagated-inputs base))))))
 
+;; This is needed for python-matplotlib@1.4 and python-scipy@0.16, at least.
+;; Try removing this when they are updated.
+(define-public python-sphinx-1.2.3
+  (package (inherit python-sphinx)
+           (version "1.2.3")
+           (source (origin
+                     (method url-fetch)
+                     (uri (pypi-uri "Sphinx" version))
+                     (sha256
+                      (base32
+                       "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
+           ;; XXX: "'NoneType' object has no attribute 'split'".
+           (arguments '(#:tests? #f))))
+
+(define-public python2-sphinx-1.2.3
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-sphinx-1.2.3)))))
+
 (define-public python-sphinx-rtd-theme
   (package
     (name "python-sphinx-rtd-theme")
@@ -3747,7 +3765,7 @@ transcendental functions).")
        ("tk" ,tk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx" ,python-sphinx-1.2.3)
        ("python-numpydoc" ,python-numpydoc)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
@@ -3831,6 +3849,10 @@ toolkits.")
     (package (inherit matplotlib)
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
+      (native-inputs
+       `(("python2-sphinx" ,python2-sphinx-1.2.3)
+         ,@(fold alist-delete (package-native-inputs matplotlib)
+                 '("python-sphinx"))))
       (propagated-inputs
        `(("python2-pycairo" ,python2-pycairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
@@ -3938,7 +3960,7 @@ functions.")
        ("openblas" ,openblas)))
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx" ,python-sphinx-1.2.3)
        ("python-numpydoc" ,python-numpydoc)
        ("gfortran" ,gfortran)
        ("texlive" ,texlive)
@@ -4013,7 +4035,15 @@ routines such as routines for numerical integration and optimization.")
     (license license:bsd-3)))
 
 (define-public python2-scipy
-  (package-with-python2 python-scipy))
+  (let ((scipy (package-with-python2
+                (strip-python2-variant python-scipy))))
+    (package (inherit scipy)
+             ;; Make sure to use special packages for Python 2 instead
+             ;; of those automatically rewritten by package-with-python2.
+             (native-inputs
+              `(("python2-sphinx" ,python2-sphinx-1.2.3)
+                ,@(fold alist-delete (package-native-inputs scipy)
+                        '("python-sphinx")))))))
 
 (define-public python-socksipy-branch
   (package
