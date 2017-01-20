@@ -86,7 +86,7 @@ most common applications of GD involve website development.")
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/libgd/libgd/releases/download/"
-                            "gd" version "/libgd-" version ".tar.xz"))
+                            "gd-" version "/libgd-" version ".tar.xz"))
         (patches (search-patches "gd-fix-gd2-read-test.patch"
                                  "gd-fix-tests-on-i686.patch"))
         (sha256
