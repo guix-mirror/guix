@@ -5290,14 +5290,14 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-1")
+    (version "2.4-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "0i0c7rc0nzgbysd1nlxzxd2rvy75qcnw3yc7nggzqjzzj5d7yzsd"))))
+         "12wf64izrpq9z3ix7mgm5421mq0xsm8dw5qblvcrz452nfhjf5w9"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
