@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -129,19 +129,16 @@ including, for example, recursive directory searching.")
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
-    (if (%current-target-system)
-        '()
-        `(#:phases
-          (modify-phases %standard-phases
-            (add-before 'patch-source-shebangs 'patch-test-suite
-              (lambda* (#:key inputs #:allow-other-keys)
-                (let ((bash (assoc-ref inputs "bash")))
-                  (patch-makefile-SHELL "testsuite/Makefile.tests")
-                  (substitute* '("testsuite/bsd.sh"
-                                 "testsuite/bug-regex9.c")
-                    (("/bin/sh")
-                     (string-append bash "/bin/sh")))
-                  #t)))))))
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'patch-source-shebangs 'patch-test-suite
+          (lambda* (#:key inputs #:allow-other-keys)
+            (patch-makefile-SHELL "testsuite/Makefile.tests")
+            (substitute* '("testsuite/bsd.sh"
+                           "testsuite/bug-regex9.c")
+              (("/bin/sh")
+               (which "sh")))
+            #t)))))
    (native-inputs
     `(("perl" ,perl))) ; for build-aux/help2man
    (description
