@@ -52,10 +52,18 @@
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("perl-timedate" ,perl-timedate)
+       ("perl-time-duration" ,perl-time-duration)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (wrap-program
+                            (string-append out "/bin/ts")
+                          `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))))
          (delete 'configure))           ; no configure script
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
