@@ -5950,7 +5950,7 @@ done, how much is left to do, and estimate how long it will take.")
 (define-public perl-term-readkey
   (package
     (name "perl-term-readkey")
-    (version "2.32")
+    (version "2.37")
     (source
      (origin
        (method url-fetch)
@@ -5958,7 +5958,7 @@ done, how much is left to do, and estimate how long it will take.")
                            "TermReadKey-" version ".tar.gz"))
        (sha256
         (base32
-         "1y79w5cj98w0a1nqxjhmaw01p2hfhzfw340m2qxd11p6124hxfaq"))))
+         "0hdj5mldpj3pyprd4hbbalfx9yjgi5p59gg2ixk9808f5v7q74sa"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/TermReadKey")
     (synopsis "Simple terminal control")
