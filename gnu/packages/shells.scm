@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,14 +107,17 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
        #:configure-flags '("--sysconfdir=/etc")
        #:phases
        (modify-phases %standard-phases
-         ;; Replace 'bc' by its absolute file name in the store.
-         (add-after 'unpack 'patch-bc
+         ;; Embed absolute paths to store items.
+         (add-after 'unpack 'embed-store-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* '("share/functions/math.fish"
                             "share/functions/seq.fish")
                (("\\| bc")
                 (string-append "| " (assoc-ref %build-inputs "bc")
-                               "/bin/bc"))))))))
+                               "/bin/bc")))
+             (substitute* "share/functions/fish_update_completions.fish"
+               (("python") (which "python")))
+             #t)))))
     (synopsis "The friendly interactive shell")
     (description
      "Fish (friendly interactive shell) is a shell focused on interactive use,
