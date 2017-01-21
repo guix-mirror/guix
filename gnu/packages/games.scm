@@ -2789,7 +2789,7 @@ the GNU GPL.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.1")
+    (version "2.01.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceforge.net/projects/tintin"
@@ -2797,7 +2797,7 @@ the GNU GPL.")
                                   "/tintin" "-" version ".tar.gz"))
               (sha256
                (base32
-                "195wrfcys8yy953gdrl1gxryhjnx9lg1vqgxm3dyzm8bi18aa2yc"))))
+                "13h39agyhlhm17zyqlb56bmbbxpimikyf5pana3gd3ylvqy1xq81"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
