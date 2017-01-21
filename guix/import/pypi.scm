@@ -227,10 +227,8 @@ name/variable pairs describing the required inputs of this package."
   (sort
     (map (lambda (input)
            (list input (list 'unquote (string->symbol input))))
-         (append '("python-setuptools")
-                 ;; Argparse has been part of Python since 2.7.
-                 (remove (cut string=? "python-argparse" <>)
-                         (guess-requirements source-url wheel-url tarball))))
+         (remove (cut string=? "python-argparse" <>)
+                 (guess-requirements source-url wheel-url tarball)))
     (lambda args
       (match args
         (((a _ ...) (b _ ...))
