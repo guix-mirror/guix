@@ -77,8 +77,10 @@
              (sha256
               (base32
                "0qjy3rcrn89n42y5iz60kgr0rrl29hpnj8mq2yvbc1wrcizmvzfs"))
-             (patches (search-patches "qemu-CVE-2017-5525.patch"
-                                      "qemu-CVE-2017-5526.patch"))))
+             (patches (search-patches "qemu-CVE-2016-10155.patch"
+                                      "qemu-CVE-2017-5525.patch"
+                                      "qemu-CVE-2017-5526.patch"
+                                      "qemu-CVE-2017-5552.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
