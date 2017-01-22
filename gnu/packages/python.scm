@@ -12492,3 +12492,33 @@ a file-like object from which an arbitrarly-sized key can be read.")
 
 (define-public python2-pbkdf2
   (package-with-python2 python-pbkdf2))
+
+(define-public python-qrcode
+  (package
+    (name "python-qrcode")
+    (version "5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "qrcode" version))
+       (sha256
+        (base32
+         "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)     ; for SVG output
+       ("python-pillow" ,python-pillow) ; for PNG output
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/lincolnloop/python-qrcode")
+    (synopsis "QR Code image generator")
+    (description "This package provides a pure Python QR Code generator
+module.  It uses the Python Imaging Library (PIL) to allow for the generation
+of QR Codes.
+
+In addition this package provides a command line tool to generate QR codes and
+either write these QR codes to a file or do the output as ascii art at the
+console.")
+    (license license:bsd-3)))
+
+(define-public python2-qrcode
+  (package-with-python2 python-qrcode))
