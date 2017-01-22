@@ -131,6 +131,15 @@ including, for example, recursive directory searching.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'dont-rebuild-sed.1
+          (lambda _
+            ;; Make sure we do not attempt to rebuild 'doc/sed.1', which does
+            ;; not work when cross-compiling because we cannot run 'sed'.
+            ;; This is fixed upstream as commit a0a25e3.
+            (substitute* "Makefile.in"
+              (("^doc/sed\\.1:.*")
+               "doc/sed.1:\n"))
+            #t))
         (add-before 'patch-source-shebangs 'patch-test-suite
           (lambda* (#:key inputs #:allow-other-keys)
             (patch-makefile-SHELL "testsuite/Makefile.tests")
@@ -139,8 +148,6 @@ including, for example, recursive directory searching.")
               (("/bin/sh")
                (which "sh")))
             #t)))))
-   (native-inputs
-    `(("perl" ,perl))) ; for build-aux/help2man
    (description
     "Sed is a non-interactive, text stream editor.  It receives a text
 input from a file or from standard input and it then applies a series of text
