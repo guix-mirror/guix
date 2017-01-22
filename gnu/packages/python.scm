@@ -12522,3 +12522,24 @@ console.")
 
 (define-public python2-qrcode
   (package-with-python2 python-qrcode))
+
+;; SlowAES isn't compatible with Python 3.
+(define-public python2-slowaes
+  (package
+    (name "python2-slowaes")
+    (version "0.1a1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "slowaes" version))
+       (sha256
+        (base32
+         "02dzajm83a7lqgxf6r3hgj64wfmcxz8gs4nvgxpvj5n19kjqlrc3"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (home-page "http://code.google.com/p/slowaes/")
+    (synopsis "Implementation of AES in Python")
+    (description "This package contains an implementation of AES in Python.
+This implementation is slow (hence the project name) but still useful when
+faster ones are not available.")
+    (license license:asl2.0)))
