@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2017 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015, 2017 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -425,3 +425,43 @@ Layer (SDL).  With them, Guile programmers can have easy access to graphics,
 sound and device input (keyboards, joysticks, mice, etc.).")
     (home-page "http://gnu.org/s/guile-sdl")
     (license gpl3+)))
+
+(define-public guile-sdl2
+  (package
+    (name "guile-sdl2")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://files.dthompson.us/guile-sdl2/guile-sdl2-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0yq9lsl17cdvj77padvpk3jcw2g6g0pck9jrchc7n2767rrc012b"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")
+       #:configure-flags
+       (list (string-append "--with-libsdl2-prefix="
+                            (assoc-ref %build-inputs "sdl2"))
+             (string-append "--with-libsdl2-image-prefix="
+                            (assoc-ref %build-inputs "sdl2-image"))
+             (string-append "--with-libsdl2-ttf-prefix="
+                            (assoc-ref %build-inputs "sdl2-ttf"))
+             (string-append "--with-libsdl2-mixer-prefix="
+                            (assoc-ref %build-inputs "sdl2-mixer")))))
+    (native-inputs
+     `(("guile" ,guile-2.0)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)
+       ("sdl2-ttf" ,sdl2-ttf)))
+    (synopsis "Guile bindings for SDL2")
+    (home-page "https://dthompson.us/projects/guile-sdl2.html")
+    (description
+     "Guile-SDL2 provides Guile Scheme bindings for the SDL2 C shared library.
+The bindings are written in pure Scheme using Guile's foreign function
+interface.")
+    (license lgpl3+)))
