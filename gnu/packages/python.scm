@@ -34,6 +34,7 @@
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12462,3 +12463,32 @@ Features:
 @item Compiles templates into optimized, yet readable, Python code.
 @end enumerate")
     (license (license:x11-style "file://LICENSE"))))
+
+(define-public python-pbkdf2
+  (package
+    (name "python-pbkdf2")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pbkdf2" version))
+       (sha256
+        (base32
+         "0yb99rl2mbsaamj571s1mf6vgniqh23v98k4632150hjkwv9fqxc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pycrypto" ,python-pycrypto)))  ; optional
+    (home-page "http://www.dlitz.net/software/python-pbkdf2/")
+    (synopsis "Password-based key derivation")
+    (description "This module implements the password-based key derivation
+function, PBKDF2, specified in RSA PKCS#5 v2.0.
+
+PKCS#5 v2.0 Password-Based Key Derivation is a key derivation function which
+is part of the RSA Public Key Cryptography Standards series.  The provided
+implementation takes a password or a passphrase and a salt value (and
+optionally a iteration count, a digest module, and a MAC module) and provides
+a file-like object from which an arbitrarly-sized key can be read.")
+    (license license:expat)))
+
+(define-public python2-pbkdf2
+  (package-with-python2 python-pbkdf2))
