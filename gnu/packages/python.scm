@@ -168,6 +168,7 @@
        (list "--enable-shared"                    ;allow embedding
              "--with-system-ffi"                  ;build ctypes
              "--with-ensurepip=install"           ;install pip and setuptools
+             "--enable-unicode=ucs4"
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
 
