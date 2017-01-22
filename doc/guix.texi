@@ -6963,6 +6963,11 @@ the partition layout you want:
 cfdisk
 @end example
 
+If your disk uses the GUID Partition Table (GPT) format and you plan to
+install BIOS-based GRUB (which is the default), make sure a BIOS Boot
+Partition is available (@pxref{BIOS installation,,, grub, GNU GRUB
+manual}).
+
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
