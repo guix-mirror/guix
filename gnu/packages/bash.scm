@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashenr <efraim@flashner.co.il>
+;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,7 +60,13 @@
    (2 "0lrwq6vyqism3yqv9s7kzaf3dsl4q5w9r5svcqz279qp7qca083h")
    (3 "1chqww2rj6g42b8s60q5zlzy0jzp684jkpsbrbfy1vzxja8mmpsi")
    (4 "1cy8abf96hkrjhw921ndr0shlcnc52bg45rn6xri4v5clhq0l25d")
-   (5 "0a8515kyk4zsgmvlqvlganjfr7pq0j6kzpr4d6xx02kpbdr4n7i2")))
+   (5 "0a8515kyk4zsgmvlqvlganjfr7pq0j6kzpr4d6xx02kpbdr4n7i2")
+   (6 "1f24wgqngmj2mrj9yibwvc2zvlmn5xi53mnw777g3l40c4m2x3ka")
+   (7 "1bzdsnqaf05gdbqpsixhan8vygjxpcxlz1dd8d9f5jdznw3wq76y")
+   (8 "1firw915mjm03hbbw9a70ch3cpgrgnvqjpllgdnn6csr8q04f546")
+   (9 "0g1l56kvw61rpw7dqa9fcl9llkl693h73g631hrhxlm030ddssqb")
+   (10 "01lfhrkdsdkdz8ypzapr614ras23x7ckjnr60aa5bzkaqprccrc4")
+   (11 "038p7mhnq9m65g505hi3827jkf9f35nd1cy00w8mwafpyxp44mnx")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
