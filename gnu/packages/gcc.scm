@@ -205,17 +205,18 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (for-each
                  (lambda (x)
                    (substitute* (find-files "gcc/config"
-                                            "^linux(64|-elf|-eabi)?\\.h$")
-                     (("(#define GLIBC_DYNAMIC_LINKER.*)\\\\\n$" _ line)
+                                            "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
+                     (("(#define (GLIBC|GNU_USER)_DYNAMIC_LINKER.*)\\\\\n$" _ line)
                       line)))
                  '(1 2 3))
 
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
                                          "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
-                  (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
-                   (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
-                           suffix
+                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ ]*).*$"
+                    _ gnu-user suffix)
+                   (format #f "#define ~a_DYNAMIC_LINKER~a \"~a\"~%"
+                           gnu-user suffix
                            (string-append libc ,(glibc-dynamic-linker)))))
 
                 ;; Tell where to find libstdc++, libc, and `?crt*.o', except
