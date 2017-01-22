@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -297,10 +297,10 @@ as well as the classic centralized workflow.")
    (native-search-paths
     ;; For HTTPS access, Git needs a single-file certificate bundle, specified
     ;; with $GIT_SSL_CAINFO.
-    ;; FIXME: This variable designates a single file; it is not a search path.
     (list (search-path-specification
            (variable "GIT_SSL_CAINFO")
            (file-type 'regular)
+           (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))))
 
    (synopsis "Distributed version control system")

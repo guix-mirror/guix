@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,17 +39,21 @@
 'GUIX_PROFILE' environment variable.  This allows users to specify what the
 user-friendly name of the profile is, for instance ~/.guix-profile rather than
 /gnu/store/...-profile."
-  (let ((replacement (string-append "${GUIX_PROFILE:-" profile "}")))
+  (let ((replacement (string-append "${GUIX_PROFILE:-" profile "}"))
+        (crop        (cute string-drop <> (string-length profile))))
     (match-lambda
       ((search-path . value)
-       (let* ((separator (search-path-specification-separator search-path))
-              (items     (string-tokenize* value separator))
-              (crop      (cute string-drop <> (string-length profile))))
-         (cons search-path
-               (string-join (map (lambda (str)
-                                   (string-append replacement (crop str)))
-                                 items)
-                            separator)))))))
+       (match (search-path-specification-separator search-path)
+         (#f
+          (cons search-path
+                (string-append replacement (crop value))))
+         ((? string? separator)
+          (let ((items (string-tokenize* value separator)))
+            (cons search-path
+                  (string-join (map (lambda (str)
+                                      (string-append replacement (crop str)))
+                                    items)
+                               separator)))))))))
 
 (define (write-environment-variable-definition port)
   "Write the given environment variable definition to PORT."

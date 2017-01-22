@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015 Alex Kost <alezost@gmail.com>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -272,6 +272,7 @@ SCM_TESTS =					\
   tests/nar.scm					\
   tests/union.scm				\
   tests/profiles.scm				\
+  tests/search-paths.scm			\
   tests/syscalls.scm				\
   tests/gremlin.scm				\
   tests/bournish.scm				\
