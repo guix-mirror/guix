@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -666,7 +666,7 @@ processed, #f otherwise."
                                         (_              #f))
                                       opts)
                      (() (list %current-profile))
-                     (lst lst)))
+                     (lst (reverse lst))))
          (profile  (match profiles
                      ((head tail ...) head))))
     (match (assoc-ref opts 'query)

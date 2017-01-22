@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -165,7 +165,7 @@ guix package --bootstrap -p "$profile_alt" -i gcc-bootstrap
 if guix package -p "$profile" --search-paths | grep LIBRARY_PATH
 then false; fi
 guix package -p "$profile" -p "$profile_alt" --search-paths \
-     | grep "LIBRARY_PATH.*$profile/lib"
+     | grep "LIBRARY_PATH.*$profile/lib.$profile_alt/lib"
 
 #
 # Try with the default profile.
