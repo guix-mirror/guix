@@ -6089,7 +6089,7 @@ guix environment --ad-hoc -e '(@@ (gnu) %base-packages)'
 
 starts a shell with all the GuixSD base packages available.
 
-The above commands only the use default output of the given packages.
+The above commands only use the default output of the given packages.
 To select other outputs, two element tuples can be specified:
 
 @example
