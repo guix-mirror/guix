@@ -101,7 +101,7 @@ provided as well as the framework to add new color models and data types.")
             (("g_object_unref \\(buffer.\\);") ""))
 
           (substitute* "tests/compositions/Makefile"
-            (("/bin/sh") (which "bash"))))
+            (("/bin/sh") (which "sh"))))
         %standard-phases)))
     (inputs
      `(("babl" ,babl)
