@@ -35,15 +35,15 @@
 (define-public ccid
   (package
     (name "ccid")
-    (version "1.4.25")
+    (version "1.4.26")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://alioth.debian.org/frs/download.php/file/4187/"
+                    "https://alioth.debian.org/frs/download.php/file/4205/"
                     "ccid-" version ".tar.bz2"))
               (sha256
                (base32
-                "029n4lpy5nvg278s4mybisyj4lm0bcjslvwfslw6hkghw162n1kb"))))
+                "0bxy835c133ajalpj4gx60nqkjvpf9y1n97n04pw105pi9qbyrrj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--enable-usbdropdir=" %output

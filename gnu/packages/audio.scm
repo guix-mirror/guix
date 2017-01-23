@@ -223,6 +223,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
        ("boost" ,boost)
        ("atkmm" ,atkmm)
        ("cairomm" ,cairomm)
+       ("eudev" ,eudev)
        ("gtkmm" ,gtkmm-2)
        ("glibmm" ,glibmm)
        ("libart-lgpl" ,libart-lgpl)
@@ -238,8 +239,8 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
        ("lv2" ,lv2)
        ("vamp" ,vamp)
        ("curl" ,curl)
-       ("fftw" ,fftw-with-threads)
-       ("fftwf" ,fftwf-with-threads)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
        ("jack" ,jack-1)
        ("serd" ,serd)
        ("sord" ,sord)
@@ -2101,19 +2102,15 @@ stretching and pitch scaling of audio.  This package contains the library.")
 (define-public wavpack
   (package
     (name "wavpack")
-    (version "4.70.0")
+    (version "5.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.wavpack.com/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "191h8hv8qk72hfh1crg429i9yq3cminwqb249sy9zadbn1wy7b9c"))))
+                "0i19c6krc0p9krwrqy9s5xahaafigqzxcn31piidmlaqadyn4f8r"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       ;; wavpack.pc.in lacks path substitution for 'exec_prefix'.
-       (list (string-append "--libdir=" %output "/lib"))))
     (home-page "http://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
     (description

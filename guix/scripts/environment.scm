@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -531,8 +531,10 @@ message if any test fails."
 
 (define (register-gc-root target root)
   "Make ROOT an indirect root to TARGET.  This is procedure is idempotent."
-  (let* ((root (string-append (canonicalize-path (dirname root))
-                              "/" root)))
+  (let* ((root (if (string-prefix? "/" root)
+                   root
+                   (string-append (canonicalize-path (dirname root))
+                                  "/" root))))
     (catch 'system-error
       (lambda ()
         (symlink target root)

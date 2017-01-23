@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -52,11 +53,17 @@
                          "/source/" name "-" version ".tar.gz"))
         (sha256
           (base32 "1ik591rx15nn3n1297cwykl8wvrlgj78i528id9wbidgy3xzd570"))
+        (modules '((guix build utils)))
+        (snippet
+         ;; Ensure reproducibility.
+         '(substitute* "src/wp/main/xp/abi_ver.cpp"
+            (("__DATE__") "\"2017\"")
+            (("__TIME__") "\"00:00\"")))
         (patches
          (search-patches "abiword-wmf-version-lookup-fix.patch"
                          "abiword-explictly-cast-bools.patch"))))
 
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments                   ;; NOTE: rsvg is disabled, since Abiword
       `(#:configure-flags        ;; supports it directly, and its BS is broken.
         (list

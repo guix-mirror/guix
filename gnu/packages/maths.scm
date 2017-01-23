@@ -252,7 +252,7 @@ numbers.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.60")
+    (version "4.61")
     (source
      (origin
       (method url-fetch)
@@ -260,13 +260,13 @@ numbers.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "15z2ymzqhxwss6wgdj5f7vkyqlqdsjgrvm0x871kmlx0n0664mhk"))))
+        "1adbvwiaqrv9pql9ry3lhn2vfsxnff2vh4fs477d90kpfx0xwrlq"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
     (arguments
      `(#:configure-flags '("--with-gmp")))
-    (home-page "http://www.gnu.org/software/glpk/")
+    (home-page "https://www.gnu.org/software/glpk/")
     (synopsis "GNU Linear Programming Kit, supporting the MathProg language")
     (description
      "GLPK is a C library for solving large-scale linear programming (LP),
@@ -484,14 +484,14 @@ computations.")
 (define-public hdf4
   (package
     (name "hdf4")
-    (version "4.2.11")
+    (version "4.2.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
-        (base32 "16yr50j845zlfx20skmw3y75ww77akk9gg0affjqkg66ih5r03mv"))
+        (base32 "020jh563sjyxsgml8l809d2i1d4ms9shivwj3gbm7n0ilxbll8id"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
                                 "hdf4-shared-fortran.patch"))))

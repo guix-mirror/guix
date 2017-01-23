@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -959,12 +959,12 @@ or a list thereof")
 
 (define* (run-checkers package #:optional (checkers %checkers))
   "Run the given CHECKERS on PACKAGE."
-  (let ((tty? (isatty? (current-error-port)))
-        (name (package-full-name package)))
+  (let ((tty? (isatty? (current-error-port))))
     (for-each (lambda (checker)
                 (when tty?
-                  (format (current-error-port) "checking ~a [~a]...\x1b[K\r"
-                          name (lint-checker-name checker))
+                  (format (current-error-port) "checking ~a@~a [~a]...\x1b[K\r"
+                          (package-name package) (package-version package)
+                          (lint-checker-name checker))
                   (force-output (current-error-port)))
                 ((lint-checker-check checker) package))
               checkers)

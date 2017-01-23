@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
@@ -75,7 +75,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gtk))
 
 (define-public aide
@@ -474,7 +474,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "9")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "4")      ; for patch release, e.g. "4"
+         (bind-release-version "5")      ; for patch release, e.g. "4"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -590,7 +590,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1qpi23lrs6jfxqx8dakbqfyg3hvrzq5ldchg6my19xcvx8515mgx"))))
+                      "1yn15chkfqf4d7961ip2x10jm27a9wqymz2xqh0a2g89arrirkaw"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1348,14 +1348,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.1.0.0")
+    (version "2.2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "1bfc2xiplpad6f2nwi48y0kps7xqnsll85dlz63cy8k5bysl6d20"))))
+         "0gz9i30pdmkchi936ijy873k8di6fmf3v5rv551hxyf0hjkjx8b3"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-pycrypto" ,python2-pycrypto)

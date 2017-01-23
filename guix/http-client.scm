@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2012, 2015 Free Software Foundation, Inc.
 ;;;
@@ -223,13 +223,14 @@ or if EOF is reached."
                 'shutdown (const #f))
 
 (define* (http-fetch uri #:key port (text? #f) (buffered? #t)
-                     keep-alive? (verify-certificate? #t))
+                     keep-alive? (verify-certificate? #t)
+                     (headers '((user-agent . "GNU Guile"))))
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
 textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
 unbuffered port, suitable for use in `filtered-port'.  When KEEP-ALIVE? is
 true, send a 'Connection: keep-alive' HTTP header, in which case PORT may be
-reused for future HTTP requests.
+reused for future HTTP requests.  HEADERS is an alist of extra HTTP headers.
 
 When VERIFY-CERTIFICATE? is true, verify HTTPS server certificates.
 
@@ -240,13 +241,14 @@ Raise an '&http-get-error' condition if downloading fails."
     (let ((port (or port (open-connection-for-uri uri
                                                   #:verify-certificate?
                                                   verify-certificate?)))
-          (auth-header (match (uri-userinfo uri)
-                         ((? string? str)
-                          (list (cons 'Authorization
-                                      (string-append "Basic "
-                                                     (base64-encode
-                                                      (string->utf8 str))))))
-                         (_ '()))))
+          (headers (match (uri-userinfo uri)
+                     ((? string? str)
+                      (cons (cons 'Authorization
+                                  (string-append "Basic "
+                                                 (base64-encode
+                                                  (string->utf8 str))))
+                            headers))
+                     (_ headers))))
       (unless (or buffered? (not (file-port? port)))
         (setvbuf port _IONBF))
       (let*-values (((resp data)
@@ -254,10 +256,10 @@ Raise an '&http-get-error' condition if downloading fails."
                      (if (guile-version>? "2.0.7")
                          (http-get uri #:streaming? #t #:port port
                                    #:keep-alive? #t
-                                   #:headers auth-header) ; 2.0.9+
+                                   #:headers headers)        ; 2.0.9+
                          (http-get* uri #:decode-body? text?        ; 2.0.7
                                     #:keep-alive? #t
-                                    #:port port #:headers auth-header)))
+                                    #:port port #:headers headers)))
                     ((code)
                      (response-code resp)))
         (case code
@@ -276,7 +278,12 @@ Raise an '&http-get-error' condition if downloading fails."
                               (code code)
                               (reason (response-reason-phrase resp)))
                              (&message
-                              (message "download failed"))))))))))
+                              (message
+                               (format
+                                #f
+                                (_ "~a: HTTP download failed: ~a (~s)")
+                                (uri->string uri) code
+                                (response-reason-phrase resp))))))))))))
 
 
 ;;;

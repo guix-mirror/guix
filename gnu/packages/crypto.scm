@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -378,3 +378,39 @@ no man page, refer to the home page for usage details.")
 storage files: it can be operated from commandline and it can integrate with a
 user's graphical desktop.")
     (license license:gpl3+)))
+
+(define-public scrypt
+  (package
+    (name "scrypt")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.tarsnap.com/scrypt/scrypt-"
+                            version ".tgz"))
+        (sha256
+         (base32
+          "1m39hpfby0fdjam842773i5w7pa0qaj7f0r22jnchxsj824vqm0p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+        (add-after 'unpack 'patch-command-invocations
+          (lambda _
+            (substitute* "Makefile.in"
+              (("command -p") ""))
+            #t))
+        (add-after 'install 'install-docs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref %outputs "out"))
+                   (misc (string-append out "/share/doc/scrypt")))
+              (install-file "FORMAT" misc)
+              #t))))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://www.tarsnap.com/scrypt.html")
+    (synopsis "Memory-hard encryption tool based on scrypt")
+    (description "This packages provides a simple password-based encryption
+utility as a demonstration of the @code{scrypt} key derivation function.
+@code{Scrypt} is designed to be far more resistant against hardware brute-force
+attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
+    (license license:bsd-2)))

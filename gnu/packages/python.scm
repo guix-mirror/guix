@@ -26,7 +26,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
@@ -34,6 +34,7 @@
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1321,7 +1322,7 @@ Python 3.3+.")
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
     (home-page "https://fedorahosted.org/dogtail/")
-    (synopsis "GUI test tool and automation framework written in ​Python")
+    (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
 It uses Accessibility (a11y) technologies to communicate with desktop
@@ -2369,14 +2370,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-click
   (package
     (name "python-click")
-    (version "6.6")
+    (version "6.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "click" version))
        (sha256
         (base32
-         "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc"))))
+         "02qkfpykbq35id8glfgwc38yc430427yd05z1wc5cnld8zgicmgi"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3463,14 +3464,14 @@ association studies (GWAS) on extremely large data sets.")
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.24.2")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
         (base32
-         "0shnafv9zc483wmcr4fzgvirg1qzz42xpdqd4a3ad39sdj1qbbia"))))
+         "0wf5rp0fvrw7j3j18dvwjq6xqlbm611wd55aphrfpps0v1gxh3ny"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -4156,6 +4157,34 @@ SQLAlchemy Database Toolkit for Python.")
 
 (define-public python2-alembic
   (package-with-python2 python-alembic))
+
+(define-public python-autopep8
+  (package
+  (name "python-autopep8")
+  (version "1.2.4")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (pypi-uri "autopep8" version))
+     (sha256
+      (base32
+       "18parm383lfn42a00wklv3qf20p4v277f1x3cn58x019dqk1xqrq"))))
+  (build-system python-build-system)
+  (propagated-inputs
+    `(("python-pep8" ,python-pep8)))
+  (home-page "https://github.com/hhatto/autopep8")
+  (synopsis "Format Python code according to the PEP 8 style guide")
+  (description
+    "@code{autopep8} automatically formats Python code to conform to
+the PEP 8 style guide.  It uses the pycodestyle utility to determine
+what parts of the code needs to be formatted.  @code{autopep8} is
+capable of fixing most of the formatting issues that can be reported
+by pycodestyle.")
+  (license (license:non-copyleft
+            "https://github.com/hhatto/autopep8/blob/master/LICENSE"))))
+
+(define-public python2-autopep8
+  (package-with-python2 python-autopep8))
 
 (define-public python-distutils-extra
   (package
@@ -6057,6 +6086,65 @@ pseudo terminal (pty), and interact with both the process and its pty.")
 (define-public python2-ptyprocess
   (package-with-python2 python-ptyprocess))
 
+(define-public python-cram
+  (package
+    (name "python-cram")
+    (version "0.7")
+    (home-page "https://bitheap.org/cram/")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append home-page "cram-"
+                                        version ".tar.gz")
+                         (pypi-uri "cram" version)))
+              (sha256
+               (base32
+                "0bvz6fwdi55rkrz3f50zsy35gvvwhlppki2yml5bj5ffy9d499vx"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* (find-files "cram" ".*\\.py$")
+               ;; Replace default shell path.
+               (("/bin/sh") (which "sh")))
+             (substitute* (find-files "tests" ".*\\.t$")
+               (("md5") "md5sum")
+               (("/bin/bash") (which "bash"))
+               (("/bin/sh") (which "sh")))
+             (substitute* "cram/_test.py"
+               ;; This hack works around a bug triggered by substituting
+               ;; the /bin/sh paths. "tests/usage.t" compares the output of
+               ;; "cram -h", which breaks the output at 80 characters. This
+               ;; causes the line showing the default shell to break into two
+               ;; lines, but the test expects a single line...
+               (("env\\['COLUMNS'\\] = '80'")
+                "env['COLUMNS'] = '160'"))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           ;; The test phase uses the built library and executable.
+           ;; It's easier to run it after install since the build
+           ;; directory contains version-specific PATH.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv "PATH" (string-append (getenv "PATH") ":"
+                                           (assoc-ref outputs "out") "/bin"))
+             (zero? (system* "make" "test")))))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("which" ,which)))
+    (synopsis "Simple testing framework for command line applications")
+    (description
+     "Cram is a functional testing framework for command line applications.
+Cram tests look like snippets of interactive shell sessions.  Cram runs each
+command and compares the command output in the test with the command’s actual
+output.")
+    (license license:gpl2+)))
+
+(define-public python2-cram
+  (package-with-python2 python-cram))
+
 (define-public python-terminado
   (package
     (name "python-terminado")
@@ -6771,26 +6859,21 @@ library.")
 (define-public python-pip
   (package
     (name "python-pip")
-    (version "8.0.2")
+    (version "9.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pip" version))
        (sha256
         (base32
-         "08cm8d4228fj0qnrysy3qv1a6022zr3dcs25amd14lgxil6vvx26"))))
+         "03clr9c1dih5n9c00c592zzvf6r1ffimywkaq9agcqdllzhl7wh9"))))
     (build-system python-build-system)
-    (native-inputs
-      `(;; Tests
-        ("python-virtualenv" ,python-virtualenv)
-        ("python-mock" ,python-mock)
-        ("python-pytest" ,python-pytest)
-        ("python-scripttest" ,python-scripttest)))
+    (arguments
+     '(#:tests? #f))          ; there are no tests in the pypi archive.
     (home-page "https://pip.pypa.io/")
-    (synopsis
-      "Package manager for Python software")
+    (synopsis "Package manager for Python software")
     (description
-      "Pip is a package manager for Python software, that finds packages on the
+     "Pip is a package manager for Python software, that finds packages on the
 Python Package Index (PyPI).")
     (license license:expat)))
 
@@ -8229,13 +8312,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.11.1")
+    (version "3.11.2")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "1bvi7rzh7scl4nmgj2n2cy7k0v3p29y15cqy2hcdnfq9mnhdr63y"))))
+               "17rcy6rb9kqjf4p707ivmx7phjq7ngcz3bf7zriwxrqgrjagj7ag"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil-2" ,python-dateutil-2)
@@ -10156,7 +10239,7 @@ different processes.  This allows better error handling when running code over
 multiple processes (imagine multiprocessing, billiard, futures, celery etc).
 
 @item Parse traceback strings and raise with the parsed tracebacks.
-@end itemize")
+@end enumerate\n")
     (license license:bsd-3)))
 
 (define-public python2-tblib
@@ -12336,3 +12419,127 @@ possible on all supported Python versions.")
 
 (define-public python2-xopen
   (package-with-python2 python-xopen))
+
+(define-public python2-cheetah
+  (package
+    (name "python2-cheetah")
+    (version "2.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Cheetah" version))
+        (sha256
+          (base32
+            "0l5mm4lnysjkzpjr95q5ydm9xc8bv43fxmr79ypybrf1y0lq4c5y"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-markdown" ,python2-markdown)))
+    (home-page "https://pythonhosted.org/Cheetah/")
+    (synopsis "Template engine")
+    (description "Cheetah is a text-based template engine and Python code
+generator.
+
+Cheetah can be used as a standalone templating utility or referenced as
+a library from other Python applications.  It has many potential uses,
+but web developers looking for a viable alternative to ASP, JSP, PHP and
+PSP are expected to be its principle user group.
+
+Features:
+@enumerate
+@item Generates HTML, SGML, XML, SQL, Postscript, form email, LaTeX, or any other
+   text-based format.
+@item Cleanly separates content, graphic design, and program code.
+@item Blends the power and flexibility of Python with a simple template language
+   that non-programmers can understand.
+@item Gives template writers full access to any Python data structure, module,
+   function, object, or method in their templates.
+@item Makes code reuse easy by providing an object-orientated interface to
+   templates that is accessible from Python code or other Cheetah templates.
+   One template can subclass another and selectively reimplement sections of it.
+@item Provides a simple, yet powerful, caching mechanism that can dramatically
+   improve the performance of a dynamic website.
+@item Compiles templates into optimized, yet readable, Python code.
+@end enumerate")
+    (license (license:x11-style "file://LICENSE"))))
+
+(define-public python-pbkdf2
+  (package
+    (name "python-pbkdf2")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pbkdf2" version))
+       (sha256
+        (base32
+         "0yb99rl2mbsaamj571s1mf6vgniqh23v98k4632150hjkwv9fqxc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pycrypto" ,python-pycrypto)))  ; optional
+    (home-page "http://www.dlitz.net/software/python-pbkdf2/")
+    (synopsis "Password-based key derivation")
+    (description "This module implements the password-based key derivation
+function, PBKDF2, specified in RSA PKCS#5 v2.0.
+
+PKCS#5 v2.0 Password-Based Key Derivation is a key derivation function which
+is part of the RSA Public Key Cryptography Standards series.  The provided
+implementation takes a password or a passphrase and a salt value (and
+optionally a iteration count, a digest module, and a MAC module) and provides
+a file-like object from which an arbitrarly-sized key can be read.")
+    (license license:expat)))
+
+(define-public python2-pbkdf2
+  (package-with-python2 python-pbkdf2))
+
+(define-public python-qrcode
+  (package
+    (name "python-qrcode")
+    (version "5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "qrcode" version))
+       (sha256
+        (base32
+         "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)     ; for SVG output
+       ("python-pillow" ,python-pillow) ; for PNG output
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/lincolnloop/python-qrcode")
+    (synopsis "QR Code image generator")
+    (description "This package provides a pure Python QR Code generator
+module.  It uses the Python Imaging Library (PIL) to allow for the generation
+of QR Codes.
+
+In addition this package provides a command line tool to generate QR codes and
+either write these QR codes to a file or do the output as ascii art at the
+console.")
+    (license license:bsd-3)))
+
+(define-public python2-qrcode
+  (package-with-python2 python-qrcode))
+
+;; SlowAES isn't compatible with Python 3.
+(define-public python2-slowaes
+  (package
+    (name "python2-slowaes")
+    (version "0.1a1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "slowaes" version))
+       (sha256
+        (base32
+         "02dzajm83a7lqgxf6r3hgj64wfmcxz8gs4nvgxpvj5n19kjqlrc3"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (home-page "http://code.google.com/p/slowaes/")
+    (synopsis "Implementation of AES in Python")
+    (description "This package contains an implementation of AES in Python.
+This implementation is slow (hence the project name) but still useful when
+faster ones are not available.")
+    (license license:asl2.0)))

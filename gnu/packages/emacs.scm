@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
@@ -12,11 +12,12 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -1066,6 +1068,44 @@ like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-ag
+  (package
+    (name "emacs-ag")
+    (version "0.47")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Wilfred/ag.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rlmp6wnyhqfg86dbz17r914msp58favn4kd4yrdwyia265a4lar"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (emacs-substitute-variables "ag.el"
+               ("ag-executable"
+                (string-append (assoc-ref inputs "the-silver-searcher")
+                               "/bin/ag")))
+             #t)))))
+    (inputs
+     `(("the-silver-searcher" ,the-silver-searcher)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("s" ,emacs-s)))
+    (home-page "https://github.com/Wilfred/ag.el")
+    (synopsis "Front-end for ag (the-silver-searcher) for Emacs")
+    (description "This package provides the ability to use the silver
+searcher, a code searching tool, sometimes abbreviated to @code{ag}.  Features
+include version control system awareness, use of Perl compatible regular
+expressions, editing the search results directly and searching file names
+rather than the contents of files.")
+    (license license:gpl3+)))
+
 (define-public emacs-async
   (package
     (name "emacs-async")
@@ -1248,7 +1288,7 @@ and stored in memory.")
 (define-public emacs-bui
   (package
     (name "emacs-bui")
-    (version "1.0.1")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1257,7 +1297,7 @@ and stored in memory.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vsh1v99xxm6hhqp0vg9fbs230kawa7xb5dnd8fidf3vwm622aqh"))))
+                "112k0mq6xpy0r47vk66miw7rxbkv3d06pv3pd0vcmrhcnhnnk486"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)))
@@ -1272,7 +1312,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1280,7 +1320,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0nhx0c3xc16frpyqikaml73hjyn8a0jijq5ibq8a4zrjiw1pqxwy"))))
+                "1i47yh24xvgmnc778765g3j9ip0xb2y85v6w83r4qmkigk9rl2ck"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1391,6 +1431,29 @@ allows easily move between them.")
 strings.")
     (license license:gpl3+)))
 
+(define-public emacs-sx
+  (package
+    (name "emacs-sx")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/vermiculus/sx.el/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("let-alist" ,let-alist)))
+    (home-page "https://github.com/vermiculus/sx.el/")
+    (synopsis "Emacs StackExchange client")
+    (description
+     "Emacs StackExchange client.  Ask and answer questions on
+Stack Overflow, Super User, and other StackExchange sites.")
+    (license license:gpl3+)))
+
 (define-public emacs-f
   (package
     (name "emacs-f")
@@ -1438,6 +1501,26 @@ can be used to move between and perform actions on these hunks.
 
 Git, Mercurial, Subversion and Bazaar are supported, and many parts of the
 display and behaviour is easily customisable.")
+    (license license:gpl3+)))
+
+(define-public emacs-git-timemachine
+  (package
+    (name "emacs-git-timemachine")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pidu/git-timemachine/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l4g0r69wfrnjsywv03v4bpdd53byg6zdx6mzabfxyymss3kvisa"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/pidu/git-timemachine")
+    (synopsis "Step through historic versions of Git-controlled files")
+    (description "This package enables you to step through historic versions
+of files under Git version control from within Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-el-mock
@@ -1713,6 +1796,27 @@ a web browser.  Expressions are sent on-the-fly from an editing buffer to be
 evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
+
+(define-public emacs-stripe-buffer
+  (package
+    (name "emacs-stripe-buffer")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sabof/stripe-buffer/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p515dq7raly5hw94kiwm3vzsfih0d8af622q4ipvvljsm98aiik"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sabof/stripe-buffer/")
+    (synopsis "Add stripes to list buffers")
+    (description
+     "This Emacs package adds faces to add stripes to list buffers and org
+tables.")
+    (license license:gpl2+)))
 
 (define-public emacs-rich-minority
   (package

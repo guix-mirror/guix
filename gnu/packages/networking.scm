@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;;
@@ -53,7 +53,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -430,7 +430,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.13")
+    (version "5.2.14")
     (source
      (origin
        (method url-fetch)
@@ -438,7 +438,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0r3bbxpwsxssa99d8dcjnp79mw1cjwqxgmqjm1537q277jwsk0yc"))))
+         "1lmh7168yby1ma8r1svgvmv9hbgjyniy9c64r6lby3zdmd0sy7d4"))))
     (build-system gnu-build-system)
     ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
@@ -879,15 +879,15 @@ sockets in Perl.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.11")
+    (version "4.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rofl0r/" name "/releases/"
                                   "download/v" version "/" name "-" version
-                                  ".tar.bz2"))
+                                  ".tar.xz"))
               (sha256
                (base32
-                "1dkncdzw852488gkh5zhn4b5i03qyj8rgh1wcvcva7yd12c19i6w"))))
+                "0kiss3ih6cwayzvqi5cx4kw4vh7r2kfxlbgk56v1f1066ncm8aj8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests

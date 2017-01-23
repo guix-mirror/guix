@@ -37,7 +37,7 @@ Patch by Andy Wingo <wingo@igalia.com>
 -	if (g_file_test ("../etc/UPower.conf", G_FILE_TEST_EXISTS))
 -		g_setenv ("UPOWER_CONF_FILE_NAME", "../etc/UPower.conf", TRUE);
 -	else
--		g_setenv ("UPOWER_CONF_FILE_NAME", "../../etc/UPower.conf", TRUE);
+-		g_setenv ("UPOWER_CONF_FILE_NAME", "../../../etc/UPower.conf", TRUE);
 -
  	/* tests go here */
  	g_test_add_func ("/power/backend", up_test_backend_func);

@@ -173,7 +173,8 @@ and vice versa.")
               (uri (string-append "https://github.com/cracklib/cracklib/"
                                   "releases/download/" name "-" version "/"
                                   name "-" version ".tar.gz"))
-              (patches (search-patches "cracklib-CVE-2016-6318.patch"))
+              (patches (search-patches "cracklib-CVE-2016-6318.patch"
+                                       "cracklib-fix-buffer-overflow.patch"))
               (sha256
                (base32
                 "0hrkb0prf7n92w6rxgq0ilzkk6rkhpys2cfqkrbzswp27na7dkqp"))))
@@ -293,7 +294,17 @@ any X11 window.")
                               '("coreutils" "getopt" "git" "gnupg" "pwgen"
                                 "sed" "tree" "which" "xclip"))))
                (wrap-program (string-append out "/bin/pass")
-                 `("PATH" ":" prefix (,(string-join path ":"))))))))
+                 `("PATH" ":" prefix (,(string-join path ":"))))
+               #t)))
+         (add-after 'wrap-path 'install-shell-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref outputs "out"))
+                    (bashcomp (string-append out "/etc/bash_completion.d")))
+               ;; TODO: install fish and zsh completions.
+               (mkdir-p bashcomp)
+               (copy-file "src/completion/pass.bash-completion"
+                          (string-append bashcomp "/pass"))
+               #t))))
        #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
        ;; Parallel tests may cause a race condition leading to a
        ;; timeout in some circumstances.

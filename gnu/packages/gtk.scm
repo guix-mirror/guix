@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -70,7 +70,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.20.0")
+   (version "2.22.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -78,7 +78,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1w1q29yfxcq67j7fyqrfm0l0n1vy4zn539c0sf4ga9d0qkv50fj9"))))
+              "1dj47ndvspa7lghw1jvjhv3v08q5f9ab5rb395mcgjbl975gajfk"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -102,14 +102,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.6")
+   (version "1.14.8")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://cairographics.org/releases/cairo-"
+            (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lmjlzmghmr27y615px9hkm552x7ap6pmq9mfbzr6smp8y2b6g31"))
+              "082ypjlh03ss5616amgjp9ap3xwwccyh2knyyrj1a4d4x65dkwni"))
             (patches (search-patches "cairo-CVE-2016-9082.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
@@ -150,7 +150,7 @@ Bézier splines, transforming and compositing translucent images, and
 antialiased text rendering.  All drawing operations can be transformed by any
 affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
-   (home-page "http://cairographics.org/")))
+   (home-page "https://cairographics.org/")))
 
 (define-public cairo-xcb
   (package
@@ -168,7 +168,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.3.3")
+   (version "1.4.1")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -176,7 +176,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1jdkdjvci5d6r26vimsz24hz3xqqrk5xq40n693jn4m42mqrh816"))))
+               "1g8mndf0p0fzjfvxrprga84zvqq186gbddnw6wbna7cscfmpz8l5"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -206,7 +206,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.40.1")
+   (version "1.40.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -214,7 +214,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0h0sbh0b5kh3lvrxrb82bs86rqakf33a9jakpv33lay7f90zayp2"))))
+              "1lqi4yncw5q0v7g5makzxyp18g5cksqyld8m1wx0qli8wxf8pfmb"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
@@ -377,7 +377,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.20.4")
+   (version "3.22.2")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -385,7 +385,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "009xag7df07ngav2wzs0rdrrx4s2m6ahx93pxzc2p1pkbz4nl3ks"))))
+               "0pmgff3p9q1z500aiqfn5l4mmij4yfi4qhq8fxscqc89vlql5s3c"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -425,7 +425,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.34.0")
+   (version "2.36.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -433,7 +433,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0yc8indbl3hf18z6x6kjg59xp9sngm1d8vmz4c7bs6g27qw5npnm"))))
+              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -506,7 +506,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.20.2")
+   (version "2.22.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -514,7 +514,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0hx12snd9as4cq99ka3bn056xdf13f87pd1ilp6177qk8ffxx948"))))
+              "02n8ybhg8344mpjwvkhnzvr0qbvvl6ryi2q9irwhi0ri46ps6pj1"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -551,7 +551,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.20.1")
+   (version "2.22.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -559,7 +559,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "13mzfwra0izmkzn7dsdgy5zj19n8izp0wdy7w1yg9s0qx6aafn13"))))
+              "1h8k271ad78smm41c9bmw5dc4gki0wfy324cn2g25svkp2zfvgg8"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -649,7 +649,9 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.20.9")
+   ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
+   ;;       mate.scm will also need to be updated.
+   (version "3.22.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -657,7 +659,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "05xcwvy68p7f4hdhi4bgdm3aycvqqr4pr5kkkr8ba91l5yx0k9l3"))
+              "0bqpx8825b1fdjmz14wq20zq58gq1yi1p5xjps8l6zqid8hmm9zb"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -929,15 +931,14 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
 (define-public cairomm
   (package
     (name "cairomm")
-    (version "1.12.0")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/cairomm/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "https://www.cairographics.org/releases/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rmgs6zjj2vaxh9hsa0944m23fdn1psycqh7bi984qd8jj1xljm5"))))
+                "16fmigxsaz85c3lgcls7biwyz8zy8c8h3jndfm54cxxas3a7zi25"))))
     (build-system gnu-build-system)
     (arguments
      ;; The examples lack -lcairo.
@@ -948,7 +949,7 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
        ("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
        ("cairo" ,cairo)))
-    (home-page "http://cairographics.org/")
+    (home-page "https://cairographics.org/")
     (synopsis "C++ bindings to the Cairo 2D graphics library")
     (description
      "Cairomm provides a C++ programming interface to the Cairo 2D graphics
@@ -1007,7 +1008,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.20.1")
+    (version "3.22.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1015,7 +1016,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "04n631a127pyidaz82ypdy9syq1hzj636r32y9hyr9kcfnwf2785"))))
+               "1x8l0ny6r3ym53z82q9d5fan4m9vi93xy3b3hj1hrclgc95lvnh5"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
@@ -1053,7 +1054,7 @@ extensive documentation, including API reference and a tutorial.")
 (define-public gtkmm-2
   (package (inherit gtkmm)
     (name "gtkmm")
-    (version "2.24.4")
+    (version "2.24.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1061,7 +1062,7 @@ extensive documentation, including API reference and a tutorial.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
+               "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
     (arguments
      '(#:configure-flags '("CPPFLAGS=-std=c++11"))) ; required by libsigc++
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1197,7 +1198,7 @@ write GNOME applications.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.6")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -1205,7 +1206,7 @@ write GNOME applications.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "03wsxj27hvcbs3x96nah7j3paclifwlfag8kdph4kldl48srp9pb"))))
+                "1r9jbhf9n40zj4ddqv1q5spijpjm683nxg4hr5lnir4a551s7rlq"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)))
     (inputs `(("gtk+" ,gtk+)

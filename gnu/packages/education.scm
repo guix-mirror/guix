@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,3 +139,56 @@ of categories with some of the activities available in that category.
 @end enumerate
 ")
     (license license:gpl3+)))
+
+(define-public tipp10
+  (package
+    (name "tipp10")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              ;; guix download is not able to handle the download links on the
+              ;; home-page, which use '<meta http-equiv="refresh" …>'
+              (uri (string-append "mirror://debian/pool/main/"
+                                  "t/tipp10/tipp10_2.1.0.orig.tar.gz"))
+              (sha256
+               (base32
+                "0d387b404j88gsv6kv0rb7wxr23v5g5vl6s5l7602x8pxf7slbbx"))
+              (patches (search-patches "tipp10-fix-compiling.patch"
+                                       "tipp10-remove-license-code.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; packages has no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-new-version-check
+           (lambda _
+             ;; Make new version check to default to false.
+             ;; TODO: Remove the checkbox from the dialog and the check itself
+             (substitute* '("widget/settingspages.cpp" "widget/mainwindow.cpp")
+               (("settings.value(\"check_new_version\", true)")
+                "settings.value(\"check_new_version\", false)"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Make program honor $PREFIX
+               (substitute* "tipp10.pro"
+                 (("\\.path = /usr/") (string-append ".path = " out "/")))
+               (substitute* "def/defines.h"
+                 (("\"/usr/") (string-append "\"" out "/")))
+               ;; Recreate Makefile
+               (zero? (system* "qmake"))))))))
+    (inputs
+     `(("qt4" ,qt-4)
+       ("sqlite" ,sqlite)))
+    (home-page "https://www.tipp10.com/")
+    (synopsis "Touch typing tutor")
+    (description "Tipp10 is a touch typing tutor.  The ingenious thing about
+the software is its intelligence feature: characters that are mistyped are
+repeated more frequently.  Beginners will find their way around right away so
+they can start practicing without a hitch.
+
+Useful support functions and an extensive progress tracker, topical lessons
+and the ability to create your own practice lessons make learning to type
+easy.")
+    (license license:gpl2)))

@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -207,6 +208,44 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                (base32
                 "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))))
 
+(define-public leveldb
+  (package
+    (name "leveldb")
+    (version "1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/leveldb"
+                                  "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00jjgs9xlwycfkg0xd7n1rj6v9zrx7xc7hann6zalrjyhap18ykx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           ;; There is no install target, so we do it here.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (for-each (lambda (file)
+                           (install-file file lib))
+                         (find-files "out-shared" "^libleveldb\\.so.*$"))
+               (copy-recursively "include" include)
+               #t))))))
+    (inputs
+     `(("snappy" ,snappy)))
+    (home-page "http://leveldb.org/")
+    (synopsis "Fast key-value storage library")
+    (description
+     "LevelDB is a fast key-value storage library that provides an ordered
+mapping from string keys to string values.")
+    (license bsd-3)))
+
 (define-public mysql
   (package
     (name "mysql")
@@ -285,7 +324,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.20")
+    (version "10.1.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -293,7 +332,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1fd0kfw94iyprf0466kjw5mwmj4ky0i997lz6499jkb79pr86kn2"))))
+                "144lcm5awcf0k6a7saqfr4p2kg8r5wbdhdm4cmn2m8hyg1an70as"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags

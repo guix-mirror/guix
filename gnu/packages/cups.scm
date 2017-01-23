@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,8 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.11.5")
+    (replacement cups-filters/fixed)
+    (version "1.13.1")
     (source(origin
               (method url-fetch)
               (uri
@@ -59,7 +61,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "1hcp1cfx1a71aa6fyayajjh7vw1ia7zya6981gz73vsy2pdb23qf"))
+                "0s7hylp2lcvc1vrqpywpv7lspkrh4xf7cyi4nbg10cf38rshj474"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -85,12 +87,16 @@
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
        #:configure-flags
-       `(,(string-append "--with-test-font-path="
+       `("--disable-driverless" ; TODO: enable this
+         ,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
          ,(string-append "--with-gs-path="
                          (assoc-ref %build-inputs "ghostscript")
                          "/bin/gsc")
+         ,(string-append "--with-shell="
+                         (assoc-ref %build-inputs "bash")
+                         "/bin/bash")
          ,(string-append "--with-rcdir="
                          (assoc-ref %outputs "out") "/etc/rc.d"))))
     (native-inputs
@@ -100,12 +106,12 @@
      `(("avahi"        ,avahi)
        ("fontconfig"   ,fontconfig)
        ("freetype"     ,freetype)
-       ("font-dejavu"  ,font-dejavu) ;needed by test suite
+       ("font-dejavu"  ,font-dejavu) ; also needed by test suite
        ("ghostscript"  ,(force ghostscript/cups))
        ("ijs"          ,ijs)
        ("dbus"         ,dbus)
        ("lcms"         ,lcms)
-       ("libjpeg-8"    ,libjpeg-8)
+       ("libjpeg"      ,libjpeg)
        ("libpng"       ,libpng)
        ("libtiff"      ,libtiff)
        ("mupdf"        ,mupdf)
@@ -128,6 +134,13 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                    license:gpl3+
                    license:lgpl2.0+
                    license:expat))))
+
+(define mupdf/fixed-instead-of-mupdf
+  (package-input-rewriting `((,mupdf . ,(@@ (gnu packages pdf) mupdf/fixed)))))
+
+;;; Fix CVE-2016-10132 and CVE-2016-10133. See mupdf/fixed for more information.
+(define cups-filters/fixed
+  (mupdf/fixed-instead-of-mupdf cups-filters))
 
 ;; CUPS on non-MacOS systems requires cups-filters.  Since cups-filters also
 ;; depends on CUPS libraries and binaries, cups-minimal has been added to

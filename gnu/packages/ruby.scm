@@ -4,7 +4,8 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -425,13 +426,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.13.6")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "1xyhy9cn8w9passp64p6hb3df2fpiqbds6rj7xha1335xpgj5zgs"))))
+                "1sfcmqmimssjmh4gjq6ls6a33l2hc353hb13g628kjh15qmddar7"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -3049,44 +3050,40 @@ features such as filtering and fine grained logging.")
     (license license:expat)))
 
 (define-public ruby-yard
-  ;; Use git reference because gem is >100 commits out of date and the tests
-  ;; do not pass with the released gem.
-  (let ((commit "d816482a0d4850506c3bcccc9434550c536c28c6"))
-    (package
-      (name "ruby-yard")
-      (version (string-append "0.9.5-1." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/lsegal/yard.git")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "1j16c85x22if7y0fzi3c900p9wzkx2riq1y7vsj92a0zvwsxai4i"))
-         (patches (search-patches "ruby-yard-fix-skip-of-markdown-tests.patch"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:test-target "spec"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-HOME-and-disable-failing-test
-             (lambda _
-               ;; $HOME needs to be set to somewhere writeable for tests to run
-               (setenv "HOME" "/tmp")
-               #t)))))
-      (native-inputs
-       `(("ruby-rspec" ,ruby-rspec-2)
-         ("ruby-rack" ,ruby-rack)))
-      (synopsis "Documentation generation tool for Ruby")
-      (description
-       "YARD is a documentation generation tool for the Ruby programming
+  (package
+    (name "ruby-yard")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Tests do not pass if we build from the distributed gem.
+       (uri (string-append "https://github.com/lsegal/yard/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rsz4bghgx7fryzyhlz8wlnd2m9xgyvf1xhrq58mnzfrrfm41bdg"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; $HOME needs to be set to somewhere writeable for tests to run
+             (setenv "HOME" "/tmp")
+             ;; Run tests without using 'rake' to avoid dependencies.
+             (zero? (system* "rspec")))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Documentation generation tool for Ruby")
+    (description
+     "YARD is a documentation generation tool for the Ruby programming
 language.  It enables the user to generate consistent, usable documentation
 that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
-      (home-page "http://yardoc.org")
-      (license license:expat))))
+    (home-page "http://yardoc.org")
+    (license license:expat)))
 
 (define-public ruby-clap
   (package
@@ -3304,14 +3301,14 @@ neither too verbose nor too minimal.")
 (define-public ruby-sqlite3
   (package
     (name "ruby-sqlite3")
-    (version "1.3.12")
+    (version "1.3.13")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sqlite3" version))
        (sha256
         (base32
-         "0hld87rvwyy31xsxzhicv2lj3g3kmvmwfxj09kw13g6lacdjz4bx"))))
+         "01ifzp8nwzqppda419c9wcvr8n82ysmisrs0hph9pdmv1lpa4f5i"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4201,4 +4198,36 @@ libraries for compiling Ruby native extensions.")
 RFC 2617.  This enables the use of the digest authentication scheme instead
 of the more insecure basic authentication scheme.")
     (home-page "http://github.com/drbrain/net-http-digest_auth")
+    (license license:expat)))
+
+(define-public ruby-mail
+  (package
+    (name "ruby-mail")
+    (version "2.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mail" version))
+       (sha256
+        (base32
+         "0c9vqfy0na9b5096i5i4qvrvhwamjnmajhgqi3kdsdfl8l6agmkp"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-mime-types" ,ruby-mime-types)))
+    (arguments
+     ;; Tests require extra gems not included in the Gemfile.
+     ;; XXX: Try enabling this for the next version with mini_mime.
+     `(#:tests? #f))
+    (synopsis "Mail library for Ruby")
+    (description
+     "Mail is an internet library for Ruby that is designed to handle email
+generation, parsing and sending.  The purpose of this library is to provide
+a single point of access to handle all email functions, including sending
+and receiving emails.  All network type actions are done through proxy
+methods to @code{Net::SMTP}, @code{Net::POP3} etc.
+
+Mail has been designed with a very simple object oriented system that
+really opens up the email messages you are parsing, if you know what you
+are doing, you can fiddle with every last bit of your email directly.")
+    (home-page "https://github.com/mikel/mail")
     (license license:expat)))

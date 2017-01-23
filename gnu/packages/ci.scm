@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,8 +186,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "cbdb59af8e7a1b40d687f80e62c5892686d384d2")
-        (revision "2"))
+  (let ((commit "d0a5801e397335bb44d8033e5deddf02c1cc99c2")
+        (revision "3"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -199,12 +199,18 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0qmhchazg8wyrfn6d2im4jg7d52gb0xp8afjan5szl3bpphi4s28"))))
+                  "0sa94dgp9w6av7i0a570fv9a9yq03jkxdrm5d75h6szsp1kiyw2i"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
+           (add-after 'unpack 'disable-repo-tests
+             (λ _
+               ;; Disable tests that use a connection to the Guix daemon.
+               (substitute* "Makefile.am"
+                 (("tests/repo.scm \\\\") "\\"))
+               #t))
+           (add-before 'configure 'bootstrap
              (lambda _ (zero? (system* "sh" "bootstrap"))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)

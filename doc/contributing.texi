@@ -237,6 +237,8 @@ especially when matching lists.
 @node Formatting Code
 @subsection Formatting Code
 
+@cindex formatting code
+@cindex coding style
 When writing Scheme code, we follow common wisdom among Scheme
 programmers.  In general, we follow the
 @url{http://mumble.net/~campbell/scheme/style.txt, Riastradh's Lisp
@@ -246,8 +248,25 @@ please do read it.
 
 Some special forms introduced in Guix, such as the @code{substitute*}
 macro, have special indentation rules.  These are defined in the
-@file{.dir-locals.el} file, which Emacs automatically uses.  If you do
-not use Emacs, please make sure to let your editor know the rules.
+@file{.dir-locals.el} file, which Emacs automatically uses.
+
+@cindex indentation, of code
+@cindex formatting, of code
+If you do not use Emacs, please make sure to let your editor knows these
+rules.  To automatically indent a package definition, you can also run:
+
+@example
+./etc/indent-code.el gnu/packages/@var{file}.scm @var{package}
+@end example
+
+@noindent
+This automatically indents the definition of @var{package} in
+@file{gnu/packages/@var{file}.scm} by running Emacs in batch mode.  To
+indent a whole file, omit the second argument:
+
+@example
+./etc/indent-code.el gnu/services/@var{file}.scm
+@end example
 
 We require all top-level procedures to carry a docstring.  This
 requirement can be relaxed for simple private procedures in the
@@ -357,6 +376,11 @@ Bundling unrelated changes together makes reviewing harder and slower.
 
 Examples of unrelated changes include the addition of several packages,
 or a package update along with fixes to that package.
+
+@item
+Please follow our code formatting rules, possibly running the
+@command{etc/indent-code.el} script to do that automatically for you
+(@pxref{Formatting Code}).
 
 @end enumerate
 

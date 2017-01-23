@@ -20,7 +20,7 @@ Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
-Copyright @copyright{} 2015, 2016 Leo Famulari@*
+Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
@@ -29,7 +29,9 @@ Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
 Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
-Copyright @copyright{} 2016 Alex ter Weele
+Copyright @copyright{} 2016 Alex ter Weele@*
+Copyright @copyright{} 2017 Clément Lassieur@*
+Copyright @copyright{} 2017 Mathieu Othacehe
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -204,8 +206,10 @@ Services
 * Desktop Services::            D-Bus and desktop services.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
+* Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
@@ -1682,6 +1686,20 @@ of packages:
        (list guile-2.0 "debug")))
 @end example
 
+@findex specification->package+output
+In this example we have to know which modules define the @code{emacs}
+and @code{guile-2.0} variables to provide the right
+@code{use-package-modules} line, which can be cumbersome.  We can
+instead provide regular package specifications and let
+@code{specification->package-output} look up the corresponding package
+objects, like this:
+
+@example
+(packages->manifest
+ (map (compose list specification->package+output)
+      '("emacs" "guile@@2.0" "guile@@2.0:debug")))
+@end example
+
 @item --roll-back
 @cindex rolling back
 @cindex undoing transactions
@@ -2271,11 +2289,14 @@ traverses @emph{all the files in the store}, this command can take a
 long time, especially on systems with a slow disk drive.
 
 @cindex repairing the store
+@cindex corruption, recovering from
 Using @option{--verify=repair} or @option{--verify=contents,repair}
 causes the daemon to try to repair corrupt store items by fetching
 substitutes for them (@pxref{Substitutes}).  Because repairing is not
 atomic, and thus potentially dangerous, it is available only to the
-system administrator.
+system administrator.  A lightweight alternative, when you know exactly
+which items in the store are corrupt, is @command{guix build --repair}
+(@pxref{Invoking guix build}).
 
 @item --optimize
 @cindex deduplication
@@ -2329,6 +2350,20 @@ Download the source tarball of Guix from @var{url}.
 
 By default, the tarball is taken from its canonical address at
 @code{gnu.org}, for the stable branch of Guix.
+
+With some Git servers, this can be used to deploy any version of Guix.
+For example, to download and deploy version 0.12.0 of Guix from the
+canonical Git repo:
+
+@example
+guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
+@end example
+
+It can also be used to deploy arbitrary Git revisions:
+
+@example
+guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
+@end example
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -4856,6 +4891,14 @@ When used in conjunction with @option{--keep-failed}, the differing
 output is kept in the store, under @file{/gnu/store/@dots{}-check}.
 This makes it easy to look for differences between the two results.
 
+@item --repair
+@cindex repairing store items
+@cindex corruption, recovering from
+Attempt to repair the specified store items, if they are corrupt, by
+re-downloading or rebuilding them.
+
+This operation is not atomic and thus restricted to @code{root}.
+
 @item --derivations
 @itemx -d
 Return the derivation paths, not the output paths, of the given
@@ -6046,7 +6089,7 @@ guix environment --ad-hoc -e '(@@ (gnu) %base-packages)'
 
 starts a shell with all the GuixSD base packages available.
 
-The above commands only the use default output of the given packages.
+The above commands only use the default output of the given packages.
 To select other outputs, two element tuples can be specified:
 
 @example
@@ -6409,6 +6452,11 @@ The one option that matters is:
 @item --substitute-urls=@var{urls}
 Consider @var{urls} the whitespace-separated list of substitute source
 URLs to compare to.
+
+@item --verbose
+@itemx -v
+Show details about matches (identical contents) in addition to
+information about mismatches.
 
 @end table
 
@@ -6915,11 +6963,16 @@ the partition layout you want:
 cfdisk
 @end example
 
+If your disk uses the GUID Partition Table (GPT) format and you plan to
+install BIOS-based GRUB (which is the default), make sure a BIOS Boot
+Partition is available (@pxref{BIOS installation,,, grub, GNU GRUB
+manual}).
+
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
-GuixSD pretty much assumes an ext4 file system.  In particular, code
-that reads partition UUIDs and labels only works with ext4.  This will
-be fixed in the future.}.
+GuixSD only supports ext4 and btrfs file systems.  In particular, code
+that reads partition UUIDs and labels only works for these file system
+types.}.
 
 Preferably, assign partitions a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
@@ -8110,8 +8163,10 @@ declaration.
 * Desktop Services::            D-Bus and desktop services.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
+* Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
@@ -8709,11 +8764,41 @@ and @command{wicd-curses} user interfaces.
 @end deffn
 
 @cindex NetworkManager
-@deffn {Scheme Procedure} network-manager-service @
-       [#:network-manager @var{network-manager}]
-Return a service that runs NetworkManager, a network connection manager
-attempting to keep network connectivity active when available.
-@end deffn
+
+@defvr {Scheme Variable} network-manager-service-type
+This is the service type for the
+@uref{https://wiki.gnome.org/Projects/NetworkManager, NetworkManager}
+service. The value for this service type is a
+@code{network-manager-configuration} record.
+@end defvr
+
+@deftp {Data Type} network-manager-configuration
+Data type representing the configuration of NetworkManager.
+
+@table @asis
+@item @code{network-manager} (default: @code{network-manager})
+The NetworkManager package to use.
+
+@item @code{dns} (default: @code{"default"})
+Processing mode for DNS, which affects how NetworkManager uses the
+@code{resolv.conf} configuration file.
+
+@table @samp
+@item default
+NetworkManager will update @code{resolv.conf} to reflect the nameservers
+provided by currently active connections.
+
+@item dnsmasq
+NetworkManager will run @code{dnsmasq} as a local caching nameserver,
+using a "split DNS" configuration if you are connected to a VPN, and
+then update @code{resolv.conf} to point to the local nameserver.
+
+@item none
+NetworkManager will not modify @code{resolv.conf}.
+@end table
+
+@end table
+@end deftp
 
 @cindex Connman
 @deffn {Scheme Procedure} connman-service @
@@ -10328,6 +10413,30 @@ TCP port on which the database server listens for incoming connections.
 @end table
 @end deftp
 
+@defvr {Scheme Variable} redis-service-type
+This is the service type for the @uref{https://redis.io/, Redis}
+key/value store, whose value is a @code{redis-configuration} object.
+@end defvr
+
+@deftp {Data Type} redis-configuration
+Data type representing the configuration of redis.
+
+@table @asis
+@item @code{redis} (default: @code{redis})
+The Redis package to use.
+
+@item @code{bind} (default: @code{"127.0.0.1"})
+Network interface on which to listen.
+
+@item @code{port} (default: @code{6379})
+Port on which to accept connections on, a value of 0 will disable
+listining on a TCP socket.
+
+@item @code{working-directory} (default: @code{"/var/lib/redis"})
+Directory in which to store the database and related files.
+@end table
+@end deftp
+
 @node Mail Services
 @subsubsection Mail Services
 
@@ -11724,6 +11833,394 @@ remote servers.  Run @command{man smtpd.conf} for more information.
 @end table
 @end deftp
 
+@node Messaging Services
+@subsubsection Messaging Services
+
+@cindex messaging
+@cindex jabber
+@cindex XMPP
+The @code{(gnu services messaging)} module provides Guix service
+definitions for messaging services: currently only Prosody is supported.
+
+@subsubheading Prosody Service
+
+@deffn {Scheme Variable} prosody-service-type
+This is the type for the @uref{http://prosody.im, Prosody XMPP
+communication server}.  Its value must be a @code{prosody-configuration}
+record as in this example:
+
+@example
+(service prosody-service-type
+         (prosody-configuration
+          (modules-enabled (cons "groups" %default-modules-enabled))
+          (int-components
+           (list
+            (int-component-configuration
+             (hostname "conference.example.net")
+             (plugin "muc")
+             (mod-muc (mod-muc-configuration)))))
+          (virtualhosts
+           (list
+            (virtualhost-configuration
+             (domain "example.net"))))))
+@end example
+
+See below for details about @code{prosody-configuration}.
+
+@end deffn
+
+By default, Prosody does not need much configuration.  Only one
+@code{virtualhosts} field is needed: it specifies the domain you wish
+Prosody to serve.
+
+Prosodyctl will help you generate X.509 certificates and keys:
+
+@example
+prosodyctl cert request example.net
+@end example
+
+The available configuration parameters follow.  Each parameter
+definition is preceded by its type; for example, @samp{string-list foo}
+indicates that the @code{foo} parameter should be specified as a list of
+strings.  Types starting with @code{maybe-} denote parameters that won't
+show up in @code{prosody.cfg.lua} when their value is @code{'disabled}.
+
+There is also a way to specify the configuration as a string, if you
+have an old @code{prosody.cfg.lua} file that you want to port over from
+some other system; see the end for more details.
+
+@c The following documentation was initially generated by
+@c (generate-documentation) in (gnu services messaging).  Manually maintained
+@c documentation is better, so we shouldn't hesitate to edit below as
+@c needed.  However if the change you want to make to this documentation
+@c can be done in an automated way, it's probably easier to change
+@c (generate-documentation) than to make it below and have to deal with
+@c the churn as Prosody updates.
+
+Available @code{prosody-configuration} fields are:
+
+@deftypevr {@code{prosody-configuration} parameter} package prosody
+The Prosody package.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} file-name data-path
+Location of the Prosody data storage directory.  See
+@url{http://prosody.im/doc/configure}.
+Defaults to @samp{"/var/lib/prosody"}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} file-name-list plugin-paths
+Additional plugin directories.  They are searched in all the specified
+paths in order.  See @url{http://prosody.im/doc/plugins_directory}.
+Defaults to @samp{()}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} string-list admins
+This is a list of accounts that are admins for the server.  Note that you
+must create the accounts separately.  See @url{http://prosody.im/doc/admins} and
+@url{http://prosody.im/doc/creating_accounts}.
+Example: @code{(admins '("user1@@example.com" "user2@@example.net"))}
+Defaults to @samp{()}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} boolean use-libevent?
+Enable use of libevent for better performance under high load.  See
+@url{http://prosody.im/doc/libevent}.
+Defaults to @samp{#f}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} module-list modules-enabled
+This is the list of modules Prosody will load on startup.  It looks for
+@code{mod_modulename.lua} in the plugins folder, so make sure that exists too.
+Documentation on modules can be found at: @url{http://prosody.im/doc/modules}.
+Defaults to @samp{%default-modules-enabled}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} string-list modules-disabled
+@samp{"offline"}, @samp{"c2s"} and @samp{"s2s"} are auto-loaded, but
+should you want to disable them then add them to this list.
+Defaults to @samp{()}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} file-name groups-file
+Path to a text file where the shared groups are defined.  If this path is
+empty then @samp{mod_groups} does nothing.  See
+@url{http://prosody.im/doc/modules/mod_groups}.
+Defaults to @samp{"/var/lib/prosody/sharedgroups.txt"}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} boolean allow-registration?
+Disable account creation by default, for security.  See
+@url{http://prosody.im/doc/creating_accounts}.
+Defaults to @samp{#f}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} maybe-ssl-configuration ssl
+These are the SSL/TLS-related settings.  Most of them are disabled so to
+use Prosody's defaults.  If you do not completely understand these options, do
+not add them to your config, it is easy to lower the security of your server
+using them.  See @url{http://prosody.im/doc/advanced_ssl_config}.
+
+Available @code{ssl-configuration} fields are:
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-string protocol
+This determines what handshake to use.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} file-name key
+Path to your private key file, relative to @code{/etc/prosody}.
+Defaults to @samp{"/etc/prosody/certs/key.pem"}.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} file-name certificate
+Path to your certificate file, relative to @code{/etc/prosody}.
+Defaults to @samp{"/etc/prosody/certs/cert.pem"}.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} file-name capath
+Path to directory containing root certificates that you wish Prosody to
+trust when verifying the certificates of remote servers.
+Defaults to @samp{"/etc/ssl/certs"}.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-name cafile
+Path to a file containing root certificates that you wish Prosody to trust.
+Similar to @code{capath} but with all certificates concatenated together.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-string-list verify
+A list of verification options (these mostly map to OpenSSL's
+@code{set_verify()} flags).
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-string-list options
+A list of general options relating to SSL/TLS.  These map to OpenSSL's
+@code{set_options()}.  For a full list of options available in LuaSec, see the
+LuaSec source.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-non-negative-integer depth
+How long a chain of certificate authorities to check when looking for a
+trusted root certificate.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-string ciphers
+An OpenSSL cipher string.  This selects what ciphers Prosody will offer to
+clients, and in what order.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-name dhparam
+A path to a file containing parameters for Diffie-Hellman key exchange.  You
+can create such a file with:
+@code{openssl dhparam -out /etc/prosody/certs/dh-2048.pem 2048}
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-string curve
+Curve for Elliptic curve Diffie-Hellman. Prosody's default is
+@samp{"secp384r1"}.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-string-list verifyext
+A list of "extra" verification options.
+@end deftypevr
+
+@deftypevr {@code{ssl-configuration} parameter} maybe-string password
+Password for encrypted private keys.
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} boolean c2s-require-encryption?
+Whether to force all client-to-server connections to be encrypted or not.
+See @url{http://prosody.im/doc/modules/mod_tls}.
+Defaults to @samp{#f}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} boolean s2s-require-encryption?
+Whether to force all server-to-server connections to be encrypted or not.
+See @url{http://prosody.im/doc/modules/mod_tls}.
+Defaults to @samp{#f}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} boolean s2s-secure-auth?
+Whether to require encryption and certificate authentication.  This
+provides ideal security, but requires servers you communicate with to support
+encryption AND present valid, trusted certificates.  See
+@url{http://prosody.im/doc/s2s#security}.
+Defaults to @samp{#f}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} string-list s2s-insecure-domains
+Many servers don't support encryption or have invalid or self-signed
+certificates.  You can list domains here that will not be required to
+authenticate using certificates.  They will be authenticated using DNS.  See
+@url{http://prosody.im/doc/s2s#security}.
+Defaults to @samp{()}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} string-list s2s-secure-domains
+Even if you leave @code{s2s-secure-auth?} disabled, you can still require
+valid certificates for some domains by specifying a list here.  See
+@url{http://prosody.im/doc/s2s#security}.
+Defaults to @samp{()}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} string authentication
+Select the authentication backend to use.  The default provider stores
+passwords in plaintext and uses Prosody's configured data storage to store the
+authentication data.  If you do not trust your server please see
+@url{http://prosody.im/doc/modules/mod_auth_internal_hashed} for information
+about using the hashed backend.  See also
+@url{http://prosody.im/doc/authentication}
+Defaults to @samp{"internal_plain"}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} maybe-string log
+Set logging options.  Advanced logging configuration is not yet supported
+by the GuixSD Prosody Service.  See @url{http://prosody.im/doc/logging}.
+Defaults to @samp{"*syslog"}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} file-name pidfile
+File to write pid in.  See @url{http://prosody.im/doc/modules/mod_posix}.
+Defaults to @samp{"/var/run/prosody/prosody.pid"}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} virtualhost-configuration-list virtualhosts
+A host in Prosody is a domain on which user accounts can be created.  For
+example if you want your users to have addresses like
+@samp{"john.smith@@example.com"} then you need to add a host
+@samp{"example.com"}.  All options in this list will apply only to this host.
+
+Note: the name "virtual" host is used in configuration to avoid confusion with
+the actual physical host that Prosody is installed on.  A single Prosody
+instance can serve many domains, each one defined as a VirtualHost entry in
+Prosody's configuration.  Conversely a server that hosts a single domain would
+have just one VirtualHost entry.
+
+See @url{http://prosody.im/doc/configure#virtual_host_settings}.
+
+Available @code{virtualhost-configuration} fields are:
+
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, plus:
+@deftypevr {@code{virtualhost-configuration} parameter} string domain
+Domain you wish Prosody to serve.
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} int-component-configuration-list int-components
+Components are extra services on a server which are available to clients,
+usually on a subdomain of the main server (such as
+@samp{"mycomponent.example.com"}).  Example components might be chatroom
+servers, user directories, or gateways to other protocols.
+
+Internal components are implemented with Prosody-specific plugins.  To add an
+internal component, you simply fill the hostname field, and the plugin you wish
+to use for the component.
+
+See @url{http://prosody.im/doc/components}.
+Defaults to @samp{()}.
+
+Available @code{int-component-configuration} fields are:
+
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, plus:
+@deftypevr {@code{int-component-configuration} parameter} string hostname
+Hostname of the component.
+@end deftypevr
+
+@deftypevr {@code{int-component-configuration} parameter} string plugin
+Plugin you wish to use for the component.
+@end deftypevr
+
+@deftypevr {@code{int-component-configuration} parameter} maybe-mod-muc-configuration mod-muc
+Multi-user chat (MUC) is Prosody's module for allowing you to create
+hosted chatrooms/conferences for XMPP users.
+
+General information on setting up and using multi-user chatrooms can be found
+in the "Chatrooms" documentation (@url{http://prosody.im/doc/chatrooms}),
+which you should read if you are new to XMPP chatrooms.
+
+See also @url{http://prosody.im/doc/modules/mod_muc}.
+
+Available @code{mod-muc-configuration} fields are:
+
+@deftypevr {@code{mod-muc-configuration} parameter} string name
+The name to return in service discovery responses.
+Defaults to @samp{"Prosody Chatrooms"}.
+@end deftypevr
+
+@deftypevr {@code{mod-muc-configuration} parameter} string-or-boolean restrict-room-creation
+If @samp{#t}, this will only allow admins to create new chatrooms.
+Otherwise anyone can create a room.  The value @samp{"local"} restricts room
+creation to users on the service's parent domain.  E.g. @samp{user@@example.com}
+can create rooms on @samp{rooms.example.com}.  The value @samp{"admin"}
+restricts to service administrators only.
+Defaults to @samp{#f}.
+@end deftypevr
+
+@deftypevr {@code{mod-muc-configuration} parameter} non-negative-integer max-history-messages
+Maximum number of history messages that will be sent to the member that has
+just joined the room.
+Defaults to @samp{20}.
+@end deftypevr
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} ext-component-configuration-list ext-components
+External components use XEP-0114, which most standalone components
+support.  To add an external component, you simply fill the hostname field.  See
+@url{http://prosody.im/doc/components}.
+Defaults to @samp{()}.
+
+Available @code{ext-component-configuration} fields are:
+
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, plus:
+@deftypevr {@code{ext-component-configuration} parameter} string component-secret
+Password which the component will use to log in.
+@end deftypevr
+
+@deftypevr {@code{ext-component-configuration} parameter} string hostname
+Hostname of the component.
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} non-negative-integer-list component-ports
+Port(s) Prosody listens on for component connections.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} string component-interface
+Interface Prosody listens on for component connections.
+Defaults to @samp{"127.0.0.1"}.
+@end deftypevr
+
+It could be that you just want to get a @code{prosody.cfg.lua}
+up and running.  In that case, you can pass an
+@code{opaque-prosody-configuration} record as the value of
+@code{prosody-service-type}.  As its name indicates, an opaque configuration
+does not have easy reflective capabilities.
+Available @code{opaque-prosody-configuration} fields are:
+
+@deftypevr {@code{opaque-prosody-configuration} parameter} package prosody
+The prosody package.
+@end deftypevr
+
+@deftypevr {@code{opaque-prosody-configuration} parameter} string prosody.cfg.lua
+The contents of the @code{prosody.cfg.lua} to use.
+@end deftypevr
+
+For example, if your @code{prosody.cfg.lua} is just the empty
+string, you could instantiate a prosody service like this:
+
+@example
+(service prosody-service-type
+         (opaque-prosody-configuration
+          (prosody.cfg.lua "")))
+@end example
+
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos
@@ -11862,6 +12359,7 @@ The @code{(gnu services web)} module provides the following service:
        [#:log-directory ``/var/log/nginx''] @
        [#:run-directory ``/var/run/nginx''] @
        [#:server-list '()] @
+       [#:upstream-list '()] @
        [#:config-file @code{#f}]
 
 Return a service that runs @var{nginx}, the nginx web server.
@@ -11873,8 +12371,10 @@ arguments should match what is in @var{config-file} to ensure that the
 directories are created when the service is activated.
 
 As an alternative to using a @var{config-file}, @var{server-list} can be
-used to specify the list of @dfn{server blocks} required on the host.  For
-this to work, use the default value for @var{config-file}.
+used to specify the list of @dfn{server blocks} required on the host and
+@var{upstream-list} can be used to specify a list of @dfn{upstream
+blocks} to configure.  For this to work, use the default value for
+@var{config-file}.
 
 @end deffn
 
@@ -11916,6 +12416,11 @@ default server for connections matching no other server.
 @item @code{root} (default: @code{"/srv/http"})
 Root of the website nginx will serve.
 
+@item @code{locations} (default: @code{'()})
+A list of @dfn{nginx-location-configuration} or
+@dfn{nginx-named-location-configuration} records to use within this
+server block.
+
 @item @code{index} (default: @code{(list "index.html")})
 Index files to look for when clients ask for a directory.  If it cannot be found,
 Nginx will send the list of files in the directory.
@@ -11930,6 +12435,421 @@ you don't have a key or you don't want to use HTTPS.
 
 @item @code{server-tokens?} (default: @code{#f})
 Whether the server should add its configuration to response.
+
+@end table
+@end deftp
+
+@node VPN Services
+@subsubsection VPN Services
+@cindex VPN (virtual private network)
+@cindex virtual private network (VPN)
+
+The @code{(gnu services vpn)} module provides services related to
+@dfn{virtual private networks} (VPNs).  It provides a @emph{client} service for
+your machine to connect to a VPN, and a @emph{servire} service for your machine
+to host a VPN.  Both services use @uref{https://openvpn.net/, OpenVPN}.
+
+@deffn {Scheme Procedure} openvpn-client-service @
+       [#:config (openvpn-client-configuration)]
+
+Return a service that runs @command{openvpn}, a VPN daemon, as a client.
+@end deffn
+
+@deffn {Scheme Procedure} openvpn-server-service @
+       [#:config (openvpn-server-configuration)]
+
+Return a service that runs @command{openvpn}, a VPN daemon, as a server.
+
+Both can be run simultaneously.
+@end deffn
+
+@c %automatically generated documentation
+
+Available @code{openvpn-client-configuration} fields are:
+
+@deftypevr @code{openvpn-client-configuration} parameter package openvpn
+The OpenVPN package.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string pid-file
+The OpenVPN pid file.
+
+Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter proto proto
+The protocol (UDP or TCP) used to open a channel between clients and
+servers.
+
+Defaults to @samp{udp}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter dev dev
+The device type used to represent the VPN connection.
+
+Defaults to @samp{tun}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string ca
+The certificate authority to check connections against.
+
+Defaults to @samp{"/etc/openvpn/ca.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string cert
+The certificate of the machine the daemon is running on.  It should be
+signed by the authority given in @code{ca}.
+
+Defaults to @samp{"/etc/openvpn/client.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string key
+The key of the machine the daemon is running on.  It must be the key whose
+certificate is @code{cert}.
+
+Defaults to @samp{"/etc/openvpn/client.key"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean comp-lzo?
+Whether to use the lzo compression algorithm.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean persist-key?
+Don't re-read key files across SIGUSR1 or --ping-restart.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean persist-tun?
+Don't close and reopen TUN/TAP device or run up/down scripts across
+SIGUSR1 or --ping-restart restarts.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter number verbosity
+Verbosity level.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter tls-auth-client tls-auth
+Add an additional layer of HMAC authentication on top of the TLS control
+channel to protect against DoS attacks.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter key-usage verify-key-usage?
+Whether to check the server certificate has server usage extension.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter bind bind?
+Bind to a specific local port number.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter resolv-retry resolv-retry?
+Retry resolving server address.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter openvpn-remote-list remote
+A list of remote servers to connect to.
+
+Defaults to @samp{()}.
+
+Available @code{openvpn-remote-configuration} fields are:
+
+@deftypevr @code{openvpn-remote-configuration} parameter string name
+Server name.
+
+Defaults to @samp{"my-server"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-remote-configuration} parameter number port
+Port number the server listens to.
+
+Defaults to @samp{1194}.
+
+@end deftypevr
+
+@end deftypevr
+@c %end of automatic openvpn-client documentation
+
+@c %automatically generated documentation
+
+Available @code{openvpn-server-configuration} fields are:
+
+@deftypevr @code{openvpn-server-configuration} parameter package openvpn
+The OpenVPN package.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string pid-file
+The OpenVPN pid file.
+
+Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter proto proto
+The protocol (UDP or TCP) used to open a channel between clients and
+servers.
+
+Defaults to @samp{udp}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter dev dev
+The device type used to represent the VPN connection.
+
+Defaults to @samp{tun}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string ca
+The certificate authority to check connections against.
+
+Defaults to @samp{"/etc/openvpn/ca.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string cert
+The certificate of the machine the daemon is running on.  It should be
+signed by the authority given in @code{ca}.
+
+Defaults to @samp{"/etc/openvpn/client.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string key
+The key of the machine the daemon is running on.  It must be the key whose
+certificate is @code{cert}.
+
+Defaults to @samp{"/etc/openvpn/client.key"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean comp-lzo?
+Whether to use the lzo compression algorithm.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean persist-key?
+Don't re-read key files across SIGUSR1 or --ping-restart.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean persist-tun?
+Don't close and reopen TUN/TAP device or run up/down scripts across
+SIGUSR1 or --ping-restart restarts.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number verbosity
+Verbosity level.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter tls-auth-server tls-auth
+Add an additional layer of HMAC authentication on top of the TLS control
+channel to protect against DoS attacks.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number port
+Specifies the port number on which the server listens.
+
+Defaults to @samp{1194}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter ip-mask server
+An ip and mask specifying the subnet inside the virtual network.
+
+Defaults to @samp{"10.8.0.0 255.255.255.0"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter cidr6 server-ipv6
+A CIDR notation specifying the IPv6 subnet inside the virtual network.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string dh
+The Diffie-Hellman parameters file.
+
+Defaults to @samp{"/etc/openvpn/dh2048.pem"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string ifconfig-pool-persist
+The file that records client IPs.
+
+Defaults to @samp{"/etc/openvpn/ipp.txt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter gateway redirect-gateway?
+When true, the server will act as a gateway for its clients.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean client-to-client?
+When true, clients are alowed to talk to each other inside the VPN.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter keepalive keepalive
+Causes ping-like messages to be sent back and forth over the link so
+that each side knows when the other side has gone down.  @code{keepalive}
+requires a pair.  The first element is the period of the ping sending,
+and the second element is the timeout before considering the other side
+down.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number max-clients
+The maximum number of clients.
+
+Defaults to @samp{100}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string status
+The status file.  This file shows a small report on current connection.
+It is trunkated and rewritten every minute.
+
+Defaults to @samp{"/var/run/openvpn/status"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter openvpn-ccd-list client-config-dir
+The list of configuration for some clients.
+
+Defaults to @samp{()}.
+
+Available @code{openvpn-ccd-configuration} fields are:
+
+@deftypevr @code{openvpn-ccd-configuration} parameter string name
+Client name.
+
+Defaults to @samp{"client"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask iroute
+Client own network
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask ifconfig-push
+Client VPN IP.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@end deftypevr
+
+
+@c %end of automatic openvpn-server documentation
+
+
+@deftp {Data Type} nginx-upstream-configuration
+Data type representing the configuration of an nginx @code{upstream}
+block.  This type has the following parameters:
+
+@table @asis
+@item @code{name}
+Name for this group of servers.
+
+@item @code{servers}
+Specify the addresses of the servers in the group.  The address can be
+specified as a IP address (e.g. @samp{127.0.0.1}), domain name
+(e.g. @samp{backend1.example.com}) or a path to a UNIX socket using the
+prefix @samp{unix:}.  For addresses using an IP address or domain name,
+the default port is 80, and a different port can be specified
+explicitly.
+
+@end table
+@end deftp
+
+@deftp {Data Type} nginx-location-configuration
+Data type representing the configuration of an nginx @code{location}
+block.  This type has the following parameters:
+
+@table @asis
+@item @code{uri}
+URI which this location block matches.
+
+@anchor{nginx-location-configuration body}
+@item @code{body}
+Body of the location block, specified as a string. This can contain many
+configuration directives.  For example, to pass requests to a upstream
+server group defined using an @code{nginx-upstream-configuration} block,
+the following directive would be specified in the body @samp{proxy_pass
+http://upstream-name;}.
+
+@end table
+@end deftp
+
+@deftp {Data Type} nginx-named-location-configuration
+Data type representing the configuration of an nginx named location
+block.  Named location blocks are used for request redirection, and not
+used for regular request processing.  This type has the following
+parameters:
+
+@table @asis
+@item @code{name}
+Name to identify this location block.
+
+@item @code{body}
+@xref{nginx-location-configuration body}, as the body for named location
+blocks can be used in a similar way to the
+@code{nginx-location-configuration body}.  One restriction is that the
+body of a named location block cannot contain location blocks.
 
 @end table
 @end deftp
@@ -12117,6 +13037,9 @@ Cuirass jobs.
 @item @code{database} (default: @code{"/var/run/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously
 added specifications.
+
+@item @code{port} (default: @code{8080})
+Port number used by the HTTP server.
 
 @item @code{specifications} (default: @code{#~'()})
 A gexp (@pxref{G-Expressions}) that evaluates to a list of specifications,

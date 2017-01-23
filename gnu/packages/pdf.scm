@@ -6,10 +6,11 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Coypright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Coypright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,14 +73,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.47.0")
+   (version "0.50.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0hnjkcqqk87dw3hlda4gh4l7brkslniax9a79g772jn3iwiffwmq"))))
+              "0dmwnh59m75vhii6dw63x8l0qa0ha733pb8bdqzr7lw9nwc37jf9"))))
    (build-system gnu-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -89,7 +90,7 @@
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("lcms" ,lcms)
-             ("openjpeg-1" ,openjpeg-1)
+             ("openjpeg-1" ,openjpeg-1) ; prefers openjpeg-1
              ("zlib" ,zlib)
 
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
@@ -117,7 +118,8 @@
             (setenv "CPATH"
                     (string-append (assoc-ref %build-inputs "openjpeg-1")
                                    "/include/openjpeg-1.5"
-                                   ":" (or (getenv "CPATH") ""))))))))
+                                   ":" (or (getenv "CPATH") "")))
+            #t)))))
    (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
@@ -270,7 +272,7 @@ reading and editing of existing PDF files.")
 (define-public zathura-cb
   (package
     (name "zathura-cb")
-    (version "0.1.5")
+    (version "0.1.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -278,7 +280,7 @@ reading and editing of existing PDF files.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1zbazysdjwwnzw01qlnzyixwmsi8rqskc76mp81qcr3rpl96jprp"))))
+                "1fim4mpm8l2g3msj1vg70ks3c9lrwllv3yh4jv8l9f8k3r19b3l8"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libarchive" ,libarchive)
@@ -301,7 +303,7 @@ using libarchive.")
 (define-public zathura-ps
   (package
     (name "zathura-ps")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -309,7 +311,7 @@ using libarchive.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "18wsfy8pqficdgj8wy2aws7j4fy8z78157rhqk17mj5f295zgvm9"))))
+                "1nxbl0glnzpan78fhdfzhkcd0cikcvrkzf9m56mb0pvnwzlwg7zv"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libspectre" ,libspectre)
@@ -332,7 +334,7 @@ using libspectre.")
 (define-public zathura-djvu
   (package
     (name "zathura-djvu")
-    (version "0.2.5")
+    (version "0.2.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -340,7 +342,7 @@ using libspectre.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "03cw54d2fipvbrnbqy0xccqkx6s77dyhyymx479aj5ryy4513dq8"))))
+                "0py0ra44f65cg064xzds0qr6vnglj2a5bwhnbwa0dyh2nyizdzmf"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs
@@ -364,7 +366,7 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-poppler
   (package
     (name "zathura-pdf-poppler")
-    (version "0.2.6")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -372,7 +374,7 @@ using the DjVuLibre library.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1maqiv7yv8d8hymlffa688c5z71v85kbzmx2j88i8z349xx0rsyi"))))
+                "1h43sgxpsbrsnn5z19661642plzhpv6b0y3f4kyzshv1rr6lwplq"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs
@@ -397,7 +399,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.3.6")
+    (version "0.3.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -405,7 +407,7 @@ by using the poppler rendering engine.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "0fyb5hak0knqvg90rmdavwcmilhnrwgg1s5ykx9wd3skbpi8nsh8"))
+                "1w0g74dq4z2vl3f99s2gkaqrb5pskgzig10qhbxj4gq9yj4zzbr2"))
               (patches (search-patches
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -479,6 +481,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
+    (replacement mupdf/fixed)
     (version "1.10a")
     (source
       (origin
@@ -536,6 +539,18 @@ The library ships with a rudimentary X11 viewer, and a set of command
 line tools for batch rendering (pdfdraw), rewriting files (pdfclean),
 and examining the file structure (pdfshow).")
     (license license:agpl3+)))
+
+(define mupdf/fixed
+  (package
+    (inherit mupdf)
+    (source
+      (origin
+        (inherit (package-source mupdf))
+        (patches
+          (append
+            (origin-patches (package-source mupdf))
+            (search-patches "mupdf-mujs-CVE-2016-10132.patch"
+                            "mupdf-mujs-CVE-2016-10133.patch")))))))
 
 (define-public qpdf
   (package

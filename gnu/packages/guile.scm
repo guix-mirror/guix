@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -512,6 +513,46 @@ format is also supported.")
                                    (,modules)))
                                #t))))))))))))
 
+(define-public guile-ics
+  (package
+    (name "guile-ics")
+    (version "0.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/artyom-poptsov/guile-ics")
+                    (commit "v0.1.1")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1pvg6j48inpbq47hq00yh5hhl2qd2srvrx5yjl7w7ky1jsjadp86"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'autoreconf
+                              (lambda _
+                                ;; Repository comes with a broken symlink
+                                (delete-file "README")
+                                (symlink "README.org" "README")
+                                (zero? (system* "autoreconf" "-fi")))))))
+    (native-inputs
+     `(("autoconf" ,(autoconf-wrapper))
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)
+       ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0) ("which" ,which)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
+    (home-page "https://github.com/artyom-poptsov/guile-ics")
+    (synopsis "Guile parser library for the iCalendar format")
+    (description
+     "Guile-ICS is an iCalendar (RFC5545) format parser library written in
+pure Scheme.  The library can be used to read and write iCalendar data.
+
+The library is shipped with documentation in Info format and usage examples.")
+    (license gpl3+)))
+
 (define-public guile-lib
   (package
     (name "guile-lib")
@@ -559,14 +600,14 @@ for Guile\".")
 (define-public guile-json
   (package
     (name "guile-json")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0l8a34l92nrdszy7ykycfvr8y0n0yi5qb3ccliycvpvf9mzk5n8d"))
+                "1qmjg7lbgciw95fkdzvlp9f68vv17kdjky42ywfzd4ffzwww0lgc"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure everything goes under .../site/X.Y, like Guile's
@@ -836,8 +877,10 @@ Guile's foreign function interface.")
       (name "guile-sqlite3")
       (version (string-append "0.0-0." (string-take commit 7)))
 
-      ;; XXX: Gitorious being dead, this is not a reliable home page.
-      (home-page "https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/")
+      ;; XXX: This used to be available read-only at
+      ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
+      ;; eventually disappeared, so we have our own copy here.
+      (home-page "https://notabug.org/civodul/guile-sqlite3.git")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1482,5 +1525,38 @@ enable -f ~/.guix-profile/lib/bash/libguile-bash.so scm
 
 and then run @command{scm example.scm}.")
       (license gpl3+))))
+
+(define-public guile-8sync
+  (package
+    (name "guile-8sync")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/8sync/8sync-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1fvf8d2s3vvg4nyskbqaiqmlm2x571hv7hizcnmny45zvalydr9h"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("guile" ,guile-next)
+                     ("pkg-config" ,pkg-config)
+                     ("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'setenv
+                    (lambda _
+                      ;; quiet warnings
+                      (setenv "GUILE_AUTO_COMPILE" "0")
+                      #t)))))
+    (home-page "https://gnu.org/s/8sync/")
+    (synopsis "Asynchronous actor model library for Guile")
+    (description
+     "GNU 8sync (pronounced \"eight-sync\") is an asynchronous programming
+library for GNU Guile based on the actor model.
+
+Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
+    (license lgpl3+)))
 
 ;;; guile.scm ends here

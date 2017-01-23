@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -78,6 +78,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/code.scm				\
   %D%/packages/commencement.scm			\
   %D%/packages/compression.scm			\
+  %D%/packages/compton.scm 			\
   %D%/packages/conkeror.scm			\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
@@ -199,6 +200,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/julia.scm			\
   %D%/packages/kde.scm              \
   %D%/packages/kde-frameworks.scm		\
+  %D%/packages/kerberos.scm			\
   %D%/packages/key-mon.scm			\
   %D%/packages/kodi.scm				\
   %D%/packages/language.scm			\
@@ -252,7 +254,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mingw.scm			\
   %D%/packages/mg.scm				\
   %D%/packages/microcom.scm			\
-  %D%/packages/mit-krb5.scm			\
   %D%/packages/moe.scm				\
   %D%/packages/monitoring.scm			\
   %D%/packages/mono.scm				\
@@ -272,6 +273,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/networking.scm			\
   %D%/packages/nfs.scm                          \
   %D%/packages/nickle.scm                       \
+  %D%/packages/nim.scm  			\
   %D%/packages/ninja.scm			\
   %D%/packages/node.scm				\
   %D%/packages/noweb.scm			\
@@ -338,7 +340,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
   %D%/packages/shellutils.scm			\
-  %D%/packages/shishi.scm			\
   %D%/packages/skarnet.scm			\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
@@ -414,6 +415,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
   %D%/services/mcron.scm			\
+  %D%/services/messaging.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\
@@ -422,6 +424,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
   %D%/services/version-control.scm              \
+  %D%/services/vpn.scm				\
   %D%/services/web.scm				\
   %D%/services/xorg.scm				\
 						\
@@ -455,7 +458,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
   %D%/tests/mail.scm				\
-  %D%/tests/ssh.scm
+  %D%/tests/ssh.scm				\
+  %D%/tests/web.scm
 
 
 patchdir = $(guilemoduledir)/%D%/packages/patches
@@ -509,6 +513,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
+  %D%/packages/patches/cracklib-fix-buffer-overflow.patch	\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/csound-header-ordering.patch		\
@@ -523,8 +528,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/doxygen-test.patch			\
-  %D%/packages/patches/duplicity-piped-password.patch		\
-  %D%/packages/patches/duplicity-test_selection-tmp.patch	\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/einstein-build.patch			\
@@ -654,6 +657,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/laby-make-install.patch			\
+  %D%/packages/patches/lcms-fix-out-of-bounds-read.patch	\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
@@ -679,6 +683,22 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10092.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10093.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10094.patch		\
+  %D%/packages/patches/libtiff-CVE-2017-5225.patch		\
+  %D%/packages/patches/libtiff-assertion-failure.patch		\
+  %D%/packages/patches/libtiff-divide-by-zero-ojpeg.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero-tiffcp.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero-tiffcrop.patch	\
+  %D%/packages/patches/libtiff-divide-by-zero.patch		\
+  %D%/packages/patches/libtiff-heap-overflow-pixarlog-luv.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tif-dirread.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tiffcp.patch	\
+  %D%/packages/patches/libtiff-heap-overflow-tiffcrop.patch	\
+  %D%/packages/patches/libtiff-invalid-read.patch		\
+  %D%/packages/patches/libtiff-null-dereference.patch		\
+  %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libupnp-CVE-2016-6255.patch		\
@@ -701,6 +721,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
+  %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-for-extempore.patch			\
@@ -733,6 +754,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/multiqc-fix-git-subprocess-error.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
+  %D%/packages/patches/mupdf-mujs-CVE-2016-10132.patch		\
+  %D%/packages/patches/mupdf-mujs-CVE-2016-10133.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
@@ -826,6 +849,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
+  %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
+  %D%/packages/patches/qemu-CVE-2016-10155.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5525.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5526.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5552.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
@@ -840,7 +868,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-puma-ignore-broken-test.patch       \
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
-  %D%/packages/patches/ruby-yard-fix-skip-of-markdown-tests.patch \
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
@@ -874,11 +901,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/texi2html-i18n.patch			\
   %D%/packages/patches/tidy-CVE-2015-5522+5523.patch		\
   %D%/packages/patches/tinyxml-use-stl.patch			\
+  %D%/packages/patches/tipp10-fix-compiling.patch		\
+  %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\
-  %D%/packages/patches/totem-debug-format-fix.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/unrtf-CVE-2016-10091.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
@@ -917,12 +945,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
-  %D%/packages/patches/xf86-video-glint-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-intel-compat-api.patch	\
   %D%/packages/patches/xf86-video-intel-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
-  %D%/packages/patches/xf86-video-nv-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-tga-remove-mibstore.patch	\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-session-fix-xflock4.patch		\

@@ -92,6 +92,7 @@
             profile-manifest
             package->manifest-entry
             packages->manifest
+            ca-certificate-bundle
             %default-profile-hooks
             profile-derivation
 

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -64,7 +64,12 @@
 
             wicd-service-type
             wicd-service
-            network-manager-service
+
+            network-manager-configuration
+            network-manager-configuration?
+            network-manager-configuration-dns
+            network-manager-service-type
+
             connman-service
             wpa-supplicant-service-type))
 
@@ -633,7 +638,12 @@ configuration file."
       (let ((file-name "/etc/wicd/dhclient.conf.template.default"))
         (unless (file-exists? file-name)
           (copy-file (string-append #$wicd file-name)
-                     file-name)))))
+                     file-name)))
+
+      ;; Wicd invokes 'wpa_supplicant', which needs this directory for its
+      ;; named socket files.
+      (mkdir-p "/var/run/wpa_supplicant")
+      (chmod "/var/run/wpa_supplicant" #o750)))
 
 (define (wicd-shepherd-service wicd)
   "Return a shepherd service for WICD."
@@ -674,40 +684,58 @@ and @command{wicd-curses} user interfaces."
 ;;; NetworkManager
 ;;;
 
+(define-record-type* <network-manager-configuration>
+  network-manager-configuration make-network-manager-configuration
+  network-manager-configuration?
+  (network-manager network-manager-configuration-network-manager
+                   (default network-manager))
+  (dns network-manager-configuration-dns
+       (default "default")))
+
 (define %network-manager-activation
   ;; Activation gexp for NetworkManager.
   #~(begin
       (use-modules (guix build utils))
       (mkdir-p "/etc/NetworkManager/system-connections")))
 
-(define (network-manager-shepherd-service network-manager)
-  "Return a shepherd service for NETWORK-MANAGER."
-  (list (shepherd-service
-         (documentation "Run the NetworkManager.")
-         (provision '(networking))
-         (requirement '(user-processes dbus-system wpa-supplicant loopback))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$network-manager
-                                        "/sbin/NetworkManager")
-                         "--no-daemon")))
-         (stop #~(make-kill-destructor)))))
+(define network-manager-shepherd-service
+  (match-lambda
+    (($ <network-manager-configuration> network-manager dns)
+     (let
+         ((conf (plain-file "NetworkManager.conf"
+                            (string-append "
+[main]
+dns=" dns "
+"))))
+     (list (shepherd-service
+            (documentation "Run the NetworkManager.")
+            (provision '(networking))
+            (requirement '(user-processes dbus-system wpa-supplicant loopback))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$network-manager
+                                           "/sbin/NetworkManager")
+                            (string-append "--config=" #$conf)
+                            "--no-daemon")))
+            (stop #~(make-kill-destructor))))))))
 
 (define network-manager-service-type
-  (service-type (name 'network-manager)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          network-manager-shepherd-service)
-                       (service-extension dbus-root-service-type list)
-                       (service-extension polkit-service-type list)
-                       (service-extension activation-service-type
-                                          (const %network-manager-activation))
-                       ;; Add network-manager to the system profile.
-                       (service-extension profile-service-type list)))))
+  (let
+      ((config->package
+        (match-lambda
+         (($ <network-manager-configuration> network-manager)
+          (list network-manager)))))
 
-(define* (network-manager-service #:key (network-manager network-manager))
-  "Return a service that runs NetworkManager, a network connection manager
-that attempting to keep active network connectivity when available."
-  (service network-manager-service-type network-manager))
+    (service-type
+     (name 'network-manager)
+     (extensions
+      (list (service-extension shepherd-root-service-type
+                               network-manager-shepherd-service)
+            (service-extension dbus-root-service-type config->package)
+            (service-extension polkit-service-type config->package)
+            (service-extension activation-service-type
+                               (const %network-manager-activation))
+            ;; Add network-manager to the system profile.
+            (service-extension profile-service-type config->package))))))
 
 
 ;;;

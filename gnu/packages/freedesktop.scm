@@ -2,11 +2,12 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@pobox.com>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,11 +43,13 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages polkit)
@@ -85,14 +88,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.5.3")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qx623nyr49sxv49ilb0j85skgk1dhkr82vd577ywyjf7d96q84i"))))
+                "0cjq4mjqx8c7iiign330s34dvpw38rlv8byaxlx68p3kim8lylxp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cairo" ,cairo)
@@ -748,14 +751,14 @@ messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
 (define-public telepathy-mission-control
   (package
     (name "telepathy-mission-control")
-    (version "5.16.3")
+    (version "5.16.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://telepathy.freedesktop.org/releases/"
-                                  name "/" name "-" version ".tar.bz2"))
+                                  name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0zcbx69k0d3p2pjh3g7sa3q2zkd5xchxkqsmlfn3fwxaz0pmsmvi"))))
+                "1jz6wwgsfxixha6ys2hbzbk5faqnj9kh2m5qdlgx5anqgandsscp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -805,3 +808,77 @@ share connections to real-time communication services without conflicting.")
 useful for both applications which need colour management and applications that
 wish to perform colour calibration.")
     (license license:lgpl2.1+)))
+
+(define-public libfprint
+  (package
+    (name "libfprint")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://people.freedesktop.org/~hadess/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1giwh2z63mn45galsjb59rhyrvgwcy01hvvp4g01iaa2snvzr0r5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list (string-append "--with-udev-rules-dir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("nss" ,nss)
+       ("glib" ,glib)
+       ("eudev" ,eudev)
+       ("pixman" ,pixman)))
+    (home-page "https://www.freedesktop.org/wiki/Software/fprint/libfprint/")
+    (synopsis "Library to access fingerprint readers")
+    (description
+     "libfprint is a library designed to make it easy for application
+developers to add support for consumer fingerprint readers to their
+software.")
+    (license license:lgpl2.1+)))
+
+(define-public fprintd
+  (package
+    (name "fprintd")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://people.freedesktop.org/~hadess/fprintd-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "05915i0bv7q62fqrs5diqwr8dz3pwqa1c1ivcgggkjyw0xk4ldp5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'set-sysconfdir
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Work around a bug whereby the 'SYSCONFDIR' macro
+                      ;; expands literally to '${prefix}/etc'.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "src/main.c"
+                          (("SYSCONFDIR, \"fprintd.conf\"")
+                           (string-append "\"" out "/etc\", "
+                                          "\"fprintd.conf\"")))
+                        #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libfprint" ,libfprint)
+       ("dbus-glib" ,dbus-glib)
+       ("polkit" ,polkit)
+       ("linux-pam" ,linux-pam)))                 ;for pam_fprintd
+    (home-page "https://www.freedesktop.org/wiki/Software/fprint/fprintd/")
+    (synopsis "D-Bus daemon that exposes fingerprint reader functionality")
+    (description
+     "fprintd is a D-Bus daemon that offers functionality of libfprint, a
+library to access fingerprint readers, over the D-Bus interprocess
+communication bus.  This daemon layer above libfprint solves problems related
+to applications simultaneously competing for fingerprint readers.")
+    (license license:gpl2+)))

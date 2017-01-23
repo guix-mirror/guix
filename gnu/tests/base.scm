@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,9 +78,11 @@ passed a gexp denoting the marionette, and it must return gexp that is
 inserted before the first test.  This is used to introduce an extra
 initialization step, such as entering a LUKS passphrase."
   (define test
-    (with-imported-modules '((gnu build marionette))
+    (with-imported-modules '((gnu build marionette)
+                             (guix build syscalls))
       #~(begin
           (use-modules (gnu build marionette)
+                       (guix build syscalls)
                        (srfi srfi-1)
                        (srfi srfi-26)
                        (srfi srfi-64)
@@ -175,6 +177,22 @@ info --version")
                             (loop (+ i 1)))
                           (apply throw args)))))
                marionette)))
+
+          ;; There should be one utmpx entry for the user logged in on tty1.
+          (test-equal "utmpx entry"
+            '(("root" "tty1" #f))
+            (marionette-eval
+             '(begin
+                (use-modules (guix build syscalls)
+                             (srfi srfi-1))
+
+                (filter-map (lambda (entry)
+                              (and (equal? (login-type USER_PROCESS)
+                                           (utmpx-login-type entry))
+                                   (list (utmpx-user entry) (utmpx-line entry)
+                                         (utmpx-host entry))))
+                            (utmpx-entries)))
+             marionette))
 
           (test-assert "host name resolution"
             (match (marionette-eval

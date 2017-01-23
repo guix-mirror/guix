@@ -28,6 +28,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
@@ -53,11 +54,16 @@
                (base32
                 "15lzih6671gh9knzpl8mxchiml7z5lfqzr7jm2r0rjhrxs6nk4jb"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)))
     (arguments
      `(#:phases
        (alist-delete 'configure %standard-phases)
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+                          "CC=gcc"
+                          "COPTS=\"-DHAVE_DBUS\"")
        ;; No 'check' target.
        #:tests? #f))
     (home-page "http://www.thekelleys.org.uk/dnsmasq/doc.html")
@@ -76,7 +82,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public bind
   (package
     (name "bind")
-    (version "9.10.4-P4")
+    (version "9.10.4-P5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -84,7 +90,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "11lxkb7d79c75scrs28q4xmr0ii2li69zj1c650al3qxir8yf754"))))
+                "1sqg7wg05h66vdjc8j215r04f8pg7lphkb93nsqxvzhk6r0ppi49"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -140,7 +146,7 @@ high-volume and high-reliability applications. The name BIND stands for
 (define-public dnscrypt-proxy
   (package
     (name "dnscrypt-proxy")
-    (version "1.8.1")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -148,7 +154,7 @@ high-volume and high-reliability applications. The name BIND stands for
                     "dnscrypt-proxy-" version ".tar.bz2"))
               (sha256
                (base32
-                "1dz0knslf7ysc2xx33ljrdlqyr4b0fpm9ifrwvwgcjaxgh94l7m8"))
+                "1xb199hpzfj53kmbkkn3awymjh8f44yzkmaj7q5ibb67b5p9fq7d"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled libltdl. XXX: This package also bundles

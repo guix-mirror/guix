@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,8 +20,9 @@
 
 (define-module (gnu packages geo)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
   #:use-module (guix download)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages glib)
@@ -29,6 +31,43 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
+
+(define-public geos
+  (package
+    (name "geos")
+    (version "3.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.osgeo.org/geos/geos-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "1icz31kd5sml2kdxhjznvmv33zfr6nig9l0i6bdcz9q9g8x4wbja"))))
+    (build-system gnu-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (add-after
+                    'unpack 'patch-test-shebangs
+                    (lambda _
+                      (substitute* '("tests/xmltester/testrunner.sh"
+                                     "tests/geostest/testrunner.sh")
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "https://geos.osgeo.org/")
+    (synopsis "Geometry Engine for Geographic Information Systems")
+    (description
+     "GEOS provides a spatial object model and fundamental geometric
+functions.  It is a C++ port of the Java Topology Suite (JTS).  As such,
+it aims to contain the complete functionality of JTS in C++.  This
+includes all the OpenGIS Simple Features for SQL spatial predicate
+functions and spatial operators, as well as specific JTS enhanced
+topology functions.")
+    (license (list license:lgpl2.1+          ; Main distribution.
+                   license:zlib              ; tests/xmltester/tinyxml/*
+                   license:public-domain)))) ; include/geos/timeval.h
 
 ;;; FIXME GNOME Maps only runs within GNOME. On i3, it fails with this error:
 ;;; (org.gnome.Maps:8568): GLib-GIO-ERROR **: Settings schema
@@ -92,4 +131,54 @@
 the OpenStreetMap project.  It can provide directions for walking, bicycling,
 and driving.")
     (home-page "https://wiki.gnome.org/Apps/Maps")
-    (license gpl2+)))
+    (license license:gpl2+)))
+
+(define-public proj.4
+  (package
+    (name "proj.4")
+    (version "4.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.osgeo.org/proj/proj-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1xw5f427xk9p2nbsj04j6m5zyjlyd66sbvl2bkg8hd1kx8pm9139"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test-paths
+           (lambda _
+             (substitute* '("nad/test27"
+                            "nad/test83"
+                            "nad/testvarious"
+                            "nad/testdatumfile"
+                            "nad/testflaky"
+                            "nad/testIGNF")
+               (("/bin/rm") (which "rm")))
+             #t))
+         ;; Precision problems on i686 and other platforms. See:
+         ;; https://web.archive.org/web/20151006134301/http://trac.osgeo.org/proj/ticket/255
+         ;; Disable failing test.
+         (add-after 'patch-test-paths 'ignore-failing-tests
+           (lambda _
+             (substitute* '("nad/Makefile.in")
+               (("\tPROJ_LIB.*" all) (string-append  "#" all)))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://proj4.org/")
+    (synopsis "Cartographic Projections Library")
+    (description
+     "Proj.4 is a library for converting coordinates between cartographic
+projections.")
+    (license (list license:expat
+                   ;; src/PJ_patterson.c
+                   license:asl2.0
+                   ;; src/geodesic.c/h
+                   license:x11
+                   ;; Embedded EPSG database.
+                   (license:non-copyleft "http://www.epsg.org/TermsOfUse")
+                   ;; cmake/*
+                   license:boost1.0))))

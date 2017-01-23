@@ -1,19 +1,20 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,12 +109,10 @@ in print.  With attention to detail for high resolution rendering.")
                      (mkdir-p doc-dir)
                      (chdir (string-append "ubuntu-font-family-" ,version))
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))
                      (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/" doc)))
+                                 (install-file doc doc-dir))
                                (find-files "." "\\.txt$"))))))
     (native-inputs `(("source" ,source)
                      ("unzip" ,unzip)))
@@ -165,19 +164,13 @@ TrueType (TTF) files.")
                      (mkdir-p doc-dir)
                      (chdir (string-append "dejavu-fonts-ttf-" ,version))
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/"
-                                                           (basename ttf))))
+                                 (install-file ttf font-dir))
                                (find-files "ttf" "\\.ttf$"))
                      (for-each (lambda (conf)
-                                 (copy-file conf
-                                            (string-append conf-dir "/"
-                                                           (basename conf))))
+                                 (install-file conf conf-dir))
                                (find-files "fontconfig" "\\.conf$"))
                      (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/"
-                                                           (basename doc))))
+                                 (install-file doc doc-dir))
                                (find-files "." "\\.txt$|^[A-Z][A-Z]*$"))))))
     (native-inputs `(("source" ,source)
                      ("tar" ,tar)
@@ -186,7 +179,7 @@ TrueType (TTF) files.")
     (synopsis "Vera font family derivate with additional characters")
     (description "DejaVu provides an expanded version of the Vera font family
 aiming for quality and broader Unicode coverage while retaining the original
-Vera style.  DejaVu currently works towards conformance with the Multilingual
+Vera style.  DejaVu currently works towards conformance to the Multilingual
 European Standards (MES-1 and MES-2) for Unicode coverage.  The DejaVu fonts
 provide serif, sans and monospaced variants.")
     (license
@@ -229,12 +222,10 @@ provide serif, sans and monospaced variants.")
                      (mkdir-p doc-dir)
                      (chdir (string-append "ttf-bitstream-vera-" ,version))
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))
                      (for-each (lambda (doc)
-                                 (copy-file doc
-                                            (string-append doc-dir "/" doc)))
+                                 (install-file doc doc-dir))
                                (find-files "." "\\.TXT$"))))))
     (native-inputs `(("source" ,source)
                      ("tar" ,tar)
@@ -250,7 +241,7 @@ package provides the TrueType (TTF) files.")
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.0.24")
+    (version "0.0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -258,7 +249,7 @@ package provides the TrueType (TTF) files.")
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "0r4jnc2x9yncf40lixjb1pqgpq8rzbi2fz33pshlqzjgx2d69bcw"))))
+                "0zvkd8cm1cg2919v1js9qmzwa02sjl7qajj3gcvgqvai1fm2i8hl"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
@@ -294,9 +285,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
                        (system* "make" "ttftar")
                        (mkdir-p font-dir)
                        (for-each (lambda (file)
-                                   (copy-file file
-                                              (string-append font-dir "/"
-                                                             (basename file))))
+                                   (install-file file font-dir))
                                  (filter
                                    (lambda (file) (string-suffix? "ttf" file))
                                    (find-files "." "")))))))
@@ -348,14 +337,10 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
            (mkdir-p doc-dir)
            (chdir (string-append "liberation-fonts-ttf-" ,version))
            (for-each (lambda (ttf)
-                       (copy-file ttf
-                                  (string-append font-dir "/"
-                                                 (basename ttf))))
+                       (install-file ttf font-dir))
                      (find-files "." "\\.ttf$"))
            (for-each (lambda (doc)
-                       (copy-file doc
-                                  (string-append doc-dir "/"
-                                                 (basename doc))))
+                       (install-file doc doc-dir))
                      '("AUTHORS" "ChangeLog" "LICENSE" "README" "TODO"))))))
     (native-inputs
      `(("source" ,source)
@@ -367,17 +352,16 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
     (description
      "The Liberation font family aims at metric compatibility with
 Arial, Times New Roman, and Courier New.
-
 There are three sets:
 
-- Sans (a substitute for Arial, Albany, Helvetica, Nimbus Sans L, and
+@enumerate
+@item Sans (a substitute for Arial, Albany, Helvetica, Nimbus Sans L, and
 Bitstream Vera Sans);
-
-- Serif (a substitute for Times New Roman, Thorndale, Nimbus Roman, and
+@item Serif (a substitute for Times New Roman, Thorndale, Nimbus Roman, and
 Bitstream Vera Serif);
-
-- Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
+@item Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
 and Bitstream Vera Sans Mono).
+@end enumerate
 
 The Liberation Fonts are sponsored by Red Hat.")
     (license license:silofl1.1)))
@@ -414,8 +398,8 @@ The Liberation Fonts are sponsored by Red Hat.")
        #:tests? #f)) ;; No test target in tarball
     (home-page "http://terminus-font.sourceforge.net/")
     (synopsis "Simple bitmap programming font")
-    (description "Terminus Font is a clean, fixed width bitmap font, designed
-for long (8 and more hours per day) work with computers.")
+    (description "Terminus Font is a clean, fixed-width bitmap font, designed
+for long periods of working with computers (8 or more hours per day).")
     (license license:silofl1.1)))
 
 (define-public font-adobe-source-han-sans
@@ -501,8 +485,7 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
            (mkdir-p font-dir)
            (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
            (chdir "wqy-zenhei")
-           (copy-file "wqy-zenhei.ttc"
-                      (string-append font-dir "wqy-zenhei.ttc"))))))
+           (install-file "wqy-zenhei.ttc" font-dir)))))
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
@@ -512,14 +495,59 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
      "WenQuanYi Zen Hei is a Hei-Ti style (sans-serif type) Chinese outline
 font.  It is designed for general purpose text formatting and on-screen
 display of Chinese characters and symbols from many other languages.
-WenQuanYi Zen Hei provides a rather complete coverage to Chinese Hanzi glyphs,
+WenQuanYi Zen Hei provides a rather complete coverage of Chinese Hanzi glyphs,
 including both simplified and traditional forms.  The total glyph number in
 this font is over 35,000, including over 21,000 Chinese Hanzi.  This font has
-full coverage to GBK(CP936) charset, CJK Unified Ideographs, as well as the
-code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
-ko (Korean) locales for fontconfig.")
+full coverage of the GBK (CP936) charset, CJK Unified Ideographs, as well as
+the code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
+ko (Korean) locales for @code{fontconfig}.")
     ;; GPLv2 with font embedding exception
     (license license:gpl2)))
+
+(define-public font-wqy-microhei
+  (package
+    (name "font-wqy-microhei")
+    (version "0.2.0-beta")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/wqy/wqy-microhei/"
+                                  version "/wqy-microhei-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gi1yxqph8xx869ichpzzxvx6y50wda5hi77lrpacdma4f0aq0i8"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
+                                    (assoc-ref %build-inputs "gzip") "/bin"))
+               (font-dir (string-append (assoc-ref %outputs "out")
+                                        "/share/fonts/wenquanyi/")))
+           (setenv "PATH" PATH)
+           (mkdir-p font-dir)
+           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (chdir "wqy-microhei")
+           (copy-file "wqy-microhei.ttc"
+                      (string-append font-dir "wqy-microhei.ttc"))))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (home-page "http://wenq.org/wqy2/")
+    (synopsis "CJK font")
+    (description
+     "WenQuanYi Micro Hei is a Sans-Serif style (also known as Hei, Gothic or
+Dotum among the Chinese/Japanese/Korean users) high quality CJK outline font.
+It was derived from \"Droid Sans Fallback\" and \"Droid Sans\" released by
+Google Inc.  This font contains all the unified CJK Han glyphs in the range of
+U+4E00-U+9FC3 defined in Unicode Standard 5.1, together with many other
+languages unicode blocks, including Latins, Extended Latins, Hanguls and
+Kanas.  The font file is extremely compact (~4M) compared with most known CJK
+fonts.")
+    ;; This font is licensed under Apache2.0 or GPLv3 with font embedding
+    ;; exceptions.
+    (license license:gpl3)))
 
 (define-public font-tex-gyre
   (package
@@ -585,12 +613,10 @@ Heros, Pagella, Schola, Termes.")
            (mkdir-p doc-dir)
            (chdir (string-append "AnonymousPro-" ,version ".001"))
            (for-each (lambda (ttf)
-                       (copy-file ttf
-                                  (string-append font-dir "/" ttf)))
+                       (install-file ttf font-dir))
                      (find-files "." "\\.ttf$"))
            (for-each (lambda (doc)
-                       (copy-file doc
-                                  (string-append doc-dir "/" doc)))
+                       (install-file doc doc-dir))
                      (find-files "." "\\.txt$"))))))
     (native-inputs
      `(("unzip" ,unzip)))
@@ -688,20 +714,61 @@ utilities to ease adding new glyphs to the font.")
 
                      (mkdir-p font-dir)
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))
                      (for-each (lambda (otf)
-                                 (copy-file otf
-                                            (string-append font-dir "/" otf)))
+                                 (install-file otf font-dir))
                                (find-files "." "\\.otf$"))))))
     (native-inputs `(("unzip" ,unzip)))
     (home-page "https://www.google.com/get/noto/")
-    (synopsis "Fonts aimed to cover all languages")
-    (description "Googe Noto Fonts is a family of fonts aimed to support all
-languages with a consistent look and aesthetic.  It's goal is to have no Unicode
-symbols unable to be displayed properly.")
+    (synopsis "Fonts to cover all languages")
+    (description "Google Noto Fonts is a family of fonts designed to support
+all languages with a consistent look and aesthetic.  Its goal is to properly
+display all Unicode symbols.")
     (license license:silofl1.1)))
+
+(define-public font-google-roboto
+  (package
+    (name "font-google-roboto")
+    (version "2.136")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/google/roboto/releases/download/"
+                           "v" version "/roboto-hinted.zip"))
+       (file-name (string-append name "-" version ".zip"))
+       (sha256
+        (base32
+         "0spscx08fad7i8qs7icns96iwcapniq8lwwqqvbf7bamvs8qfln4"))))
+    (native-inputs `(("unzip" ,unzip)))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((PATH (string-append (assoc-ref %build-inputs
+                                                         "unzip")
+                                              "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype")))
+                     (setenv "PATH" PATH)
+                     (system* "unzip" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (chdir "roboto-hinted")
+                     (for-each (lambda (ttf)
+                                 (copy-file ttf
+                                            (string-append font-dir "/" ttf)))
+                               (find-files "." "\\.ttf$"))))))
+    (home-page "https://github.com/google/roboto")
+    (synopsis "The Roboto family of fonts")
+    (description
+     "Roboto is Google’s signature family of fonts, the default font on Android
+and Chrome OS, and the recommended font for the
+visual language \"Material Design\".")
+    (license license:asl2.0)))
 
 (define-public font-un
   (package
@@ -735,14 +802,10 @@ symbols unable to be displayed properly.")
            (mkdir-p doc-dir)
            (chdir (string-append "un-fonts"))
            (for-each (lambda (ttf)
-                       (copy-file ttf
-                                  (string-append font-dir "/"
-                                                 (basename ttf))))
+                       (install-file ttf font-dir))
                      (find-files "." "\\.ttf$"))
            (for-each (lambda (doc)
-                       (copy-file doc
-                                  (string-append doc-dir "/"
-                                                 (basename doc))))
+                       (install-file doc doc-dir))
                      '("COPYING" "README"))))))
     (native-inputs
      `(("tar" ,tar)
@@ -840,18 +903,17 @@ glyph designs, not just an added slant.")
 
                      (mkdir-p font-dir)
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))))))
     (native-inputs
      `(("source" ,source)
        ("unzip" ,unzip)))
     (home-page "https://sourcefoundry.org/hack/")
-    (synopsis "Typeface designed for sourcecode")
+    (synopsis "Typeface designed for source code")
     (description
-     "Hack is designed to be a workhorse typeface for code, it expands upon
-the Bitstream Vera & DejaVu projects, provides 1561 glyphs including
-powerline support.")
+     "Hack is designed to be a workhorse typeface for code.  It expands upon
+the Bitstream Vera & DejaVu projects, provides 1561 glyphs, and includes
+Powerline support.")
     (license (license:x11-style
               "https://github.com/chrissimpkins/Hack/blob/master/LICENSE.md"
               "Hack Open Font License v2.0"))))

@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5014,6 +5015,30 @@ show those variables which are in scope at the point of the call.  PadWalker
 is particularly useful for debugging.")
     (license (package-license perl))))
 
+(define-public perl-parallel-forkmanager
+  (package
+    (name "perl-parallel-forkmanager")
+    (version "1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/Y/YA/YANICK/Parallel-ForkManager-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wm4wp6p3ah5z212jl12728z68nmxmfr0f03z1jpvdzffnc2xppi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warn" ,perl-test-warn)))
+    (home-page "http://search.cpan.org/dist/Parallel-ForkManager")
+    (synopsis "Simple parallel processing fork manager")
+    (description "@code{Parallel::ForkManager} is intended for use in
+operations that can be done in parallel where the number of
+processes to be forked off should be limited.")
+    (license (package-license perl))))
+
 (define-public perl-params-util
   (package
     (name "perl-params-util")
@@ -5925,7 +5950,7 @@ done, how much is left to do, and estimate how long it will take.")
 (define-public perl-term-readkey
   (package
     (name "perl-term-readkey")
-    (version "2.32")
+    (version "2.37")
     (source
      (origin
        (method url-fetch)
@@ -5933,7 +5958,7 @@ done, how much is left to do, and estimate how long it will take.")
                            "TermReadKey-" version ".tar.gz"))
        (sha256
         (base32
-         "1y79w5cj98w0a1nqxjhmaw01p2hfhzfw340m2qxd11p6124hxfaq"))))
+         "0hdj5mldpj3pyprd4hbbalfx9yjgi5p59gg2ixk9808f5v7q74sa"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/TermReadKey")
     (synopsis "Simple terminal control")

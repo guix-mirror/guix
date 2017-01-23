@@ -232,6 +232,10 @@ AM_MISSING_PROG([DOT], [dot])
 dnl Manual pages.
 AM_MISSING_PROG([HELP2MAN], [help2man])
 
+dnl Emacs (optional), for 'etc/indent-package.el'.
+AC_PATH_PROG([EMACS], [emacs], [/usr/bin/emacs])
+AC_SUBST([EMACS])
+
 AC_CONFIG_FILES([Makefile
                  po/guix/Makefile.in
                  po/packages/Makefile.in
@@ -241,5 +245,6 @@ AC_CONFIG_FILES([scripts/guix], [chmod +x scripts/guix])
 AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
 AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],
   [chmod +x pre-inst-env])
+AC_CONFIG_FILES([etc/indent-code.el], [chmod +x etc/indent-code.el])
 
 AC_OUTPUT

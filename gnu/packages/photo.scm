@@ -163,7 +163,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "10.20")
+    (version "10.40")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -171,7 +171,7 @@ MTP, and much more.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0akdnxvb23ibcwa63ncibaj5m5k56cb34x8gy90z9lqcjl0f4sph"))))
+                "1p05d9k94win8a24cr7lsllb6wjl3dagsmdbcxzv6f68z7i1jdly"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -186,10 +186,10 @@ MTP, and much more.")
                                    `("PERL5LIB" prefix (,lib)))))
                  %standard-phases)))
     (home-page "http://search.cpan.org/dist/Image-ExifTool")
-    (synopsis "Program and Perl library to manipulate EXIF tags")
-    (description
-     "This package provides the 'exiftool' command and the 'Image::ExifTool'
-Perl library to manipulate EXIF tags of digital images.")
+    (synopsis "Program and Perl library to manipulate EXIF and other metadata")
+    (description "This package provides the @code{exiftool} command and the
+@code{Image::ExifTool} Perl library to manipulate EXIF tags of digital images
+and a wide variety of other metadata.")
     (license (package-license perl))))
 
 (define-public libpano13

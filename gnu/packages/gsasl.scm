@@ -21,7 +21,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages nettle)
-  #:use-module (gnu packages shishi)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)

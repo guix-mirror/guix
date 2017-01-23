@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -842,7 +842,7 @@ your own lessons.")
 (define-public powertabeditor
   (package
     (name "powertabeditor")
-    (version "2.0.0-alpha8")
+    (version "2.0.0-alpha9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -851,27 +851,20 @@ your own lessons.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gaa2x209v3azql8ak3r1n9a9qbxjx2ssirvwdxwklv2lmfqkm82"))
+                "1zjdz1qpkl83xr6dkap8airqcyjs3mxc5dzfyhrrvkyr7dics7ii"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Remove bundled sources for external libraries
                   (delete-file-recursively "external")
+                  ;; Use only system libraries
                   (substitute* "CMakeLists.txt"
-                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") "")
-                    (("add_subdirectory\\(external\\)") ""))
-                  (substitute* "test/CMakeLists.txt"
-                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") ""))
-
-                  ;; Add install target
-                  (substitute* "source/CMakeLists.txt"
-                    (("qt5_use_modules")
-                     (string-append
-                      "install(TARGETS powertabeditor "
-                      "RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)\n"
-                      "install(FILES data/tunings.json DESTINATION "
-                      "${CMAKE_INSTALL_PREFIX}/share/powertabeditor/)\n"
-                      "qt5_use_modules")))
+                    (("include\\( PTE_ThirdParty \\)")
+                     "\
+include(third_party/Qt)
+include(third_party/boost)
+add_library( Catch INTERFACE IMPORTED )
+add_library( rapidjson INTERFACE IMPORTED )"))
                   #t))))
     (build-system cmake-build-system)
     (arguments
@@ -882,42 +875,45 @@ your own lessons.")
        ;; CMake appears to lose the RUNPATH for some reason, so it has to be
        ;; explicitly set with CMAKE_INSTALL_RPATH.
        (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
-             "-DCMAKE_ENABLE_PRECOMPILED_HEADERS=OFF" ; if ON pte_tests cannot be built
              (string-append "-DCMAKE_INSTALL_RPATH="
                             (string-join (map (match-lambda
                                                 ((name . directory)
                                                  (string-append directory "/lib")))
-                                              %build-inputs) ";")))
+                                              %build-inputs) ";"))
+             "-DPTE_DATA_DIR=share/powertabeditor")
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'check
-          (lambda _
-            (zero? (system* "bin/pte_tests"
-                            ;; Exclude this failing test
-                            "~Formats/PowerTabOldImport/Directions"))))
-         (add-before
-          'configure 'fix-tests
-          (lambda _
-            ;; Tests cannot be built with precompiled headers
-            (substitute* "test/CMakeLists.txt"
-              (("cotire\\(pte_tests\\)") ""))
-            #t))
-         (add-before
-          'configure 'remove-third-party-libs
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; Link with required static libraries, because we're not
-            ;; using the bundled version of withershins.
-            (substitute* '("source/CMakeLists.txt"
-                           "test/CMakeLists.txt")
-              (("target_link_libraries\\((powertabeditor|pte_tests)" _ target)
-               (string-append "target_link_libraries(" target " "
-                              (assoc-ref inputs "binutils")
-                              "/lib/libbfd.a "
-                              (assoc-ref inputs "libiberty")
-                              "/lib/libiberty.a "
-                              "dl")))
-            #t)))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "bin/pte_tests"
+                             ;; FIXME: one test fails.
+                             "exclude:Formats/PowerTabOldImport/Directions"))))
+         (add-after 'unpack 'set-target-directories
+           (lambda _
+             (substitute* "cmake/PTE_Executable.cmake"
+               (("set\\( install_dir.*")
+                "set( install_dir bin )\n"))
+             (substitute* "cmake/PTE_Paths.cmake"
+               (("set\\( PTE_DATA_DIR .*")
+                "set( PTE_DATA_DIR share/powertabeditor )\n"))
+             ;; Tests hardcode the data directory as "data"
+             (substitute* "test/CMakeLists.txt"
+               (("\\$\\{PTE_DATA_DIR\\}") "data"))
+             #t))
+         (add-before 'configure 'remove-third-party-libs
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Link with required static libraries, because we're not
+             ;; using the bundled version of withershins.
+             (substitute* "source/build/CMakeLists.txt"
+               (("withershins" line)
+                (string-append line "\n"
+                               (assoc-ref inputs "binutils")
+                               "/lib/libbfd.a\n"
+                               (assoc-ref inputs "libiberty")
+                               "/lib/libiberty.a\n"
+                               "dl\n"
+                               "z\n")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("alsa-lib" ,alsa-lib)
@@ -1687,6 +1683,35 @@ synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
     (license license:gpl2)))
 
+(define-public libgig
+  (package
+    (name "libgig")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.linuxsampler.org/packages/"
+                                  "libgig-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wr8mwjmqpnyz6bx9757lspiii1zzn8zfbqsvn2ipzpgqkxv6kaz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libuuid" ,util-linux)
+       ("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://linuxsampler.org/libgig/")
+    (synopsis "C++ library for working with Gigasampler (.gig) files")
+    (description
+     "Libgig is a C++ library for loading, modifying existing and creating new
+Gigasampler (.gig) files and DLS (Downloadable Sounds) Level 1/2 files, KORG
+sample based instruments (.KSF and .KMP files), SoundFont v2 (.sf2) files and
+AKAI sampler data.  The package includes a couple of command line tools based
+on the library.")
+    ;; The library and tools are released under the GPL, except the AKAI
+    ;; classes which are released under the LGPL.
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public jack-keyboard
   (package
     (name "jack-keyboard")
@@ -1889,8 +1914,8 @@ analogue-like user interface.")
                #t)))))
       (inputs
        `(("lilv" ,lilv)
-         ("fftw" ,fftw-with-threads)
-         ("fftwf" ,fftwf-with-threads)
+         ("fftw" ,fftw)
+         ("fftwf" ,fftwf)
          ("lv2" ,lv2)
          ("jack" ,jack-1)
          ("readline" ,readline)))
@@ -1941,13 +1966,13 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public python-mutagen
   (package
     (name "python-mutagen")
-    (version "1.35.1")
+    (version "1.36")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mutagen" version))
               (sha256
                (base32
-                "0klk68c1n3285vvm2xzk8ii7mlqp1dxii04askan0gi1wlpagka9"))))
+                "1kabb9b81hgvpd3wcznww549vss12b1xlvpnxg1r6n4c7gikgvnp"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -2056,13 +2081,13 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.2")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "0sna2hx8sdaa36jnvw5a7m31wzfm717lw2ixh906fsfp43i74k5m"))))
+                "0r743a2pv1iyw50jsdl01v2ml3pdkhdp920a5d1wsacak48vwgxr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2179,7 +2204,7 @@ with a number of bugfixes and changes to improve IT playback.")
 (define-public moc
   (package
     (name "moc")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.daper.net/pub/soft/"
@@ -2187,7 +2212,13 @@ with a number of bugfixes and changes to improve IT playback.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1wn4za08z64bhsgfhr9c0crfyvy8c3b6a337wx7gz19am5srqh8v"))))
+                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
+               '(substitute* "main.c"
+                  (("printf \\(\"            Built : %s\", __DATE__\\);") "")
+                  (("printf \\(\" %s\", __TIME__\\);") "")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -58,7 +58,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -146,7 +146,7 @@ and its related documentation.")
          (add-before 'configure 'patch-/bin/sh
            (lambda _
              (substitute* "auto/feature"
-               (("/bin/sh") (which "bash")))
+               (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -527,7 +527,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.16.1")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -535,7 +535,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "1srrd0iyz9p5xgl8q0hrzqg7p8cl9ar0cdb8f54hls4kllf3f80l"))))
+                "0jyxwc6bcvkcahkwcq237a0x209cysb63n5lak5m7zbglbb2jmq2"))))
     (build-system gnu-build-system)
     (inputs
      `(("icu4c" ,icu4c)

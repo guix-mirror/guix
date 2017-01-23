@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2016 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -33,7 +33,8 @@ namespace nix {
 
     /* Build DRV, which lives at DRVPATH.  */
     typedef void (*derivationBuilder) (const Derivation &drv,
-				       const std::string &drvPath);
+				       const std::string &drvPath,
+				       const std::string &output);
 
     /* Return the built-in builder called BUILDER, or NULL if none was
        found.  */

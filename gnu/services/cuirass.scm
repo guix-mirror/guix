@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,8 @@
                     (default 60))
   (database         cuirass-configuration-database ;string (file-name)
                     (default "/var/run/cuirass/cuirass.db"))
+  (port             cuirass-configuration-port ;integer (port)
+                    (default 8080))
   (specifications   cuirass-configuration-specifications)
                                   ;gexp that evaluates to specification-alist
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
@@ -74,6 +77,7 @@
          (group            (cuirass-configuration-group config))
          (interval         (cuirass-configuration-interval config))
          (database         (cuirass-configuration-database config))
+         (port             (cuirass-configuration-port config))
          (specs            (cuirass-configuration-specifications config))
          (use-substitutes? (cuirass-configuration-use-substitutes? config))
          (one-shot?        (cuirass-configuration-one-shot? config)))
@@ -87,6 +91,7 @@
                             "--specifications"
                             #$(scheme-file "cuirass-specs.scm" specs)
                             "--database" #$database
+                            "--port" #$(number->string port)
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
                             #$@(if one-shot? '("--one-shot") '()))

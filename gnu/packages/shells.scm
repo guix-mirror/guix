@@ -5,6 +5,8 @@
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +28,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages ncurses)
@@ -106,14 +109,17 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
        #:configure-flags '("--sysconfdir=/etc")
        #:phases
        (modify-phases %standard-phases
-         ;; Replace 'bc' by its absolute file name in the store.
-         (add-after 'unpack 'patch-bc
+         ;; Embed absolute paths to store items.
+         (add-after 'unpack 'embed-store-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* '("share/functions/math.fish"
                             "share/functions/seq.fish")
                (("\\| bc")
                 (string-append "| " (assoc-ref %build-inputs "bc")
-                               "/bin/bc"))))))))
+                               "/bin/bc")))
+             (substitute* "share/functions/fish_update_completions.fish"
+               (("python") (which "python")))
+             #t)))))
     (synopsis "The friendly interactive shell")
     (description
      "Fish (friendly interactive shell) is a shell focused on interactive use,
@@ -171,6 +177,42 @@ highlighting.")
 has a small feature set similar to a traditional Bourne shell.")
     (home-page "http://github.com/rakitzis/rc")
     (license zlib)))
+
+(define-public es
+  (package
+    (name "es")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/wryun/es-shell/releases/"
+                           "download/v" version "/es-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fplzxc6lncz2lv2fyr2ig23rgg5j96rm2bbl1rs28mik771zd5h"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 're-enter-rootdir
+           ;; The tarball has no folder.
+           (lambda _
+             (chdir ".."))))))
+    (inputs
+     `(("readline" ,readline)))
+    (native-inputs
+     `(("bison" ,bison)))
+    (synopsis "Extensible shell with higher-order functions")
+    (description
+     "Es is an extensible shell.  The language was derived from the Plan 9
+shell, rc, and was influenced by functional programming languages, such as
+Scheme, and the Tcl embeddable programming language.  This implementation is
+derived from Byron Rakitzis's public domain implementation of rc, and was
+written by Paul Haahr and Byron Rakitzis.")
+    (home-page "https://wryun.github.io/es-shell/")
+    (license public-domain)))
 
 (define-public tcsh
   (package
@@ -299,14 +341,14 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "1a3jkvfh1xc6aw557y8zjn498q89bapyx4dxc3md7qwrmnj9pkv3"))
+            "13ndyq9cal2j93qqbjyp2jn3cshiavdxsaj2qjzm6mas0gzywmf0"))
         (modules '((guix build utils)))
         (snippet
          `(begin

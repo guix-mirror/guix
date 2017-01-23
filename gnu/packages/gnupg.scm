@@ -370,6 +370,15 @@ libskba (working with X.509 certificates and CMS data).")
     (inputs
      `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-cmake-file
+           (lambda _
+             ;; Work around <https://bugs.gnupg.org/gnupg/issue2877>.
+             (substitute* "lang/cpp/src/GpgmeppConfig.cmake.in"
+               (("@libsuffix@") ".so"))
+             #t)))))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
     (synopsis "Library providing simplified access to GnuPG functionality")
     (description
@@ -425,7 +434,8 @@ distributed separately.")
        ;; Unfortunately, we have to disable some tests due to some gpg-agent
        ;; goofiness... see:
        ;;   https://bugs.launchpad.net/pygpgme/+bug/999949
-       (patches (search-patches "pygpgme-disable-problematic-tests.patch"))))
+       (patches (search-patches "pygpgme-disable-problematic-tests.patch"
+                                "python-pygpgme-fix-pinentry-tests.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

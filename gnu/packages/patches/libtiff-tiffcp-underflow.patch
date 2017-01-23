@@ -1,0 +1,41 @@
+Fix a integer underflow in tiffcp that led to heap overflows in
+TIFFReverseBits():
+
+http://bugzilla.maptools.org/show_bug.cgi?id=2598
+
+2016-12-02 Even Rouault <even.rouault at spatialys.com>
+
+        * tools/tiffcp.c: avoid uint32 underflow in cpDecodedStrips that 
+        can cause various issues, such as buffer overflows in the library.
+        Reported by Agostino Sarubbo.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2598
+
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <--  ChangeLog
+new revision: 1.1174; previous revision: 1.1173
+/cvs/maptools/cvsroot/libtiff/tools/tiffcp.c,v  <--  tools/tiffcp.c
+new revision: 1.56; previous revision: 1.55
+
+Index: libtiff/tools/tiffcp.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/tools/tiffcp.c,v
+retrieving revision 1.55
+retrieving revision 1.56
+diff -u -r1.55 -r1.56
+--- libtiff/tools/tiffcp.c	8 Oct 2016 15:54:57 -0000	1.55
++++ libtiff/tools/tiffcp.c	2 Dec 2016 22:13:32 -0000	1.56
+@@ -1,4 +1,4 @@
+-/* $Id: tiffcp.c,v 1.55 2016-10-08 15:54:57 erouault Exp $ */
++/* $Id: tiffcp.c,v 1.56 2016-12-02 22:13:32 erouault Exp $ */
+ 
+ /*
+  * Copyright (c) 1988-1997 Sam Leffler
+@@ -985,7 +985,7 @@
+ 		tstrip_t s, ns = TIFFNumberOfStrips(in);
+ 		uint32 row = 0;
+ 		_TIFFmemset(buf, 0, stripsize);
+-		for (s = 0; s < ns; s++) {
++		for (s = 0; s < ns && row < imagelength; s++) {
+ 			tsize_t cc = (row + rowsperstrip > imagelength) ?
+ 			    TIFFVStripSize(in, imagelength - row) : stripsize;
+ 			if (TIFFReadEncodedStrip(in, s, buf, cc) < 0

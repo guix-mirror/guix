@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -904,7 +904,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -913,7 +913,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "10zizf926a82c753a80bi49rb5c4yqjyd6zin4xgmggspfxngncj"))))
+         "1hn3mpsxbrwf2m0nz4vzji4i6i896y8kqjb9kijqpk04cnrs3fgz"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -970,15 +970,15 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.12.15")
+    (version "2017.01.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://youtube-dl.org/downloads/"
+              (uri (string-append "https://yt-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "17m3dimgpn6139w95drc7zncfx2mskjx45qvmj74zhdqxnk3gnc5"))))
+                "1jlwz6p7ryj9ygmwqm4r3pykd9qw21rsiqpifbx0p0kcvdvvvj3n"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1006,7 +1006,7 @@ access to mpv's powerful playback capabilities.")
     (description
      "Youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
-    (home-page "https://youtube-dl.org")
+    (home-page "https://yt-dl.org")
     (license license:public-domain)))
 
 (define-public libbluray
@@ -1485,7 +1485,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.16.6")
+    (version "17.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1493,7 +1493,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00vwdnf0gnwp029sznsr0s4lcky3brxbmpy0ch7igjpk5sf6mkqp"))))
+                "02cfhpkcsq718zwhwwsm48gjggf95qr38hqpi0kwrvsy18ll0msm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1513,9 +1513,11 @@ be used for realtime video capture via Linux-specific APIs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
        ("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("jack" ,jack-1)
        ("jansson" ,jansson)
@@ -1525,6 +1527,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)
+       ("speex" ,speex)
        ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")

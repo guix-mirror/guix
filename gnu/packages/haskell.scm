@@ -6,8 +6,9 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -1605,6 +1607,25 @@ UTF8 without truncation.")
 environment variables.")
     (license license:expat)))
 
+(define-public ghc-setlocale
+  (package
+    (name "ghc-setlocale")
+    (version "1.0.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/setlocale-"
+                    version "/setlocale-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sd73zgpijr9xjdj5p562cmlcxmx5iff5k8xh9b6rpcgrgnnlf9j"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/setlocale")
+    (synopsis "Haskell bindings to setlocale")
+    (description "This package provides Haskell bindings to the
+@code{setlocale} C function.")
+    (license license:bsd-3)))
+
 (define-public ghc-x11
   (package
     (name "ghc-x11")
@@ -2974,7 +2995,7 @@ writing to stdout and other handles.")
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
-    (version "0.3.11")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -2984,13 +3005,15 @@ writing to stdout and other handles.")
              version ".tar.gz"))
        (sha256
         (base32
-         "041s6963czs1pz0fc9cx17lgd6p83czqy2nxji7bhxqxwl2j15h2"))))
+         "1wwvkzpams7i0j7nk5qj8vvhj8x5zcbgbgrpczszgvshva4bkmfx"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
        ("ghc-text" ,ghc-text)))
     (home-page
      "https://github.com/aslatter/qc-instances")
@@ -3050,7 +3073,7 @@ use HUnit assertions as QuickCheck properties.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.8.1")
+    (version "2.8.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3061,7 +3084,7 @@ use HUnit assertions as QuickCheck properties.")
              ".tar.gz"))
        (sha256
         (base32
-         "0fvnfl30fxmj5q920l13641ar896d53z0z6z66m7c1366lvalwvh"))))
+         "1ai6k5v0bibaxq8xffcblc6rwmmk6gf8vjyd9p2h3y6vwbhlvilq"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
@@ -4571,7 +4594,7 @@ just a @code{Semigroup} are added.")
 (define-public ghc-semigroups
   (package
     (name "ghc-semigroups")
-    (version "0.17.0.1")
+    (version "0.18.2")
     (source
      (origin
        (method url-fetch)
@@ -4581,7 +4604,7 @@ just a @code{Semigroup} are added.")
              ".tar.gz"))
        (sha256
         (base32
-         "0gvpfi7s6ys4qha3y9a1zl1a15gf9cgg33wjb94ghg82ivcxnc3r"))))
+         "1r6hsn3am3dpf4rprrj4m04d9318v9iq02bin0pl29dg4a3gzjax"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-nats" ,ghc-nats)
@@ -8099,5 +8122,65 @@ and a large set of GNU extensions.")
     (description "This package allows you to have a README.md that at the
 same time is a literate Haskell program.")
     (license license:expat)))
+
+(define-public corrode
+  (let ((commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
+    (package
+      (name "corrode")
+      (version (string-append "0.0.1-" (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jameysharp/corrode.git")
+               (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
+         (file-name
+          (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
+      (build-system haskell-build-system)
+      (inputs
+       `(("ghc-language-c" ,ghc-language-c)
+         ("ghc-markdown-unlit" ,ghc-markdown-unlit)))
+      (home-page "https://github.com/jameysharp/corrode")
+      (synopsis "Automatic semantics-preserving translation from C to Rust")
+      (description
+       "This program reads a C source file and prints an equivalent module in
+Rust syntax.  It is intended to be useful for two different purposes:
+
+@enumerate
+@item Partial automation for migrating legacy code that was implemented in C.
+@item A new, complementary approach to static analysis for C programs.
+@end enumerate\n")
+      (license license:gpl2+))))
+
+(define-public ghc-wave
+  (package
+    (name "ghc-wave")
+    (version "0.1.4")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://hackage.haskell.org/package/wave/wave-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1g5nmqfk6p25v9ismwz4i66ay91bd1qh39xwj0hm4z6a5mw8frk8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-data-default-class"
+        ,ghc-data-default-class)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/mrkkrp/wave")
+    (synopsis "Work with WAVE and RF64 files in Haskell")
+    (description "This package allows you to work with WAVE and RF64
+files in Haskell.")
+    (license license:bsd-3)))
 
 ;;; haskell.scm ends here

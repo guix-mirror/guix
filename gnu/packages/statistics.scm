@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -727,7 +727,8 @@ legends.")
        ("r-lazyeval" ,r-lazyeval)
        ("r-tibble" ,r-tibble)
        ("r-reshape2" ,r-reshape2)
-       ("r-scales" ,r-scales)))
+       ("r-scales" ,r-scales)
+       ("r-svglite" ,r-svglite))) ; Needed for 'ggsave'
     (home-page "http://ggplot2.org")
     (synopsis "An implementation of the grammar of graphics")
     (description
@@ -3954,6 +3955,31 @@ such that the arrangement of points within a category reflects the density of
 data at that region, and avoids over-plotting.")
     (license license:gpl2+)))
 
+(define-public r-ggthemes
+  (package
+    (name "r-ggthemes")
+    (version "3.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ggthemes" version))
+              (sha256
+               (base32
+                "1qdxg2siwsiq32fmgcxn4vihgxad9v8q0aqigl7a94c26bwxs7y2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-colorspace" ,r-colorspace)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://cran.rstudio.com/web/packages/ggthemes")
+    (synopsis "Extra themes, scales and geoms for @code{ggplot2}")
+    (description "This package provides extra themes and scales for
+@code{ggplot2} that replicate the look of plots by Edward Tufte and
+Stephen Few in Fivethirtyeight, The Economist, Stata, Excel, and The
+Wall Street Journal, among others.  This package also provides
+@code{geoms} for Tufte's box plot and range frame.")
+    (license license:gpl2)))
+
 (define-public r-statmod
   (package
     (name "r-statmod")
@@ -3979,3 +4005,143 @@ generalized linear model functions that implement secure convergence,
 dispersion modeling and Tweedie power-law families.")
     ;; Statmod is distributed under either license
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-fivethirtyeight
+  (package
+    (name "r-fivethirtyeight")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mran.microsoft.com/src/contrib/"
+                           "fivethirtyeight_" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fcc8rq745nsghp27dk0lgih90y4zx8hrzcvsn6ih786yv7qxhvl"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-dplyr" ,r-dplyr)
+       ("r-readr" ,r-readr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-magrittr" ,r-magrittr)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://mran.microsoft.com/package/fivethirtyeight/")
+    (synopsis "Data and code behind the stories at FiveThirtyEight")
+    (description "This R package provides access to the code and data sets
+published by the statistics blog FiveThirtyEight.")
+    (license license:expat)))
+
+(define-public r-compquadform
+  (package
+    (name "r-compquadform")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CompQuadForm" version))
+       (sha256
+        (base32
+         "0bsgbdblxpv57mbwnf51xyiydp2bqyxkg4zzwqki85cv5xqlrq1n"))))
+    (properties `((upstream-name . "CompQuadForm")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/CompQuadForm")
+    (synopsis "Distribution function of quadratic forms in normal variables")
+    (description
+     "This package provides functions to compute the distribution function of
+quadratic forms in normal variables using Imhof's method, Davies's algorithm,
+Farebrother's algorithm or Liu et al.'s algorithm.")
+    (license license:gpl2+)))
+
+(define-public r-cowplot
+  (package
+    (name "r-cowplot")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cowplot" version))
+       (sha256
+        (base32
+         "03iimcsh1pk7iqzjdlfcj43b8khijdk4hg00j4jdllv19xsfb0hx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gtable" ,r-gtable)
+       ("r-plyr" ,r-plyr)))
+    (home-page "https://github.com/wilkelab/cowplot")
+    (synopsis "Streamlined plot theme and plot annotations for ggplot2")
+    (description
+     "This package provides some helpful extensions and modifications to the
+ggplot2 package to combine multiple ggplot2 plots into one and label them with
+letters, as is often required for scientific publications.")
+    (license license:gpl2)))
+
+(define-public r-mixtools
+  (package
+    (name "r-mixtools")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mixtools" version))
+       (sha256
+        (base32
+         "133rr17ywmlhsc6457hs8qxi8ng443ql9ashxpwc8875gjhv1x32"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-segmented" ,r-segmented)))
+    (home-page "http://cran.r-project.org/web/packages/mixtools")
+    (synopsis "Tools for analyzing finite mixture models")
+    (description
+     "This package provides a collection of R functions for analyzing finite
+mixture models.")
+    (license license:gpl2+)))
+
+(define-public r-lars
+  (package
+    (name "r-lars")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lars" version))
+       (sha256
+        (base32
+         "0blj44wqrx6lmym1m9v6wkz8zxzbjax2zl6swgdczci0ixb5nx34"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://www-stat.stanford.edu/~hastie/Papers/#LARS")
+    (synopsis "Least angle regression software")
+    (description
+     "Least Angle Regression (\"LAR\") is a model selection algorithm; a
+useful and less greedy version of traditional forward selection methods.  A
+simple modification of the LAR algorithm implements Tibshirani's Lasso; the
+Lasso modification of LARS calculates the entire Lasso path of coefficients
+for a given problem at the cost of a single least squares fit.  Another LARS
+modification efficiently implements epsilon Forward Stagewise linear
+regression.")
+    (license license:gpl2)))
+
+(define-public r-fastica
+  (package
+    (name "r-fastica")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastICA" version))
+       (sha256
+        (base32
+         "0ykk78fsk5da2g16i4wji85bvji7nayjvkfp07hyaxq9d15jmf0r"))))
+    (properties `((upstream-name . "fastICA")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/fastICA")
+    (synopsis "FastICA algorithms to perform ICA and projection pursuit")
+    (description
+     "This package provides an implementation of the FastICA algorithm to
+perform @dfn{independent component analysis} (ICA) and projection pursuit.")
+    ;; Any GPL version.
+    (license license:gpl3+)))

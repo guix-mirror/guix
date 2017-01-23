@@ -70,7 +70,7 @@
                                   ".tar.xz"))
               (sha256
                (base32
-                "12p6xvqs8smbk9nivi43089fiw1jbb3g9836arr0sksmmziklnvy"))))
+                "1gsfzrcbwp7835pbilk7cvda8hjsf9g3gl4llbm61y9j7a4x2kn6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

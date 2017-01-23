@@ -22,7 +22,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages libevent)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system cmake)

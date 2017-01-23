@@ -1,0 +1,60 @@
+Fix assertion failure in readSeparateTilesIntoBuffer():
+
+http://bugzilla.maptools.org/show_bug.cgi?id=2605
+
+2016-12-03 Even Rouault <even.rouault at spatialys.com>
+
+        * tools/tiffcp.c: replace assert( (bps % 8) == 0 ) by a non assert
+check.
+        Reported by Agostino Sarubbo.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2605
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <--  ChangeLog
+new revision: 1.1188; previous revision: 1.1187
+/cvs/maptools/cvsroot/libtiff/tools/tiffcp.c,v  <--  tools/tiffcp.c
+new revision: 1.60; previous revision: 1.59
+
+Index: libtiff/tools/tiffcp.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/tools/tiffcp.c,v
+retrieving revision 1.59
+retrieving revision 1.60
+diff -u -r1.59 -r1.60
+--- libtiff/tools/tiffcp.c	3 Dec 2016 16:40:01 -0000	1.59
++++ libtiff/tools/tiffcp.c	3 Dec 2016 16:50:02 -0000	1.60
+@@ -45,7 +45,6 @@
+ #include <string.h>
+ 
+ #include <ctype.h>
+-#include <assert.h>
+ 
+ #ifdef HAVE_UNISTD_H
+ # include <unistd.h>
+@@ -1393,7 +1392,12 @@
+             status = 0;
+             goto done;
+         }
+-	assert( bps % 8 == 0 );
++        if( (bps % 8) != 0 )
++        {
++            TIFFError(TIFFFileName(in), "Error, cannot handle BitsPerSample that is not a multiple of 8");
++            status = 0;
++            goto done;
++        }
+ 	bytes_per_sample = bps/8;
+ 
+ 	for (row = 0; row < imagelength; row += tl) {
+@@ -1584,7 +1588,12 @@
+             _TIFFfree(obuf);
+             return 0;
+         }
+-	assert( bps % 8 == 0 );
++        if( (bps % 8) != 0 )
++        {
++            TIFFError(TIFFFileName(out), "Error, cannot handle BitsPerSample that is not a multiple of 8");
++            _TIFFfree(obuf);
++            return 0;
++        }
+ 	bytes_per_sample = bps/8;
+ 
+ 	for (row = 0; row < imagelength; row += tl) {

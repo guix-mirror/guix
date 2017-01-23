@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -326,3 +328,41 @@ the distributed hash table (DHT) and Peer Exchange.  Hashing is multi-threaded
 and will take advantage of multiple processor cores where possible.")
     (license (list l:public-domain      ; sha1.*, used to build without OpenSSL
                    l:gpl2+))))          ; with permission to link with OpenSSL
+
+(define-public libtorrent-rasterbar
+  (package
+    (name "libtorrent-rasterbar")
+    (version "1.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
+                "1_0_10" "/libtorrent-rasterbar-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjcr892hzmcngvpw5bycjci4dk49v763lsnpvbwsjmim2ncwrd8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost-libdir="
+                            (assoc-ref %build-inputs "boost")
+                            "/lib")
+             "--enable-python-binding"
+             "--enable-tests")
+       #:make-flags (list
+                     (string-append "LDFLAGS=-Wl,-rpath="
+                                    (assoc-ref %outputs "out") "/lib"))))
+    (inputs `(("boost" ,boost)
+              ("openssl" ,openssl)))
+    (native-inputs `(("python" ,python-2)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "http://www.rasterbar.com/products/libtorrent/")
+    (synopsis "Feature complete BitTorrent implementation")
+    (description
+     "libtorrent-rasterbar is a feature complete C++ BitTorrent implementation
+focusing on efficiency and scalability.  It runs on embedded devices as well as
+desktops.")
+    (license l:bsd-2)))
+
+

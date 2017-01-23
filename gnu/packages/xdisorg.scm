@@ -852,7 +852,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.35")
+    (version "5.36")
     (source
      (origin
        (method url-fetch)
@@ -861,7 +861,7 @@ color temperature should be set to match the lamps in your room.")
                        version ".tar.gz"))
        (sha256
         (base32
-         "08kbb0ry7ih436ab4i5g6lnhaaz13zkcdmbdibrn4j5gm5qq8v0y"))))
+         "0v60mdhvv42jla5hljp77igng11kxpah5fs9j7ci65kz0hw552vb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -940,7 +940,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -948,7 +948,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "1a65ai93ygras5bi7wc0s5i3zqslzqlnw3klq3sdnp2p0d6hjjqn"))))
+                "1s47biv6d68nblpz6d3aklsar1xxxcilzr4y77v3hz2w1wbz2b5m"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)

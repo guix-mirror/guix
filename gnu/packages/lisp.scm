@@ -756,14 +756,14 @@ from other CLXes around the net.")
 (define-public sbcl-stumpwm
   (package
     (name "sbcl-stumpwm")
-    (version "0.9.9")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/stumpwm/stumpwm/archive/"
                     version ".tar.gz"))
               (sha256
-               (base32 "1fqabij4zcsqg1ywgdv2irp1ys23dwc8ms9ai55lb2i47hgv7z3x"))
+               (base32 "1maxp98gh64az3d9vz9br6zdd6rc9fmj2imvax4by85g6kxvdz1i"))
               (file-name (string-append "stumpwm-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
     (inputs `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)

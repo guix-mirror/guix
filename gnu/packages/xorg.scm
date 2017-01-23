@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -335,6 +335,7 @@ provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
 
+(define-public %app-defaults-dir "/lib/X11/app-defaults")
 
 (define-public editres
   (package
@@ -354,7 +355,7 @@ provided.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-appdefaultdir="
-                            %output "/lib/X11/app-defaults"))))
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libxaw" ,libxaw)
        ("libxmu" ,libxmu)
@@ -398,21 +399,31 @@ Resources file.")
     (description "Xorg font encoding files.")
     (license license:public-domain)))
 
+(define (%xorg-font-origin font version hash)
+  (origin
+    (method url-fetch)
+    (uri (string-append "mirror://xorg/individual/font/" font "-"
+                        version ".tar.bz2"))
+    (sha256 hash)
+    (modules '((guix build utils)))
+    (snippet
+     ;; Do not include timestamps in '.pcf.gz' files.
+     '(substitute* "Makefile.in"
+        (("^COMPRESS = (.*)$" _ rest)
+         (string-append "COMPRESS = " (string-trim-right rest)
+                        " --no-name\n"))))))
+
+(define-syntax-rule (xorg-font-origin font version hash)
+  "Expand to the 'origin' form for the given Xorg font package."
+  (%xorg-font-origin font version (base32 hash)))
 
 (define-public font-adobe100dpi
   (package
     (name "font-adobe100dpi")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-adobe-100dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))))
+    (source (xorg-font-origin
+             "font-adobe-100dpi" version
+             "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
@@ -435,16 +446,9 @@ Resources file.")
   (package
     (name "font-adobe75dpi")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-adobe-75dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))))
+    (source (xorg-font-origin
+             "font-adobe-75dpi" version
+             "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
@@ -471,16 +475,9 @@ Resources file.")
   (package
     (name "font-alias")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-alias-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))))
+    (source (xorg-font-origin
+             name version
+             "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -512,16 +509,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-arabic-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-arabic-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1x246dfnxnmflzf0qzy62k8jdpkb6jkgspcjgbk8jcq9lw99npah"))))
+    (source (xorg-font-origin
+             name version
+             "1x246dfnxnmflzf0qzy62k8jdpkb6jkgspcjgbk8jcq9lw99npah"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -549,16 +539,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-cronyx-cyrillic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-cronyx-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0ai1v4n61k8j9x2a1knvfbl2xjxk3xxmqaq3p9vpqrspc69k31kf"))))
+    (source (xorg-font-origin
+             name version
+             "0ai1v4n61k8j9x2a1knvfbl2xjxk3xxmqaq3p9vpqrspc69k31kf"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -582,16 +565,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-dec-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-dec-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0yzza0l4zwyy7accr1s8ab7fjqkpwggqydbm2vc19scdby5xz7g1"))))
+    (source (xorg-font-origin
+             name version
+             "0yzza0l4zwyy7accr1s8ab7fjqkpwggqydbm2vc19scdby5xz7g1"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -611,16 +587,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-isas-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-isas-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0rx8q02rkx673a7skkpnvfkg28i8gmqzgf25s9yi0lar915sn92q"))))
+    (source (xorg-font-origin
+             name version
+             "0rx8q02rkx673a7skkpnvfkg28i8gmqzgf25s9yi0lar915sn92q"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -641,16 +610,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-micro-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-micro-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1dldxlh54zq1yzfnrh83j5vm0k4ijprrs5yl18gm3n9j1z0q2cws"))))
+    (source (xorg-font-origin
+             name version
+             "1dldxlh54zq1yzfnrh83j5vm0k4ijprrs5yl18gm3n9j1z0q2cws"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -667,16 +629,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-misc-cyrillic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-misc-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0q2ybxs8wvylvw95j6x9i800rismsmx4b587alwbfqiw6biy63z4"))))
+    (source (xorg-font-origin
+             name version
+             "0q2ybxs8wvylvw95j6x9i800rismsmx4b587alwbfqiw6biy63z4"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -693,16 +648,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-misc-ethiopic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-misc-ethiopic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "19cq7iq0pfad0nc2v28n681fdq3fcw1l1hzaq0wpkgpx7bc1zjsk"))))
+    (source (xorg-font-origin
+             name version
+             "19cq7iq0pfad0nc2v28n681fdq3fcw1l1hzaq0wpkgpx7bc1zjsk"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -723,16 +671,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-misc-misc")
     (version "1.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-misc-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "150pq6n8n984fah34n3k133kggn9v0c5k07igv29sxp1wi07krxq"))))
+    (source (xorg-font-origin
+             name version
+             "150pq6n8n984fah34n3k133kggn9v0c5k07igv29sxp1wi07krxq"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -753,16 +694,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-mutt-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-mutt-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "13qghgr1zzpv64m0p42195k1kc77pksiv059fdvijz1n6kdplpxx"))))
+    (source (xorg-font-origin
+             name version
+             "13qghgr1zzpv64m0p42195k1kc77pksiv059fdvijz1n6kdplpxx"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -779,16 +713,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-schumacher-misc")
     (version "1.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-schumacher-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0nkym3n48b4v36y4s927bbkjnsmicajarnf6vlp7wxp0as304i74"))))
+    (source (xorg-font-origin
+             name version
+             "0nkym3n48b4v36y4s927bbkjnsmicajarnf6vlp7wxp0as304i74"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -809,16 +736,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-screen-cyrillic")
     (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-screen-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0yayf1qlv7irf58nngddz2f1q04qkpr5jwp4aja2j5gyvzl32hl2"))))
+    (source (xorg-font-origin
+             name version
+             "0yayf1qlv7irf58nngddz2f1q04qkpr5jwp4aja2j5gyvzl32hl2"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -835,16 +755,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-sony-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-sony-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1xfgcx4gsgik5mkgkca31fj3w72jw9iw76qyrajrsz1lp8ka6hr0"))))
+    (source (xorg-font-origin
+             name version
+             "1xfgcx4gsgik5mkgkca31fj3w72jw9iw76qyrajrsz1lp8ka6hr0"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -861,16 +774,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-sun-misc")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-sun-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1q6jcqrffg9q5f5raivzwx9ffvf7r11g6g0b125na1bhpz5ly7s8"))))
+    (source (xorg-font-origin
+             name version
+             "1q6jcqrffg9q5f5raivzwx9ffvf7r11g6g0b125na1bhpz5ly7s8"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -910,16 +816,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-winitzki-cyrillic")
     (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-winitzki-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "181n1bgq8vxfxqicmy1jpm1hnr6gwn1kdhl6hr4frjigs1ikpldb"))))
+    (source (xorg-font-origin
+             name version
+             "181n1bgq8vxfxqicmy1jpm1hnr6gwn1kdhl6hr4frjigs1ikpldb"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -936,16 +835,9 @@ For example: '6x10', '9x15bold', etc.")
   (package
     (name "font-xfree86-type1")
     (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/font/font-xfree86-type1-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))))
+    (source (xorg-font-origin
+             name version
+             "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -1458,7 +1350,7 @@ treat it as part of their software base when porting.")
 (define-public libxpm
   (package
     (name "libxpm")
-    (version "3.5.11")
+    (version "3.5.12")
     (source
       (origin
         (method url-fetch)
@@ -1468,7 +1360,7 @@ treat it as part of their software base when porting.")
                ".tar.bz2"))
         (sha256
           (base32
-            "07041q4k8m4nirzl7lrqn8by2zylx0xvh6n0za301qqs3njszgf5"))))
+            "1v5xaiw4zlhxspvx76y3hq4wpxv7mpj6parqnwdqvpj8vbinsspx"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
@@ -2425,7 +2317,7 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.10.4")
+    (version "2.10.5")
     (source
       (origin
         (method url-fetch)
@@ -2435,7 +2327,7 @@ devices, thus making direct access unnecessary.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hhc97k1qmgs85fp8p2i3gq4p18azlczbvklv33w19p1phzs1xmv"))))
+           "03dphgwjaxxyys8axc1kyysp6xvy9bjxicsdrhi2jvdgbchadnly"))))
     (build-system gnu-build-system)
     (inputs
       `(("udev" ,eudev)
@@ -2828,7 +2720,7 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
 (define-public xf86-video-glint
   (package
     (name "xf86-video-glint")
-    (version "1.2.8")
+    (version "1.2.9")
     (source
       (origin
         (method url-fetch)
@@ -2838,8 +2730,7 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
                ".tar.bz2"))
         (sha256
           (base32
-           "08a2aark2yn9irws9c78d9q44dichr03i9zbk61jgr54ncxqhzv5"))
-        (patches (search-patches "xf86-video-glint-remove-mibstore.patch"))))
+           "1lkpspvrvrp9s539bhfdjfh4andaqyk63l6zjn8m3km95smk6a45"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -2958,7 +2849,7 @@ the same level of support for generic VGA or 8514/A adapters.")
 (define-public xf86-video-mga
   (package
     (name "xf86-video-mga")
-    (version "1.6.4")
+    (version "1.6.5")
     (source
       (origin
         (method url-fetch)
@@ -2968,7 +2859,7 @@ the same level of support for generic VGA or 8514/A adapters.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0kyl8w99arviv27pc349zsy2vinnm7mdpy34vr9nzisicw5nkij8"))))
+           "08ll52hlar9z446v0wwca5qkj3hxhswwm7vvcgic9xv4cf7csqxn"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3061,7 +2952,7 @@ kernel mode setting (KMS).")
 (define-public xf86-video-nv
   (package
     (name "xf86-video-nv")
-    (version "2.1.20")
+    (version "2.1.21")
     (source
       (origin
         (method url-fetch)
@@ -3071,8 +2962,7 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-           "1gqh1khc4zalip5hh2nksgs7i3piqq18nncgmsx9qvzi05azd5c3"))
-        (patches (search-patches "xf86-video-nv-remove-mibstore.patch"))))
+           "0bdk3pc5y0n7p53q4gc2ff7bw16hy5hwdjjxkm5j3s7hdyg6960z"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3174,7 +3064,7 @@ This driver is intended for the spice qxl virtio device.")
 (define-public xf86-video-r128
   (package
     (name "xf86-video-r128")
-    (version "6.10.1")
+    (version "6.10.2")
     (source
       (origin
         (method url-fetch)
@@ -3184,7 +3074,7 @@ This driver is intended for the spice qxl virtio device.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1sp4glyyj23rs77vgffmn0mar5h504a86701nzvi56qwhd4yzgsy"))))
+           "1pkpka5m4cd6iy0f8iqnmg6xci14nb6887ilvxzn3xrsgx8j3nl4"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3201,7 +3091,7 @@ This driver is intended for ATI Rage 128 based cards.")
 (define-public xf86-video-savage
   (package
     (name "xf86-video-savage")
-    (version "2.3.8")
+    (version "2.3.9")
     (source
       (origin
         (method url-fetch)
@@ -3211,7 +3101,7 @@ This driver is intended for ATI Rage 128 based cards.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0qzshncynjdmyhavhqw4x5ha3gwbygi0zbsy158fpg1jcnla9kpx"))))
+           "11pcrsdpdrwk0mrgv83s5nsx8a9i4lhmivnal3fjbrvi3zdw94rc"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3227,7 +3117,7 @@ This driver is intended for ATI Rage 128 based cards.")
 (define-public xf86-video-siliconmotion
   (package
     (name "xf86-video-siliconmotion")
-    (version "1.7.8")
+    (version "1.7.9")
     (source
       (origin
         (method url-fetch)
@@ -3237,7 +3127,7 @@ This driver is intended for ATI Rage 128 based cards.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1sqv0y31mi4zmh9yaxqpzg7p8y2z01j6qys433hb8n4yznllkm79"))))
+           "1g2r6gxqrmjdff95d42msxdw6vmkg2zn5sqv0rxd420iwy8wdwyh"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3252,7 +3142,7 @@ Xorg X server.")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.8")
+    (version "0.10.9")
     (source
       (origin
         (method url-fetch)
@@ -3262,7 +3152,7 @@ Xorg X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1znkqwdyd6am23xbsfjzamq125j5rrylg5mzqky4scv9gxbz5wy8"))))
+           "03f1abjjf68y8y1iz768rn95va9d33wmbwfbsqrgl6k0gi0bf9jj"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86dgaproto" ,xf86dgaproto)
@@ -3329,7 +3219,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
 (define-public xf86-video-tdfx
   (package
     (name "xf86-video-tdfx")
-    (version "1.4.6")
+    (version "1.4.7")
     (source
       (origin
         (method url-fetch)
@@ -3339,7 +3229,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0dvdrhyn1iv6rr85v1c52s1gl0j1qrxgv7x0r7qn3ba0gj38i2is"))))
+           "0hia45z4jc472fxp00803nznizcn4h1ybp63jcsb4lmd9vhqxx2c"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3382,7 +3272,7 @@ X server.")
 (define-public xf86-video-trident
   (package
     (name "xf86-video-trident")
-    (version "1.3.7")
+    (version "1.3.8")
     (source
       (origin
         (method url-fetch)
@@ -3392,7 +3282,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1bhkwic2acq9za4yz4bwj338cwv5mdrgr2qmgkhlj3bscbg1imgc"))))
+           "0gxcar434kx813fxdpb93126lhmkl3ikabaljhcj5qn3fkcijlcy"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -3982,23 +3872,9 @@ protocol.")
                 "1grir464hy52a71r3mpm9mzvkf7nwr3vk0b1vc27pd3gp588a38p"))))
     (build-system gnu-build-system)
     (arguments
-     ;; By default, it tries to install XFontSel file in
-     ;; "/gnu/store/<libxt>/share/X11/app-defaults": it defines this
-     ;; directory from 'libxt' (using 'pkg-config').  To put this file
-     ;; inside output dir and to use it properly, we need to configure
-     ;; --with-appdefaultdir and to wrap 'xfontsel' binary.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
-       `(#:configure-flags
-         (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfontsel
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfontsel")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
     (inputs
      `(("libx11" ,libx11)
        ("libxaw" ,libxaw)
@@ -4028,19 +3904,9 @@ Font Description (XLFD) full name for a font.")
                 "0n97iqqap9wyxjan2n520vh4rrf5bc0apsw2k9py94dqzci258y1"))))
     (build-system gnu-build-system)
     (arguments
-     ;; The same 'app-defaults' problem as with 'xfontsel' package.
-     (let ((app-defaults-dir "/share/X11/app-defaults"))
        `(#:configure-flags
          (list (string-append "--with-appdefaultdir="
-                              %output ,app-defaults-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-xfd
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/xfd")
-                   `("XAPPLRESDIR" =
-                     (,(string-append out ,app-defaults-dir)))))))))))
+                              %output ,%app-defaults-dir))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("libx11" ,libx11)
@@ -5304,7 +5170,8 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))))
+           "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))
+        (patches (search-patches "libxt-guix-search-paths.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;2 MiB of man pages + XML
@@ -5357,6 +5224,36 @@ draggable titlebars and borders.")
 Intrinsics (Xt) Library.")
     (license license:x11)))
 
+(define-public twm
+  (package
+    (name "twm")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1s1r00x8add3f27xjqxg6q7mwplwrb72gakbh4y6j052as25wchw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxt" ,libxt)
+       ("libxmu" ,libxmu)
+       ("libxext" ,libxext)
+       ("xproto" ,xproto)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Tab Window Manager for the X Window System")
+    (description "Twm is a window manager for the X Window System.
+It provides titlebars, shaped windows, several forms of icon management,
+user-defined macro functions, click-to-type and pointer-driven
+keyboard focus, and user-specified key and pointer button bindings.")
+    (license license:x11)))
 
 (define-public xcb-util
   (package
@@ -5614,6 +5511,66 @@ user-friendly mechanism to start the X server.")
     (description
      "Xaw is the X 3D Athena Widget Set based on the X Toolkit
 Intrinsics (Xt) Library.")
+    (license license:x11)))
+
+(define-public xmag
+  (package
+    (name "xmag")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19bsg5ykal458d52v0rvdx49v54vwxwqg8q36fdcsv9p2j8yri87"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Display or capture a magnified part of a X11 screen")
+    (description "Xmag displays and captures a magnified snapshot of a portion
+of an X11 screen.")
+    (license license:x11)))
+
+(define-public xmessage
+  (package
+    (name "xmessage")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jmcac1xbwplbxfl75sr6w3zqhx1khpdzlqippjsr31cjp1rjc48"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Displays a message or query in a window")
+    (description
+     "Xmessage displays a message or query in a window.   The user can click
+on a button to dismiss it or can select one of several buttons
+to answer a question.  Xmessage can also exit after a specified time.")
     (license license:x11)))
 
 (define-public xterm

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -76,7 +76,11 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0qjy3rcrn89n42y5iz60kgr0rrl29hpnj8mq2yvbc1wrcizmvzfs"))))
+               "0qjy3rcrn89n42y5iz60kgr0rrl29hpnj8mq2yvbc1wrcizmvzfs"))
+             (patches (search-patches "qemu-CVE-2016-10155.patch"
+                                      "qemu-CVE-2017-5525.patch"
+                                      "qemu-CVE-2017-5526.patch"
+                                      "qemu-CVE-2017-5552.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -237,6 +241,7 @@ server and embedded PowerPC, and S390 guests.")
         ,(origin
            (method url-fetch)
            (uri "http://linux-usb.cvs.sourceforge.net/viewvc/linux-usb/htdocs/usb.ids?revision=1.539")
+           (file-name "usb.ids")
            (sha256
             (base32
              "0w9ila7662lzpx416lqy69zx6gfwq2xiigwd5fdyqcrg3dj07m80"))))))

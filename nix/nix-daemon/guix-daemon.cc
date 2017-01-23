@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -301,8 +301,9 @@ main (int argc, char *argv[])
   /* Turn automatic deduplication on by default.  */
   settings.autoOptimiseStore = true;
 
-  /* Default to using as many cores as possible.  */
+  /* Default to using as many cores as possible and one job at a time.  */
   settings.buildCores = 0;
+  settings.maxBuildJobs = 1;
 
   argvSaved = argv;
 

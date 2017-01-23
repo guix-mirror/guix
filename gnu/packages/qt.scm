@@ -2,8 +2,8 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -55,6 +55,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -553,14 +554,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "qmake" (string-append "PREFIX=" out))))))
+               ;; Valid QT_BUILD_PARTS variables are:
+               ;; libs tools tests examples demos docs translations
+               (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools tests"
+                               (string-append "PREFIX=" out))))))
          (add-before 'install 'fix-Makefiles
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out    (assoc-ref outputs "out"))
                    (qtbase (assoc-ref inputs "qtbase")))
                (substitute* (find-files "." "Makefile")
                             (((string-append "INSTALL_ROOT)" qtbase))
-                             (string-append "INSTALL_ROOT)" out)))))))))))
+                             (string-append "INSTALL_ROOT)" out)))
+               #t)))
+            (add-before 'check 'set-display
+              (lambda _
+                (setenv "QT_QPA_PLATFORM" "offscreen")
+                #t)))))))
 
 (define-public qtimageformats
   (package (inherit qtsvg)
@@ -602,6 +611,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "09z49jm70f5i0gcdz9a16z00pg96x8pz7vri5wpirh3fqqn0qnjz"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
@@ -620,6 +632,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1rgqnpg64gn5agmvjwy0am8hp5fpxl3cdkixr1yrsdxi5a6961d8"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'disable-network-tests
+             (lambda _ (substitute* "tests/auto/auto.pro"
+                         (("qxmlquery") "# qxmlquery")
+                         (("xmlpatterns") "# xmlpatterns"))
+               #t))))))
     (native-inputs `(("perl" ,perl)))
     (inputs `(("qtbase" ,qtbase)))))
 
@@ -636,6 +657,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "0mjxfwnplpx60jc6y94krg00isddl9bfwc7dayl981njb4qds4zx"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -680,6 +704,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1laj0slwibs0bg69kgrdhc9k1s6yisq3pcsr0r9rhbkzisv7aajw"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
@@ -720,7 +747,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (snippet
               '(begin
                  (delete-file-recursively
-                   "examples/multimedia/spectrum/3rdparty")))))
+                   "examples/multimedia/spectrum/3rdparty")
+                 ;; We also prevent the spectrum example from being built.
+                 (substitute* "examples/multimedia/multimedia.pro"
+                   (("spectrum") "#"))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -781,6 +814,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("eudev" ,eudev)))))
 
+(define-public qtserialbus
+  (package (inherit qtsvg)
+    (name "qtserialbus")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0mxi43l2inpbar8rmg21qjg33bv3f1ycxjgvzjf12ncnybhdnzkj"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtserialport" ,qtserialport)))))
+
 (define-public qtwebchannel
   (package (inherit qtsvg)
     (name "qtwebchannel")
@@ -813,6 +863,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "17zkzffzwbg6aqhsggs23cmwzq4y45m938842lsc423hfm7fdsgr"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
@@ -833,6 +886,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1b6zqa5690b8lqms7rrhb8rcq0xg5hp117v3m08qngbcd0i706b4"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
@@ -872,6 +928,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "17cyfyqzjbm9dhq9pjscz36y84y16rmxwk6h826gjfprddrimsvg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -889,6 +948,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1v77ydy4k15lksp3bi2kgha2h7m79g4n7c2qhbr09xnvpb8ars7j"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -906,6 +968,169 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1j2drnx7zp3w6cgvy7bn00fyk5v7vw1j1hidaqcg78lzb6zgls1c"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtdeclarative-render2d
+  (package (inherit qtsvg)
+    (name "qtdeclarative-render2d")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0zwch9vn17f3bpy300jcfxx6cx9qymk5j7khx0x9k1xqid4166c3"))
+             (modules '((guix build utils)))
+             (snippet
+              '(delete-file-recursively "tools/opengldummy/3rdparty"))))
+    (native-inputs `())
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtgamepad
+  (package (inherit qtsvg)
+    (name "qtgamepad")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "10lijbsg9xx5ddbbjymdgl41nxz99yn1qgiww2kkggxwwdjj2axv"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libxrender" ,libxrender)
+       ("sdl2" ,sdl2)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtscxml
+  (package (inherit qtsvg)
+    (name "qtscxml")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "135kknqdmib2cjryfmvfgv7a2qx9pyba3m7i7nkbc5d742r4mbcx"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (delete-file-recursively "tests/3rdparty")
+                 ;; the scion test refers to the bundled 3rd party test code.
+                 (substitute* "tests/auto/auto.pro"
+                   (("scion") "#"))))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtpurchasing
+  (package (inherit qtsvg)
+    (name "qtpurchasing")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0hkvrgafz1hx9q4yc3nskv3pd3fszghvvd5a7mj33ynf55wpb57n"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtcanvas3d
+  (package (inherit qtsvg)
+    (name "qtcanvas3d")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1d5xpq3mhjg4ipxzap7s2vnlfcd02d3yq720npv10xxp2ww0i1x8"))
+             (modules '((guix build utils)))
+             (snippet
+              '(delete-file-recursively "examples/canvas3d/3rdparty"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+      ;; Building the tests depends on the bundled 3rd party javascript files,
+      ;; and the test phase fails to import QtCanvas3D, causing the phase to
+      ;; fail, so we skip building them for now.
+      ((#:phases phases)
+       `(modify-phases ,phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools"
+                               (string-append "PREFIX=" out))))))))
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
+    (native-inputs `())
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtcharts
+  (package (inherit qtsvg)
+    (name "qtcharts")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1qrzcddwff2hxsbxrraff16j4abah2zkra2756s1mvydj9lyxzl5"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
+(define-public qtdatavis3d
+  (package (inherit qtsvg)
+    (name "qtdatavis3d")
+    (version "5.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1y00p0wyj5cw9c2925y537vpmmg9q3kpf7qr1s7sv67dvvf8bzqv"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
@@ -1313,3 +1538,37 @@ embed content from the World Wide Web into your Qt application.  At the same
 time Web content can be enhanced with native controls.")
 
     (license license:lgpl2.1+)))
+
+(define-public dotherside
+  (package
+    (name "dotherside")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/filcuc/DOtherSide/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pqlrvy4ajjir80ra79ka3n0rjj0ir0f0m91cq86iz3nnw8w148z"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://github.com/frankosterfeld/qtkeychain")
+    (synopsis "C language library for creating bindings for the Qt QML language")
+    (description
+     "DOtherSide is a C language library for creating bindings for the
+QT QML language.  The following features are implementable from
+a binding language:
+@itemize
+@item Creating custom QObject
+@item Creating custom QAbstractListModels
+@item Creating custom properties, signals and slots
+@item Creating from QML QObject defined in the binded language
+@item Creating from Singleton QML QObject defined in the binded language
+@end itemize\n")
+    (license license:lgpl3)))                    ;version 3 only (+ exception)

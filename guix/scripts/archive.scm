@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,7 +31,6 @@
   #:use-module (guix ui)
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
-  #:use-module (guix docker)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
@@ -46,6 +45,11 @@
   #:export (guix-archive
             options->derivations+files))
 
+;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
+;; See <http://bugs.gnu.org/12202>.
+(module-autoload! (current-module)
+                  '(guix docker) '(build-docker-image))
+
 
 ;;;
 ;;; Command-line options.
@@ -53,7 +57,8 @@
 
 (define %default-options
   ;; Alist of default option values.
-  `((system . ,(%current-system))
+  `((format . "nar")
+    (system . ,(%current-system))
     (substitutes? . #t)
     (graft? . #t)
     (max-silent-time . 3600)
@@ -253,8 +258,21 @@ resulting archive to the standard output port."
 
     (if (or (assoc-ref opts 'dry-run?)
             (build-derivations store drv))
-        (export-paths store files (current-output-port)
-                      #:recursive? (assoc-ref opts 'export-recursive?))
+        (match (assoc-ref opts 'format)
+          ("nar"
+           (export-paths store files (current-output-port)
+                         #:recursive? (assoc-ref opts 'export-recursive?)))
+          ("docker"
+           (match files
+             ((file)
+              (let ((system (assoc-ref opts 'system)))
+                (format #t "~a\n"
+                        (build-docker-image file #:system system))))
+             (_
+              ;; TODO: Remove this restriction.
+              (leave (_ "only a single item can be exported to Docker~%")))))
+          (format
+           (leave (_ "~a: unknown archive format~%") format)))
         (leave (_ "unable to export the given packages~%")))))
 
 (define (generate-key-pair parameters)
@@ -338,15 +356,7 @@ the input port."
                 (else
                  (with-store store
                    (cond ((assoc-ref opts 'export)
-                          (cond ((equal? (assoc-ref opts 'format) "docker")
-                                 (match (car opts)
-                                   (('argument . (? store-path? item))
-                                    (format #t "~a\n"
-                                            (build-docker-image
-                                             item
-                                             #:system (assoc-ref opts 'system))))
-                                   (_ (leave (_ "argument must be a direct store path~%")))))
-                                (_ (export-from-store store opts))))
+                          (export-from-store store opts))
                          ((assoc-ref opts 'import)
                           (import-paths store (current-input-port)))
                          ((assoc-ref opts 'missing)

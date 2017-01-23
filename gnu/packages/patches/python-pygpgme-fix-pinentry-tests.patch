@@ -1,0 +1,69 @@
+Fix test failure of test_XXX caused by upgrade of gpgme from 1.6.0 to
+1.8.0:
+
+======================================================================
+FAIL: test_encrypt_to_signonly (tests.test_encrypt_decrypt.EncryptDecryptTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/guix-build-python2-pygpgme-0.3.drv-0/pygpgme-0.3/tests/test_encrypt_decrypt.py", line 185, in test_encrypt_to_signonly
+    self.assertEqual(exc.args[0], gpgme.ERR_SOURCE_UNKNOWN)
+AssertionError: 7 != 0
+
+----------------------------------------------------------------------
+
+Patch copied from the Debian package pygpgme-0.3-1.2:
+
+https://sources.debian.net/src/pygpgme/0.3-1.2/debian/patches/0005-Fix-test-failures-with-pinentry.patch/
+
+From: "Dr. Tobias Quathamer" <toddy@debian.org>
+Date: Thu, 24 Nov 2016 12:20:54 +0100
+Subject: Fix test failures with pinentry
+
+---
+ tests/test_encrypt_decrypt.py | 5 +++--
+ tests/test_passphrase.py      | 2 ++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/tests/test_encrypt_decrypt.py b/tests/test_encrypt_decrypt.py
+index 21ae83e..05707e1 100644
+--- a/tests/test_encrypt_decrypt.py
++++ b/tests/test_encrypt_decrypt.py
+@@ -132,6 +132,7 @@ class EncryptDecryptTestCase(GpgHomeTestCase):
+             os.write(fd, b'Symmetric passphrase\n')
+         ctx = gpgme.Context()
+         ctx.armor = True
++        ctx.pinentry_mode = gpgme.PINENTRY_MODE_LOOPBACK
+         ctx.passphrase_cb = passphrase
+         ctx.encrypt(None, 0, plaintext, ciphertext)
+         self.assertTrue(
+@@ -182,8 +183,8 @@ class EncryptDecryptTestCase(GpgHomeTestCase):
+             ctx.encrypt([recipient], gpgme.ENCRYPT_ALWAYS_TRUST,
+                         plaintext, ciphertext)
+         except gpgme.GpgmeError as exc:
+-            self.assertEqual(exc.args[0], gpgme.ERR_SOURCE_UNKNOWN)
+-            self.assertEqual(exc.args[1], gpgme.ERR_GENERAL)
++            self.assertEqual(exc.args[0], gpgme.ERR_SOURCE_GPGME)
++            self.assertEqual(exc.args[1], gpgme.ERR_UNUSABLE_PUBKEY)
+         else:
+             self.fail('gpgme.GpgmeError not raised')
+ 
+diff --git a/tests/test_passphrase.py b/tests/test_passphrase.py
+index 35b3c59..05e6811 100644
+--- a/tests/test_passphrase.py
++++ b/tests/test_passphrase.py
+@@ -34,6 +34,7 @@ class PassphraseTestCase(GpgHomeTestCase):
+         ctx = gpgme.Context()
+         key = ctx.get_key('EFB052B4230BBBC51914BCBB54DCBBC8DBFB9EB3')
+         ctx.signers = [key]
++        ctx.pinentry_mode = gpgme.PINENTRY_MODE_LOOPBACK
+         plaintext = BytesIO(b'Hello World\n')
+         signature = BytesIO()
+ 
+@@ -55,6 +56,7 @@ class PassphraseTestCase(GpgHomeTestCase):
+         ctx = gpgme.Context()
+         key = ctx.get_key('EFB052B4230BBBC51914BCBB54DCBBC8DBFB9EB3')
+         ctx.signers = [key]
++        ctx.pinentry_mode = gpgme.PINENTRY_MODE_LOOPBACK
+         ctx.passphrase_cb = self.passphrase_cb
+         plaintext = BytesIO(b'Hello World\n')
+         signature = BytesIO()

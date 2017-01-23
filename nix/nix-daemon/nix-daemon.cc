@@ -549,8 +549,12 @@ static void performOp(bool trusted, unsigned int clientVersion,
         settings.keepGoing = readInt(from) != 0;
         settings.set("build-fallback", readInt(from) ? "true" : "false");
         verbosity = (Verbosity) readInt(from);
-        settings.set("build-max-jobs", std::to_string(readInt(from)));
-        settings.set("build-max-silent-time", std::to_string(readInt(from)));
+
+        if (GET_PROTOCOL_MINOR(clientVersion) < 0x61) {
+            settings.set("build-max-jobs", std::to_string(readInt(from)));
+            settings.set("build-max-silent-time", std::to_string(readInt(from)));
+        }
+
         if (GET_PROTOCOL_MINOR(clientVersion) >= 2)
             settings.useBuildHook = readInt(from) != 0;
         if (GET_PROTOCOL_MINOR(clientVersion) >= 4) {
@@ -558,7 +562,8 @@ static void performOp(bool trusted, unsigned int clientVersion,
             logType = (LogType) readInt(from);
             settings.printBuildTrace = readInt(from) != 0;
         }
-        if (GET_PROTOCOL_MINOR(clientVersion) >= 6)
+        if (GET_PROTOCOL_MINOR(clientVersion) >= 6
+            && GET_PROTOCOL_MINOR(clientVersion) < 0x61)
             settings.set("build-cores", std::to_string(readInt(from)));
         if (GET_PROTOCOL_MINOR(clientVersion) >= 10)
             settings.set("build-use-substitutes", readInt(from) ? "true" : "false");
@@ -567,7 +572,10 @@ static void performOp(bool trusted, unsigned int clientVersion,
             for (unsigned int i = 0; i < n; i++) {
                 string name = readString(from);
                 string value = readString(from);
-                if (name == "build-timeout" || name == "build-repeat" || name == "use-ssh-substituter")
+                if (name == "build-timeout" || name == "build-max-silent-time"
+                    || name == "build-max-jobs" || name == "build-cores"
+                    || name == "build-repeat"
+                    || name == "use-ssh-substituter")
                     settings.set(name, value);
                 else
                     settings.set(trusted ? name : "untrusted-" + name, value);

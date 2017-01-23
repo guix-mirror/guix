@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -440,6 +440,17 @@
 (test-assert "terminal-columns non-file port"
   (> (terminal-columns (open-input-string "Join us now, share the software!"))
      0))
+
+(test-assert "utmpx-entries"
+  (match (utmpx-entries)
+    (((? utmpx? entries) ...)
+     (every (lambda (entry)
+              (match (utmpx-user entry)
+                ((? string?)
+                 (> (utmpx-pid entry) 0))
+                (#f                               ;might be DEAD_PROCESS
+                 #t)))
+            entries))))
 
 (test-end)
 

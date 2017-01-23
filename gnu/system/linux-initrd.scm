@@ -197,6 +197,9 @@ loaded at boot time in the order in which they appear."
       ,@(if (find (file-system-type-predicate "vfat") file-systems)
             '("nls_iso8859-1")
             '())
+      ,@(if (find (file-system-type-predicate "btrfs") file-systems)
+            '("btrfs")
+            '())
       ,@(if volatile-root?
             '("fuse")
             '())
@@ -213,6 +216,9 @@ loaded at boot time in the order in which they appear."
                     (string-suffix? "fat" (file-system-type fs)))
                   file-systems)
             (list fatfsck/static)
+            '())
+      ,@(if (find (file-system-type-predicate "btrfs") file-systems)
+            (list btrfs-progs/static)
             '())
       ,@(if volatile-root?
             (list unionfs-fuse/static)

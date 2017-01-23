@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2016 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -25,7 +25,8 @@
 namespace nix {
 
 static void builtinDownload(const Derivation &drv,
-			    const std::string &drvPath)
+			    const std::string &drvPath,
+			    const std::string &output)
 {
     /* Invoke 'guix perform-download'.  */
     Strings args;
@@ -35,7 +36,10 @@ static void builtinDownload(const Derivation &drv,
     /* Close all other file descriptors. */
     closeMostFDs(set<int>());
 
-    const char *const argv[] = { "download", drvPath.c_str(), NULL };
+    const char *const argv[] =
+      {
+	"download", drvPath.c_str(), output.c_str(), NULL
+      };
 
     /* XXX: Hack our way to use the 'download' script from 'LIBEXECDIR/guix'
        or just 'LIBEXECDIR', depending on whether we're running uninstalled or

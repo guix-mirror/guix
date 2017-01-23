@@ -1,13 +1,13 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -342,26 +343,26 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
 (define-public linux-libre
-  (make-linux-libre "4.8.15"
-                    "0msgi44mh1ighfawysrzrljikwrapkvk418d6h0v45vj2i5rwln9"
+  (make-linux-libre "4.9.5"
+                    "1s8lip1hxjsza0qqw93kwp3281rbgzhk4vnvy6fmny8iz7y75vzd"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.39"
-                    "0aqi44xshib7lx9zjc0kj2v172ywa0iy2kb6z0whbiw3f841hv43"
+  (make-linux-libre "4.4.44"
+                    "0rg5iw7qxry84hha8vfnzrjq0sfnr3vvdwhdz858y7pblg2vr3f0"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.37"
-                    "0q79cxmrz0j5wh7z1dc103q6q6qf7rqgjl7ka8lvn4vl32pr0kq1"
+  (make-linux-libre "4.1.38"
+                    "165kmzglhg63hn7y4q7r6cb2dpsljxiq1czvgyx0bkd1vd2bcvsa"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 ;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.8.15")
-(define %linux-libre-hash "0msgi44mh1ighfawysrzrljikwrapkvk418d6h0v45vj2i5rwln9")
+(define %linux-libre-version "4.9.5")
+(define %linux-libre-hash "1s8lip1hxjsza0qqw93kwp3281rbgzhk4vnvy6fmny8iz7y75vzd")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -606,7 +607,7 @@ slabtop, and skill.")
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
-       ("eudev" ,eudev)))
+       ("eudev" ,eudev-with-hwdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
@@ -631,9 +632,15 @@ slabtop, and skill.")
                "1ix0b83zgw5n0p2grh2961c6796m92yr2jqc2sbr23x3lfsp8r71"))
              (modules '((guix build utils)))
              (snippet
-              '(substitute* "MCONFIG.in"
-                 (("INSTALL_SYMLINK = /bin/sh")
-                  "INSTALL_SYMLINK = sh")))))
+              '(begin
+                 (substitute* "MCONFIG.in"
+                   (("INSTALL_SYMLINK = /bin/sh")
+                    "INSTALL_SYMLINK = sh"))
+
+                 ;; Do not include a timestamp in libext2fs.info.gz.
+                 (substitute* "doc/Makefile.in"
+                   (("gzip -9")
+                    "gzip -9n"))))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -649,6 +656,11 @@ slabtop, and skill.")
        #:configure-flags '("--disable-libblkid"
                            "--disable-libuuid" "--disable-uuidd"
                            "--disable-fsck"
+
+                           ;; Use symlinks instead of hard links for
+                           ;; 'fsck.extN' etc.  This makes the resulting nar
+                           ;; smaller and is preserved across copies.
+                           "--enable-symlink-install"
 
                            ;; Install libext2fs et al.
                            "--enable-elf-shlibs")
@@ -715,6 +727,8 @@ slabtop, and skill.")
     (version (package-version e2fsprogs))
     (build-system trivial-build-system)
     (source #f)
+    (inputs
+     `(("e2fsprogs" ,e2fsprogs/static)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -723,23 +737,18 @@ slabtop, and skill.")
                       (ice-9 ftw)
                       (srfi srfi-26))
 
-         (let ((source (string-append (assoc-ref %build-inputs "e2fsprogs")
-                                      "/sbin"))
+         (let ((e2fsck (string-append (assoc-ref %build-inputs "e2fsprogs")
+                                      "/sbin/e2fsck"))
                (bin    (string-append (assoc-ref %outputs "out") "/sbin")))
            (mkdir-p bin)
            (with-directory-excursion bin
-             (for-each (lambda (file)
-                         (copy-file (string-append source "/" file)
-                                    file)
-                         (remove-store-references file)
-                         (chmod file #o555))
-                       (scandir source (cut string-prefix? "fsck." <>))))))))
-    (inputs `(("e2fsprogs" ,e2fsprogs/static)))
-    (synopsis "Statically-linked fsck.* commands from e2fsprogs")
-    (description
-     "This package provides statically-linked command of fsck.ext[234] taken
-from the e2fsprogs package.  It is meant to be used in initrds.")
+             (copy-file e2fsck "e2fsck")
+             (remove-store-references "e2fsck")
+             (chmod "e2fsck" #o555))))))
     (home-page (package-home-page e2fsprogs))
+    (synopsis "Statically-linked e2fsck command from e2fsprogs")
+    (description "This package provides statically-linked e2fsck command taken
+from the e2fsprogs package.  It is meant to be used in initrds.")
     (license (package-license e2fsprogs))))
 
 (define-public extundelete
@@ -1668,7 +1677,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "22")
+    (version "23")
     (source (origin
               (method url-fetch)
               (uri
@@ -1676,7 +1685,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "10lzfkmnpq6a43a3gkx7x633njh216w0bjwz31rv8a1jlgg1sfxs"))
+                "0mc12sx06p8il1ym3hdmgxxb37apn9yv7xij26gddjdfkx8xa0yk"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1740,6 +1749,21 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
+
+(define-public eudev-with-hwdb
+  ;; TODO: Merge with 'eudev'.
+  (package
+    (inherit eudev)
+    (name "eudev-with-hwdb")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'build-hwdb
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
+                      ;; similar tools to display product names.
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* (string-append out "/bin/udevadm")
+                                        "hwdb" "--update"))))))))))
 
 (define-public lvm2
   (package
@@ -2759,6 +2783,36 @@ easy administration.")
     ;; GPL2: Everything else.
     (license (list license:gpl2 license:gpl2+))))
 
+(define-public btrfs-progs/static
+  (package
+    (name "btrfs-progs-static")
+    (version (package-version btrfs-progs))
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs
+     `(("btrfs-progs:static" ,btrfs-progs "static")))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+
+         (let* ((btrfs  (assoc-ref %build-inputs "btrfs-progs:static"))
+                (out    (assoc-ref %outputs "out"))
+                (source (string-append btrfs "/bin/btrfs.static"))
+                (target (string-append out "/bin/btrfs")))
+           (mkdir-p (dirname target))
+           (copy-file source target)
+           (remove-store-references target)
+           (chmod target #o555)))))
+    (home-page (package-home-page btrfs-progs))
+    (synopsis "Statically-linked btrfs command from btrfsprogs")
+    (description "This package provides statically-linked command of btrfs taken
+from the btrfsprogs package.  It is meant to be used in initrds.")
+    (license (package-license btrfs-progs))))
+
 (define-public freefall
   (package
     (name "freefall")
@@ -3072,14 +3126,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "146")
+    (version "147")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "0jjx4q1mfa380319cqz86nw5wv6jnbpvq2r8n0dyh87mhvrgb4wi"))
+                "10xxmqpd348ifbs7w8j0m53agp28r6imv237ha3kmhp632hmyf1d"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3280,4 +3334,41 @@ interface to the variable facility of UEFI boot firmware.")
 Extensible Firmware Interface (EFI) Boot Manager.  This application can
 create and destroy boot entries, change the boot order, change the next
 running boot option, and more.")
+    (license license:gpl2+)))
+
+(define-public sysstat
+  (package
+    (name "sysstat")
+    (version "11.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://perso.orange.fr/sebastien.godard/"
+                                  "sysstat-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0f8gk1hma3bk198ziwrhh5jhisnbbgc1v4rxhny58n0zjzw0gm0z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite.
+       ;; Without this flag, it tries to install the man pages with group 'root'
+       ;; and fails because /etc/passwd lacks an entry for the root user.
+       #:configure-flags
+       (list "--disable-file-attr"
+             (string-append "conf_dir=" (assoc-ref %outputs "out") "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build process tries to create '/var/lib/sa', so we skip that
+         ;; instruction.
+         (add-after 'build 'skip-touching-var
+           (lambda _
+             (substitute* "Makefile"
+               (("mkdir -p \\$\\(DESTDIR\\)\\$\\(SA_DIR\\)")
+                ""))
+             #t)))))
+    (home-page "http://sebastien.godard.pagesperso-orange.fr/")
+    (synopsis "Performance monitoring tools for Linux")
+    (description "The sysstat utilities are a collection of performance
+monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
+@code{tapestat}, @code{cifsiostat}, @code{pidstat}, @code{sar}, @code{sadc},
+@code{sadf} and @code{sa}.")
     (license license:gpl2+)))

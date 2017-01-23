@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu OTHACEHE <m.othacehe@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,6 +124,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
     (inputs
      `(("efl" ,efl)
        ("python-2" ,python-2)
+       ("python2-dbus" ,python2-dbus)
        ("python2-efl" ,python2-efl)))
     (home-page "https://www.enlightenment.org")
     (synopsis "Connman User Interface written using the EFL")

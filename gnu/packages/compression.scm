@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -57,8 +57,8 @@
       (method url-fetch)
       (uri (list (string-append "http://zlib.net/zlib-"
                                  version ".tar.gz")
-                 (string-append "mirror://sourceforge/libpng/zlib-"
-                                 version ".tar.gz")))
+                 (string-append "mirror://sourceforge/libpng/zlib/"
+                                version "/zlib-" version ".tar.gz")))
       (sha256
        (base32
         "18dighcs333gsvajvvgqp8l4cx7h1x7yx9gd5xacnk80spyykrf3"))))

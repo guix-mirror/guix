@@ -577,11 +577,12 @@ upgrading, #f otherwise."
 (define (store-item->manifest-entry item)
   "Return a manifest entry for ITEM, a \"/gnu/store/...\" file name."
   (let-values (((name version)
-                (package-name->name+version (store-path-package-name item))))
+                (package-name->name+version (store-path-package-name item)
+                                            #\-)))
     (manifest-entry
       (name name)
       (version version)
-      (output #f)
+      (output "out")                              ;XXX: wild guess
       (item item))))
 
 (define (options->installable opts manifest transaction)
