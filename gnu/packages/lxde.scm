@@ -27,12 +27,14 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages openbox)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -408,5 +410,42 @@ in LXDE.")
      "Lxpanel provides an X11 desktop panel for LXDE.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
+
+(define-public lxde
+  (package
+    (name "lxde")
+    (version (package-version lxde-common))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     ;; TODO:
+     ;; lxshortcut, lxsession-edit, gpicview, leafpad,
+     ;; lxappearance-obconf
+     `(("menu-cache" ,menu-cache)
+       ("lxappearance" ,lxappearance)
+       ("lxde-icon-theme" ,lxde-icon-theme)
+       ("lxde-common" ,lxde-common)
+       ("lxmenu-data" ,lxmenu-data)
+       ("lxpanel" ,lxpanel)
+       ("lxrandr" ,lxrandr)
+       ("lxsession" ,lxsession)
+       ("libfm" ,libfm)
+       ("libfm-extra" ,libfm-extra)
+       ("lxtask" ,lxtask)
+       ("lxterminal" ,lxterminal)
+       ("pcmanfm" ,pcmanfm)
+       ("openbox" ,openbox)
+       ("obconf" ,obconf)))
+    (synopsis "Lightweight X11 Desktop Environment")
+    (description
+     "LXDE, which stands for Lightweight X11 Desktop Environment, is a
+desktop environment which is lightweight and fast.  It is designed to be
+user friendly and slim, while keeping the resource usage low.  LXDE uses
+less RAM and less CPU while being a feature rich desktop environment.  Unlike
+other tightly integrated desktops LXDE strives to be modular, so each
+component can be used independently with few dependencies.")
+    (home-page "https://lxde.org")
+    (license license:gpl2+))) ; And others.
 
 ;;; lxde.scm ends here
