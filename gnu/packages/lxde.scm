@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,16 +144,20 @@ toolkit.  It allows users to monitor and control of running processes.")
 (define-public lxterminal
   (package
     (name "lxterminal")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/LXTerminal"
                                   "%20%28terminal%20emulator%29/LXTerminal%20"
-                                  version "/" name "-" version ".tar.gz"))
+                                  version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1brb506vmnncih8nyvlrckrrn6msbsvz2vwbm7bsqwigcnchwjqp"))))
+                "1yf76s15zvfw0h42b0ay1slpq47khgjmcry8ki2z812zar9lchia"))))
     (build-system gnu-build-system)
+    (arguments
+     `(;; Tests for "po" fail with "No rule to make target '../src/encoding.c'
+       ;; needed by 'lxterminal.pot'. Stop."
+       #:tests? #f))
     (inputs `(("gtk+" ,gtk+-2)
               ("vte"  ,vte/gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
