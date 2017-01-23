@@ -22,11 +22,15 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -351,6 +355,57 @@ in LXDE.")
     (synopsis "Lightweight X11 session manager")
     (description
      "Lxsession provides an lightweight X11 session manager.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
+(define-public lxpanel
+  (package
+    (name "lxpanel")
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://downloads.sourceforge.net/lxde/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ccgv7jgl3y865cpb6w7baaz7468fxncm83bqxlwyni5bwhglb1l"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (menu (assoc-ref inputs "lxmenu-data")))
+               (wrap-program (string-append out "/bin/lxpanel")
+                 `("XDG_DATA_DIRS" ":" prefix
+                   (,(string-append menu "/share"))))
+               #t))))))
+    (inputs
+     ;; TODO: libindicator-0.3.0
+     `(("gtk+-2" ,gtk+-2)
+       ("alsa-lib" ,alsa-lib)
+       ("libwnck-2" ,libwnck-2)
+       ("keybinder" ,keybinder)
+       ("libxmu" ,libxmu)
+       ("libxpm" ,libxpm)
+       ("libxml2" ,libxml2)
+       ("cairo" ,cairo)
+       ("libx11" ,libx11)
+       ("wireless-tools" ,wireless-tools)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("docbook-xml" ,docbook-xml)
+       ("gettext-minimal" ,gettext-minimal)))
+    (propagated-inputs
+     `(("lxmenu-data" ,lxmenu-data)
+       ("libfm" ,libfm)
+       ("menu-cache" ,menu-cache)))
+    (synopsis "X11 Desktop panel for LXDE")
+    (description
+     "Lxpanel provides an X11 desktop panel for LXDE.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
 
