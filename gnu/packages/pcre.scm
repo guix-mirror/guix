@@ -31,7 +31,7 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.38")
+   (version "8.40")
    (source (origin
             (method url-fetch)
             (uri (list
@@ -42,8 +42,7 @@
                                  version "/pcre-" version ".tar.bz2")))
             (sha256
              (base32
-              "1pvra19ljkr5ky35y2iywjnsckrs9ch2anrf5b0dc91hw8v2vq5r"))
-            (patches (list (search-patch "pcre-CVE-2016-3191.patch")))))
+              "1x7lpjn7jhk0n3sdvggxrlrhab8kkfjwl7qix0ypw9nlx8lpmqh0"))))
    (build-system gnu-build-system)
    (outputs '("out"           ;library & headers
               "bin"           ;depends on Readline (adds 20MiB to the closure)
