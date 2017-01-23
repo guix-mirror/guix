@@ -1228,7 +1228,7 @@ for use with HTML5 video.")
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
              (substitute* "ffmpeg-2.7.6/configure"
-               (("#! /bin/sh") (string-append "#!" (which "bash"))))
+               (("#! /bin/sh") (string-append "#!" (which "sh"))))
              (system* "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
                       ;; avoid non-determinism in the archive
                       "--sort=name" "--mtime=@0"
