@@ -242,4 +242,25 @@ menu spec-compliant desktop menus for LXDE.")
     (home-page "http://lxde.org")
     (license license:lgpl2.1+)))
 
+(define-public lxde-icon-theme
+  (package
+    (name "lxde-icon-theme")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://downloads.sourceforge.net/lxde/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0v4i6x86fr2hbx4fb2si7y2qzmj7h6hcjwaifnin18r8kwwvgl73"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "LXDE default icon theme based on nuoveXT2")
+    (description
+     "Lxde-icon-theme provides an default icon theme for LXDE.")
+    (home-page "http://lxde.org")
+    (license license:lgpl3)))
+
 ;;; lxde.scm ends here
