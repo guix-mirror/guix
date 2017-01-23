@@ -287,4 +287,29 @@ menu spec-compliant desktop menus for LXDE.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
 
+(define-public lxinput
+  (package
+    (name "lxinput")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://downloads.sourceforge.net/lxde/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "123f3yn4rp1w5b3n5aj3ad9snkxab29qkrs7bcvf5bx4cn57g3sf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+-2" ,gtk+-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (synopsis "Tool for mouse and keyboard configuration in LXDE")
+    (description
+     "Lxinput provides a small program to configure keyboard and mouse
+in LXDE.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
 ;;; lxde.scm ends here
