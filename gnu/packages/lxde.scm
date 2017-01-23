@@ -219,4 +219,27 @@ with freedesktop.org standard.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
 
+(define-public lxmenu-data
+  (package
+    (name "lxmenu-data")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://downloads.sourceforge.net/lxde/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1f5sh2dvb3pdnjlcsyzq9543ck2jsqizkx3204cr22zm5s6j3qwz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (synopsis "Freedesktop.org desktop menus for LXDE")
+    (description
+     "Lxmenu-data provides files required to build freedesktop.org
+menu spec-compliant desktop menus for LXDE.")
+    (home-page "http://lxde.org")
+    (license license:lgpl2.1+)))
+
 ;;; lxde.scm ends here
