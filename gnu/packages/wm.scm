@@ -12,6 +12,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
+;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -320,7 +321,7 @@ prompt.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.11.1")
+    (version "0.12")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
@@ -328,22 +329,15 @@ prompt.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pfjssamiwpwjp1qqkm9m9p9s35pv381m0cwg6jxg0ppglibzq1r"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Here we update the constraints on the utf8-string package in
-               ;; the Cabal file.  We allow a newer version which is compatible
-               ;; with GHC 7.10.2.  The same change is applied on Hackage.  See
-               ;; <https://hackage.haskell.org/package/xmonad-0.11.1/revisions/>.
-               '(substitute* "xmonad.cabal"
-                  (("utf8-string >= 0.3 && < 0.4")
-                   "utf8-string >= 0.3 && < 1.1")))))
+                "1mzx3p17ppgmi30q3phaj58x6kxn73pbbkn9v9gzgmd8skdlkxp8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-x11" ,ghc-x11)))
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-mtl"                   ,ghc-mtl)
+       ("ghc-quickcheck"            ,ghc-quickcheck)
+       ("ghc-setlocale"             ,ghc-setlocale)
+       ("ghc-utf8-string"           ,ghc-utf8-string)
+       ("ghc-x11"                   ,ghc-x11)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -376,7 +370,7 @@ tiled on several screens.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.11.4")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
@@ -384,7 +378,7 @@ tiled on several screens.")
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32
-         "1g5cw9vvnfbiyi599fngk02zlmdhrf82x0bndhypkn6kybab6yd3"))))
+         "04gk449dxwmimmb6y2d2hvvmv91r91xlj879qzlyq0mcf723278k"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-mtl" ,ghc-mtl)
