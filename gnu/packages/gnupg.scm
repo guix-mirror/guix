@@ -310,7 +310,7 @@ libskba (working with X.509 certificates and CMS data).")
         (add-before 'configure 'patch-config-files
           (lambda _
             (substitute* "tests/openpgp/Makefile.in"
-              (("/bin/sh") (which "bash")))
+              (("/bin/sh") (which "sh")))
             #t))
         (add-after 'install 'rename-v2-commands
           (lambda* (#:key outputs #:allow-other-keys)
