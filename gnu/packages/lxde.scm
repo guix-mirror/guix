@@ -19,11 +19,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages lxde)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -309,6 +312,45 @@ menu spec-compliant desktop menus for LXDE.")
     (description
      "Lxinput provides a small program to configure keyboard and mouse
 in LXDE.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
+(define-public lxsession
+  (package
+    (name "lxsession")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://downloads.sourceforge.net/lxde/"
+                           name "-" version ".tar.xz"))
+       (patches (search-patches "lxsession-use-gapplication.patch"))
+       (sha256
+        (base32
+         "1a0zmyywwzdh59nc0l94cir18vhp633z4q2xfhn5zx11ajj45gwh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'rm-stamp
+           (lambda _
+             (for-each delete-file (find-files "." "\\.stamp$"))))
+         (add-after 'rm-stamp 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("polkit" ,polkit)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("docbook-xsl" ,docbook-xsl)
+       ("vala" ,vala)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Lightweight X11 session manager")
+    (description
+     "Lxsession provides an lightweight X11 session manager.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
 
