@@ -146,7 +146,7 @@ and its related documentation.")
          (add-before 'configure 'patch-/bin/sh
            (lambda _
              (substitute* "auto/feature"
-               (("/bin/sh") (which "bash")))
+               (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
