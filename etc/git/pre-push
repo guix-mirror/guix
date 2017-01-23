@@ -40,17 +40,29 @@ do
 	else
 		if [ "$remote_sha" = $z40 ]
 		then
-			# New branch, examine all commits
-			range="$local_sha"
+			# We are pushing a new branch. To prevent wasting too
+			# much time for this relatively rare case, we examine
+			# all commits since the first signed commit, rather than
+			# the full history. This check *will* fail, and the user
+			# will need to temporarily disable the hook to push the
+			# new branch.
+			range="e3d0fcbf7e55e8cbe8d0a1c5a24d73f341d7243b..$local_sha"
 		else
 			# Update to existing branch, examine new commits
 			range="$remote_sha..$local_sha"
 		fi
 
 		# Verify the signatures of all commits being pushed.
-		git verify-commit $(git rev-list $range) >/dev/null 2>&1
-
-		exit $?
+		ret=0
+		for commit in $(git rev-list $range)
+		do
+			if ! git verify-commit $commit >/dev/null 2>&1
+			then
+				printf "%s failed signature check\n" $commit
+				ret=1
+			fi
+		done
+		exit $ret
 	fi
 done
 
