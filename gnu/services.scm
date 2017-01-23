@@ -345,6 +345,10 @@ ACTIVATION-SCRIPT-TYPE."
                       ;; thus there is no accounting at all.
                       (close-port (open-file "/var/run/utmpx" "a0"))
 
+                      ;; Same for 'wtmp', which is populated by mingetty et
+                      ;; al.
+                      (close-port (open-file "/var/log/wtmp" "a0"))
+
                       ;; Set up /run/current-system.  Among other things this
                       ;; sets up locales, which the activation snippets
                       ;; executed below may expect.

@@ -194,6 +194,29 @@ info --version")
                             (utmpx-entries)))
              marionette))
 
+          ;; Likewise for /var/log/wtmp (used by 'last').
+          (test-assert "wtmp entry"
+            (match (marionette-eval
+                    '(begin
+                       (use-modules (guix build syscalls)
+                                    (srfi srfi-1))
+
+                       (define (entry->list entry)
+                         (list (utmpx-user entry) (utmpx-line entry)
+                               (utmpx-host entry) (utmpx-login-type entry)))
+
+                       (call-with-input-file "/var/log/wtmp"
+                         (lambda (port)
+                           (let loop ((result '()))
+                             (if (eof-object? (peek-char port))
+                                 (map entry->list (reverse result))
+                                 (loop (cons (read-utmpx port) result)))))))
+                    marionette)
+              (((users lines hosts types) ..1)
+               (every (lambda (type)
+                        (eqv? type (login-type LOGIN_PROCESS)))
+                      types))))
+
           (test-assert "host name resolution"
             (match (marionette-eval
                     '(begin
