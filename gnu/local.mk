@@ -769,7 +769,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
-  %D%/packages/patches/pcre-CVE-2016-3191.patch			\
   %D%/packages/patches/pcre2-CVE-2016-3191.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
