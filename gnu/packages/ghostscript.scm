@@ -57,7 +57,8 @@
 focus on accuracy and performance.  It uses the International Color
 Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
-   (home-page "http://www.littlecms.com/")))
+   (home-page "http://www.littlecms.com/")
+   (properties '((cpe-name . "little_cms_color_engine")))))
 
 (define lcms/fixed
   (package
