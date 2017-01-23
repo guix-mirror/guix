@@ -645,3 +645,32 @@ all of them.  Currently supported window managers include:
 @end enumerate\n")
     (home-page "http://menumaker.sourceforge.net/")
     (license license:bsd-2)))
+
+(define-public keybinder
+  (package
+    (name "keybinder")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/engla/keybinder/releases/"
+                           "download/v" version "/keybinder-"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h52hj3ay8mfhwvmfxbxlfyq74hifdk8wxgxp7fr4iy6189hg7w7"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python-2" ,python-2)
+       ("gtk+-2" ,gtk+-2)))
+    (native-inputs
+     `(("python2-pygtk" ,python2-pygtk)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Library for registering global keyboard shortcuts")
+    (description
+     "Keybinder is a library for registering global keyboard shortcuts.
+Keybinder works with GTK-based applications using the X Window System.")
+    (home-page "https://github.com/engla/keybinder")
+    (license license:gpl2+)))
