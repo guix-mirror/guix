@@ -727,7 +727,8 @@ legends.")
        ("r-lazyeval" ,r-lazyeval)
        ("r-tibble" ,r-tibble)
        ("r-reshape2" ,r-reshape2)
-       ("r-scales" ,r-scales)))
+       ("r-scales" ,r-scales)
+       ("r-svglite" ,r-svglite))) ; Needed for 'ggsave'
     (home-page "http://ggplot2.org")
     (synopsis "An implementation of the grammar of graphics")
     (description
