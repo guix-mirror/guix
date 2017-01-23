@@ -1557,10 +1557,10 @@ powerful user customization features.")
                         "contrib/mmuegel" "devtools/bin/configure.sh")
                   (find-files "." ".*\\.m4")
                   (find-files "." ".*\\.cf"))
-               (("/bin/sh") (which "bash")))
+               (("/bin/sh") (which "sh")))
 
              (substitute* "devtools/bin/Build"
-               (("SHELL=/bin/sh") (string-append "SHELL=" (which "bash"))))
+               (("SHELL=/bin/sh") (string-append "SHELL=" (which "sh"))))
              #t))
          (replace 'configure
            (lambda _
