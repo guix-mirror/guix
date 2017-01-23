@@ -168,9 +168,9 @@ printing, and psresize, for adjusting page sizes.")
         (add-after 'configure 'patch-config-files
                    (lambda _
                      (substitute* "base/all-arch.mak"
-                       (("/bin/sh") (which "bash")))
+                       (("/bin/sh") (which "sh")))
                      (substitute* "base/unixhead.mak"
-                       (("/bin/sh") (which "bash")))))
+                       (("/bin/sh") (which "sh")))))
         (add-after 'configure 'remove-doc-reference
                    (lambda _
                      ;; Don't retain a reference to the 'doc' output in 'gs'.
