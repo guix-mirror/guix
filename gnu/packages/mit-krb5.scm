@@ -68,7 +68,7 @@
              (let ((perl (assoc-ref inputs "perl")))
                (substitute* "plugins/kdb/db2/libdb2/test/run.test"
                  (("/bin/cat") (string-append perl "/bin/perl"))
-                 (("D/bin/sh") (string-append "D" (which "bash")))
+                 (("D/bin/sh") (string-append "D" (which "sh")))
                  (("bindir=/bin/.") (string-append "bindir=" perl "/bin"))))
 
              ;; avoid service names since /etc/services is unavailable
