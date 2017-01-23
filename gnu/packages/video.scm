@@ -796,7 +796,7 @@ treaming protocols.")
             (let ((out (assoc-ref outputs "out"))
                   (libx11 (assoc-ref inputs "libx11")))
               (substitute* "configure"
-                (("#! /bin/sh") (string-append "#!" (which "bash"))))
+                (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
               (zero? (system*
