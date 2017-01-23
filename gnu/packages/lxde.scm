@@ -34,7 +34,7 @@
 (define-public libfm
   (package
     (name "libfm")
-    (version "1.2.4")
+    (version "1.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -42,7 +42,7 @@
                                   "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bsh4p7h2glhxf1cc1lvbxyb4qy0y1zsnl9izf7vrldkikrgc13q"))))
+                "0nlvfwh09gbq8bkbvwnw6iqr918rrs9gc9ljb9pjspyg408bn1n7"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+-2)))
@@ -195,7 +195,7 @@ speed up the access to freedesktop.org defined application menus.")
 (define-public pcmanfm
   (package
     (name "pcmanfm")
-    (version "1.2.4")
+    (version "1.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/"
@@ -203,7 +203,7 @@ speed up the access to freedesktop.org defined application menus.")
                                   "%29/PCManFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04z3vd9si24yi4c8calqncdpb9b6mbj4cs4f3fs86i6j05gvpk9q"))))
+                "0rxdh0dfzc84l85c54blq42gczygq8adhr3l9hqzy1dp530cm1hc"))))
     (build-system gnu-build-system)
     ;; (#:configure-flags '("--sysconfdir=/etc")) suggested in README.
     (inputs `(("gtk+"   ,gtk+-2)
