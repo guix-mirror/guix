@@ -573,7 +573,7 @@ PGP keysigning parties.")
               (substitute* "keyanalyze/Makefile"
                 (("./configure") (string-append "./configure --prefix=" out)))
               (substitute* "keyanalyze/pgpring/configure"
-                (("/bin/sh") (which "bash")))
+                (("/bin/sh") (which "sh")))
               (substitute* "gpgwrap/Makefile"
                 (("\\} clean")
                  (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
