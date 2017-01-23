@@ -263,4 +263,28 @@ menu spec-compliant desktop menus for LXDE.")
     (home-page "http://lxde.org")
     (license license:lgpl3)))
 
+(define-public lxde-common
+  (package
+    (name "lxde-common")
+    (version "0.99.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://downloads.sourceforge.net/lxde/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0mj84fa3f4ak1jjslrwc2q3ci9zxrxpciggviza9bjb0168brn8w"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("lxmenu-data" ,lxmenu-data)
+       ("lxde-icon-theme" ,lxde-icon-theme)))
+    (synopsis "Common files of the LXDE Desktop")
+    (description
+     "Lxde-common provides common files of the LXDE Desktop.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
 ;;; lxde.scm ends here
