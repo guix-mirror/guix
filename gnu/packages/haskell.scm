@@ -1607,6 +1607,25 @@ UTF8 without truncation.")
 environment variables.")
     (license license:expat)))
 
+(define-public ghc-setlocale
+  (package
+    (name "ghc-setlocale")
+    (version "1.0.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/setlocale-"
+                    version "/setlocale-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sd73zgpijr9xjdj5p562cmlcxmx5iff5k8xh9b6rpcgrgnnlf9j"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/setlocale")
+    (synopsis "Haskell bindings to setlocale")
+    (description "This package provides Haskell bindings to the
+@code{setlocale} C function.")
+    (license license:bsd-3)))
+
 (define-public ghc-x11
   (package
     (name "ghc-x11")
