@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -424,6 +425,33 @@ types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (x11-style "file://COPYRIGHT"))))
+
+(define-public qdbm
+  (package
+    (name "qdbm")
+    (version "1.8.78")
+    (source
+      (origin
+       (method url-fetch)
+       (uri (string-append "http://fallabs.com/" name "/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gmpvhn02pkq280ffmn4da1g4mdr1xxz7l80b7y4n7km1mrzwrml"))))
+    (build-system gnu-build-system)
+    (arguments
+     `( #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                               (assoc-ref %outputs "out")
+                                               "/lib"))))
+    (home-page "http://fallabs.com/qdbm")
+    (synopsis "Key-value database")
+    (description "QDBM is a library of routines for managing a
+database.  The database is a simple data file containing key-value
+pairs.  Every key and value is serial bytes with variable length.
+Binary data as well as character strings can be used as a key or a
+value.  There is no concept of data tables or data types.  Records are
+organized in a hash table or B+ tree.")
+    (license license:lgpl2.1+)))
 
 (define-public recutils
   (package
