@@ -2241,10 +2241,11 @@ executed.")
     (propagated-inputs
      `(("python-coverage" ,python-coverage)))
     (home-page "https://github.com/schlamar/cov-core")
-    (synopsis "plugin core for use by pytest-cov, nose-cov and nose2-cov")
+    (synopsis "Coverage plugin core for pytest-cov, nose-cov and nose2-cov")
     (description
-     "This is a library package for use by pytest-cov, nose-cov and nose2-cov.
-It is useful for developing coverage plugins for these testing frameworks.")
+     "This is a library package for use by @code{pytest-cov}, @code{nose-cov}
+and @code{nose2-cov}.  It is useful for developing coverage plugins for these
+testing frameworks.")
     (license license:expat)))
 
 (define-public python2-cov-core
