@@ -1085,7 +1085,7 @@ database and supports many programming languages.  It is a NoSQL database.")
 (define-public wiredtiger
   (package
     (name "wiredtiger")
-    (version "2.8.0")
+    (version "2.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1093,7 +1093,7 @@ database and supports many programming languages.  It is a NoSQL database.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1qh7y5paisdxq19jgg81ld7i32lz920n5k30hdpxnr8ll9c4hgjr"))))
+                "0krwnb2zfbhvjaskwl875qzd3y626s84zcciq2mxr5c5riw3yh6s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-lz4" "--enable-zlib")
