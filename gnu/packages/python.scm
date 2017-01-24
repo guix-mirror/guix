@@ -4003,14 +4003,14 @@ Python code against some of the style conventions in
 (define-public python-orderedmultidict
   (package
     (name "python-orderedmultidict")
-    (version "0.7.10")
+    (version "0.7.11")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "orderedmultidict" version))
         (sha256
           (base32
-            "1gvqk0jd432wsn88kq4svad68xz3r012jfpnhh9in7bqrkyxidky"))))
+            "0dls862ibm7qbq4fnvwx0xn1v9hwyzywbff8xjjdr42dd75208yw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
