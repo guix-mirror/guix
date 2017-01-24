@@ -45,6 +45,7 @@
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -382,6 +383,72 @@ Features include:
 @item many additional color options.
 @end enumerate")
     (license license:bsd-3)))
+
+(define-public i3lock-fancy
+  (package
+    (name "i3lock-fancy")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/meskarune/i3lock-fancy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "020m7mnfq5cvir7p9v3hkb7cvb4cai33wppxl2zdwscwwjnchc5y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;No tests included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (icons (string-append out "/share/i3lock-fancy/icons/"))
+                    (wmctrl (string-append (assoc-ref inputs "wmctrl")
+                                           "/bin/wmctrl"))
+                    (mconvert (string-append (assoc-ref inputs "imagemagick")
+                                             "/bin/convert"))
+                    (mimport (string-append (assoc-ref inputs "imagemagick")
+                                            "/bin/import"))
+                    (awk (string-append (assoc-ref inputs "gawk")
+                                        "/bin/gawk")))
+
+               (substitute* "lock"
+                 (("$(which wmctrl)") wmctrl)
+                 (("convert") mconvert)
+                 (("shot=\\(import") (string-append "shot=\(" mimport))
+                 (("awk -F") (string-append awk " -F"))
+                 ((" awk") awk)
+                 (("\\$scriptpath/icons/") icons))
+               #t)))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (icons (string-append out "/share/i3lock-fancy/icons/")))
+
+               (install-file "lock" bin)
+               (rename-file (string-append bin "/lock")
+                            (string-append bin "/i3lock-fancy"))
+               (copy-recursively "icons" icons)
+               #t))))))
+    (native-inputs
+     `(("imagemagick" ,imagemagick)
+       ("wmctrl" ,wmctrl)
+       ("gawk" ,gawk)))
+    (home-page "https://github.com/meskarune/i3lock-fancy")
+    (synopsis "Screen locker with screenshot function")
+    (description
+     "@code{i3lock-fancy} is a Bash script that takes a screenshot of
+the desktop, blurs the background and adds a lock icon and text.
+It requires @code{i3lock-color} or @code{i3lock} and can optionally
+be passed any screenshot util like @code{scrot}.
+This screen locker can be used with any window manager or
+desktop environment.")
+    (license license:expat)))
 
 (define-public xmonad
   (package
