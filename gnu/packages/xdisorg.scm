@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -75,7 +75,14 @@
                                   "/files/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))))
+                "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Do not record a timestamp and file name in gzipped man
+               ;; pages (this is equivalent to 'gzip --no-name'.)
+               '(substitute* "setup.py"
+                  (("gzip\\.open\\(gzfile, 'w', 9\\)")
+                   "gzip.GzipFile('', 'wb', 9, open(gzfile, 'wb'), 0.)")))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
