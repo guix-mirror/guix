@@ -4511,7 +4511,7 @@ guix build --quiet --keep-going \
 
 @var{package-or-derivation} may be either the name of a package found in
 the software distribution such as @code{coreutils} or
-@code{coreutils-8.20}, or a derivation such as
+@code{coreutils@8.20}, or a derivation such as
 @file{/gnu/store/@dots{}-coreutils-8.19.drv}.  In the former case, a
 package with the corresponding name (and optionally version) is searched
 for among the GNU distribution modules (@pxref{Package Modules}).
@@ -5671,7 +5671,7 @@ single output for a package that could easily be split (@pxref{Packages
 with Multiple Outputs}).  Such are the typical issues that
 @command{guix size} can highlight.
 
-The command can be passed a package specification such as @code{gcc-4.8}
+The command can be passed a package specification such as @code{gcc@4.8}
 or @code{guile:debug}, or a file name in the store.  Consider this
 example:
 
