@@ -300,7 +300,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define opus
   (package
     (name "opus")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -308,7 +308,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                     ".tar.gz"))
               (sha256
                (base32
-                "0cxnd7pjxbgh6l3cbzsw29phpr5cq28fikfhjlp1hc3y5s0gxdjq"))))
+                "14l6kpapmcnvl7p9hrmbqcnzj13zfzyppyc9a5kd4788h2rvc8li"))))
     (build-system gnu-build-system)
     (synopsis "Versatile audio codec")
     (description
