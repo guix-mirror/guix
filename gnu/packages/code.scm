@@ -190,37 +190,22 @@ COCOMO model or user-provided parameters.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "0.32.0")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/ggreer/the_silver_searcher/archive/"
+                    "http://geoff.greer.fm/ag/releases/the_silver_searcher-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1k543cjpignwvy8avhchz8pkqrqcgcryps36ycy8mz2w5rbhicn5"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0v54himv65w294l0k4lhdyc6kvpgijn8b9g5356479fzy7hphjkg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (arguments
-     `(#:phases
-       ;; There is no configure yet, so let's create it, but let configure and
-       ;; make do the work in later phases.
-       (alist-cons-before 'configure 'autoconf
-                          (lambda _
-                            (substitute* "build.sh"
-                              (("./configure") "true")
-                              (("make -j4") "true"))
-                            (zero? (system* "sh" "build.sh")))
-                          %standard-phases)))
     (home-page "http://geoff.greer.fm/ag/")
     (synopsis "Fast code searching tool")
     (description
