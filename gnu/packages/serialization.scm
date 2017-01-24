@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
@@ -128,6 +128,34 @@ such as compact binary encodings, XML, or JSON.")
     (description "Msgpack is a library for C/C++ that implements binary
 serialization.")
     (license license:boost1.0)))
+
+(define-public libmpack
+  (package
+    (name "libmpack")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/tarruda/libmpack/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "08kfdl55yf66xk57aqsbf8n45f2jsw2v7qwnaan08ciim77j3sv5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (home-page "https://github.com/tarruda/libmpack")
+    (synopsis "Small binary serialization library")
+    (description "Libmpack is a small binary serialization and RPC library
+that implements both the msgpack and msgpack-rpc specifications.")
+    (license license:expat)))
 
 (define-public yaml-cpp
   (package
