@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -209,9 +210,11 @@ COCOMO model or user-provided parameters.")
     (home-page "http://geoff.greer.fm/ag/")
     (synopsis "Fast code searching tool")
     (description
-     "The silver searcher, or 'ag', is tool for quickly searching through
-files, but compared to grep is much faster and respects files like .gitignore,
-.hgignore, etc.")
+     "The Silver Searcher (@command{ag}) is a tool for quickly searching large
+numbers of files.  It's intended primarily for source code repositories, and
+respects files like @file{.gitignore} and @file{.hgignore}.  It's also an order
+of magnitude faster than its inspiration, @command{ack}, and less specialised
+tools such as @command{grep}.")
     (license license:asl2.0)))
 
 (define-public trio
