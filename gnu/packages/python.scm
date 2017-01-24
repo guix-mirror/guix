@@ -10399,13 +10399,13 @@ It uses LR parsing and does extensive error checking.")
 (define-public python-tabulate
   (package
     (name "python-tabulate")
-    (version "0.7.5")
+    (version "0.7.7")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "tabulate" version))
              (sha256
               (base32
-               "03l1r7ddd1a0j2snv1yd0hlnghjad3fg1an1jr8936ksv75slwch"))
+               "1inqhspd4frxnp08c32yndr0lc4px1xfkqah184i5w09gkhvi843"))
              ;; Fix tests
              (modules '((guix build utils)))
              (snippet '(substitute* '("test/test_cli.py"
