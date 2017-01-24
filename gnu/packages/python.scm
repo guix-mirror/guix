@@ -5534,13 +5534,13 @@ Python style, together with a fast and comfortable execution environment.")
 (define-public python-seaborn
   (package
     (name "python-seaborn")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "0ibi3xsfm2kysph61mnfy0pf8d5rkgxgrdb0z9nbizgcgdsb5a0m"))))
+        (base32 "0pawrqc3mxpwd5g9pvi9gba02637bh5c8ldpp8izfwpfn52469zs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
