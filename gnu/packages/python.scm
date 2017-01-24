@@ -5997,7 +5997,7 @@ complexity of Python source code.")
 (define-public python-mistune
   (package
     (name "python-mistune")
-    (version "0.7")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
@@ -6007,7 +6007,7 @@ complexity of Python source code.")
              ".tar.gz"))
        (sha256
         (base32
-         "17zqjp9m4d1w3jf2rbbq5xshcw24q1vlcv24gkgfqqyyymajxahx"))))
+         "04xpk1zvslhq3xpnf01g3ag0dy9wfv4z28p093r8k49vvxlyil11"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
