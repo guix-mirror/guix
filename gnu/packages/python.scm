@@ -1193,14 +1193,14 @@ under several distributions that's hard or impossible to figure out.")
 (define-public python2-pysqlite
   (package
     (name "python2-pysqlite")
-    (version "2.8.1")
+    (version "2.8.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pysqlite" version))
       (sha256
        (base32
-        "0rm0zqyb363y6wljhfmbxs16jjv7p8nk1d8zgq9sdwj6js7y3jkm"))))
+        "1424gwq9sil2ffmnizk60q36vydkv8rxs6m7xs987kz8cdc37lqp"))))
     (build-system python-build-system)
     (inputs
      `(("sqlite" ,sqlite)))
