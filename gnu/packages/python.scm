@@ -7021,7 +7021,7 @@ serve the same purpose: provide Python bindings for libmagic.")))
 (define-public python-debian
   (package
     (name "python-debian")
-    (version "0.1.23")
+    (version "0.1.28")
     (source
      (origin
        (method url-fetch)
@@ -7030,7 +7030,7 @@ serve the same purpose: provide Python bindings for libmagic.")))
              version ".tar.gz"))
        (sha256
         (base32
-         "193faznwnjc3n5991wyzim6h9gyq1zxifmfrnpm3avgkh7ahyynh"))))
+         "0i15f0xzx679sd0ldq2sls9pnnps9fv6vhqvnv9dzf4qhma42i0y"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
