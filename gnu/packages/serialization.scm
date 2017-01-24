@@ -193,6 +193,26 @@ that implements both the msgpack and msgpack-rpc specifications.")
      `(("pkg-config" ,pkg-config)))
     (synopsis "Lua bindings for the libmpack binary serialization library")))
 
+(define-public lua5.2-libmpack
+  (package (inherit lua-libmpack)
+    (name "lua5.2-libmpack")
+    (arguments
+     (substitute-keyword-arguments (package-arguments lua-libmpack)
+       ((#:make-flags flags)
+        `(let* ((lua-version ,(package-version lua-5.2))
+                (lua-major+minor ,(version-major+minor (package-version lua-5.2))))
+           (list "CC=gcc"
+                 "USE_SYSTEM_LUA=yes"
+                 (string-append "LUA_VERSION=" lua-version)
+                 (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+                 (string-append "PREFIX="
+                                (assoc-ref %outputs "out"))
+                 (string-append "LUA_CMOD_INSTALLDIR="
+                                (assoc-ref %outputs "out")
+                                "/lib/lua/" lua-major+minor))))))
+    (inputs
+     `(("lua" ,lua-5.2)))))
+
 (define-public yaml-cpp
   (package
     (name "yaml-cpp")
