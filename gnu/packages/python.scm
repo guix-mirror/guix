@@ -10705,13 +10705,13 @@ It supports TSIG authenticated messages and EDNS0.")
 (define-public python-email-validator
   (package
     (name "python-email-validator")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin (method url-fetch)
              (uri (pypi-uri "email_validator" version))
              (sha256
               (base32
-               "0mn8jg5h8ifl8w6a6m0hq8kbk0mzw9vm054qfamkn89b3npz52qw"))))
+               "1ja9149l9ck5n45a72h3is7v476hjny5ybxbcamx1nw6iplsm7k6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
