@@ -2567,13 +2567,13 @@ cutting and pasting that code over and over.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "0.04.18")
+    (version "0.04.20")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "12hhblqy1ajvidm38im4171x4arg83pfmziyn53nizp29p3m14gi"))))
+               "1q00i8gpsq3d9r0q8wk4b290fxl0kqlsdk7iadvli45in6s1hi7d"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/Unidecode")
     (synopsis "ASCII transliterations of Unicode text")
