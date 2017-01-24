@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -32,6 +33,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
@@ -156,6 +158,40 @@ serialization.")
     (description "Libmpack is a small binary serialization and RPC library
 that implements both the msgpack and msgpack-rpc specifications.")
     (license license:expat)))
+
+(define-public lua-libmpack
+  (package (inherit libmpack)
+    (name "lua-libmpack")
+    (build-system gnu-build-system)
+    (arguments
+     `(;; FIXME: tests require "busted", which is not yet available in Guix.
+       #:tests? #f
+       #:test-target "test"
+       #:make-flags
+       (let* ((lua-version ,(package-version lua))
+              (lua-major+minor ,(version-major+minor (package-version lua))))
+         (list "CC=gcc"
+               "USE_SYSTEM_LUA=yes"
+               (string-append "LUA_VERSION=" lua-version)
+               (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+               (string-append "PREFIX="
+                              (assoc-ref %outputs "out"))
+               (string-append "LUA_CMOD_INSTALLDIR="
+                              (assoc-ref %outputs "out")
+                              "/lib/lua/" lua-major+minor)
+               ;; This is unnecessary as of upstream commit 02886c13ff8a2,
+               ;; which is not part of the current release.
+               "CFLAGS=-DLUA_C89_NUMBERS -fPIC"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "binding/lua") #t)))))
+    (inputs
+     `(("lua" ,lua)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Lua bindings for the libmpack binary serialization library")))
 
 (define-public yaml-cpp
   (package
