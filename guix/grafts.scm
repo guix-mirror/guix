@@ -78,11 +78,12 @@
 (define* (graft-derivation/shallow store drv grafts
                                    #:key
                                    (name (derivation-name drv))
+                                   (outputs (derivation-output-names drv))
                                    (guile (%guile-for-build))
                                    (system (%current-system)))
-  "Return a derivation called NAME, based on DRV but with all the GRAFTS
-applied.  This procedure performs \"shallow\" grafting in that GRAFTS are not
-recursively applied to dependencies of DRV."
+  "Return a derivation called NAME, which applies GRAFTS to the specified
+OUTPUTS of DRV.  This procedure performs \"shallow\" grafting in that GRAFTS
+are not recursively applied to dependencies of DRV."
   ;; XXX: Someday rewrite using gexps.
   (define mapping
     ;; List of store item pairs.
@@ -96,14 +97,12 @@ recursively applied to dependencies of DRV."
                      target))))
          grafts))
 
-  (define outputs
-    (map (match-lambda
-           ((name . output)
-            (cons name (derivation-output-path output))))
-         (derivation-outputs drv)))
-
-  (define output-names
-    (derivation-output-names drv))
+  (define output-pairs
+    (map (lambda (output)
+           (cons output
+                 (derivation-output-path
+                  (assoc-ref (derivation-outputs drv) output))))
+         outputs))
 
   (define build
     `(begin
@@ -111,7 +110,7 @@ recursively applied to dependencies of DRV."
                     (guix build utils)
                     (ice-9 match))
 
-       (let* ((old-outputs ',outputs)
+       (let* ((old-outputs ',output-pairs)
               (mapping (append ',mapping
                                (map (match-lambda
                                       ((name . file)
@@ -143,10 +142,10 @@ recursively applied to dependencies of DRV."
                                                  (guix build utils))
                                      #:inputs `(,@(map (lambda (out)
                                                          `("x" ,drv ,out))
-                                                       output-names)
+                                                       outputs)
                                                 ,@(append (map add-label sources)
                                                           (map add-label targets)))
-                                     #:outputs output-names
+                                     #:outputs outputs
                                      #:local-build? #t)))))
 (define (item->deriver store item)
   "Return two values: the derivation that led to ITEM (a store item), and the
