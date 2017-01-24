@@ -4131,14 +4131,14 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "0.8.7")
+    (version "0.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "0ias6fdzwr2s220fnjspkdgm9510bd0cnap0hx5y4zy4srba9f3z"))))
+         "06br9sfqypnjlal6fsbnky3zb0askwcn3diz8k3kwa0qcblm0fqf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
