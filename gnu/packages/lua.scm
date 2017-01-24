@@ -401,3 +401,36 @@ Notable examples are GTK+, GStreamer and Webkit.")
 Grammars (PEGs).")
     (home-page "http://www.inf.puc-rio.br/~roberto/lpeg")
     (license license:expat)))
+
+;; Lua 5.3 is not supported.
+(define-public lua5.2-bitop
+  (package
+    (name "lua5.2-bitop")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://bitop.luajit.org/download/"
+                                  "LuaBitOp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16fffbrgfcw40kskh2bn9q7m3gajffwd2f35rafynlnd7llwj1qj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "INSTALL=install -pD"
+             (string-append "INSTALLPATH=printf "
+                            (assoc-ref %outputs "out")
+                            "/lib/lua/"
+                            ,(version-major+minor (package-version lua-5.2))
+                            "/bit/bit.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs `(("lua", lua-5.2)))
+    (home-page "http://bitop.luajit.org/index.html")
+    (synopsis "Bitwise operations on numbers for Lua")
+    (description
+     "Lua BitOp is a C extension module for Lua which adds bitwise operations
+on numbers.")
+    (license license:expat)))
