@@ -8620,7 +8620,7 @@ supports url redirection and retries, and also gzip and deflate decoding.")
       (base32
        "0avqkn6362v7k2kg3afb35g4sfdvixjgy890clip4q174p9whhz0"))))
    (build-system python-build-system)
-   (synopsis "colored terminal text rendering for Python")
+   (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
 text.")
    (home-page "https://pypi.python.org/pypi/colorama")
