@@ -2807,14 +2807,14 @@ be removed from the front.  This type of data structure is sometimes called an
 (define-public emacs-spinner
   (package
     (name "emacs-spinner")
-    (version "1.7.1")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/spinner-"
                                   version ".el"))
               (sha256
                (base32
-                "1fmwzdih0kbyvs8bn38mpm4sbs2mikqy2vdykfy9g20wpa8vb681"))))
+                "19kp1mmndbmw11sgvv2ggfjl4pyf5zrsbh3871f0965pw9z8vahd"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/spinner.el")
     (synopsis "Emacs mode-line spinner for operations in progress")
