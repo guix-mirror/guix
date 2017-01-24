@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -332,6 +333,7 @@ restrict -6 ::1\n"))
   "Return the activation gexp for CONFIG."
   (with-imported-modules '((guix build utils))
     #~(begin
+        (use-modules (guix build utils))
         (define %user
           (getpw "ntpd"))
 
