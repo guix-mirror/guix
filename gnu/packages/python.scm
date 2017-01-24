@@ -8611,14 +8611,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 (define-public python-colorama
   (package
    (name "python-colorama")
-   (version "0.3.3")
+   (version "0.3.7")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "colorama" version))
      (sha256
       (base32
-       "1716z9pq1r5ys3nkg7wdrb3h2f9rmd0zdxpxzmx3bgwgf6xg48gb"))))
+       "0avqkn6362v7k2kg3afb35g4sfdvixjgy890clip4q174p9whhz0"))))
    (build-system python-build-system)
    (synopsis "colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
