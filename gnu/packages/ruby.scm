@@ -1859,25 +1859,31 @@ generation of complex SQL queries and is compatible with various RDBMSes.")
     (license license:expat)))
 
 (define-public ruby-minitar
-  (package
-    (name "ruby-minitar")
-    (version "0.5.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (rubygems-uri "minitar" version))
-       (sha256
-        (base32
-         "1vpdjfmdq1yc4i620frfp9af02ia435dnpj8ybsd7dc3rypkvbka"))))
-    (build-system ruby-build-system)
-    (arguments
-     '(#:tests? #f)) ; missing a gemspec
-    (synopsis "Ruby library and utility for handling tar archives")
-    (description
-     "Archive::Tar::Minitar is a pure-Ruby library and command-line utility
+  ;; We package from the GitHub source to fix the security issue reported at
+  ;; https://github.com/halostatue/minitar/issues/16.
+  (let ((commit "e25205ecbb6277ae8a3df1e6a306d7ed4458b6e4"))
+    (package
+      (name "ruby-minitar")
+      (version (string-append "0.5.4-1." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/halostatue/minitar.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1iywfx07jgjqcmixzkxk9zdwfmij1fyg1z2jlwzj15cj7s99qlfv"))))
+      (build-system ruby-build-system)
+      (arguments
+       '(#:tests? #f)) ; missing a gemspec
+      (synopsis "Ruby library and utility for handling tar archives")
+      (description
+       "Archive::Tar::Minitar is a pure-Ruby library and command-line utility
 that provides the ability to deal with POSIX tar archive files.")
-    (home-page "http://www.github.com/atoulme/minitar")
-    (license (list license:gpl2+ license:ruby))))
+      (home-page "http://www.github.com/atoulme/minitar")
+      (license (list license:gpl2+ license:ruby)))))
 
 (define-public ruby-mini-portile
   (package
