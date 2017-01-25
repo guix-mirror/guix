@@ -39,12 +39,12 @@
 (define-public lcms
   (package
    (name "lcms")
-   (replacement lcms/fixed)
    (version "2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
+            (patches (search-patches "lcms-fix-out-of-bounds-read.patch"))
             (sha256 (base32
                      "1c8lgq8gfs3nyplvbx9k8wzfj6r2bqi3f611vb1m8z3476454wji"))))
    (build-system gnu-build-system)
@@ -58,14 +58,6 @@ focus on accuracy and performance.  It uses the International Color
 Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
    (home-page "http://www.littlecms.com/")))
-
-(define lcms/fixed
-  (package
-    (inherit lcms)
-    (source
-      (origin
-        (inherit (package-source lcms))
-        (patches (search-patches "lcms-fix-out-of-bounds-read.patch"))))))
 
 (define-public libpaper
   (package
