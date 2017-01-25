@@ -26,6 +26,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages haskell)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
@@ -267,14 +268,17 @@ interactive environment for the functional language Haskell.")
 (define-public ghc-8
   (package
     (name "ghc")
-    (version "8.0.1")
+    (version "8.0.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://www.haskell.org/ghc/dist/"
                           version "/" name "-" version "-src.tar.xz"))
       (sha256
-       (base32 "1lniqy29djhjkddnailpaqhlqh4ld2mqvb1fxgxw1qqjhz6j1ywh"))))
+       (base32 "1c8qc4fhkycynk4g1f9hvk53dj6a1vvqi6bklqznns6hw59m8qhi"))
+      (patches
+       (search-patches
+        "ghc-dont-pass-linker-flags-via-response-files.patch"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (outputs '("out" "doc"))
@@ -290,7 +294,7 @@ interactive environment for the functional language Haskell.")
                  "https://www.haskell.org/ghc/dist/"
                  version "/" name "-" version "-testsuite.tar.xz"))
            (sha256
-            (base32 "0lc1vjivkxn01aw3jg2gd7fmqb5pj7a5j987c7pn5r7caqv1cmxw"))))))
+            (base32 "1wjc3x68l305bl1h1ijd3yhqp2vqj83lkp3kqbr94qmmkqlms8sj"))))))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2)                ; for tests
@@ -312,13 +316,6 @@ interactive environment for the functional language Haskell.")
        ;; then complains that they don't match.
        #:build #f
 
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26)
-                  (srfi srfi-1))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))
        #:configure-flags
        (list
         (string-append "--with-gmp-libraries="
@@ -366,19 +363,7 @@ interactive environment for the functional language Haskell.")
                        "testsuite/tests/programs/life_space_leak/life.test")
                (("/bin/sh") (which "sh"))
                (("/bin/rm") "rm"))
-             #t))
-         ;; the testsuite can't find shared libraries.
-         (add-before 'check 'configure-testsuite
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((gmp (assoc-ref inputs "gmp"))
-                    (gmp-lib (string-append gmp "/lib"))
-                    (ffi (assoc-ref inputs "libffi"))
-                    (ffi-lib (string-append ffi "/lib"))
-                    (ncurses (assoc-ref inputs "ncurses"))
-                    (ncurses-lib (string-append ncurses "/lib")))
-               (setenv "LD_LIBRARY_PATH"
-                       (string-append gmp-lib ":" ffi-lib ":" ncurses-lib))
-               #t))))))
+             #t)))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
                                 (files (list

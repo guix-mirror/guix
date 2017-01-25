@@ -575,6 +575,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-fix-truecolor-format-correction.patch	\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
+  %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
   %D%/packages/patches/ghostscript-CVE-2013-5653.patch		\
   %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
   %D%/packages/patches/ghostscript-CVE-2016-7976.patch		\
