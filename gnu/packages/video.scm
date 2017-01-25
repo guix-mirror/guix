@@ -580,7 +580,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
           (lambda* (#:key outputs configure-flags #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* "configure"
-                (("#! /bin/sh") (string-append "#!" (which "bash"))))
+                (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
               (zero? (apply system*
@@ -796,7 +796,7 @@ treaming protocols.")
             (let ((out (assoc-ref outputs "out"))
                   (libx11 (assoc-ref inputs "libx11")))
               (substitute* "configure"
-                (("#! /bin/sh") (string-append "#!" (which "bash"))))
+                (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
               (zero? (system*
@@ -970,7 +970,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.01.14")
+    (version "2017.01.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -978,7 +978,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1jlwz6p7ryj9ygmwqm4r3pykd9qw21rsiqpifbx0p0kcvdvvvj3n"))))
+                "1n74s6kfs4v1lfg7xls9ymk6yrq09hxwd18sz3lziv5qd1pj14b6"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1228,7 +1228,7 @@ for use with HTML5 video.")
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
              (substitute* "ffmpeg-2.7.6/configure"
-               (("#! /bin/sh") (string-append "#!" (which "bash"))))
+               (("#! /bin/sh") (string-append "#!" (which "sh"))))
              (system* "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
                       ;; avoid non-determinism in the archive
                       "--sort=name" "--mtime=@0"

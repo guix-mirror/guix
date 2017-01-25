@@ -452,6 +452,15 @@
                  #t)))
             entries))))
 
+(test-assert "read-utmpx, EOF"
+  (eof-object? (read-utmpx (%make-void-port "r"))))
+
+(unless (access? "/var/run/utmpx" O_RDONLY)
+  (tes-skip 1))
+(test-assert "read-utmpx"
+  (let ((result (call-with-input-file "/var/run/utmpx" read-utmpx)))
+    (or (utmpx? result) (eof-object? result))))
+
 (test-end)
 
 (false-if-exception (delete-file temp-file))

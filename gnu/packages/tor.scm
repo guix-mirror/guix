@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,14 +39,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.2.9.8")
+    (version "0.2.9.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0sklgmx4nikcfhqd606kvpwy1l8840w24ikli1xjjx25739k7pgv"))))
+               "0hqdk5p6dw4bpn7c8gmhyi8jjkhc37112pfw5nx4gl0g4lmmscik"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))  ; for tests

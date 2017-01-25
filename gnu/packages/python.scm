@@ -1194,14 +1194,14 @@ under several distributions that's hard or impossible to figure out.")
 (define-public python2-pysqlite
   (package
     (name "python2-pysqlite")
-    (version "2.8.1")
+    (version "2.8.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pysqlite" version))
       (sha256
        (base32
-        "0rm0zqyb363y6wljhfmbxs16jjv7p8nk1d8zgq9sdwj6js7y3jkm"))))
+        "1424gwq9sil2ffmnizk60q36vydkv8rxs6m7xs987kz8cdc37lqp"))))
     (build-system python-build-system)
     (inputs
      `(("sqlite" ,sqlite)))
@@ -2242,10 +2242,11 @@ executed.")
     (propagated-inputs
      `(("python-coverage" ,python-coverage)))
     (home-page "https://github.com/schlamar/cov-core")
-    (synopsis "plugin core for use by pytest-cov, nose-cov and nose2-cov")
+    (synopsis "Coverage plugin core for pytest-cov, nose-cov and nose2-cov")
     (description
-     "This is a library package for use by pytest-cov, nose-cov and nose2-cov.
-It is useful for developing coverage plugins for these testing frameworks.")
+     "This is a library package for use by @code{pytest-cov}, @code{nose-cov}
+and @code{nose2-cov}.  It is useful for developing coverage plugins for these
+testing frameworks.")
     (license license:expat)))
 
 (define-public python2-cov-core
@@ -2568,13 +2569,13 @@ cutting and pasting that code over and over.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "0.04.18")
+    (version "0.04.20")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "12hhblqy1ajvidm38im4171x4arg83pfmziyn53nizp29p3m14gi"))))
+               "1q00i8gpsq3d9r0q8wk4b290fxl0kqlsdk7iadvli45in6s1hi7d"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/Unidecode")
     (synopsis "ASCII transliterations of Unicode text")
@@ -4004,14 +4005,14 @@ Python code against some of the style conventions in
 (define-public python-orderedmultidict
   (package
     (name "python-orderedmultidict")
-    (version "0.7.10")
+    (version "0.7.11")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "orderedmultidict" version))
         (sha256
           (base32
-            "1gvqk0jd432wsn88kq4svad68xz3r012jfpnhh9in7bqrkyxidky"))))
+            "0dls862ibm7qbq4fnvwx0xn1v9hwyzywbff8xjjdr42dd75208yw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4132,14 +4133,14 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "0.8.7")
+    (version "0.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "0ias6fdzwr2s220fnjspkdgm9510bd0cnap0hx5y4zy4srba9f3z"))))
+         "06br9sfqypnjlal6fsbnky3zb0askwcn3diz8k3kwa0qcblm0fqf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -5535,13 +5536,13 @@ Python style, together with a fast and comfortable execution environment.")
 (define-public python-seaborn
   (package
     (name "python-seaborn")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "0ibi3xsfm2kysph61mnfy0pf8d5rkgxgrdb0z9nbizgcgdsb5a0m"))))
+        (base32 "0pawrqc3mxpwd5g9pvi9gba02637bh5c8ldpp8izfwpfn52469zs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
@@ -5998,7 +5999,7 @@ complexity of Python source code.")
 (define-public python-mistune
   (package
     (name "python-mistune")
-    (version "0.7")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
@@ -6008,7 +6009,7 @@ complexity of Python source code.")
              ".tar.gz"))
        (sha256
         (base32
-         "17zqjp9m4d1w3jf2rbbq5xshcw24q1vlcv24gkgfqqyyymajxahx"))))
+         "04xpk1zvslhq3xpnf01g3ag0dy9wfv4z28p093r8k49vvxlyil11"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -7022,16 +7023,14 @@ serve the same purpose: provide Python bindings for libmagic.")))
 (define-public python-debian
   (package
     (name "python-debian")
-    (version "0.1.23")
+    (version "0.1.28")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/python-debian/python-debian-"
-             version ".tar.gz"))
+       (uri (pypi-uri name version))
        (sha256
         (base32
-         "193faznwnjc3n5991wyzim6h9gyq1zxifmfrnpm3avgkh7ahyynh"))))
+         "0i15f0xzx679sd0ldq2sls9pnnps9fv6vhqvnv9dzf4qhma42i0y"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
@@ -8612,16 +8611,16 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 (define-public python-colorama
   (package
    (name "python-colorama")
-   (version "0.3.3")
+   (version "0.3.7")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "colorama" version))
      (sha256
       (base32
-       "1716z9pq1r5ys3nkg7wdrb3h2f9rmd0zdxpxzmx3bgwgf6xg48gb"))))
+       "0avqkn6362v7k2kg3afb35g4sfdvixjgy890clip4q174p9whhz0"))))
    (build-system python-build-system)
-   (synopsis "colored terminal text rendering for Python")
+   (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
 text.")
    (home-page "https://pypi.python.org/pypi/colorama")
@@ -9027,14 +9026,14 @@ file.")
 (define-public python-paste
   (package
     (name "python-paste")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Paste" version))
        (sha256
         (base32
-         "16dsv9qi0r4qsrsb6dilpq2rx0fnglvh36flzywcdnm2jg43mb5d"))
+         "062jk0nlxf6lb2wwj6zc20rlvrwsnikpkh90y0dn8cjch93s6ii3"))
        (patches (search-patches "python-paste-remove-website-test.patch"
                                 "python-paste-remove-timing-test.patch"))))
     (build-system python-build-system)
@@ -9042,12 +9041,6 @@ file.")
      `(("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (arguments
-     '(;; Tests don't pass on Python 3, but work fine on Python 2.
-       ;; (As of 2.0.2, Python 3 support in Paste is presently a bit broken,
-       ;; but is usable enough for the minimal amount it's used in MediaGoblin
-       ;; still... things should be better by the next Paste release.)
-       #:tests? #f))
     (home-page "http://pythonpaste.org")
     (synopsis
      "Python web development tools, focusing on WSGI")
@@ -9055,18 +9048,10 @@ file.")
      "Paste provides a variety of web development tools and middleware which
 can be nested together to build web applications.  Paste's design closely
 follows ideas flowing from WSGI (Web Standard Gateway Interface).")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-paste))))))
+    (license license:expat)))
 
 (define-public python2-paste
-  (let ((paste (package-with-python2
-                (strip-python2-variant python-paste))))
-    (package
-      (inherit paste)
-      (arguments
-       ;; Tests are back for Python 2!
-       `(#:tests? #t
-         ,@(package-arguments paste))))))
+  (package-with-python2 python-paste))
 
 (define-public python-pastescript
   (package
@@ -10414,13 +10399,13 @@ It uses LR parsing and does extensive error checking.")
 (define-public python-tabulate
   (package
     (name "python-tabulate")
-    (version "0.7.5")
+    (version "0.7.7")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "tabulate" version))
              (sha256
               (base32
-               "03l1r7ddd1a0j2snv1yd0hlnghjad3fg1an1jr8936ksv75slwch"))
+               "1inqhspd4frxnp08c32yndr0lc4px1xfkqah184i5w09gkhvi843"))
              ;; Fix tests
              (modules '((guix build utils)))
              (snippet '(substitute* '("test/test_cli.py"
@@ -10720,13 +10705,13 @@ It supports TSIG authenticated messages and EDNS0.")
 (define-public python-email-validator
   (package
     (name "python-email-validator")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin (method url-fetch)
              (uri (pypi-uri "email_validator" version))
              (sha256
               (base32
-               "0mn8jg5h8ifl8w6a6m0hq8kbk0mzw9vm054qfamkn89b3npz52qw"))))
+               "1ja9149l9ck5n45a72h3is7v476hjny5ybxbcamx1nw6iplsm7k6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

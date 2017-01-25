@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,9 @@
 
 (define (spice-vdagent-activation config)
   "Return the activation gexp for CONFIG."
-  #~(mkdir-p "/var/run/spice-vdagentd"))
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/run/spice-vdagentd")))
 
 (define (spice-vdagent-shepherd-service config)
   "Return a <shepherd-service> for spice-vdagentd with CONFIG."

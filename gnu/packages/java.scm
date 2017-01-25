@@ -337,7 +337,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
 (define-public icedtea-6
   (package
     (name "icedtea")
-    (version "1.13.12")
+    (version "1.13.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -345,7 +345,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1q5iqm3dzqj8w3dwj6qqhczkkrslrfhmn3110klfwq9kyi2nimj8"))
+                "0bg9sb4f7qbq77c0zf9m17p47ga0kf0r9622g9p12ysg26jd1ksg"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile.in"
@@ -764,10 +764,10 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ("openjdk6-src"
         ,(origin
            (method url-fetch)
-           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b40-22_aug_2016.tar.gz")
+           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b41-04_jan_2017.tar.xz")
            (sha256
             (base32
-             "01v4q7g9pa6w7m6yxply5yrin08jgv12fck665xnmp09bpxy8sa5"))))
+             "058szix0j280g14jzajvsixx1j2dxmc10r848f5swpy6rr8x8d4f"))))
        ("lcms" ,lcms)
        ("zlib" ,zlib)
        ("gtk" ,gtk+-2)

@@ -1130,7 +1130,7 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "11.88.6")
+    (version "11.90.0")
     (source
      (origin
        (method url-fetch)
@@ -1140,7 +1140,7 @@ as a library for other Emacs packages.")
              ".tar"))
        (sha256
         (base32
-         "1pmki8hdjjikxlvip3pzi350bln3gcimr27yjf0xfwjvnp5hh9nc"))))
+         "04nsndwcf0dimgc2p1yzzrymc36amzdnjg0158nxplmjkzdp28gy"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -2807,14 +2807,14 @@ be removed from the front.  This type of data structure is sometimes called an
 (define-public emacs-spinner
   (package
     (name "emacs-spinner")
-    (version "1.7.1")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/spinner-"
                                   version ".el"))
               (sha256
                (base32
-                "1fmwzdih0kbyvs8bn38mpm4sbs2mikqy2vdykfy9g20wpa8vb681"))))
+                "19kp1mmndbmw11sgvv2ggfjl4pyf5zrsbh3871f0965pw9z8vahd"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/spinner.el")
     (synopsis "Emacs mode-line spinner for operations in progress")
@@ -2826,14 +2826,14 @@ ongoing operations.")
 (define-public emacs-seq
   (package
     (name "emacs-seq")
-    (version "2.15")
+    (version "2.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/seq-"
                                   version ".tar"))
               (sha256
                (base32
-                "09wi1765bmn7i8fg6ajjfaxgs4ipc42d58zx2fdqpidrdg9c7q73"))))
+                "11hb7is6a4h1lscjcfrzh576j0g3m5yjydn16s6x5bxp5gsr6zha"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/seq.html")
     (synopsis "Sequence manipulation functions for Emacs")

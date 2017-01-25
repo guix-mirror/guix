@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -444,7 +445,9 @@ is trunkated and rewritten every minute.")
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define %openvpn-activation
-  #~(mkdir-p "/var/run/openvpn"))
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/run/openvpn")))
 
 (define openvpn-server-service-type
   (service-type (name 'openvpn-server)

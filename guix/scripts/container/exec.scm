@@ -74,7 +74,14 @@ and the other containing arguments for the command to be executed."
       (let* ((opts (parse-command-line args %options '(())
                                        #:argument-handler
                                        handle-argument))
-             (pid  (assoc-ref opts 'pid)))
+             (pid  (assoc-ref opts 'pid))
+             (environment (filter-map (lambda (name)
+                                        (let ((value (getenv name)))
+                                          (and value (cons name value))))
+                                      ;; Pass through the TERM environment
+                                      ;; variable to inform processes about
+                                      ;; the capabilities of the terminal.
+                                      '("TERM"))))
 
         (unless pid
           (leave (_ "no pid specified~%")))
@@ -89,6 +96,10 @@ and the other containing arguments for the command to be executed."
                         (lambda ()
                           (match command
                             ((program . program-args)
+                             (for-each (match-lambda
+                                         ((name . value)
+                                          (setenv name value)))
+                                       environment)
                              (apply execlp program program program-args)))))))
           (unless (zero? result)
             (leave (_ "exec failed with status ~d~%") result)))))))

@@ -90,7 +90,7 @@
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
-                           bsd-2))
+                           bsd-2 x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -732,6 +732,27 @@ framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
     (license (non-copyleft "file://COPYING"))))
+
+(define-public compface
+  (package
+    (name "compface")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.heanet.ie/mirrors/"
+                                  "ftp.xemacs.org/aux/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09b89wg63hg502hsz592cd2h87wdprb1dq1k1y07n89hym2q56d6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))
+    (synopsis "Portrait image compressor")
+    (description "This packages takes your 48x48x1 portrait image and
+compresses it.")
+    (home-page "http://www.cs.indiana.edu/pub/faces/")
+    (license (x11-style "file://README"))))
 
 (define-public claws-mail
   (package
@@ -1536,10 +1557,10 @@ powerful user customization features.")
                         "contrib/mmuegel" "devtools/bin/configure.sh")
                   (find-files "." ".*\\.m4")
                   (find-files "." ".*\\.cf"))
-               (("/bin/sh") (which "bash")))
+               (("/bin/sh") (which "sh")))
 
              (substitute* "devtools/bin/Build"
-               (("SHELL=/bin/sh") (string-append "SHELL=" (which "bash"))))
+               (("SHELL=/bin/sh") (string-append "SHELL=" (which "sh"))))
              #t))
          (replace 'configure
            (lambda _

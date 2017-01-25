@@ -217,18 +217,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.17")
+    (version "2.1.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1js308b46ifx1gim0c9nivr5yxhans7iq1yvkf7zl2928gdm9p65"))
-              (patches
-               ;; This fixes a test failure on 32bit. Remove for next version.
-               ;; https://lists.gnu.org/archive/html/guix-devel/2016-12/msg00869.html
-               (search-patches "gnupg-test-segfault-on-32bit-arch.patch"))))
+                "157rrv3ly9j2k0acz43nhiba5hfl6h7048jvj55wwqjmgsmnyk6h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -310,7 +306,7 @@ libskba (working with X.509 certificates and CMS data).")
         (add-before 'configure 'patch-config-files
           (lambda _
             (substitute* "tests/openpgp/Makefile.in"
-              (("/bin/sh") (which "bash")))
+              (("/bin/sh") (which "sh")))
             #t))
         (add-after 'install 'rename-v2-commands
           (lambda* (#:key outputs #:allow-other-keys)
@@ -349,7 +345,7 @@ libskba (working with X.509 certificates and CMS data).")
          (add-after 'unpack 'patch-check-sh
            (lambda _
              (substitute* "checks/Makefile.in"
-               (("/bin/sh") (which "bash"))))))))))
+               (("/bin/sh") (which "sh"))))))))))
 
 (define-public gpgme
   (package
@@ -573,7 +569,7 @@ PGP keysigning parties.")
               (substitute* "keyanalyze/Makefile"
                 (("./configure") (string-append "./configure --prefix=" out)))
               (substitute* "keyanalyze/pgpring/configure"
-                (("/bin/sh") (which "bash")))
+                (("/bin/sh") (which "sh")))
               (substitute* "gpgwrap/Makefile"
                 (("\\} clean")
                  (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "

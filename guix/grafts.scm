@@ -78,11 +78,12 @@
 (define* (graft-derivation/shallow store drv grafts
                                    #:key
                                    (name (derivation-name drv))
+                                   (outputs (derivation-output-names drv))
                                    (guile (%guile-for-build))
                                    (system (%current-system)))
-  "Return a derivation called NAME, based on DRV but with all the GRAFTS
-applied.  This procedure performs \"shallow\" grafting in that GRAFTS are not
-recursively applied to dependencies of DRV."
+  "Return a derivation called NAME, which applies GRAFTS to the specified
+OUTPUTS of DRV.  This procedure performs \"shallow\" grafting in that GRAFTS
+are not recursively applied to dependencies of DRV."
   ;; XXX: Someday rewrite using gexps.
   (define mapping
     ;; List of store item pairs.
@@ -96,14 +97,12 @@ recursively applied to dependencies of DRV."
                      target))))
          grafts))
 
-  (define outputs
-    (map (match-lambda
-           ((name . output)
-            (cons name (derivation-output-path output))))
-         (derivation-outputs drv)))
-
-  (define output-names
-    (derivation-output-names drv))
+  (define output-pairs
+    (map (lambda (output)
+           (cons output
+                 (derivation-output-path
+                  (assoc-ref (derivation-outputs drv) output))))
+         outputs))
 
   (define build
     `(begin
@@ -111,7 +110,7 @@ recursively applied to dependencies of DRV."
                     (guix build utils)
                     (ice-9 match))
 
-       (let* ((old-outputs ',outputs)
+       (let* ((old-outputs ',output-pairs)
               (mapping (append ',mapping
                                (map (match-lambda
                                       ((name . file)
@@ -143,10 +142,10 @@ recursively applied to dependencies of DRV."
                                                  (guix build utils))
                                      #:inputs `(,@(map (lambda (out)
                                                          `("x" ,drv ,out))
-                                                       output-names)
+                                                       outputs)
                                                 ,@(append (map add-label sources)
                                                           (map add-label targets)))
-                                     #:outputs output-names
+                                     #:outputs outputs
                                      #:local-build? #t)))))
 (define (item->deriver store item)
   "Return two values: the derivation that led to ITEM (a store item), and the
@@ -217,14 +216,14 @@ available."
 (define-syntax-rule (with-cache key exp ...)
   "Cache the value of monadic expression EXP under KEY."
   (mlet %state-monad ((cache (current-state)))
-    (match (vhash-assq key cache)
+    (match (vhash-assoc key cache)
       ((_ . result)                               ;cache hit
        (return result))
       (#f                                         ;cache miss
        (mlet %state-monad ((result (begin exp ...))
                            (cache  (current-state)))
          (mbegin %state-monad
-           (set-current-state (vhash-consq key result cache))
+           (set-current-state (vhash-cons key result cache))
            (return result)))))))
 
 (define* (cumulative-grafts store drv grafts
@@ -265,7 +264,7 @@ derivations to the corresponding set of grafts."
                                  #:system system))
           (state-return grafts))))
 
-  (with-cache drv
+  (with-cache (cons (derivation-file-name drv) outputs)
     (match (non-self-references references drv outputs)
       (()                                         ;no dependencies
        (return grafts))
@@ -282,29 +281,27 @@ derivations to the corresponding set of grafts."
               ;; applicable to DRV, to avoid creating several identical
               ;; grafted variants of DRV.
               (let* ((new    (graft-derivation/shallow store drv applicable
+                                                       #:outputs outputs
                                                        #:guile guile
                                                        #:system system))
-
-                     ;; Replace references to any of the outputs of DRV,
-                     ;; even if that's more than needed.  This is so that
-                     ;; the result refers only to the outputs of NEW and
-                     ;; not to those of DRV.
                      (grafts (append (map (lambda (output)
                                             (graft
                                               (origin drv)
                                               (origin-output output)
                                               (replacement new)
                                               (replacement-output output)))
-                                          (derivation-output-names drv))
+                                          outputs)
                                      grafts)))
                 (return grafts))))))))))
 
 (define* (graft-derivation store drv grafts
-                           #:key (guile (%guile-for-build))
+                           #:key
+                           (guile (%guile-for-build))
+                           (outputs (derivation-output-names drv))
                            (system (%current-system)))
-  "Applied GRAFTS to DRV and all its dependencies, recursively.  That is, if
-GRAFTS apply only indirectly to DRV, graft the dependencies of DRV, and graft
-DRV itself to refer to those grafted dependencies."
+  "Apply GRAFTS to the OUTPUTS of DRV and all their dependencies, recursively.
+That is, if GRAFTS apply only indirectly to DRV, graft the dependencies of
+DRV, and graft DRV itself to refer to those grafted dependencies."
 
   ;; First, pre-compute the dependency tree of the outputs of DRV.  Do this
   ;; upfront to have as much parallelism as possible when querying substitute
@@ -314,6 +311,7 @@ DRV itself to refer to those grafted dependencies."
 
   (match (run-with-state
              (cumulative-grafts store drv grafts references
+                                #:outputs outputs
                                 #:guile guile #:system system)
            vlist-null)                            ;the initial cache
     ((first . rest)

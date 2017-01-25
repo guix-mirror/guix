@@ -595,7 +595,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
-  %D%/packages/patches/gnupg-test-segfault-on-32bit-arch.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
@@ -647,7 +646,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
-  %D%/packages/patches/khal-disable-failing-tests.patch		\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
@@ -701,8 +699,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
-  %D%/packages/patches/libupnp-CVE-2016-6255.patch		\
-  %D%/packages/patches/libupnp-CVE-2016-8863.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libwebp-CVE-2016-9085.patch		\
   %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
@@ -782,6 +778,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openjpeg-CVE-2016-5157.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-7163.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9850-CVE-2016-9851.patch		\
+  %D%/packages/patches/openjpeg-CVE-2016-9572-CVE-2016-9573.patch		\
   %D%/packages/patches/openjpeg-use-after-free-fix.patch	\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\

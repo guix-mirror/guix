@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
  #:use-module (guix build utils)
  #:use-module (guix build-system gnu)
  #:use-module (guix build-system cmake)
+ #:use-module (guix build-system python)
  #:use-module (gnu packages base)
  #:use-module (gnu packages boost)
  #:use-module (gnu packages databases)
@@ -240,3 +242,52 @@ allow to do that off the ERiC library (which is proprietary however).
 It's not clear at the moment whether one day it will be possible to
 do so.")
     (license license:agpl3+)))
+
+(define-public electrum
+  (package
+    (name "electrum")
+    (version "2.7.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.electrum.org/"
+                           version "/Electrum-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0vxdfl208if7mdsnva1jg37bnay2dsz3ww157aqwcv1j6512fi1n"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete the bundled dependencies.
+           (delete-file-recursively "packages")
+           #t))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-slowaes" ,python2-slowaes)
+       ("python-sip" ,python2-sip)
+       ("python-pyqt" ,python2-pyqt-4)
+       ("python-ecdsa" ,python2-ecdsa)
+       ("python-pbkdf2" ,python2-pbkdf2)
+       ("python-requests" ,python2-requests)
+       ("python-qrcode" ,python2-qrcode)
+       ("python-protobuf" ,python2-protobuf)
+       ("python-dnspython" ,python2-dnspython)
+       ("python-jsonrpclib" ,python2-jsonrpclib)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-home
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("~/.local/share")
+                (string-append (assoc-ref outputs "out") "/local/share"))))))))
+    (home-page "https://electrum.org/")
+    (synopsis "Bitcoin wallet")
+    (description
+     "Electrum is a lightweight Bitcoin client, based on a client-server
+protocol.  It supports Simple Payment Verification (SPV) and deterministic key
+generation from a seed.  Your secret keys are encrypted and are never sent to
+other machines/servers.  Electrum does not download the Bitcoin blockchain.")
+    (license license:expat)))

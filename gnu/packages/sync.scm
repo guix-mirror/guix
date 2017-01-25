@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
@@ -158,3 +160,49 @@ their folder.
 @item Toggle for monochrome icon.
 @end enumerate\n")
     (license license:lgpl3+)))
+
+(define-public lsyncd
+  (package
+    (name "lsyncd")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/axkibe/lsyncd/archive/release-"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0da7mrq2c578v2dd5x9v75l1fqrm28jvn28qkcd49y8p992nj6gl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(;; The "tests" target is broken and assumes that tests are run in the
+       ;; root directory.
+       #:tests? #f
+       #:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         ;; No install target.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "lsyncd" bin)
+               (install-file (string-append "../lsyncd-release-"
+                                            ,version
+                                            "/doc/manpage/lsyncd.1")
+                             man)
+               #t))))))
+    (native-inputs
+     `(("lua" ,lua-5.2)))
+    (home-page "https://github.com/axkibe/lsyncd")
+    (synopsis "Synchronize local directories with remote targets")
+    (description "Lsyncd watches a local directory trees event monitor
+interface (inotify or fsevents).  It aggregates and combines events for a few
+seconds and then spawns one (or more) process(es) to synchronize the changes.
+By default this is rsync, which must be installed on all source and target
+machines.  Lsyncd is thus a light-weight live mirror solution that is
+comparatively easy to install not requiring new filesystems or block devices
+and does not hamper local filesystem performance.")
+    (license license:gpl2+)))

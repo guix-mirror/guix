@@ -21,6 +21,7 @@
 (define-module (guix build syscalls)
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
+  #:autoload   (ice-9 binary-ports) (get-bytevector-n)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -142,7 +143,8 @@
             utmpx-time
             utmpx-address
             login-type
-            utmpx-entries))
+            utmpx-entries
+            (read-utmpx-from-port . read-utmpx)))
 
 ;;; Commentary:
 ;;;
@@ -1597,5 +1599,14 @@ always a positive integer."
        (reverse entries))
       ((? utmpx? entry)
        (loop (cons entry entries))))))
+
+(define (read-utmpx-from-port port)
+  "Read a utmpx entry from PORT.  Return either the EOF object or a utmpx
+entry."
+  (match (get-bytevector-n port sizeof-utmpx)
+    ((? eof-object? eof)
+     eof)
+    ((? bytevector? bv)
+     (read-utmpx bv))))
 
 ;;; syscalls.scm ends here

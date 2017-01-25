@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Andy Wingo <wingo@pobox.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -811,6 +812,7 @@ IPP specifications.")
   ;; Activation gexp.
   (with-imported-modules '((guix build utils))
     #~(begin
+        (use-modules (guix build utils))
         (define (mkdir-p/perms directory owner perms)
           (mkdir-p directory)
           (chown "/var/run/cups" (passwd:uid owner) (passwd:gid owner))
