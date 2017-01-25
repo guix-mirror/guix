@@ -3056,7 +3056,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
     (build-system gnu-build-system)
     (inputs
       `(("fontsproto" ,fontsproto)
-        ("libxfont" ,libxfont)
+        ("libxfont" ,libxfont2)
         ("spice-protocol" ,spice-protocol)
         ("xf86dgaproto" ,xf86dgaproto)
         ("xorg-server" ,xorg-server)
