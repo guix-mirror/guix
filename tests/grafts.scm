@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +42,9 @@
   (bootstrap-binary "bash"))
 (define %mkdir
   (bootstrap-binary "mkdir"))
+
+(define make-derivation-input
+  (@@ (guix derivations) make-derivation-input))
 
 
 (test-begin "grafts")
@@ -241,13 +244,124 @@
                 (replacement p1r)
                 (replacement-output "ONE")))
          (p3d (graft-derivation %store p3 (list p1g))))
-    (and (build-derivations %store (list p3d))
+
+    (and (not (find (lambda (input)
+                      ;; INPUT should not be P2:zzz since the result of P3
+                      ;; does not depend on it.  See
+                      ;; <http://bugs.gnu.org/24886>.
+                      (and (string=? (derivation-input-path input)
+                                     (derivation-file-name p2))
+                           (member "zzz"
+                                   (derivation-input-sub-derivations input))))
+                    (derivation-inputs p3d)))
+
+         (build-derivations %store (list p3d))
          (let ((out (derivation->output-path (pk 'p2d p3d))))
            (and (not (string=? (readlink out)
                                (derivation->output-path p2 "aaa")))
                 (string=? (derivation->output-path p1 "two")
                           (readlink (string-append out "/two")))
                 (file-exists? (string-append out "/one/replacement")))))))
+
+(test-assert "graft-derivation with #:outputs"
+  ;; Call 'graft-derivation' with a narrowed set of outputs passed as
+  ;; #:outputs.
+  (let* ((p1  (build-expression->derivation
+               %store "p1"
+               `(let ((one (assoc-ref %outputs "one"))
+                      (two (assoc-ref %outputs "two")))
+                  (mkdir one)
+                  (mkdir two))
+               #:outputs '("one" "two")))
+         (p1r (build-expression->derivation
+               %store "P1"
+               `(let ((other (assoc-ref %outputs "ONE")))
+                  (mkdir other)
+                  (call-with-output-file (string-append other "/replacement")
+                    (const #t)))
+               #:outputs '("ONE")))
+         (p2  (build-expression->derivation
+               %store "p2"
+               `(let ((aaa (assoc-ref %outputs "aaa"))
+                      (zzz (assoc-ref %outputs "zzz")))
+                  (mkdir zzz) (chdir zzz)
+                  (mkdir aaa) (chdir aaa)
+                  (symlink (assoc-ref %build-inputs "p1:two") "two"))
+               #:outputs '("aaa" "zzz")
+               #:inputs `(("p1:one" ,p1 "one")
+                          ("p1:two" ,p1 "two"))))
+         (p1g (graft
+                (origin p1)
+                (origin-output "one")
+                (replacement p1r)
+                (replacement-output "ONE")))
+         (p2g (graft-derivation %store p2 (list p1g)
+                                #:outputs '("aaa"))))
+    ;; P2:aaa depends on P1:two, but not on P1:one, so nothing to graft.
+    (eq? p2g p2)))
+
+(test-equal "graft-derivation, unused outputs not depended on"
+  '("aaa")
+
+  ;; Make sure that the result of 'graft-derivation' does not pull outputs
+  ;; that are irrelevant to the grafting process.  See
+  ;; <http://bugs.gnu.org/24886>.
+  (let* ((p1  (build-expression->derivation
+               %store "p1"
+               `(let ((one (assoc-ref %outputs "one"))
+                      (two (assoc-ref %outputs "two")))
+                  (mkdir one)
+                  (mkdir two))
+               #:outputs '("one" "two")))
+         (p1r (build-expression->derivation
+               %store "P1"
+               `(let ((other (assoc-ref %outputs "ONE")))
+                  (mkdir other)
+                  (call-with-output-file (string-append other "/replacement")
+                    (const #t)))
+               #:outputs '("ONE")))
+         (p2  (build-expression->derivation
+               %store "p2"
+               `(let ((aaa (assoc-ref %outputs "aaa"))
+                      (zzz (assoc-ref %outputs "zzz")))
+                  (mkdir zzz) (chdir zzz)
+                  (symlink (assoc-ref %build-inputs "p1:two") "two")
+                  (mkdir aaa) (chdir aaa)
+                  (symlink (assoc-ref %build-inputs "p1:one") "one"))
+               #:outputs '("aaa" "zzz")
+               #:inputs `(("p1:one" ,p1 "one")
+                          ("p1:two" ,p1 "two"))))
+         (p1g (graft
+                (origin p1)
+                (origin-output "one")
+                (replacement p1r)
+                (replacement-output "ONE")))
+         (p2g (graft-derivation %store p2 (list p1g)
+                                #:outputs '("aaa"))))
+
+    ;; Here P2G should only depend on P1:one and P1R:one; it must not depend
+    ;; on P1:two or P1R:two since these are unused in the grafting process.
+    (and (not (eq? p2g p2))
+         (let* ((inputs      (derivation-inputs p2g))
+                (match-input (lambda (drv)
+                               (lambda (input)
+                                 (string=? (derivation-input-path input)
+                                           (derivation-file-name drv)))))
+                (p1-inputs   (filter (match-input p1) inputs))
+                (p1r-inputs  (filter (match-input p1r) inputs))
+                (p2-inputs   (filter (match-input p2) inputs)))
+           (and (equal? p1-inputs
+                        (list (make-derivation-input (derivation-file-name p1)
+                                                     '("one"))))
+                (equal? p1r-inputs
+                        (list
+                         (make-derivation-input (derivation-file-name p1r)
+                                                '("ONE"))))
+                (equal? p2-inputs
+                        (list
+                         (make-derivation-input (derivation-file-name p2)
+                                                '("aaa"))))
+                (derivation-output-names p2g))))))
 
 (test-assert "graft-derivation, renaming"         ;<http://bugs.gnu.org/23132>
   (let* ((build `(begin
