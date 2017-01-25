@@ -217,7 +217,6 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (replacement tcsh/fixed)
     (version "6.18.01")
     (source (origin
               (method url-fetch)
@@ -230,7 +229,8 @@ written by Paul Haahr and Byron Rakitzis.")
                (base32
                 "1a4z9kwgx1iqqzvv64si34m60gj34p7lp6rrcrb59s7ka5wa476q"))
               (patches (search-patches "tcsh-fix-autotest.patch"
-                                       "tcsh-do-not-define-BSDWAIT.patch"))
+                                       "tcsh-do-not-define-BSDWAIT.patch"
+                                       "tcsh-fix-out-of-bounds-read.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (inputs
@@ -274,15 +274,6 @@ interactive login shell and a shell script command processor.  It includes a
 command-line editor, programmable word completion, spelling correction, a
 history mechanism, job control and a C-like syntax.")
     (license bsd-4)))
-
-(define tcsh/fixed
-  (package
-    (inherit tcsh)
-    (name "tcsh")
-    (source (origin
-              (inherit (package-source tcsh))
-              (patches (cons (search-patch "tcsh-fix-out-of-bounds-read.patch")
-                             (origin-patches (package-source tcsh))))))))
 
 (define-public zsh
   (package
