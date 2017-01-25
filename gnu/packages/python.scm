@@ -3160,15 +3160,13 @@ mining and data analysis.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "2.10.3")
+    (version "2.10.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/r/redis/redis-"
-             version ".tar.gz"))
+       (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4"))))
+        (base32 "0csmrkxb29x7xs9b51zplwkkq2hwnbh9jns1g85dykn5rxmaxysx"))))
     (build-system python-build-system)
     ;; Tests require a running Redis server
     (arguments '(#:tests? #f))
