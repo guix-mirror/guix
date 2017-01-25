@@ -5066,17 +5066,19 @@ over Xlib, including:
              "--enable-kdrive"
              "--enable-xephyr")
 
-       #:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (substitute* (find-files "." "\\.c$")
-                     (("/bin/sh") (which "sh")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            (substitute* (find-files "." "\\.c$")
+              (("/bin/sh") (which "sh")))
 
-                   ;; Don't try to 'mkdir /var'.
-                   (substitute* "hw/xfree86/Makefile.in"
-                     (("\\$\\(MKDIR_P\\).*logdir.*")
-                      "true\n")))
-                 %standard-phases)))
+            ;; Don't try to 'mkdir /var'.
+            (substitute* "hw/xfree86/Makefile.in"
+              (("\\$\\(MKDIR_P\\).*logdir.*")
+               "true\n"))
+            #t)))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description
