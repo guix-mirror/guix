@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -74,12 +74,13 @@ things the parser might find in the XML document (like start tags).")
 (define-public libxml2
   (package
     (name "libxml2")
-    (replacement libxml2/fixed)
     (version "2.9.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
+             (patches (search-patches "libxml2-CVE-2016-4658.patch"
+                                      "libxml2-CVE-2016-5131.patch"))
              (sha256
               (base32
                "0g336cr0bw6dax1q48bblphmchgihx9p1pjmxdnrd6sh3qci3fgz"))))
@@ -102,19 +103,9 @@ things the parser might find in the XML document (like start tags).")
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
 
-(define libxml2/fixed
-  (package
-    (inherit libxml2)
-    (source
-      (origin
-        (inherit (package-source libxml2))
-        (patches (search-patches "libxml2-CVE-2016-4658.patch"
-                                 "libxml2-CVE-2016-5131.patch"))))))
-
 (define-public python-libxml2
   (package (inherit libxml2)
     (name "python-libxml2")
-    (replacement #f)
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests are specified in 'Makefile.am', but not in 'setup.py'.
