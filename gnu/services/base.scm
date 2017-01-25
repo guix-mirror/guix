@@ -99,6 +99,18 @@
             %default-authorized-guix-keys
             guix-configuration
             guix-configuration?
+
+            guix-configuration-guix
+            guix-configuration-build-group
+            guix-configuration-build-accounts
+            guix-configuration-authorize-key?
+            guix-configuration-authorized-keys
+            guix-configuration-use-substitutes?
+            guix-configuration-substitute-urls
+            guix-configuration-extra-options
+            guix-configuration-log-file
+            guix-configuration-lsof
+
             guix-service
             guix-service-type
             guix-publish-configuration
