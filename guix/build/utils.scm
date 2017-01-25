@@ -50,6 +50,7 @@
             with-directory-excursion
             mkdir-p
             install-file
+            make-file-writable
             copy-recursively
             delete-file-recursively
             file-name-predicate
@@ -261,6 +262,11 @@ preserve FILE's modification time."
 name."
   (mkdir-p directory)
   (copy-file file (string-append directory "/" (basename file))))
+
+(define (make-file-writable file)
+  "Make FILE writable for its owner."
+  (let ((stat (lstat file)))                      ;XXX: symlinks
+    (chmod file (logior #o600 (stat:perms stat)))))
 
 (define* (copy-recursively source destination
                            #:key

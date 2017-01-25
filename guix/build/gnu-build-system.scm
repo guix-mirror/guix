@@ -392,8 +392,10 @@ makefiles."
                 (and (or (elf-file? file) (ar-file? file))
                      (or (not debug-output)
                          (make-debug-file file))
-                     ;; Ensure libraries are writable.
-                     (chmod file #o755)
+
+                     ;; Ensure the file is writable.
+                     (begin (make-file-writable file) #t)
+
                      (zero? (apply system* strip-command
                                    (append strip-flags (list file))))
                      (or (not debug-output)
