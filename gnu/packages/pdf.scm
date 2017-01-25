@@ -481,7 +481,6 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (replacement mupdf/fixed)
     (version "1.10a")
     (source
       (origin
@@ -491,7 +490,9 @@ extracting content or merging files.")
         (sha256
          (base32
           "0dm8wcs8i29aibzkqkrn8kcnk4q0kd1v66pg48h5c3qqp4v1zk5a"))
-        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
+                                 "mupdf-mujs-CVE-2016-10132.patch"
+                                 "mupdf-mujs-CVE-2016-10133.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Delete all the bundled libraries except for mujs, which is
@@ -539,18 +540,6 @@ The library ships with a rudimentary X11 viewer, and a set of command
 line tools for batch rendering (pdfdraw), rewriting files (pdfclean),
 and examining the file structure (pdfshow).")
     (license license:agpl3+)))
-
-(define mupdf/fixed
-  (package
-    (inherit mupdf)
-    (source
-      (origin
-        (inherit (package-source mupdf))
-        (patches
-          (append
-            (origin-patches (package-source mupdf))
-            (search-patches "mupdf-mujs-CVE-2016-10132.patch"
-                            "mupdf-mujs-CVE-2016-10133.patch")))))))
 
 (define-public qpdf
   (package

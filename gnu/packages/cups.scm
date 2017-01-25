@@ -52,7 +52,6 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (replacement cups-filters/fixed)
     (version "1.13.1")
     (source(origin
               (method url-fetch)
@@ -134,13 +133,6 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                    license:gpl3+
                    license:lgpl2.0+
                    license:expat))))
-
-(define mupdf/fixed-instead-of-mupdf
-  (package-input-rewriting `((,mupdf . ,(@@ (gnu packages pdf) mupdf/fixed)))))
-
-;;; Fix CVE-2016-10132 and CVE-2016-10133. See mupdf/fixed for more information.
-(define cups-filters/fixed
-  (mupdf/fixed-instead-of-mupdf cups-filters))
 
 ;; CUPS on non-MacOS systems requires cups-filters.  Since cups-filters also
 ;; depends on CUPS libraries and binaries, cups-minimal has been added to
