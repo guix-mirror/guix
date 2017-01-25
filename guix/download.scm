@@ -36,6 +36,7 @@
   #:export (%mirrors
             url-fetch
             url-fetch/tarbomb
+            url-fetch/zipbomb
             download-to-store))
 
 ;;; Commentary:
@@ -510,6 +511,35 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                           (chdir #$output)
                           (zero? (system* (string-append #$tar "/bin/tar")
                                           "xf" #$drv)))
+                      #:local-build? #t)))
+
+(define* (url-fetch/zipbomb url hash-algo hash
+                            #:optional name
+                            #:key (system (%current-system))
+                            (guile (default-guile)))
+  "Similar to 'url-fetch' but unpack the zip file at URL in a directory of its
+own.  This helper makes it easier to deal with \"zip bombs\"."
+  (define file-name
+    (match url
+      ((head _ ...)
+       (basename head))
+      (_
+       (basename url))))
+  (define unzip
+    (module-ref (resolve-interface '(gnu packages zip)) 'unzip))
+
+  (mlet %store-monad ((drv (url-fetch url hash-algo hash
+                                      (string-append "zipbomb-"
+                                                     (or name file-name))
+                                      #:system system
+                                      #:guile guile)))
+    ;; Take the zip bomb, and simply unpack it as a directory.
+    (gexp->derivation (or name file-name)
+                      #~(begin
+                          (mkdir #$output)
+                          (chdir #$output)
+                          (zero? (system* (string-append #$unzip "/bin/unzip")
+                                          #$drv)))
                       #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))
