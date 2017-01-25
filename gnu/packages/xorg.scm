@@ -4796,6 +4796,17 @@ not be used by normal X11 clients.  X11 clients access fonts via either the
 new API's in libXft, or the legacy API's in libX11.")
     (license license:x11)))
 
+(define-public libxfont2
+  (package
+    (inherit libxfont)
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0znvwk36nhmyqpmhbm9mzisgixp1mp5qkfald8x1n5yxbm3vpyz9"))))))
 
 (define-public libxi
   (package
