@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3968,3 +3969,29 @@ useful for users behind restrictive firewalls.  As long as Web traffic is
 allowed, even through a HTTP-only proxy, httptunnel can be combined with other
 tools like SSH (Secure Shell) to reach the outside world.")
     (license l:gpl2+)))
+
+(define-public stunnel
+  (package
+  (name "stunnel")
+  (version "5.39")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1vjdn32iw11zqsygwxbjmqgs4644dk3ql1h8ap890ls6a1x0i318"))))
+  (build-system gnu-build-system)
+  (inputs `(("openssl" ,openssl)))
+  (arguments
+   `(#:configure-flags
+     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))))
+  (home-page "https://www.stunnel.org")
+  (synopsis "TLS proxy for clients or servers")
+  (description "Stunnel is a proxy designed to add TLS encryption
+functionality to existing clients and servers without any changes in the
+programs' code.  Its architecture is optimized for security, portability, and
+scalability (including load-balancing), making it suitable for large
+deployments.")
+  (license l:gpl2+)))
