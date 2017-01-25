@@ -36,12 +36,11 @@
 (define-public gd
   (package
     (name "gd")
-    (replacement gd-2.2.4)
 
     ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
-    (version "2.2.3")
+    (version "2.2.4")
 
     (source (origin
              (method url-fetch)
@@ -50,12 +49,21 @@
                    version "/libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "0g3xz8jpz1pl2zzmssglrpa9nxiaa7rmcmvgpbrjz8k9cyynqsvl"))
-             (patches (search-patches "gd-CVE-2016-7568.patch"
-                                      "gd-CVE-2016-8670.patch"
-                                      "gd-fix-gd2-read-test.patch"
+               "1rp4v7n1dq38b92kl7gkvpvqqkw7nvdfnz6d5kip5klkxfki6zqk"))
+             (patches (search-patches "gd-fix-gd2-read-test.patch"
                                       "gd-fix-tests-on-i686.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This test is known to fail on i686-linux:
+         ;; https://github.com/libgd/libgd/issues/359
+         ;; TODO Replace this substitution with an upstream bug fix.
+         (add-after 'unpack 'disable-failing-test
+           (lambda _
+             (substitute* "tests/gdimagegrayscale/basic.c"
+               (("return gdNumFailures\\(\\)")
+                 "return 0")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -77,32 +85,6 @@ most common applications of GD involve website development.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING file in the distribution."))
     (properties '((cpe-name . "libgd")))))
-
-(define gd-2.2.4
-  (package
-    (inherit gd)
-    (version "2.2.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/libgd/libgd/releases/download/"
-                            "gd-" version "/libgd-" version ".tar.xz"))
-        (patches (search-patches "gd-fix-gd2-read-test.patch"
-                                 "gd-fix-tests-on-i686.patch"))
-        (sha256
-         (base32
-          "1rp4v7n1dq38b92kl7gkvpvqqkw7nvdfnz6d5kip5klkxfki6zqk"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; This test is known to fail on i686-linux:
-         ;; https://github.com/libgd/libgd/issues/359
-         ;; TODO Replace this substitution with an upstream bug fix.
-         (add-after 'unpack 'disable-failing-test
-           (lambda _
-             (substitute* "tests/gdimagegrayscale/basic.c"
-               (("return gdNumFailures\\(\\)")
-                 "return 0")))))))))
 
 (define-public perl-gd
   (package
