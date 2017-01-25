@@ -48,6 +48,10 @@
               (base32
                "0hqdk5p6dw4bpn7c8gmhyi8jjkhc37112pfw5nx4gl0g4lmmscik"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-expensive-hardening"
+                               "--enable-gcc-hardening"
+                               "--enable-linker-hardening")))
     (native-inputs
      `(("python" ,python-2)))  ; for tests
     (inputs
