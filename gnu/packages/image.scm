@@ -250,12 +250,27 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
    (version "4.0.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
                                 version ".tar.gz"))
+            (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
+                                     "libtiff-null-dereference.patch"
+                                     "libtiff-heap-overflow-tif-dirread.patch"
+                                     "libtiff-heap-overflow-pixarlog-luv.patch"
+                                     "libtiff-divide-by-zero.patch"
+                                     "libtiff-divide-by-zero-ojpeg.patch"
+                                     "libtiff-tiffcp-underflow.patch"
+                                     "libtiff-invalid-read.patch"
+                                     "libtiff-CVE-2016-10092.patch"
+                                     "libtiff-heap-overflow-tiffcrop.patch"
+                                     "libtiff-divide-by-zero-tiffcrop.patch"
+                                     "libtiff-CVE-2016-10093.patch"
+                                     "libtiff-divide-by-zero-tiffcp.patch"
+                                     "libtiff-assertion-failure.patch"
+                                     "libtiff-CVE-2016-10094.patch"
+                                     "libtiff-CVE-2017-5225.patch"))
             (sha256
              (base32
               "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
@@ -282,29 +297,6 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
-
-(define libtiff/fixed
-  (package
-    (inherit libtiff)
-    (source
-      (origin
-        (inherit (package-source libtiff))
-        (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
-                                 "libtiff-null-dereference.patch"
-                                 "libtiff-heap-overflow-tif-dirread.patch"
-                                 "libtiff-heap-overflow-pixarlog-luv.patch"
-                                 "libtiff-divide-by-zero.patch"
-                                 "libtiff-divide-by-zero-ojpeg.patch"
-                                 "libtiff-tiffcp-underflow.patch"
-                                 "libtiff-invalid-read.patch"
-                                 "libtiff-CVE-2016-10092.patch"
-                                 "libtiff-heap-overflow-tiffcrop.patch"
-                                 "libtiff-divide-by-zero-tiffcrop.patch"
-                                 "libtiff-CVE-2016-10093.patch"
-                                 "libtiff-divide-by-zero-tiffcp.patch"
-                                 "libtiff-assertion-failure.patch"
-                                 "libtiff-CVE-2016-10094.patch"
-                                 "libtiff-CVE-2017-5225.patch"))))))
 
 (define-public libwmf
   (package
