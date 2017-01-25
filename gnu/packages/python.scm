@@ -7026,9 +7026,7 @@ serve the same purpose: provide Python bindings for libmagic.")))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/python-debian/python-debian-"
-             version ".tar.gz"))
+       (uri (pypi-uri name version))
        (sha256
         (base32
          "0i15f0xzx679sd0ldq2sls9pnnps9fv6vhqvnv9dzf4qhma42i0y"))))
