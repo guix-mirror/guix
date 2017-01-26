@@ -1404,3 +1404,31 @@ development.")
     ;; test/crypto.test are licensed under a 3-clause BSD license. All other
     ;; source files are in the public domain.
     (license (list license:public-domain license:bsd-3))))
+
+(define-public python-pyodbc-c
+  (package
+    (name "python-pyodbc-c")
+    (version "3.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/daym/pyodbc-c/repository/"
+                           "archive.tar.gz?ref=v" version))
+       (sha256
+        (base32
+         "0nl11n3mgrcfnhimjqgv48rxqnb21l5m6s7p8ps2fa4nn4z6rzy0"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("unixodbc" ,unixodbc)))
+    (arguments
+     `(;; No unit tests exist.
+       #:tests? #f))
+    (home-page "https://github.com/mkleehammer/pyodbc")
+    (synopsis "Python ODBC Library")
+    (description "@code{python-pyodbc-c} provides a Python DB-API driver
+for ODBC.")
+    (license (license:x11-style "file://LICENSE.TXT"))))
+
+(define-public python2-pyodbc-c
+  (package-with-python2 python-pyodbc-c))
