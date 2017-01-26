@@ -2349,16 +2349,15 @@ files.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2016.8.31")
+    (version "2017.1.23")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "06c9dcyv8ss050gkv5xjivbxhm6qm0s9vzy4r33wqabgv118lw7p"))))
+                "1klrzl3hgvcf2mjk00g0k3kk1p2z27vzwnxivwar4vhjmjvpz1w1"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; no tests
-    (home-page "http://python-requests.org/")
+    (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
     (description
      "Certifi is a Python library that contains a CA certificate bundle, which
