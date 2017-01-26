@@ -496,43 +496,36 @@ and signature functionality from Python programs.")
   (package-with-python2 python-gnupg))
 
 (define-public pius
-  ;; pius 2.2.2 does not work with gpg-agent 2.1, so we take a newer
-  ;; commit.  When a new pius (> 2.2.2) is released, update this package
-  ;; and delete this message.
-  ;; More info: https://github.com/jaymzh/pius/issues/46
-  (let ((commit "891687ccb3d232a1fc0e7da7d22572c0318644cb")
-        (base-version "2.2.2"))     ; i.e. there were no releases
-                                    ; between BASE-VERSION and COMMIT
-    (package
-     (name "pius")
-     (version (string-append base-version "-0."
-                             (string-take commit 7)))
-     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/jaymzh/pius.git")
-                    (commit commit)))
-              (sha256
-               (base32
-                "0m2na4bnf1rv0zpf404l9ga6pwyf7ijldp4lw5irgh7gkmpllxr3"))))
-     (build-system python-build-system)
-     (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
-               ("gpg" ,gnupg)))
-     (arguments
-      `(#:tests? #f
-        #:python ,python-2                     ;uses the Python 2 'print' syntax
-        #:phases
-        (modify-phases %standard-phases
-          (add-before
-           'build 'set-gpg-file-name
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((gpg (string-append (assoc-ref inputs "gpg")
-                                        "/bin/gpg")))
-               (substitute* "libpius/constants.py"
-                 (("/usr/bin/gpg2") gpg))))))))
-     (synopsis "Programs to simplify GnuPG key signing")
-     (description
-      "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
+  (package
+   (name "pius")
+   (version "2.2.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/jaymzh/pius/releases/download/v"
+                  version "/pius-" version ".tar.bz2"))
+            (sha256
+             (base32
+              "0iy0gnms6lv9hpvk29313kc495a2f7pq2mg6ljxhy233vxsmjsk6"))))
+   (build-system python-build-system)
+   (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
+             ("gpg" ,gnupg)))
+   (arguments
+    `(#:tests? #f
+      #:python ,python-2                     ;uses the Python 2 'print' syntax
+      #:phases
+      (modify-phases %standard-phases
+        (add-before
+         'build 'set-gpg-file-name
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let* ((gpg (string-append (assoc-ref inputs "gpg")
+                                      "/bin/gpg")))
+             (substitute* "libpius/constants.py"
+               (("/usr/bin/gpg2") gpg))
+             #t))))))
+   (synopsis "Programs to simplify GnuPG key signing")
+   (description
+    "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
 parties.  It is the main utility and makes it possible to quickly and easily
 sign each UID on a set of PGP keys.  It is designed to take the pain out of
 the sign-all-the-keys part of PGP Keysigning Party while adding security
@@ -540,8 +533,8 @@ to the process.
 
 pius-keyring-mgr and pius-party-worksheet help organisers of
 PGP keysigning parties.")
-     (license license:gpl2)
-     (home-page "https://www.phildev.net/pius/index.shtml"))))
+   (license license:gpl2)
+   (home-page "https://www.phildev.net/pius/index.shtml")))
 
 (define-public signing-party
   (package
