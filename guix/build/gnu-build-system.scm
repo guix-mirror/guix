@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -389,8 +389,7 @@ makefiles."
               debug-output objcopy-command))
 
     (for-each (lambda (file)
-                (and (file-exists? file)          ;discard dangling symlinks
-                     (or (elf-file? file) (ar-file? file))
+                (and (or (elf-file? file) (ar-file? file))
                      (or (not debug-output)
                          (make-debug-file file))
                      ;; Ensure libraries are writable.
@@ -399,7 +398,12 @@ makefiles."
                                    (append strip-flags (list file))))
                      (or (not debug-output)
                          (add-debug-link file))))
-              (find-files dir)))
+              (find-files dir
+                          (lambda (file stat)
+                            ;; Ignore symlinks such as:
+                            ;; libfoo.so -> libfoo.so.0.0.
+                            (eq? 'regular (stat:type stat)))
+                          #:stat lstat)))
 
   (or (not strip-binaries?)
       (every strip-dir
