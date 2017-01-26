@@ -534,13 +534,13 @@ security, and applying best practice development processes.")
 (define-public certbot
   (package
     (name "certbot")
-    (version "0.10.1")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0hx71ba7w8kf8hpg1wy5zf8ggczb57g3kcsdg83kxjpqnfnrkmp0"))))
+                "0c8nidbbq8p4rjhcrw31saw04n5rz4zgr08chbch17gw03hrqwik"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -583,9 +583,10 @@ security, and applying best practice development processes.")
        ("python2-requests" ,python2-requests)
        ("python2-pytz" ,python2-pytz)))
     (synopsis "Let's Encrypt client by the Electronic Frontier Foundation")
-    (description "Tool to automatically receive and install X.509 certificates
-to enable TLS on servers.  The client will interoperate with the Let’s Encrypt CA which
-will be issuing browser-trusted certificates for free.")
+    (description "Certbot automatically receives and installs X.509 certificates
+to enable Transport Layer Security (TLS) on servers.  It interoperates with the
+Let’s Encrypt certificate authority (CA), which issues browser-trusted
+certificates for free.")
     (home-page "https://certbot.eff.org/")
     (license license:asl2.0)))
 
