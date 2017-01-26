@@ -2094,14 +2094,14 @@ protocol.")
 (define python-pbr-minimal
   (package
     (name "python-pbr-minimal")
-    (version "1.8.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pbr" version))
        (sha256
         (base32
-         "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
+         "177kd9kbv1hvf2ban7l3x9ymzbi1md4hkaymwbgnz7ihf312hr0q"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
