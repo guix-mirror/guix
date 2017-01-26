@@ -3995,3 +3995,28 @@ programs' code.  Its architecture is optimized for security, portability, and
 scalability (including load-balancing), making it suitable for large
 deployments.")
   (license l:gpl2+)))
+
+(define-public xinetd
+  (package
+    (name "xinetd")
+    (version "2.3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://github.com/xinetd-org/xinetd/archive/xinetd-2-3-15.tar.gz")
+       (patches (search-patches "xinetd-CVE-2013-4342.patch" "xinetd-fix-fd-leak.patch"))
+       (sha256
+        (base32
+         "0k59x52cbzp5fw0n8zn0y54j1ps0x9b72y8k5grzswjdmgs2a2v2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-loadavg")
+       #:tests? #f )) ; no tests
+    (home-page "https://github.com/xinetd-org/xinetd")
+    (synopsis "Internet services daemon")
+    (description "@code{xinetd}, a more secure replacement for @code{inetd},
+listens for incoming requests over a network and launches the appropriate
+service for that request.  Requests are made using port numbers as identifiers
+and xinetd usually launches another daemon to handle the request.  It can be
+used to start services with both privileged and non-privileged port numbers.")
+    (license (l:fsf-free "file://COPYRIGHT"))))
