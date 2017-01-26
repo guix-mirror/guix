@@ -98,7 +98,15 @@ based command language.")
                (commit commit)))
          (sha256
           (base32
-           "19qs99l8r9p1vi5pxxx9an22fvi7xx40qw3jh2cnh2mbacawvdyb"))))
+           "19qs99l8r9p1vi5pxxx9an22fvi7xx40qw3jh2cnh2mbacawvdyb"))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Kakoune uses 'gzip' to compress its manpages. Make sure
+          ;; timestamps are not preserved for reproducibility.
+          '(begin
+             (substitute* "src/Makefile"
+               (("gzip -f") "gzip -f --no-name"))
+             #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -117,10 +125,6 @@ based command language.")
                  (("if \\(m_shell.empty\\(\\)\\)" line)
                   (string-append "m_shell = \"" (which "sh")
                                  "\";\n        " line)))
-               ;; Kakoune uses 'gzip' to compress its manpages. Make sure
-               ;; timestamps are not preserved for reproducibility.
-               (substitute* "src/Makefile"
-                 (("gzip -f") "gzip -f --no-name"))
                #t))
            (delete 'configure)
            ;; kakoune requires us to be in the src/ directory to build
