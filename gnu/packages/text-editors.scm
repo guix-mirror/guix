@@ -31,6 +31,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages xml))
 
 (define-public vis
