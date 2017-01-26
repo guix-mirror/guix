@@ -482,6 +482,23 @@ and 'man/'.  This phase moves directories to the right place if needed."
      (for-each validate-output directories)))
   #t)
 
+(define* (reset-gzip-timestamps #:key outputs #:allow-other-keys)
+  "Reset embedded timestamps in gzip files found in OUTPUTS."
+  (define (process-directory directory)
+    (let ((files (find-files directory
+                             (lambda (file stat)
+                               (and (eq? 'regular (stat:type stat))
+                                    (or (string-suffix? ".gz" file)
+                                        (string-suffix? ".tgz" file))
+                                    (gzip-file? file)))
+                             #:stat lstat)))
+      (for-each reset-gzip-timestamp files)))
+
+  (match outputs
+    (((names . directories) ...)
+     (for-each process-directory directories)))
+  #t)
+
 (define* (compress-documentation #:key outputs
                                  (compress-documentation? #t)
                                  (documentation-compressor "gzip")
@@ -604,6 +621,7 @@ which cannot be found~%"
             validate-documentation-location
             delete-info-dir-file
             patch-dot-desktop-files
+            reset-gzip-timestamps
             compress-documentation)))
 
 
