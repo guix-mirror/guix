@@ -6000,10 +6000,7 @@ complexity of Python source code.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/m/mistune/mistune-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "mistune" version))
        (sha256
         (base32
          "04xpk1zvslhq3xpnf01g3ag0dy9wfv4z28p093r8k49vvxlyil11"))))
