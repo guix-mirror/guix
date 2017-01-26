@@ -2014,6 +2014,41 @@ the same way.")
 legacy X clients.")
     (license license:x11)))
 
+(define-public xcalc
+  (package
+    (name "xcalc")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/" name "-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0s2gdkk3wxpmraqd05mxsy2895h2h22sbfk1q3jkc4nlmskga2xm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'configure 'mutate-makefile
+                   (lambda _
+                     (substitute* "Makefile"
+                       (("^appdefaultdir = .*$")
+                        (string-append "appdefaultdir = " %output
+                                       ,%app-defaults-dir "\n")))
+                     #t)))))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Hand calculator for the X Window system")
+    (description "Xcalc is a scientific calculator desktop accessory that can
+emulate a TI-30 or an HP-10C.")
+    (license license:x11)))
+
 
 (define-public xcb-proto
   (package
