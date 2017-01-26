@@ -485,13 +485,13 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.10.1")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "04d2464klbhvrsrlmca10qxyd968qz7xizdppr53cihnlfq2y77m"))))
+        "0y6y8d66yvwdcby96g0dlqqwy72b81yh6hws4va8r7w4aribcrb4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
