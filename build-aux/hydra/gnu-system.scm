@@ -123,6 +123,7 @@ SYSTEM."
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"
     "arm-linux-gnueabihf"
+    "aarch64-linux-gnu"
     "powerpc-linux-gnu"
     "i586-pc-gnu"                                 ;aka. GNU/Hurd
     "i686-w64-mingw32"))
