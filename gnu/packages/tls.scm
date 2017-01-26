@@ -244,6 +244,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl-1.0.2k)
    (version "1.0.2j")
    (source (origin
              (method url-fetch)
@@ -381,9 +382,29 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
+(define openssl-1.0.2k
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (version "1.0.2k")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                  name "-" version ".tar.gz")
+                   (string-append "ftp://ftp.openssl.org/source/old/"
+                                  (string-trim-right version char-set:letter)
+                                  "/" name "-" version ".tar.gz")))
+        (sha256
+         (base32
+          "1h6qi35w6hv6rd73p4cdgdzg732pdrfgpp37cgwz1v9a3z37ffbb"))
+        (patches (search-patches "openssl-runpath.patch"
+                                 "openssl-c-rehash-in.patch"))))))
+
 (define-public openssl-next
   (package
     (inherit openssl)
+    (replacement #f)
     (name "openssl")
     (version "1.1.0c")
     (source (origin
