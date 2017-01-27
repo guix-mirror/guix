@@ -3501,7 +3501,6 @@ that a read originated from a particular isoform.")
     (version "3.8.1551")
     (source (origin
               (method url-fetch/tarbomb)
-              (file-name (string-append name "-" version))
               (uri (string-append
                     "http://www.drive5.com/muscle/muscle_src_"
                     version ".tar.gz"))

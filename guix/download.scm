@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -485,17 +486,24 @@ in the store."
                             (guile (default-guile)))
   "Similar to 'url-fetch' but unpack the file from URL in a directory of its
 own.  This helper makes it easier to deal with \"tar bombs\"."
+  (define file-name
+    (match url
+      ((head _ ...)
+       (basename head))
+      (_
+       (basename url))))
   (define gzip
     (module-ref (resolve-interface '(gnu packages compression)) 'gzip))
   (define tar
     (module-ref (resolve-interface '(gnu packages base)) 'tar))
 
   (mlet %store-monad ((drv (url-fetch url hash-algo hash
-                                      (string-append "tarbomb-" name)
+                                      (string-append "tarbomb-"
+                                                     (or name file-name))
                                       #:system system
                                       #:guile guile)))
     ;; Take the tar bomb, and simply unpack it as a directory.
-    (gexp->derivation name
+    (gexp->derivation (or name file-name)
                       #~(begin
                           (mkdir #$output)
                           (setenv "PATH" (string-append #$gzip "/bin"))
