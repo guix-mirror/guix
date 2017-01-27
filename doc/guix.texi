@@ -7138,7 +7138,7 @@ Boot the USB installation image in an VM:
 
 @example
 qemu-system-x86_64 -m 1024 -smp 1 \
-  -net default -net nic,model=virtio -boot menu=on \
+  -net user -net nic,model=virtio -boot menu=on \
   -drive file=guixsd.img \
   -drive file=guixsd-usb-install-@value{VERSION}.@var{system}
 @end example
