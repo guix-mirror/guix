@@ -448,8 +448,10 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
 (define (pure-gnu-package? package)
   "Return true if PACKAGE is a non-Emacs and non-GNOME GNU package.  This
 excludes AucTeX, for instance, whose releases are now uploaded to
-elpa.gnu.org, and all the GNOME packages."
-  (and (not (string-prefix? "emacs-" (package-name package)))
+elpa.gnu.org, and all the GNOME packages; EMMS is included though, because its
+releases are on gnu.org."
+  (and (or (not (string-prefix? "emacs-" (package-name package)))
+           (gnu-hosted? package))
        (not (gnome-package? package))
        (gnu-package? package)))
 
@@ -470,6 +472,9 @@ source URLs starts with PREFIX."
          ((? matching-uri?) #t)
          (_                 #f)))
       (_ #f))))
+
+(define gnu-hosted?
+  (url-prefix-predicate "mirror://gnu/"))
 
 (define gnome-package?
   (url-prefix-predicate "mirror://gnome/"))
