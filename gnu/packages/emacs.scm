@@ -3671,3 +3671,33 @@ procedures for emacs-lisp-mode.")
 provides functions to convert hash tables from and to alists and plists.")
     (license license:gpl3+)))
 
+(define-public emacs-log4e
+  (package
+    (name "emacs-log4e")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/aki2o/log4e/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nbdpbw353snda3v19l9hsm6gimppwnpxj18amm350bm81lyim2g"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-tests
+           ;; Guile builder complains about null characters in some
+           ;; strings of test files.  Remove "test" directory (it is not
+           ;; needed anyway).
+           (lambda _
+             (delete-file-recursively "test"))))))
+    (home-page "https://github.com/aki2o/log4e")
+    (synopsis "Logging framework for elisp")
+    (description
+     "This package provides a logging framework for elisp.  It allows
+you to deal with multiple log levels.")
+    (license license:gpl3+)))
