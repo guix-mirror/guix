@@ -201,9 +201,7 @@ network to check in GNU's database."
 
        (or (gnu-home-page? package)
            (let ((url  (and=> (package-source package) origin-uri))
-                 (name (or (assq-ref (package-properties package)
-                                     'upstream-name)
-                           (package-name package))))
+                 (name (package-upstream-name package)))
              (case (and (string? url) (mirror-type url))
                ((gnu) #t)
                ((non-gnu) #f)
@@ -218,8 +216,7 @@ network to check in GNU's database."
 
 (define (ftp-server/directory package)
   "Return the FTP server and directory where PACKAGE's tarball are stored."
-  (let ((name (or (assq-ref (package-properties package) 'upstream-name)
-                  (package-name package))))
+  (let ((name (package-upstream-name package)))
     (values (or (assoc-ref (package-properties package) 'ftp-server)
                 "ftp.gnu.org")
             (or (assoc-ref (package-properties package) 'ftp-directory)
@@ -433,11 +430,9 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
 \"emacs-auctex\", for instance.)"
   (let-values (((server directory)
                 (ftp-server/directory package)))
-    (let ((name (or (assoc-ref (package-properties package) 'upstream-name)
-                    (package-name package))))
-      (false-if-ftp-error (latest-release name
-                                          #:server server
-                                          #:directory directory)))))
+    (false-if-ftp-error (latest-release (package-upstream-name package)
+                                        #:server server
+                                        #:directory directory))))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
@@ -506,8 +501,7 @@ source URLs starts with PREFIX."
 
   (define upstream-name
     ;; Some packages like "NetworkManager" have camel-case names.
-    (or (assoc-ref (package-properties package) 'upstream-name)
-        (package-name package)))
+    (package-upstream-name package))
 
   (false-if-ftp-error
    (latest-ftp-release upstream-name
@@ -531,8 +525,7 @@ source URLs starts with PREFIX."
   (let ((uri (string->uri (origin-uri (package-source package)))))
     (false-if-ftp-error
      (latest-ftp-release
-      (or (assoc-ref (package-properties package) 'upstream-name)
-          (package-name package))
+      (package-upstream-name package)
       #:server "mirrors.mit.edu"
       #:directory
       (string-append "/kde" (dirname (dirname (uri-path uri))))

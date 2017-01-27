@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -62,6 +62,7 @@
             package
             package?
             package-name
+            package-upstream-name
             package-version
             package-full-name
             package-source
@@ -295,6 +296,12 @@ name of its URI."
                                       (number->string (object-address
                                                        package)
                                                       16)))))
+
+(define (package-upstream-name package)
+  "Return the upstream name of PACKAGE, which could be different from the name
+it has in Guix."
+  (or (assq-ref (package-properties package) 'upstream-name)
+      (package-name package)))
 
 (define (hidden-package p)
   "Return a \"hidden\" version of P--i.e., one that 'fold-packages' and thus,
