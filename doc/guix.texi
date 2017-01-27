@@ -9264,6 +9264,23 @@ Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
 sockets.
 @end deffn
 
+@deffn {Scheme Variable} openvswitch-service-type
+This is the type of the @uref{http://www.openvswitch.org, Open vSwitch}
+service, whose value should be an @code{openvswitch-configuration}
+object.
+@end deffn
+
+@deftp {Data Type} openvswitch-configuration
+Data type representing the configuration of Open vSwitch, a multilayer
+virtual switch which is designed to enable massive network automation
+through programmatic extension.
+
+@table @asis
+@item @code{package} (default: @var{openvswitch})
+Package object of the Open vSwitch.
+
+@end table
+@end deftp
 
 @node X Window
 @subsubsection X Window
