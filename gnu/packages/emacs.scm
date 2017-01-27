@@ -3725,3 +3725,29 @@ described at @uref{http://www.growlforwindows.com/gfw/help/gntp.aspx}.
 It is incomplete as it only lets you send but not receive
 notifications.")
     (license license:bsd-3)))
+
+(define-public emacs-alert
+  (package
+    (name "emacs-alert")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwiegley/alert/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1693kck3k2iz5zhpmxwqyafxm68hr6gzs60lkxd3j1wlp2c9fwyr"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-gntp" ,emacs-gntp)
+       ("emacs-log4e" ,emacs-log4e)))
+    (home-page "https://github.com/jwiegley/alert")
+    (synopsis "Growl-style notification system for Emacs")
+    (description
+     "Alert is a Growl-workalike for Emacs which uses a common notification
+interface and multiple, selectable \"styles\", whose use is fully
+customizable by the user.")
+    (license license:gpl2+)))
