@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -969,6 +969,7 @@ provides an optional IDE-like error list.")
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
               ("mp3info" ,mp3info)))
+    (properties '((upstream-name . "emms")))
     (synopsis "Emacs Multimedia System")
     (description
      "EMMS is the Emacs Multimedia System.  It is a small front-end which
