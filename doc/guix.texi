@@ -7120,8 +7120,8 @@ disk image, follow these steps:
 
 @enumerate
 @item
-First, retrieve the GuixSD installation image as described previously
-(@pxref{USB Stick Installation}).
+First, retrieve and decompress the GuixSD installation image as
+described previously (@pxref{USB Stick Installation}).
 
 @item
 Create a disk image that will hold the installed system.  To make a
