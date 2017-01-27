@@ -187,11 +187,17 @@ network to check in GNU's database."
                   'non-gnu)))))
 
        (define (gnu-home-page? package)
-         (and=> (package-home-page package)
-                (lambda (url)
-                  (and=> (uri-host (string->uri url))
-                         (lambda (host)
-                           (member host '("www.gnu.org" "gnu.org")))))))
+         (letrec-syntax ((>> (syntax-rules ()
+                               ((_ value proc)
+                                (and=> value proc))
+                               ((_ value proc rest ...)
+                                (and=> value
+                                       (lambda (next)
+                                         (>> (proc next) rest ...)))))))
+           (>> package package-home-page
+               string->uri uri-host
+               (lambda (host)
+                 (member host '("www.gnu.org" "gnu.org"))))))
 
        (or (gnu-home-page? package)
            (let ((url  (and=> (package-source package) origin-uri))
