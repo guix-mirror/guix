@@ -3751,3 +3751,30 @@ notifications.")
 interface and multiple, selectable \"styles\", whose use is fully
 customizable by the user.")
     (license license:gpl2+)))
+
+(define-public emacs-mu4e-alert
+  (package
+    (name "emacs-mu4e-alert")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/iqbalansari/mu4e-alert/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1m63vyb2v5r9swmqv56q80jca8172nk5vaxl7bcm5zbfs8zsvr4b"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-alert" ,emacs-alert)
+       ("emacs-s" ,emacs-s)
+       ("emacs-ht" ,emacs-ht)))
+    (home-page "https://github.com/iqbalansari/mu4e-alert")
+    (synopsis "Desktop notification for mu4e")
+    (description
+     "This package provides desktop notifications for mu4e.
+Additionally it can display the number of unread emails in the
+mode-line.")
+    (license license:gpl3+)))
