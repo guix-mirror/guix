@@ -179,7 +179,7 @@ XML-RPC over SCGI.")
         (revision "0"))
     (package
       (name "tremc")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (string-append "0.9.0-" revision "." (string-take commit 7)))
       (source
         (origin
           (method git-fetch)
@@ -254,9 +254,11 @@ Transmission BitTorrent daemon.")
                           completions)))))))
     (synopsis "Console client for the Transmission BitTorrent daemon")
     (description "Transmission-remote-cli is a console client, with a curses
-interface, for the Transmission BitTorrent daemon.")
+interface, for the Transmission BitTorrent daemon.  This package is no longer
+maintained upstream.")
     (home-page "https://github.com/fagga/transmission-remote-cli")
-    (license l:gpl3+)))
+    (license l:gpl3+)
+    (properties `((superseded . ,tremc)))))
 
 (define-public aria2
   (package
