@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3646,3 +3647,27 @@ Streams are implemented as delayed evaluation of cons cells.")
       (description "This package provides expression based interactive search
 procedures for emacs-lisp-mode.")
       (license license:gpl3+))))
+
+(define-public emacs-ht
+  (package
+    (name "emacs-ht")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/Wilfred/ht.el/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lpba36kzxcc966fvsbrfpy8ah9gnvay0yk26gbyjil0rggrbqzj"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/Wilfred/ht.el")
+    (synopsis "Hash table library for Emacs")
+    (description
+     "This package simplifies the use of hash tables in elisp.  It also
+provides functions to convert hash tables from and to alists and plists.")
+    (license license:gpl3+)))
+
