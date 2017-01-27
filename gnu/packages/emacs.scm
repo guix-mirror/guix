@@ -3701,3 +3701,27 @@ provides functions to convert hash tables from and to alists and plists.")
      "This package provides a logging framework for elisp.  It allows
 you to deal with multiple log levels.")
     (license license:gpl3+)))
+
+(define-public emacs-gntp
+  (package
+    (name "emacs-gntp")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tekai/gntp.el/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16c1dfkia9yhl206bdhjr3b8kfvqcqr38jl5lq8qsyrrzsnmghny"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tekai/gntp.el")
+    (synopsis "Growl Notification Protocol for Emacs")
+    (description
+     "This package implements the Growl Notification Protocol GNTP
+described at @uref{http://www.growlforwindows.com/gfw/help/gntp.aspx}.
+It is incomplete as it only lets you send but not receive
+notifications.")
+    (license license:bsd-3)))
