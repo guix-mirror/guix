@@ -800,12 +800,17 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
-  ;; FIXME: This depends on 'bootstrap-binaries' via Makefile.in.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (static-libgcc-package bash)
-                                 %boot3-inputs
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (let ((bash (package
+                (inherit bash)
+                (arguments
+                 `(#:disallowed-references
+                   ,(assoc-ref %boot3-inputs "coreutils&co")
+                   ,@(package-arguments bash))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs (static-libgcc-package bash)
+                                   %boot3-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
 
 (define %boot4-inputs
   ;; Now use the final Bash.
