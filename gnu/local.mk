@@ -414,6 +414,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/package-management.scm		\
   %D%/packages/pantheon.scm			\
   %D%/packages/parallel.scm			\
+  %D%/packages/pascal.scm			\
   %D%/packages/password-utils.scm		\
   %D%/packages/patchutils.scm			\
   %D%/packages/pciutils.scm			\
@@ -962,6 +963,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/fontconfig-hurd-path-max.patch		\
+  %D%/packages/patches/fpc-reproducibility.patch		\
   %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
