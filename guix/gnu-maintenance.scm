@@ -195,7 +195,9 @@ network to check in GNU's database."
 
        (or (gnu-home-page? package)
            (let ((url  (and=> (package-source package) origin-uri))
-                 (name (package-name package)))
+                 (name (or (assq-ref (package-properties package)
+                                     'upstream-name)
+                           (package-name package))))
              (case (and (string? url) (mirror-type url))
                ((gnu) #t)
                ((non-gnu) #f)
@@ -210,10 +212,12 @@ network to check in GNU's database."
 
 (define (ftp-server/directory package)
   "Return the FTP server and directory where PACKAGE's tarball are stored."
-  (values (or (assoc-ref (package-properties package) 'ftp-server)
-              "ftp.gnu.org")
-          (or (assoc-ref (package-properties package) 'ftp-directory)
-              (string-append "/gnu/" (package-name package)))))
+  (let ((name (or (assq-ref (package-properties package) 'upstream-name)
+                  (package-name package))))
+    (values (or (assoc-ref (package-properties package) 'ftp-server)
+                "ftp.gnu.org")
+            (or (assoc-ref (package-properties package) 'ftp-directory)
+                (string-append "/gnu/" name)))))
 
 (define (sans-extension tarball)
   "Return TARBALL without its .tar.* or .zip extension."
