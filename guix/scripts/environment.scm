@@ -421,7 +421,8 @@ host file systems to mount inside the container."
                                              ;; read-only within the
                                              ;; container.
                                              (writable?
-                                              (string=? "/etc/resolv.conf")))))
+                                              (string=? file
+                                                        "/etc/resolv.conf")))))
                                      %network-configuration-files)
                          '())
                      ;; Mappings for the union closure of all inputs.
