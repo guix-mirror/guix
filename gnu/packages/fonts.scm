@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -996,3 +997,40 @@ designed to work well in user interface environments.")
     (synopsis "Mozilla's monospace font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
+
+(define-public font-awesome
+  (package
+   (name "font-awesome")
+   (version "4.7.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://fontawesome.io/assets/"
+                                name "-" version ".zip"))
+            (sha256
+             (base32
+              "1frhmw41lnnm9rda2zs202pvfi5vzlrsw4xfp4mswl0qgws61mcd"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let* ((font-dir (string-append %output
+                                                  "/share/fonts/opentype"))
+                         (source (assoc-ref %build-inputs "source"))
+                         (src-otf-file (string-append "font-awesome-"
+                                                      ,version
+                                                      "/fonts/FontAwesome.otf"))
+                         (dest-otf-file (string-append font-dir "/FontAwesome.otf"))
+                         (unzip (assoc-ref %build-inputs "unzip")))
+                    (setenv "PATH" (string-append unzip "/bin"))
+                    (mkdir-p font-dir)
+                    (system* "unzip" source "-d" ".")
+                    (copy-file src-otf-file dest-otf-file)))))
+   (home-page "http://fontawesome.io")
+   (synopsis "Font that contains a rich iconset")
+   (description
+    "Font Awesome is a full suite of pictographic icons for easy scalable
+vector graphics.")
+   (license license:silofl1.1)))
