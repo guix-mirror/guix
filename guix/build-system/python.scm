@@ -87,49 +87,48 @@ pre-defined variants."
     ;; Memoize the transformations.  Failing to do that, we would build a huge
     ;; object graph with lots of duplicates, which in turns prevents us from
     ;; benefiting from memoization in 'package-derivation'.
-    (memoize                                      ;FIXME: use 'eq?'
-     (lambda (p)
-       (let* ((rewrite-if-package
-               (lambda (content)
-                 ;; CONTENT may be a file name, in which case it is returned,
-                 ;; or a package, which is rewritten with the new PYTHON and
-                 ;; NEW-PREFIX.
-                 (if (package? content)
-                     (transform content)
-                     content)))
-              (rewrite
-               (match-lambda
-                 ((name content . rest)
-                  (append (list name (rewrite-if-package content)) rest)))))
+    (mlambda (p)                                  ;XXX: use 'eq?'
+      (let* ((rewrite-if-package
+              (lambda (content)
+                ;; CONTENT may be a file name, in which case it is returned,
+                ;; or a package, which is rewritten with the new PYTHON and
+                ;; NEW-PREFIX.
+                (if (package? content)
+                    (transform content)
+                    content)))
+             (rewrite
+              (match-lambda
+                ((name content . rest)
+                 (append (list name (rewrite-if-package content)) rest)))))
 
-         (cond
-          ;; If VARIANT-PROPERTY is present, use that.
-          ((and variant-property
-                (assoc-ref (package-properties p) variant-property))
-           => force)
+        (cond
+         ;; If VARIANT-PROPERTY is present, use that.
+         ((and variant-property
+               (assoc-ref (package-properties p) variant-property))
+          => force)
 
-          ;; Otherwise build the new package object graph.
-          ((eq? (package-build-system p) python-build-system)
-           (package
-             (inherit p)
-             (location (package-location p))
-             (name (let ((name (package-name p)))
-                     (string-append new-prefix
-                                    (if (string-prefix? old-prefix name)
-                                        (substring name
-                                                   (string-length old-prefix))
-                                        name))))
-             (arguments
-              (let ((python (if (promise? python)
-                                (force python)
-                                python)))
-                (ensure-keyword-arguments (package-arguments p)
-                                          `(#:python ,python))))
-             (inputs (map rewrite (package-inputs p)))
-             (propagated-inputs (map rewrite (package-propagated-inputs p)))
-             (native-inputs (map rewrite (package-native-inputs p)))))
-          (else
-           p))))))
+         ;; Otherwise build the new package object graph.
+         ((eq? (package-build-system p) python-build-system)
+          (package
+            (inherit p)
+            (location (package-location p))
+            (name (let ((name (package-name p)))
+                    (string-append new-prefix
+                                   (if (string-prefix? old-prefix name)
+                                       (substring name
+                                                  (string-length old-prefix))
+                                       name))))
+            (arguments
+             (let ((python (if (promise? python)
+                               (force python)
+                               python)))
+               (ensure-keyword-arguments (package-arguments p)
+                                         `(#:python ,python))))
+            (inputs (map rewrite (package-inputs p)))
+            (propagated-inputs (map rewrite (package-propagated-inputs p)))
+            (native-inputs (map rewrite (package-native-inputs p)))))
+         (else
+          p)))))
 
   transform)
 

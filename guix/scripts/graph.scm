@@ -191,12 +191,11 @@ Dependencies may include packages, origin, and file names."
                  %store-monad))))
 
 (define standard-package-set
-  (memoize
-   (lambda ()
-     "Return the set of standard packages provided by GNU-BUILD-SYSTEM."
-     (match (standard-packages)
-       (((labels packages . output) ...)
-        (list->setq packages))))))
+  (mlambda ()
+    "Return the set of standard packages provided by GNU-BUILD-SYSTEM."
+    (match (standard-packages)
+      (((labels packages . output) ...)
+       (list->setq packages)))))
 
 (define (bag-node-edges-sans-bootstrap thing)
   "Like 'bag-node-edges', but pretend that the standard packages of

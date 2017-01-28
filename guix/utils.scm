@@ -771,11 +771,10 @@ be determined."
   (column        location-column))                ; 0-indexed column
 
 (define location
-  (memoize
-   (lambda (file line column)
-     "Return the <location> object for the given FILE, LINE, and COLUMN."
-     (and line column file
-          (make-location file line column)))))
+  (mlambda (file line column)
+    "Return the <location> object for the given FILE, LINE, and COLUMN."
+    (and line column file
+         (make-location file line column))))
 
 (define (source-properties->location loc)
   "Return a location object based on the info in LOC, an alist as returned

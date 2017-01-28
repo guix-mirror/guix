@@ -71,18 +71,17 @@ CLAUSES."
              result)))))
 
 (define module-file-dependencies
-  (memoize
-   (lambda (file)
-     "Return the list of the names of modules that the Guile module in FILE
+  (mlambda (file)
+    "Return the list of the names of modules that the Guile module in FILE
 depends on."
-     (call-with-input-file file
-       (lambda (port)
-         (match (read port)
-           (('define-module name clauses ...)
-            (extract-dependencies clauses))
-           ;; XXX: R6RS 'library' form is ignored.
-           (_
-            '())))))))
+    (call-with-input-file file
+      (lambda (port)
+        (match (read port)
+          (('define-module name clauses ...)
+           (extract-dependencies clauses))
+          ;; XXX: R6RS 'library' form is ignored.
+          (_
+           '()))))))
 
 (define (module-name->file-name module)
   "Return the file name for MODULE."

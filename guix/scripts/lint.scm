@@ -559,12 +559,11 @@ patch could not be found."
                       str)))
 
 (define official-gnu-packages*
-  (memoize
-   (lambda ()
-     "A memoizing version of 'official-gnu-packages' that returns the empty
+  (mlambda ()
+    "A memoizing version of 'official-gnu-packages' that returns the empty
 list when something goes wrong, such as a networking issue."
-     (let ((gnus (false-if-exception (official-gnu-packages))))
-       (or gnus '())))))
+    (let ((gnus (false-if-exception (official-gnu-packages))))
+      (or gnus '()))))
 
 (define (check-gnu-synopsis+description package)
   "Make sure that, if PACKAGE is a GNU package, it uses the synopsis and

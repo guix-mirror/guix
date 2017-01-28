@@ -165,49 +165,48 @@ found."
         (official-gnu-packages)))
 
 (define gnu-package?
-  (memoize
-   (let ((official-gnu-packages (memoize official-gnu-packages)))
-     (lambda (package)
-       "Return true if PACKAGE is a GNU package.  This procedure may access the
+  (let ((official-gnu-packages (memoize official-gnu-packages)))
+    (mlambda (package)
+      "Return true if PACKAGE is a GNU package.  This procedure may access the
 network to check in GNU's database."
-       (define (mirror-type url)
-         (let ((uri (string->uri url)))
-           (and (eq? (uri-scheme uri) 'mirror)
-                (cond
-                 ((member (uri-host uri)
-                          '("gnu" "gnupg" "gcc" "gnome"))
-                  ;; Definitely GNU.
-                  'gnu)
-                 ((equal? (uri-host uri) "cran")
-                  ;; Possibly GNU: mirror://cran could be either GNU R itself
-                  ;; or a non-GNU package.
-                  #f)
-                 (else
-                  ;; Definitely non-GNU.
-                  'non-gnu)))))
+      (define (mirror-type url)
+        (let ((uri (string->uri url)))
+          (and (eq? (uri-scheme uri) 'mirror)
+               (cond
+                ((member (uri-host uri)
+                         '("gnu" "gnupg" "gcc" "gnome"))
+                 ;; Definitely GNU.
+                 'gnu)
+                ((equal? (uri-host uri) "cran")
+                 ;; Possibly GNU: mirror://cran could be either GNU R itself
+                 ;; or a non-GNU package.
+                 #f)
+                (else
+                 ;; Definitely non-GNU.
+                 'non-gnu)))))
 
-       (define (gnu-home-page? package)
-         (letrec-syntax ((>> (syntax-rules ()
-                               ((_ value proc)
-                                (and=> value proc))
-                               ((_ value proc rest ...)
-                                (and=> value
-                                       (lambda (next)
-                                         (>> (proc next) rest ...)))))))
-           (>> package package-home-page
-               string->uri uri-host
-               (lambda (host)
-                 (member host '("www.gnu.org" "gnu.org"))))))
+      (define (gnu-home-page? package)
+        (letrec-syntax ((>> (syntax-rules ()
+                              ((_ value proc)
+                               (and=> value proc))
+                              ((_ value proc rest ...)
+                               (and=> value
+                                      (lambda (next)
+                                        (>> (proc next) rest ...)))))))
+          (>> package package-home-page
+              string->uri uri-host
+              (lambda (host)
+                (member host '("www.gnu.org" "gnu.org"))))))
 
-       (or (gnu-home-page? package)
-           (let ((url  (and=> (package-source package) origin-uri))
-                 (name (package-upstream-name package)))
-             (case (and (string? url) (mirror-type url))
-               ((gnu) #t)
-               ((non-gnu) #f)
-               (else
-                (and (member name (map gnu-package-name (official-gnu-packages)))
-                     #t)))))))))
+      (or (gnu-home-page? package)
+          (let ((url  (and=> (package-source package) origin-uri))
+                (name (package-upstream-name package)))
+            (case (and (string? url) (mirror-type url))
+              ((gnu) #t)
+              ((non-gnu) #f)
+              (else
+               (and (member name (map gnu-package-name (official-gnu-packages)))
+                    #t))))))))
 
 
 ;;;

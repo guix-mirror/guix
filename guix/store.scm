@@ -1282,11 +1282,10 @@ valid inputs."
 (define store-regexp*
   ;; The substituter makes repeated calls to 'store-path-hash-part', hence
   ;; this optimization.
-  (memoize
-   (lambda (store)
-     "Return a regexp matching a file in STORE."
-     (make-regexp (string-append "^" (regexp-quote store)
-                                 "/([0-9a-df-np-sv-z]{32})-([^/]+)$")))))
+  (mlambda (store)
+    "Return a regexp matching a file in STORE."
+    (make-regexp (string-append "^" (regexp-quote store)
+                                "/([0-9a-df-np-sv-z]{32})-([^/]+)$"))))
 
 (define (store-path-package-name path)
   "Return the package name part of PATH, a file name in the store."

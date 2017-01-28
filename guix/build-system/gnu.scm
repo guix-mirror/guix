@@ -84,15 +84,15 @@ builder, or the distro's final Guile when GUILE is #f."
 
   (let loop ((p p))
     (define rewritten-input
-      (memoize
-       (match-lambda
-        ((name (? package? p) sub-drv ...)
-         ;; XXX: Check whether P's build system knows #:implicit-inputs, for
-         ;; things like `cross-pkg-config'.
-         (if (eq? (package-build-system p) gnu-build-system)
-             (cons* name (loop p) sub-drv)
-             (cons* name p sub-drv)))
-        (x x))))
+      (mlambda (input)
+        (match input
+          ((name (? package? p) sub-drv ...)
+           ;; XXX: Check whether P's build system knows #:implicit-inputs, for
+           ;; things like `cross-pkg-config'.
+           (if (eq? (package-build-system p) gnu-build-system)
+               (cons* name (loop p) sub-drv)
+               (cons* name p sub-drv)))
+          (x x))))
 
     (package (inherit p)
       (location (if (pair? loc) (source-properties->location loc) loc))
@@ -393,22 +393,21 @@ packages that must not be referenced."
 ;;;
 
 (define standard-cross-packages
-  (memoize
-   (lambda (target kind)
-     "Return the list of name/package tuples to cross-build for TARGET.  KIND
+  (mlambda (target kind)
+    "Return the list of name/package tuples to cross-build for TARGET.  KIND
 is one of `host' or `target'."
-     (let* ((cross     (resolve-interface '(gnu packages cross-base)))
-            (gcc       (module-ref cross 'cross-gcc))
-            (binutils  (module-ref cross 'cross-binutils))
-            (libc      (module-ref cross 'cross-libc)))
-       (case kind
-         ((host)
-          `(("cross-gcc" ,(gcc target
-                               (binutils target)
-                               (libc target)))
-            ("cross-binutils" ,(binutils target))))
-         ((target)
-          `(("cross-libc" ,(libc target)))))))))
+    (let* ((cross     (resolve-interface '(gnu packages cross-base)))
+           (gcc       (module-ref cross 'cross-gcc))
+           (binutils  (module-ref cross 'cross-binutils))
+           (libc      (module-ref cross 'cross-libc)))
+      (case kind
+        ((host)
+         `(("cross-gcc" ,(gcc target
+                              (binutils target)
+                              (libc target)))
+           ("cross-binutils" ,(binutils target))))
+        ((target)
+         `(("cross-libc" ,(libc target))))))))
 
 (define* (gnu-cross-build store name
                           #:key
