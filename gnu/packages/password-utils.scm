@@ -36,6 +36,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
@@ -240,6 +241,15 @@ random passwords that pass the checks.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'install 'wrap-assword
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog            (string-append
+                                     (assoc-ref outputs "out")
+                                     "/bin/assword"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
+               #t)))
          (add-after 'install 'manpage
            (lambda* (#:key outputs #:allow-other-keys)
              (and
@@ -255,7 +265,8 @@ random passwords that pass the checks.")
     (native-inputs
      `(("txt2man" ,txt2man)))
     (inputs
-     `(("python-xdo" ,python-xdo)
+     `(("gtk+" ,gtk+)
+       ("python-xdo" ,python-xdo)
        ("python-gpg" ,python-gpg)
        ("python-pygobject" ,python-pygobject)))
     (propagated-inputs
