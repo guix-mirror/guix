@@ -166,7 +166,7 @@ found."
 
 (define gnu-package?
   (let ((official-gnu-packages (memoize official-gnu-packages)))
-    (mlambda (package)
+    (mlambdaq (package)
       "Return true if PACKAGE is a GNU package.  This procedure may access the
 network to check in GNU's database."
       (define (mirror-type url)
