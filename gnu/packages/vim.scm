@@ -49,7 +49,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.0194")
+    (version "8.0.0257")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -57,7 +57,7 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0rvhlgfms6w7h1v17lxwvfp32nmxx92vc0xsmgj5xgapz43l2sp0"))))
+               "05vz59iw77lmhnywfv9ihd0d895axqf2y81ddpjkn1qdspvw8ijj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
