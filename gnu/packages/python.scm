@@ -8856,6 +8856,8 @@ normally the case.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))  ; no tests provided
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (inputs
      `(("xdotool" ,xdotool)
        ("libX11" ,libx11)))
