@@ -87,7 +87,7 @@ pre-defined variants."
     ;; Memoize the transformations.  Failing to do that, we would build a huge
     ;; object graph with lots of duplicates, which in turns prevents us from
     ;; benefiting from memoization in 'package-derivation'.
-    (mlambda (p)                                  ;XXX: use 'eq?'
+    (mlambdaq (p)
       (let* ((rewrite-if-package
               (lambda (content)
                 ;; CONTENT may be a file name, in which case it is returned,
