@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -3362,3 +3364,45 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 @code{tapestat}, @code{cifsiostat}, @code{pidstat}, @code{sar}, @code{sadc},
 @code{sadf} and @code{sa}.")
     (license license:gpl2+)))
+
+(define-public light
+  (package
+    (name "light")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/haikarainen/" name
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r5gn6c0jcxknzybl6059dplxv46dpahchqq4gymrs7z8bp0hilp"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'patch-makefile
+           (lambda _
+             (substitute* "Makefile" (("chown") "#")))))))
+    (native-inputs
+     `(("help2man" ,help2man)))
+    (home-page "https://haikarainen.github.io/light")
+    (synopsis "GNU/Linux application to control backlights")
+    (description
+     "Light is a program to send commands to screen backlight controllers
+under GNU/Linux.  Features include:
+
+@itemize
+@item It does not rely on X.
+@item Light can automatically figure out the best controller to use, making
+full use of underlying hardware.
+@item It is possible to set a minimum brightness value, as some controllers
+set the screen to be pitch black at a vaĺue of 0 (or higher).
+@end itemize
+
+Light is the successor of lightscript.")
+    (license license:gpl3+)))
