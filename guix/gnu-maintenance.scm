@@ -30,7 +30,7 @@
   #:use-module (guix http-client)
   #:use-module (guix ftp-client)
   #:use-module (guix utils)
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)

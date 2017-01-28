@@ -33,7 +33,7 @@
   #:use-module (ice-9 binary-ports)
   #:autoload   (rnrs io ports) (make-custom-binary-input-port)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 vlist)

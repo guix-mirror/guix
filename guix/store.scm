@@ -19,7 +19,7 @@
 (define-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix config)
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module (guix serialization)
   #:use-module (guix monads)
   #:autoload   (guix base32) (bytevector->base32-string)
