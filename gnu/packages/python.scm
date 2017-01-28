@@ -8855,7 +8855,19 @@ normally the case.")
                 "1vqh1n5yy5dhnq312kwrl90fnck4v26is3lq3lxdvcn60vv19da0"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))  ; no tests provided
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-libxdo-path
+           ;; Hardcode the path of dynamically loaded libxdo library.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libxdo (string-append
+                            (assoc-ref inputs "xdotool")
+                            "/lib/libxdo.so")))
+               (substitute* "xdo/_xdo.py"
+                 (("find_library\\(\"xdo\"\\)")
+                  (simple-format #f "\"~a\"" libxdo)))
+               #t))))
+       #:tests? #f))  ; no tests provided
     (propagated-inputs
      `(("python-six" ,python-six)))
     (inputs
