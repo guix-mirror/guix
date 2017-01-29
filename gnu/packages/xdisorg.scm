@@ -266,7 +266,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.74")
+    (version "2.4.75")
     (source
       (origin
         (method url-fetch)
@@ -276,7 +276,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "02w4xy3gsp0556l9d395mlxhlzixqscxkk6was3lq7s0djkxa3fq"))
+          "0kq5hmck0gq7b29fr8jp94njc7jpkpbyws12s63w4b21xw750nid"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (inputs
