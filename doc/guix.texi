@@ -3326,9 +3326,9 @@ be passed via the @code{#:build-flags} key.  Install is taken care of by
 be added to the @code{native-inputs} field of the package definition.
 
 Note that most OCaml packages assume they will be installed in the same
-directory as ocaml, which is not what we want in guix.  In particular, they
+directory as OCaml, which is not what we want in guix.  In particular, they
 will install @file{.so} files in their module's directory, which is usually
-fine because it is in the ocaml compiler directory.  In guix though, these
+fine because it is in the OCaml compiler directory.  In guix though, these
 libraries cannot be found and we use @code{CAML_LD_LIBRARY_PATH}.  This
 variable points to @file{lib/ocaml/site-lib/stubslibs} and this is where
 @file{.so} libraries should be installed.
