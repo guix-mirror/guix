@@ -92,6 +92,11 @@
 
 (test-skip (if %store 0 13))
 
+(test-equal "add-data-to-store"
+  #vu8(1 2 3 4 5)
+  (call-with-input-file (add-data-to-store %store "data" #vu8(1 2 3 4 5))
+    get-bytevector-all))
+
 (test-assert "valid-path? live"
   (let ((p (add-text-to-store %store "hello" "hello, world")))
     (valid-path? %store p)))
