@@ -28,6 +28,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages llvm)
@@ -274,3 +275,40 @@ latest DMD frontend and uses LLVM as backend.")
              (patches (search-patches "ldc-1.1.0-disable-dmd-tests.patch")))))))))
 
 (define-public ldc-beta ldc-1.1.0-beta6)
+
+(define-public dub
+  (package
+    (name "dub")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dlang/dub/archive/"
+                                  "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sd8i1rvxc7y7kk0y6km5zyvaladc5zh56r6afj74ndd63dssv43"))))
+   (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; it would have tested itself by installing some packages (vibe etc)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (zero? (system* "./build.sh"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (outbin (string-append out "/bin")))
+               (mkdir-p outbin)
+               (install-file "bin/dub" outbin)
+               #t))))))
+    (inputs
+     `(("curl" ,curl)))
+    (native-inputs
+     `(("ldc" ,ldc)))
+    (home-page "https://code.dlang.org/getting_started")
+    (synopsis "DUB package manager")
+    (description "This package provides the D package manager.")
+    (license license:expat)))
