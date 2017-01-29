@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
@@ -33,6 +35,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg))
@@ -205,3 +208,59 @@ your images.  Among its features are:
 @item Configurable mouse actions
 @end enumerate\n")
     (license license:gpl3+)))
+
+(define-public catimg
+  (package
+    (name "catimg")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/posva/catimg/archive"
+                           "/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14g90zwh2d3s13hgyxypx2vc0rj1g58l6zcxhgc84wsyxfxd6xpb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((magic (assoc-ref %build-inputs "imagemagick"))
+                    (convert (string-append magic "/bin/convert")))
+               (substitute* "catimg"
+                 ;; By replacing "convert", we also replace the "convert"
+                 ;; in the message 'The version of convert is too old, don't
+                 ;; expect good results :('. This should not happen, but in
+                 ;; practice this error message should not affect us.
+                 (("convert") convert))
+               #t)))
+         (replace 'build
+           (lambda _
+             (zero? (system* "cmake" "-D"
+                             (string-append "CMAKE_INSTALL_PREFIX="
+                                            (assoc-ref %outputs "out"))
+                             "."))
+             (zero? (system* "make"))))
+         (add-before 'install 'install-script
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The bashscript lacks an file extension, we have to rename
+             ;; it so that the C program and the bash script can be happy
+             ;; side by side.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "catimg" bin)
+               (rename-file (string-append bin "/catimg")
+                            (string-append bin "/catimg.sh"))
+               #t))))))
+    (inputs
+     `(("imagemagick" ,imagemagick))) ; For the bash script version
+    (home-page "https://github.com/posva/catimg")
+    (synopsis "Render images in the terminal")
+    (description
+     "Catimg is a little program that prints images in the terminal.
+It supports JPEG, PNG and GIF formats.")
+    (license license:expat)))
