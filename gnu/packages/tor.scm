@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tor)
-  #:use-module ((guix licenses) #:select (bsd-3 gpl3+ gpl2+ gpl2))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -73,7 +73,7 @@ To @code{torify} applications (to take measures to ensure that an application,
 which has not been designed for use with Tor such as ssh, will use only Tor for
 internet connectivity, and also ensures that there are no leaks from DNS, UDP or
 the application layer) you need to install @code{torsocks}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public torsocks
   (package
@@ -95,7 +95,7 @@ way with Tor.  It ensures that DNS requests are handled safely and explicitly
 rejects UDP traffic from the application you're using.")
 
     ;; All the files explicitly say "version 2 only".
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public privoxy
   (package
@@ -139,7 +139,7 @@ access, and removing ads and other obnoxious Internet junk.  Privoxy has a
 flexible configuration and can be customized to suit individual needs and
 tastes.  It has application for both stand-alone systems and multi-user
 networks.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public onionshare
   (package
@@ -225,5 +225,5 @@ using a third party filesharing service.  You host the file on your own computer
 and use a Tor hidden service to make it temporarily accessible over the
 internet.  The other user just needs to use Tor Browser to download the file
 from you.")
-    (license (list gpl3+
-                   bsd-3)))) ; onionshare/socks.py
+    (license (list license:gpl3+
+                   license:bsd-3))))    ; onionshare/socks.py
