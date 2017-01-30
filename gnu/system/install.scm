@@ -388,7 +388,7 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
-                     parted ddrescue
+                     parted gptfdisk ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
                      mdadm
