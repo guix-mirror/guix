@@ -2939,5 +2939,4 @@ instruction sets.  Thus, an application written with Vc can be compiled for:
 algorithm for LCS.  It is a fast program to compute the approximate
 Longest Commons Subsequence of a set of strings.")
       (home-page "https://github.com/gdv/Reduce-Expand-for-LCS")
-      ;; The source specifies no "and later" of GPL3.
-      (license license:gpl3))))
+      (license license:gpl3+))))
