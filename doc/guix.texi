@@ -13146,6 +13146,10 @@ from source.
 @item @code{one-shot?} (default: @code{#f})
 Only evaluate specifications and build derivations once.
 
+@item @code{load-path} (default: @code{'()})
+This allows users to define their own packages and make them visible to
+cuirass as in @command{guix build} command.
+
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.
 @end table
