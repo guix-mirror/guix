@@ -116,37 +116,16 @@ keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license (list license:lgpl2.1 license:gpl2))))
 
-;; These patches together fix https://github.com/bitlbee/bitlbee/pull/55, are
-;; already upstream, and should be unnecessary when the next bitlbee comes
-;; out.
-(define %bitlbee-buddy-nick-change-patch
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/bitlbee/bitlbee/commit/a42fda42.patch")
-    (sha256
-     (base32
-      "1mzjhcdn0rxir5mzgqz9kv142ai38p1iq2lajqx89wb7x0bp51zx"))))
-(define %bitlbee-always-use-nicks-patch
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/bitlbee/bitlbee/commit/3320d6d9.patch")
-    (sha256
-     (base32
-      "14d9kb5zdzh5hzakdvrbviz83rix0j2lq9rzb58b2fn92fp8yixd"))))
-
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.4.2")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0mza8lnfwibmklz8hdzg4f7p83hblf4h6fbf7d732kzpvra5bj39"))
-              (patches
-               (list %bitlbee-buddy-nick-change-patch
-                     %bitlbee-always-use-nicks-patch))))
+               (base32 "0sgsn0fv41rga46mih3fyv65cvfa6rvki8x92dn7bczbi7yxfdln"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
