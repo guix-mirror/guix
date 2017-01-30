@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
@@ -2896,3 +2898,46 @@ instruction sets.  Thus, an application written with Vc can be compiled for:
 @end enumerate\n")
     (home-page "https://github.com/VcDevel/Vc")
     (license license:bsd-3)))
+
+(define-public reducelcs
+  ;; This is the last commit which is available upstream, no
+  ;; release happened since 2010.
+  (let ((commit "474f88deb968061abe8cf11c959e02319b8ae5c0")
+        (revision "1"))
+    (package
+      (name "reducelcs")
+      (version (string-append "1.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gdv/Reduce-Expand-for-LCS")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1rllzcfwc042c336mhq262a8ha90x6afq30kvk60r7i4761j4yjm"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("openlibm" ,openlibm)))
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No configure script exists.
+           (replace 'install ; No install phase exists.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "Approximation" bin)
+                 (install-file "CollectResults" bin)
+                 (install-file "GenerateInstances" bin)
+                 #t))))))
+      (synopsis "Approximate Longest Commons Subsequence computation tool")
+      (description
+       "@code{reduceLCS} is an implementation of the Reduce-Expand
+algorithm for LCS.  It is a fast program to compute the approximate
+Longest Commons Subsequence of a set of strings.")
+      (home-page "https://github.com/gdv/Reduce-Expand-for-LCS")
+      ;; The source specifies no "and later" of GPL3.
+      (license license:gpl3))))
