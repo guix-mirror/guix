@@ -633,14 +633,24 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.7.4")
+    (version "4.9.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
-                                  version ".tar.gz"))
+              ;; We use this Debian URL while the upstream URL is still
+              ;; officially private. This is the result of a botched
+              ;; coordinated release of tcpdump 4.9.0. I verified with
+              ;; the tcpdump maintainers that the upstream URL provides
+              ;; the same data as this Debian URL.
+              (uri
+                (list
+                  (string-append "http://http.debian.net/debian/pool/main/t/"
+                                  name "/" name "_" version ".orig.tar.gz")
+                  (string-append "http://www.tcpdump.org/release/tcpdump-"
+                                 version ".tar.gz")))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1byr8w6grk08fsq0444jmcz9ar89lq9nf4mjq2cny0w9k8k21rbb"))))
+                "0pjsxsy8l71i813sa934cwf1ryp9xbr7nxwsvnzavjdirchq3sga"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
