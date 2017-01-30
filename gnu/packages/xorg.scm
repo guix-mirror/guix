@@ -1930,7 +1930,7 @@ server.")
 (define-public xauth
   (package
     (name "xauth")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
@@ -1940,7 +1940,7 @@ server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "13y2invb0894b1in03jbglximbz6v31y2kr4yjjgica8xciibkjn"))))
+            "0kgwz9rmxjfdvi2syf8g0ms5rr5cgyqx4n0n1m960kyz7k745zjs"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
