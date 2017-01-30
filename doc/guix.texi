@@ -2337,7 +2337,9 @@ instance, when user @code{root} runs @command{guix pull}, this has no
 effect on the version of Guix that user @code{alice} sees, and vice
 versa@footnote{Under the hood, @command{guix pull} updates the
 @file{~/.config/guix/latest} symbolic link to point to the latest Guix,
-and the @command{guix} command loads code from there.}.
+and the @command{guix} command loads code from there.  Currently, the
+only way to roll back an invocation of @command{guix pull} is to
+manually update this symlink to point to the previous Guix.}.
 
 The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
