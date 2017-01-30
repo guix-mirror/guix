@@ -7063,6 +7063,26 @@ mkswap /dev/sda2
 swapon /dev/sda2
 @end example
 
+Alternatively, you may use a swap file.  For example, assuming that in
+the new system you want to use the file @file{/swapfile} as a swap file,
+you would run@footnote{This example will work for many types of file
+systems (e.g., ext4).  However, for copy-on-write file systems (e.g.,
+btrfs), the required steps may be different.  For details, see the
+manual pages for @command{mkswap} and @command{swapon}.}:
+
+@example
+# This is 10 GiB of swap space.  Adjust "count" to change the size.
+dd if=/dev/zero of=/mnt/swapfile bs=1MiB count=10240
+# For security, make the file readable and writable only by root.
+chmod 600 /mnt/swapfile
+mkswap /mnt/swapfile
+swapon /mnt/swapfile
+@end example
+
+Note that if you have encrypted the root partition and created a swap
+file in its file system as described above, then the encryption also
+protects the swap file, just like any other file in that file system.
+
 @node Proceeding with the Installation
 @subsection Proceeding with the Installation
 
@@ -7516,9 +7536,12 @@ A list of file systems.  @xref{File Systems}.
 
 @item @code{swap-devices} (default: @code{'()})
 @cindex swap devices
-A list of strings identifying devices to be used for ``swap space''
-(@pxref{Memory Concepts,,, libc, The GNU C Library Reference Manual}).
-For example, @code{'("/dev/sda3")}.
+A list of strings identifying devices or files to be used for ``swap
+space'' (@pxref{Memory Concepts,,, libc, The GNU C Library Reference
+Manual}).  For example, @code{'("/dev/sda3")} or @code{'("/swapfile")}.
+It is possible to specify a swap file in a file system on a mapped
+device, provided that the necessary device mapping and file system are
+also specified.  @xref{Mapped Devices} and @ref{File Systems}.
 
 @item @code{users} (default: @code{%base-user-accounts})
 @itemx @code{groups} (default: @var{%base-groups})
@@ -7860,6 +7883,13 @@ and use it as follows:
   (target "home")
   (type luks-device-mapping))
 @end example
+
+@cindex swap encryption
+It is also desirable to encrypt swap space, since swap space may contain
+sensitive data.  One way to accomplish that is to use a swap file in a
+file system on a device mapped via LUKS encryption.  In this way, the
+swap file is encrypted because the entire device is encrypted.
+@xref{Preparing for Installation,,Disk Partitioning}, for an example.
 
 A RAID device formed of the partitions @file{/dev/sda1} and @file{/dev/sdb1}
 may be declared as follows:
