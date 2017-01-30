@@ -324,6 +324,43 @@ Gnome project.  It includes xml2po tool which makes it easier to translate
 and keep up to date translations of documentation.")
     (license license:gpl2+))) ; xslt under lgpl
 
+(define-public gnome-disk-utility
+  (package
+    (name "gnome-disk-utility")
+    (version "3.22.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hqynlcgwm72il2rdml98gcarz0alsgxs5xf6ww2x0czaj3s3953"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (inputs
+     `(("glib" ,glib)
+       ("appstream-glib" ,appstream-glib)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libdvdread" ,libdvdread)
+       ("libnotify" ,libnotify)
+       ("libpwquality" ,libpwquality)
+       ("libsecret" ,libsecret)
+       ("udisks" ,udisks)))
+    (home-page "https://git.gnome.org/browse/gnome-disk-utility")
+    (synopsis "Disk management utility for GNOME")
+    (description "Disk management utility for GNOME.")
+    (license license:gpl2+)))
+
 (define-public gcr
   (package
     (name "gcr")
