@@ -608,14 +608,14 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.7.4")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1c28ykkizd7jqgzrfkg7ivqjlqs9p6lygp26bsw2i0z8hwhi3lvs"))))
+                "07jlhc66z76dipj4j5v3dig8x6h3k6cb36kmnmpsixf3zmlvqgb7"))))
     (build-system gnu-build-system)
     (native-inputs `(("bison" ,bison) ("flex" ,flex)))
     (arguments '(#:configure-flags '("--with-pcap=linux")
