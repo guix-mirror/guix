@@ -8506,14 +8506,14 @@ the standard library.")
 (define-public python-texttable
   (package
     (name "python-texttable")
-    (version "0.8.4")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "texttable" version))
        (sha256
         (base32
-         "0bkhs4dx9s6g7fpb969hygq56hyz4ncfamlynw72s0n6nqfbd1w5"))))
+         "1liiiydgkg37i46a418aw19fyf6z3ds51wdwwpyjbs12x0phhf4a"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/foutaise/texttable/")
