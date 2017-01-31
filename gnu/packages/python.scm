@@ -8256,15 +8256,14 @@ security policies on Python objects.")
 (define-public python-zope-component
   (package
     (name "python-zope-component")
-    (version "4.2.2")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.component/zope.component-" version ".tar.gz"))
+       (uri (pypi-uri "zope.component" version))
        (sha256
         (base32
-         "06pqr8m5jv12xjyy5b59hh9anl61cxkzhw9mka33r3nxalmi2b18"))))
+         "1hlvzwj1kcfz1qms1dzhwsshpsf38z9clmyksb1gh41n8k3kchdv"))))
     (build-system python-build-system)
     (arguments
      ;; Skip tests due to circular dependency with python-zope-security.
