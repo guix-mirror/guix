@@ -12,7 +12,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
-;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016, 2017 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Coypright © 2016 John Darrington <jmd@gnu.org>
 ;;;
@@ -1916,3 +1916,65 @@ in order to be able to find it.
 @item @command{sunxi-nand-image-builder}: Prepares raw NAND images.
 @end enumerate")
     (license license:gpl2+)))
+
+(define-public sedsed
+  (package
+    (name "sedsed")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/aureliojargas/sedsed/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0139jkqvm8ipiwfj7k69ry2f9b1ffgpk79arpz4r7w9kf6h23bnh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sed-in
+           (lambda _
+             (substitute* "sedsed.py"
+               (("sedbin = 'sed'")
+                (string-append "sedbin = '" (which "sed") "'")))
+             #t))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               ;; Just one file to copy around
+               (install-file "sedsed.py" bin)
+               #t)))
+         (add-after 'install 'symlink
+           ;; Create 'sedsed' symlink to "sedsed.py".
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (sed (string-append bin "/sedsed"))
+                    (sedpy (string-append bin "/sedsed.py")))
+               (symlink  sedpy sed)
+               #t))))))
+    (home-page "http://aurelio.net/projects/sedsed")
+    (synopsis "Sed sed scripts")
+    (description
+     "@code{sedsed} can debug, indent, tokenize and HTMLize your sed(1) script.
+
+In debug mode it reads your script and add extra commands to it.  When
+executed you can see the data flow between the commands, revealing all the
+magic sed does on its internal buffers.
+
+In indent mode your script is reformatted with standard spacing.
+
+In tokenize mode you can see the elements of every command you use.
+
+In HTMLize mode your script is converted to a beautiful colored HTML file,
+with all the commands and parameters identified for your viewing pleasure.
+
+With sedsed you can master any sed script.  No more secrets, no more hidden
+buffers.")
+    (license license:expat)))
