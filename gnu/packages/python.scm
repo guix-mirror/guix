@@ -12551,13 +12551,13 @@ English stemmer.")
 (define-public python-sphinx-cloud-sptheme
   (package
     (name "python-sphinx-cloud-sptheme")
-    (version "1.7.1")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cloud_sptheme" version))
               (sha256
                (base32
-                "0zm9ap4p5dzln8f1m2immadaxv2xpg8jg4w53y52rhfl7pdb58vy"))))
+                "1dniqb6a39yh786f86c4jn666rwnyi1jvzn4616zhcchb7sfdshd"))))
     (build-system python-build-system)
     ;; FIXME: The 'pypi' release archive does not contain tests.
     (arguments '(#:tests? #f))
