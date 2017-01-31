@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -272,6 +273,8 @@ rustc-bootstrap and cargo-bootstrap packages.")
                (wrap-program (string-append out "/bin/rustc")
                  `("PATH" ":" prefix (,(string-append ld-wrapper "/bin")))
                  `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))))))))
+    ;; rustc invokes gcc, so we need to set its search paths accordingly.
+    (native-search-paths (package-native-search-paths gcc))
     (synopsis "Compiler for the Rust progamming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
