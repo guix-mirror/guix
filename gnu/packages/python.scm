@@ -11175,17 +11175,14 @@ are optionally backed by a C extension built on librdkafka.")
 (define-public python-wcwidth
  (package
   (name "python-wcwidth")
-  (version "0.1.6")
+  (version "0.1.7")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/"
-             "c2/d1/7689293086a8d5320025080cde0e3155b94ae0a7496fb89a3fbaa92c354a/"
-             "wcwidth-" version ".tar.gz"))
+      (uri (pypi-uri "wcwidth" version))
       (sha256
         (base32
-          "02wjrpf001gjdjsaxxbzcwfg19crlk2dbddayrfc2v06f53yrcyw"))))
+          "0pn6dflzm609m4r3i8ik5ni9ijjbb5fa3vg1n7hn6vkd49r77wrx"))))
   (build-system python-build-system)
   (home-page "https://github.com/jquast/wcwidth")
   (synopsis "Measure number of terminal column cells of wide-character codes")
