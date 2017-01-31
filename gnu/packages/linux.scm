@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
@@ -66,6 +68,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -3408,6 +3411,100 @@ set the screen to be pitch black at a vaĺue of 0 (or higher).
 
 Light is the successor of lightscript.")
     (license license:gpl3+)))
+
+(define-public tlp
+  (package
+    (name "tlp")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/linrunner/"
+                    (string-upcase name)
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xksm8ar6dbq0azbfz8qs9yyzqg1j333lyd5znc074rz8inj4yw8"))))
+    (inputs `(("bash" ,bash)
+              ("dbus" ,dbus)
+              ("ethtool" ,ethtool)
+              ("eudev" ,eudev)
+              ("grep" ,grep)
+              ("hdparm" ,hdparm)
+              ("inetutils" ,inetutils)
+              ("iw" ,iw)
+              ("kmod" ,kmod)
+              ("pciutils" ,pciutils)
+              ("perl" ,perl)
+              ("rfkill" ,rfkill)
+              ("sed" ,sed)
+              ("usbutils" ,usbutils)
+              ("util-linux" ,util-linux)
+              ("wireless-tools" ,wireless-tools)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'setenv
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "TLP_WITH_SYSTEMD" "0")
+               (setenv "TLP_NO_INIT" "1")
+               (setenv "TLP_NO_PMUTILS" "1")
+               (setenv "TLP_SBIN" (string-append out "/bin"))
+               (setenv "TLP_BIN" (string-append out "/bin"))
+               (setenv "TLP_TLIB" (string-append out "/share/tlp-pm"))
+               (setenv "TLP_ULIB" (string-append out "/lib/udev"))
+               (setenv "TLP_CONF" (string-append out "/etc/tlp"))
+               (setenv "TLP_SHCPL"
+                       (string-append out "/share/bash-completion/completions"))
+               (setenv "TLP_MAN" (string-append out "/share/man")))))
+         (delete 'check)
+         (replace 'install
+           (lambda _
+             (system "make install-tlp install-man")))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (bin-files (find-files bin ".*")))
+               (define (bin-directory input-name)
+                 (string-append (assoc-ref inputs input-name) "/bin"))
+               (define (sbin-directory input-name)
+                 (string-append (assoc-ref inputs input-name) "/sbin"))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("PATH" ":" prefix
+                               ,(append
+                                 (map bin-directory '("bash"
+                                                      "coreutils"
+                                                      "dbus"
+                                                      "eudev"
+                                                      "grep"
+                                                      "inetutils"
+                                                      "kmod"
+                                                      "perl"
+                                                      "sed"
+                                                      "usbutils"
+                                                      "util-linux"))
+                                 (map sbin-directory '("ethtool"
+                                                       "hdparm"
+                                                       "iw"
+                                                       "pciutils"
+                                                       "rfkill"
+                                                       "wireless-tools"))))))
+                         bin-files)))))))
+    (home-page "http://linrunner.de/en/tlp/tlp.html")
+    (synopsis "Power management tool for Linux")
+    (description "TLP is a power management tool for Linux.  It comes with
+a default configuration already optimized for battery life.  Nevertheless,
+TLP is customizable to fulfil system requirements.  TLP settings are applied
+every time the power supply source is changed.")
+
+    ;; 'COPYING' is a custom version that says that one file is GPLv3+ and the
+    ;; rest is GPLv2+.
+    (license (list license:gpl2+ license:gpl3+))))
 
 (define-public lshw
   (package
