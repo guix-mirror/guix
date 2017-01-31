@@ -2467,7 +2467,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "3.4")
+    (version "4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2475,13 +2475,14 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0248v9f28mrbwabl94ck22gfim29sqhkf70wrpfi52nk4x3bxl17"))))
+                "1ad3mma641946wn5lsllwf0lifw9lps34fv1nnkhyfpd9krffshx"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "INSTALL=install"
+                      (list "CC=gcc"
+                            "INSTALL=install"
                             "CHECK_RUN_DIR=0"
                             ;; TODO: tell it where to find 'sendmail'
                             ;; (string-append "MAILCMD=" <???> "/sbin/sendmail")
