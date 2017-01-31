@@ -202,7 +202,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.2.2-103")
+    (version "1.2.3-19")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -214,7 +214,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "1qrhjw2sdvyv2x8fqs9isqv8rgldn448gfxbi7zbva8m5va5b3z1"))))
+                "0asynsj0xcfdjn0vkyxdgdy3hfpr6gc9f92xxa1rmn7clbqmlk1y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
