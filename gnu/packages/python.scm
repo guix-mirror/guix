@@ -1759,14 +1759,14 @@ standard library.")
 (define-public python-py
   (package
     (name "python-py")
-    (version "1.4.31")
+    (version "1.4.32")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "0561gz2w3i825gyl42mcq14y3dcgkapfiv5zv9a2bz15qxiijl56"))))
+         "19s1pql9pq85h1qzsdwgyb8a3k1qgkvh33b02m8kfqhizz8rzf64"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: "ImportError: 'test' module incorrectly imported from
