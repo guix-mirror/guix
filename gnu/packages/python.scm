@@ -10061,14 +10061,14 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
         (base32
-         "0k4hshvrwsh8yagydyxgmd0pjm29lwdxkngcq9fzfzkmpsxrmkva"))))
+         "0p60z2gwfcal30y2w8gprflchp1kcg9qblc5rn782p4wxl90wjbh"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
