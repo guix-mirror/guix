@@ -3154,14 +3154,14 @@ augment the changelog, but it can be used for other documents, too.")
 (define-public python-feedgenerator
   (package
     (name "python-feedgenerator")
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "feedgenerator" version))
        (sha256
         (base32
-         "0mkimp1fpdan4p3882vzcws4l594k71ich4g0wq97jbra7p602n0"))
+         "01mirwkm7xfx539hmvj7g9da1j51gw5lsx74dr0glizskjm5vq2s"))
        (modules '((guix build utils)))
        (snippet
         '(begin
