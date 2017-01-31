@@ -1592,14 +1592,14 @@ system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ppv953gn2zylcagr4z6zg5y2x93dxrml29plypg6xgbq3hrv2bs"))
+                "124swm93dm4ca0pifgkrand3r9gvj3019d4zkfxsj9djpvv0mnaz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
