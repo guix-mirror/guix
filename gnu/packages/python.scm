@@ -6870,17 +6870,14 @@ and MAC network addresses.")
 (define-public python-wrapt
   (package
     (name "python-wrapt")
-    (version "1.10.5")
+    (version "1.10.8")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/w/wrapt/wrapt-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "wrapt" version))
         (sha256
           (base32
-            "0cq8rlpzkxzk48b50yrfhzn1d1hrq4gjcdqlrgq4v5palgiv9jwr"))))
+            "0wrcm1mydvfivbkzz0h81ygzdchnscshi6xvy5n3r21r9s0px8af"))))
     (build-system python-build-system)
     (arguments
      ;; Tests are not included in the tarball, they are only available in the
