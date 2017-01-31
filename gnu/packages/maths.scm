@@ -1014,14 +1014,14 @@ Open CASCADE library.")
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "2.15.0")
+    (version "2.16.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://gmsh.info/src/gmsh-"
                           version "-source.tgz"))
       (sha256
-       (base32 "02h7fk4vv8qwnq3ymm409c5sp4nksd0m9h2vkxqmy42l0ic4nalr"))
+       (base32 "1slf0bfkwrcgn6296wb4qhbk4ahz6i4wfb10hnim08x05vrylag8"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
