@@ -90,9 +90,9 @@
   ;; provided MESSAGE.
   (let ((loc (or (package-field-location package field)
                  (package-location package))))
-    (format (guix-warning-port) "~a: ~a: ~a~%"
+    (format (guix-warning-port) "~a: ~a@~a: ~a~%"
             (location->string loc)
-            (package-full-name package)
+            (package-name package) (package-version package)
             message)))
 
 (define (call-with-accumulated-warnings thunk)
