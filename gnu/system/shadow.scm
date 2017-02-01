@@ -84,7 +84,7 @@
   (create-home-directory? user-account-create-home-directory? ;Boolean
                           (default #t))
   (shell          user-account-shell              ; gexp
-                  (default #~(string-append #$bash "/bin/bash")))
+                  (default (file-append bash "/bin/bash")))
   (system?        user-account-system?            ; Boolean
                   (default #f)))
 
@@ -131,7 +131,7 @@
          (name "nobody")
          (uid 65534)
          (group "nogroup")
-         (shell #~(string-append #$shadow "/sbin/nologin"))
+         (shell (file-append shadow "/sbin/nologin"))
          (home-directory "/nonexistent")
          (create-home-directory? #f)
          (system? #t))))
