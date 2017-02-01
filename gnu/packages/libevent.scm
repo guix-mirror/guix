@@ -43,7 +43,10 @@
              (sha256
               (base32
                "1hhxnxlr0fsdv7bdmzsnhdz16fxf3jg2r6vyljcl3kj6pflcap4n"))
-             (patches (search-patches "libevent-2.1-dns-tests.patch"))))
+             (patches (search-patches "libevent-2.1-dns-tests.patch"
+                                      ;; XXX: Try removing this for > 2.1.8.
+                                      ;; https://github.com/libevent/libevent/issues/452
+                                      "libevent-2.1-skip-failing-test.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("python" ,python-2)))           ; for 'event_rpcgen.py'

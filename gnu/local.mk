@@ -676,6 +676,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.0-evdns-fix-searching-empty-hostnames.patch	\
   %D%/packages/patches/libevent-2.0-evutil-fix-buffer-overflow.patch	\
   %D%/packages/patches/libevent-2.1-dns-tests.patch		\
+  %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
