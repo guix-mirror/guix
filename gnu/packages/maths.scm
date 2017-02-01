@@ -1035,6 +1035,7 @@ Open CASCADE library.")
        ("lapack" ,lapack)
        ("mesa" ,mesa)
        ("glu" ,glu)
+       ("opencascade-oce" ,opencascade-oce)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
     (inputs
@@ -1043,15 +1044,7 @@ Open CASCADE library.")
     (arguments
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
-                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")
-       #:phases (modify-phases %standard-phases
-                  (replace
-                   'check
-                   (lambda _
-                     (zero? (system* "make" "test"
-                                     ;; Disable this test.  See
-                                     ;; https://geuz.org/trac/gmsh/ticket/271
-                                     "ARGS=-E component8_in_a_box")))))))
+                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
     (home-page "http://www.geuz.org/gmsh/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in
