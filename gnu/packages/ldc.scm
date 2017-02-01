@@ -77,7 +77,7 @@ minimize the amount of work necessary.  Unlike make, rdmd tracks dependencies
 and freshness without requiring additional information from the user.")
       (license license:boost1.0))))
 
-(define-public ldc
+(define-public ldc-bootstrap
   (package
     (name "ldc")
     (version "0.17.2")
@@ -182,7 +182,7 @@ latest DMD frontend and uses LLVM as backend.")
   ;; variable to hold this variable.
   (let ((older-version "1.1.0-beta4"))
     (package
-      (inherit ldc)
+      (inherit ldc-bootstrap)
       (name "ldc")
       (version "1.1.0-beta6")
       ;; Beta version needed to compile various scientific tools that require
@@ -227,7 +227,7 @@ latest DMD frontend and uses LLVM as backend.")
       (native-inputs
        `(("llvm" ,llvm)
          ("clang" ,clang)
-         ("ldc" ,ldc)
+         ("ldc" ,ldc-bootstrap)
          ("python-lit" ,python-lit)
          ("python-wrapper" ,python-wrapper)
          ("unzip" ,unzip)
