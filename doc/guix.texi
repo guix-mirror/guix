@@ -8786,11 +8786,21 @@ Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces.
 @end deffn
 
+@defvr {Scheme Variable} static-networking-service-type
+This is the type for statically-configured network interfaces.
+@c TODO Document <static-networking> data structures.
+@end defvr
+
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
        [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
 it must be a string specifying the default network gateway.
+
+This procedure can be called several times, one for each network
+interface of interest.  Behind the scenes what it does is extend
+@code{static-networking-service-type} with additional network interfaces
+to handle.
 @end deffn
 
 @cindex wicd

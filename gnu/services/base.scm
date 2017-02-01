@@ -1546,8 +1546,10 @@ This service is not part of @var{%base-services}."
         (mingetty-service (mingetty-configuration
                            (tty "tty6")))
 
-        (static-networking-service "lo" "127.0.0.1"
-                                   #:provision '(loopback))
+        (service static-networking-service-type
+                 (list (static-networking (interface "lo")
+                                          (ip "127.0.0.1")
+                                          (provision '(loopback)))))
         (syslog-service)
         (urandom-seed-service)
         (guix-service)
