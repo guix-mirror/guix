@@ -752,7 +752,7 @@ number generator")
 (define-public acme-client
   (package
     (name "acme-client")
-    (version "0.1.15")
+    (version "0.1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://kristaps.bsd.lv/" name "/"
@@ -760,7 +760,7 @@ number generator")
                                   version ".tgz"))
               (sha256
                (base32
-                "07p723391whrswl4rir0l1k03l457sjscnj0cfaxr8mfnkx4y3wi"))))
+                "00q05b3b1dfnfp7sr1nbd212n0mqrycl3cr9lbs51m7ncaihbrz9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no test suite
