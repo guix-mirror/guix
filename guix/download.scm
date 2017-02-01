@@ -88,6 +88,7 @@
        "http://ftp.belnet.be/ftp.gnome.org/"
        "http://ftp.linux.org.uk/mirrors/ftp.gnome.org/"
        "http://ftp.gnome.org/pub/GNOME/"
+       "https://download.gnome.org/"
        "http://mirror.yandex.ru/mirrors/ftp.gnome.org/")
       (hackage
        "http://hackage.haskell.org/")
