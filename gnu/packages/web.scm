@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
@@ -5236,3 +5236,35 @@ file links.")
                    ;; https://github.com/wummel/linkchecker/issues/729
                    l:isc   ; third_party/dnspython
                    l:asl2.0)))) ; third_party/miniboa
+
+(define-public cadaver
+  (package
+    (name "cadaver")
+    (version "0.23.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.webdav.org/cadaver/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jizq69ifrjbjvz5y79wh1ny94gsdby4gdxwjad4bfih6a5fck7x"))))
+    (build-system gnu-build-system)
+    ;; TODO: Unbundle libneon and make build succeed with new neon.
+    (arguments
+     `(#:configure-flags (list "--with-ssl=openssl")
+       #:tests? #f)) ;No tests included
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("expat" ,expat)
+       ("openssl" ,openssl)))
+    (home-page "http://www.webdav.org/cadaver")
+    (synopsis "Command-line WebDAV client")
+    (description
+     "Cadaver is a command-line WebDAV client for Unix. It supports
+file upload, download, on-screen display, namespace operations (move/copy),
+collection creation and deletion, and locking operations.")
+    (license l:gpl2)))
