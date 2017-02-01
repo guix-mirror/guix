@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -426,7 +427,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.10.0")
+    (version "2.10.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -434,7 +435,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1w74vy46z922kfs7gjkrng7wjpi481calpasqmjzpn3hqvgsd5d1"))))
+               "1a3gsarl0zrk1dydqn93kx7pnwm7pb7av7g17pj5m7b7kc66k7jv"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
