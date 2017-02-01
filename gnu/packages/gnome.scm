@@ -4244,17 +4244,20 @@ to display dialog boxes from the commandline and shell scripts.")
     (license license:lgpl2.0+)))
 
 (define-public mutter
+  ;; Uses the gnome 3.22 branch that only contains bug fixes.
+  (let ((commit "23c315ea7121e9bd108e2837d0b4beeba53c5e18"))
   (package
     (name "mutter")
-    (version "3.22.2")
+    (version (git-version "3.22.2" "1" commit))
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.gnome.org/mutter")
+                    (commit commit)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "18lj80klfnkwh0cb3ab0i1vfvzbp0zjl73x9d7pna4dsdhsmi6ym"))))
+                "1v1f9xyzjr1ihmfwpq9kzlv2lyr9qn63ck8zny699mbp5hsi11mb"))))
      ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
      ;; versions of cogl and clutter.  As a result, many of the inputs,
      ;; propagated-inputs, and configure flags used in cogl and clutter are
@@ -4277,12 +4280,21 @@ to display dialog boxes from the commandline and shell scripts.")
              "--enable-cogl-gst"
              (string-append "--with-gl-libname="
                             (assoc-ref %build-inputs "mesa")
-                            "/lib/libGL.so"))))
+                            "/lib/libGL.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ;; For git build
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (propagated-inputs
      `(;; libmutter.pc refers to these:
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
@@ -4328,7 +4340,7 @@ to display dialog boxes from the commandline and shell scripts.")
 desktop via OpenGL.  Mutter combines a sophisticated display engine using the
 Clutter toolkit with solid window-management logic inherited from the Metacity
 window manager.")
-    (license license:gpl2+)))
+    (license license:gpl2+))))
 
 (define-public gnome-online-accounts
   (package
