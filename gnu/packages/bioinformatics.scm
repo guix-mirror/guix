@@ -6324,7 +6324,8 @@ names in their natural, rather than lexicographic, order.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-limma" ,r-limma)
-       ("r-locfit" ,r-locfit)))
+       ("r-locfit" ,r-locfit)
+       ("r-statmod" ,r-statmod))) ;for estimateDisp
     (home-page "http://bioinf.wehi.edu.au/edgeR")
     (synopsis "EdgeR does empirical analysis of digital gene expression data")
     (description "This package can do differential expression analysis of
