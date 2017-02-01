@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,3 +152,28 @@ commands provide immediate and incremental results, while still being
 competitive (as in keystroke count) with Vim.")
       (home-page "http://kakoune.org/")
       (license license:unlicense))))
+
+(define-public joe
+  (package
+    (name "joe")
+    (version "4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://sourceforge.net/projects/joe-editor/"
+                           "files/JOE sources/joe-" version "/"
+                           "joe-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y898r1xlrv75m00y598rvwwsricabplyh80wawsqafapcl4hw55"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://joe-editor.sourceforge.net/")
+    (synopsis "Console screen editor")
+    (description
+     "JOE is a blending of MicroPro's microcomputer word processor WordStar
+and Richard Stallman's LISP-based text editor GNU Emacs.  Most of the basic
+editing keys and the overall feel of the editor are the same as in WordStar.
+JOE also has some of the key bindings and many of the powerful features of GNU
+Emacs.")
+    (license license:gpl3+)))
