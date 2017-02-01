@@ -93,7 +93,8 @@ also initializes the boards (RAM etc).")
        ("cross-binutils" ,(cross-binutils triplet))
        ,@(package-native-inputs u-boot)))
     (arguments
-     `(#:test-target "test"
+     `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
+       #:test-target "test"
        #:make-flags
        (list "HOSTCC=gcc" (string-append "CROSS_COMPILE=" ,triplet "-"))
        #:phases
@@ -105,14 +106,14 @@ also initializes the boards (RAM etc).")
                    (zero? (apply system* "make" `(,@make-flags ,config-name)))
                    (begin
                      (display "Invalid board name. Valid board names are:")
-                     (let ((dir (opendir "configs"))
-                           (suffix-length (string-length "_defconfig")))
-                       (do ((file-name (readdir dir) (readdir dir)))
-                           ((eof-object? file-name))
-                         (when (string-suffix? "_defconfig" file-name)
-                           (format #t "- ~A\n"
-                                   (string-drop-right file-name suffix-length))))
-                       (closedir dir))
+                     (let ((suffix-len (string-length "_defconfig")))
+                       (scandir "configs"
+                                (lambda (file-name)
+                                  (when (string-suffix? "_defconfig" file-name)
+                                    (format #t
+                                            "- ~A\n"
+                                            (string-drop-right file-name
+                                                               suffix-len))))))
                      #f)))))
          (replace 'install
            (lambda* (#:key outputs make-flags #:allow-other-keys)
