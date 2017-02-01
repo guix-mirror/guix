@@ -104,6 +104,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -3071,3 +3072,33 @@ symbols, the game needs graphics to render the non-euclidean world.")
 for Un*x systems with X11.")
     (home-page "http://olofson.net/kobodl/")
     (license license:gpl2+)))
+
+(define-public freeciv
+  (package
+   (name "freeciv")
+   (version "2.5.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://download.gna.org/freeciv/"
+           "stable/freeciv-" version ".tar.bz2"))
+     (sha256
+      (base32
+       "16wrnsx5rmbz6rjs03bhy0vn20i6n6g73lx7fjpai98ixhzc5bfg"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("curl" ,curl)
+      ("cyrus-sasl" ,cyrus-sasl)
+      ("gtk+" ,gtk+)
+      ("sdl-mixer" ,sdl-mixer)
+      ("zlib" ,zlib)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "http://www.freeciv.org/")
+   (synopsis "Turn based empire building strategy game")
+   (description "Freeciv is a turn based empire building strategy game
+inspired by the history of human civilization.  The game commences in
+prehistory and your mission is to lead your tribe from the Stone Age
+to the Space Age.")
+   (license license:gpl2+)))
