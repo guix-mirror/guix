@@ -367,6 +367,47 @@ write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
     (license license:gpl2)))
 
+(define-public git-crypt
+  (package
+    (name "git-crypt")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/AGWA/git-crypt"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0454fdmgm5f3razkn8n03lfqm5zyzvr4r2528zmlxiwba9518l2i"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("git" ,git)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (zero? (system* "make"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "make" "install"
+                               (string-append "PREFIX=" out)))))))))
+    (home-page "https://www.agwa.name/projects/git-crypt")
+    (synopsis "Transparent encryption of files in a git repository")
+    (description "git-crypt enables transparent encryption and decryption of
+files in a git repository. Files which you choose to protect are encrypted when
+committed, and decrypted when checked out. git-crypt lets you freely share a
+repository containing a mix of public and private content. git-crypt gracefully
+degrades, so developers without the secret key can still clone and commit to a
+repository with encrypted files. This lets you store your secret material (such
+as keys or passwords) in the same repository as your code, without requiring you
+to lock down your entire repository.")
+    (license license:gpl3+)))
+
 (define-public cgit
   (package
     (name "cgit")
