@@ -21,9 +21,11 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (guix modules)
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
   #:use-module ((gnu system file-systems)
                 #:select (%tty-gid))
   #:use-module ((gnu packages admin)
@@ -43,6 +45,7 @@
             user-account-supplementary-groups
             user-account-comment
             user-account-home-directory
+            user-account-create-home-directory?
             user-account-shell
             user-account-system?
 
@@ -288,6 +291,35 @@ group."
       (activate-users+groups (list #$@user-specs)
                              (list #$@group-specs))))
 
+(define (account-shepherd-service accounts+groups)
+  "Return a Shepherd service that creates the home directories for the user
+accounts among ACCOUNTS+GROUPS."
+  (define accounts
+    (filter user-account? accounts+groups))
+
+  ;; Create home directories only once 'file-systems' is up.  This makes sure
+  ;; they are created in the right place if /home lives on a separate
+  ;; partition.
+  ;;
+  ;; XXX: We arrange for this service to stop right after it's done its job so
+  ;; that 'guix system reconfigure' knows that it can reload it fearlessly
+  ;; (and thus create new home directories).  The cost of this hack is that
+  ;; there's a small window during which first-time logins could happen before
+  ;; the home directory has been created.
+  (list (shepherd-service
+         (requirement '(file-systems))
+         (provision '(user-homes))
+         (modules '((gnu build activation)))
+         (start (with-imported-modules (source-module-closure
+                                        '((gnu build activation)))
+                  #~(lambda ()
+                      (activate-user-home
+                       (list #$@(map user-account->gexp accounts)))
+                      #f)))                       ;stop
+         (stop #~(const #f))
+         (respawn? #f)
+         (documentation "Create user home directories."))))
+
 (define (shells-file shells)
   "Return a file-like object that builds a shell list for use as /etc/shells
 based on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
@@ -327,6 +359,8 @@ the /etc/skel directory for those."
                 (extensions
                  (list (service-extension activation-service-type
                                           account-activation)
+                       (service-extension shepherd-root-service-type
+                                          account-shepherd-service)
                        (service-extension etc-service-type
                                           etc-files)))))
 

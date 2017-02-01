@@ -35,6 +35,7 @@
   #:use-module (guix utils)
   #:export (%test-installed-os
             %test-separate-store-os
+            %test-separate-home-os
             %test-raid-root-os
             %test-encrypted-os
             %test-btrfs-root-os))
@@ -218,7 +219,6 @@ IMAGE, a disk image.  The QEMU VM is has access to MEMORY-SIZE MiB of RAM."
                   "-no-reboot" "-m" #$(number->string memory-size)
                   "-drive" "file=disk.img,if=virtio")))))
 
-
 (define %test-installed-os
   (system-test
    (name "installed-os")
@@ -231,6 +231,64 @@ build (current-guix) and then store a couple of full system images.")
                          (command (qemu-command/writable-image image)))
       (run-basic-test %minimal-os command
                       "installed-os")))))
+
+
+;;;
+;;; Separate /home.
+;;;
+
+(define-os-with-source (%separate-home-os %separate-home-os-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.utf8")
+
+    (bootloader (grub-configuration (device "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons* (file-system
+                           (device "my-root")
+                           (title 'label)
+                           (mount-point "/")
+                           (type "ext4"))
+                         (file-system
+                           (device "none")
+                           (title 'device)
+                           (type "tmpfs")
+                           (mount-point "/home")
+                           (type "tmpfs"))
+                         %base-file-systems))
+    (users (cons* (user-account
+                   (name "alice")
+                   (group "users")
+                   (home-directory "/home/alice"))
+                  (user-account
+                   (name "charlie")
+                   (group "users")
+                   (home-directory "/home/charlie"))
+                  %base-user-accounts))
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %test-separate-home-os
+  (system-test
+   (name "separate-home-os")
+   (description
+    "Test basic functionality of an installed OS with a separate /home
+partition.  In particular, home directories must be correctly created (see
+<https://bugs.gnu.org/21108>).")
+   (value
+    (mlet* %store-monad ((image   (run-install %separate-home-os
+                                               %separate-home-os-source
+                                               #:script
+                                               %simple-installation-script))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %separate-home-os command "separate-home-os")))))
 
 
 ;;;
