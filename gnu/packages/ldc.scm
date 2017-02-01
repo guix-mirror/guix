@@ -176,15 +176,15 @@ latest DMD frontend and uses LLVM as backend.")
                    license:boost1.0))))
 
 
-(define-public ldc-1.1.0-beta6
+(define-public ldc
   ;; The phobos, druntime and dmd-testsuite dependencies do not have a newer
   ;; release than 1.1.0-beta4, hence the need to make use of the older-version
   ;; variable to hold this variable.
-  (let ((older-version "1.1.0-beta4"))
+  (let ((older-version "1.1.0"))
     (package
       (inherit ldc-bootstrap)
       (name "ldc")
-      (version "1.1.0-beta6")
+      (version "1.1.0")
       ;; Beta version needed to compile various scientific tools that require
       ;; the newer beta versions, and won't compile successfully with the
       ;; older stable version.
@@ -196,7 +196,7 @@ latest DMD frontend and uses LLVM as backend.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0n53brlkm86jjkppy9xmzx7nyxykzj68kcxgv8q7d10s5hfscxs8"))))
+                  "10zkrmx9bcmhfxvgykm3fkjamzc8js96wm032bv0fyil5c9ja2y1"))))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -240,7 +240,7 @@ latest DMD frontend and uses LLVM as backend.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "1iwy5rs0rqkicj1zfsa5yqvk8ard99bfr8g69qmhlbzb98q0kpks"))
+               "0z5v55b9s1ppf0c2ivjq7sbmq688c37c92ihc3qwrbxnqvkkvrlk"))
              ;; This patch deactivates some tests that depend on network access
              ;; to pass.  It also deactivates some tests that have some reliance
              ;; on timezone.
@@ -259,7 +259,7 @@ latest DMD frontend and uses LLVM as backend.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "1qsiw5lz1pr8ms9myjf8b94nqi7f1781k226jvxwnhkjg11d0s63"))))
+               "07qvrqj6vgakd6qr4x5f70w6zwkzd1li5x8i1b5ywnds1z5lnfp6"))))
          ("dmd-testsuite-src"
           ,(origin
              (method url-fetch)
@@ -268,13 +268,13 @@ latest DMD frontend and uses LLVM as backend.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "0jp54hyi75i9g41rvgmm3zg21yzv57q8dghrhb432rb0n9j15mbp"))
+               "12cak7yqmsgjlflx0dp6fwmwb9dac25amgi86n0bb95ard3547wy"))
              ;; Remove the gdb tests that fails with a "Error: No such file or
              ;; directory" error, despite the files being present in the debug
              ;; files left with the --keep-failed flag to guix build.
              (patches (search-patches "ldc-1.1.0-disable-dmd-tests.patch")))))))))
 
-(define-public ldc-beta ldc-1.1.0-beta6)
+(define-public ldc-beta ldc)
 
 (define-public dub
   (package
