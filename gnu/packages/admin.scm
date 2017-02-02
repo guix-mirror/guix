@@ -1712,7 +1712,7 @@ throughput (in the same interval).")
        ("python-decorator" ,python-decorator)
        ("python-psutil" ,python-psutil)
        ("python-six" ,python-six)))
-    (inputs
+    (native-inputs
      ;; Requires setuptools >= 17.1 due to some features used, while our
      ;; python currently only includes 12.0. TODO: Remove this input.
      `(("python-setuptools" ,python-setuptools)))
