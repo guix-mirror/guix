@@ -1,0 +1,32 @@
+This fixes a test failure on i686.
+
+Patch copied from upstream source repository:
+
+https://cgit.freedesktop.org/gstreamer/gst-plugins-base/commit/?id=5e2e111627871c566ffc6607eda8f4ef4699d040
+
+From 5e2e111627871c566ffc6607eda8f4ef4699d040 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Sebastian=20Dr=C3=B6ge?= <sebastian@centricular.com>
+Date: Thu, 2 Feb 2017 14:56:39 +0200
+Subject: [PATCH] multifdsink: Make sure to use a 64 bit integer for the
+ units-max property
+
+---
+ tests/check/elements/multifdsink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/check/elements/multifdsink.c b/tests/check/elements/multifdsink.c
+index af138cc92..951b1b9fa 100644
+--- a/tests/check/elements/multifdsink.c
++++ b/tests/check/elements/multifdsink.c
+@@ -869,7 +869,7 @@ GST_START_TEST (test_client_kick)
+   gint i, initial_buffers = 3, num_buffers = 0;
+ 
+   sink = setup_multifdsink ();
+-  g_object_set (sink, "units-max", initial_buffers, NULL);
++  g_object_set (sink, "units-max", (gint64) initial_buffers, NULL);
+ 
+   fail_if (pipe (pfd1) == -1);
+   fail_if (pipe (pfd2) == -1);
+-- 
+2.11.0
+
