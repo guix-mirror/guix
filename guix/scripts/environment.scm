@@ -433,7 +433,8 @@ host file systems to mount inside the container."
                              (writable? #f)))
                           reqs)))
             (file-systems (append %container-file-systems
-                                  (map mapping->file-system mappings))))
+                                  (map file-system-mapping->bind-mount
+                                       mappings))))
        (exit/status
         (call-with-container file-systems
           (lambda ()

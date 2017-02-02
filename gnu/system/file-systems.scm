@@ -63,6 +63,8 @@
             file-system-mapping-target
             file-system-mapping-writable?
 
+            file-system-mapping->bind-mount
+
             %store-mapping))
 
 ;;; Commentary:
@@ -351,6 +353,21 @@ TARGET in the other system."
   (target    file-system-mapping-target)          ;string
   (writable? file-system-mapping-writable?        ;Boolean
              (default #f)))
+
+(define (file-system-mapping->bind-mount mapping)
+  "Return a file system that realizes MAPPING, a <file-system-mapping>, using
+a bind mount."
+  (match mapping
+    (($ <file-system-mapping> source target writable?)
+     (file-system
+       (mount-point target)
+       (device source)
+       (type "none")
+       (flags (if writable?
+                  '(bind-mount)
+                  '(bind-mount read-only)))
+       (check? #f)
+       (create-mount-point? #t)))))
 
 (define %store-mapping
   ;; Mapping of the host's store into the guest.
