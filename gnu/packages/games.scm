@@ -17,7 +17,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -3102,3 +3102,39 @@ inspired by the history of human civilization.  The game commences in
 prehistory and your mission is to lead your tribe from the Stone Age
 to the Space Age.")
    (license license:gpl2+)))
+
+(define-public no-more-secrets
+  (package
+    (name "no-more-secrets")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/bartobri/no-more-secrets/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "038flwqr0kqv55im2v76xjn01zbvvkb3nzb5ridwm2kbnk9cgg4v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list "CC=gcc" "all-ncurses"
+                          (string-append "prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://github.com/bartobri/no-more-secrets")
+    (synopsis "Recreation of data decryption effect in \"Sneakers\"")
+    (description
+     "@code{No More Secrets} provides a command line tool called \"nms\"
+that recreates the famous data decryption effect seen on screen in the 1992
+movie \"Sneakers\".
+
+This command works on piped data.  Pipe any ASCII or UTF-8 text to nms, and
+it will apply the hollywood effect, initially showing encrypted data, then
+starting a decryption sequence to reveal the original plaintext characters.")
+    (license license:expat)))
