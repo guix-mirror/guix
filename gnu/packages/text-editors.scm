@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -171,9 +171,7 @@ competitive (as in keystroke count) with Vim.")
     (home-page "http://joe-editor.sourceforge.net/")
     (synopsis "Console screen editor")
     (description
-     "JOE is a blending of MicroPro's microcomputer word processor WordStar
-and Richard Stallman's LISP-based text editor GNU Emacs.  Most of the basic
-editing keys and the overall feel of the editor are the same as in WordStar.
-JOE also has some of the key bindings and many of the powerful features of GNU
-Emacs.")
+     "JOE is a powerful console screen editor with a \"mode-less\" user
+interface similar to many user-friendly editors.  JOE has some of the key
+bindings and many of the powerful features of GNU Emacs.")
     (license license:gpl3+)))
