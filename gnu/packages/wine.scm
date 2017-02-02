@@ -53,7 +53,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "1.9.24")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -61,7 +61,7 @@
                                   "/wine-" version ".tar.bz2"))
               (sha256
                (base32
-                "0qb07vfxwz41wj71lb0ss3apf22m4ch06382rqfksf7gg34pswnb"))))
+                "1ik6q0h3ph3jizmp7bxhf6kcm1pzrdrn2m0yf2x86slv2aigamlp"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)

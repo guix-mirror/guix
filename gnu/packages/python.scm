@@ -2095,14 +2095,14 @@ protocol.")
 (define python-pbr-minimal
   (package
     (name "python-pbr-minimal")
-    (version "1.8.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pbr" version))
        (sha256
         (base32
-         "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
+         "177kd9kbv1hvf2ban7l3x9ymzbi1md4hkaymwbgnz7ihf312hr0q"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
@@ -2350,16 +2350,15 @@ files.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2016.8.31")
+    (version "2017.1.23")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "06c9dcyv8ss050gkv5xjivbxhm6qm0s9vzy4r33wqabgv118lw7p"))))
+                "1klrzl3hgvcf2mjk00g0k3kk1p2z27vzwnxivwar4vhjmjvpz1w1"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; no tests
-    (home-page "http://python-requests.org/")
+    (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
     (description
      "Certifi is a Python library that contains a CA certificate bundle, which
@@ -2407,14 +2406,14 @@ with sensible defaults out of the box.")
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.29.0")
+    (version "0.30.0a0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "0j0n38hg1jvrmyy68f9ikvzq1gs9g0sx4ws7maf8wi3bwbbqmfqy"))))
+          "1nm6mn8isny0hr86rhbfrpfj867c0phf001xgsd69xfp9ady1wwq"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-jsonschema" ,python-jsonschema)
@@ -3161,15 +3160,13 @@ mining and data analysis.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "2.10.3")
+    (version "2.10.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/r/redis/redis-"
-             version ".tar.gz"))
+       (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4"))))
+        (base32 "0csmrkxb29x7xs9b51zplwkkq2hwnbh9jns1g85dykn5rxmaxysx"))))
     (build-system python-build-system)
     ;; Tests require a running Redis server
     (arguments '(#:tests? #f))
@@ -6003,10 +6000,7 @@ complexity of Python source code.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/m/mistune/mistune-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "mistune" version))
        (sha256
         (base32
          "04xpk1zvslhq3xpnf01g3ag0dy9wfv4z28p093r8k49vvxlyil11"))))
@@ -8766,14 +8760,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.11.35")
+   (version "1.11.43")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri name version))
      (sha256
       (base32
-       "0k6y8cg311bqak5x9pilg80w6f76dcbzm6xcdrw6rjnk6v4xwy70"))))
+       "1x94jmy8ygld8g4pf35zdankh4dx8g8qn3q9j3hrbawqw0vkrp3y"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-colorama" ,python-colorama)
@@ -8787,7 +8781,7 @@ interface to the Amazon Web Services (AWS) API.")
       ("python-sphinx" ,python-sphinx)
       ("python-tox" ,python-tox)
       ("python-wheel" ,python-wheel)))
-   (home-page "http://aws.amazon.com/cli/")
+   (home-page "https://aws.amazon.com/cli/")
    (synopsis "Command line client for AWS")
    (description "AWS CLI provides a unified command line interface to the
 Amazon Web Services (AWS) API.")
@@ -8862,7 +8856,21 @@ normally the case.")
                 "1vqh1n5yy5dhnq312kwrl90fnck4v26is3lq3lxdvcn60vv19da0"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))  ; no tests provided
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-libxdo-path
+           ;; Hardcode the path of dynamically loaded libxdo library.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libxdo (string-append
+                            (assoc-ref inputs "xdotool")
+                            "/lib/libxdo.so")))
+               (substitute* "xdo/_xdo.py"
+                 (("find_library\\(\"xdo\"\\)")
+                  (simple-format #f "\"~a\"" libxdo)))
+               #t))))
+       #:tests? #f))  ; no tests provided
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (inputs
      `(("xdotool" ,xdotool)
        ("libX11" ,libx11)))
@@ -10998,14 +11006,14 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 (define-public python-stem
   (package
     (name "python-stem")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stem" version))
        (sha256
         (base32
-         "0fm67dfx6qaj0mg80r4yw2i72birpzn7cnbyz4p1857max3zfc97"))))
+         "1j7pnblrn0yr6jmxvsq6y0ihmxmj5x50jl2n2606w67f6wq16j9n"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

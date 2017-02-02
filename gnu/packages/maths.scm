@@ -12,9 +12,11 @@
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
@@ -953,17 +956,72 @@ Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
 
+(define-public opencascade-oce
+  (package
+    (name "opencascade-oce")
+    (version "0.17.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://github.com/tpaviot/oce/archive/OCE-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0vpmnb0k5y2f7lpmwx9pg9yfq24zjvnsak5alzacncfm1hv9b6cd"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+        (list "-DOCE_TESTING:BOOL=ON"
+              "-DOCE_USE_TCL_TEST_FRAMEWORK:BOOL=ON"
+              "-DOCE_DRAW:BOOL=ON"
+              (string-append "-DOCE_INSTALL_PREFIX:PATH="
+                        (assoc-ref %outputs "out"))
+              "-UCMAKE_INSTALL_RPATH")))
+    (inputs
+      `(("freetype" ,freetype)
+        ("glu" ,glu)
+        ("libxmu" ,libxmu)
+        ("mesa" ,mesa)
+        ("tcl" ,tcl)
+        ("tk" ,tk)))
+    (native-inputs
+      `(("python" ,python-wrapper)))
+    (home-page "https://github.com/tpaviot/oce")
+    (synopsis "Libraries for 3D modeling and numerical simulation")
+    (description
+     "Open CASCADE is a set of libraries for the development of applications
+dealing with 3D CAD data or requiring industrial 3D capabilities.  It includes
+C++ class libraries providing services for 3D surface and solid modeling, CAD
+data exchange, and visualization.  It is used for development of specialized
+software dealing with 3D models in design (CAD), manufacturing (CAM),
+numerical simulation (CAE), measurement equipment (CMM), and quality
+control (CAQ) domains.
+
+This is the ``Community Edition'' (OCE) of Open CASCADE, which gathers
+patches, improvements, and experiments contributed by users over the official
+Open CASCADE library.")
+    (license (list license:lgpl2.1; OCE libraries, with an exception for the
+                                  ; use of header files; see
+                                  ; OCCT_LGPL_EXCEPTION.txt
+                   license:public-domain; files
+                                  ; src/Standard/Standard_StdAllocator.hxx and
+                                  ; src/NCollection/NCollection_StdAllocator.hxx
+                   license:expat; file src/OpenGl/OpenGl_glext.h
+                   license:bsd-3)))); test framework gtest
+
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "2.15.0")
+    (version "2.16.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://gmsh.info/src/gmsh-"
                           version "-source.tgz"))
       (sha256
-       (base32 "02h7fk4vv8qwnq3ymm409c5sp4nksd0m9h2vkxqmy42l0ic4nalr"))
+       (base32 "1slf0bfkwrcgn6296wb4qhbk4ahz6i4wfb10hnim08x05vrylag8"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
@@ -2840,3 +2898,45 @@ instruction sets.  Thus, an application written with Vc can be compiled for:
 @end enumerate\n")
     (home-page "https://github.com/VcDevel/Vc")
     (license license:bsd-3)))
+
+(define-public reducelcs
+  ;; This is the last commit which is available upstream, no
+  ;; release happened since 2010.
+  (let ((commit "474f88deb968061abe8cf11c959e02319b8ae5c0")
+        (revision "1"))
+    (package
+      (name "reducelcs")
+      (version (string-append "1.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gdv/Reduce-Expand-for-LCS")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1rllzcfwc042c336mhq262a8ha90x6afq30kvk60r7i4761j4yjm"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("openlibm" ,openlibm)))
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No configure script exists.
+           (replace 'install ; No install phase exists.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "Approximation" bin)
+                 (install-file "CollectResults" bin)
+                 (install-file "GenerateInstances" bin)
+                 #t))))))
+      (synopsis "Approximate Longest Commons Subsequence computation tool")
+      (description
+       "@code{reduceLCS} is an implementation of the Reduce-Expand
+algorithm for LCS.  It is a fast program to compute the approximate
+Longest Commons Subsequence of a set of strings.")
+      (home-page "https://github.com/gdv/Reduce-Expand-for-LCS")
+      (license license:gpl3+))))

@@ -576,6 +576,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-fix-truecolor-format-correction.patch	\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
+  %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
   %D%/packages/patches/ghostscript-CVE-2013-5653.patch		\
   %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
   %D%/packages/patches/ghostscript-CVE-2016-7976.patch		\
@@ -630,7 +631,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-linker-flags.patch			\
-  %D%/packages/patches/httpd-CVE-2016-8740.patch			\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
@@ -656,6 +656,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/lcms-fix-out-of-bounds-read.patch	\
   %D%/packages/patches/ldc-disable-tests.patch			\
+  %D%/packages/patches/ldc-1.1.0-disable-dmd-tests.patch	\
+  %D%/packages/patches/ldc-1.1.0-disable-phobos-tests.patch	\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -666,6 +668,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libepoxy-gl-null-checks.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
+  %D%/packages/patches/libevent-2.0-evdns-fix-remote-stack-overread.patch	\
+  %D%/packages/patches/libevent-2.0-evdns-fix-searching-empty-hostnames.patch	\
+  %D%/packages/patches/libevent-2.0-evutil-fix-buffer-overflow.patch	\
+  %D%/packages/patches/libevent-2.1-dns-tests.patch		\
+  %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
@@ -772,6 +779,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
+  %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-5157.patch		\
@@ -949,6 +957,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-session-fix-xflock4.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
+  %D%/packages/patches/xinetd-fix-fd-leak.patch			\
+  %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
   %D%/packages/patches/zathura-plugindir-environment-variable.patch

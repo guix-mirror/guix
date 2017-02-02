@@ -64,7 +64,9 @@
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
                     (default #f))
   (one-shot?        cuirass-configuration-one-shot? ;boolean
-                    (default #f)))
+                    (default #f))
+  (load-path        cuirass-configuration-load-path
+                    (default '())))
 
 (define (cuirass-shepherd-service config)
   "Return a <shepherd-service> for the Cuirass service with CONFIG."
@@ -80,7 +82,8 @@
          (port             (cuirass-configuration-port config))
          (specs            (cuirass-configuration-specifications config))
          (use-substitutes? (cuirass-configuration-use-substitutes? config))
-         (one-shot?        (cuirass-configuration-one-shot? config)))
+         (one-shot?        (cuirass-configuration-one-shot? config))
+         (load-path        (cuirass-configuration-load-path config)))
      (list (shepherd-service
             (documentation "Run Cuirass.")
             (provision '(cuirass))
@@ -94,7 +97,9 @@
                             "--port" #$(number->string port)
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
-                            #$@(if one-shot? '("--one-shot") '()))
+                            #$@(if one-shot? '("--one-shot") '())
+                            #$@(if (null? load-path) '()
+                                 `("--load-path" ,(string-join load-path ":"))))
                       #:user #$user
                       #:group #$group
                       #:log-file #$log-file))

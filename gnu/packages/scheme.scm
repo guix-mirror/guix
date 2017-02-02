@@ -604,7 +604,6 @@ threads.")
          (snippet
           ;; Remove binary code
           '(delete-file-recursively "scmutils/mit-scheme"))
-         (file-name (string-append name "-" version ".tar.gz"))
          (uri (string-append "http://groups.csail.mit.edu/mac/users/gjs/6946"
                              "/scmutils-tarballs/" name "-" version
                              "-x86-64-gnu-linux.tar.gz"))

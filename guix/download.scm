@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:export (%mirrors
             url-fetch
             url-fetch/tarbomb
+            url-fetch/zipbomb
             download-to-store))
 
 ;;; Commentary:
@@ -86,6 +88,7 @@
        "http://ftp.belnet.be/ftp.gnome.org/"
        "http://ftp.linux.org.uk/mirrors/ftp.gnome.org/"
        "http://ftp.gnome.org/pub/GNOME/"
+       "https://download.gnome.org/"
        "http://mirror.yandex.ru/mirrors/ftp.gnome.org/")
       (hackage
        "http://hackage.haskell.org/")
@@ -485,23 +488,59 @@ in the store."
                             (guile (default-guile)))
   "Similar to 'url-fetch' but unpack the file from URL in a directory of its
 own.  This helper makes it easier to deal with \"tar bombs\"."
+  (define file-name
+    (match url
+      ((head _ ...)
+       (basename head))
+      (_
+       (basename url))))
   (define gzip
     (module-ref (resolve-interface '(gnu packages compression)) 'gzip))
   (define tar
     (module-ref (resolve-interface '(gnu packages base)) 'tar))
 
   (mlet %store-monad ((drv (url-fetch url hash-algo hash
-                                      (string-append "tarbomb-" name)
+                                      (string-append "tarbomb-"
+                                                     (or name file-name))
                                       #:system system
                                       #:guile guile)))
     ;; Take the tar bomb, and simply unpack it as a directory.
-    (gexp->derivation name
+    (gexp->derivation (or name file-name)
                       #~(begin
                           (mkdir #$output)
                           (setenv "PATH" (string-append #$gzip "/bin"))
                           (chdir #$output)
                           (zero? (system* (string-append #$tar "/bin/tar")
                                           "xf" #$drv)))
+                      #:local-build? #t)))
+
+(define* (url-fetch/zipbomb url hash-algo hash
+                            #:optional name
+                            #:key (system (%current-system))
+                            (guile (default-guile)))
+  "Similar to 'url-fetch' but unpack the zip file at URL in a directory of its
+own.  This helper makes it easier to deal with \"zip bombs\"."
+  (define file-name
+    (match url
+      ((head _ ...)
+       (basename head))
+      (_
+       (basename url))))
+  (define unzip
+    (module-ref (resolve-interface '(gnu packages zip)) 'unzip))
+
+  (mlet %store-monad ((drv (url-fetch url hash-algo hash
+                                      (string-append "zipbomb-"
+                                                     (or name file-name))
+                                      #:system system
+                                      #:guile guile)))
+    ;; Take the zip bomb, and simply unpack it as a directory.
+    (gexp->derivation (or name file-name)
+                      #~(begin
+                          (mkdir #$output)
+                          (chdir #$output)
+                          (zero? (system* (string-append #$unzip "/bin/unzip")
+                                          #$drv)))
                       #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))

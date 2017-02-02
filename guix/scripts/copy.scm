@@ -63,8 +63,8 @@ Throw an error on failure."
 
     (match (connect! session)
       ('ok
-       ;; Let the SSH agent authenticate us to the server.
-       (match (userauth-agent! session)
+       ;; Use public key authentication, via the SSH agent if it's available.
+       (match (userauth-public-key/auto! session)
          ('success
           session)
          (x

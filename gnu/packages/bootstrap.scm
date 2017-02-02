@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -28,7 +28,7 @@
   #:use-module ((guix store) #:select (add-to-store add-text-to-store))
   #:use-module ((guix derivations) #:select (derivation))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -131,30 +131,29 @@ successful, or false to signal an error."
     (license gpl3+)))
 
 (define package-with-bootstrap-guile
-  (memoize
-   (lambda (p)
+  (mlambda (p)
     "Return a variant of P such that all its origins are fetched with
 %BOOTSTRAP-GUILE."
     (define rewritten-input
       (match-lambda
-       ((name (? origin? o))
-        `(,name ,(bootstrap-origin o)))
-       ((name (? package? p) sub-drvs ...)
-        `(,name ,(package-with-bootstrap-guile p) ,@sub-drvs))
-       (x x)))
+        ((name (? origin? o))
+         `(,name ,(bootstrap-origin o)))
+        ((name (? package? p) sub-drvs ...)
+         `(,name ,(package-with-bootstrap-guile p) ,@sub-drvs))
+        (x x)))
 
     (package (inherit p)
-      (source (match (package-source p)
-                ((? origin? o) (bootstrap-origin o))
-                (s s)))
-      (inputs (map rewritten-input
-                   (package-inputs p)))
-      (native-inputs (map rewritten-input
-                          (package-native-inputs p)))
-      (propagated-inputs (map rewritten-input
-                              (package-propagated-inputs p)))
-      (replacement (and=> (package-replacement p)
-                          package-with-bootstrap-guile))))))
+             (source (match (package-source p)
+                       ((? origin? o) (bootstrap-origin o))
+                       (s s)))
+             (inputs (map rewritten-input
+                          (package-inputs p)))
+             (native-inputs (map rewritten-input
+                                 (package-native-inputs p)))
+             (propagated-inputs (map rewritten-input
+                                     (package-propagated-inputs p)))
+             (replacement (and=> (package-replacement p)
+                                 package-with-bootstrap-guile)))))
 
 (define* (glibc-dynamic-linker
           #:optional (system (or (and=> (%current-target-system)

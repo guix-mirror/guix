@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +35,6 @@
   #:use-module (guix base32)
   #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module ((guix combinators) #:select (memoize))
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (elpa->guix-package
             %elpa-updater))

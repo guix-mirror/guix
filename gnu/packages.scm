@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix memoization)
   #:use-module (guix combinators)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
@@ -234,28 +235,27 @@ decreasing version order."
             matching)))))
 
 (define find-newest-available-packages
-  (memoize
-   (lambda ()
-     "Return a vhash keyed by package names, and with
+  (mlambda ()
+    "Return a vhash keyed by package names, and with
 associated values of the form
 
   (newest-version newest-package ...)
 
 where the preferred package is listed first."
 
-     ;; FIXME: Currently, the preferred package is whichever one
-     ;; was found last by 'fold-packages'.  Find a better solution.
-     (fold-packages (lambda (p r)
-                      (let ((name    (package-name p))
-                            (version (package-version p)))
-                        (match (vhash-assoc name r)
-                          ((_ newest-so-far . pkgs)
-                           (case (version-compare version newest-so-far)
-                             ((>) (vhash-cons name `(,version ,p) r))
-                             ((=) (vhash-cons name `(,version ,p ,@pkgs) r))
-                             ((<) r)))
-                          (#f (vhash-cons name `(,version ,p) r)))))
-                    vlist-null))))
+    ;; FIXME: Currently, the preferred package is whichever one
+    ;; was found last by 'fold-packages'.  Find a better solution.
+    (fold-packages (lambda (p r)
+                     (let ((name    (package-name p))
+                           (version (package-version p)))
+                       (match (vhash-assoc name r)
+                         ((_ newest-so-far . pkgs)
+                          (case (version-compare version newest-so-far)
+                            ((>) (vhash-cons name `(,version ,p) r))
+                            ((=) (vhash-cons name `(,version ,p ,@pkgs) r))
+                            ((<) r)))
+                         (#f (vhash-cons name `(,version ,p) r)))))
+                   vlist-null)))
 
 (define (find-best-packages-by-name name version)
   "If version is #f, return the list of packages named NAME with the highest

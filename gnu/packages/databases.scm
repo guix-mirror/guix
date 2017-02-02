@@ -55,15 +55,17 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages jemalloc)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl3 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
-                          bsd-2 bsd-3 public-domain))
+                          bsd-2 bsd-3 public-domain asl2.0))
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -509,6 +511,93 @@ unique fields, primary keys, time stamps and more.  Many different field
 types are supported, as is encryption.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/recutils/")))
+
+(define-public rocksdb
+  (package
+    (name "rocksdb")
+    (version "5.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/facebook/rocksdb"
+                                  "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jj8b50w8jr3bnyjzk2hmlzq9x49yihjilx3xlq2rfdx3q9x4fay"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; TODO: unbundle gtest.
+                  (delete-file "build_tools/gnu_parallel")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc"
+                          ;; Make the resulting library position-independent so the
+                          ;; static version can be included in shared objects.
+                          "EXTRA_CXXFLAGS=-fPIC"
+                          (string-append "INSTALL_PATH="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("build_tools/gnu_parallel") "parallel")
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             #t))
+         (delete 'configure)
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             (substitute* "Makefile"
+               ;; These tests reliably fail due to "Too many open files".
+               (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
+               (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))
+             #t))
+         (add-after
+          'check 'build-release-libraries
+          ;; The 'check' target depends on the default target which is compiled
+          ;; with debug symbols. The 'install' target depends on shared and
+          ;; static release targets so we build them here for clarity.
+          ;; TODO: Add debug output.
+          (lambda* (#:key (make-flags '()) #:allow-other-keys)
+            ;; Prevent the build from adding machine-specific optimizations.
+            ;; This does not work if passed as a make flag...
+            (setenv "PORTABLE" "1")
+            (and (zero? (apply system* "make" "static_lib" make-flags))
+                 (zero? (apply system* "make" "shared_lib" make-flags)))))
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each (lambda (file)
+                           (delete-file file))
+                         (find-files lib "\\.l?a$"))
+               #t))))))
+    (native-inputs
+     `(("parallel" ,parallel)
+       ("perl" ,perl)
+       ("procps" ,procps)
+       ("python" ,python-2)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("gflags" ,gflags)
+       ("jemalloc" ,jemalloc)
+       ("lz4" ,lz4)
+       ("snappy" ,snappy)
+       ("zlib" ,zlib)))
+    (home-page "http://rocksdb.org/")
+    (synopsis "Persistent key-value store for fast storage")
+    (description
+     "RocksDB is a library that forms the core building block for a fast
+key-value server, especially suited for storing data on flash drives.  It
+has a @dfn{Log-Structured-Merge-Database} (LSM) design with flexible tradeoffs
+between @dfn{Write-Amplification-Factor} (WAF), @dfn{Read-Amplification-Factor}
+(RAF) and @dfn{Space-Amplification-Factor} (SAF).  It has multi-threaded
+compactions, making it specially suitable for storing multiple terabytes of
+data in a single database.  RocksDB is partially based on @code{LevelDB}.")
+    ;; RocksDB is BSD-3 and the JNI adapter is Apache 2.0.
+    (license (list bsd-3 asl2.0))))
 
 (define-public sparql-query
   (package

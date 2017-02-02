@@ -11,8 +11,8 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
@@ -104,6 +104,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -942,7 +943,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.7.3")
+    (version "0.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -950,7 +951,7 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "1lg3z7jhzmsjym53qss8mbydny8hafwjnfsc7x91hrr9zrkwblly"))))
+                "0d2j4ybdjmimg67v2fndgahgq4fvgz3fpfb3a4l1ar75n6hy776s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1254,7 +1255,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.6.12.24")
+    (version "1.7.1.21")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1262,7 +1263,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "1g64pid26vcv1ay002bzz6ymabwrmy3wmklywpcgpvrhynm6f2cq"))))
+                "0q9hk9jgz5jja1mmba5iafxwavk6991kjpmdxdkgbam0hk15pqmz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -3071,3 +3072,33 @@ symbols, the game needs graphics to render the non-euclidean world.")
 for Un*x systems with X11.")
     (home-page "http://olofson.net/kobodl/")
     (license license:gpl2+)))
+
+(define-public freeciv
+  (package
+   (name "freeciv")
+   (version "2.5.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://download.gna.org/freeciv/"
+           "stable/freeciv-" version ".tar.bz2"))
+     (sha256
+      (base32
+       "16wrnsx5rmbz6rjs03bhy0vn20i6n6g73lx7fjpai98ixhzc5bfg"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("curl" ,curl)
+      ("cyrus-sasl" ,cyrus-sasl)
+      ("gtk+" ,gtk+)
+      ("sdl-mixer" ,sdl-mixer)
+      ("zlib" ,zlib)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "http://www.freeciv.org/")
+   (synopsis "Turn based empire building strategy game")
+   (description "Freeciv is a turn based empire building strategy game
+inspired by the history of human civilization.  The game commences in
+prehistory and your mission is to lead your tribe from the Stone Age
+to the Space Age.")
+   (license license:gpl2+)))

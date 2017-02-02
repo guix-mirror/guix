@@ -32,7 +32,7 @@
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (guix utils)
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module (guix scripts)
   #:use-module (guix gnu-maintenance)
   #:use-module (guix monads)
@@ -90,9 +90,9 @@
   ;; provided MESSAGE.
   (let ((loc (or (package-field-location package field)
                  (package-location package))))
-    (format (guix-warning-port) "~a: ~a: ~a~%"
+    (format (guix-warning-port) "~a: ~a@~a: ~a~%"
             (location->string loc)
-            (package-full-name package)
+            (package-name package) (package-version package)
             message)))
 
 (define (call-with-accumulated-warnings thunk)
@@ -559,12 +559,11 @@ patch could not be found."
                       str)))
 
 (define official-gnu-packages*
-  (memoize
-   (lambda ()
-     "A memoizing version of 'official-gnu-packages' that returns the empty
+  (mlambda ()
+    "A memoizing version of 'official-gnu-packages' that returns the empty
 list when something goes wrong, such as a networking issue."
-     (let ((gnus (false-if-exception (official-gnu-packages))))
-       (or gnus '())))))
+    (let ((gnus (false-if-exception (official-gnu-packages))))
+      (or gnus '()))))
 
 (define (check-gnu-synopsis+description package)
   "Make sure that, if PACKAGE is a GNU package, it uses the synopsis and

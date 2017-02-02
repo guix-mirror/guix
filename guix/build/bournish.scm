@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,6 +106,14 @@ characters."
        ((@ (guix build utils) dump-port) port (current-output-port))
        *unspecified*)))
 
+(define (rm-command . args)
+  "Emit code for the 'rm' command."
+  (cond ((member "-r" args)
+         `(for-each (@ (guix build utils) delete-file-recursively)
+                    (list ,@(delete "-r" args))))
+        (else
+         `(for-each delete-file (list ,@args)))))
+
 (define (lines+chars port)
   "Return the number of lines and number of chars read from PORT."
   (let loop ((lines 0) (chars 0))
@@ -194,7 +203,7 @@ commands such as 'ls' and 'cd'; it lacks globbing, pipes---everything.\n"))
   `(("echo"   ,(lambda strings `(list ,@strings)))
     ("cd"     ,(lambda (dir) `(chdir ,dir)))
     ("pwd"    ,(lambda () `(getcwd)))
-    ("rm"     ,(lambda (file) `(delete-file ,file)))
+    ("rm"     ,rm-command)
     ("cp"     ,(lambda (source dest) `(copy-file ,source ,dest)))
     ("help"   ,help-command)
     ("ls"     ,ls-command)

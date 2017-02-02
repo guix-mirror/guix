@@ -88,16 +88,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.23")
+    (version "2.4.25")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0n2yx3gjlpr4kgqx845fj6amnmg25r2l6a7rzab5hxnpmar985hc"))
-             (patches (search-patches "httpd-CVE-2016-8740.patch"))
-             (patch-flags '("-p0"))))
+               "1cl0bkqg6srb1sypga0cn8dcmdyxldavij73zmmkxvlz3kgw4zpq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -128,14 +126,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.11.6")
+    (version "1.11.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1gc5phrzm2hbpvryaya6rlvasa00vjips4hv5q1rqbcfa6xsnlri"))))
+                "0j2pcara9ir2xj3m2mjzf7wz46mdy51c0kal61cp0ldm2qgvf8nw"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -3995,3 +3993,28 @@ programs' code.  Its architecture is optimized for security, portability, and
 scalability (including load-balancing), making it suitable for large
 deployments.")
   (license l:gpl2+)))
+
+(define-public xinetd
+  (package
+    (name "xinetd")
+    (version "2.3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://github.com/xinetd-org/xinetd/archive/xinetd-2-3-15.tar.gz")
+       (patches (search-patches "xinetd-CVE-2013-4342.patch" "xinetd-fix-fd-leak.patch"))
+       (sha256
+        (base32
+         "0k59x52cbzp5fw0n8zn0y54j1ps0x9b72y8k5grzswjdmgs2a2v2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-loadavg")
+       #:tests? #f )) ; no tests
+    (home-page "https://github.com/xinetd-org/xinetd")
+    (synopsis "Internet services daemon")
+    (description "@code{xinetd}, a more secure replacement for @code{inetd},
+listens for incoming requests over a network and launches the appropriate
+service for that request.  Requests are made using port numbers as identifiers
+and xinetd usually launches another daemon to handle the request.  It can be
+used to start services with both privileged and non-privileged port numbers.")
+    (license (l:fsf-free "file://COPYRIGHT"))))

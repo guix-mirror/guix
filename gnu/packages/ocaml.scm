@@ -40,6 +40,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -64,6 +65,46 @@
   (string-append "https://forge.ocamlcore.org/frs/download.php/"
                  (number->string file-number) "/" name "-" version
                  ".tar.gz"))
+
+;; Janestreet packages are found in a similar way and all need the same patch.
+(define (janestreet-origin name version hash)
+  (origin (method url-fetch)
+          (uri (string-append "https://ocaml.janestreet.com/ocaml-core/"
+                              (version-major+minor version) "/files/"
+                              name "-" version ".tar.gz"))
+          (sha256 (base32 hash))
+          (modules '((guix build utils)))
+          (snippet
+           (let ((pattern (string-append "lib/" name)))
+             `(begin
+                ;; install.ml contains an invalid reference to the ppx file and
+                ;; propagates this error to the generated META file.  It
+                ;; looks for it in the "lib" directory, but it is installed in
+                ;; "lib/ocaml/site-lib/package".  This substitute does not change
+                ;; this file for non ppx packages.
+                (substitute* "install.ml"
+                  ((,pattern) (string-append "lib/ocaml/site-lib/" ,name)))
+                ;; The standard Makefile would try to install janestreet modules
+                ;; in OCaml's directory in the store, which is read-only.
+                (substitute* "Makefile"
+                  (("--prefix")
+                   "--libdir $(LIBDIR) --prefix")))))))
+
+;; They also require almost the same set of arguments
+(define janestreet-arguments
+  `(#:use-make? #t
+    #:make-flags
+    (list (string-append "CONFIGUREFLAGS=--prefix "
+                         (assoc-ref %outputs "out")
+                         " --enable-tests")
+          (string-append "LIBDIR="
+                         (assoc-ref %outputs "out")
+                         "/lib/ocaml/site-lib")
+          ;; for ocaml-bin-prot, otherwise ignored
+          (string-append "OCAML_TOPLEVEL_PATH="
+                         (assoc-ref %build-inputs "findlib")
+                         "/lib/ocaml/site-lib"))
+    #:phases (modify-phases %standard-phases (delete 'configure))))
 
 (define-public ocaml
   (package
@@ -1696,3 +1737,291 @@ without a complete in-memory representation of the data.")
     (description "Client-side URL transfer library, supporting HTTP and a
 multitude of other network protocols (FTP/SMTP/RTSP/etc).")
     (license license:isc)))
+
+(define-public ocaml-base64
+  (package
+    (name "ocaml-base64")
+    (version "2.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-base64/"
+                                  "releases/download/v" version "/base64-"
+                                   version ".tbz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                 "1p45sawchmrkr22gkmydjc4ary23pisp58zsnb7iq7d82nxs1lfq"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:build-flags (list "build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("topkg" ,ocaml-topkg)
+       ("opam" ,opam)
+       ("rresult" ,ocaml-rresult)
+       ("bos" ,ocaml-bos)
+       ("alcotest" ,ocaml-alcotest)))
+    (home-page "https://github.com/mirage/ocaml-base64")
+    (synopsis "Base64 encoding for OCaml")
+    (description "Base64 is a group of similar binary-to-text encoding schemes
+that represent binary data in an ASCII string format by translating it into a
+radix-64 representation.  It is specified in RFC 4648.")
+    (license license:isc)))
+
+(define-public ocamlify
+  (package
+    (name "ocamlify")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1209))
+              (sha256
+               (base32
+                "1f0fghvlbfryf5h3j4as7vcqrgfjb4c8abl5y0y5h069vs4kp5ii"))))
+    (build-system ocaml-build-system)
+    ; tests are done during build
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check))))
+    (home-page "https://forge.ocamlcore.org/projects/ocamlify")
+    (synopsis "Include files in OCaml code")
+    (description "OCamlify allows to create OCaml source code by including
+whole files into OCaml string or string list.  The code generated can be
+compiled as a standard OCaml file.  It allows embedding external resources as
+OCaml code.")
+    (license license:lgpl2.1+))); with the OCaml static compilation exception
+
+(define-public omake
+  (package
+    (name "omake")
+    (version "0.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.camlcity.org/download/"
+                                  "omake-" version ".tar.gz"))
+              (sha256
+               (base32
+                "093ansbppms90hiqvzar2a46fj8gm9iwnf8gn38s6piyp70lrbsj"))
+              (patches (search-patches "omake-fix-non-determinism.patch"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-makefile
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (substitute* "mk/osconfig_unix.mk"
+                                    (("CC = cc") "CC = gcc")))))))
+    (native-inputs `(("hevea" ,hevea)))
+    (home-page "http://projects.camlcity.org/projects/omake.html")
+    (synopsis "Build system designed for scalability and portability")
+    (description "Similar to make utilities you may have used, but it features
+many additional enhancements, including:
+
+@enumerate
+@item Support for projects spanning several directories or directory hierarchies.
+@item Fast, reliable, automated, scriptable dependency analysis using MD5 digests,
+      with full support for incremental builds.
+@item Dependency analysis takes the command lines into account — whenever the
+      command line used to build a target changes, the target is considered
+      out-of-date.
+@item Fully scriptable, includes a library that providing support for standard
+      tasks in C, C++, OCaml, and LaTeX projects, or a mixture thereof.
+@end enumerate")
+    (license (list license:lgpl2.1 ; libmojave
+                   license:expat ; OMake scripts
+                   license:gpl2)))) ; OMake itself, with ocaml linking exception
+                                    ; see LICENSE.OMake
+
+(define-public ocaml-batteries
+  (package
+    (name "ocaml-batteries")
+    (version "2.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri "batteries" version 1650))
+              (sha256
+               (base32
+                "1a97w3x2l1jr5x9kj5gqm1x6b0q9fjqdcsvls7arnl3bvzgsia0n"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("qtest" ,ocaml-qtest)
+       ("bisect" ,ocaml-bisect)
+       ("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check) ; tests are run by the build phase
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "ocaml" "setup.ml" "-build")))))))
+    (home-page "http://batteries.forge.ocamlcore.org/")
+    (synopsis "Development platform for the OCaml programming language")
+    (description "Define a standard set of libraries which may be expected on
+every compliant installation of OCaml and organize these libraries into a
+hierarchy of modules.")
+    (license license:lgpl2.1+)))
+
+(define-public ocaml-pcre
+  (package
+    (name "ocaml-pcre")
+    (version "7.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mmottl/pcre-ocaml/archive"
+                                  "/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rj6dw79px4sj2kq0iss2nzq3rnsn9wivvc0f44wa1mppr6njfb3"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'link-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out "/lib/ocaml/site-lib/pcre")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dllpcre_stubs.so")
+                        (string-append stubs "/dllpcre_stubs.so"))))))))
+    (native-inputs
+     `(("batteries" ,ocaml-batteries)
+       ("pcre:bin" ,pcre "bin")))
+    (propagated-inputs `(("pcre" ,pcre)))
+    (home-page "https://mmottl.github.io/pcre-ocaml")
+    (synopsis "Bindings to the Perl Compatibility Regular Expressions library")
+    (description "Pcre-ocaml offers library functions for string pattern
+matching and substitution, similar to the functionality offered by the Perl
+language.")
+    (license license:lgpl2.1+))); with the OCaml link exception
+
+(define-public ocaml-expect
+  (package
+    (name "ocaml-expect")
+    (version "0.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1372))
+              (sha256
+               (base32
+                "07xq8w2x2vffc32z7vk6y14jwbfb1cw0m2lm1jzi60hnr1dvg8by"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ocaml-pcre" ,ocaml-pcre)
+       ("ounit" ,ocaml-ounit)))
+    (propagated-inputs `(("batteries" ,ocaml-batteries)))
+    (home-page "https://forge.ocamlcore.org/projects/ocaml-expect/")
+    (synopsis "Simple implementation of expect")
+    (description "Help building unitary testing of interactive program.  You
+can match the question using a regular expression or a timeout.")
+    (license license:lgpl2.1+))) ; with the OCaml static compilation exception
+
+(define-public ocaml-fileutils
+  (package
+    (name "ocaml-fileutils")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1651))
+              (sha256
+               (base32
+                "0g6zx2rcvacklxyli19ixcf6ich9ipxsps4k3jz98f5zlaab0a7g"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("ounit" ,ocaml-ounit)))
+    (home-page "http://ocaml-fileutils.forge.ocamlcore.org")
+    (synopsis "Pure OCaml functions to manipulate real file and filename")
+    (description "Library to provide pure OCaml functions to manipulate real
+file (POSIX like) and filename.")
+    (license license:lgpl2.1+))) ; with the OCaml static compilation exception
+
+(define-public ocaml-oasis
+  (package
+    (name "ocaml-oasis")
+    (version "0.4.8")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1669))
+              (sha256
+               (base32
+                "1ln7vc7ip6s5xbi20mhnn087xi4a2m5vqawx0703qqnfkzhmslqy"))
+            (modules '((guix build utils)))
+            (snippet
+             '(substitute* "test/test-main/Test.ml"
+                ;; most of these tests fail because ld cannot find crti.o, but according
+                ;; to the log file, the environment variables {LD_,}LIBRARY_PATH
+                ;; are set correctly whene LD_LIBRARY_PATH is defined beforhand.
+                (("TestBaseCompat.tests;") "")
+                (("TestExamples.tests;") "")
+                (("TestFull.tests;") "")
+                (("TestPluginDevFiles.tests;") "")
+                (("TestPluginInternal.tests;") "")
+                (("TestPluginOCamlbuild.tests;") "")
+                (("TestPluginOMake.tests;") "")))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ocamlify" ,ocamlify)
+       ("ocamlmod" ,ocamlmod)
+       ("ounit" ,ocaml-ounit)
+       ("omake" ,omake)
+       ("ocaml-expect" ,ocaml-expect)
+       ("ocaml-pcre" ,ocaml-pcre)
+       ("ocaml-fileutils" ,ocaml-fileutils)
+       ("camlp4" ,camlp4)
+       ("texlive" ,texlive)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://oasis.forge.ocamlcore.org")
+    (synopsis "Integrates a configure, build, install system in OCaml projects")
+    (description "OASIS is a tool to integrate a configure, build and install
+system in your OCaml projects.  It helps to create standard entry points in your
+build system and allows external tools to analyse your project easily.")
+    (license license:lgpl2.1+))) ; with ocaml static compilation exception
+
+(define-public ocaml-js-build-tools
+  (package
+    (name "ocaml-js-build-tools")
+    (version "113.33.06")
+    (source (janestreet-origin "js-build-tools" version
+              "0r8z4fz8iy5y6hkdlkpwf6rk4qigcr3dzyv35585xgg2ahf12zy6"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/js-build-tools")
+    (synopsis "Collection of tools to help building Jane Street Packages")
+    (description "This package contains tools to help building Jane Street
+packages, but can be used for other purposes.  It contains:
+@enumerate
+@item an @command{oasis2opam-install} tool to produce a @file{.install} file
+from the oasis build log
+@item a @code{js_build_tools} ocamlbuild plugin with various goodies.
+@end enumerate")
+    (license license:asl2.0)))
+
+(define-public ocaml-bin-prot
+  (package
+    (name "ocaml-bin-prot")
+    (version "113.33.03")
+    (source (janestreet-origin "bin_prot" version
+               "1ws8c017z8nbj3vw92ndvjk9011f71rmp3llncbv8r5fc76wqv3l"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/bin_prot/")
+    (synopsis "Binary protocol generator")
+    (description "This library contains functionality for reading and writing
+OCaml-values in a type-safe binary protocol.  It is extremely efficient,
+typically supporting type-safe marshalling and unmarshalling of even highly
+structured values at speeds sufficient to saturate a gigabit connection.  The
+protocol is also heavily optimized for size, making it ideal for long-term
+storage of large amounts of data.")
+    (license license:asl2.0)))

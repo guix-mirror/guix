@@ -49,7 +49,8 @@
   "Return the extension of the archive e.g. '.tar.gz' given a URL, or
 false if none is recognized"
   (find (lambda (x) (string-suffix? x url))
-        (list ".tar.gz" ".tar.bz2" ".tar.xz" ".zip" ".tar" ".tgz" ".love")))
+        (list ".tar.gz" ".tar.bz2" ".tar.xz" ".zip" ".tar"
+              ".tgz" ".tbz" ".love")))
 
 (define (updated-github-url old-package new-version)
   ;; Return a url for the OLD-PACKAGE with NEW-VERSION.  If no source url in
@@ -57,7 +58,7 @@ false if none is recognized"
 
   (define (updated-url url)
     (if (string-prefix? "https://github.com/" url)
-        (let ((ext     (find-extension url))
+        (let ((ext     (or (find-extension url) ""))
               (name    (package-name old-package))
               (version (package-version old-package))
               (prefix  (string-append "https://github.com/"

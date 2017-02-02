@@ -55,8 +55,9 @@
          (delete 'configure))))
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")
-    (description "@command{dtc} compiles device tree source files to device
-tree binary files. These are board description files used by Linux and BSD.")
+    (description "@command{dtc} compiles
+@uref{http://elinux.org/Device_Tree_Usage, device tree source files} to device
+tree binary files.  These are board description files used by Linux and BSD.")
     (license license:gpl2+)))
 
 (define u-boot

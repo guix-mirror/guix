@@ -3501,7 +3501,6 @@ that a read originated from a particular isoform.")
     (version "3.8.1551")
     (source (origin
               (method url-fetch/tarbomb)
-              (file-name (string-append name "-" version))
               (uri (string-append
                     "http://www.drive5.com/muscle/muscle_src_"
                     version ".tar.gz"))
@@ -6325,7 +6324,8 @@ names in their natural, rather than lexicographic, order.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-limma" ,r-limma)
-       ("r-locfit" ,r-locfit)))
+       ("r-locfit" ,r-locfit)
+       ("r-statmod" ,r-statmod))) ;for estimateDisp
     (home-page "http://bioinf.wehi.edu.au/edgeR")
     (synopsis "EdgeR does empirical analysis of digital gene expression data")
     (description "This package can do differential expression analysis of
@@ -6883,6 +6883,37 @@ dependencies between GO terms can be implemented and applied.")
     (description
      "This package provides infrastructure shared by all Biostrings-based
 genome data packages and support for efficient SNP representation.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-hsapiens-1000genomes-hs37d5
+  (package
+    (name "r-bsgenome-hsapiens-1000genomes-hs37d5")
+    (version "0.99.1")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.1000genomes.hs37d5_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1cg0g5fqmsvwyw2p9hp2yy4ilk21jkbbrnpgqvb5c36ihjwvc7sr"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.1000genomes.hs37d5")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "http://www.bioconductor.org/packages/BSgenome.Hsapiens.1000genomes.hs37d5/")
+    (synopsis "Full genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens from
+1000genomes phase2 reference genome sequence (hs37d5), based on NCBI GRCh37.")
     (license license:artistic2.0)))
 
 (define-public r-impute
@@ -7768,6 +7799,71 @@ factors bound at the specific regions.")
 for DNA and protein sequences.  This package supports several sequence
 kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
     (license license:gpl2+)))
+
+(define-public r-tximport
+  (package
+    (name "r-tximport")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "tximport" version))
+              (sha256
+               (base32
+                "1k5a7dad6zqg936s17f6cmwgqp11x24z9zhxndsgwbscgpyhpcb0"))))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/tximport")
+    (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
+    (description
+     "This package provides tools to import transcript-level abundance,
+estimated counts and transcript lengths, and to summarize them into matrices
+for use with downstream gene-level analysis packages.  Average transcript
+length, weighted by sample-specific transcript abundance estimates, is
+provided as a matrix which can be used as an offset for different expression
+of gene-level counts.")
+    (license license:gpl2+)))
+
+(define-public r-rhdf5
+  (package
+    (name "r-rhdf5")
+    (version "2.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "rhdf5" version))
+              (sha256
+               (base32
+                "0pb04li55ysag30s7rap7nnivc0rqmgsmpj43kin0rxdabfn1w0k"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-smallhdf5
+           (lambda* (#:key outputs #:allow-other-keys)
+             (system* "tar" "-xzvf"
+                      "src/hdf5source/hdf5small.tgz" "-C" "src/" )
+             (substitute* "src/Makevars"
+               (("^.*cd hdf5source &&.*$") "")
+               (("^.*gunzip -dc hdf5small.tgz.*$") "")
+               (("^.*rm -rf hdf5.*$") "")
+               (("^.*mv hdf5source/hdf5 ..*$") ""))
+             (substitute* "src/hdf5/configure"
+               (("/bin/mv") "mv"))
+             #t)))))
+    (propagated-inputs
+     `(("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("perl" ,perl)
+       ("zlib" ,zlib)))
+    (home-page "http://bioconductor.org/packages/rhdf5")
+    (synopsis "HDF5 interface to R")
+    (description
+     "This R/Bioconductor package provides an interface between HDF5 and R.
+HDF5's main features are the ability to store and access very large and/or
+complex datasets and a wide variety of metadata on mass storage (disk) through
+a completely portable file format.  The rhdf5 package is thus suited for the
+exchange of large and/or complex datasets between R and other software
+package, and for letting R applications work on datasets that are larger than
+the available RAM.")
+    (license license:artistic2.0)))
 
 (define-public emboss
   (package

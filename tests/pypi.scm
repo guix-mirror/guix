@@ -130,8 +130,7 @@ baz > 13.37")
                      ('propagated-inputs
                       ('quasiquote
                        (("python-bar" ('unquote 'python-bar))
-                        ("python-baz" ('unquote 'python-baz))
-                        ("python-setuptools" ('unquote 'python-setuptools)))))
+                        ("python-baz" ('unquote 'python-baz)))))
                      ('home-page "http://example.com")
                      ('synopsis "summary")
                      ('description "summary")
@@ -194,8 +193,7 @@ baz > 13.37")
                    ('propagated-inputs
                     ('quasiquote
                      (("python-bar" ('unquote 'python-bar))
-                      ("python-baz" ('unquote 'python-baz))
-                      ("python-setuptools" ('unquote 'python-setuptools)))))
+                      ("python-baz" ('unquote 'python-baz)))))
                    ('home-page "http://example.com")
                    ('synopsis "summary")
                    ('description "summary")

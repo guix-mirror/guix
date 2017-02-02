@@ -86,6 +86,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages docbook)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
@@ -247,6 +248,83 @@ aliasing facilities to work just as they would on normal mail.")
 operating systems.")
     (license gpl2+)))
 
+(define-public neomutt
+  (package
+    (inherit mutt)
+    (name "neomutt")
+    (version "20170113")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/" name "/" name
+                           "/archive/" name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cqr77q263b5qcmdw6g0qixdpk6gmzgzpa03v226nr55v2ips9jg"))))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("gdbm" ,gdbm)
+       ("gpgme" ,gpgme)
+       ("ncurses" ,ncurses)
+       ("gnutls" ,gnutls)
+       ("openssl" ,openssl) ;For smime
+       ("perl" ,perl)
+       ("libxslt" ,libxslt)
+       ("libidn" ,libidn)
+       ("libxml2" ,libxml2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("notmuch" ,notmuch)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list "--enable-smtp"
+             "--enable-imap"
+             "--enable-pop"
+             "--enable-gpgme"
+
+             ;; database, implies header caching
+             "--without-tokyocabinet"
+             "--without-qdbm"
+             "--without-bdb"
+             "--without-lmdb"
+             "--with-gdbm"
+
+             "--with-gnutls"
+             "--without-ssl"
+             "--with-sasl"
+
+             "--with-regex"
+             "--enable-smime"
+             "--enable-notmuch"
+             "--with-idn"
+
+             ;; If we do not set this, neomutt wants to check
+             ;; whether the path exists, which it does not
+             ;; in the chroot. The workaround is this.
+             "--with-mailpath=/var/mail"
+
+             "--with-external-dotlock"
+             "--enable-nntp"
+             "--enable-compressed"
+
+             (string-append "--with-curses="
+                            (assoc-ref %build-inputs "ncurses")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (zero? (system* "sh" "autoreconf" "-vfi")))))))
+    (home-page "https://www.neomutt.org/")
+    (synopsis "Command-line mail reader based on Mutt")
+    (description
+     "NeoMutt is a command-line mail reader which is based on mutt.
+It adds a large amount of features to mutt, and they all find their way
+into mutt, so it is not a fork but a large set of feature patches.")))
+
 (define-public gmime
   (package
     (name "gmime")
@@ -327,7 +405,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.12")
+    (version "7.0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -335,7 +413,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1m1lp7wxnra8k7lsqc8xlm5giy3i89wvmp35jjb1gf4yslpddnkz"))))
+                "1kl72wcxnxb4y5lm2f7ymwjsisnnpwb4w971ajkxlsiwjhzq8i7p"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)

@@ -78,7 +78,12 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages fontutils))
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages less)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo))
 
 (define-public libotr
   (package
@@ -111,37 +116,16 @@ keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license (list license:lgpl2.1 license:gpl2))))
 
-;; These patches together fix https://github.com/bitlbee/bitlbee/pull/55, are
-;; already upstream, and should be unnecessary when the next bitlbee comes
-;; out.
-(define %bitlbee-buddy-nick-change-patch
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/bitlbee/bitlbee/commit/a42fda42.patch")
-    (sha256
-     (base32
-      "1mzjhcdn0rxir5mzgqz9kv142ai38p1iq2lajqx89wb7x0bp51zx"))))
-(define %bitlbee-always-use-nicks-patch
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/bitlbee/bitlbee/commit/3320d6d9.patch")
-    (sha256
-     (base32
-      "14d9kb5zdzh5hzakdvrbviz83rix0j2lq9rzb58b2fn92fp8yixd"))))
-
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.4.2")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0mza8lnfwibmklz8hdzg4f7p83hblf4h6fbf7d732kzpvra5bj39"))
-              (patches
-               (list %bitlbee-buddy-nick-change-patch
-                     %bitlbee-always-use-nicks-patch))))
+               (base32 "0sgsn0fv41rga46mih3fyv65cvfa6rvki8x92dn7bczbi7yxfdln"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
@@ -1187,5 +1171,57 @@ command-completion, OpenPGP encryption, @dfn{Off-the-Record Messaging} (OTR)
 support, and more.")
     (synopsis "Small XMPP console client")
     (license license:gpl2+)))
+
+(define-public freetalk
+  (package
+    (name "freetalk")
+    (version "4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/freetalk/freetalk-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1rmrn7a1bb7vm26yaklrvx008a9qhwc32s57dwrlf40lv9gffwny"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "sh" "autogen.sh"))))
+         ;; For 'system' commands in Scheme code.
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bash      (assoc-ref inputs "bash"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (less      (assoc-ref inputs "less")))
+               (wrap-program (string-append out "/bin/freetalk")
+                 `("PATH" ":" prefix
+                   ,(map (lambda (dir)
+                           (string-append dir "/bin"))
+                         (list bash coreutils less))))
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("bash" ,bash)
+       ("glib" ,glib)
+       ("guile" ,guile-2.0)
+       ("less" ,less)
+       ("loudmouth" ,loudmouth)
+       ("readline" ,readline)))
+    (synopsis "Extensible console-based Jabber client")
+    (description
+     "GNU Freetalk is a command-line Jabber/XMPP chat client.  It notably uses
+the Readline library to handle input, so it features convenient navigation of
+text as well as tab-completion of buddy names, commands and English words.  It
+is also scriptable and extensible via Guile.")
+    (home-page "https://www.gnu.org/software/freetalk")
+    (license license:gpl3+)))
 
 ;;; messaging.scm ends here

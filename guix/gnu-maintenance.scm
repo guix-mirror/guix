@@ -30,7 +30,7 @@
   #:use-module (guix http-client)
   #:use-module (guix ftp-client)
   #:use-module (guix utils)
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)
@@ -165,43 +165,48 @@ found."
         (official-gnu-packages)))
 
 (define gnu-package?
-  (memoize
-   (let ((official-gnu-packages (memoize official-gnu-packages)))
-     (lambda (package)
-       "Return true if PACKAGE is a GNU package.  This procedure may access the
+  (let ((official-gnu-packages (memoize official-gnu-packages)))
+    (mlambdaq (package)
+      "Return true if PACKAGE is a GNU package.  This procedure may access the
 network to check in GNU's database."
-       (define (mirror-type url)
-         (let ((uri (string->uri url)))
-           (and (eq? (uri-scheme uri) 'mirror)
-                (cond
-                 ((member (uri-host uri)
-                          '("gnu" "gnupg" "gcc" "gnome"))
-                  ;; Definitely GNU.
-                  'gnu)
-                 ((equal? (uri-host uri) "cran")
-                  ;; Possibly GNU: mirror://cran could be either GNU R itself
-                  ;; or a non-GNU package.
-                  #f)
-                 (else
-                  ;; Definitely non-GNU.
-                  'non-gnu)))))
+      (define (mirror-type url)
+        (let ((uri (string->uri url)))
+          (and (eq? (uri-scheme uri) 'mirror)
+               (cond
+                ((member (uri-host uri)
+                         '("gnu" "gnupg" "gcc" "gnome"))
+                 ;; Definitely GNU.
+                 'gnu)
+                ((equal? (uri-host uri) "cran")
+                 ;; Possibly GNU: mirror://cran could be either GNU R itself
+                 ;; or a non-GNU package.
+                 #f)
+                (else
+                 ;; Definitely non-GNU.
+                 'non-gnu)))))
 
-       (define (gnu-home-page? package)
-         (and=> (package-home-page package)
-                (lambda (url)
-                  (and=> (uri-host (string->uri url))
-                         (lambda (host)
-                           (member host '("www.gnu.org" "gnu.org")))))))
+      (define (gnu-home-page? package)
+        (letrec-syntax ((>> (syntax-rules ()
+                              ((_ value proc)
+                               (and=> value proc))
+                              ((_ value proc rest ...)
+                               (and=> value
+                                      (lambda (next)
+                                        (>> (proc next) rest ...)))))))
+          (>> package package-home-page
+              string->uri uri-host
+              (lambda (host)
+                (member host '("www.gnu.org" "gnu.org"))))))
 
-       (or (gnu-home-page? package)
-           (let ((url  (and=> (package-source package) origin-uri))
-                 (name (package-name package)))
-             (case (and (string? url) (mirror-type url))
-               ((gnu) #t)
-               ((non-gnu) #f)
-               (else
-                (and (member name (map gnu-package-name (official-gnu-packages)))
-                     #t)))))))))
+      (or (gnu-home-page? package)
+          (let ((url  (and=> (package-source package) origin-uri))
+                (name (package-upstream-name package)))
+            (case (and (string? url) (mirror-type url))
+              ((gnu) #t)
+              ((non-gnu) #f)
+              (else
+               (and (member name (map gnu-package-name (official-gnu-packages)))
+                    #t))))))))
 
 
 ;;;
@@ -210,10 +215,11 @@ network to check in GNU's database."
 
 (define (ftp-server/directory package)
   "Return the FTP server and directory where PACKAGE's tarball are stored."
-  (values (or (assoc-ref (package-properties package) 'ftp-server)
-              "ftp.gnu.org")
-          (or (assoc-ref (package-properties package) 'ftp-directory)
-              (string-append "/gnu/" (package-name package)))))
+  (let ((name (package-upstream-name package)))
+    (values (or (assoc-ref (package-properties package) 'ftp-server)
+                "ftp.gnu.org")
+            (or (assoc-ref (package-properties package) 'ftp-directory)
+                (string-append "/gnu/" name)))))
 
 (define (sans-extension tarball)
   "Return TARBALL without its .tar.* or .zip extension."
@@ -423,11 +429,9 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
 \"emacs-auctex\", for instance.)"
   (let-values (((server directory)
                 (ftp-server/directory package)))
-    (let ((name (or (assoc-ref (package-properties package) 'upstream-name)
-                    (package-name package))))
-      (false-if-ftp-error (latest-release name
-                                          #:server server
-                                          #:directory directory)))))
+    (false-if-ftp-error (latest-release (package-upstream-name package)
+                                        #:server server
+                                        #:directory directory))))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
@@ -444,8 +448,10 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
 (define (pure-gnu-package? package)
   "Return true if PACKAGE is a non-Emacs and non-GNOME GNU package.  This
 excludes AucTeX, for instance, whose releases are now uploaded to
-elpa.gnu.org, and all the GNOME packages."
-  (and (not (string-prefix? "emacs-" (package-name package)))
+elpa.gnu.org, and all the GNOME packages; EMMS is included though, because its
+releases are on gnu.org."
+  (and (or (not (string-prefix? "emacs-" (package-name package)))
+           (gnu-hosted? package))
        (not (gnome-package? package))
        (gnu-package? package)))
 
@@ -466,6 +472,9 @@ source URLs starts with PREFIX."
          ((? matching-uri?) #t)
          (_                 #f)))
       (_ #f))))
+
+(define gnu-hosted?
+  (url-prefix-predicate "mirror://gnu/"))
 
 (define gnome-package?
   (url-prefix-predicate "mirror://gnome/"))
@@ -491,8 +500,7 @@ source URLs starts with PREFIX."
 
   (define upstream-name
     ;; Some packages like "NetworkManager" have camel-case names.
-    (or (assoc-ref (package-properties package) 'upstream-name)
-        (package-name package)))
+    (package-upstream-name package))
 
   (false-if-ftp-error
    (latest-ftp-release upstream-name
@@ -516,8 +524,7 @@ source URLs starts with PREFIX."
   (let ((uri (string->uri (origin-uri (package-source package)))))
     (false-if-ftp-error
      (latest-ftp-release
-      (or (assoc-ref (package-properties package) 'upstream-name)
-          (package-name package))
+      (package-upstream-name package)
       #:server "mirrors.mit.edu"
       #:directory
       (string-append "/kde" (dirname (dirname (uri-path uri))))

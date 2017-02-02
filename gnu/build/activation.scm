@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (activate-users+groups
+            activate-user-home
             activate-etc
             activate-setuid-programs
             activate-/bin/sh
@@ -215,7 +216,7 @@ numeric gid or #f."
                      #:supplementary-groups supplementary-groups
                      #:comment comment
                      #:home home
-                     #:create-home? create-home?
+                     #:create-home? (and create-home? system?)
                      #:shell shell
                      #:password password)
 
@@ -262,6 +263,20 @@ numeric gid or #f."
                              (match groups
                                (((names . _) ...)
                                 names)))))
+
+(define (activate-user-home users)
+  "Create and populate the home directory of USERS, a list of tuples, unless
+they already exist."
+  (define ensure-user-home
+    (match-lambda
+      ((name uid group supplementary-groups comment home create-home?
+             shell password system?)
+       (unless (or (not home) (directory-exists? home))
+         (mkdir-p home)
+         (unless system?
+           (copy-account-skeletons home))))))
+
+  (for-each ensure-user-home users))
 
 (define (activate-etc etc)
   "Install ETC, a directory in the store, as the source of static files for

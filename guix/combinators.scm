@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,8 +20,7 @@
 (define-module (guix combinators)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
-  #:export (memoize
-            fold2
+  #:export (fold2
             fold-tree
             fold-tree-leaves
             compile-time-value))
@@ -32,19 +31,6 @@
 ;;; friends.
 ;;;
 ;;; Code:
-
-(define (memoize proc)
-  "Return a memoizing version of PROC."
-  (let ((cache (make-hash-table)))
-    (lambda args
-      (let ((results (hash-ref cache args)))
-        (if results
-            (apply values results)
-            (let ((results (call-with-values (lambda ()
-                                               (apply proc args))
-                             list)))
-              (hash-set! cache args results)
-              (apply values results)))))))
 
 (define fold2
   (case-lambda

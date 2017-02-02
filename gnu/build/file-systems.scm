@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -72,22 +72,33 @@
   "Bind-mount SOURCE at TARGET."
   (mount source target "" MS_BIND))
 
+(define (seek* fd/port offset whence)
+  "Like 'seek' but return -1 instead of throwing to 'system-error' upon
+EINVAL.  This makes it easier to catch cases like OFFSET being too large for
+FD/PORT."
+  (catch 'system-error
+    (lambda ()
+      (seek fd/port offset whence))
+    (lambda args
+      (if (= EINVAL (system-error-errno args))
+          -1
+          (apply throw args)))))
+
 (define (read-superblock device offset size magic?)
   "Read a superblock of SIZE from OFFSET and DEVICE.  Return the raw
 superblock on success, and #f if no valid superblock was found.  MAGIC?
 takes a bytevector and returns #t when it's a valid superblock."
   (call-with-input-file device
     (lambda (port)
-      (seek port offset SEEK_SET)
-
-      (let ((block (make-bytevector size)))
-        (match (get-bytevector-n! port block 0 (bytevector-length block))
-          ((? eof-object?)
-           #f)
-          ((? number? len)
-           (and (= len (bytevector-length block))
-                (and (magic? block)
-                     block))))))))
+      (and (= offset (seek* port offset SEEK_SET))
+           (let ((block (make-bytevector size)))
+             (match (get-bytevector-n! port block 0 (bytevector-length block))
+               ((? eof-object?)
+                #f)
+               ((? number? len)
+                (and (= len (bytevector-length block))
+                     (and (magic? block)
+                          block)))))))))
 
 (define (sub-bytevector bv start size)
   "Return a copy of the SIZE bytes of BV starting from offset START."

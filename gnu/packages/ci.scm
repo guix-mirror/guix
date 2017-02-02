@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,8 +187,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "d0a5801e397335bb44d8033e5deddf02c1cc99c2")
-        (revision "3"))
+  (let ((commit "f695c79eb3b93a0432901844c8ede16de39b8d07")
+        (revision "4"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -199,7 +200,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0sa94dgp9w6av7i0a570fv9a9yq03jkxdrm5d75h6szsp1kiyw2i"))))
+                  "1zsj3l85d8jq7h9a0zfb2w5pyvlwkirgvis4bv60syhbpblfvmri"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases

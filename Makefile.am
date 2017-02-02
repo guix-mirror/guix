@@ -39,6 +39,7 @@ MODULES =					\
   guix/pk-crypto.scm				\
   guix/pki.scm					\
   guix/combinators.scm				\
+  guix/memoization.scm				\
   guix/utils.scm				\
   guix/sets.scm					\
   guix/modules.scm				\

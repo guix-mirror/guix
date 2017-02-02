@@ -259,7 +259,6 @@ featuring various improvements and bug fixes.")))
     (version "2.0-18Sep92")
     (source (origin
               (method url-fetch/tarbomb)
-              (file-name (string-append name "-" version ".tar.gz"))
               (uri (string-append "http://www.rle.mit.edu/cpg/codes/"
                                   name "-" version ".tgz"))
               (sha256

@@ -146,6 +146,43 @@ info --version")
                      (pk 'services services)
                      '(root #$@(operating-system-shepherd-service-names os)))))
 
+          (test-assert "homes"
+            (let ((homes
+                   '#$(map user-account-home-directory
+                           (filter user-account-create-home-directory?
+                                   (operating-system-user-accounts os)))))
+              (marionette-eval
+               `(begin
+                  (use-modules (gnu services herd) (srfi srfi-1))
+
+                  ;; Home directories are supposed to exist once 'user-homes'
+                  ;; has been started.
+                  (start-service 'user-homes)
+
+                  (every (lambda (home)
+                           (and (file-exists? home)
+                                (file-is-directory? home)))
+                         ',homes))
+               marionette)))
+
+          (test-assert "skeletons in home directories"
+            (let ((homes
+                   '#$(filter-map (lambda (account)
+                                    (and (user-account-create-home-directory?
+                                          account)
+                                         (not (user-account-system? account))
+                                         (user-account-home-directory account)))
+                                  (operating-system-user-accounts os))))
+              (marionette-eval
+               `(begin
+                  (use-modules (srfi srfi-1) (ice-9 ftw))
+                  (every (lambda (home)
+                           (null? (lset-difference string=?
+                                                   (scandir "/etc/skel/")
+                                                   (scandir home))))
+                         ',homes))
+               marionette)))
+
           (test-equal "login on tty1"
             "root\n"
             (begin
