@@ -365,6 +365,44 @@ LZO is written in ANSI C.  Both the source code and the compressed data
 format are designed to be portable across platforms.")
     (license license:gpl2+)))
 
+(define-public python-lzo
+  (package
+    (name "python-lzo")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-lzo" version))
+       (sha256
+        (base32
+         "11p3ifg14p086byhhin6azx5svlkg8dzw2b5abixik97xd6fm81q"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "check"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setuppy
+           (lambda _
+             (substitute* "setup.py"
+               (("include_dirs.append\\(.*\\)")
+                (string-append "include_dirs.append('"
+                               (assoc-ref %build-inputs "lzo")
+                               "/include/lzo"
+                               "')")))
+             #t)))))
+    (inputs
+     `(("lzo" ,lzo)))
+    (home-page "https://github.com/jd-boyd/python-lzo")
+    (synopsis "Python bindings for the LZO data compression library")
+    (description
+     "Python-LZO provides Python bindings for LZO, i.e. you can access
+the LZO library from your Python scripts thereby compressing ordinary
+Python strings.")
+    (license license:gpl2+)))
+
+(define-public python2-lzo
+  (package-with-python2 python-lzo))
+
 (define-public lzop
   (package
     (name "lzop")
