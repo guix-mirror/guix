@@ -860,9 +860,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/qemu-CVE-2016-10155.patch			\
+  %D%/packages/patches/qemu-CVE-2017-2615.patch			\
   %D%/packages/patches/qemu-CVE-2017-5525.patch			\
   %D%/packages/patches/qemu-CVE-2017-5526.patch			\
   %D%/packages/patches/qemu-CVE-2017-5552.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5578.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5579.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5856.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
