@@ -565,7 +565,6 @@ security, and applying best practice development processes.")
     (propagated-inputs
      `(("python2-acme" ,python2-acme)
        ("python2-zope-interface" ,python2-zope-interface)
-       ("python2-pythondialog" ,python2-pythondialog)
        ("python2-pyrfc3339" ,python2-pyrfc3339)
        ("python2-pyopenssl" ,python2-pyopenssl)
        ("python2-configobj" ,python2-configobj)
