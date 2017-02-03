@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2016, 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4145,3 +4145,25 @@ regression.")
 perform @dfn{independent component analysis} (ICA) and projection pursuit.")
     ;; Any GPL version.
     (license license:gpl3+)))
+
+(define-public r-randomforest
+  (package
+    (name "r-randomforest")
+    (version "4.6-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "randomForest" version))
+       (sha256
+        (base32
+         "1i43idaihhl6nwqw42v9dqpl6f8z3ykcn2in32lh2755i27jylbf"))))
+    (properties `((upstream-name . "randomForest")))
+    (build-system r-build-system)
+    (home-page "https://www.stat.berkeley.edu/~breiman/RandomForests/")
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (synopsis "Breiman and Cutler's random forests for classification and regression")
+    (description
+"This package provides the Breiman and Cutler's random forests algorithm, based on a
+forest of trees using random inputs, for classification and regression.")
+    (license license:gpl2+)))
