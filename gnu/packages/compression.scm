@@ -924,7 +924,8 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
                   (delete-file-recursively "CPP/7zip/Archive/Rar")
                   (delete-file-recursively "CPP/7zip/Compress/Rar")
                   #t))
-              (patches (search-patches "p7zip-remove-unused-code.patch"))))
+              (patches (search-patches "p7zip-CVE-2016-9296.patch"
+                                       "p7zip-remove-unused-code.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
