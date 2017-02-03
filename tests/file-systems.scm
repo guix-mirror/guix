@@ -18,6 +18,7 @@
 
 (define-module (test-file-systems)
   #:use-module (guix store)
+  #:use-module (guix modules)
   #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors))
@@ -71,5 +72,12 @@
                    (inherit (dummy-fs (%store-prefix)))
                    (device "/foo")
                    (flags '(bind-mount read-only)))))))))
+
+(test-assert "does not pull (guix config)"
+  ;; This module is meant both for the host side and "build side", so make
+  ;; sure it doesn't pull in (guix config), which depends on the user's
+  ;; config.
+  (not (member '(guix config)
+               (source-module-closure '((gnu system file-systems))))))
 
 (test-end)

@@ -19,7 +19,6 @@
 (define-module (gnu system file-systems)
   #:use-module (ice-9 match)
   #:use-module (guix records)
-  #:use-module (guix store)
   #:use-module ((gnu build file-systems)
                 #:select (string->uuid uuid->string))
   #:re-export (string->uuid
@@ -96,6 +95,20 @@
                        (default #f))
   (dependencies     file-system-dependencies      ; list of <file-system>
                     (default '())))               ; or <mapped-device>
+
+;; Note: This module is used both on the build side and on the host side.
+;; Arrange not to pull (guix store) and (guix config) because the latter
+;; differs from user to user.
+(define (%store-prefix)
+  "Return the store prefix."
+  (cond ((resolve-module '(guix store) #:ensure #f)
+         =>
+         (lambda (store)
+           ((module-ref store '%store-prefix))))
+        ((getenv "NIX_STORE")
+         => identity)
+        (else
+         "/gnu/store")))
 
 (define %not-slash
   (char-set-complement (char-set #\/)))
