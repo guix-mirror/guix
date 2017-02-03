@@ -1215,8 +1215,9 @@ module provides support functions to the automatically generated code.")
        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python-sip" ,python-sip)
-       ("qtbase" ,qtbase))) ; for qmake
+     `(("qtbase" ,qtbase))) ; for qmake
+    (propagated-inputs
+     `(("python-sip" ,python-sip)))
     (inputs
      `(("python" ,python-wrapper)
        ("qtbase" ,qtbase)
