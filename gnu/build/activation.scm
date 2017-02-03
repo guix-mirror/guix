@@ -85,16 +85,27 @@
     (chmod file (logior #o600 (stat:perms stat)))))
 
 (define* (copy-account-skeletons home
-                                 #:optional (directory %skeleton-directory))
-  "Copy the account skeletons from DIRECTORY to HOME."
+                                 #:key
+                                 (directory %skeleton-directory)
+                                 uid gid)
+  "Copy the account skeletons from DIRECTORY to HOME.  When UID is an integer,
+make it the owner of all the files created; likewise for GID."
+  (define (set-owner file)
+    (when (or uid gid)
+      (chown file (or uid -1) (or gid -1))))
+
   (let ((files (scandir directory (negate dot-or-dot-dot?)
                         string<?)))
     (mkdir-p home)
+    (set-owner home)
     (for-each (lambda (file)
                 (let ((target (string-append home "/" file)))
                   (copy-recursively (string-append directory "/" file)
                                     target
                                     #:log (%make-void-port "w"))
+                  (for-each set-owner
+                            (find-files target (const #t)
+                                        #:directories? #t))
                   (make-file-writable target)))
               files)))
 
@@ -277,9 +288,14 @@ they already exist."
       ((name uid group supplementary-groups comment home create-home?
              shell password system?)
        (unless (or (not home) (directory-exists? home))
-         (mkdir-p home)
-         (unless system?
-           (copy-account-skeletons home))))))
+         (let* ((pw  (getpwnam name))
+                (uid (passwd:uid pw))
+                (gid (passwd:gid pw)))
+           (mkdir-p home)
+           (chown home uid gid)
+           (unless system?
+             (copy-account-skeletons home
+                                     #:uid uid #:gid gid)))))))
 
   (for-each ensure-user-home users))
 
