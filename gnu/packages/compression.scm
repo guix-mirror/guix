@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1034,11 +1034,12 @@ functionality in a C++ iostream.")
                                (_               " -DNOJIT")))
         ;; These should be safe, lowest-common-denominator instruction sets,
         ;; allowing for some optimisation while remaining reproducible.
-        (string-append "CXXFLAGS=-O3 -mtune=generic -DNDEBUG"
+        (string-append "CXXFLAGS=-O3 -DNDEBUG"
                        ,(match (or (%current-target-system)
                                    (%current-system))
-                               ("x86_64-linux"  " -march=nocona")
-                               ("i686-linux"    " -march=i686")
+                               ("x86_64-linux"  " -march=nocona -mtune=generic")
+                               ("i686-linux"    " -march=i686 -mtune=generic")
+                               ("armhf-linux"   " -mtune=generic-armv7-a")
                                (_               "")))
         (string-append "PREFIX="
                        (assoc-ref %outputs "out")))))
