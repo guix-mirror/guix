@@ -506,13 +506,14 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.10.2")
+    ;; Remember to update the hash of certbot when updating python-acme.
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "0y6y8d66yvwdcby96g0dlqqwy72b81yh6hws4va8r7w4aribcrb4"))))
+        "0kk95iqxygrg0cd66kq8kbyalg2x5pz9hn1175cgwgf1vy72adfv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -555,13 +556,15 @@ security, and applying best practice development processes.")
 (define-public certbot
   (package
     (name "certbot")
-    (version "0.10.2")
+    ;; Certbot and python-acme are developed in the same repository, and their
+    ;; versions should remain synchronized.
+    (version (package-version python-acme))
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0c8nidbbq8p4rjhcrw31saw04n5rz4zgr08chbch17gw03hrqwik"))))
+                "1wis5kgqcsrs60kkcmbrbx8z9yasmwa6lg9ir5im232hdm4285vc"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
