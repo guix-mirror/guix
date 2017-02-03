@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -294,7 +294,7 @@ from an audio CD.")
 (define-public abcde
   (package
     (name "abcde")
-    (version "2.7.2")
+    (version "2.8.1")
     (home-page "https://abcde.einval.com/")
     (source (origin
               (method url-fetch)
@@ -302,7 +302,7 @@ from an audio CD.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pakpi41k8yd780mfp0snhia6mmwjwxk9lcrq6gynimch8b8hfda"))
+                "0f9bjs0phk23vry7gvh0cll9vl6kmc1y4fwwh762scfdvpbp3774"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
