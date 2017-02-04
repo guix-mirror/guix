@@ -1764,6 +1764,9 @@ format.  It can process XML documents without a complete in-memory
 representation of the data.")
     (license license:isc)))
 
+(define-public ocaml4.01-xmlm
+  (package-with-ocaml4.01 ocaml-xmlm))
+
 (define-public ocaml-ulex
   (package
     (name "ocaml-ulex")
