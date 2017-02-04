@@ -23,7 +23,7 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -1063,14 +1063,14 @@ Python file, so it can be easily copied into your project.")
 (define-public python-dateutil-2
   (package
     (name "python-dateutil")
-    (version "2.5.2")
+    (version "2.5.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "python-dateutil" version))
       (sha256
        (base32
-        "0jrfpcgvgya6hs45dhrd9yiqgdgz9qp9aa07zsw8gqgn8zphff86"))))
+        "1v9j9fmf8g911yg6k01xa2db6dx3wv73zkk7fncsj7vagjqgs20l"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
