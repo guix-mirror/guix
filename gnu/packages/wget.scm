@@ -33,7 +33,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.18")
+    (version "1.19")
     (source
      (origin
       (method url-fetch)
@@ -41,7 +41,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1hcwx8ww3sxzdskkx3l7q70a7wd6569yrnjkw9pw013cf9smpddm"))))
+        "1133c14g19ysv74j7am66jwgwrr0rdn0rdyxw7rikbnsyjxmf48g"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -53,7 +53,7 @@
        ("python" ,python)               ;for testenv suite
        ("perl-http-daemon" ,perl-http-daemon)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
-    (home-page "http://www.gnu.org/software/wget/")
+    (home-page "https://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description
      "GNU Wget is a non-interactive tool for fetching files using the HTTP,
