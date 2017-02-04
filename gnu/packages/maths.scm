@@ -313,7 +313,7 @@ integer programming problems and computes Markov bases for statistics.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlib-"
+      (uri (string-append "ftp://ftp.math.ethz.ch/users/fukudak/cdd/cddlib-"
                           (string-delete #\. version) ".tar.gz"))
       (sha256
        (base32
