@@ -128,13 +128,19 @@ for the process."
               "/dev/fuse"))
 
   ;; Setup the container's /dev/console by bind mounting the pseudo-terminal
-  ;; associated with standard input.
-  (let ((in      (current-input-port))
-        (console (scope "/dev/console")))
-    (when (isatty? in)
+  ;; associated with standard input when there is one.
+  (let* ((in      (current-input-port))
+         (tty     (catch 'system-error
+                    (lambda ()
+                      ;; This call throws if IN does not correspond to a tty.
+                      ;; This is more reliable than 'isatty?'.
+                      (ttyname in))
+                    (const #f)))
+         (console (scope "/dev/console")))
+    (when tty
       (touch console)
       (chmod console #o600)
-      (bind-mount (ttyname in) console)))
+      (bind-mount tty console)))
 
   ;; Setup standard input/output/error.
   (symlink "/proc/self/fd"   (scope "/dev/fd"))
