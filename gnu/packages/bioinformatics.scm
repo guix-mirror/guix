@@ -5268,6 +5268,42 @@ between experiments, StringTie's output can be processed either by the
 Cuffdiff or Ballgown programs.")
     (license license:artistic2.0)))
 
+(define-public taxtastic
+  (package
+    (name "taxtastic")
+    (version "0.5.7")
+    ;; Versions after 0.5.4 do not appear to be distributed on PyPI so we
+    ;; download the package from GitHub.
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/fhcrc/taxtastic/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s0h5y1lds1c40jhir5585ffm6yjyn8h5aqimpgv64rhqhfv56xx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "unittest" "discover" "-v")))))))
+    (propagated-inputs
+     `(("python-sqlalchemy" ,python2-sqlalchemy)
+       ("python-decorator" ,python2-decorator)
+       ("python-biopython" ,python2-biopython)
+       ("python-pandas" ,python2-pandas)))
+    (home-page "https://github.com/fhcrc/taxtastic")
+    (synopsis "Tools for taxonomic naming and annotation")
+    (description
+     "Taxtastic is software written in python used to build and maintain
+reference packages i.e. collections of reference trees, reference alignments,
+profiles, and associated taxonomic information.")
+    (license license:gpl3+)))
+
 (define-public vcftools
   (package
     (name "vcftools")
