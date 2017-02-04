@@ -45,7 +45,7 @@
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
-       ("libidn" ,libidn)
+       ("libidn2" ,libidn2)
        ("libpsl" ,libpsl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
