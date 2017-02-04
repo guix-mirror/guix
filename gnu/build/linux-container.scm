@@ -235,6 +235,8 @@ host user identifiers to map into the user namespace."
                                                                namespaces)))
                     (lambda args
                       ;; Forward the exception to the parent process.
+                      ;; FIXME: SRFI-35 conditions and non-trivial objects
+                      ;; cannot be 'read' so they shouldn't be written as is.
                       (write args child)
                       (primitive-exit 3))))
                 ;; TODO: Manage capabilities.
