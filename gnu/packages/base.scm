@@ -118,14 +118,14 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.3")
+   (version "4.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "1anhdgah8h423hlmn9hwzxzr7hjbqjm6hxq3z1p7p7nf8640vhj7"))))
+              "0fv88bcnraixc8jvpacvxshi30p5x9m7yb8ns1hfv07hmb2ypmnb"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
