@@ -2032,6 +2032,9 @@ every compliant installation of OCaml and organize these libraries into a
 hierarchy of modules.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml4.01-batteries
+  (package-with-ocaml4.01 ocaml-batteries))
+
 (define-public ocaml-pcre
   (package
     (name "ocaml-pcre")
