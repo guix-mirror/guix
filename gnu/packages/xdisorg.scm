@@ -919,7 +919,7 @@ demos.  It also acts as a nice screen locker.")
     (license (license:non-copyleft
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
-               "/main/x/xscreensaver/xscreensaver_5.34-2_copyright")))))
+               "/main/x/xscreensaver/xscreensaver_5.36-1_copyright")))))
 
 (define-public xdpyprobe
   (package
