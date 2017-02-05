@@ -318,6 +318,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ratpoison.scm			\
   %D%/packages/rdesktop.scm			\
   %D%/packages/rdf.scm				\
+  %D%/packages/re2c.scm				\
   %D%/packages/readline.scm			\
   %D%/packages/regex.scm				\
   %D%/packages/rrdtool.scm			\
