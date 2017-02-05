@@ -29,7 +29,8 @@
   (guard (c ((and (http-get-error? c)
                   (= 404 (http-get-error-code c)))
              #f))                       ;"expected" if package is unknown
-    (let* ((port (http-fetch url))
+    (let* ((port (http-fetch url #:headers '((user-agent . "GNU Guile")
+                                             (Accept . "application/json"))))
            (result (hash-table->alist (json->scm port))))
       (close-port port)
       result)))
