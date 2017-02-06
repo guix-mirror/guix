@@ -20,6 +20,7 @@
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
+;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3407,3 +3408,32 @@ set the screen to be pitch black at a vaĺue of 0 (or higher).
 
 Light is the successor of lightscript.")
     (license license:gpl3+)))
+
+(define-public lshw
+  (package
+    (name "lshw")
+    (version "B.02.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ezix.org/software/"
+                                  "files/lshw-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0brwra4jld0d53d7jsgca415ljglmmx1l2iazpj4ndilr48yy8mf"))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:phases (modify-phases %standard-phases (delete 'configure))
+        #:tests? #f ; no tests
+        #:make-flags
+          (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (synopsis "List hardware information")
+    (description
+     "@command{lshw} (Hardware Lister) is a small tool to provide
+detailed information on the hardware configuration of the machine.
+It can report exact memory configuration, firmware version, mainboard
+configuration, CPU version and speed, cache configuration, bus speed,
+and more on DMI-capable x86 or EFI (IA-64) systems and on some PowerPC
+machines (PowerMac G4 is known to work).")
+    (home-page "https://www.ezix.org/project/wiki/HardwareLiSter")
+    (license license:gpl2+)))
