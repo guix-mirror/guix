@@ -31,7 +31,8 @@ Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017 Clément Lassieur@*
-Copyright @copyright{} 2017 Mathieu Othacehe
+Copyright @copyright{} 2017 Mathieu Othacehe@*
+Copyright @copyright{} 2017 Federico Beffa
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -5340,6 +5341,34 @@ package name by an at-sign and a version number as in the following example:
 guix import hackage mtl@@2.1.3.1
 @end example
 
+@item stackage
+@cindex stackage
+The @code{stackage} importer is a wrapper around the @code{hackage} one.
+It takes a package name, looks up the package version included in a
+long-term support (LTS) @uref{https://www.stackage.org, Stackage}
+release and uses the @code{hackage} importer to retrieve its metadata.
+Note that it is up to you to select an LTS release compatible with the
+GHC compiler used by Guix.
+
+Specific command-line options are:
+
+@table @code
+@item --no-test-dependencies
+@itemx -t
+Do not include dependencies required only by the test suites.
+@item --lts-version=@var{version}
+@itemx -r @var{version}
+@var{version} is the desired LTS release version.  If omitted the latest
+release is used.
+@end table
+
+The command below imports metadata for the @code{HTTP} Haskell package
+included in the LTS Stackage release version 7.18:
+
+@example
+guix import stackage --lts-version=7.18 HTTP
+@end example
+
 @item elpa
 @cindex elpa
 Import metadata from an Emacs Lisp Package Archive (ELPA) package
@@ -5504,6 +5533,8 @@ the updater for @uref{https://rubygems.org, RubyGems} packages.
 the updater for @uref{https://github.com, GitHub} packages.
 @item hackage
 the updater for @uref{https://hackage.haskell.org, Hackage} packages.
+@item stackage
+the updater for @uref{https://www.stackage.org, Stackage} packages.
 @item crate
 the updater for @uref{https://crates.io, Crates} packages.
 @end table

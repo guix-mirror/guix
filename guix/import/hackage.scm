@@ -37,7 +37,13 @@
   #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (hackage->guix-package
-            %hackage-updater))
+            %hackage-updater
+
+            guix-package->hackage-name
+            hackage-fetch
+            hackage-source-url
+            hackage-cabal-url
+            hackage-package?))
 
 (define ghc-standard-libraries
   ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as

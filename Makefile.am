@@ -126,6 +126,7 @@ MODULES =					\
   guix/import/cabal.scm				\
   guix/import/cran.scm				\
   guix/import/hackage.scm			\
+  guix/import/stackage.scm			\
   guix/import/elpa.scm   			\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
@@ -147,6 +148,7 @@ MODULES =					\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
+  guix/scripts/import/stackage.scm		\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
