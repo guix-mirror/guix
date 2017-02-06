@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,8 @@
             %namespaces
             run-container
             call-with-container
-            container-excursion))
+            container-excursion
+            container-excursion*))
 
 (define (user-namespace-supported?)
   "Return #t if user namespaces are supported on this system."
@@ -326,3 +328,21 @@ return the exit status."
      (match (waitpid pid)
        ((_ . status)
         (status:exit-val status))))))
+
+(define (container-excursion* pid thunk)
+  "Like 'container-excursion', but return the return value of THUNK."
+  (match (pipe)
+    ((in . out)
+     (match (container-excursion pid
+              (lambda ()
+                (close-port in)
+                (write (thunk) out)))
+       (0
+        (close-port out)
+        (let ((result (read in)))
+          (close-port in)
+          result))
+       (_                                         ;maybe PID died already
+        (close-port out)
+        (close-port in)
+        #f)))))
