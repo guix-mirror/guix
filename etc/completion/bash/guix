@@ -26,7 +26,7 @@ _guix_complete_subcommand ()
     local subcommands="$(${COMP_WORDS[0]} $command --help 2> /dev/null \
                          | grep '^   [a-z]' \
                          | sed -e's/^ \+\([a-z-]\+\).*$/\1/g')"
-    COMPREPLY=($(compgen -W "$subcommands" -- "${COMP_WORDS[${#COMP_WORDS[*]} - 1]}"))
+    COMPREPLY=($(compgen -W "$subcommands" -- "${COMP_WORDS[$COMP_CWORD]}"))
 }
 
 _guix_complete_available_package ()
