@@ -22,6 +22,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,11 +97,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages spice)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -1899,6 +1902,43 @@ selection and URL hints.")))
     (propagated-inputs
      `(("gtk+" ,gtk+-2)         ; required by libvte.pc
        ("ncurses" ,ncurses))))) ; required by libvte.la
+
+(define-public vinagre
+  (package
+    (name "vinagre")
+    (version "3.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("glib-bin" ,glib "bin")                   ;for glib-compile-schemas
+       ("gtk+-bin" ,gtk+ "bin")))                 ;for gtk-update-icon-cache
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("gtk-vnc" ,gtk-vnc)
+       ("gnome-keyring" ,gnome-keyring)
+       ("libsecret" ,libsecret)
+       ("freerdp" ,freerdp)
+       ("spice" ,spice)
+       ("spice-gtk" ,spice-gtk)
+       ("telepathy-glib" ,telepathy-glib)
+       ("vte" ,vte)))
+    (arguments
+     `(#:configure-flags '("--enable-rdp")))
+    (home-page "https://wiki.gnome.org/Apps/Vinagre")
+    (synopsis "Remote desktop viewer for GNOME")
+    (description "Vinagre is a remote display client supporting the VNC, SPICE
+and RDP protocols.")
+    (license license:gpl3+)))
 
 (define-public dconf
   (package
