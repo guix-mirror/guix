@@ -18,6 +18,7 @@
 
 (define-module (gnu system file-systems)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (guix records)
   #:use-module ((gnu build file-systems)
                 #:select (string->uuid uuid->string))
@@ -64,7 +65,9 @@
 
             file-system-mapping->bind-mount
 
-            %store-mapping))
+            %store-mapping
+            %network-configuration-files
+            %network-file-mappings))
 
 ;;; Commentary:
 ;;;
@@ -388,5 +391,24 @@ a bind mount."
    (source (%store-prefix))
    (target (%store-prefix))
    (writable? #f)))
+
+(define %network-configuration-files
+  ;; List of essential network configuration files.
+  '("/etc/resolv.conf"
+    "/etc/nsswitch.conf"
+    "/etc/services"
+    "/etc/hosts"))
+
+(define %network-file-mappings
+  ;; List of file mappings for essential network files.
+  (filter-map (lambda (file)
+                (file-system-mapping
+                 (source file)
+                 (target file)
+                 ;; XXX: On some GNU/Linux systems, /etc/resolv.conf is a
+                 ;; symlink to a file in a tmpfs which, for an unknown reason,
+                 ;; cannot be bind mounted read-only within the container.
+                 (writable? (string=? file "/etc/resolv.conf"))))
+              %network-configuration-files))
 
 ;;; file-systems.scm ends here
