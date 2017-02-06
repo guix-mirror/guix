@@ -65,7 +65,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl3 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
-                          bsd-2 bsd-3 public-domain asl2.0))
+                          agpl3+ bsd-2 bsd-3 public-domain asl2.0))
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -194,8 +194,9 @@ and provides interfaces to the traditional file format.")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
 SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
-    (license (non-copyleft "file://LICENSE"
-                           "See LICENSE in the distribution."))
+    ;; Starting with version 6, BDB is distributed under AGPL3. Many individual
+    ;; files are covered by the 3-clause BSD license.
+    (license (list agpl3+ bsd-3))
     (home-page
      "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
 
@@ -203,6 +204,8 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
   (package (inherit bdb)
     (name "bdb")
     (version "5.3.28")
+    (license (non-copyleft "file://LICENSE"
+                           "See LICENSE in the distribution."))
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.oracle.com/berkeley-db/db-"
