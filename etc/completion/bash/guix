@@ -113,6 +113,12 @@ _guix_complete_file ()
     COMPREPLY=()
 }
 
+_guix_complete_pid ()
+{
+    local pids="$(cd /proc; echo [0-9]*)"
+    COMPREPLY=($(compgen -W "$pids" -- "$1"))
+}
+
 declare _guix_subcommands
 
 _guix_complete ()
@@ -157,6 +163,13 @@ _guix_complete ()
 		case $COMP_CWORD in
 		    2) _guix_complete_subcommand;;
 		    *) _guix_complete_file;; # TODO: restrict to *.scm
+		esac
+	    elif _guix_is_command "container"
+	    then
+		case $COMP_CWORD in
+		    2) _guix_complete_subcommand;;
+		    3) _guix_complete_pid "$word_at_point";;
+		    *) _guix_complete_file;;
 		esac
 	    elif _guix_is_command "import"
 	    then
