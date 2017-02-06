@@ -154,7 +154,7 @@ tables.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.21")
+    (version "1.22")
     (source
      (origin
       (method url-fetch)
@@ -162,9 +162,9 @@ tables.")
                           version ".tar.lz"))
       (sha256
        (base32
-        "1b71hb42lh33y9843nd1mxlwkk9qh9ajvnz6ivzd1jq9lav4x7ph"))))
+        "19qhx9ggkkjl0g3a88g501wmybkj1y4n5lm5kp0km0blh0p7p189"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/ddrescue/ddrescue.html")
+    (home-page "https://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
     (native-inputs `(("lzip" ,lzip)))
     (description
