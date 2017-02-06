@@ -629,7 +629,8 @@ project's documentation} for more information."
               (requirement '(user-processes loopback))
               (start #~(make-forkexec-constructor
                         (list (string-append #$bitlbee "/sbin/bitlbee")
-                              "-n" "-F" "-u" "bitlbee" "-c" #$conf)))
+                              "-n" "-F" "-u" "bitlbee" "-c" #$conf)
+                        #:pid-file "/var/run/bitlbee.pid"))
               (stop  #~(make-kill-destructor))))))))
 
 (define %bitlbee-accounts
