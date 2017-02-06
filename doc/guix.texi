@@ -3438,6 +3438,16 @@ Which Haskell compiler is used can be specified with the @code{#:haskell}
 parameter which defaults to @code{ghc}.
 @end defvr
 
+@defvr {Scheme Variable} dub-build-system
+This variable is exported by @code{(guix build-system dub)}.  It
+implements the Dub build procedure used by D packages, which
+involves running @code{dub build} and @code{dub run}.
+Installation is done by copying the files manually.
+
+Which D compiler is used can be specified with the @code{#:ldc}
+parameter which defaults to @code{ldc}.
+@end defvr
+
 @defvr {Scheme Variable} emacs-build-system
 This variable is exported by @code{(guix build-system emacs)}.  It
 implements an installation procedure similar to the packaging system

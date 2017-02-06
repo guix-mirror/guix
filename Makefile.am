@@ -64,6 +64,7 @@ MODULES =					\
   guix/build-system/ant.scm			\
   guix/build-system/cargo.scm			\
   guix/build-system/cmake.scm			\
+  guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
@@ -88,6 +89,7 @@ MODULES =					\
   guix/build/download.scm			\
   guix/build/cargo-build-system.scm		\
   guix/build/cmake-build-system.scm		\
+  guix/build/dub-build-system.scm		\
   guix/build/emacs-build-system.scm		\
   guix/build/asdf-build-system.scm		\
   guix/build/git.scm				\
