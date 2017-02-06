@@ -154,7 +154,10 @@ _guix_complete ()
 		fi
 	    elif _guix_is_command "system"
 	    then
-		_guix_complete_subcommand
+		case $COMP_CWORD in
+		    2) _guix_complete_subcommand;;
+		    *) _guix_complete_file;; # TODO: restrict to *.scm
+		esac
 	    elif _guix_is_command "import"
 	    then
 		_guix_complete_subcommand
