@@ -31,7 +31,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -5158,6 +5158,24 @@ features useful for text console applications.")
 
 (define-public python2-urwid
   (package-with-python2 python-urwid))
+
+(define-public python-openid
+  (package
+    (name "python-openid")
+    (version "3.0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python3-openid" version))
+       (sha256
+        (base32
+         "1x3nh3fycqfn43jp5j5pb4q4y2jxp4mdka4absaa3bc0078qd758"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/necaris/python3-openid")
+    (synopsis "OpenID support for servers and consumers")
+    (description "This library provides OpenID authentication for Python, both
+for clients and servers.")
+    (license license:asl2.0)))
 
 (define-public python2-openid
   (package
