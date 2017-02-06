@@ -63,7 +63,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2016.07")
+    (version "2017.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -71,7 +71,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0lqj4ckmfqiap8mc6z2d5albs3g2h5mzccbn60hsgxhabhibfkwp"))))
+                "1wpc51jm3zyibgcr78jng2yksqvrya76bxgsr4pcyjrsz5sm2hkc"))))
     (native-inputs
      `(("bc" ,bc)
        ("dtc" ,dtc)
