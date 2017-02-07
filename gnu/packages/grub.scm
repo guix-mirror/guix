@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -139,8 +139,8 @@ menu to select one of the installed operating systems.")
        ;; Search for 'OVMF' in "tests/util/grub-shell.in".
        #:tests? #f
        ,@(substitute-keyword-arguments (package-arguments grub)
-           ((#:configure-flags flags) `(cons* "--with-platform=efi"
-                                              ,flags))
+           ((#:configure-flags flags ''())
+            `(cons "--with-platform=efi" ,flags))
            ((#:phases phases)
             `(modify-phases ,phases
                (add-after 'patch-stuff 'use-absolute-efibootmgr-path
