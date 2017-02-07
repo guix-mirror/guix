@@ -772,6 +772,18 @@ GLIBC/HURD for a Hurd host"
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
+(define-public glibc-2.24
+  (package
+    (inherit glibc)
+    (version "2.24")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1lxmprg9gm73gvafxd503x70z32phwjzcy74i0adfi6ixzla7m4r"))))))
+
 (define-public glibc-2.23
   (package
     (inherit glibc)
