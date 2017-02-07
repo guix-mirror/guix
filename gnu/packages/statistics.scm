@@ -116,7 +116,9 @@ be output in text, PostScript, PDF or HTML.")
      `(#:make-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
-                            "/lib/R/lib"))
+                            "/lib/R/lib")
+             ;; This affects the embedded timestamp of only the core packages.
+             "PKG_BUILT_STAMP=1970-01-01")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-uname
@@ -126,8 +128,13 @@ be output in text, PostScript, PDF or HTML.")
                (substitute* "src/scripts/R.sh.in"
                  (("uname") uname-bin)))
              #t))
-         (add-before
-          'configure 'set-default-pager
+         (add-after 'unpack 'build-recommended-packages-reproducibly
+           (lambda _
+             (substitute* "src/library/Recommended/Makefile.in"
+               (("INSTALL_OPTS =.*" line)
+                (string-append line " --built-timestamp=1970-01-01")))
+             #t))
+         (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
           ;; making "help()" print nothing at all.
           (lambda _ (setenv "PAGER" "cat") #t))
