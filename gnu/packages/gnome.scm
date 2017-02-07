@@ -3634,7 +3634,7 @@ work and the interface is well tested.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.22.4")
+    (version "3.22.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3642,7 +3642,7 @@ work and the interface is well tested.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0skdsma9rmq01703andigmpbdn2rl34y3lqny19a93v1ph3jb9qk"))))
+                "1hpwjwiviwh9dgc9cwq0gmr5jy40rvigjcq0cbg2nw2hqiyshzny"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
@@ -3650,7 +3650,8 @@ work and the interface is well tested.")
      ;;   ** (test-ephy-bookmarks:19591): WARNING **: Unable to start Zeroconf
      ;;      subsystem
      ;;   FAIL
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:configure-flags '("CFLAGS=-std=gnu99")))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
