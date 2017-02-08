@@ -8272,6 +8272,50 @@ this:
 @end example
 @end defvr
 
+@defvr {Scheme Variable} special-files-service-type
+This is the service that sets up ``special files'' such as
+@file{/bin/sh}; an instance of it is part of @code{%base-services}.
+
+The value associated with @code{special-files-service-type} services
+must be a list of tuples where the first element is the ``special file''
+and the second element is its target.  By default it is:
+
+@cindex @file{/bin/sh}
+@cindex @file{sh}, in @file{/bin}
+@example
+`(("/bin/sh" ,(file-append @var{bash} "/bin/sh")))
+@end example
+
+@cindex @file{/usr/bin/env}
+@cindex @file{env}, in @file{/usr/bin}
+If you want to add, say, @code{/usr/bin/env} to your system, you can
+change it to:
+
+@example
+`(("/bin/sh" ,(file-append @var{bash} "/bin/sh"))
+  ("/usr/bin/env" ,(file-append @var{coreutils} "/bin/env")))
+@end example
+
+Since this is part of @code{%base-services}, you can use
+@code{modify-services} to customize the set of special files
+(@pxref{Service Reference, @code{modify-services}}).  But the simple way
+to add a special file is @i{via} the @code{extra-special-file} procedure
+(see below.)
+@end defvr
+
+@deffn {Scheme Procedure} extra-special-file @var{file} @var{target}
+Use @var{target} as the ``special file'' @var{file}.
+
+For example, adding the following lines to the @code{services} field of
+your operating system declaration leads to a @file{/usr/bin/env}
+symlink:
+
+@example
+(extra-special-file "/usr/bin/env"
+                    (file-append coreutils "/bin/env"))
+@end example
+@end deffn
+
 @deffn {Scheme Procedure} host-name-service @var{name}
 Return a service that sets the host name to @var{name}.
 @end deffn

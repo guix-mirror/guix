@@ -28,7 +28,7 @@
             activate-user-home
             activate-etc
             activate-setuid-programs
-            activate-/bin/sh
+            activate-special-files
             activate-modprobe
             activate-firmware
             activate-ptrace-attach
@@ -383,10 +383,23 @@ copy SOURCE to TARGET."
 
   (for-each make-setuid-program programs))
 
-(define (activate-/bin/sh shell)
-  "Change /bin/sh to point to SHELL."
-  (symlink shell "/bin/sh.new")
-  (rename-file "/bin/sh.new" "/bin/sh"))
+(define (activate-special-files special-files)
+  "Install the files listed in SPECIAL-FILES.  Each element of SPECIAL-FILES
+is a pair where the first element is the name of the special file and the
+second element is the name it should appear at, such as:
+
+  ((\"/bin/sh\" \"/gnu/store/…-bash/bin/sh\")
+   (\"/usr/bin/env\" \"/gnu/store/…-coreutils/bin/env\"))
+"
+  (define install-special-file
+    (match-lambda
+      ((target file)
+       (let ((pivot (string-append target ".new")))
+         (mkdir-p (dirname target))
+         (symlink file pivot)
+         (rename-file pivot target)))))
+
+  (for-each install-special-file special-files))
 
 (define (activate-modprobe modprobe)
   "Tell the kernel to use MODPROBE to load modules."

@@ -77,6 +77,11 @@ When INITIALIZATION is true, it must be a one-argument procedure that is
 passed a gexp denoting the marionette, and it must return gexp that is
 inserted before the first test.  This is used to introduce an extra
 initialization step, such as entering a LUKS passphrase."
+  (define special-files
+    (service-parameters
+     (fold-services (operating-system-services os)
+                    #:target-type special-files-service-type)))
+
   (define test
     (with-imported-modules '((gnu build marionette)
                              (guix build syscalls))
@@ -119,6 +124,18 @@ ls --version
 grep --version
 info --version")
                                     marionette)))
+
+          (test-equal "special files"
+            '#$special-files
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 match))
+
+                (map (match-lambda
+                       ((file target)
+                        (list file (readlink file))))
+                     '#$special-files))
+             marionette))
 
           (test-assert "accounts"
             (let ((users (marionette-eval '(begin
