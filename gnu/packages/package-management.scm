@@ -329,14 +329,14 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "1.11.2")
+    (version "1.11.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "1mk9z75gklxcv6kzwwz1h5r2ci5kjy6bh7qwk4m5lf5v9s0k64pw"))))
+               "18xjg7cfvqzhsmvir6xmw95jxvl2w7icphbbll462xbnj9ddaag7"))))
     (build-system gnu-build-system)
     ;; XXX: Should we pass '--with-store-dir=/gnu/store'?  But then we'd also
     ;; need '--localstatedir=/var'.  But then!  The thing would use /var/nix
