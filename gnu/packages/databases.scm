@@ -64,9 +64,6 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
-  #:use-module ((guix licenses)
-                #:select (gpl2 gpl3 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
-                          agpl3+ bsd-2 bsd-3 public-domain asl2.0))
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -121,7 +118,7 @@
     (synopsis "Clustered RDF storage and query engine")
     (description "4store is a RDF/SPARQL store written in C, supporting
 either single machines or networked clusters.")
-      (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public gdbm
   (package
@@ -143,7 +140,7 @@ either single machines or networked clusters.")
      "GDBM is a library for manipulating hashed databases.  It is used to
 store key/value pairs in a file in a manner similar to the Unix dbm library
 and provides interfaces to the traditional file format.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public bdb
   (package
@@ -197,7 +194,7 @@ and provides interfaces to the traditional file format.")
 SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     ;; Starting with version 6, BDB is distributed under AGPL3. Many individual
     ;; files are covered by the 3-clause BSD license.
-    (license (list agpl3+ bsd-3))
+    (license (list license:agpl3+ license:bsd-3))
     (home-page
      "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
 
@@ -205,8 +202,8 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
   (package (inherit bdb)
     (name "bdb")
     (version "5.3.28")
-    (license (non-copyleft "file://LICENSE"
-                           "See LICENSE in the distribution."))
+    (license (license:non-copyleft "file://LICENSE"
+                                   "See LICENSE in the distribution."))
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.oracle.com/berkeley-db/db-"
@@ -251,7 +248,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     (description
      "LevelDB is a fast key-value storage library that provides an ordered
 mapping from string keys to string values.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public mysql
   (package
@@ -326,7 +323,7 @@ mapping from string keys to string values.")
      "MySQL is a fast, reliable, and easy to use relational database
 management system that supports the standardized Structured Query
 Language.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public mariadb
   (package
@@ -394,7 +391,7 @@ Language.")
     (description
      "MariaDB is a multi-user and multi-threaded SQL database server, designed
 as a drop-in replacement of MySQL.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public postgresql
   (package
@@ -430,7 +427,7 @@ stored procedures (in multiple languages).  It includes most SQL:2008 data
 types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
-    (license (x11-style "file://COPYRIGHT"))))
+    (license (license:x11-style "file://COPYRIGHT"))))
 
 (define-public qdbm
   (package
@@ -513,7 +510,7 @@ manipulating text-based, human-editable databases.  Despite being text-based,
 databases created with Recutils carry all of the expected features such as
 unique fields, primary keys, time stamps and more.  Many different field
 types are supported, as is encryption.")
-    (license gpl3+)
+    (license license:gpl3+)
     (home-page "http://www.gnu.org/software/recutils/")))
 
 (define-public rocksdb
@@ -602,7 +599,7 @@ between @dfn{Write-Amplification-Factor} (WAF), @dfn{Read-Amplification-Factor}
 compactions, making it specially suitable for storing multiple terabytes of
 data in a single database.  RocksDB is partially based on @code{LevelDB}.")
     ;; RocksDB is BSD-3 and the JNI adapter is Apache 2.0.
-    (license (list bsd-3 asl2.0))))
+    (license (list license:bsd-3 license:asl2.0))))
 
 (define-public sparql-query
   (package
@@ -663,7 +660,7 @@ edit previous queries, even across sessions.  It can be used non-interactively,
 for example from a shell script.")
     ;; Some files (like scan-sparql.c) contain a GPLv3+ license header, while
     ;; others (like sparql-query.c) contain a GPLv2+ license header.
-    (license (list gpl3+))))
+    (license (list license:gpl3+))))
 
 (define-public sqlite
   (package
@@ -717,7 +714,7 @@ for example from a shell script.")
 zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
-   (license public-domain)))
+   (license license:public-domain)))
 
 (define-public sqlite-3.15.1
   (package (inherit sqlite)
@@ -774,7 +771,7 @@ is in the public domain.")
 and BSD's DB except that it allows multiple simultaneous writers and uses
 locking internally to keep writers from trampling on each other.  TDB is also
 extremely small.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public perl-dbi
   (package
@@ -1119,7 +1116,7 @@ valid SQL query.")
    (description "Unixodbc is a library providing an API with which to access
 data sources.  Data sources include SQL Servers and any software with an ODBC
 Driver.")
-   (license lgpl2.1+)
+   (license license:lgpl2.1+)
    ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
    (home-page "http://www.unixodbc.org")))
 
@@ -1147,7 +1144,7 @@ self-contained, serverless, zero-configuration, transactional NoSQL
 database engine.  UnQLite is a document store database similar to
 MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
 similar to BerkeleyDB, LevelDB, etc.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public redis
   (package
@@ -1175,7 +1172,7 @@ similar to BerkeleyDB, LevelDB, etc.")
 supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
     (home-page "http://redis.io/")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public kyotocabinet
   (package
@@ -1202,7 +1199,7 @@ sets, bitmaps and hyperloglogs.")
      "Kyoto Cabinet is a standalone file-based database that supports Hash
 and B+ Tree data storage models.  It is a fast key-value lightweight
 database and supports many programming languages.  It is a NoSQL database.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public wiredtiger
   (package
@@ -1238,7 +1235,7 @@ row-oriented storage (where all columns of a row are stored together),
 column-oriented storage (where columns are stored in groups, allowing for
 more efficient access and storage of column subsets) and log-structured merge
 trees (LSM), for sustained throughput under random insert workloads.")
-    (license gpl3) ; or GPL-2
+    (license license:gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux"))))
 
