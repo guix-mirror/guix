@@ -739,7 +739,7 @@ for both major versions of GTK+."
   (mlet %store-monad ((gtk+   (manifest-lookup-package manifest "gtk+" "3"))
                       (gtk+-2 (manifest-lookup-package manifest "gtk+" "2")))
 
-    (define (build gtk gtk-version)
+    (define (build gtk gtk-version query)
       (let ((major (string-take gtk-version 1)))
         (with-imported-modules '((guix build utils)
                                  (guix build union)
@@ -756,8 +756,6 @@ for both major versions of GTK+."
 
               (let* ((prefix  (string-append "/lib/gtk-" #$major ".0/"
                                              #$gtk-version))
-                     (query   (string-append #$gtk "/bin/gtk-query-immodules-"
-                                             #$major ".0"))
                      (destdir (string-append #$output prefix))
                      (moddirs (cons (string-append #$gtk prefix "/immodules")
                                     (filter file-exists?
@@ -768,7 +766,7 @@ for both major versions of GTK+."
 
                 ;; Generate a new immodules cache file.
                 (mkdir-p (string-append #$output prefix))
-                (let ((pipe    (apply open-pipe* OPEN_READ query modules))
+                (let ((pipe    (apply open-pipe* OPEN_READ #$query modules))
                       (outfile (string-append #$output prefix
                                               "/immodules-gtk" #$major ".cache")))
                   (dynamic-wind
@@ -783,9 +781,23 @@ for both major versions of GTK+."
                       (close-pipe pipe)))))))))
 
     ;; Don't run the hook when there's nothing to do.
-    (let ((gexp #~(begin
-                    #$(if gtk+   (build gtk+   "3.0.0")  #t)
-                    #$(if gtk+-2 (build gtk+-2 "2.10.0") #t))))
+    (let* ((pkg-gtk+ (module-ref        ; lazy reference
+                      (resolve-interface '(gnu packages gtk)) 'gtk+))
+           (gexp #~(begin
+                     #$(if gtk+
+                           (build
+                            gtk+ "3.0.0"
+                            ;; Use 'gtk-query-immodules-3.0' from the 'bin'
+                            ;; output of latest gtk+ package.
+                            #~(string-append
+                               #$pkg-gtk+:bin "/bin/gtk-query-immodules-3.0"))
+                           #t)
+                     #$(if gtk+-2
+                           (build
+                            gtk+-2 "2.10.0"
+                            #~(string-append
+                               #$gtk+-2 "/bin/gtk-query-immodules-2.0"))
+                           #t))))
       (if (or gtk+ gtk+-2)
           (gexp->derivation "gtk-im-modules" gexp
                             #:local-build? #t
