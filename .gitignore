@@ -11,6 +11,7 @@
 /INSTALL
 /aclocal.m4
 /autom4te.cache
+/build-aux/ar-lib
 /build-aux/compile
 /build-aux/config.guess
 /build-aux/config.rpath
