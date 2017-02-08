@@ -35,6 +35,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages crypto)
@@ -518,7 +519,7 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.0.2")
+    (version "5.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/rocksdb"
@@ -526,7 +527,7 @@ types are supported, as is encryption.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jj8b50w8jr3bnyjzk2hmlzq9x49yihjilx3xlq2rfdx3q9x4fay"))
+                "1qdbs13al7g45xc2j44wzx0ywrg32q1gsdhk5j6j4952xg91rfmh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -581,7 +582,8 @@ types are supported, as is encryption.")
      `(("parallel" ,parallel)
        ("perl" ,perl)
        ("procps" ,procps)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("which" ,which)))
     (inputs
      `(("bzip2" ,bzip2)
        ("gflags" ,gflags)
