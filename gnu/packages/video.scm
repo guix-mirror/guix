@@ -891,7 +891,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
-       #:configure-flags (list "--enable-libmpv-shared" "--enable-zsh-comp")
+       #:configure-flags (list "--enable-libmpv-shared"
+                               "--enable-zsh-comp"
+                               "--disable-build-date")
        ;; No check function defined.
        #:tests? #f))
     (home-page "https://mpv.io/")
