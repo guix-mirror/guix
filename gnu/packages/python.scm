@@ -12608,3 +12608,28 @@ it with different test data, and make it appear as multiple test cases.")
 
 (define-public python2-ddt
   (package-with-python2 python-ddt))
+
+(define-public python-pycosat
+  (package
+    (name "python-pycosat")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycosat" version))
+       (sha256
+        (base32
+         "1kl3wh1f47rc712n4bmwplbx3fqz3x9i1b587jrbpmvdva4c8f6l"))))
+    ;; TODO: Unundle picosat. http://fmv.jku.at/picosat/
+    (build-system python-build-system)
+    (home-page "https://github.com/ContinuumIO/pycosat")
+    (synopsis "Bindings to picosat (a SAT solver)")
+    (description
+     "This package provides efficient Python bindings to @code{picosat} on
+the C level.  When importing pycosat, the @code{picosat} solver becomes part
+of the Python process itself.  @code{picosat} is a @dfn{Boolean Satisfiability
+Problem} (SAT) solver.")
+    (license license:expat)))
+
+(define-public python2-pycosat
+  (package-with-python2 python-pycosat))
