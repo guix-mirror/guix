@@ -115,13 +115,30 @@
       ("zlib" ,zlib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
+   (outputs '("out"
+              "static")) ; 396 KiB .a files
    (arguments
     `(#:configure-flags
       (list (string-append "--with-ltdl="
                            (assoc-ref %build-inputs "libltdl"))
             (string-append "--with-tidy="
                            (assoc-ref %build-inputs "tidy-html")))
-      #:parallel-tests? #f))
+      #:parallel-tests? #f
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'move-static-libraries
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Move static libraries to the "static" output.
+            (let* ((out    (assoc-ref outputs "out"))
+                   (lib    (string-append out "/lib"))
+                   (static (assoc-ref outputs "static"))
+                   (slib   (string-append static "/lib")))
+              (mkdir-p slib)
+              (for-each (lambda (file)
+                          (install-file file slib)
+                          (delete-file file))
+                        (find-files lib "\\.a$"))
+              #t))))))
    (synopsis "Library to extract meta-data from media files")
    (description
     "GNU libextractor is a library for extracting metadata from files.  It
