@@ -934,7 +934,7 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://storage.googleapis.com/"
@@ -942,7 +942,7 @@ access to mpv's powerful playback capabilities.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1basd6dda5di9p7jhc0f4f52wzm9c3hsravqspw6ibpcn5gbpbyh"))
+                "06d8hqjkfs6wl45qf4pwh1kpbvkx6cwywd5y8d4lgagvjwm0qb0w"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
