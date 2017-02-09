@@ -1068,3 +1068,37 @@ vector graphics.")
     "Comic Neue is a font that attempts to create a respectable casual
 typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
    (license license:silofl1.1)))
+
+(define-public font-iosevka
+  (package
+   (name "font-iosevka")
+   (version "1.11.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/be5invis/Iosevka/releases/download/v"
+                  version "/iosevka-pack-" version ".zip"))
+            (sha256
+             (base32
+              "0d8prdk7s5z94sdfd0y92cvqq531yqrlg7hnadbnhd7fs9jqr5hj"))))
+   (build-system trivial-build-system)
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let ((font-dir (string-append %output
+                                                 "/share/fonts/truetype"))
+                        (source (assoc-ref %build-inputs "source"))
+                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                               "/bin/unzip")))
+                    (mkdir-p font-dir)
+                    (system* unzip "-d" font-dir source)))))
+   (native-inputs `(("unzip" ,unzip)))
+   (home-page "https://be5invis.github.io/Iosevka/")
+   (synopsis "Coders' typeface, built from code")
+   (description
+    "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
+by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
+programming.  Iosevka is completely generated from its source code.")
+   (license (list license:silofl1.1  ; build artifacts (i.e. the fonts)
+                  license:bsd-3))))  ; supporting code
