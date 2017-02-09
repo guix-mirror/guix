@@ -64,6 +64,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/bittorrent.scm			\
   %D%/packages/bison.scm			\
   %D%/packages/boost.scm			\
+  %D%/packages/bootloaders.scm			\
   %D%/packages/bootstrap.scm			\
   %D%/packages/busybox.scm			\
   %D%/packages/c.scm				\
@@ -170,7 +171,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/graphics.scm			\
   %D%/packages/graphviz.scm			\
   %D%/packages/groff.scm			\
-  %D%/packages/grub.scm				\
   %D%/packages/gsasl.scm			\
   %D%/packages/gstreamer.scm			\
   %D%/packages/gtk.scm				\
@@ -373,7 +373,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
   %D%/packages/uucp.scm				\
-  %D%/packages/u-boot.scm			\
   %D%/packages/valgrind.scm			\
   %D%/packages/version-control.scm		\
   %D%/packages/video.scm			\
