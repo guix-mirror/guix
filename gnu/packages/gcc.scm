@@ -263,6 +263,12 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (("static char const sed_cmd_z\\[\\] =.*;")
                  "static char const sed_cmd_z[] = \"sed\";"))
 
+              ;; Aarch64 support didn't land in GCC until the 4.8 series.
+              (when (file-exists? "gcc/config/aarch64")
+                ;; Force Aarch64 libdir to be /lib and not /lib64
+                (substitute* "gcc/config/aarch64/t-aarch64-linux"
+                  (("lib64") "lib")))
+
               (when (file-exists? "libbacktrace")
                 ;; GCC 4.8+ comes with libbacktrace.  By default it builds
                 ;; with -Werror, which fails with a -Wcast-qual error in glibc
