@@ -39,11 +39,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1102,3 +1104,41 @@ by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
 programming.  Iosevka is completely generated from its source code.")
    (license (list license:silofl1.1  ; build artifacts (i.e. the fonts)
                   license:bsd-3))))  ; supporting code
+
+(define-public font-go
+  (let ((commit "b7f8df6bc082334698d4505fb85fa05e99156b72")
+        (revision "1"))
+    (package
+     (name "font-go")
+     (version (string-append "20161115-" revision "." (string-take commit 7)))
+     (source (origin
+              (file-name (string-append "go-image-" version "-checkout"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://go.googlesource.com/image")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1ywxs6dmcyzwwsmnan3qqza7znprnbvmdi260x6sjmydz6dyq2zs"))))
+     (build-system trivial-build-system)
+     (arguments
+      `(#:modules ((guix build utils))
+        #:builder (begin
+                    (use-modules (guix build utils))
+                    (let ((font-dir (string-append %output
+                                                   "/share/fonts/truetype"))
+                          (source (assoc-ref %build-inputs "source")))
+                      (mkdir-p font-dir)
+                      (with-directory-excursion
+                       (string-append source "/font/gofont/ttfs")
+                       (for-each (lambda (ttf)
+                                   (install-file ttf font-dir))
+                                 (find-files "." "\\.ttf$")))))))
+     (home-page "https://blog.golang.org/go-fonts")
+     (synopsis "The Go font family")
+     (description
+      "The Go font family is a set of WGL4 TrueType fonts from the Bigelow &
+Holmes type foundry, released under the same license as the Go programming
+language.  It includes a set of proportional, sans-serif fonts, and a set of
+monospace, slab-serif fonts.")
+     (license (package-license go-1.4)))))
