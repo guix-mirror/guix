@@ -33,6 +33,8 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages man)
   #:use-module (gnu packages texinfo)
@@ -150,3 +152,64 @@ menu to select one of the installed operating systems.")
                       (string-append (assoc-ref inputs "efibootmgr")
                                      "/sbin/efibootmgr")))
                    #t)))))))))
+
+(define-public syslinux
+  (let ((commit "bb41e935cc83c6242de24d2271e067d76af3585c"))
+    (package
+      (name "syslinux")
+      (version (git-version "6.04-pre" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/geneC/syslinux")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0k8dvafd6410kqxf3kyr4y8jzmpmrih6wbjqg6gklak7945yflrc"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("nasm" ,nasm)
+         ("perl" ,perl)
+         ("python-2" ,python-2)))
+      (inputs
+       `(("libuuid" ,util-linux)))
+      (arguments
+       `(#:parallel-build? #f
+         #:make-flags
+         (list (string-append "BINDIR=" %output "/bin")
+               (string-append "SBINDIR=" %output "/sbin")
+               (string-append "LIBDIR=" %output "/lib")
+               (string-append "INCDIR=" %output "/include")
+               (string-append "DATADIR=" %output "/share")
+               (string-append "MANDIR=" %output "/share/man")
+               "PERL=perl"
+               "bios")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-files
+             (lambda _
+               (substitute* (find-files "." "Makefile.*|ppmtolss16")
+                 (("/bin/pwd") (which "pwd"))
+                 (("/bin/echo") (which "echo"))
+                 (("/usr/bin/perl") (which "perl")))
+               #t))
+           (delete 'configure)
+           (add-before 'build 'set-permissions
+             (lambda _
+               (zero? (system* "chmod" "a+w" "utils/isohybrid.in"))))
+           (replace 'check
+             (lambda _
+               (setenv "CC" "gcc")
+               (substitute* "tests/unittest/include/unittest/unittest.h"
+                 ;; Don't look up headers under /usr.
+                 (("/usr/include/") ""))
+               (zero? (system* "make" "unittest")))))))
+      (home-page "http://www.syslinux.org")
+      (synopsis "Lightweight Linux bootloader")
+      (description "Syslinux is a lightweight Linux bootloader.")
+      (license (list license:gpl2+
+                     license:bsd-3 ; gnu-efi/*
+                     license:bsd-4 ; gnu-efi/inc/* gnu-efi/lib/*
+                     ;; Also contains:
+                     license:expat license:isc license:zlib)))))
