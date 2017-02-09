@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
@@ -67,10 +67,12 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
@@ -1996,4 +1998,53 @@ with all the commands and parameters identified for your viewing pleasure.
 
 With sedsed you can master any sed script.  No more secrets, no more hidden
 buffers.")
+    (license license:expat)))
+
+(define-public intel-gpu-tools
+  (package
+    (name "intel-gpu-tools")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
+                                  "intel-gpu-tools/snapshot/"
+                                  "intel-gpu-tools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0w7djk0y5w76hzn1b3cm39zd5c6w9za1wfn80wd857h0v313rzq3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; many of the tests try to load kernel modules
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             ;; Don't run configure in this phase
+             (setenv "NOCONFIGURE" "1")
+             (zero? (system* "sh" "autogen.sh")))))))
+    (inputs
+     `(("util-macros" ,util-macros)
+       ("libdrm" ,libdrm)
+       ("libpciaccess" ,libpciaccess)
+       ("kmod" ,kmod)
+       ("procps" ,procps)
+       ("cairo" ,cairo)
+       ("libunwind" ,libunwind)
+       ("libxrandr" ,libxrandr)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
+    (synopsis "Tools for development and testing of the Intel DRM driver")
+    (description "Intel GPU Tools is a collection of tools for development and
+testing of the Intel DRM driver.  There are many macro-level test suites that
+get used against the driver, including xtest, rendercheck, piglit, and
+oglconform, but failures from those can be difficult to track down to kernel
+changes, and many require complicated build procedures or specific testing
+environments to get useful results.  Therefore, Intel GPU Tools includes
+low-level tools and tests specifically for development and testing of the
+Intel DRM Driver.")
     (license license:expat)))
