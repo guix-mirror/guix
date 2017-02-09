@@ -12633,3 +12633,37 @@ Problem} (SAT) solver.")
 
 (define-public python2-pycosat
   (package-with-python2 python-pycosat))
+
+(define-public python2-ruamel.ordereddict
+  (package
+    (name "python2-ruamel.ordereddict")
+    (version "0.4.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ruamel.ordereddict" version))
+       (sha256
+        (base32
+         "1xmkl8v9l9inm2pyxgc1fm5005yxm7fkd5gv74q7lj1iy5qc8n3h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "python" "test/testordereddict.py")))))))
+    (home-page "https://bitbucket.org/ruamel/ordereddict")
+    (synopsis "Version of dict that keeps keys in insertion order")
+    (description
+     "This is an implementation of an ordered dictionary with @dfn{Key
+Insertion Order} (KIO: updates of values do not affect the position of the
+key), @dfn{Key Value Insertion Order} (KVIO, an existing key's position is
+removed and put at the back).  The standard library module @code{OrderedDict},
+implemented later, implements a subset of @code{ordereddict} functionality.
+Sorted dictionaries are also provided.  Currently only with @dfn{Key Sorted
+Order} (KSO, no sorting function can be specified, but a transform can be
+specified to apply on the key before comparison (e.g. @code{string.lower})).")
+    (license license:expat)))
