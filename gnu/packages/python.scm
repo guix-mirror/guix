@@ -12580,3 +12580,31 @@ faster ones are not available.")
      "Python module dedicated to rendering RST (reStructuredText) documents
 to ansi-escaped strings suitable for display in a terminal.")
     (license license:expat)))
+
+(define-public python-ddt
+  (package
+    (name "python-ddt")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ddt" version))
+       (sha256
+        (base32
+         "1c00ikkxr7lha97c81k938bzhgd4pbwamkjn0h4nkhr3xk00zp6n"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/txels/ddt")
+    (synopsis "Data-Driven Tests")
+    (description
+     "DDT (Data-Driven Tests) allows you to multiply one test case by running
+it with different test data, and make it appear as multiple test cases.")
+    (license license:expat)))
+
+(define-public python2-ddt
+  (package-with-python2 python-ddt))
