@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2769,3 +2770,51 @@ collections and wantlists, inventory, and orders.")
 
 (define-public python2-discogs-client
   (package-with-python2 python-discogs-client))
+
+(define-public libsmf
+  (package
+    (name "libsmf")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       ;; SF download page says development moved, but the link it points to
+       ;; is gone (https://github.com/nilsgey/libsmf).  Someone else adopted
+       ;; it but made no release so far (https://github.com/stump/libsmf).
+       (uri (string-append "mirror://sourceforge/libsmf/libsmf/"
+                           version "/libsmf-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16c0n40h0r56gzbh5ypxa4dwp296dan3jminml2qkb4lvqarym6k"))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "static")) ; 88KiB of .a files
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (mkdir-p slib)
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t))))))
+    (inputs
+     `(("readline" ,readline)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://libsmf.sourceforge.net/")
+    (synopsis "Standard MIDI File format library")
+    (description
+     "LibSMF is a C library for handling SMF (\"*.mid\") files.  It transparently handles
+conversions between time and pulses, tempo map handling and more.  The only dependencies
+are a C compiler and glib.  Full API documentation and examples are included.")
+    (license license:bsd-2)))
