@@ -134,6 +134,16 @@ be output in text, PostScript, PDF or HTML.")
                (("INSTALL_OPTS =(.*)" line rest )
                 (string-append "INSTALL_OPTS = --built-timestamp=1970-01-01"
                                rest)))
+             ;; Ensure that gzipped files are reproducible
+             (substitute* '("src/library/grDevices/Makefile.in"
+                            "doc/manual/Makefile.in")
+               (("R_GZIPCMD\\)" line)
+                (string-append line " -n")))
+             ;; This library is installed using "install_package_description",
+             ;; so we need to pass the "builtStamp" argument.
+             (substitute* "src/library/tools/Makefile.in"
+               (("(install_package_description\\(.*\"')\\)\"" line prefix)
+                (string-append prefix ", builtStamp='1970-01-01')\"")))
              #t))
          (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
