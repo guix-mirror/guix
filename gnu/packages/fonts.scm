@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1030,4 +1031,40 @@ designed to work well in user interface environments.")
    (description
     "Font Awesome is a full suite of pictographic icons for easy scalable
 vector graphics.")
+   (license license:silofl1.1)))
+
+(define-public font-comic-neue
+  (package
+   (name "font-comic-neue")
+   (version "2.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://www.comicneue.com/comic-neue-" version ".zip"))
+            (sha256
+             (base32
+              "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+   (build-system trivial-build-system)
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let ((font-dir (string-append %output
+                                                 "/share/fonts/truetype"))
+                        (source (assoc-ref %build-inputs "source"))
+                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                               "/bin/unzip")))
+                    (mkdir-p font-dir)
+                    (system* unzip source)
+                    (with-directory-excursion
+                     (string-append "Web")
+                     (for-each (lambda (ttf)
+                                 (install-file ttf font-dir))
+                               (find-files "." "\\.ttf$")))))))
+   (native-inputs `(("unzip" ,unzip)))
+   (home-page "http://www.comicneue.com/")
+   (synopsis "Font that fixes the shortcomings of Comic Sans")
+   (description
+    "Comic Neue is a font that attempts to create a respectable casual
+typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
    (license license:silofl1.1)))
