@@ -35,6 +35,7 @@
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12536,3 +12537,24 @@ console.")
 This implementation is slow (hence the project name) but still useful when
 faster ones are not available.")
     (license license:asl2.0)))
+
+(define-public python-rst2ansi
+  (package
+    (name "python-rst2ansi")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rst2ansi" version))
+       (sha256
+        (base32
+         "0vzy6gd60l79ff750scl0sz48r1laalkl6md6dwzah4dcadgn5qv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)))
+    (home-page "https://github.com/Snaipe/python-rst-to-ansi")
+    (synopsis "Convert RST to ANSI-decorated console output")
+    (description
+     "Python module dedicated to rendering RST (reStructuredText) documents
+to ansi-escaped strings suitable for display in a terminal.")
+    (license license:expat)))
