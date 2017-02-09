@@ -5748,7 +5748,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.3.4")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -5758,31 +5758,12 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1xyraxmhyx62mxx8z7c8waygvcijwkh48ms1ar60w2cv2y2sn4al"))
-       (modules '((guix build utils)))
+         "007q9a50hdw4vs2iajabvbw7qccml4r8cbqzyi5ipkkf42jk3vnr"))
+       (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
-           ;; Remove bundled cityhash and '-mtune=native'.
-           (substitute* "src/Makefile.am"
-             (("^AM_CXXFLAGS=-I\\$\\{srcdir\\}/cityhash \
--O3 -mtune=native -Wall -Wsign-compare")
-              (string-append "AM_CXXFLAGS=-lcityhash"
-                             " -O3 -Wall -Wsign-compare"))
-             (("^__top_builddir__bin_vsearch_SOURCES = city.h \\\\")
-              "__top_builddir__bin_vsearch_SOURCES = \\")
-             (("^city.h \\\\") "\\")
-             (("^citycrc.h \\\\") "\\")
-             (("^libcityhash_a.*") "")
-             (("noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a \
-libcityhash.a")
-              "noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a")
-             (("__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
-libcpu_sse2.a libcityhash.a")
-              "__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
-libcpu_sse2.a -lcityhash"))
-           (substitute* "src/vsearch.h"
-             (("^\\#include \"city.h\"") "#include <city.h>")
-             (("^\\#include \"citycrc.h\"") "#include <citycrc.h>"))
+           ;; Remove bundled cityhash sources.  The vsearch source is adjusted
+           ;; for this in the patch.
            (delete-file "src/city.h")
            (delete-file "src/citycrc.h")
            (delete-file "src/city.cc")
