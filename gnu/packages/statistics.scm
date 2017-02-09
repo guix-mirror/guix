@@ -131,8 +131,9 @@ be output in text, PostScript, PDF or HTML.")
          (add-after 'unpack 'build-recommended-packages-reproducibly
            (lambda _
              (substitute* "src/library/Recommended/Makefile.in"
-               (("INSTALL_OPTS =.*" line)
-                (string-append line " --built-timestamp=1970-01-01")))
+               (("INSTALL_OPTS =(.*)" line rest )
+                (string-append "INSTALL_OPTS = --built-timestamp=1970-01-01"
+                               rest)))
              #t))
          (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
