@@ -5993,6 +5993,28 @@ complexity of Python source code.")
 (define-public python2-flake8-2.2.4
   (package-with-python2 python-flake8-2.2.4))
 
+(define-public python-flake8-polyfill
+  (package
+    (name "python-flake8-polyfill")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-polyfill" version))
+       (sha256
+        (base32
+         "02gn2wxvh9vnf7m7dld7ca4l60mg5c370hv3swwppkngwaqmcw67"))))
+    (build-system python-build-system)
+    (home-page "https://gitlab.com/pycqa/flake8-polyfill")
+    (synopsis "Polyfill package for Flake8 plugins")
+    (description
+     "This package that provides some compatibility helpers for Flake8
+plugins that intend to support Flake8 2.x and 3.x simultaneously.")
+    (license license:expat)))
+
+(define-public python2-flake8-polyfill
+  (package-with-python2 python-flake8-polyfill))
+
 (define-public python-mistune
   (package
     (name "python-mistune")
