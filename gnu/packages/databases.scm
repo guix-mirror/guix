@@ -1407,7 +1407,7 @@ development.")
 (define-public python-pyodbc-c
   (package
     (name "python-pyodbc-c")
-    (version "3.1.2")
+    (version "3.1.4")
     (source
      (origin
        (method url-fetch)
@@ -1415,7 +1415,7 @@ development.")
                            "archive.tar.gz?ref=v" version))
        (sha256
         (base32
-         "0nl11n3mgrcfnhimjqgv48rxqnb21l5m6s7p8ps2fa4nn4z6rzy0"))
+         "05aq2297k779xidmxcwkrrxjvj1bh2q7d9a1rcjv6zr15y764ga9"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
