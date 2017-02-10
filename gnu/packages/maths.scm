@@ -1985,7 +1985,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "16.12.0")
+    (version "16.12.2")
     (source
      (origin
        (method url-fetch)
@@ -1993,7 +1993,7 @@ point numbers.")
                            version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01kas9viqabw5id6crbhz8ahjimmv78gqzizs5hgnj9kngrgrm1h"))))
+         "0y22zhyhyxj2cbhzvs9c4pxr44i55ryfy5xi96d39bg2nbgs9h22"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
