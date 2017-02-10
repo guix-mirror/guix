@@ -37,45 +37,42 @@
   #:use-module (gnu packages zip))
 
 (define-public rdmd
-  (let ((commit "da0a2e0a379b08294015eec9d531f1e5dd4226f0"))
-    (package
-      (name "rdmd")
-      (version (string-append "v2.070.0-1." (string-take commit 7)))
-      (source (origin
-        (method git-fetch)
-        (uri (git-reference
-              (url "https://github.com/D-Programming-Language/tools.git")
-              (commit commit)))
-        (file-name (string-append name "-" version "-checkout"))
-        (sha256
-         (base32
-          "1pcx5lyqzrip86f4vv60x292rpvnwsq2hvl1znm9x9rn68f34m45"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'check) ; There is no Makefile, so there's no 'make check'.
-           (replace
-            'build
-            (lambda _
-              (zero? (system* "ldc2" "rdmd.d"))))
-           (replace
-            'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                (install-file "rdmd" bin)))))))
-      (native-inputs
-       `(("ldc" ,ldc)))
-      (home-page "https://github.com/D-Programming-Language/tools/")
-      (synopsis "Specialized equivalent to 'make' for the D language")
-      (description
-       "rdmd is a companion to the dmd compiler that simplifies the typical
+  (package
+    (name "rdmd")
+    (version "2.073.0")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/dlang/tools/archive/v" version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "01if3ivnb7g2myfhymp4d9346s4vmvcl82i1kxfs5iza45almh7v"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check) ; There is no Makefile, so there's no 'make check'.
+         (replace
+          'build
+          (lambda _
+            (zero? (system* "ldc2" "rdmd.d"))))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+              (install-file "rdmd" bin)))))))
+    (native-inputs
+     `(("ldc" ,ldc)))
+    (home-page "https://github.com/D-Programming-Language/tools/")
+    (synopsis "Specialized equivalent to 'make' for the D language")
+    (description
+     "rdmd is a companion to the dmd compiler that simplifies the typical
 edit-compile-link-run or edit-make-run cycle to a rapid edit-run cycle.  Like
 make and other tools, rdmd uses the relative dates of the files involved to
 minimize the amount of work necessary.  Unlike make, rdmd tracks dependencies
 and freshness without requiring additional information from the user.")
-      (license license:boost1.0))))
+    (license license:boost1.0)))
 
 (define-public ldc-bootstrap
   (package
