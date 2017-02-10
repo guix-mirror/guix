@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
@@ -38,7 +38,7 @@
 
 (define (patch-url seqno)
   "Return the URL of Bash patch number SEQNO."
-  (format #f "mirror://gnu/bash/bash-4.3-patches/bash43-~3,'0d" seqno))
+  (format #f "mirror://gnu/bash/bash-4.4-patches/bash44-~3,'0d" seqno))
 
 (define (bash-patch seqno sha256)
   "Return the origin of Bash patch SEQNO, with expected hash SHA256"
