@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages firmware)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -85,7 +86,7 @@
      "This is the firmware for the Qualcomm Atheros AR7010 and AR9271 USB
 802.11n NICs (aka Wi-Fi USB dongles).  It is used by the ath9k driver of
 Linux-libre.")
-    (license (non-copyleft "http://directory.fsf.org/wiki/License:ClearBSD"))))
+    (license (license:non-copyleft "http://directory.fsf.org/wiki/License:ClearBSD"))))
 
 (define-public b43-tools
   (let ((commit "8dce53297966b31b6c70a7a03c2433978dd9f288")
@@ -143,7 +144,7 @@ Linux-libre.")
        "The b43 firmware tools is a collection of firmware extractor,
 assembler, disassembler, and debugging tools for the Linux kernel b43 wireless
 driver.")
-      (license gpl2))))
+      (license license:gpl2))))
 
 (define-public openfwwf-firmware
   (package
@@ -173,4 +174,4 @@ driver.")
      "This is firmware from Open FirmWare for WiFi networks (OpenFWWF) for the
 Broadcom/AirForce chipset BCM43xx with Wireless-Core Revision 5.  It is used
 by the b43-open driver of Linux-libre.")
-    (license gpl2)))
+    (license license:gpl2)))
