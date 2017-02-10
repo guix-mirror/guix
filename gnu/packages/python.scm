@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
@@ -5374,9 +5374,9 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
               (strip-python2-variant python-beautifulsoup4)))
     (arguments `(#:python ,python-2))))
 
-(define-public python2-cssutils
+(define-public python-cssutils
   (package
-    (name "python2-cssutils")
+    (name "python-cssutils")
     (version "1.0.1")
     (source
       (origin
@@ -5387,12 +5387,9 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
           "0qwha9x1wml2qmipbcz03gndnlwhzrjdvw9i09si247a90l8p8fq"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python2-mock" ,python2-mock) ; for the tests
-        ("unzip" ,unzip))) ; for unpacking the source
+      `(("unzip" ,unzip))) ; for unpacking the source
     (arguments
-     `(#:python ,python-2 ; Otherwise tests fail with a syntax error.
-       #:tests? #f ; The tests apparently download an external URL.
-       ))
+     `(#:tests? #f))                    ;tests require python-pbr < 1.7.0
     (home-page "http://cthedot.de/cssutils/")
     (synopsis
       "CSS Cascading Style Sheets library for Python")
@@ -5401,6 +5398,9 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 Cascading Style Sheets.  Currently it provides a DOM only and no rendering
 options.")
     (license license:lgpl3+)))
+
+(define-public python2-cssutils
+  (package-with-python2 python-cssutils))
 
 (define-public python-cssselect
   (package
