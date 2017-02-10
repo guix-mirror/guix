@@ -275,16 +275,7 @@ as well as the classic centralized workflow.")
               (wrap-program git-sm
                 `("PATH" ":" prefix
                   (,(string-append (assoc-ref inputs "perl")
-                                   "/bin"))))
-
-              ;; Tell 'git' to look for core programs in the user's profile.
-              ;; This allows user to install other outputs of this package and
-              ;; have them transparently taken into account.  There's a
-              ;; 'GIT_EXEC_PATH' environment variable, but it's supposed to
-              ;; specify a single directory, not a search path.
-              (wrap-program (string-append out "/bin/git")
-                `("PATH" ":" prefix
-                  ("$HOME/.guix-profile/libexec/git-core"))))))
+                                   "/bin")))))))
         (add-after 'split 'install-man-pages
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
@@ -301,7 +292,10 @@ as well as the classic centralized workflow.")
     (list (search-path-specification
            (variable "GIT_SSL_CAINFO")
            (file-type 'regular)
-           (files '("etc/ssl/certs/ca-certificates.crt")))))
+           (files '("etc/ssl/certs/ca-certificates.crt")))
+          (search-path-specification
+           (variable "GIT_EXEC_PATH")
+           (files '("libexec/git-core")))))
 
    (synopsis "Distributed version control system")
    (description
