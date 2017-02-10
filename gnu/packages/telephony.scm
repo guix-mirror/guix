@@ -215,7 +215,8 @@ internet.")
               (base32
                "1w2g623qkd7gdyydglx2hr4s2y237lg0nszjmy7z8d2iq8hvb9sn"))))
     (native-inputs
-     `(("procps" ,procps)))
+     `(("psmisc" ,psmisc)                        ;some tests require 'killall'
+       ("procps" ,procps)))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "runtest"
@@ -234,8 +235,8 @@ internet.")
              (substitute* "test/rtpw.c"
                (("/usr/share/dict/words")
                 (string-append (assoc-ref %build-inputs "procps")
-                               "/share/doc/procps-ng"))
-                (("words.txt") "FAQ"))
+                               "/share/doc/procps-ng/FAQ"))
+               (("words.txt") "FAQ"))
              #t)))))
     (synopsis "Secure RTP (SRTP) Reference Implementation")
     (description "This package provides an implementation of the Secure
