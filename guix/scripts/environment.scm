@@ -60,12 +60,6 @@ directories in PROFILE, the store path of a profile."
 (define %default-shell
   (or (getenv "SHELL") "/bin/sh"))
 
-(define %network-configuration-files
-  '("/etc/resolv.conf"
-    "/etc/nsswitch.conf"
-    "/etc/services"
-    "/etc/hosts"))
-
 (define (purify-environment)
   "Unset almost all environment variables.  A small number of variables such
 as 'HOME' and 'USER' are left untouched."
@@ -408,22 +402,7 @@ host file systems to mount inside the container."
                      ;; When in Rome, do as Nix build.cc does: Automagically
                      ;; map common network configuration files.
                      (if network?
-                         (filter-map (lambda (file)
-                                       (and (file-exists? file)
-                                            (file-system-mapping
-                                             (source file)
-                                             (target file)
-                                             ;; XXX: On some GNU/Linux
-                                             ;; systems, /etc/resolv.conf is a
-                                             ;; symlink to a file in a tmpfs
-                                             ;; which, for an unknown reason,
-                                             ;; cannot be bind mounted
-                                             ;; read-only within the
-                                             ;; container.
-                                             (writable?
-                                              (string=? file
-                                                        "/etc/resolv.conf")))))
-                                     %network-configuration-files)
+                         %network-file-mappings
                          '())
                      ;; Mappings for the union closure of all inputs.
                      (map (lambda (dir)
@@ -433,7 +412,8 @@ host file systems to mount inside the container."
                              (writable? #f)))
                           reqs)))
             (file-systems (append %container-file-systems
-                                  (map mapping->file-system mappings))))
+                                  (map file-system-mapping->bind-mount
+                                       mappings))))
        (exit/status
         (call-with-container file-systems
           (lambda ()

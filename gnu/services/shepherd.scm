@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -195,6 +196,7 @@ stored."
     (string-append "shepherd-"
                    (string-map (match-lambda
                                  (#\/ #\-)
+                                 (#\  #\-)
                                  (chr chr))
                                provisions)
                    ".scm")))

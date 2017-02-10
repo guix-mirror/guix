@@ -2386,7 +2386,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.23.0")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2394,7 +2394,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1p596v3kbmjpdz3kz8z19bnd79l860f1pbwjvma7bz7qx3gynlqb"))))
+                "0a1nn65qq71bbfhxq39zdb4b1h6ickzv98cjdacv4ngd18shgjyx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2805,10 +2805,10 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "9fe04af4bce3057e3e94a6bf36a3d8d2e48d592c"))
+  (let ((commit "e4fe79cf0d9a05ee3f3a027148ef0aeb2b1b34e1"))
     (package
       (name "xf86-video-intel")
-      (version (string-append "2.99.917-2-" (string-take commit 7)))
+      (version (string-append "2.99.917-3-" (string-take commit 7)))
       (source
        (origin
          ;; there's no current tarball
@@ -2818,7 +2818,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "06nnm9kjvmwxazp2ki0i5x1xv03bysfgpw30nd2jlf71qllybxml"))
+           "0hf3fxv5jchyh820h449c1ld9x19gc8081w1yk98mab6zr89zswp"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)

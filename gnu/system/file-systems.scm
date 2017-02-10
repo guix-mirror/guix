@@ -18,8 +18,8 @@
 
 (define-module (gnu system file-systems)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (guix records)
-  #:use-module (guix store)
   #:use-module ((gnu build file-systems)
                 #:select (string->uuid uuid->string))
   #:re-export (string->uuid
@@ -63,7 +63,11 @@
             file-system-mapping-target
             file-system-mapping-writable?
 
-            %store-mapping))
+            file-system-mapping->bind-mount
+
+            %store-mapping
+            %network-configuration-files
+            %network-file-mappings))
 
 ;;; Commentary:
 ;;;
@@ -94,6 +98,20 @@
                        (default #f))
   (dependencies     file-system-dependencies      ; list of <file-system>
                     (default '())))               ; or <mapped-device>
+
+;; Note: This module is used both on the build side and on the host side.
+;; Arrange not to pull (guix store) and (guix config) because the latter
+;; differs from user to user.
+(define (%store-prefix)
+  "Return the store prefix."
+  (cond ((resolve-module '(guix store) #:ensure #f)
+         =>
+         (lambda (store)
+           ((module-ref store '%store-prefix))))
+        ((getenv "NIX_STORE")
+         => identity)
+        (else
+         "/gnu/store")))
 
 (define %not-slash
   (char-set-complement (char-set #\/)))
@@ -352,11 +370,45 @@ TARGET in the other system."
   (writable? file-system-mapping-writable?        ;Boolean
              (default #f)))
 
+(define (file-system-mapping->bind-mount mapping)
+  "Return a file system that realizes MAPPING, a <file-system-mapping>, using
+a bind mount."
+  (match mapping
+    (($ <file-system-mapping> source target writable?)
+     (file-system
+       (mount-point target)
+       (device source)
+       (type "none")
+       (flags (if writable?
+                  '(bind-mount)
+                  '(bind-mount read-only)))
+       (check? #f)
+       (create-mount-point? #t)))))
+
 (define %store-mapping
   ;; Mapping of the host's store into the guest.
   (file-system-mapping
    (source (%store-prefix))
    (target (%store-prefix))
    (writable? #f)))
+
+(define %network-configuration-files
+  ;; List of essential network configuration files.
+  '("/etc/resolv.conf"
+    "/etc/nsswitch.conf"
+    "/etc/services"
+    "/etc/hosts"))
+
+(define %network-file-mappings
+  ;; List of file mappings for essential network files.
+  (filter-map (lambda (file)
+                (file-system-mapping
+                 (source file)
+                 (target file)
+                 ;; XXX: On some GNU/Linux systems, /etc/resolv.conf is a
+                 ;; symlink to a file in a tmpfs which, for an unknown reason,
+                 ;; cannot be bind mounted read-only within the container.
+                 (writable? (string=? file "/etc/resolv.conf"))))
+              %network-configuration-files))
 
 ;;; file-systems.scm ends here

@@ -154,7 +154,9 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "040pifl4cgsqqz2si4s1y5khj3zwm39w21siagxwp805swbrcag6"))))
+        "040pifl4cgsqqz2si4s1y5khj3zwm39w21siagxwp805swbrcag6"))
+      (patches
+       (search-patches "gst-plugins-base-fix-test-on-32bit.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs

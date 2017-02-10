@@ -64,6 +64,7 @@ MODULES =					\
   guix/build-system/ant.scm			\
   guix/build-system/cargo.scm			\
   guix/build-system/cmake.scm			\
+  guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
@@ -88,6 +89,7 @@ MODULES =					\
   guix/build/download.scm			\
   guix/build/cargo-build-system.scm		\
   guix/build/cmake-build-system.scm		\
+  guix/build/dub-build-system.scm		\
   guix/build/emacs-build-system.scm		\
   guix/build/asdf-build-system.scm		\
   guix/build/git.scm				\
@@ -126,6 +128,7 @@ MODULES =					\
   guix/import/cabal.scm				\
   guix/import/cran.scm				\
   guix/import/hackage.scm			\
+  guix/import/stackage.scm			\
   guix/import/elpa.scm   			\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
@@ -147,6 +150,7 @@ MODULES =					\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
+  guix/scripts/import/stackage.scm		\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\

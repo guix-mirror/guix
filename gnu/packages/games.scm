@@ -17,13 +17,14 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
+;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,22 +178,23 @@ scriptable with Guile.")
 (define-public abbaye
   (package
     (name "abbaye")
-    (version "1.13")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/"
-                           "google-code-archive-downloads/v2/code.google.com/"
-                           "abbaye-for-linux/abbaye-for-linux-src-"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/nevat/abbayedesmorts-gpl/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wgvckgqa2084rbskxif58wbb83xbas8s1i8s7d57xbj08ryq8rk"))))
+         "1a67b0hq6271dd7pvwndjq29cwn2n8gawwz17xafa3k1hrhf8vw3"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Unbundle fonts.
+        '(delete-file-recursively "fonts"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:modules ((ice-9 match)
-                  (guix build gnu-build-system)
-                  (guix build utils))
+     '(#:make-flags '("CC=gcc")
        #:phases (modify-phases %standard-phases
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -202,10 +204,8 @@ scriptable with Guile.")
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
-                      (for-each (lambda (file)
-                                  (substitute* file
-                                    (("/usr") (assoc-ref outputs "out"))))
-                                '("makefile" "src/pantallas.c" "src/comun.h"))))
+                      (substitute* "Makefile"
+                        (("/usr") (assoc-ref outputs "out")))))
                   (add-before 'install 'make-install-dirs
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((prefix (assoc-ref outputs "out")))
@@ -217,15 +217,15 @@ scriptable with Guile.")
                   (delete 'configure))
        #:tests? #f)) ;; No check target.
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("sdl-union" ,(sdl-union))))
-    (home-page "http://code.google.com/p/abbaye-for-linux/")
+    (inputs `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer)))))
+    (home-page "https://github.com/nevat/abbayedesmorts-gpl")
     (synopsis "GNU/Linux port of the indie game \"l'Abbaye des Morts\"")
     (description "L'Abbaye des Morts is a 2D platform game set in 13th century
 France.  The Cathars, who preach about good Christian beliefs, were being
 expelled by the Catholic Church out of the Languedoc region in France.  One of
 them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
-    (license license:gpl3+)))
+    (license license:gpl3)))
 
 (define-public pingus
   (package
@@ -3102,3 +3102,39 @@ inspired by the history of human civilization.  The game commences in
 prehistory and your mission is to lead your tribe from the Stone Age
 to the Space Age.")
    (license license:gpl2+)))
+
+(define-public no-more-secrets
+  (package
+    (name "no-more-secrets")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/bartobri/no-more-secrets/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "038flwqr0kqv55im2v76xjn01zbvvkb3nzb5ridwm2kbnk9cgg4v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list "CC=gcc" "all-ncurses"
+                          (string-append "prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://github.com/bartobri/no-more-secrets")
+    (synopsis "Recreation of data decryption effect in \"Sneakers\"")
+    (description
+     "@code{No More Secrets} provides a command line tool called \"nms\"
+that recreates the famous data decryption effect seen on screen in the 1992
+movie \"Sneakers\".
+
+This command works on piped data.  Pipe any ASCII or UTF-8 text to nms, and
+it will apply the hollywood effect, initially showing encrypted data, then
+starting a decryption sequence to reveal the original plaintext characters.")
+    (license license:expat)))

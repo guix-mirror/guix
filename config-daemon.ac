@@ -5,6 +5,7 @@ AC_MSG_RESULT([$guix_build_daemon])
 
 dnl C++ environment.  This macro must be used unconditionnaly.
 AC_PROG_CXX
+AM_PROG_AR
 AC_LANG([C++])
 
 if test "x$guix_build_daemon" = "xyes"; then

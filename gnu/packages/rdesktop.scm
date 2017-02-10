@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +21,19 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
+  #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xml))
 
 (define-public rdesktop
   (package
@@ -57,3 +68,63 @@
 capable of natively speaking Remote Desktop Protocol (RDP).  It allows users
 to remotely control a user's Windows desktop.")
     (license license:gpl3+)))
+
+(define-public freerdp
+  (package
+    (name "freerdp")
+    (version "1.2.0-beta1+android9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://github.com/FreeRDP/FreeRDP.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1m0lzrr7hkxfvc5f9p8snimv0rmin2463zhg25mv36wig8g5k7l3"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xmlto" ,xmlto)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxkbfile" ,libxkbfile)
+       ("libxcursor" ,libxcursor)
+       ("libxext" ,libxext)
+       ("libxi" ,libxi)
+       ("libxv" ,libxv)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxinerama" ,libxinerama)
+       ("libxshmfence" ,libxshmfence)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("cups" ,cups)
+       ("ffmpeg" ,ffmpeg)
+       ("pulseaudio" ,pulseaudio)
+       ("alsa-lib" ,alsa-lib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("zlib" ,zlib)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       '("-DCMAKE_INSTALL_LIBDIR=lib"
+         "-DWITH_PULSE=ON"
+         "-DWITH_CUPS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-cmakelists
+           (lambda _
+             ;; CMake would return an error on REMOVE_DUPLICATES because this
+             ;; list is empty.
+             (substitute* "channels/client/CMakeLists.txt"
+               (("list\\(REMOVE_DUPLICATES CHANNEL_STATIC_CLIENT_ENTRIES\\)")
+                "")))))
+       #:tests? #f))                              ; no 'test' target
+    (home-page "https://www.freerdp.com")
+    (synopsis "Remote Desktop Protocol implementation")
+    (description "FreeRDP implements Microsoft's Remote Desktop Protocol.  It
+consists of the @code{xfreerdp} client, libraries for client and server
+functionality, and Windows Portable Runtime (WinPR), a portable implementation
+of parts of the Windows API.")
+    (license license:asl2.0)))

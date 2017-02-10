@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,11 +39,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -525,13 +528,11 @@ ko (Korean) locales for @code{fontconfig}.")
          (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
                                     (assoc-ref %build-inputs "gzip") "/bin"))
                (font-dir (string-append (assoc-ref %outputs "out")
-                                        "/share/fonts/wenquanyi/")))
-           (setenv "PATH" PATH)
+                                        "/share/fonts/wenquanyi")))
            (mkdir-p font-dir)
+           (setenv "PATH" PATH)
            (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-           (chdir "wqy-microhei")
-           (copy-file "wqy-microhei.ttc"
-                      (string-append font-dir "wqy-microhei.ttc"))))))
+           (install-file "wqy-microhei/wqy-microhei.ttc" font-dir)))))
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
@@ -760,8 +761,7 @@ display all Unicode symbols.")
                      (mkdir-p font-dir)
                      (chdir "roboto-hinted")
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))))))
     (home-page "https://github.com/google/roboto")
     (synopsis "The Roboto family of fonts")
@@ -1034,3 +1034,111 @@ designed to work well in user interface environments.")
     "Font Awesome is a full suite of pictographic icons for easy scalable
 vector graphics.")
    (license license:silofl1.1)))
+
+(define-public font-comic-neue
+  (package
+   (name "font-comic-neue")
+   (version "2.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://www.comicneue.com/comic-neue-" version ".zip"))
+            (sha256
+             (base32
+              "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+   (build-system trivial-build-system)
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let ((font-dir (string-append %output
+                                                 "/share/fonts/truetype"))
+                        (source (assoc-ref %build-inputs "source"))
+                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                               "/bin/unzip")))
+                    (mkdir-p font-dir)
+                    (system* unzip source)
+                    (with-directory-excursion
+                     (string-append "Web")
+                     (for-each (lambda (ttf)
+                                 (install-file ttf font-dir))
+                               (find-files "." "\\.ttf$")))))))
+   (native-inputs `(("unzip" ,unzip)))
+   (home-page "http://www.comicneue.com/")
+   (synopsis "Font that fixes the shortcomings of Comic Sans")
+   (description
+    "Comic Neue is a font that attempts to create a respectable casual
+typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
+   (license license:silofl1.1)))
+
+(define-public font-iosevka
+  (package
+   (name "font-iosevka")
+   (version "1.11.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/be5invis/Iosevka/releases/download/v"
+                  version "/iosevka-pack-" version ".zip"))
+            (sha256
+             (base32
+              "0d8prdk7s5z94sdfd0y92cvqq531yqrlg7hnadbnhd7fs9jqr5hj"))))
+   (build-system trivial-build-system)
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let ((font-dir (string-append %output
+                                                 "/share/fonts/truetype"))
+                        (source (assoc-ref %build-inputs "source"))
+                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                               "/bin/unzip")))
+                    (mkdir-p font-dir)
+                    (system* unzip "-d" font-dir source)))))
+   (native-inputs `(("unzip" ,unzip)))
+   (home-page "https://be5invis.github.io/Iosevka/")
+   (synopsis "Coders' typeface, built from code")
+   (description
+    "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
+by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
+programming.  Iosevka is completely generated from its source code.")
+   (license (list license:silofl1.1  ; build artifacts (i.e. the fonts)
+                  license:bsd-3))))  ; supporting code
+
+(define-public font-go
+  (let ((commit "b7f8df6bc082334698d4505fb85fa05e99156b72")
+        (revision "1"))
+    (package
+     (name "font-go")
+     (version (string-append "20161115-" revision "." (string-take commit 7)))
+     (source (origin
+              (file-name (string-append "go-image-" version "-checkout"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://go.googlesource.com/image")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1ywxs6dmcyzwwsmnan3qqza7znprnbvmdi260x6sjmydz6dyq2zs"))))
+     (build-system trivial-build-system)
+     (arguments
+      `(#:modules ((guix build utils))
+        #:builder (begin
+                    (use-modules (guix build utils))
+                    (let ((font-dir (string-append %output
+                                                   "/share/fonts/truetype"))
+                          (source (assoc-ref %build-inputs "source")))
+                      (mkdir-p font-dir)
+                      (with-directory-excursion
+                       (string-append source "/font/gofont/ttfs")
+                       (for-each (lambda (ttf)
+                                   (install-file ttf font-dir))
+                                 (find-files "." "\\.ttf$")))))))
+     (home-page "https://blog.golang.org/go-fonts")
+     (synopsis "The Go font family")
+     (description
+      "The Go font family is a set of WGL4 TrueType fonts from the Bigelow &
+Holmes type foundry, released under the same license as the Go programming
+language.  It includes a set of proportional, sans-serif fonts, and a set of
+monospace, slab-serif fonts.")
+     (license (package-license go-1.4)))))

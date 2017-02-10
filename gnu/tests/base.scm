@@ -77,6 +77,11 @@ When INITIALIZATION is true, it must be a one-argument procedure that is
 passed a gexp denoting the marionette, and it must return gexp that is
 inserted before the first test.  This is used to introduce an extra
 initialization step, such as entering a LUKS passphrase."
+  (define special-files
+    (service-parameters
+     (fold-services (operating-system-services os)
+                    #:target-type special-files-service-type)))
+
   (define test
     (with-imported-modules '((gnu build marionette)
                              (guix build syscalls))
@@ -119,6 +124,18 @@ ls --version
 grep --version
 info --version")
                                     marionette)))
+
+          (test-equal "special files"
+            '#$special-files
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 match))
+
+                (map (match-lambda
+                       ((file target)
+                        (list file (readlink file))))
+                     '#$special-files))
+             marionette))
 
           (test-assert "accounts"
             (let ((users (marionette-eval '(begin
@@ -166,21 +183,41 @@ info --version")
                marionette)))
 
           (test-assert "skeletons in home directories"
-            (let ((homes
+            (let ((users+homes
                    '#$(filter-map (lambda (account)
                                     (and (user-account-create-home-directory?
                                           account)
                                          (not (user-account-system? account))
-                                         (user-account-home-directory account)))
+                                         (list (user-account-name account)
+                                               (user-account-home-directory
+                                                account))))
                                   (operating-system-user-accounts os))))
               (marionette-eval
                `(begin
-                  (use-modules (srfi srfi-1) (ice-9 ftw))
-                  (every (lambda (home)
-                           (null? (lset-difference string=?
-                                                   (scandir "/etc/skel/")
-                                                   (scandir home))))
-                         ',homes))
+                  (use-modules (srfi srfi-1) (ice-9 ftw)
+                               (ice-9 match))
+
+                  (every (match-lambda
+                           ((user home)
+                            ;; Make sure HOME has all the skeletons...
+                            (and (null? (lset-difference string=?
+                                                         (scandir "/etc/skel/")
+                                                         (scandir home)))
+
+                                 ;; ... and that everything is user-owned.
+                                 (let* ((pw  (getpwnam user))
+                                        (uid (passwd:uid pw))
+                                        (gid (passwd:gid pw))
+                                        (st  (lstat home)))
+                                   (define (user-owned? file)
+                                     (= uid (stat:uid (lstat file))))
+
+                                   (and (= uid (stat:uid st))
+                                        (eq? 'directory (stat:type st))
+                                        (every user-owned?
+                                               (find-files home
+                                                           #:directories? #t)))))))
+                         ',users+homes))
                marionette)))
 
           (test-equal "login on tty1"

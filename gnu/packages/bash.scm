@@ -29,6 +29,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
+  #:use-module (guix store)
   #:use-module (guix build-system gnu)
   #:autoload   (guix gnupg) (gnupg-verify*)
   #:autoload   (guix hash) (port-sha256)
@@ -107,6 +110,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
          (version "4.4"))
     (package
      (name "bash")
+     (replacement bash/fixed)
      (source (origin
               (method url-fetch)
               (uri (string-append
@@ -200,6 +204,7 @@ without modification.")
   ;; A stripped-down Bash for non-interactive use.
   (package (inherit bash)
     (name "bash-minimal")
+    (replacement #f) ;not vulnerable to CVE-2017-5932 since it lacks completion
     (inputs '())                                ; no readline, no curses
 
     ;; No "include" output because there's no support for loadable modules.
@@ -254,6 +259,43 @@ without modification.")
                    (delete-file (string-append bin "/bashbug"))
                    (delete-file-recursively (string-append out "/share"))
                    #t))))))))))
+
+(define* (url-fetch/reset-patch-level url hash-algo hash
+                                      #:optional name
+                                      #:key (system (%current-system)) guile)
+  "Fetch the Bash patch from URL and reset its 'PATCHLEVEL' definition so it
+can apply to a patch-level 0 Bash."
+  (mlet* %store-monad ((name -> (or name (basename url)))
+                       (patch (url-fetch url hash-algo hash
+                                         (string-append name ".orig")
+                                         #:system system
+                                         #:guile guile)))
+    (gexp->derivation name
+                      (with-imported-modules '((guix build utils))
+                        #~(begin
+                            (use-modules (guix build utils))
+                            (copy-file #$patch #$output)
+                            (substitute* #$output
+                              (("PATCHLEVEL [0-6]+")
+                               "PATCHLEVEL 0"))))
+                      #:guile-for-build guile
+                      #:system system)))
+
+(define bash/fixed                        ;CVE-2017-5932 (RCE with completion)
+  (package
+    (inherit bash)
+    (version "4.4.A")                             ;4.4.0 + patch #7
+    (replacement #f)
+    (source
+     (origin
+       (inherit (package-source bash))
+       (patches (cons (origin
+                        (method url-fetch/reset-patch-level)
+                        (uri (patch-url 7))
+                        (sha256
+                         (base32
+                          "1bzdsnqaf05gdbqpsixhan8vygjxpcxlz1dd8d9f5jdznw3wq76y")))
+                      (origin-patches (package-source bash))))))))
 
 (define-public bash-completion
   (package

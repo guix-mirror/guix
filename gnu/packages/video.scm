@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -57,6 +57,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -75,6 +76,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ocr)
@@ -442,14 +444,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1z7d5y5crhsl5fm74236rdwbkd4jj5frx1l4iizjfym1w4gvs09z"))))
+               "1ifwjh68zw0mwq9swmfjqk2ck84gysi0w8hrkw2yddqhr8m51kjl"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -891,7 +893,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
-       #:configure-flags (list "--enable-libmpv-shared" "--enable-zsh-comp")
+       #:configure-flags (list "--enable-libmpv-shared"
+                               "--enable-zsh-comp"
+                               "--disable-build-date")
        ;; No check function defined.
        #:tests? #f))
     (home-page "https://mpv.io/")
@@ -932,7 +936,7 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://storage.googleapis.com/"
@@ -940,7 +944,7 @@ access to mpv's powerful playback capabilities.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1basd6dda5di9p7jhc0f4f52wzm9c3hsravqspw6ibpcn5gbpbyh"))
+                "06d8hqjkfs6wl45qf4pwh1kpbvkx6cwywd5y8d4lgagvjwm0qb0w"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -970,7 +974,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.01.29")
+    (version "2017.02.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -978,7 +982,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0visxc4rb6kw4hjcgcv5llis08z0syhian1m5hr1fdbz4w73hx9l"))))
+                "1grq3aqa1zc0xdq1y6vqnk0y0vcd1j2jjn85696hw98mi0w1am73"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1862,3 +1866,62 @@ of modern, widely supported codecs.")
     (description
      "Openh264 is a library which can decode H264 video streams.")
     (license license:bsd-2)))
+
+(define-public libmp4v2
+  (package
+    (name "libmp4v2")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; XXX: The new location of upstream is uncertain and will become relevant the
+       ;; moment when the googlecode archive shuts down. It is past the date it
+       ;; should've been turned off. I tried to communicate with upstream, but this
+       ;; wasn't very responsive and not very helpful. The short summary is, it is
+       ;; chaos when it comes to the amount of forks and only time will tell where
+       ;; the new upstream location is.
+       (uri (string-append "https://storage.googleapis.com/google-"
+                           "code-archive-downloads/v2/"
+                           "code.google.com/mp4v2/mp4v2-" version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0f438bimimsvxjbdp4vsr8hjw2nwggmhaxgcw07g2z361fkbj683"))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "static")) ; 3.7MiB .a file
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-dates
+           (lambda _
+             ;; Make the build reproducible.
+             (substitute* "configure"
+               (("PROJECT_build=\"`date`\"") "PROJECT_build=\"\"")
+               (("ac_abs_top_builddir=$ac_pwd") "ac_abs_top_builddir=\"\""))
+             #t))
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (mkdir-p slib)
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t))))))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("dejagnu" ,dejagnu)))
+    (home-page "https://code.google.com/archive/p/mp4v2/")
+    (synopsis "API to create and modify mp4 files")
+    (description
+     "The MP4v2 library provides an API to create and modify mp4 files as defined by
+ISO-IEC:14496-1:2001 MPEG-4 Systems.  This file format is derived from Apple's QuickTime
+file format that has been used as a multimedia file format in a variety of platforms and
+applications.  It is a very powerful and extensible format that can accommodate
+practically any type of media.")
+    (license license:mpl1.1)))

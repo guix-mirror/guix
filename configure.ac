@@ -236,6 +236,15 @@ dnl Emacs (optional), for 'etc/indent-package.el'.
 AC_PATH_PROG([EMACS], [emacs], [/usr/bin/emacs])
 AC_SUBST([EMACS])
 
+case "$storedir" in
+  /gnu/store)
+    ;;
+  *)
+    AC_MSG_WARN([Using a store directory other than '/gnu/store' will prevent you])
+    AC_MSG_WARN([from downloading substitutes from gnu.org.])
+    ;;
+esac
+
 AC_CONFIG_FILES([Makefile
                  po/guix/Makefile.in
                  po/packages/Makefile.in

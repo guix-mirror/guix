@@ -72,6 +72,8 @@
             activation-service-type
             activation-service->script
             %linux-bare-metal-service
+            special-files-service-type
+            extra-special-file
             etc-service-type
             etc-directory
             setuid-program-service-type
@@ -336,10 +338,6 @@ ACTIVATION-SCRIPT-TYPE."
                   #~(begin
                       (use-modules (gnu build activation))
 
-                      ;; Make sure /bin/sh is valid and current.
-                      (activate-/bin/sh
-                       (string-append #$(canonical-package bash) "/bin/sh"))
-
                       ;; Make sure the user accounting database exists.  If it
                       ;; does not exist, 'setutxent' does not create it and
                       ;; thus there is no accounting at all.
@@ -412,6 +410,25 @@ ACTIVATION-SCRIPT-TYPE."
   ;; The service that does things that are needed on the "bare metal", but not
   ;; necessary or impossible in a container.
   (service linux-bare-metal-service-type #f))
+
+(define special-files-service-type
+  ;; Service to install "special files" such as /bin/sh and /usr/bin/env.
+  (service-type
+   (name 'special-files)
+   (extensions
+    (list (service-extension activation-service-type
+                             (lambda (files)
+                               #~(activate-special-files '#$files)))))
+   (compose concatenate)
+   (extend append)))
+
+(define (extra-special-file file target)
+  "Use TARGET as the \"special file\" FILE.  For example, TARGET might be
+  (file-append coreutils \"/bin/env\")
+and FILE could be \"/usr/bin/env\"."
+  (simple-service (string->symbol (string-append "special-file-" file))
+                  special-files-service-type
+                  `((,file ,target))))
 
 (define (etc-directory service)
   "Return the directory for SERVICE, a service of type ETC-SERVICE-TYPE."

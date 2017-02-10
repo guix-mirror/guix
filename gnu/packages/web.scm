@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
@@ -4018,3 +4018,51 @@ service for that request.  Requests are made using port numbers as identifiers
 and xinetd usually launches another daemon to handle the request.  It can be
 used to start services with both privileged and non-privileged port numbers.")
     (license (l:fsf-free "file://COPYRIGHT"))))
+
+(define-public tidy-html
+  (package
+    (name "tidy-html")
+    (version "5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/htacg/tidy-html5/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kbwzh15dlapp3s3vff2qgz0yfcf8hwsnx5q4igwa6pimhak8lw0"))))
+    (build-system cmake-build-system)
+    (outputs '("out"
+               "static")) ; 1.0MiB of .a files
+    (arguments
+     `(#:tests? #f ; No tests available
+       #:configure-flags (list "-DCMAKE_BUILD_TYPE=Release")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (mkdir-p slib)
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t))))))
+    (native-inputs
+     `(("libxslt" ,libxslt)))
+    (home-page "http://www.html-tidy.org/")
+    (synopsis "HTML Tidy with HTML5 support")
+    (description
+     "Tidy is a console application which corrects and cleans up
+HTML and XML documents by fixing markup errors and upgrading
+legacy code to modern standards.
+
+Tidy also provides @code{libtidy}, a C static and dynamic library that
+developers can integrate into their applications to make use of the
+functions of Tidy.")
+    (license l:bsd-3)))

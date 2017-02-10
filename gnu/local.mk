@@ -4,7 +4,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+# Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 # Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -64,6 +64,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/bittorrent.scm			\
   %D%/packages/bison.scm			\
   %D%/packages/boost.scm			\
+  %D%/packages/bootloaders.scm			\
   %D%/packages/bootstrap.scm			\
   %D%/packages/busybox.scm			\
   %D%/packages/c.scm				\
@@ -170,7 +171,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/graphics.scm			\
   %D%/packages/graphviz.scm			\
   %D%/packages/groff.scm			\
-  %D%/packages/grub.scm				\
   %D%/packages/gsasl.scm			\
   %D%/packages/gstreamer.scm			\
   %D%/packages/gtk.scm				\
@@ -318,6 +318,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ratpoison.scm			\
   %D%/packages/rdesktop.scm			\
   %D%/packages/rdf.scm				\
+  %D%/packages/re2c.scm				\
   %D%/packages/readline.scm			\
   %D%/packages/regex.scm				\
   %D%/packages/rrdtool.scm			\
@@ -372,7 +373,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
   %D%/packages/uucp.scm				\
-  %D%/packages/u-boot.scm			\
   %D%/packages/valgrind.scm			\
   %D%/packages/version-control.scm		\
   %D%/packages/video.scm			\
@@ -450,6 +450,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/linux-initrd.scm			\
   %D%/build/linux-modules.scm			\
   %D%/build/marionette.scm			\
+  %D%/build/shepherd.scm			\
   %D%/build/svg.scm				\
   %D%/build/vm.scm				\
 						\
@@ -603,6 +604,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-gets-undeclared.patch		\
   %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
+  %D%/packages/patches/gst-plugins-base-fix-test-on-32bit.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
@@ -771,6 +773,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
   %D%/packages/patches/nss-pkgconfig.patch			\
+  %D%/packages/patches/ntfs-3g-CVE-2017-0358.patch		\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
@@ -793,6 +796,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
+  %D%/packages/patches/p7zip-CVE-2016-9296.patch			\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
@@ -855,9 +859,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/qemu-CVE-2016-10155.patch			\
+  %D%/packages/patches/qemu-CVE-2017-2615.patch			\
   %D%/packages/patches/qemu-CVE-2017-5525.patch			\
   %D%/packages/patches/qemu-CVE-2017-5526.patch			\
   %D%/packages/patches/qemu-CVE-2017-5552.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5578.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5579.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5856.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\

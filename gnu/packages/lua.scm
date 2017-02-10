@@ -43,13 +43,13 @@
 (define-public lua
   (package
     (name "lua")
-    (version "5.3.3")
+    (version "5.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "18mcfbbmjyp8f2l9yy7n6dzk066nq6man0kpwly4bppphilc04si"))
+              (base32 "0320a8dg3aci4hxla380dx1ifkw8gj4gbw5c4dz41g1kh98sm0gn"))
              (patches (search-patches "lua-pkgconfig.patch"
                                       "lua-liblua-so.patch"))))
     (build-system gnu-build-system)

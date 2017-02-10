@@ -33,39 +33,37 @@
 
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages crypto)
-  #:use-module (gnu packages gettext)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages language)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages tcl)
-  #:use-module (gnu packages tls)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages emacs)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages python)
+  #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages language)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages tcl)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages jemalloc)
-  #:use-module ((guix licenses)
-                #:select (gpl2 gpl3 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
-                          bsd-2 bsd-3 public-domain asl2.0))
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -120,7 +118,7 @@
     (synopsis "Clustered RDF storage and query engine")
     (description "4store is a RDF/SPARQL store written in C, supporting
 either single machines or networked clusters.")
-      (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public gdbm
   (package
@@ -142,7 +140,7 @@ either single machines or networked clusters.")
      "GDBM is a library for manipulating hashed databases.  It is used to
 store key/value pairs in a file in a manner similar to the Unix dbm library
 and provides interfaces to the traditional file format.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public bdb
   (package
@@ -194,8 +192,9 @@ and provides interfaces to the traditional file format.")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
 SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
-    (license (non-copyleft "file://LICENSE"
-                           "See LICENSE in the distribution."))
+    ;; Starting with version 6, BDB is distributed under AGPL3. Many individual
+    ;; files are covered by the 3-clause BSD license.
+    (license (list license:agpl3+ license:bsd-3))
     (home-page
      "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
 
@@ -203,6 +202,8 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
   (package (inherit bdb)
     (name "bdb")
     (version "5.3.28")
+    (license (license:non-copyleft "file://LICENSE"
+                                   "See LICENSE in the distribution."))
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.oracle.com/berkeley-db/db-"
@@ -247,7 +248,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     (description
      "LevelDB is a fast key-value storage library that provides an ordered
 mapping from string keys to string values.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public mysql
   (package
@@ -322,7 +323,7 @@ mapping from string keys to string values.")
      "MySQL is a fast, reliable, and easy to use relational database
 management system that supports the standardized Structured Query
 Language.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public mariadb
   (package
@@ -390,7 +391,7 @@ Language.")
     (description
      "MariaDB is a multi-user and multi-threaded SQL database server, designed
 as a drop-in replacement of MySQL.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public postgresql
   (package
@@ -426,7 +427,7 @@ stored procedures (in multiple languages).  It includes most SQL:2008 data
 types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
-    (license (x11-style "file://COPYRIGHT"))))
+    (license (license:x11-style "file://COPYRIGHT"))))
 
 (define-public qdbm
   (package
@@ -509,13 +510,13 @@ manipulating text-based, human-editable databases.  Despite being text-based,
 databases created with Recutils carry all of the expected features such as
 unique fields, primary keys, time stamps and more.  Many different field
 types are supported, as is encryption.")
-    (license gpl3+)
+    (license license:gpl3+)
     (home-page "http://www.gnu.org/software/recutils/")))
 
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.0.2")
+    (version "5.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/rocksdb"
@@ -523,7 +524,7 @@ types are supported, as is encryption.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jj8b50w8jr3bnyjzk2hmlzq9x49yihjilx3xlq2rfdx3q9x4fay"))
+                "1qdbs13al7g45xc2j44wzx0ywrg32q1gsdhk5j6j4952xg91rfmh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -578,7 +579,8 @@ types are supported, as is encryption.")
      `(("parallel" ,parallel)
        ("perl" ,perl)
        ("procps" ,procps)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("which" ,which)))
     (inputs
      `(("bzip2" ,bzip2)
        ("gflags" ,gflags)
@@ -597,7 +599,7 @@ between @dfn{Write-Amplification-Factor} (WAF), @dfn{Read-Amplification-Factor}
 compactions, making it specially suitable for storing multiple terabytes of
 data in a single database.  RocksDB is partially based on @code{LevelDB}.")
     ;; RocksDB is BSD-3 and the JNI adapter is Apache 2.0.
-    (license (list bsd-3 asl2.0))))
+    (license (list license:bsd-3 license:asl2.0))))
 
 (define-public sparql-query
   (package
@@ -658,7 +660,7 @@ edit previous queries, even across sessions.  It can be used non-interactively,
 for example from a shell script.")
     ;; Some files (like scan-sparql.c) contain a GPLv3+ license header, while
     ;; others (like sparql-query.c) contain a GPLv2+ license header.
-    (license (list gpl3+))))
+    (license (list license:gpl3+))))
 
 (define-public sqlite
   (package
@@ -697,7 +699,7 @@ for example from a shell script.")
 zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
-   (license public-domain)))
+   (license license:public-domain)))
 
 (define-public tdb
   (package
@@ -734,7 +736,7 @@ is in the public domain.")
 and BSD's DB except that it allows multiple simultaneous writers and uses
 locking internally to keep writers from trampling on each other.  TDB is also
 extremely small.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public perl-dbi
   (package
@@ -1079,7 +1081,7 @@ valid SQL query.")
    (description "Unixodbc is a library providing an API with which to access
 data sources.  Data sources include SQL Servers and any software with an ODBC
 Driver.")
-   (license lgpl2.1+)
+   (license license:lgpl2.1+)
    ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
    (home-page "http://www.unixodbc.org")))
 
@@ -1107,7 +1109,7 @@ self-contained, serverless, zero-configuration, transactional NoSQL
 database engine.  UnQLite is a document store database similar to
 MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
 similar to BerkeleyDB, LevelDB, etc.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public redis
   (package
@@ -1135,7 +1137,7 @@ similar to BerkeleyDB, LevelDB, etc.")
 supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
     (home-page "http://redis.io/")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public kyotocabinet
   (package
@@ -1162,7 +1164,7 @@ sets, bitmaps and hyperloglogs.")
      "Kyoto Cabinet is a standalone file-based database that supports Hash
 and B+ Tree data storage models.  It is a fast key-value lightweight
 database and supports many programming languages.  It is a NoSQL database.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public wiredtiger
   (package
@@ -1198,7 +1200,7 @@ row-oriented storage (where all columns of a row are stored together),
 column-oriented storage (where columns are stored in groups, allowing for
 more efficient access and storage of column subsets) and log-structured merge
 trees (LSM), for sustained throughput under random insert workloads.")
-    (license gpl3) ; or GPL-2
+    (license license:gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux"))))
 
@@ -1366,3 +1368,31 @@ development.")
     ;; test/crypto.test are licensed under a 3-clause BSD license. All other
     ;; source files are in the public domain.
     (license (list license:public-domain license:bsd-3))))
+
+(define-public python-pyodbc-c
+  (package
+    (name "python-pyodbc-c")
+    (version "3.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/daym/pyodbc-c/repository/"
+                           "archive.tar.gz?ref=v" version))
+       (sha256
+        (base32
+         "0nl11n3mgrcfnhimjqgv48rxqnb21l5m6s7p8ps2fa4nn4z6rzy0"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("unixodbc" ,unixodbc)))
+    (arguments
+     `(;; No unit tests exist.
+       #:tests? #f))
+    (home-page "https://github.com/mkleehammer/pyodbc")
+    (synopsis "Python ODBC Library")
+    (description "@code{python-pyodbc-c} provides a Python DB-API driver
+for ODBC.")
+    (license (license:x11-style "file://LICENSE.TXT"))))
+
+(define-public python2-pyodbc-c
+  (package-with-python2 python-pyodbc-c))

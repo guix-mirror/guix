@@ -22,6 +22,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,11 +97,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages spice)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -320,6 +323,43 @@ The gnome-about program helps find which version of GNOME is installed.")
 Gnome project.  It includes xml2po tool which makes it easier to translate
 and keep up to date translations of documentation.")
     (license license:gpl2+))) ; xslt under lgpl
+
+(define-public gnome-disk-utility
+  (package
+    (name "gnome-disk-utility")
+    (version "3.22.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hqynlcgwm72il2rdml98gcarz0alsgxs5xf6ww2x0czaj3s3953"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (inputs
+     `(("glib" ,glib)
+       ("appstream-glib" ,appstream-glib)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libdvdread" ,libdvdread)
+       ("libnotify" ,libnotify)
+       ("libpwquality" ,libpwquality)
+       ("libsecret" ,libsecret)
+       ("udisks" ,udisks)))
+    (home-page "https://git.gnome.org/browse/gnome-disk-utility")
+    (synopsis "Disk management utility for GNOME")
+    (description "Disk management utility for GNOME.")
+    (license license:gpl2+)))
 
 (define-public gcr
   (package
@@ -1824,7 +1864,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.44.1.b")
+    (version "0.46.1.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -1839,7 +1879,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mhz4i1qkdlrs49vgm7nsrb60lry9v6wsgwsmji7fln1nyrp1pag"))))
+                "1c0czhsn28b5h4pk3kx89jjbdc5d2qkxhl4ywqvxfivphf2nicbp"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
@@ -1899,6 +1939,43 @@ selection and URL hints.")))
     (propagated-inputs
      `(("gtk+" ,gtk+-2)         ; required by libvte.pc
        ("ncurses" ,ncurses))))) ; required by libvte.la
+
+(define-public vinagre
+  (package
+    (name "vinagre")
+    (version "3.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("glib-bin" ,glib "bin")                   ;for glib-compile-schemas
+       ("gtk+-bin" ,gtk+ "bin")))                 ;for gtk-update-icon-cache
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("gtk-vnc" ,gtk-vnc)
+       ("gnome-keyring" ,gnome-keyring)
+       ("libsecret" ,libsecret)
+       ("freerdp" ,freerdp)
+       ("spice" ,spice)
+       ("spice-gtk" ,spice-gtk)
+       ("telepathy-glib" ,telepathy-glib)
+       ("vte" ,vte)))
+    (arguments
+     `(#:configure-flags '("--enable-rdp")))
+    (home-page "https://wiki.gnome.org/Apps/Vinagre")
+    (synopsis "Remote desktop viewer for GNOME")
+    (description "Vinagre is a remote display client supporting the VNC, SPICE
+and RDP protocols.")
+    (license license:gpl3+)))
 
 (define-public dconf
   (package
@@ -3634,7 +3711,7 @@ work and the interface is well tested.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.22.4")
+    (version "3.22.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3642,7 +3719,7 @@ work and the interface is well tested.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0skdsma9rmq01703andigmpbdn2rl34y3lqny19a93v1ph3jb9qk"))))
+                "1hpwjwiviwh9dgc9cwq0gmr5jy40rvigjcq0cbg2nw2hqiyshzny"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
@@ -3650,7 +3727,8 @@ work and the interface is well tested.")
      ;;   ** (test-ephy-bookmarks:19591): WARNING **: Unable to start Zeroconf
      ;;      subsystem
      ;;   FAIL
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:configure-flags '("CFLAGS=-std=gnu99")))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
@@ -4203,17 +4281,20 @@ to display dialog boxes from the commandline and shell scripts.")
     (license license:lgpl2.0+)))
 
 (define-public mutter
+  ;; Uses the gnome 3.22 branch that only contains bug fixes.
+  (let ((commit "23c315ea7121e9bd108e2837d0b4beeba53c5e18"))
   (package
     (name "mutter")
-    (version "3.22.2")
+    (version (git-version "3.22.2" "1" commit))
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.gnome.org/mutter")
+                    (commit commit)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "18lj80klfnkwh0cb3ab0i1vfvzbp0zjl73x9d7pna4dsdhsmi6ym"))))
+                "1v1f9xyzjr1ihmfwpq9kzlv2lyr9qn63ck8zny699mbp5hsi11mb"))))
      ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
      ;; versions of cogl and clutter.  As a result, many of the inputs,
      ;; propagated-inputs, and configure flags used in cogl and clutter are
@@ -4236,12 +4317,21 @@ to display dialog boxes from the commandline and shell scripts.")
              "--enable-cogl-gst"
              (string-append "--with-gl-libname="
                             (assoc-ref %build-inputs "mesa")
-                            "/lib/libGL.so"))))
+                            "/lib/libGL.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ;; For git build
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (propagated-inputs
      `(;; libmutter.pc refers to these:
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
@@ -4287,7 +4377,7 @@ to display dialog boxes from the commandline and shell scripts.")
 desktop via OpenGL.  Mutter combines a sophisticated display engine using the
 Clutter toolkit with solid window-management logic inherited from the Metacity
 window manager.")
-    (license license:gpl2+)))
+    (license license:gpl2+))))
 
 (define-public gnome-online-accounts
   (package

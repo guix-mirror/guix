@@ -36,6 +36,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -624,13 +625,29 @@ project's documentation} for more information."
   DaemonPort = " (number->string port) "
 " extra-settings))))
 
-       (list (shepherd-service
-              (provision '(bitlbee))
-              (requirement '(user-processes loopback))
-              (start #~(make-forkexec-constructor
-                        (list (string-append #$bitlbee "/sbin/bitlbee")
-                              "-n" "-F" "-u" "bitlbee" "-c" #$conf)))
-              (stop  #~(make-kill-destructor))))))))
+       (with-imported-modules (source-module-closure
+                               '((gnu build shepherd)
+                                 (gnu system file-systems)))
+         (list (shepherd-service
+                (provision '(bitlbee))
+
+                ;; Note: If networking is not up, then /etc/resolv.conf
+                ;; doesn't get mapped in the container, hence the dependency
+                ;; on 'networking'.
+                (requirement '(user-processes networking))
+
+                (modules '((gnu build shepherd)
+                           (gnu system file-systems)))
+                (start #~(make-forkexec-constructor/container
+                          (list #$(file-append bitlbee "/sbin/bitlbee")
+                                "-n" "-F" "-u" "bitlbee" "-c" #$conf)
+
+                          #:pid-file "/var/run/bitlbee.pid"
+                          #:mappings (list (file-system-mapping
+                                            (source "/var/lib/bitlbee")
+                                            (target source)
+                                            (writable? #t)))))
+                (stop  #~(make-kill-destructor)))))))))
 
 (define %bitlbee-accounts
   ;; User group and account to run BitlBee.

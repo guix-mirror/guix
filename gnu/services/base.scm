@@ -36,6 +36,7 @@
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages terminals)
@@ -1558,6 +1559,10 @@ This service is not part of @var{%base-services}."
         ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
         ;; used, so enable them by default.  The FUSE and ALSA rules are
         ;; less critical, but handy.
-        (udev-service #:rules (list lvm2 fuse alsa-utils crda))))
+        (udev-service #:rules (list lvm2 fuse alsa-utils crda))
+
+        (service special-files-service-type
+                 `(("/bin/sh" ,(file-append (canonical-package bash)
+                                            "/bin/sh"))))))
 
 ;;; base.scm ends here

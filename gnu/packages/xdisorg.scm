@@ -844,7 +844,6 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
        ("libxxf86vm" ,libxxf86vm)
-       ("libjpeg" ,libjpeg)
        ("glib" ,glib)))                           ;for Geoclue2 support
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")
@@ -920,7 +919,7 @@ demos.  It also acts as a nice screen locker.")
     (license (license:non-copyleft
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
-               "/main/x/xscreensaver/xscreensaver_5.34-2_copyright")))))
+               "/main/x/xscreensaver/xscreensaver_5.36-1_copyright")))))
 
 (define-public xdpyprobe
   (package

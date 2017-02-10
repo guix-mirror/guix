@@ -20,6 +20,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +80,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
   #:use-module (gnu packages tls)
@@ -454,6 +456,57 @@ and corrections.  It is based on a Bayesian filter.")
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
     (license gpl2+)))
+
+(define-public emacs-mew
+  (package
+    (name "emacs-mew")
+    (version "6.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://mew.org/Release/mew-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03fzky2kz73vgx4cbps2psbbnrgqgkk5q7jwfldisymkzr9iz03y"))))
+    (native-inputs
+     `(("emacs" ,emacs)))
+    (propagated-inputs
+     `(("ruby-sqlite3" ,ruby-sqlite3) ; optional for the database of messages
+       ("ruby" ,ruby))) ; to set GEM_PATH so ruby-sqlite3 is found at runtime
+    (build-system gnu-build-system)
+    (arguments
+     (let ((elisp-dir "/share/emacs/site-lisp/guix.d/mew")
+           (icon-dir  "/share/mew"))
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:configure-flags
+         (list (string-append "--with-elispdir=" %output ,elisp-dir)
+               (string-append "--with-etcdir=" %output ,icon-dir))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'configure 'patch-mew-icon-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               (emacs-substitute-sexps "mew-key.el"
+                 ("(def.* mew-icon-directory"
+                  `(progn
+                    (add-to-list 'image-load-path 'mew-icon-directory)
+                    ,(string-append (assoc-ref outputs "out") ,icon-dir))))
+               #t))
+           (add-after 'install 'generate-autoloads
+             (lambda* (#:key outputs #:allow-other-keys)
+               (emacs-generate-autoloads
+                "mew" (string-append (assoc-ref outputs "out") ,elisp-dir))
+               #t)))
+         #:tests? #f)))
+    (home-page "http://www.mew.org")
+    (synopsis "Emacs e-mail client")
+    (description "Mew (Messaging in the Emacs World) is a user interface
+for text messages, multimedia messages (MIME), news articles and
+security functionality including PGP, S/MIME, SSH, and SSL.")
+    (license bsd-3)))
 
 (define-public mu
   (package

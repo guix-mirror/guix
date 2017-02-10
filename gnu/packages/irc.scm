@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,14 +181,13 @@ SILC and ICB protocols via plugins.")
                   (add-before 'configure 'autogen
                     (lambda _
                       (zero? (system* "./autogen.sh"))))
-                  (add-before 'build 'set-python-file-name
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "src/plugins/python/weechat-python.c"
-                        (("python2_bin = weechat_python_get_python2_bin.*;")
-                         (string-append "python2_bin = strdup (\""
-                                        (assoc-ref inputs "python")
-                                        "/bin/python\");\n")))
-                      #t)))))
+                  (add-after 'install 'wrap
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (py2 (assoc-ref inputs "python")))
+                        (wrap-program (string-append out "/bin/weechat")
+                          `("PATH" ":" prefix (,(string-append py2 "/bin"))))
+                        #t))))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 Internet Relay Chat client, which is designed to be light and fast.

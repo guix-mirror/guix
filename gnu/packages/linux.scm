@@ -21,6 +21,8 @@
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
+;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +47,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
@@ -66,6 +69,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -344,15 +348,18 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
+(define %linux-libre-version "4.9.9")
+(define %linux-libre-hash "0grk94jym0wz581c7pimia0rszq4h2xqjmf818i4l4qrjd0bnqvk")
+
 (define-public linux-libre
-  (make-linux-libre "4.9.6"
-                    "0mafa628la5qj26rff014mmih2widl5k2sjxg152lmpgijmf6qhd"
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.45"
-                    "1c6nigbl8yrqpaz89954la956lshr3p0llm52phxq2h06zblsp87"
+  (make-linux-libre "4.4.48"
+                    "0g7ram0b5b7p0c6v5m5im6m5pwa348mhkhf67rs036lzvcw1bvyk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -361,10 +368,6 @@ It has been modified to remove all non-free binary blobs.")
                     "165kmzglhg63hn7y4q7r6cb2dpsljxiq1czvgyx0bkd1vd2bcvsa"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
-
-;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.9.6")
-(define %linux-libre-hash "0mafa628la5qj26rff014mmih2widl5k2sjxg152lmpgijmf6qhd")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -1770,14 +1773,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.166")
+    (version "2.02.168")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "150v0mawd2swdvypcmkjd3h3s4n5i1220h6sxx94a8jvp1kb0871"))
+                "03b62hcsj9z37ckd8c21wwpm07s9zblq7grfh58yzcs1vp6x38r3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2915,6 +2918,7 @@ from userspace.")
                (base32
                 "180y5y09h30ryf2vim8j30a2npwz1iv9ly5yjmh3wjdkwh2jrdyp"))
               (modules '((guix build utils)))
+              (patches (search-patches "ntfs-3g-CVE-2017-0358.patch"))
               (snippet
                ;; Install under $prefix.
                '(substitute* '("src/Makefile.in" "ntfsprogs/Makefile.in")
@@ -3129,14 +3133,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "147")
+    (version "148")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "10xxmqpd348ifbs7w8j0m53agp28r6imv237ha3kmhp632hmyf1d"))
+                "1d5g09ndfsnl56vyhb5xw0zxspnh0f937biw3agqhdfbvw40j9jr"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3417,3 +3421,126 @@ set the screen to be pitch black at a vaĺue of 0 (or higher).
 
 Light is the successor of lightscript.")
     (license license:gpl3+)))
+
+(define-public tlp
+  (package
+    (name "tlp")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/linrunner/"
+                    (string-upcase name)
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xksm8ar6dbq0azbfz8qs9yyzqg1j333lyd5znc074rz8inj4yw8"))))
+    (inputs `(("bash" ,bash)
+              ("dbus" ,dbus)
+              ("ethtool" ,ethtool)
+              ("eudev" ,eudev)
+              ("grep" ,grep)
+              ("hdparm" ,hdparm)
+              ("inetutils" ,inetutils)
+              ("iw" ,iw)
+              ("kmod" ,kmod)
+              ("pciutils" ,pciutils)
+              ("perl" ,perl)
+              ("rfkill" ,rfkill)
+              ("sed" ,sed)
+              ("usbutils" ,usbutils)
+              ("util-linux" ,util-linux)
+              ("wireless-tools" ,wireless-tools)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'setenv
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "TLP_WITH_SYSTEMD" "0")
+               (setenv "TLP_NO_INIT" "1")
+               (setenv "TLP_NO_PMUTILS" "1")
+               (setenv "TLP_SBIN" (string-append out "/bin"))
+               (setenv "TLP_BIN" (string-append out "/bin"))
+               (setenv "TLP_TLIB" (string-append out "/share/tlp-pm"))
+               (setenv "TLP_ULIB" (string-append out "/lib/udev"))
+               (setenv "TLP_CONF" (string-append out "/etc/tlp"))
+               (setenv "TLP_SHCPL"
+                       (string-append out "/share/bash-completion/completions"))
+               (setenv "TLP_MAN" (string-append out "/share/man")))))
+         (delete 'check)
+         (replace 'install
+           (lambda _
+             (system "make install-tlp install-man")))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (bin-files (find-files bin ".*")))
+               (define (bin-directory input-name)
+                 (string-append (assoc-ref inputs input-name) "/bin"))
+               (define (sbin-directory input-name)
+                 (string-append (assoc-ref inputs input-name) "/sbin"))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("PATH" ":" prefix
+                               ,(append
+                                 (map bin-directory '("bash"
+                                                      "coreutils"
+                                                      "dbus"
+                                                      "eudev"
+                                                      "grep"
+                                                      "inetutils"
+                                                      "kmod"
+                                                      "perl"
+                                                      "sed"
+                                                      "usbutils"
+                                                      "util-linux"))
+                                 (map sbin-directory '("ethtool"
+                                                       "hdparm"
+                                                       "iw"
+                                                       "pciutils"
+                                                       "rfkill"
+                                                       "wireless-tools"))))))
+                         bin-files)))))))
+    (home-page "http://linrunner.de/en/tlp/tlp.html")
+    (synopsis "Power management tool for Linux")
+    (description "TLP is a power management tool for Linux.  It comes with
+a default configuration already optimized for battery life.  Nevertheless,
+TLP is customizable to fulfil system requirements.  TLP settings are applied
+every time the power supply source is changed.")
+
+    ;; 'COPYING' is a custom version that says that one file is GPLv3+ and the
+    ;; rest is GPLv2+.
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public lshw
+  (package
+    (name "lshw")
+    (version "B.02.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ezix.org/software/"
+                                  "files/lshw-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0brwra4jld0d53d7jsgca415ljglmmx1l2iazpj4ndilr48yy8mf"))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:phases (modify-phases %standard-phases (delete 'configure))
+        #:tests? #f ; no tests
+        #:make-flags
+          (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (synopsis "List hardware information")
+    (description
+     "@command{lshw} (Hardware Lister) is a small tool to provide
+detailed information on the hardware configuration of the machine.
+It can report exact memory configuration, firmware version, mainboard
+configuration, CPU version and speed, cache configuration, bus speed,
+and more on DMI-capable x86 or EFI (IA-64) systems and on some PowerPC
+machines (PowerMac G4 is known to work).")
+    (home-page "https://www.ezix.org/project/wiki/HardwareLiSter")
+    (license license:gpl2+)))

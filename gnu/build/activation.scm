@@ -28,7 +28,7 @@
             activate-user-home
             activate-etc
             activate-setuid-programs
-            activate-/bin/sh
+            activate-special-files
             activate-modprobe
             activate-firmware
             activate-ptrace-attach
@@ -80,16 +80,27 @@
   (member file '("." "..")))
 
 (define* (copy-account-skeletons home
-                                 #:optional (directory %skeleton-directory))
-  "Copy the account skeletons from DIRECTORY to HOME."
+                                 #:key
+                                 (directory %skeleton-directory)
+                                 uid gid)
+  "Copy the account skeletons from DIRECTORY to HOME.  When UID is an integer,
+make it the owner of all the files created; likewise for GID."
+  (define (set-owner file)
+    (when (or uid gid)
+      (chown file (or uid -1) (or gid -1))))
+
   (let ((files (scandir directory (negate dot-or-dot-dot?)
                         string<?)))
     (mkdir-p home)
+    (set-owner home)
     (for-each (lambda (file)
                 (let ((target (string-append home "/" file)))
                   (copy-recursively (string-append directory "/" file)
                                     target
                                     #:log (%make-void-port "w"))
+                  (for-each set-owner
+                            (find-files target (const #t)
+                                        #:directories? #t))
                   (make-file-writable target)))
               files)))
 
@@ -272,9 +283,14 @@ they already exist."
       ((name uid group supplementary-groups comment home create-home?
              shell password system?)
        (unless (or (not home) (directory-exists? home))
-         (mkdir-p home)
-         (unless system?
-           (copy-account-skeletons home))))))
+         (let* ((pw  (getpwnam name))
+                (uid (passwd:uid pw))
+                (gid (passwd:gid pw)))
+           (mkdir-p home)
+           (chown home uid gid)
+           (unless system?
+             (copy-account-skeletons home
+                                     #:uid uid #:gid gid)))))))
 
   (for-each ensure-user-home users))
 
@@ -362,10 +378,23 @@ copy SOURCE to TARGET."
 
   (for-each make-setuid-program programs))
 
-(define (activate-/bin/sh shell)
-  "Change /bin/sh to point to SHELL."
-  (symlink shell "/bin/sh.new")
-  (rename-file "/bin/sh.new" "/bin/sh"))
+(define (activate-special-files special-files)
+  "Install the files listed in SPECIAL-FILES.  Each element of SPECIAL-FILES
+is a pair where the first element is the name of the special file and the
+second element is the name it should appear at, such as:
+
+  ((\"/bin/sh\" \"/gnu/store/…-bash/bin/sh\")
+   (\"/usr/bin/env\" \"/gnu/store/…-coreutils/bin/env\"))
+"
+  (define install-special-file
+    (match-lambda
+      ((target file)
+       (let ((pivot (string-append target ".new")))
+         (mkdir-p (dirname target))
+         (symlink file pivot)
+         (rename-file pivot target)))))
+
+  (for-each install-special-file special-files))
 
 (define (activate-modprobe modprobe)
   "Tell the kernel to use MODPROBE to load modules."

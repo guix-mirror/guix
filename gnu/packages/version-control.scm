@@ -112,14 +112,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.11.0")
+   (version "2.11.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "02zx368id8rys0bh2sjrxz0ln2l2wm5nf1vhp1rj72clsilqszky"))))
+              "05b4jw86w77c3pyh3nm6aw31vhxwzvhnx2x0bcfqmm15wg57k9y0"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -132,7 +132,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1n18jnpi0z3skwc1ckrm7zdld6i3zvn0g95cg9r9pdn0564fglxk"))))))
+            "0cfa3c2r7d86ksswxdl0jqdka9mai3446gg8380921gf779nwj39"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -275,16 +275,7 @@ as well as the classic centralized workflow.")
               (wrap-program git-sm
                 `("PATH" ":" prefix
                   (,(string-append (assoc-ref inputs "perl")
-                                   "/bin"))))
-
-              ;; Tell 'git' to look for core programs in the user's profile.
-              ;; This allows user to install other outputs of this package and
-              ;; have them transparently taken into account.  There's a
-              ;; 'GIT_EXEC_PATH' environment variable, but it's supposed to
-              ;; specify a single directory, not a search path.
-              (wrap-program (string-append out "/bin/git")
-                `("PATH" ":" prefix
-                  ("$HOME/.guix-profile/libexec/git-core"))))))
+                                   "/bin")))))))
         (add-after 'split 'install-man-pages
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
@@ -301,7 +292,10 @@ as well as the classic centralized workflow.")
            (variable "GIT_SSL_CAINFO")
            (file-type 'regular)
            (separator #f)                         ;single entry
-           (files '("etc/ssl/certs/ca-certificates.crt")))))
+           (files '("etc/ssl/certs/ca-certificates.crt")))
+          (search-path-specification
+           (variable "GIT_EXEC_PATH")
+           (files '("libexec/git-core")))))
 
    (synopsis "Distributed version control system")
    (description
@@ -366,6 +360,47 @@ provided as a re-entrant linkable library with a solid API, allowing you to
 write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
     (license license:gpl2)))
+
+(define-public git-crypt
+  (package
+    (name "git-crypt")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/AGWA/git-crypt"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0454fdmgm5f3razkn8n03lfqm5zyzvr4r2528zmlxiwba9518l2i"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("git" ,git)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (zero? (system* "make"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "make" "install"
+                               (string-append "PREFIX=" out)))))))))
+    (home-page "https://www.agwa.name/projects/git-crypt")
+    (synopsis "Transparent encryption of files in a git repository")
+    (description "git-crypt enables transparent encryption and decryption of
+files in a git repository. Files which you choose to protect are encrypted when
+committed, and decrypted when checked out. git-crypt lets you freely share a
+repository containing a mix of public and private content. git-crypt gracefully
+degrades, so developers without the secret key can still clone and commit to a
+repository with encrypted files. This lets you store your secret material (such
+as keys or passwords) in the same repository as your code, without requiring you
+to lock down your entire repository.")
+    (license license:gpl3+)))
 
 (define-public cgit
   (package

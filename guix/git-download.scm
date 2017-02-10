@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix git-download)
+  #:use-module (guix build utils)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -24,6 +26,9 @@
   #:use-module (guix packages)
   #:autoload   (guix build-system gnu) (standard-packages)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
+  #:use-module (srfi srfi-1)
   #:export (git-reference
             git-reference?
             git-reference-url
@@ -32,7 +37,8 @@
 
             git-fetch
             git-version
-            git-file-name))
+            git-file-name
+            git-predicate))
 
 ;;; Commentary:
 ;;;
@@ -118,5 +124,40 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
 (define (git-file-name name version)
   "Return the file-name for packages using git-download."
   (string-append name "-" version "-checkout"))
+
+(define (git-predicate directory)
+  "Return a predicate that returns true if a file is part of the Git checkout
+living at DIRECTORY.  Upon Git failure, return #f instead of a predicate.
+
+The returned predicate takes two arguments FILE and STAT where FILE is an
+absolute file name and STAT is the result of 'lstat'."
+  (define (parent-directory? thing directory)
+    ;; Return #t if DIRECTORY is the parent of THING.
+    (or (string-suffix? thing directory)
+        (and (string-index thing #\/)
+             (parent-directory? (dirname thing) directory))))
+
+  (let* ((pipe        (with-directory-excursion directory
+                        (open-pipe* OPEN_READ "git" "ls-files")))
+         (files       (let loop ((lines '()))
+                        (match (read-line pipe)
+                          ((? eof-object?)
+                           (reverse lines))
+                          (line
+                           (loop (cons line lines))))))
+         (status      (close-pipe pipe)))
+    (and (zero? status)
+         (lambda (file stat)
+           (match (stat:type stat)
+             ('directory
+              ;; 'git ls-files' does not list directories, only regular files,
+              ;; so we need this special trick.
+              (any (lambda (f) (parent-directory? f file))
+                   files))
+             ((or 'regular 'symlink)
+              (any (lambda (f) (string-suffix? f file))
+                   files))
+             (_
+              #f))))))
 
 ;;; git-download.scm ends here

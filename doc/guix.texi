@@ -31,7 +31,8 @@ Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017 Clément Lassieur@*
-Copyright @copyright{} 2017 Mathieu Othacehe
+Copyright @copyright{} 2017 Mathieu Othacehe@*
+Copyright @copyright{} 2017 Federico Beffa
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -3437,6 +3438,16 @@ Which Haskell compiler is used can be specified with the @code{#:haskell}
 parameter which defaults to @code{ghc}.
 @end defvr
 
+@defvr {Scheme Variable} dub-build-system
+This variable is exported by @code{(guix build-system dub)}.  It
+implements the Dub build procedure used by D packages, which
+involves running @code{dub build} and @code{dub run}.
+Installation is done by copying the files manually.
+
+Which D compiler is used can be specified with the @code{#:ldc}
+parameter which defaults to @code{ldc}.
+@end defvr
+
 @defvr {Scheme Variable} emacs-build-system
 This variable is exported by @code{(guix build-system emacs)}.  It
 implements an installation procedure similar to the packaging system
@@ -5340,6 +5351,34 @@ package name by an at-sign and a version number as in the following example:
 guix import hackage mtl@@2.1.3.1
 @end example
 
+@item stackage
+@cindex stackage
+The @code{stackage} importer is a wrapper around the @code{hackage} one.
+It takes a package name, looks up the package version included in a
+long-term support (LTS) @uref{https://www.stackage.org, Stackage}
+release and uses the @code{hackage} importer to retrieve its metadata.
+Note that it is up to you to select an LTS release compatible with the
+GHC compiler used by Guix.
+
+Specific command-line options are:
+
+@table @code
+@item --no-test-dependencies
+@itemx -t
+Do not include dependencies required only by the test suites.
+@item --lts-version=@var{version}
+@itemx -r @var{version}
+@var{version} is the desired LTS release version.  If omitted the latest
+release is used.
+@end table
+
+The command below imports metadata for the @code{HTTP} Haskell package
+included in the LTS Stackage release version 7.18:
+
+@example
+guix import stackage --lts-version=7.18 HTTP
+@end example
+
 @item elpa
 @cindex elpa
 Import metadata from an Emacs Lisp Package Archive (ELPA) package
@@ -5504,6 +5543,8 @@ the updater for @uref{https://rubygems.org, RubyGems} packages.
 the updater for @uref{https://github.com, GitHub} packages.
 @item hackage
 the updater for @uref{https://hackage.haskell.org, Hackage} packages.
+@item stackage
+the updater for @uref{https://www.stackage.org, Stackage} packages.
 @item crate
 the updater for @uref{https://crates.io, Crates} packages.
 @end table
@@ -8271,6 +8312,50 @@ this:
 (cons* (avahi-service) (lsh-service) %base-services)
 @end example
 @end defvr
+
+@defvr {Scheme Variable} special-files-service-type
+This is the service that sets up ``special files'' such as
+@file{/bin/sh}; an instance of it is part of @code{%base-services}.
+
+The value associated with @code{special-files-service-type} services
+must be a list of tuples where the first element is the ``special file''
+and the second element is its target.  By default it is:
+
+@cindex @file{/bin/sh}
+@cindex @file{sh}, in @file{/bin}
+@example
+`(("/bin/sh" ,(file-append @var{bash} "/bin/sh")))
+@end example
+
+@cindex @file{/usr/bin/env}
+@cindex @file{env}, in @file{/usr/bin}
+If you want to add, say, @code{/usr/bin/env} to your system, you can
+change it to:
+
+@example
+`(("/bin/sh" ,(file-append @var{bash} "/bin/sh"))
+  ("/usr/bin/env" ,(file-append @var{coreutils} "/bin/env")))
+@end example
+
+Since this is part of @code{%base-services}, you can use
+@code{modify-services} to customize the set of special files
+(@pxref{Service Reference, @code{modify-services}}).  But the simple way
+to add a special file is @i{via} the @code{extra-special-file} procedure
+(see below.)
+@end defvr
+
+@deffn {Scheme Procedure} extra-special-file @var{file} @var{target}
+Use @var{target} as the ``special file'' @var{file}.
+
+For example, adding the following lines to the @code{services} field of
+your operating system declaration leads to a @file{/usr/bin/env}
+symlink:
+
+@example
+(extra-special-file "/usr/bin/env"
+                    (file-append coreutils "/bin/env"))
+@end example
+@end deffn
 
 @deffn {Scheme Procedure} host-name-service @var{name}
 Return a service that sets the host name to @var{name}.

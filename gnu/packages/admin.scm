@@ -474,7 +474,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "9")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "5")      ; for patch release, e.g. "4"
+         (bind-release-version "6")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -590,7 +590,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1yn15chkfqf4d7961ip2x10jm27a9wqymz2xqh0a2g89arrirkaw"))))
+                      "1qf9j0nyqx0qy871mj22xh4dg0n1pqlv94lpiijb8vr7n7m3svhr"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -639,18 +639,8 @@ network statistics collection, security monitoring, network debugging, etc.")
     (version "4.9.0")
     (source (origin
               (method url-fetch)
-              ;; We use this Debian URL while the upstream URL is still
-              ;; officially private. This is the result of a botched
-              ;; coordinated release of tcpdump 4.9.0. I verified with
-              ;; the tcpdump maintainers that the upstream URL provides
-              ;; the same data as this Debian URL.
-              (uri
-                (list
-                  (string-append "http://http.debian.net/debian/pool/main/t/"
-                                  name "/" name "_" version ".orig.tar.gz")
-                  (string-append "http://www.tcpdump.org/release/tcpdump-"
-                                 version ".tar.gz")))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "0pjsxsy8l71i813sa934cwf1ryp9xbr7nxwsvnzavjdirchq3sga"))))
@@ -1715,7 +1705,7 @@ throughput (in the same interval).")
        ("python-decorator" ,python-decorator)
        ("python-psutil" ,python-psutil)
        ("python-six" ,python-six)))
-    (inputs
+    (native-inputs
      ;; Requires setuptools >= 17.1 due to some features used, while our
      ;; python currently only includes 12.0. TODO: Remove this input.
      `(("python-setuptools" ,python-setuptools)))

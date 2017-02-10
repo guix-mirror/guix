@@ -313,7 +313,7 @@ integer programming problems and computes Markov bases for statistics.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlib-"
+      (uri (string-append "ftp://ftp.math.ethz.ch/users/fukudak/cdd/cddlib-"
                           (string-delete #\. version) ".tar.gz"))
       (sha256
        (base32
@@ -1035,6 +1035,7 @@ Open CASCADE library.")
        ("lapack" ,lapack)
        ("mesa" ,mesa)
        ("glu" ,glu)
+       ("opencascade-oce" ,opencascade-oce)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
     (inputs
@@ -1043,15 +1044,7 @@ Open CASCADE library.")
     (arguments
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
-                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")
-       #:phases (modify-phases %standard-phases
-                  (replace
-                   'check
-                   (lambda _
-                     (zero? (system* "make" "test"
-                                     ;; Disable this test.  See
-                                     ;; https://geuz.org/trac/gmsh/ticket/271
-                                     "ARGS=-E component8_in_a_box")))))))
+                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
     (home-page "http://www.geuz.org/gmsh/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in
@@ -1992,7 +1985,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "16.12.0")
+    (version "16.12.2")
     (source
      (origin
        (method url-fetch)
@@ -2000,7 +1993,7 @@ point numbers.")
                            version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01kas9viqabw5id6crbhz8ahjimmv78gqzizs5hgnj9kngrgrm1h"))))
+         "0y22zhyhyxj2cbhzvs9c4pxr44i55ryfy5xi96d39bg2nbgs9h22"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)

@@ -110,7 +110,18 @@
                                    (find-files "." "loaddefs\\.el$")
                                    ;; This is the only "autoloads" file that
                                    ;; does not have "*loaddefs.el" name.
-                                   '("eshell/esh-groups.el")))))))
+                                   '("eshell/esh-groups.el")))
+
+                 ;; Make sure Tramp looks for binaries in the right places on
+                 ;; remote GuixSD machines, where 'getconf PATH' returns
+                 ;; something bogus.
+                 (substitute* "net/tramp-sh.el"
+                   ;; Patch the line after "(defcustom tramp-remote-path".
+                   (("\\(tramp-default-remote-path")
+                    (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
+                            "~/.guix-profile/bin" "~/.guix-profile/sbin"
+                            "/run/current-system/profile/bin"
+                            "/run/current-system/profile/sbin")))))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases

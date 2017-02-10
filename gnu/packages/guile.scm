@@ -624,12 +624,15 @@ for Guile\".")
     (home-page "http://savannah.nongnu.org/projects/guile-json/")
     (synopsis "JSON module for Guile")
     (description
-     "Guile-json supports parsing and building JSON documents according to the
-http:://json.org specification.  These are the main features:
-- Strictly complies to http://json.org specification.
-- Build JSON documents programmatically via macros.
-- Unicode support for strings.
-- Allows JSON pretty printing.")
+     "Guile-JSON supports parsing and building JSON documents according to the
+specification.  These are the main features:
+
+@itemize
+@item Strictly complies to @uref{http://json.org, specification}.
+@item Build JSON documents programmatically via macros.
+@item Unicode support for strings.
+@item Allows JSON pretty printing.
+@end itemize\n")
     (license lgpl3+)))
 
 (define-public guile2.2-json

@@ -180,4 +180,31 @@
     (lambda ()
       (primitive-exit 42))))
 
+(skip-if-unsupported)
+(test-assert "container-excursion*"
+  (call-with-temporary-directory
+   (lambda (root)
+     (define (namespaces pid)
+       (let ((pid (number->string pid)))
+         (map (lambda (ns)
+                (readlink (string-append "/proc/" pid "/ns/" ns)))
+              '("user" "ipc" "uts" "net" "pid" "mnt"))))
+
+     (let* ((pid    (run-container root '()
+                                   %namespaces 1
+                                   (lambda ()
+                                     (sleep 100))))
+            (result (container-excursion* pid
+                      (lambda ()
+                        (namespaces 1)))))
+       (kill pid SIGKILL)
+       (equal? result (namespaces pid))))))
+
+(skip-if-unsupported)
+(test-equal "container-excursion*, same namespaces"
+  42
+  (container-excursion* (getpid)
+    (lambda ()
+      (* 6 7))))
+
 (test-end)

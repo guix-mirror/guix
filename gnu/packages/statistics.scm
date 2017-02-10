@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2016, 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,7 +116,9 @@ be output in text, PostScript, PDF or HTML.")
      `(#:make-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
-                            "/lib/R/lib"))
+                            "/lib/R/lib")
+             ;; This affects the embedded timestamp of only the core packages.
+             "PKG_BUILT_STAMP=1970-01-01")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-uname
@@ -126,8 +128,13 @@ be output in text, PostScript, PDF or HTML.")
                (substitute* "src/scripts/R.sh.in"
                  (("uname") uname-bin)))
              #t))
-         (add-before
-          'configure 'set-default-pager
+         (add-after 'unpack 'build-recommended-packages-reproducibly
+           (lambda _
+             (substitute* "src/library/Recommended/Makefile.in"
+               (("INSTALL_OPTS =.*" line)
+                (string-append line " --built-timestamp=1970-01-01")))
+             #t))
+         (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
           ;; making "help()" print nothing at all.
           (lambda _ (setenv "PAGER" "cat") #t))
@@ -4006,6 +4013,27 @@ dispersion modeling and Tweedie power-law families.")
     ;; Statmod is distributed under either license
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-rann
+  (package
+    (name "r-rann")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "RANN" version))
+              (sha256
+               (base32
+                "007cgqg9bybg2zlljbv5m6cmlm3r6i251018rpgjcn0xnm9sjsj7"))))
+    (properties
+     `((upstream-name . "RANN")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jefferis/RANN")
+    (synopsis "Fast nearest neighbour search")
+    (description
+     "This package finds the k nearest neighbours for every point in a given
+dataset in O(N log N) time using Arya and Mount's ANN library.  Provides
+approximate, exact searches, fixed radius searches, bd and kb trees.")
+    (license license:gpl3+)))
+
 (define-public r-fivethirtyeight
   (package
     (name "r-fivethirtyeight")
@@ -4145,3 +4173,25 @@ regression.")
 perform @dfn{independent component analysis} (ICA) and projection pursuit.")
     ;; Any GPL version.
     (license license:gpl3+)))
+
+(define-public r-randomforest
+  (package
+    (name "r-randomforest")
+    (version "4.6-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "randomForest" version))
+       (sha256
+        (base32
+         "1i43idaihhl6nwqw42v9dqpl6f8z3ykcn2in32lh2755i27jylbf"))))
+    (properties `((upstream-name . "randomForest")))
+    (build-system r-build-system)
+    (home-page "https://www.stat.berkeley.edu/~breiman/RandomForests/")
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (synopsis "Breiman and Cutler's random forests for classification and regression")
+    (description
+"This package provides the Breiman and Cutler's random forests algorithm, based on a
+forest of trees using random inputs, for classification and regression.")
+    (license license:gpl2+)))
