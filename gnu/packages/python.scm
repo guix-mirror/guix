@@ -12685,3 +12685,26 @@ Sorted dictionaries are also provided.  Currently only with @dfn{Key Sorted
 Order} (KSO, no sorting function can be specified, but a transform can be
 specified to apply on the key before comparison (e.g. @code{string.lower})).")
     (license license:expat)))
+
+(define-public python-pypeg2
+  (package
+    (name "python-pypeg2")
+    (version "2.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyPEG2" version))
+       (sha256
+        (base32
+         "0v8ziaam2r637v94ra4dbjw6jzxz99gs5x4i585kgag1v204yb9b"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-lxml" ,python-lxml)))
+    (arguments
+     ;;https://bitbucket.org/fdik/pypeg/issues/36/test-failures-on-py35
+     '(#:tests? #f))
+    (home-page "https://fdik.org/pyPEG/")
+    (synopsis "Parsering Expression Grammars in Python")
+    (description "PyPEG is an intrinsic parser interpreter framework for
+Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
+parse many formal languages.")
+    (license license:gpl2)))
