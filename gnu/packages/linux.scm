@@ -2908,6 +2908,7 @@ from userspace.")
                (base32
                 "180y5y09h30ryf2vim8j30a2npwz1iv9ly5yjmh3wjdkwh2jrdyp"))
               (modules '((guix build utils)))
+              (patches (search-patches "ntfs-3g-CVE-2017-0358.patch"))
               (snippet
                ;; Install under $prefix.
                '(substitute* '("src/Makefile.in" "ntfsprogs/Makefile.in")
