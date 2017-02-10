@@ -96,7 +96,7 @@
 (define-public virglrenderer
   (package
     (name "virglrenderer")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -104,7 +104,7 @@
                 "virglrenderer-" version ".tar.bz2"))
               (sha256
                (base32
-                "1dj0j8nbyr7nrpds4dqlp43ji8ixjyqhgw6ywlz1r9dn6cs5m5d1"))))
+                "06kf0q4l52gzx5p63l8850hff8pmhp7xv1hk8zgx2apbw18y6jd5"))))
     (build-system gnu-build-system)
     (inputs
       `(("libepoxy" ,libepoxy)
