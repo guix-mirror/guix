@@ -887,6 +887,9 @@ inspired by the SCSH regular expression system.")
 Guile's foreign function interface.")
     (license gpl3+)))
 
+(define-public guile2.2-gdbm-ffi
+  (package-for-guile-2.2 guile-gdbm-ffi))
+
 (define-public guile-sqlite3
   (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
     (package
