@@ -459,6 +459,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
   %D%/tests/mail.scm				\
+  %D%/tests/messaging.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/web.scm
 
