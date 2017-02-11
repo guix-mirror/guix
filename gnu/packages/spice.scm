@@ -208,7 +208,11 @@ which allows users to view a desktop computing environment.")
                 "spice-" version ".tar.bz2"))
               (sha256
                (base32
-                "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))))
+                "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))
+              (patches
+               (search-patches "spice-CVE-2016-9577.patch"
+                               "spice-CVE-2016-9578-1.patch"
+                               "spice-CVE-2016-9578-2.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("openssl" ,openssl)
