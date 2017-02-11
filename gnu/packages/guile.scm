@@ -846,10 +846,22 @@ inspired by the SCSH regular expression system.")
        #:builder
        (begin
          (use-modules (guix build utils)
-                      (system base compile))
+                      (ice-9 rdelim)
+                      (ice-9 popen))
+
+         ;; Avoid warnings we can safely ignore
+         (setenv "GUILE_AUTO_COMPILE" "0")
 
          (let* ((out (assoc-ref %outputs "out"))
-                (module-dir (string-append out "/share/guile/site/2.0"))
+                (effective-version
+                 (read-line
+                  (open-pipe* OPEN_READ
+                              (string-append
+                               (assoc-ref %build-inputs "guile")
+                               "/bin/guile")
+                              "-c" "(display (effective-version))")))
+                (module-dir (string-append out "/share/guile/site/"
+                                           effective-version))
                 (source (assoc-ref %build-inputs "source"))
                 (doc (string-append out "/share/doc"))
                 (guild (string-append (assoc-ref %build-inputs "guile")
@@ -857,7 +869,10 @@ inspired by the SCSH regular expression system.")
                 (gdbm.scm-dest
                  (string-append module-dir "/gdbm.scm"))
                 (gdbm.go-dest
-                 (string-append module-dir "/gdbm.go")))
+                 (string-append module-dir "/gdbm.go"))
+                (compile-file
+                 (lambda (in-file out-file)
+                   (system* guild "compile" "-o" out-file in-file))))
            ;; Make installation directories.
            (mkdir-p module-dir)
            (mkdir-p doc)
@@ -875,8 +890,7 @@ inspired by the SCSH regular expression system.")
                       (assoc-ref %build-inputs "gdbm"))))
 
            ;; compile to the destination
-           (compile-file gdbm.scm-dest
-                         #:output-file gdbm.go-dest)))))
+           (compile-file gdbm.scm-dest gdbm.go-dest)))))
     (inputs
      `(("guile" ,guile-2.0)))
     (propagated-inputs
