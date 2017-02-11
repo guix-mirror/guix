@@ -141,15 +141,15 @@ which allows users to view a desktop computing environment.")
 (define-public spice-gtk
   (package
     (name "spice-gtk")
-    (version "0.32")
+    (version "0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                "http://spice-space.org/download/gtk/"
+                "https://spice-space.org/download/gtk/"
                 "spice-gtk-" version ".tar.bz2"))
               (sha256
                (base32
-                "00pf94xh2xf0h1g13lnavxrysd0d0x22l5jl108cvq1mjc4z8j2c"))))
+                "0fdgx9k4vgmasp8i2n0swrkapq8f212igcg7wsgvr3mbhsvk7bvx"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
@@ -194,7 +194,7 @@ which allows users to view a desktop computing environment.")
               #t)))))
     (synopsis "Gtk client and libraries for SPICE remote desktop servers")
     (description "Gtk client and libraries for SPICE remote desktop servers.")
-    (home-page "http://www.spice-space.org")
+    (home-page "https://www.spice-space.org")
     (license (list license:lgpl2.1+ license:lgpl2.0+))))
 
 (define-public spice
