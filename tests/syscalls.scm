@@ -447,7 +447,8 @@
      (every (lambda (entry)
               (match (utmpx-user entry)
                 ((? string?)
-                 (> (utmpx-pid entry) 0))
+                 (or (eqv? (login-type BOOT_TIME) (utmpx-login-type entry))
+                     (> (utmpx-pid entry) 0)))
                 (#f                               ;might be DEAD_PROCESS
                  #t)))
             entries))))
