@@ -8165,4 +8165,33 @@ Rust syntax.  It is intended to be useful for two different purposes:
 files in Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-hslogger
+  (package
+    (name "ghc-hslogger")
+    (version "1.2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hslogger-" version "/" "hslogger-"
+                           version ".tar.gz"))
+       (sha256 (base32
+                "0as5gvlh6pi2gflakp695qnlizyyp059dqrhvjl4gjxalja6xjnp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-directory", ghc-directory)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-process" ,ghc-process)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://software.complete.org/hslogger")
+    (synopsis "Logging framework for Haskell, similar to Python's logging module")
+    (description "Hslogger lets each log message have a priority and source be
+associated with it.  The programmer can then define global handlers that route
+or filter messages based on the priority and source.  It also has a syslog
+handler built in.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
