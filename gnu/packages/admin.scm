@@ -12,7 +12,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
-;;; Coypright © 2016, 2017 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Coypright © 2016 John Darrington <jmd@gnu.org>
 ;;;
@@ -283,27 +283,27 @@ client and server, a telnet client and server, and an rsh client and server.")
     (arguments
      '(;; Assume System V `setpgrp (void)', which is the default on GNU
        ;; variants (`AC_FUNC_SETPGRP' is not cross-compilation capable.)
-       #:configure-flags '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
+       #:configure-flags
+       '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
 
-       #:phases (alist-cons-before
-                 'build 'set-nscd-file-name
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Use the right file name for nscd.
-                   (let ((libc (assoc-ref inputs "libc")))
-                     (substitute* "lib/nscd.c"
-                       (("/usr/sbin/nscd")
-                        (string-append libc "/sbin/nscd")))))
-                 (alist-cons-after
-                  'install 'remove-groups
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Remove `groups', which is already provided by Coreutils.
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bin (string-append out "/bin"))
-                           (man (string-append out "/share/man")))
-                      (delete-file (string-append bin "/groups"))
-                      (for-each delete-file (find-files man "^groups\\."))
-                      #t))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-nscd-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Use the right file name for nscd.
+             (let ((libc (assoc-ref inputs "libc")))
+               (substitute* "lib/nscd.c"
+                 (("/usr/sbin/nscd")
+                  (string-append libc "/sbin/nscd"))))))
+         (add-after 'install 'remove-groups
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Remove `groups', which is already provided by Coreutils.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man")))
+               (delete-file (string-append bin "/groups"))
+               (for-each delete-file (find-files man "^groups\\."))
+               #t))))))
 
     (inputs (if (string-suffix? "-linux"
                                 (or (%current-target-system)
