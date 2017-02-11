@@ -55,6 +55,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
@@ -1578,5 +1579,43 @@ library for GNU Guile based on the actor model.
 
 Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
     (license license:lgpl3+)))
+
+(define-public guile-git
+  (let ((revision "0")
+        (commit "969514aa7224217bc3c1a4c5312a9469ac5f13d5"))
+    (package
+      (name "guile-git")
+      (version (string-append "0.0-" revision "." (string-take commit 7)))
+      (home-page "https://gitlab.com/amirouche/guile-git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "079l8y6pjkmahb4k6dfqh3hk34pg540rrl29aixyvv86w9bdfjil"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))
+
+         ;; Test suite is not parallel-safe: the tests open same-named repos.
+         #:parallel-tests? #f))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.0)
+         ("libgit2" ,libgit2)))
+      (propagated-inputs
+       `(("guile-bytestructures" ,guile-bytestructures)))
+      (synopsis "Guile bindings for libgit2")
+      (description
+       "This package provides Guile bindings to libgit2, a library to
+manipulate repositories of the Git version control system.")
+      (license license:gpl3+))))
 
 ;;; guile.scm ends here
