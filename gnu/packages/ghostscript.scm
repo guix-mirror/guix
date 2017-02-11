@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,14 +40,14 @@
 (define-public lcms
   (package
    (name "lcms")
-   (version "2.6")
+   (version "2.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
             (patches (search-patches "lcms-fix-out-of-bounds-read.patch"))
             (sha256 (base32
-                     "1c8lgq8gfs3nyplvbx9k8wzfj6r2bqi3f611vb1m8z3476454wji"))))
+                     "08pvl289g0mbznzx5l6ibhaldsgx41kwvdn2c974ga9fkli2pl36"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg-8" ,libjpeg-8)
              ("libtiff" ,libtiff)
