@@ -33,7 +33,6 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
@@ -107,7 +106,6 @@
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
        ("libffi" ,libffi)
-       ("libedit" ,libedit)
        ("ghc-testsuite"
         ,(origin
            (method url-fetch)
@@ -286,7 +284,6 @@ interactive environment for the functional language Haskell.")
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
        ("libffi" ,libffi)
-       ("libedit" ,libedit)
        ("ghc-testsuite"
         ,(origin
            (method url-fetch)
