@@ -45,7 +45,7 @@
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
-            (patches (search-patches "lcms-fix-out-of-bounds-read.patch"))
+            (patches (search-patches "lcms-CVE-2016-10165.patch"))
             (sha256 (base32
                      "08pvl289g0mbznzx5l6ibhaldsgx41kwvdn2c974ga9fkli2pl36"))))
    (build-system gnu-build-system)

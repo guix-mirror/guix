@@ -9,6 +9,7 @@
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+# Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -656,7 +657,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/laby-make-install.patch			\
-  %D%/packages/patches/lcms-fix-out-of-bounds-read.patch	\
+  %D%/packages/patches/lcms-CVE-2016-10165.patch		\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/ldc-1.1.0-disable-dmd-tests.patch	\
   %D%/packages/patches/ldc-1.1.0-disable-phobos-tests.patch	\
