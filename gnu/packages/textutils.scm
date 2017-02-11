@@ -109,7 +109,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
@@ -118,7 +118,7 @@ libenca and several charset conversion libraries and tools.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "140vib1m6n5kwzkw1n9fbsi5gl6xymbd7yndwqx1sj15aakak776"))))
+        (base32 "0q1jhdkk4f9b0zb8s2ql3sba3br5nvjsmbsaybmgj064k9hwbk15"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
