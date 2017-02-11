@@ -121,21 +121,21 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.12.11")
+    (version "0.12.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                "http://www.spice-space.org/download/releases/"
+                "https://www.spice-space.org/download/releases/"
                 "spice-protocol-" version ".tar.bz2"))
               (sha256
                (base32
-                "0c33kg3vdz3nnl2wjfbgmszz5hbjbvsw6map35dj9hxnpwwf9fi2"))))
+                "00wx81f2ml62g3maw63jq9w217zym921rdi38h7lpm5m8ckxraqp"))))
     (build-system gnu-build-system)
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
 Environments) is a remote-display system built for virtual environments
 which allows users to view a desktop computing environment.")
-    (home-page "http://www.spice-space.org")
+    (home-page "https://www.spice-space.org")
     (license (list license:bsd-3 license:lgpl2.1+))))
 
 (define-public spice-gtk
