@@ -3967,6 +3967,29 @@ project.")
 written in C.  It is developed as part of the NetSurf project.")
     (license l:expat)))
 
+(define-public libnsgif
+  (package
+    (name "libnsgif")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "1ldsyscsgqwc8g5481h9nqmwirpp1pp57hmss450hr0mqra26g0k"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libnsgif/")
+    (synopsis "Decoding library for GIF files")
+    (description
+     "Libnsgif is a decoding library for the GIF image file format, written in
+C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
