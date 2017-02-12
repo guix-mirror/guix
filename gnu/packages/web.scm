@@ -51,6 +51,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
@@ -3820,6 +3821,32 @@ C.  It is developed as part of the NetSurf project.")
      "Hubbub is an HTML5 compliant parsing library, written in C, which can
 parse both valid and invalid web content.  It is developed as part of the
 NetSurf project.")
+    (license l:expat)))
+
+(define-public libwapcaplet
+  (package
+    (name "libwapcaplet")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0cs1dd2afjgc3wf5gqg434hv6jdabrp9qvlpl4dp53nhkyfywna3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("check" ,check)))               ;for tests
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libwapcaplet/")
+    (synopsis "String internment library")
+    (description
+     "LibWapcaplet provides a reference counted string internment system
+designed to store small strings and allow rapid comparison of them.  It is
+developed as part of the Netsurf project.")
     (license l:expat)))
 
 (define-public netsurf
