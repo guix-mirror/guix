@@ -3944,6 +3944,29 @@ which can be rendered easily, as defined in
 project.")
     (license l:expat)))
 
+(define-public libnsbmp
+  (package
+    (name "libnsbmp")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0y4a0gn4l6lq4z9183wix0mdsgalqyw24k19k8jr8sz4h3lb7jrb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libnsbmp/")
+    (synopsis "Decoding library for BMP and ICO files")
+    (description
+     "Libnsbmp is a decoding library for BMP and ICO image file formats,
+written in C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
