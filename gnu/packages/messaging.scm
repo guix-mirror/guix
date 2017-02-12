@@ -1140,7 +1140,7 @@ protocol allows.")
 (define-public mcabber
   (package
     (name "mcabber")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
@@ -1148,7 +1148,7 @@ protocol allows.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "02nfn5r7cjpnacym95l6bvczii232v3x2gi79gfa9syc7w0brdk3"))))
+         "0ixdzk5b3s31a4bdfqgqrsiq7vbgdzhqr49p9pz9cq9bgn0h1wm0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--enable-otr"
