@@ -3849,6 +3849,34 @@ designed to store small strings and allow rapid comparison of them.  It is
 developed as part of the Netsurf project.")
     (license l:expat)))
 
+(define-public libcss
+  (package
+    (name "libcss")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0qp4p1q1dwgdra4pkrzd081zjzisxkgwx650ijx323j8bj725daf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)))
+    (propagated-inputs                  ;needed for libcss.pc
+     `(("libparserutils" ,libparserutils)
+       ("libwapcaplet" ,libwapcaplet)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libcss/")
+    (synopsis "CSS parser and selection library")
+    (description
+     "LibCSS is a CSS (Cascading Style Sheet) parser and selection engine,
+written in C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
