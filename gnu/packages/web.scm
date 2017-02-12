@@ -3791,6 +3791,37 @@ libraries.")
 C.  It is developed as part of the NetSurf project.")
     (license l:expat)))
 
+(define-public hubbub
+  (package
+    (name "hubbub")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           "lib" name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "101781iw32p47386fxqr01nrkywi12w17ajh02k2vlga4z8zyv86"))
+       (patches (search-patches "hubbub-sort-entities.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("doxygen" ,doxygen)
+       ("json-c" ,json-c)
+       ("perl" ,perl)))
+    (propagated-inputs
+     `(("libparserutils" ,libparserutils))) ;for libhubbub.pc
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/hubbub/")
+    (synopsis "HTML5 compliant parsing library")
+    (description
+     "Hubbub is an HTML5 compliant parsing library, written in C, which can
+parse both valid and invalid web content.  It is developed as part of the
+NetSurf project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
