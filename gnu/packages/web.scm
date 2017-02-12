@@ -3877,6 +3877,42 @@ developed as part of the Netsurf project.")
 written in C.  It is developed as part of the NetSurf project.")
     (license l:expat)))
 
+(define-public libdom
+  (package
+    (name "libdom")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0qy7c8b229aiamyqqjgp6m1jlzc3fpl8s9dk33kxzkj70na8l7hv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)                   ;for test harness
+       ("perl-libxml" ,perl-libxml)
+       ("perl-switch" ,perl-switch)
+       ("perl-xml-xpath" ,perl-xml-xpath)))
+    (inputs
+     `(("libparserutils" ,libparserutils)
+       ("libwapcaplet" ,libwapcaplet)))
+    (propagated-inputs
+     `(("expat" ,expat)                 ;needed for headers and linking
+       ("hubbub" ,hubbub)))             ;for libdom.pc
+    (arguments
+     `(#:tests? #f                 ;TODO: re-enable. tests take a looong time.
+       ,@netsurf-buildsystem-arguments))
+    (home-page "http://www.netsurf-browser.org/projects/libdom/")
+    (synopsis "Implementation of the W3C DOM")
+    (description
+     "LibDOM is an implementation of the W3C DOM, written in C.  It is
+developed as part of the NetSurf project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
