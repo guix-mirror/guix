@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -3726,6 +3726,70 @@ playback of HTTP request/response traces.")
 can easily be invoked on a single file.  Your partner can access the file with
 tools they trust (e.g. wget).")
     (license l:gpl2+)))
+
+(define netsurf-buildsystem
+  (package
+    (name "netsurf-buildsystem")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           "buildsystem-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wdgvasrjik1dgvvpqbppbpyfzkqd1v45x3g9rq7p67n773azinv"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build))))
+    (home-page "http://www.netsurf-browser.org")
+    (synopsis "Build system for the Netsurf project")
+    (description
+     "This package provides the shared build system for Netsurf project
+libraries.")
+    (license l:expat)))
+
+(define netsurf-buildsystem-arguments
+  `(#:make-flags `("COMPONENT_TYPE=lib-shared"
+                   "CC=gcc" "BUILD_CC=gcc"
+                   ,(string-append "PREFIX=" %output)
+                   ,(string-append "NSSHARED="
+                                   (assoc-ref %build-inputs
+                                              "netsurf-buildsystem")
+                                   "/share/netsurf-buildsystem"))
+    #:test-target "test"
+    #:phases (modify-phases %standard-phases
+               (delete 'configure))))
+
+(define-public libparserutils
+  (package
+    (name "libparserutils")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "01gzlsabgl6x0icd8758d9jqs8rrf9574bdkjainn04w3fs3znf5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)))                 ;for test harness
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libparserutils/")
+    (synopsis "Parser building library")
+    (description
+     "LibParserUtils is a library for building efficient parsers, written in
+C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
 
 (define-public netsurf
   (package
