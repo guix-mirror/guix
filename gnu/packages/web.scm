@@ -4071,32 +4071,41 @@ w3c webidl files and a binding configuration file.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/"
-                           "netsurf/releases/source-full/netsurf-all-"
-                           version ".tar.gz"))
+       (uri (string-append "http://download.netsurf-browser.org/netsurf/"
+                           "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1cgq9n4nvkpih93sfpdadv3666ycsx9bnp8kwalbs8h232mr7ppx"))))
+         "174sjx0566agckwmlj4w2cip5qbxdiafyhlp185a1qprxx84pbjr"))
+       (patches (search-patches "netsurf-system-utf8proc.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("nsgenbind" ,nsgenbind)
        ("perl" ,perl)
        ("perl-html-parser" ,perl-html-parser)
-       ("flex" ,flex)
-       ("bison" ,bison)))
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("gperf" ,gperf)
-       ("curl" ,curl)
+     `(("curl" ,curl)
+       ("gtk+" ,gtk+-2)
        ("openssl" ,openssl)
+       ("utf8proc" ,utf8proc)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg)
-       ("expat" ,expat)))
+       ("libcss" ,libcss)
+       ("libdom" ,libdom)
+       ("libnsbmp" ,libnsbmp)
+       ("libnsgif" ,libnsgif)
+       ("libnspsl" ,libnspsl)
+       ("libnsutils" ,libnsutils)
+       ("libsvgtiny" ,libsvgtiny)))
     (arguments
      `(#:make-flags `("CC=gcc" "BUILD_CC=gcc"
-                      ,(string-append "PREFIX=" %output))
-       #:parallel-build? #f         ;parallel builds not supported
-       #:tests? #f                  ;no way to easily run from release tarball
+                      ,(string-append "PREFIX=" %output)
+                      ,(string-append "NSSHARED="
+                                      (assoc-ref %build-inputs
+                                                 "netsurf-buildsystem")
+                                      "/share/netsurf-buildsystem"))
+       #:tests? #f
        #:modules ((ice-9 rdelim)
                   (ice-9 match)
                   (srfi srfi-1)
@@ -4104,18 +4113,11 @@ w3c webidl files and a binding configuration file.")
                   ,@%glib-or-gtk-build-system-modules)
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (call-with-output-file "netsurf/Makefile.config"
-               (lambda (port)
-                 (format port "~
-                         NETSURF_GTK_RESOURCES := $(PREFIX)/share/netsurf/~@
-                         ")))
-             #t))
+         (delete 'configure)
          (add-after 'build 'adjust-welcome
            (lambda _
              ;; First, fix some unended tags and simple substitutions
-             (substitute* "netsurf/frontends/gtk/res/welcome.html"
+             (substitute* "frontends/gtk/res/welcome.html"
                (("<(img|input)([^>]*)>" _ tag contents)
                 (string-append "<" tag contents " />"))
                (("Licence") "License") ;prefer GNU spelling
@@ -4126,7 +4128,7 @@ w3c webidl files and a binding configuration file.")
                (("Google Search") "DuckDuckGo Search")
                (("name=\"btnG\"") ""))
              ;; Remove default links so it doesn't seem we're endorsing them
-             (with-atomic-file-replacement "netsurf/frontends/gtk/res/welcome.html"
+             (with-atomic-file-replacement "frontends/gtk/res/welcome.html"
                (lambda (in out)
                  ;; Leave the DOCTYPE header as is
                  (display (read-line in 'concat) out)
@@ -4148,13 +4150,13 @@ w3c webidl files and a binding configuration file.")
                     (desktop (string-append out "/share/applications/"
                                             "netsurf.desktop")))
                (mkdir-p (dirname desktop))
-               (copy-file "netsurf/frontends/gtk/res/netsurf-gtk.desktop"
+               (copy-file "frontends/gtk/res/netsurf-gtk.desktop"
                           desktop)
                (substitute* desktop
                  (("netsurf-gtk") (string-append out "/bin/netsurf"))
                  (("netsurf.png") (string-append out "/share/netsurf/"
                                                  "netsurf.xpm")))
-               (install-file "netsurf/Docs/netsurf-gtk.1"
+               (install-file "Docs/netsurf-gtk.1"
                              (string-append out "/share/man/man1/"))
                #t))))))
     (home-page "http://www.netsurf-browser.org")
