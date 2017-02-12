@@ -3730,26 +3730,16 @@ tools they trust (e.g. wget).")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.5")
+    (version "3.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download.netsurf-browser.org/"
+       (uri (string-append "http://download.netsurf-browser.org/"
                            "netsurf/releases/source-full/netsurf-all-"
                            version ".tar.gz"))
        (sha256
         (base32
-         "1vdldzcv42wykajmw8vbql0f1yd44gbx30kywfrrh2x3064ly609"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "Makefile"
-             ;; Do not clobber PKG_CONFIG_PATH from the environment
-             (("PKG_CONFIG_PATH = \\$")
-              "PKG_CONFIG_PATH := $(PKG_CONFIG_PATH):$")
-             ;; Honor make variables
-             (("shell cc") "shell $(CC)"))))
-       (patches (search-patches "netsurf-about.patch"))))
+         "1cgq9n4nvkpih93sfpdadv3666ycsx9bnp8kwalbs8h232mr7ppx"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -3788,7 +3778,7 @@ tools they trust (e.g. wget).")
          (add-after 'build 'adjust-welcome
            (lambda _
              ;; First, fix some unended tags and simple substitutions
-             (substitute* "netsurf/gtk/res/welcome.html"
+             (substitute* "netsurf/frontends/gtk/res/welcome.html"
                (("<(img|input)([^>]*)>" _ tag contents)
                 (string-append "<" tag contents " />"))
                (("Licence") "License") ;prefer GNU spelling
@@ -3799,7 +3789,7 @@ tools they trust (e.g. wget).")
                (("Google Search") "DuckDuckGo Search")
                (("name=\"btnG\"") ""))
              ;; Remove default links so it doesn't seem we're endorsing them
-             (with-atomic-file-replacement "netsurf/gtk/res/welcome.html"
+             (with-atomic-file-replacement "netsurf/frontends/gtk/res/welcome.html"
                (lambda (in out)
                  ;; Leave the DOCTYPE header as is
                  (display (read-line in 'concat) out)
@@ -3821,7 +3811,7 @@ tools they trust (e.g. wget).")
                     (desktop (string-append out "/share/applications/"
                                             "netsurf.desktop")))
                (mkdir-p (dirname desktop))
-               (copy-file "netsurf/gtk/res/netsurf-gtk.desktop"
+               (copy-file "netsurf/frontends/gtk/res/netsurf-gtk.desktop"
                           desktop)
                (substitute* desktop
                  (("netsurf-gtk") (string-append out "/bin/netsurf"))
@@ -3830,7 +3820,7 @@ tools they trust (e.g. wget).")
                (install-file "netsurf/Docs/netsurf-gtk.1"
                              (string-append out "/share/man/man1/"))
                #t))))))
-    (home-page "https://www.netsurf-browser.org")
+    (home-page "http://www.netsurf-browser.org")
     (synopsis "Web browser")
     (description
      "NetSurf is a lightweight web browser that has its own layout and
