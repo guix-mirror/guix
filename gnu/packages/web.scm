@@ -3913,6 +3913,37 @@ written in C.  It is developed as part of the NetSurf project.")
 developed as part of the NetSurf project.")
     (license l:expat)))
 
+(define-public libsvgtiny
+  (package
+    (name "libsvgtiny")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0w5hab9x1saz4lq2s9w47x1r64fbzcsl5bvdjph9c9dq68qv3f8a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("gperf" ,gperf)))
+    (inputs
+     `(("libwapcaplet" ,libwapcaplet)))
+    (propagated-inputs
+     `(("libdom" ,libdom)))             ;for libsvgtiny.pc
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libsvgtiny/")
+    (synopsis "Library for parsing SVG files")
+    (description
+     "Libsvgtiny takes some SVG as input and returns a list of paths and texts
+which can be rendered easily, as defined in
+@url{http://www.w3.org/TR/SVGMobile/}.  It is developed as part of the NetSurf
+project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
