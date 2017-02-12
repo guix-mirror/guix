@@ -5746,6 +5746,26 @@ access the DOM object, create and access Javascript, and generate SMIL
 animation content.")
     (license (package-license perl))))
 
+(define-public perl-switch
+  (package
+    (name "perl-switch")
+    (version "2.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/Switch-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0xbdjdgzfj9zwa4j3ipr8bfk7bcici4hk89hq5d27rhg2isljd9i"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Switch")
+    (synopsis "Switch statement for Perl")
+    (description "Switch is a Perl module which implements a generalized case
+mechanism.  The module augments the standard Perl syntax with two new
+statements: @code{switch} and @code{case}.")
+    (license (package-license perl))))
+
 (define-public perl-sys-cpu
   (package
     (name "perl-sys-cpu")
