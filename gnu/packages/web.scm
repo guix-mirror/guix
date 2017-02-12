@@ -3990,6 +3990,29 @@ written in C.  It is developed as part of the NetSurf project.")
 C.  It is developed as part of the NetSurf project.")
     (license l:expat)))
 
+(define-public libnsutils
+  (package
+    (name "libnsutils")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0wrxn4rcn7xrfnkmf60jafqn3n1kicgsdpnakd821q56bmqvzf0m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Utility library for NetSurf")
+    (description
+     "Libnsutils provides a small number of useful utility routines.  It is
+developed as part of the NetSurf project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
