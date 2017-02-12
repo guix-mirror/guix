@@ -870,7 +870,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-5552.patch			\
   %D%/packages/patches/qemu-CVE-2017-5578.patch			\
   %D%/packages/patches/qemu-CVE-2017-5579.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5667.patch			\
   %D%/packages/patches/qemu-CVE-2017-5856.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5898.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5931.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
