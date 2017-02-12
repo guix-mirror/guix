@@ -4036,6 +4036,34 @@ developed as part of the NetSurf project.")
 Public Suffix List.  It is developed as part of the NetSurf project.")
     (license l:expat)))
 
+(define-public nsgenbind
+  (package
+    (name "nsgenbind")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "078gpbfcs96bgcba0ygha0ph9jzqr6ry5s3a8p6sl61px2908s66"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (arguments
+     (substitute-keyword-arguments netsurf-buildsystem-arguments
+       ((#:make-flags flags)
+        `(delete "COMPONENT_TYPE=lib-shared" ,flags))))
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Generate JavaScript to DOM bindings")
+    (description
+     "@code{nsgenbind} is a tool to generate JavaScript to DOM bindings from
+w3c webidl files and a binding configuration file.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
