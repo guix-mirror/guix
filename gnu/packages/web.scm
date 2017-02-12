@@ -4013,6 +4013,29 @@ C.  It is developed as part of the NetSurf project.")
 developed as part of the NetSurf project.")
     (license l:expat)))
 
+(define-public libnspsl
+  (package
+    (name "libnspsl")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0x3frscrp9bzxlm9ama5laxjr3zi8cg20r8lhsamw4x4zyyk145y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Library to generate a static Public Suffix List")
+    (description
+     "Libnspsl is a library to generate a static code representation of the
+Public Suffix List.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
 (define-public netsurf
   (package
     (name "netsurf")
