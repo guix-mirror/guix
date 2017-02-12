@@ -341,6 +341,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
   %D%/packages/shellutils.scm			\
+  %D%/packages/simh.scm				\
   %D%/packages/skarnet.scm			\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
