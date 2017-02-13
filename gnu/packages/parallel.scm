@@ -45,7 +45,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20161222")
+    (version "20170122")
     (source
      (origin
       (method url-fetch)
@@ -53,7 +53,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1chgr3csyc7hbq2wq4jnwnbsr3ix8rzsk2lf4vdnvkjpd6dvw517"))))
+        "19maf889vj1c4zakqwap58f44hgypyb5mzzwfsliir9gvvcq6zj1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -92,7 +92,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "15.08.7.1")
+   (version "16.05.9.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -101,7 +101,7 @@ and they are executed on lists of files, hosts, users or other items.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "1rmi35l4img00dr4vic8cv8s7b6n1yx1mkq2s7kjf5hvqdh6s2ki"))
+              "1zx5y2lyjknnca4aw7cbawn00mjhsqzy3h35w7s757cykfjqr8gv"))
             (patches (search-patches
                       "slurm-configure-remove-nonfree-contribs.patch"))
             (modules '((guix build utils)))

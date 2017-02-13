@@ -1,10 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
@@ -12,11 +12,14 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +49,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -106,7 +110,18 @@
                                    (find-files "." "loaddefs\\.el$")
                                    ;; This is the only "autoloads" file that
                                    ;; does not have "*loaddefs.el" name.
-                                   '("eshell/esh-groups.el")))))))
+                                   '("eshell/esh-groups.el")))
+
+                 ;; Make sure Tramp looks for binaries in the right places on
+                 ;; remote GuixSD machines, where 'getconf PATH' returns
+                 ;; something bogus.
+                 (substitute* "net/tramp-sh.el"
+                   ;; Patch the line after "(defcustom tramp-remote-path".
+                   (("\\(tramp-default-remote-path")
+                    (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
+                            "~/.guix-profile/bin" "~/.guix-profile/sbin"
+                            "/run/current-system/profile/bin"
+                            "/run/current-system/profile/sbin")))))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -398,7 +413,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.9")
+    (version "2.5.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -407,7 +422,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0znfznyqr360ryi7za9szbz1l5236v2cig25s4k7kkw0w8828xzh"))))
+                "0lsxa1hghybkzvqhqvvym3hxbyp9vjcnnpb9j800z0vyhbnlka67"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -423,7 +438,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.10.0")
+    (version "2.10.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -431,7 +446,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1w74vy46z922kfs7gjkrng7wjpi481calpasqmjzpn3hqvgsd5d1"))))
+               "1a3gsarl0zrk1dydqn93kx7pnwm7pb7av7g17pj5m7b7kc66k7jv"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -967,6 +982,7 @@ provides an optional IDE-like error list.")
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
               ("mp3info" ,mp3info)))
+    (properties '((upstream-name . "emms")))
     (synopsis "Emacs Multimedia System")
     (description
      "EMMS is the Emacs Multimedia System.  It is a small front-end which
@@ -1066,6 +1082,44 @@ like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-ag
+  (package
+    (name "emacs-ag")
+    (version "0.47")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Wilfred/ag.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rlmp6wnyhqfg86dbz17r914msp58favn4kd4yrdwyia265a4lar"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (emacs-substitute-variables "ag.el"
+               ("ag-executable"
+                (string-append (assoc-ref inputs "the-silver-searcher")
+                               "/bin/ag")))
+             #t)))))
+    (inputs
+     `(("the-silver-searcher" ,the-silver-searcher)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("s" ,emacs-s)))
+    (home-page "https://github.com/Wilfred/ag.el")
+    (synopsis "Front-end for ag (the-silver-searcher) for Emacs")
+    (description "This package provides the ability to use the silver
+searcher, a code searching tool, sometimes abbreviated to @code{ag}.  Features
+include version control system awareness, use of Perl compatible regular
+expressions, editing the search results directly and searching file names
+rather than the contents of files.")
+    (license license:gpl3+)))
+
 (define-public emacs-async
   (package
     (name "emacs-async")
@@ -1090,7 +1144,7 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "11.88.6")
+    (version "11.90.0")
     (source
      (origin
        (method url-fetch)
@@ -1100,7 +1154,7 @@ as a library for other Emacs packages.")
              ".tar"))
        (sha256
         (base32
-         "1pmki8hdjjikxlvip3pzi350bln3gcimr27yjf0xfwjvnp5hh9nc"))))
+         "04nsndwcf0dimgc2p1yzzrymc36amzdnjg0158nxplmjkzdp28gy"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -1391,6 +1445,29 @@ allows easily move between them.")
 strings.")
     (license license:gpl3+)))
 
+(define-public emacs-sx
+  (package
+    (name "emacs-sx")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/vermiculus/sx.el/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("let-alist" ,let-alist)))
+    (home-page "https://github.com/vermiculus/sx.el/")
+    (synopsis "Emacs StackExchange client")
+    (description
+     "Emacs StackExchange client.  Ask and answer questions on
+Stack Overflow, Super User, and other StackExchange sites.")
+    (license license:gpl3+)))
+
 (define-public emacs-f
   (package
     (name "emacs-f")
@@ -1438,6 +1515,26 @@ can be used to move between and perform actions on these hunks.
 
 Git, Mercurial, Subversion and Bazaar are supported, and many parts of the
 display and behaviour is easily customisable.")
+    (license license:gpl3+)))
+
+(define-public emacs-git-timemachine
+  (package
+    (name "emacs-git-timemachine")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pidu/git-timemachine/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l4g0r69wfrnjsywv03v4bpdd53byg6zdx6mzabfxyymss3kvisa"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/pidu/git-timemachine")
+    (synopsis "Step through historic versions of Git-controlled files")
+    (description "This package enables you to step through historic versions
+of files under Git version control from within Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-el-mock
@@ -1713,6 +1810,27 @@ a web browser.  Expressions are sent on-the-fly from an editing buffer to be
 evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
+
+(define-public emacs-stripe-buffer
+  (package
+    (name "emacs-stripe-buffer")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sabof/stripe-buffer/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p515dq7raly5hw94kiwm3vzsfih0d8af622q4ipvvljsm98aiik"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sabof/stripe-buffer/")
+    (synopsis "Add stripes to list buffers")
+    (description
+     "This Emacs package adds faces to add stripes to list buffers and org
+tables.")
+    (license license:gpl2+)))
 
 (define-public emacs-rich-minority
   (package
@@ -2703,14 +2821,14 @@ be removed from the front.  This type of data structure is sometimes called an
 (define-public emacs-spinner
   (package
     (name "emacs-spinner")
-    (version "1.7.1")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/spinner-"
                                   version ".el"))
               (sha256
                (base32
-                "1fmwzdih0kbyvs8bn38mpm4sbs2mikqy2vdykfy9g20wpa8vb681"))))
+                "19kp1mmndbmw11sgvv2ggfjl4pyf5zrsbh3871f0965pw9z8vahd"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/spinner.el")
     (synopsis "Emacs mode-line spinner for operations in progress")
@@ -2722,14 +2840,14 @@ ongoing operations.")
 (define-public emacs-seq
   (package
     (name "emacs-seq")
-    (version "2.15")
+    (version "2.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/seq-"
                                   version ".tar"))
               (sha256
                (base32
-                "09wi1765bmn7i8fg6ajjfaxgs4ipc42d58zx2fdqpidrdg9c7q73"))))
+                "11hb7is6a4h1lscjcfrzh576j0g3m5yjydn16s6x5bxp5gsr6zha"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/seq.html")
     (synopsis "Sequence manipulation functions for Emacs")
@@ -3292,14 +3410,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20161224")
+    (version "20170124")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0b10bjypn0w5ja776f8sxl1qpvb61iyz1n3c74jx6fqwypv7dmgi"))))
+                "0mcnjwvily0xv1xl11dj18lg38llvrxja2j9mwn6vql8n5y1srxi"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -3541,3 +3659,134 @@ Streams are implemented as delayed evaluation of cons cells.")
       (description "This package provides expression based interactive search
 procedures for emacs-lisp-mode.")
       (license license:gpl3+))))
+
+(define-public emacs-ht
+  (package
+    (name "emacs-ht")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/Wilfred/ht.el/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lpba36kzxcc966fvsbrfpy8ah9gnvay0yk26gbyjil0rggrbqzj"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/Wilfred/ht.el")
+    (synopsis "Hash table library for Emacs")
+    (description
+     "This package simplifies the use of hash tables in elisp.  It also
+provides functions to convert hash tables from and to alists and plists.")
+    (license license:gpl3+)))
+
+(define-public emacs-log4e
+  (package
+    (name "emacs-log4e")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/aki2o/log4e/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nbdpbw353snda3v19l9hsm6gimppwnpxj18amm350bm81lyim2g"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-tests
+           ;; Guile builder complains about null characters in some
+           ;; strings of test files.  Remove "test" directory (it is not
+           ;; needed anyway).
+           (lambda _
+             (delete-file-recursively "test"))))))
+    (home-page "https://github.com/aki2o/log4e")
+    (synopsis "Logging framework for elisp")
+    (description
+     "This package provides a logging framework for elisp.  It allows
+you to deal with multiple log levels.")
+    (license license:gpl3+)))
+
+(define-public emacs-gntp
+  (package
+    (name "emacs-gntp")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tekai/gntp.el/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16c1dfkia9yhl206bdhjr3b8kfvqcqr38jl5lq8qsyrrzsnmghny"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tekai/gntp.el")
+    (synopsis "Growl Notification Protocol for Emacs")
+    (description
+     "This package implements the Growl Notification Protocol GNTP
+described at @uref{http://www.growlforwindows.com/gfw/help/gntp.aspx}.
+It is incomplete as it only lets you send but not receive
+notifications.")
+    (license license:bsd-3)))
+
+(define-public emacs-alert
+  (package
+    (name "emacs-alert")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwiegley/alert/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1693kck3k2iz5zhpmxwqyafxm68hr6gzs60lkxd3j1wlp2c9fwyr"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-gntp" ,emacs-gntp)
+       ("emacs-log4e" ,emacs-log4e)))
+    (home-page "https://github.com/jwiegley/alert")
+    (synopsis "Growl-style notification system for Emacs")
+    (description
+     "Alert is a Growl-workalike for Emacs which uses a common notification
+interface and multiple, selectable \"styles\", whose use is fully
+customizable by the user.")
+    (license license:gpl2+)))
+
+(define-public emacs-mu4e-alert
+  (package
+    (name "emacs-mu4e-alert")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/iqbalansari/mu4e-alert/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1m63vyb2v5r9swmqv56q80jca8172nk5vaxl7bcm5zbfs8zsvr4b"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-alert" ,emacs-alert)
+       ("emacs-s" ,emacs-s)
+       ("emacs-ht" ,emacs-ht)))
+    (home-page "https://github.com/iqbalansari/mu4e-alert")
+    (synopsis "Desktop notification for mu4e")
+    (description
+     "This package provides desktop notifications for mu4e.
+Additionally it can display the number of unread emails in the
+mode-line.")
+    (license license:gpl3+)))

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,9 +89,16 @@ package."
 (define (guix-package->pypi-name package)
   "Given a Python PACKAGE built from pypi.python.org, return the name of the
 package on PyPI."
-  (let ((source-url (and=> (package-source package) origin-uri)))
+  (define (url->pypi-name url)
     (hyphen-package-name->name+version
-     (basename (file-sans-extension source-url)))))
+     (basename (file-sans-extension url))))
+
+  (match (and=> (package-source package) origin-uri)
+    ((? string? url)
+     (url->pypi-name url))
+    ((lst ...)
+     (any url->pypi-name lst))
+    (#f #f)))
 
 (define (wheel-url->extracted-directory wheel-url)
   (match (string-split (basename wheel-url) #\-)
@@ -227,10 +234,8 @@ name/variable pairs describing the required inputs of this package."
   (sort
     (map (lambda (input)
            (list input (list 'unquote (string->symbol input))))
-         (append '("python-setuptools")
-                 ;; Argparse has been part of Python since 2.7.
-                 (remove (cut string=? "python-argparse" <>)
-                         (guess-requirements source-url wheel-url tarball))))
+         (remove (cut string=? "python-argparse" <>)
+                 (guess-requirements source-url wheel-url tarball)))
     (lambda args
       (match args
         (((a _ ...) (b _ ...))

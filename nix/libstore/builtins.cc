@@ -21,6 +21,7 @@
 #include <globals.hh>
 
 #include <unistd.h>
+#include <cstdlib>
 
 namespace nix {
 
@@ -40,6 +41,11 @@ static void builtinDownload(const Derivation &drv,
       {
 	"download", drvPath.c_str(), output.c_str(), NULL
       };
+
+    /* Tell the script what the store file name is, so that
+       'strip-store-file-name' (used for instance to determine the URL of
+       content-addressed mirrors) works correctly.  */
+    setenv("NIX_STORE", settings.nixStore.c_str(), 1);
 
     /* XXX: Hack our way to use the 'download' script from 'LIBEXECDIR/guix'
        or just 'LIBEXECDIR', depending on whether we're running uninstalled or

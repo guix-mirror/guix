@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,43 +191,30 @@ COCOMO model or user-provided parameters.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "0.32.0")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/ggreer/the_silver_searcher/archive/"
+                    "http://geoff.greer.fm/ag/releases/the_silver_searcher-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1k543cjpignwvy8avhchz8pkqrqcgcryps36ycy8mz2w5rbhicn5"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0v54himv65w294l0k4lhdyc6kvpgijn8b9g5356479fzy7hphjkg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (arguments
-     `(#:phases
-       ;; There is no configure yet, so let's create it, but let configure and
-       ;; make do the work in later phases.
-       (alist-cons-before 'configure 'autoconf
-                          (lambda _
-                            (substitute* "build.sh"
-                              (("./configure") "true")
-                              (("make -j4") "true"))
-                            (zero? (system* "sh" "build.sh")))
-                          %standard-phases)))
     (home-page "http://geoff.greer.fm/ag/")
     (synopsis "Fast code searching tool")
     (description
-     "The silver searcher, or 'ag', is tool for quickly searching through
-files, but compared to grep is much faster and respects files like .gitignore,
-.hgignore, etc.")
+     "The Silver Searcher (@command{ag}) is a tool for quickly searching large
+numbers of files.  It's intended primarily for source code repositories, and
+respects files like @file{.gitignore} and @file{.hgignore}.  It's also an order
+of magnitude faster than its inspiration, @command{ack}, and less specialised
+tools such as @command{grep}.")
     (license license:asl2.0)))
 
 (define-public trio

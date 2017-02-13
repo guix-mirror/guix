@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
@@ -53,7 +53,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -469,7 +469,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.3")
+    (version "2.2.4")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -478,7 +478,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0fsrvl6sp772g2q2j24h10h9lfda6q67x7wahjjm8849i2gciflp"))))
+         "049r5962yrajhhz9r4dsnx403dab50d6091y2mw298ymxqszp9s2"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)
@@ -879,15 +879,15 @@ sockets in Perl.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.11")
+    (version "4.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rofl0r/" name "/releases/"
                                   "download/v" version "/" name "-" version
-                                  ".tar.bz2"))
+                                  ".tar.xz"))
               (sha256
                (base32
-                "1dkncdzw852488gkh5zhn4b5i03qyj8rgh1wcvcva7yd12c19i6w"))))
+                "0kiss3ih6cwayzvqi5cx4kw4vh7r2kfxlbgk56v1f1066ncm8aj8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1060,3 +1060,62 @@ suddenly a lot of network traffic, you can fire up NetHogs and immediately see
 which PID is causing this.  This makes it easy to identify programs that have
 gone wild and are suddenly taking up your bandwidth.")
     (license license:gpl2+)))
+
+(define-public openvswitch
+  (package
+    (name "openvswitch")
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://openvswitch.org/releases/openvswitch-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "036gq741j9kqsjlp693nff838c9wjd1c56nswl9vyyd1lsmj0yrh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; FIXME: many tests fail with:
+       ;;    […]
+       ;;    test -e $OVS_RUNDIR/ovs-vswitchd.pid
+       ;;    ovs-appctl -t ovs-vswitchd exit
+       ;;    hard failure
+       #:tests? #f
+       #:configure-flags
+       '("--enable-shared"
+         "--localstatedir=/var"
+         "--with-dbdir=/var/lib/openvswitch")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda _
+             (zero? (system* "make"
+                             ;; Don't try to create directories under /var.
+                             "RUNDIR=/tmp"
+                             "PKIDIR=/tmp"
+                             "LOGDIR=/tmp"
+                             "DBDIR=/tmp"
+                             "install")))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ;; for testing
+       ("util-linux" ,util-linux)))
+    (propagated-inputs
+     `(("python-six" ,python2-six)))
+    (inputs
+     `(("libcap-ng" ,libcap-ng)
+       ("openssl" ,openssl)))
+    (synopsis "Virtual network switch")
+    (home-page "http://www.openvswitch.org/")
+    (description
+     "Open vSwitch is a multilayer virtual switch.  It is designed to enable
+massive network automation through programmatic extension, while still
+supporting standard management interfaces and protocols (e.g. NetFlow, sFlow,
+IPFIX, RSPAN, CLI, LACP, 802.1ag).")
+    (license                            ; see debian/copyright for detail
+     (list license:lgpl2.1              ; xenserver and utilities/bugtool
+           license:gpl2                 ; datapath
+           license:bsd-2 license:bsd-3
+           license:asl2.0))))           ; all other

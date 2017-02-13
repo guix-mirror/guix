@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,8 @@
             %namespaces
             run-container
             call-with-container
-            container-excursion))
+            container-excursion
+            container-excursion*))
 
 (define (user-namespace-supported?)
   "Return #t if user namespaces are supported on this system."
@@ -128,13 +130,19 @@ for the process."
               "/dev/fuse"))
 
   ;; Setup the container's /dev/console by bind mounting the pseudo-terminal
-  ;; associated with standard input.
-  (let ((in      (current-input-port))
-        (console (scope "/dev/console")))
-    (when (isatty? in)
+  ;; associated with standard input when there is one.
+  (let* ((in      (current-input-port))
+         (tty     (catch 'system-error
+                    (lambda ()
+                      ;; This call throws if IN does not correspond to a tty.
+                      ;; This is more reliable than 'isatty?'.
+                      (ttyname in))
+                    (const #f)))
+         (console (scope "/dev/console")))
+    (when tty
       (touch console)
       (chmod console #o600)
-      (bind-mount (ttyname in) console)))
+      (bind-mount tty console)))
 
   ;; Setup standard input/output/error.
   (symlink "/proc/self/fd"   (scope "/dev/fd"))
@@ -229,6 +237,8 @@ host user identifiers to map into the user namespace."
                                                                namespaces)))
                     (lambda args
                       ;; Forward the exception to the parent process.
+                      ;; FIXME: SRFI-35 conditions and non-trivial objects
+                      ;; cannot be 'read' so they shouldn't be written as is.
                       (write args child)
                       (primitive-exit 3))))
                 ;; TODO: Manage capabilities.
@@ -318,3 +328,21 @@ return the exit status."
      (match (waitpid pid)
        ((_ . status)
         (status:exit-val status))))))
+
+(define (container-excursion* pid thunk)
+  "Like 'container-excursion', but return the return value of THUNK."
+  (match (pipe)
+    ((in . out)
+     (match (container-excursion pid
+              (lambda ()
+                (close-port in)
+                (write (thunk) out)))
+       (0
+        (close-port out)
+        (let ((result (read in)))
+          (close-port in)
+          result))
+       (_                                         ;maybe PID died already
+        (close-port out)
+        (close-port in)
+        #f)))))

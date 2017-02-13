@@ -34,6 +34,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages ftp)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
@@ -52,7 +53,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.6.26")
+    (version "0.7.11")
     (source
      (origin
       (method url-fetch)
@@ -62,18 +63,19 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0jh79syhr8n3l81jxlwsmwm1pklb4d923m2lgqbswyavh1fqmvwb"))
-      (patches (search-patches "duplicity-piped-password.patch"
-                               "duplicity-test_selection-tmp.patch"))))
+        "01zcq9cwn4pvj68rihgjvcdgccnxvz4jrba38sbv6nqz19cs2ixh"))))
     (build-system python-build-system)
     (native-inputs
-     `(("util-linux" ,util-linux)))     ;setsid command, for the tests
+     `(("util-linux" ,util-linux)     ;setsid command, for the tests
+       ("python-pexpect" ,python2-pexpect)
+       ("mock" ,python2-mock)))
+    (propagated-inputs
+     `(("lockfile" ,python2-lockfile)
+       ("urllib3" ,python2-urllib3)))
     (inputs
-     `(("python" ,python-2)
-       ("librsync" ,librsync)
-       ("mock" ,python2-mock)           ;for testing
-       ("lockfile" ,python2-lockfile)
-       ("gnupg" ,gnupg-1)               ;gpg executable needed
+     `(("librsync" ,librsync)
+       ("lftp" ,lftp)
+       ("gnupg" ,gnupg)                 ;gpg executable needed
        ("util-linux" ,util-linux)       ;for setsid
        ("tzdata" ,tzdata)))
     (arguments
@@ -81,6 +83,12 @@
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
+         (add-before
+          'build 'patch-source ; embed gpg store name
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "duplicity/gpginterface.py"
+              (("self.call = 'gpg'")
+               (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))))
          (add-before 'check 'check-setup
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "testing/functional/__init__.py"

@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +44,9 @@
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
@@ -87,13 +89,11 @@
    ;; The following dependencies are all optional, but should be
    ;; available for maximum coverage:
    ;; * libmagic (file)
-   ;; * libmp4v2        ; package it
-   ;; * librpm          ; package it
-   ;; * libsmf          ; package it
-   ;; * libtidy         ; package it
+   ;; * librpm (rpm)    ; investigate failure
    ;; * libgif (giflib) ; investigate failure
    (inputs
     `(("exiv2" ,exiv2)
+      ("bzip2" ,bzip2)
       ("flac" ,flac)
       ("ffmpeg" ,ffmpeg)
       ("file" ,file)                           ;libmagic, for the MIME plug-in
@@ -106,17 +106,39 @@
       ("libjpeg" ,libjpeg)
       ("libltdl" ,libltdl)
       ("libmpeg2" ,libmpeg2)
+      ("libmp4v2" ,libmp4v2)
+      ("libsmf" ,libsmf)
+      ("tidy-html" ,tidy-html)
       ("libogg" ,libogg)
       ("libtiff" ,libtiff)
       ("libvorbis" ,libvorbis)
       ("zlib" ,zlib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
+   (outputs '("out"
+              "static")) ; 396 KiB .a files
    (arguments
     `(#:configure-flags
       (list (string-append "--with-ltdl="
-                           (assoc-ref %build-inputs "libltdl")))
-      #:parallel-tests? #f))
+                           (assoc-ref %build-inputs "libltdl"))
+            (string-append "--with-tidy="
+                           (assoc-ref %build-inputs "tidy-html")))
+      #:parallel-tests? #f
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'move-static-libraries
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Move static libraries to the "static" output.
+            (let* ((out    (assoc-ref outputs "out"))
+                   (lib    (string-append out "/lib"))
+                   (static (assoc-ref outputs "static"))
+                   (slib   (string-append static "/lib")))
+              (mkdir-p slib)
+              (for-each (lambda (file)
+                          (install-file file slib)
+                          (delete-file file))
+                        (find-files lib "\\.a$"))
+              #t))))))
    (synopsis "Library to extract meta-data from media files")
    (description
     "GNU libextractor is a library for extracting metadata from files.  It

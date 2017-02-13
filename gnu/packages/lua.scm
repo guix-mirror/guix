@@ -43,13 +43,13 @@
 (define-public lua
   (package
     (name "lua")
-    (version "5.3.3")
+    (version "5.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "18mcfbbmjyp8f2l9yy7n6dzk066nq6man0kpwly4bppphilc04si"))
+              (base32 "0320a8dg3aci4hxla380dx1ifkw8gj4gbw5c4dz41g1kh98sm0gn"))
              (patches (search-patches "lua-pkgconfig.patch"
                                       "lua-liblua-so.patch"))))
     (build-system gnu-build-system)
@@ -371,13 +371,13 @@ Notable examples are GTK+, GStreamer and Webkit.")
 (define-public lua-lpeg
   (package
     (name "lua-lpeg")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "13mz18s359wlkwm9d9iqlyyrrwjc6iqfpa99ai0icam2b3khl68h"))))
+               (base32 "0sq25z3r324a324ky73izgq9mbf66j2xvjp0fxf227rwxalzgnb2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -400,4 +400,61 @@ Notable examples are GTK+, GStreamer and Webkit.")
      "LPeg is a pattern-matching library for Lua, based on Parsing Expression
 Grammars (PEGs).")
     (home-page "http://www.inf.puc-rio.br/~roberto/lpeg")
+    (license license:expat)))
+
+(define-public lua5.2-lpeg
+  (package (inherit lua-lpeg)
+    (name "lua5.2-lpeg")
+    ;; XXX: The arguments field is almost an exact copy of the field in
+    ;; "lua-lpeg", except for the version string, which was derived from "lua"
+    ;; and now is taken from "lua-5.2".  See this discussion for context:
+    ;; http://lists.gnu.org/archive/html/guix-devel/2017-01/msg02048.html
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; `make install` isn't available, so we have to do it manually
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (lua-version ,(version-major+minor (package-version lua-5.2))))
+               (install-file "lpeg.so"
+                             (string-append out "/lib/lua/" lua-version))
+               (install-file "re.lua"
+                             (string-append out "/share/lua/" lua-version))
+               #t))))
+       #:test-target "test"))
+    (inputs `(("lua", lua-5.2)))))
+
+;; Lua 5.3 is not supported.
+(define-public lua5.2-bitop
+  (package
+    (name "lua5.2-bitop")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://bitop.luajit.org/download/"
+                                  "LuaBitOp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16fffbrgfcw40kskh2bn9q7m3gajffwd2f35rafynlnd7llwj1qj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "INSTALL=install -pD"
+             (string-append "INSTALLPATH=printf "
+                            (assoc-ref %outputs "out")
+                            "/lib/lua/"
+                            ,(version-major+minor (package-version lua-5.2))
+                            "/bit/bit.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs `(("lua", lua-5.2)))
+    (home-page "http://bitop.luajit.org/index.html")
+    (synopsis "Bitwise operations on numbers for Lua")
+    (description
+     "Lua BitOp is a C extension module for Lua which adds bitwise operations
+on numbers.")
     (license license:expat)))

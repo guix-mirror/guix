@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,8 +18,8 @@
 
 (define-module (gnu system file-systems)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (guix records)
-  #:use-module (guix store)
   #:use-module ((gnu build file-systems)
                 #:select (string->uuid uuid->string))
   #:re-export (string->uuid
@@ -63,7 +63,11 @@
             file-system-mapping-target
             file-system-mapping-writable?
 
-            %store-mapping))
+            file-system-mapping->bind-mount
+
+            %store-mapping
+            %network-configuration-files
+            %network-file-mappings))
 
 ;;; Commentary:
 ;;;
@@ -95,11 +99,53 @@
   (dependencies     file-system-dependencies      ; list of <file-system>
                     (default '())))               ; or <mapped-device>
 
-(define-inlinable (file-system-needed-for-boot? fs)
-  "Return true if FS has the 'needed-for-boot?' flag set, or if it's the root
-file system."
+;; Note: This module is used both on the build side and on the host side.
+;; Arrange not to pull (guix store) and (guix config) because the latter
+;; differs from user to user.
+(define (%store-prefix)
+  "Return the store prefix."
+  (cond ((resolve-module '(guix store) #:ensure #f)
+         =>
+         (lambda (store)
+           ((module-ref store '%store-prefix))))
+        ((getenv "NIX_STORE")
+         => identity)
+        (else
+         "/gnu/store")))
+
+(define %not-slash
+  (char-set-complement (char-set #\/)))
+
+(define (file-prefix? file1 file2)
+  "Return #t if FILE1 denotes the name of a file that is a parent of FILE2,
+where both FILE1 and FILE2 are absolute file name.  For example:
+
+  (file-prefix? \"/gnu\" \"/gnu/store\")
+  => #t
+
+  (file-prefix? \"/gn\" \"/gnu/store\")
+  => #f
+"
+  (and (string-prefix? "/" file1)
+       (string-prefix? "/" file2)
+       (let loop ((file1 (string-tokenize file1 %not-slash))
+                  (file2 (string-tokenize file2 %not-slash)))
+         (match file1
+           (()
+            #t)
+           ((head1 tail1 ...)
+            (match file2
+              ((head2 tail2 ...)
+               (and (string=? head1 head2) (loop tail1 tail2)))
+              (()
+               #f)))))))
+
+(define (file-system-needed-for-boot? fs)
+  "Return true if FS has the 'needed-for-boot?' flag set, or if it holds the
+store--e.g., if FS is the root file system."
   (or (%file-system-needed-for-boot? fs)
-      (string=? "/" (file-system-mount-point fs))))
+      (and (file-prefix? (file-system-mount-point fs) (%store-prefix))
+           (not (memq 'bind-mount (file-system-flags fs))))))
 
 (define (file-system->spec fs)
   "Return a list corresponding to file-system FS that can be passed to the
@@ -324,11 +370,45 @@ TARGET in the other system."
   (writable? file-system-mapping-writable?        ;Boolean
              (default #f)))
 
+(define (file-system-mapping->bind-mount mapping)
+  "Return a file system that realizes MAPPING, a <file-system-mapping>, using
+a bind mount."
+  (match mapping
+    (($ <file-system-mapping> source target writable?)
+     (file-system
+       (mount-point target)
+       (device source)
+       (type "none")
+       (flags (if writable?
+                  '(bind-mount)
+                  '(bind-mount read-only)))
+       (check? #f)
+       (create-mount-point? #t)))))
+
 (define %store-mapping
   ;; Mapping of the host's store into the guest.
   (file-system-mapping
    (source (%store-prefix))
    (target (%store-prefix))
    (writable? #f)))
+
+(define %network-configuration-files
+  ;; List of essential network configuration files.
+  '("/etc/resolv.conf"
+    "/etc/nsswitch.conf"
+    "/etc/services"
+    "/etc/hosts"))
+
+(define %network-file-mappings
+  ;; List of file mappings for essential network files.
+  (filter-map (lambda (file)
+                (file-system-mapping
+                 (source file)
+                 (target file)
+                 ;; XXX: On some GNU/Linux systems, /etc/resolv.conf is a
+                 ;; symlink to a file in a tmpfs which, for an unknown reason,
+                 ;; cannot be bind mounted read-only within the container.
+                 (writable? (string=? file "/etc/resolv.conf"))))
+              %network-configuration-files))
 
 ;;; file-systems.scm ends here

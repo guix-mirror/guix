@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2017 Frederick Muriithi <fredmanglis@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages gdb)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages python)
@@ -34,47 +37,44 @@
   #:use-module (gnu packages zip))
 
 (define-public rdmd
-  (let ((commit "da0a2e0a379b08294015eec9d531f1e5dd4226f0"))
-    (package
-      (name "rdmd")
-      (version (string-append "v2.070.0-1." (string-take commit 7)))
-      (source (origin
-        (method git-fetch)
-        (uri (git-reference
-              (url "https://github.com/D-Programming-Language/tools.git")
-              (commit commit)))
-        (file-name (string-append name "-" version "-checkout"))
-        (sha256
-         (base32
-          "1pcx5lyqzrip86f4vv60x292rpvnwsq2hvl1znm9x9rn68f34m45"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'check) ; There is no Makefile, so there's no 'make check'.
-           (replace
-            'build
-            (lambda _
-              (zero? (system* "ldc2" "rdmd.d"))))
-           (replace
-            'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                (install-file "rdmd" bin)))))))
-      (native-inputs
-       `(("ldc" ,ldc)))
-      (home-page "https://github.com/D-Programming-Language/tools/")
-      (synopsis "Specialized equivalent to 'make' for the D language")
-      (description
-       "rdmd is a companion to the dmd compiler that simplifies the typical
+  (package
+    (name "rdmd")
+    (version "2.073.0")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/dlang/tools/archive/v" version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "01if3ivnb7g2myfhymp4d9346s4vmvcl82i1kxfs5iza45almh7v"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check) ; There is no Makefile, so there's no 'make check'.
+         (replace
+          'build
+          (lambda _
+            (zero? (system* "ldc2" "rdmd.d"))))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+              (install-file "rdmd" bin)))))))
+    (native-inputs
+     `(("ldc" ,ldc)))
+    (home-page "https://github.com/D-Programming-Language/tools/")
+    (synopsis "Specialized equivalent to 'make' for the D language")
+    (description
+     "rdmd is a companion to the dmd compiler that simplifies the typical
 edit-compile-link-run or edit-make-run cycle to a rapid edit-run cycle.  Like
 make and other tools, rdmd uses the relative dates of the files involved to
 minimize the amount of work necessary.  Unlike make, rdmd tracks dependencies
 and freshness without requiring additional information from the user.")
-      (license license:boost1.0))))
+    (license license:boost1.0)))
 
-(define-public ldc
+(define-public ldc-bootstrap
   (package
     (name "ldc")
     (version "0.17.2")
@@ -171,3 +171,141 @@ latest DMD frontend and uses LLVM as backend.")
     (license (list license:bsd-3
                    license:gpl2+
                    license:boost1.0))))
+
+
+(define-public ldc
+  ;; The phobos, druntime and dmd-testsuite dependencies do not have a newer
+  ;; release than 1.1.0-beta4, hence the need to make use of the older-version
+  ;; variable to hold this variable.
+  (let ((older-version "1.1.0"))
+    (package
+      (inherit ldc-bootstrap)
+      (name "ldc")
+      (version "1.1.0")
+      ;; Beta version needed to compile various scientific tools that require
+      ;; the newer beta versions, and won't compile successfully with the
+      ;; older stable version.
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://github.com/ldc-developers/ldc/archive/v"
+                      version ".tar.gz"))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "10zkrmx9bcmhfxvgykm3fkjamzc8js96wm032bv0fyil5c9ja2y1"))))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-submodule-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unpack (lambda (source target)
+                               (with-directory-excursion target
+                                 (zero? (system* "tar" "xvf"
+                                                 (assoc-ref inputs source)
+                                                 "--strip-components=1"))))))
+                 (and (unpack "phobos-src" "runtime/phobos")
+                      (unpack "druntime-src" "runtime/druntime")
+                      (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")))))
+           ;; The 'patch-dmd2 step in ldc causes the build to fail since
+           ;; dmd2/root/port.c no longer exists.  Arguments needed to have
+           ;; 'patch-dmd2 step removed, but retain everything else.
+           (add-after 'unpack-submodule-sources 'patch-phobos
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "runtime/phobos/std/process.d"
+                 (("/bin/sh") (which "sh"))
+                 (("echo") (which "echo")))
+               (substitute* "runtime/phobos/std/datetime.d"
+                 (("/usr/share/zoneinfo/")
+                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
+               (substitute* "tests/d2/dmd-testsuite/Makefile"
+                 (("/bin/bash") (which "bash")))
+               #t)))))
+      (native-inputs
+       `(("llvm" ,llvm)
+         ("clang" ,clang)
+         ("ldc" ,ldc-bootstrap)
+         ("python-lit" ,python-lit)
+         ("python-wrapper" ,python-wrapper)
+         ("unzip" ,unzip)
+         ("gdb" ,gdb)
+         ("phobos-src"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/ldc-developers/phobos/archive/ldc-v"
+                   older-version ".tar.gz"))
+             (sha256
+              (base32
+               "0z5v55b9s1ppf0c2ivjq7sbmq688c37c92ihc3qwrbxnqvkkvrlk"))
+             ;; This patch deactivates some tests that depend on network access
+             ;; to pass.  It also deactivates some tests that have some reliance
+             ;; on timezone.
+             ;;
+             ;; For the network tests, there's an effort to get a version flag
+             ;; added to deactivate these tests for distribution packagers
+             ;; that is being pursued at
+             ;; <https://forum.dlang.org/post/zmdbdgnzrxyvtpqafvyg@forum.dlang.org>.
+             ;; It also deactivates a test that requires /root
+             (patches (search-patches "ldc-1.1.0-disable-phobos-tests.patch"))))
+         ("druntime-src"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/ldc-developers/druntime/archive/ldc-v"
+                   older-version ".tar.gz"))
+             (sha256
+              (base32
+               "07qvrqj6vgakd6qr4x5f70w6zwkzd1li5x8i1b5ywnds1z5lnfp6"))))
+         ("dmd-testsuite-src"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/ldc-developers/dmd-testsuite/archive/ldc-v"
+                   older-version ".tar.gz"))
+             (sha256
+              (base32
+               "12cak7yqmsgjlflx0dp6fwmwb9dac25amgi86n0bb95ard3547wy"))
+             ;; Remove the gdb tests that fails with a "Error: No such file or
+             ;; directory" error, despite the files being present in the debug
+             ;; files left with the --keep-failed flag to guix build.
+             (patches (search-patches "ldc-1.1.0-disable-dmd-tests.patch")))))))))
+
+(define-public ldc-beta ldc)
+
+(define-public dub
+  (package
+    (name "dub")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dlang/dub/archive/"
+                                  "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sd8i1rvxc7y7kk0y6km5zyvaladc5zh56r6afj74ndd63dssv43"))))
+   (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; it would have tested itself by installing some packages (vibe etc)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (zero? (system* "./build.sh"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (outbin (string-append out "/bin")))
+               (mkdir-p outbin)
+               (install-file "bin/dub" outbin)
+               #t))))))
+    (inputs
+     `(("curl" ,curl)))
+    (native-inputs
+     `(("ldc" ,ldc)))
+    (home-page "https://code.dlang.org/getting_started")
+    (synopsis "DUB package manager")
+    (description "This package provides the D package manager.")
+    (license license:expat)))

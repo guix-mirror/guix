@@ -24,6 +24,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
@@ -38,20 +39,20 @@
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.1.0")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/audacity/audacity/" version
-                           "/audacity-minsrc-" version ".tar.xz"))
+       (uri (string-append "https://github.com/audacity/audacity/archive"
+                           "/Audacity-" version ".zip"))
        (sha256
-        (base32 "1cs2w3fwqylpqmfwkvlgdx5lhclpckfil7pqibl37qlbnf4qvndh"))
+        (base32 "1642i9d5cdmqzj6r0qdl2ldnqsvpb08znnczncysi72x6zpvb5qq"))
        (patches (search-patches "audacity-fix-ffmpeg-binding.patch"))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add portSMF and libwidgetextra once they're packaged.  In-tree
      ;; versions shipping with Audacity are used for now.
-     `(("wxwidgets" ,wxwidgets-2)
+     `(("wxwidgets" ,wxwidgets-gtk2)
        ("gtk" ,gtk+-2)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
@@ -72,7 +73,8 @@
        ("lilv" ,lilv)
        ("portaudio" ,portaudio)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gettext" ,gettext-minimal)     ;for msgfmt
+       ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("which" ,which)))
     (arguments

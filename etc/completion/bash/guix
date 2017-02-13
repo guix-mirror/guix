@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -26,7 +26,7 @@ _guix_complete_subcommand ()
     local subcommands="$(${COMP_WORDS[0]} $command --help 2> /dev/null \
                          | grep '^   [a-z]' \
                          | sed -e's/^ \+\([a-z-]\+\).*$/\1/g')"
-    COMPREPLY=($(compgen -W "$subcommands" -- "${COMP_WORDS[${#COMP_WORDS[*]} - 1]}"))
+    COMPREPLY=($(compgen -W "$subcommands" -- "${COMP_WORDS[$COMP_CWORD]}"))
 }
 
 _guix_complete_available_package ()
@@ -113,6 +113,12 @@ _guix_complete_file ()
     COMPREPLY=()
 }
 
+_guix_complete_pid ()
+{
+    local pids="$(cd /proc; echo [0-9]*)"
+    COMPREPLY=($(compgen -W "$pids" -- "$1"))
+}
+
 declare _guix_subcommands
 
 _guix_complete ()
@@ -154,11 +160,21 @@ _guix_complete ()
 		fi
 	    elif _guix_is_command "system"
 	    then
-		_guix_complete_subcommand
+		case $COMP_CWORD in
+		    2) _guix_complete_subcommand;;
+		    *) _guix_complete_file;; # TODO: restrict to *.scm
+		esac
+	    elif _guix_is_command "container"
+	    then
+		case $COMP_CWORD in
+		    2) _guix_complete_subcommand;;
+		    3) _guix_complete_pid "$word_at_point";;
+		    *) _guix_complete_file;;
+		esac
 	    elif _guix_is_command "import"
 	    then
 		_guix_complete_subcommand
-	    elif _guix_is_command "hash"
+	    elif _guix_is_command "hash" || _guix_is_command "gc"
 	    then
 		_guix_complete_file
 	    else

@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,12 @@
             nginx-configuration?
             nginx-server-configuration
             nginx-server-configuration?
+            nginx-upstream-configuration
+            nginx-upstream-configuration?
+            nginx-location-configuration
+            nginx-location-configuration?
+            nginx-named-location-configuration
+            nginx-named-location-configuration?
             nginx-service
             nginx-service-type))
 
@@ -53,6 +60,8 @@
                        (default (list 'default)))
   (root                nginx-server-configuration-root
                        (default "/srv/http"))
+  (locations           nginx-server-configuration-locations
+                       (default '()))
   (index               nginx-server-configuration-index
                        (default (list "index.html")))
   (ssl-certificate     nginx-server-configuration-ssl-certificate
@@ -62,14 +71,41 @@
   (server-tokens?      nginx-server-configuration-server-tokens?
                        (default #f)))
 
+(define-record-type* <nginx-upstream-configuration>
+  nginx-upstream-configuration make-nginx-upstream-configuration
+  nginx-upstream-configuration?
+  (name                nginx-upstream-configuration-name)
+  (servers             nginx-upstream-configuration-servers))
+
+(define-record-type* <nginx-location-configuration>
+  nginx-location-configuration make-nginx-location-configuration
+  nginx-location-configuration?
+  (uri                 nginx-location-configuration-uri
+                       (default #f))
+  (body                nginx-location-configuration-body))
+
+(define-record-type* <nginx-named-location-configuration>
+  nginx-named-location-configuration make-nginx-named-location-configuration
+  nginx-named-location-configuration?
+  (name                nginx-named-location-configuration-name
+                       (default #f))
+  (body                nginx-named-location-configuration-body))
+
 (define-record-type* <nginx-configuration>
   nginx-configuration make-nginx-configuration
   nginx-configuration?
-  (nginx         nginx-configuration-nginx)         ;<package>
-  (log-directory nginx-configuration-log-directory) ;string
-  (run-directory nginx-configuration-run-directory) ;string
-  (server-blocks nginx-configuration-server-blocks) ;list
-  (file          nginx-configuration-file))         ;string | file-like
+  (nginx         nginx-configuration-nginx          ;<package>
+                 (default nginx))
+  (log-directory nginx-configuration-log-directory  ;string
+                 (default "/var/log/nginx"))
+  (run-directory nginx-configuration-run-directory  ;string
+                 (default "/var/run/nginx"))
+  (server-blocks nginx-configuration-server-blocks
+                 (default '()))          ;list of <nginx-server-configuration>
+  (upstream-blocks nginx-configuration-upstream-blocks
+                   (default '()))      ;list of <nginx-upstream-configuration>
+  (file          nginx-configuration-file         ;#f | string | file-like
+                 (default #f)))
 
 (define (config-domain-strings names)
  "Return a string denoting the nginx config representation of NAMES, a list
@@ -87,6 +123,19 @@ of index files."
   (map (match-lambda
         ((? string? str) (string-append str " ")))
        names)))
+
+(define nginx-location-config
+  (match-lambda
+    (($ <nginx-location-configuration> uri body)
+     (string-append
+      "      location " uri " {\n"
+      "        " (string-join body "\n    ") "\n"
+      "      }\n"))
+    (($ <nginx-named-location-configuration> name body)
+     (string-append
+      "      location @" name " {\n"
+      "        " (string-join body "\n    ") "\n"
+      "      }\n"))))
 
 (define (default-nginx-server-config server)
   (string-append
@@ -116,11 +165,23 @@ of index files."
    "      index " (config-index-strings (nginx-server-configuration-index server)) ";\n"
    "      server_tokens " (if (nginx-server-configuration-server-tokens? server)
                               "on" "off") ";\n"
+   "\n"
+   (string-join
+    (map nginx-location-config (nginx-server-configuration-locations server))
+    "\n")
    "    }\n"))
 
-(define (default-nginx-config log-directory run-directory server-list)
-  (plain-file "nginx.conf"
-              (string-append
+(define (nginx-upstream-config upstream)
+  (string-append
+   "    upstream " (nginx-upstream-configuration-name upstream) " {\n"
+   (string-concatenate
+    (map (lambda (server)
+           (simple-format #f "      server ~A;\n" server))
+         (nginx-upstream-configuration-servers upstream)))
+   "    }\n"))
+
+(define (default-nginx-config log-directory run-directory server-list upstream-list)
+  (mixed-text-file "nginx.conf"
                "user nginx nginx;\n"
                "pid " run-directory "/pid;\n"
                "error_log " log-directory "/error.log info;\n"
@@ -131,12 +192,18 @@ of index files."
                "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
                "    scgi_temp_path " run-directory "/scgi_temp;\n"
                "    access_log " log-directory "/access.log;\n"
+               "\n"
+               (string-join
+                (filter (lambda (section) (not (null? section)))
+                        (map nginx-upstream-config upstream-list))
+                "\n")
+               "\n"
                (let ((http (map default-nginx-server-config server-list)))
                  (do ((http http (cdr http))
                       (block "" (string-append (car http) "\n" block )))
                      ((null? http) block)))
                "}\n"
-               "events {}\n")))
+               "events {}\n"))
 
 (define %nginx-accounts
   (list (user-group (name "nginx") (system? #t))
@@ -151,7 +218,7 @@ of index files."
 (define nginx-activation
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              config-file)
+                              upstream-blocks config-file)
      #~(begin
          (use-modules (guix build utils))
 
@@ -169,13 +236,13 @@ of index files."
          (system* (string-append #$nginx "/sbin/nginx")
                   "-c" #$(or config-file
                              (default-nginx-config log-directory
-                               run-directory server-blocks))
+                               run-directory server-blocks upstream-blocks))
                   "-t")))))
 
 (define nginx-shepherd-service
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              config-file)
+                              upstream-blocks config-file)
      (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
             (nginx-action
              (lambda args
@@ -184,7 +251,7 @@ of index files."
                     (system* #$nginx-binary "-c"
                              #$(or config-file
                                    (default-nginx-config log-directory
-                                     run-directory server-blocks))
+                                     run-directory server-blocks upstream-blocks))
                              #$@args))))))
 
        ;; TODO: Add 'reload' action.
@@ -216,6 +283,7 @@ of index files."
                         (log-directory "/var/log/nginx")
                         (run-directory "/var/run/nginx")
                         (server-list '())
+                        (upstream-list '())
                         (config-file #f))
   "Return a service that runs NGINX, the nginx web server.
 
@@ -227,4 +295,5 @@ files in LOG-DIRECTORY, and stores temporary runtime files in RUN-DIRECTORY."
             (log-directory log-directory)
             (run-directory run-directory)
             (server-blocks server-list)
+            (upstream-blocks upstream-list)
             (file config-file))))

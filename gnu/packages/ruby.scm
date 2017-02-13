@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -425,13 +426,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.13.6")
+    (version "1.14.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "1xyhy9cn8w9passp64p6hb3df2fpiqbds6rj7xha1335xpgj5zgs"))))
+                "1hafmb7p41pm40a2z7f4x5zpgrb72xvgwlvkxnflmzqkvq2prkfv"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -1858,25 +1859,31 @@ generation of complex SQL queries and is compatible with various RDBMSes.")
     (license license:expat)))
 
 (define-public ruby-minitar
-  (package
-    (name "ruby-minitar")
-    (version "0.5.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (rubygems-uri "minitar" version))
-       (sha256
-        (base32
-         "1vpdjfmdq1yc4i620frfp9af02ia435dnpj8ybsd7dc3rypkvbka"))))
-    (build-system ruby-build-system)
-    (arguments
-     '(#:tests? #f)) ; missing a gemspec
-    (synopsis "Ruby library and utility for handling tar archives")
-    (description
-     "Archive::Tar::Minitar is a pure-Ruby library and command-line utility
+  ;; We package from the GitHub source to fix the security issue reported at
+  ;; https://github.com/halostatue/minitar/issues/16.
+  (let ((commit "e25205ecbb6277ae8a3df1e6a306d7ed4458b6e4"))
+    (package
+      (name "ruby-minitar")
+      (version (string-append "0.5.4-1." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/halostatue/minitar.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1iywfx07jgjqcmixzkxk9zdwfmij1fyg1z2jlwzj15cj7s99qlfv"))))
+      (build-system ruby-build-system)
+      (arguments
+       '(#:tests? #f)) ; missing a gemspec
+      (synopsis "Ruby library and utility for handling tar archives")
+      (description
+       "Archive::Tar::Minitar is a pure-Ruby library and command-line utility
 that provides the ability to deal with POSIX tar archive files.")
-    (home-page "http://www.github.com/atoulme/minitar")
-    (license (list license:gpl2+ license:ruby))))
+      (home-page "http://www.github.com/atoulme/minitar")
+      (license (list license:gpl2+ license:ruby)))))
 
 (define-public ruby-mini-portile
   (package
@@ -4197,4 +4204,36 @@ libraries for compiling Ruby native extensions.")
 RFC 2617.  This enables the use of the digest authentication scheme instead
 of the more insecure basic authentication scheme.")
     (home-page "http://github.com/drbrain/net-http-digest_auth")
+    (license license:expat)))
+
+(define-public ruby-mail
+  (package
+    (name "ruby-mail")
+    (version "2.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mail" version))
+       (sha256
+        (base32
+         "0c9vqfy0na9b5096i5i4qvrvhwamjnmajhgqi3kdsdfl8l6agmkp"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-mime-types" ,ruby-mime-types)))
+    (arguments
+     ;; Tests require extra gems not included in the Gemfile.
+     ;; XXX: Try enabling this for the next version with mini_mime.
+     `(#:tests? #f))
+    (synopsis "Mail library for Ruby")
+    (description
+     "Mail is an internet library for Ruby that is designed to handle email
+generation, parsing and sending.  The purpose of this library is to provide
+a single point of access to handle all email functions, including sending
+and receiving emails.  All network type actions are done through proxy
+methods to @code{Net::SMTP}, @code{Net::POP3} etc.
+
+Mail has been designed with a very simple object oriented system that
+really opens up the email messages you are parsing, if you know what you
+are doing, you can fiddle with every last bit of your email directly.")
+    (home-page "https://github.com/mikel/mail")
     (license license:expat)))

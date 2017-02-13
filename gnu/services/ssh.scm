@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -292,6 +293,7 @@ The other options should be self-descriptive."
 (define (openssh-activation config)
   "Return the activation GEXP for CONFIG."
   #~(begin
+      (use-modules (guix build utils))
       (mkdir-p "/etc/ssh")
       (mkdir-p (dirname #$(openssh-configuration-pid-file config)))
 
@@ -388,6 +390,7 @@ The other options should be self-descriptive."
 (define (dropbear-activation config)
   "Return the activation gexp for CONFIG."
   #~(begin
+      (use-modules (guix build utils))
       (mkdir-p "/etc/dropbear")))
 
 (define (dropbear-shepherd-service config)

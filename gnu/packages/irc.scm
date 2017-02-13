@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,7 +101,7 @@ irssi, but graphical.")
 (define-public irssi
   (package
     (name "irssi")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/irssi/irssi/"
@@ -108,7 +109,7 @@ irssi, but graphical.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1f2gmr5nynagwi4wx3yprhzfpg4ww6r7ff395b0a48d0qqgkr2ka"))))
+               "1krw71n24mj4p3f5nhzj6kdi1kq9ssl53hrqyjpgz61m7wdcaa4l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -140,14 +141,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1qqnb9bdi15l30378rnmhf26ndacwi5hmq5vpz4lfyihk17xnryn"))
+                "1crdwlxj5liik32svflfac0s87vm6p8xm208yndigzsbg8rli4sr"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
@@ -180,14 +181,13 @@ SILC and ICB protocols via plugins.")
                   (add-before 'configure 'autogen
                     (lambda _
                       (zero? (system* "./autogen.sh"))))
-                  (add-before 'build 'set-python-file-name
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "src/plugins/python/weechat-python.c"
-                        (("python2_bin = weechat_python_get_python2_bin.*;")
-                         (string-append "python2_bin = strdup (\""
-                                        (assoc-ref inputs "python")
-                                        "/bin/python\");\n")))
-                      #t)))))
+                  (add-after 'install 'wrap
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (py2 (assoc-ref inputs "python")))
+                        (wrap-program (string-append out "/bin/weechat")
+                          `("PATH" ":" prefix (,(string-append py2 "/bin"))))
+                        #t))))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 Internet Relay Chat client, which is designed to be light and fast.

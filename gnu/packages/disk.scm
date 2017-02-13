@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages xml))
 
 (define-public parted
@@ -154,7 +155,7 @@ tables.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.21")
+    (version "1.22")
     (source
      (origin
       (method url-fetch)
@@ -162,9 +163,9 @@ tables.")
                           version ".tar.lz"))
       (sha256
        (base32
-        "1b71hb42lh33y9843nd1mxlwkk9qh9ajvnz6ivzd1jq9lav4x7ph"))))
+        "19qhx9ggkkjl0g3a88g501wmybkj1y4n5lm5kp0km0blh0p7p189"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/ddrescue/ddrescue.html")
+    (home-page "https://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
     (native-inputs `(("lzip" ,lzip)))
     (description
@@ -177,7 +178,7 @@ to recover data more efficiently by only reading the necessary blocks.")
 (define-public dosfstools
   (package
     (name "dosfstools")
-    (version "4.0")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
@@ -186,12 +187,13 @@ to recover data more efficiently by only reading the necessary blocks.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1bvxbv1w6vhbx0nx7ygp700wq5k2hjv0hm7w0kz1x7amaf4p6dwh"))))
+         "0wy13i3i4x2bw1hf5m4fd0myh61f9bcrs035fdlf6gyc1jksrcp6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")
-       #:tests? #f))  ;no tests
+                          "CC=gcc")))
+    (native-inputs
+     `(("xxd" ,vim))) ; for tests
     (home-page "https://github.com/dosfstools/dosfstools")
     (synopsis "Utilities for making and checking MS-DOS FAT file systems")
     (description

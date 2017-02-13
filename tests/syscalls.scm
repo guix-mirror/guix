@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -440,6 +440,27 @@
 (test-assert "terminal-columns non-file port"
   (> (terminal-columns (open-input-string "Join us now, share the software!"))
      0))
+
+(test-assert "utmpx-entries"
+  (match (utmpx-entries)
+    (((? utmpx? entries) ...)
+     (every (lambda (entry)
+              (match (utmpx-user entry)
+                ((? string?)
+                 (or (eqv? (login-type BOOT_TIME) (utmpx-login-type entry))
+                     (> (utmpx-pid entry) 0)))
+                (#f                               ;might be DEAD_PROCESS
+                 #t)))
+            entries))))
+
+(test-assert "read-utmpx, EOF"
+  (eof-object? (read-utmpx (%make-void-port "r"))))
+
+(unless (access? "/var/run/utmpx" O_RDONLY)
+  (test-skip 1))
+(test-assert "read-utmpx"
+  (let ((result (call-with-input-file "/var/run/utmpx" read-utmpx)))
+    (or (utmpx? result) (eof-object? result))))
 
 (test-end)
 

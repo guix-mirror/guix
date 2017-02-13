@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +27,7 @@
   #:use-module (srfi srfi-41)
   #:use-module (ice-9 receive)
   #:use-module (web uri)
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module (guix http-client)
   #:use-module (guix hash)
   #:use-module (guix store)

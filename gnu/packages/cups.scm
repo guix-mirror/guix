@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
+    (replacement cups-filters/fixed)
     (version "1.13.1")
     (source(origin
               (method url-fetch)
@@ -132,6 +134,13 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                    license:gpl3+
                    license:lgpl2.0+
                    license:expat))))
+
+(define mupdf/fixed-instead-of-mupdf
+  (package-input-rewriting `((,mupdf . ,(@@ (gnu packages pdf) mupdf/fixed)))))
+
+;;; Fix CVE-2016-10132 and CVE-2016-10133. See mupdf/fixed for more information.
+(define cups-filters/fixed
+  (mupdf/fixed-instead-of-mupdf cups-filters))
 
 ;; CUPS on non-MacOS systems requires cups-filters.  Since cups-filters also
 ;; depends on CUPS libraries and binaries, cups-minimal has been added to

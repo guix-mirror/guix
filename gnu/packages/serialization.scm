@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -32,6 +33,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
@@ -128,6 +130,88 @@ such as compact binary encodings, XML, or JSON.")
     (description "Msgpack is a library for C/C++ that implements binary
 serialization.")
     (license license:boost1.0)))
+
+(define-public libmpack
+  (package
+    (name "libmpack")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/tarruda/libmpack/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "08kfdl55yf66xk57aqsbf8n45f2jsw2v7qwnaan08ciim77j3sv5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (home-page "https://github.com/tarruda/libmpack")
+    (synopsis "Small binary serialization library")
+    (description "Libmpack is a small binary serialization and RPC library
+that implements both the msgpack and msgpack-rpc specifications.")
+    (license license:expat)))
+
+(define-public lua-libmpack
+  (package (inherit libmpack)
+    (name "lua-libmpack")
+    (build-system gnu-build-system)
+    (arguments
+     `(;; FIXME: tests require "busted", which is not yet available in Guix.
+       #:tests? #f
+       #:test-target "test"
+       #:make-flags
+       (let* ((lua-version ,(package-version lua))
+              (lua-major+minor ,(version-major+minor (package-version lua))))
+         (list "CC=gcc"
+               "USE_SYSTEM_LUA=yes"
+               (string-append "LUA_VERSION=" lua-version)
+               (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+               (string-append "PREFIX="
+                              (assoc-ref %outputs "out"))
+               (string-append "LUA_CMOD_INSTALLDIR="
+                              (assoc-ref %outputs "out")
+                              "/lib/lua/" lua-major+minor)
+               ;; This is unnecessary as of upstream commit 02886c13ff8a2,
+               ;; which is not part of the current release.
+               "CFLAGS=-DLUA_C89_NUMBERS -fPIC"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "binding/lua") #t)))))
+    (inputs
+     `(("lua" ,lua)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Lua bindings for the libmpack binary serialization library")))
+
+(define-public lua5.2-libmpack
+  (package (inherit lua-libmpack)
+    (name "lua5.2-libmpack")
+    (arguments
+     (substitute-keyword-arguments (package-arguments lua-libmpack)
+       ((#:make-flags flags)
+        `(let* ((lua-version ,(package-version lua-5.2))
+                (lua-major+minor ,(version-major+minor (package-version lua-5.2))))
+           (list "CC=gcc"
+                 "USE_SYSTEM_LUA=yes"
+                 (string-append "LUA_VERSION=" lua-version)
+                 (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+                 (string-append "PREFIX="
+                                (assoc-ref %outputs "out"))
+                 (string-append "LUA_CMOD_INSTALLDIR="
+                                (assoc-ref %outputs "out")
+                                "/lib/lua/" lua-major+minor))))))
+    (inputs
+     `(("lua" ,lua-5.2)))))
 
 (define-public yaml-cpp
   (package

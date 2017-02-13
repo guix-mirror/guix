@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
@@ -26,13 +26,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages haskell)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
@@ -106,7 +106,6 @@
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
        ("libffi" ,libffi)
-       ("libedit" ,libedit)
        ("ghc-testsuite"
         ,(origin
            (method url-fetch)
@@ -267,14 +266,17 @@ interactive environment for the functional language Haskell.")
 (define-public ghc-8
   (package
     (name "ghc")
-    (version "8.0.1")
+    (version "8.0.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://www.haskell.org/ghc/dist/"
                           version "/" name "-" version "-src.tar.xz"))
       (sha256
-       (base32 "1lniqy29djhjkddnailpaqhlqh4ld2mqvb1fxgxw1qqjhz6j1ywh"))))
+       (base32 "1c8qc4fhkycynk4g1f9hvk53dj6a1vvqi6bklqznns6hw59m8qhi"))
+      (patches
+       (search-patches
+        "ghc-dont-pass-linker-flags-via-response-files.patch"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (outputs '("out" "doc"))
@@ -282,7 +284,6 @@ interactive environment for the functional language Haskell.")
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
        ("libffi" ,libffi)
-       ("libedit" ,libedit)
        ("ghc-testsuite"
         ,(origin
            (method url-fetch)
@@ -290,7 +291,7 @@ interactive environment for the functional language Haskell.")
                  "https://www.haskell.org/ghc/dist/"
                  version "/" name "-" version "-testsuite.tar.xz"))
            (sha256
-            (base32 "0lc1vjivkxn01aw3jg2gd7fmqb5pj7a5j987c7pn5r7caqv1cmxw"))))))
+            (base32 "1wjc3x68l305bl1h1ijd3yhqp2vqj83lkp3kqbr94qmmkqlms8sj"))))))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2)                ; for tests
@@ -312,13 +313,6 @@ interactive environment for the functional language Haskell.")
        ;; then complains that they don't match.
        #:build #f
 
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26)
-                  (srfi srfi-1))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))
        #:configure-flags
        (list
         (string-append "--with-gmp-libraries="
@@ -366,19 +360,7 @@ interactive environment for the functional language Haskell.")
                        "testsuite/tests/programs/life_space_leak/life.test")
                (("/bin/sh") (which "sh"))
                (("/bin/rm") "rm"))
-             #t))
-         ;; the testsuite can't find shared libraries.
-         (add-before 'check 'configure-testsuite
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((gmp (assoc-ref inputs "gmp"))
-                    (gmp-lib (string-append gmp "/lib"))
-                    (ffi (assoc-ref inputs "libffi"))
-                    (ffi-lib (string-append ffi "/lib"))
-                    (ncurses (assoc-ref inputs "ncurses"))
-                    (ncurses-lib (string-append ncurses "/lib")))
-               (setenv "LD_LIBRARY_PATH"
-                       (string-append gmp-lib ":" ffi-lib ":" ncurses-lib))
-               #t))))))
+             #t)))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
                                 (files (list
@@ -1606,6 +1588,25 @@ UTF8 without truncation.")
     (description "This package provides a Haskell library for setting
 environment variables.")
     (license license:expat)))
+
+(define-public ghc-setlocale
+  (package
+    (name "ghc-setlocale")
+    (version "1.0.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/setlocale-"
+                    version "/setlocale-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sd73zgpijr9xjdj5p562cmlcxmx5iff5k8xh9b6rpcgrgnnlf9j"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/setlocale")
+    (synopsis "Haskell bindings to setlocale")
+    (description "This package provides Haskell bindings to the
+@code{setlocale} C function.")
+    (license license:bsd-3)))
 
 (define-public ghc-x11
   (package
@@ -2976,7 +2977,7 @@ writing to stdout and other handles.")
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
-    (version "0.3.11")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -2986,13 +2987,15 @@ writing to stdout and other handles.")
              version ".tar.gz"))
        (sha256
         (base32
-         "041s6963czs1pz0fc9cx17lgd6p83czqy2nxji7bhxqxwl2j15h2"))))
+         "1wwvkzpams7i0j7nk5qj8vvhj8x5zcbgbgrpczszgvshva4bkmfx"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
        ("ghc-text" ,ghc-text)))
     (home-page
      "https://github.com/aslatter/qc-instances")
@@ -8160,6 +8163,35 @@ Rust syntax.  It is intended to be useful for two different purposes:
     (synopsis "Work with WAVE and RF64 files in Haskell")
     (description "This package allows you to work with WAVE and RF64
 files in Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-hslogger
+  (package
+    (name "ghc-hslogger")
+    (version "1.2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hslogger-" version "/" "hslogger-"
+                           version ".tar.gz"))
+       (sha256 (base32
+                "0as5gvlh6pi2gflakp695qnlizyyp059dqrhvjl4gjxalja6xjnp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-directory", ghc-directory)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-process" ,ghc-process)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://software.complete.org/hslogger")
+    (synopsis "Logging framework for Haskell, similar to Python's logging module")
+    (description "Hslogger lets each log message have a priority and source be
+associated with it.  The programmer can then define global handlers that route
+or filter messages based on the priority and source.  It also has a syslog
+handler built in.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here

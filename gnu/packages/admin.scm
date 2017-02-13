@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
@@ -12,7 +12,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
-;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Coypright © 2016 John Darrington <jmd@gnu.org>
 ;;;
@@ -75,7 +75,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gtk))
 
 (define-public aide
@@ -270,40 +270,41 @@ client and server, a telnet client and server, and an rsh client and server.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.2.1")
+    (version "4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://pkg-shadow.alioth.debian.org/releases/"
-                    name "-" version ".tar.xz"))
+                    "https://github.com/shadow-maint/shadow/releases/"
+                    "download/" version "/shadow-" version ".tar.xz"))
+              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"))
               (sha256
                (base32
-                "0h9x1zdbq0pqmygmc1x459jraiqw4gqz8849v268crk78z8r621v"))))
+                "0g7hf55ar2pafg5g3ldx0fwzjk36wf4xb21p4ndanbjm3c2a9ab1"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Assume System V `setpgrp (void)', which is the default on GNU
        ;; variants (`AC_FUNC_SETPGRP' is not cross-compilation capable.)
-       #:configure-flags '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
+       #:configure-flags
+       '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
 
-       #:phases (alist-cons-before
-                 'build 'set-nscd-file-name
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Use the right file name for nscd.
-                   (let ((libc (assoc-ref inputs "libc")))
-                     (substitute* "lib/nscd.c"
-                       (("/usr/sbin/nscd")
-                        (string-append libc "/sbin/nscd")))))
-                 (alist-cons-after
-                  'install 'remove-groups
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Remove `groups', which is already provided by Coreutils.
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bin (string-append out "/bin"))
-                           (man (string-append out "/share/man")))
-                      (delete-file (string-append bin "/groups"))
-                      (for-each delete-file (find-files man "^groups\\."))
-                      #t))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-nscd-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Use the right file name for nscd.
+             (let ((libc (assoc-ref inputs "libc")))
+               (substitute* "lib/nscd.c"
+                 (("/usr/sbin/nscd")
+                  (string-append libc "/sbin/nscd"))))))
+         (add-after 'install 'remove-groups
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Remove `groups', which is already provided by Coreutils.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man")))
+               (delete-file (string-append bin "/groups"))
+               (for-each delete-file (find-files man "^groups\\."))
+               #t))))))
 
     (inputs (if (string-suffix? "-linux"
                                 (or (%current-target-system)
@@ -471,7 +472,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "9")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "5")      ; for patch release, e.g. "4"
+         (bind-release-version "6")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -587,7 +588,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1yn15chkfqf4d7961ip2x10jm27a9wqymz2xqh0a2g89arrirkaw"))))
+                      "1qf9j0nyqx0qy871mj22xh4dg0n1pqlv94lpiijb8vr7n7m3svhr"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -608,14 +609,14 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.7.4")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1c28ykkizd7jqgzrfkg7ivqjlqs9p6lygp26bsw2i0z8hwhi3lvs"))))
+                "07jlhc66z76dipj4j5v3dig8x6h3k6cb36kmnmpsixf3zmlvqgb7"))))
     (build-system gnu-build-system)
     (native-inputs `(("bison" ,bison) ("flex" ,flex)))
     (arguments '(#:configure-flags '("--with-pcap=linux")
@@ -633,14 +634,14 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.7.4")
+    (version "4.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1byr8w6grk08fsq0444jmcz9ar89lq9nf4mjq2cny0w9k8k21rbb"))))
+                "0pjsxsy8l71i813sa934cwf1ryp9xbr7nxwsvnzavjdirchq3sga"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
@@ -1345,14 +1346,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.1.0.0")
+    (version "2.2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "1bfc2xiplpad6f2nwi48y0kps7xqnsll85dlz63cy8k5bysl6d20"))))
+         "0gz9i30pdmkchi936ijy873k8di6fmf3v5rv551hxyf0hjkjx8b3"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-pycrypto" ,python2-pycrypto)
@@ -1716,7 +1717,10 @@ throughput (in the same interval).")
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+       ("python-pytest-mock" ,python-pytest-mock)
+       ;; Requires setuptools >= 17.1 due to some features used, while our
+       ;; python currently only includes 12.0. TODO: Remove this input.
+       ("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/nvbn/thefuck")
     (synopsis "Correct mistyped console command")
     (description
@@ -1927,3 +1931,65 @@ in order to be able to find it.
 @item @command{sunxi-nand-image-builder}: Prepares raw NAND images.
 @end enumerate")
     (license license:gpl2+)))
+
+(define-public sedsed
+  (package
+    (name "sedsed")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/aureliojargas/sedsed/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0139jkqvm8ipiwfj7k69ry2f9b1ffgpk79arpz4r7w9kf6h23bnh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sed-in
+           (lambda _
+             (substitute* "sedsed.py"
+               (("sedbin = 'sed'")
+                (string-append "sedbin = '" (which "sed") "'")))
+             #t))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               ;; Just one file to copy around
+               (install-file "sedsed.py" bin)
+               #t)))
+         (add-after 'install 'symlink
+           ;; Create 'sedsed' symlink to "sedsed.py".
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (sed (string-append bin "/sedsed"))
+                    (sedpy (string-append bin "/sedsed.py")))
+               (symlink  sedpy sed)
+               #t))))))
+    (home-page "http://aurelio.net/projects/sedsed")
+    (synopsis "Sed sed scripts")
+    (description
+     "@code{sedsed} can debug, indent, tokenize and HTMLize your sed(1) script.
+
+In debug mode it reads your script and add extra commands to it.  When
+executed you can see the data flow between the commands, revealing all the
+magic sed does on its internal buffers.
+
+In indent mode your script is reformatted with standard spacing.
+
+In tokenize mode you can see the elements of every command you use.
+
+In HTMLize mode your script is converted to a beautiful colored HTML file,
+with all the commands and parameters identified for your viewing pleasure.
+
+With sedsed you can master any sed script.  No more secrets, no more hidden
+buffers.")
+    (license license:expat)))

@@ -21,6 +21,7 @@
 (define-module (guix import hackage)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-1)
@@ -37,7 +38,13 @@
   #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (hackage->guix-package
-            %hackage-updater))
+            %hackage-updater
+
+            guix-package->hackage-name
+            hackage-fetch
+            hackage-source-url
+            hackage-cabal-url
+            hackage-package?))
 
 (define ghc-standard-libraries
   ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as
@@ -109,12 +116,15 @@ version is returned."
   "Return the Cabal file for the package NAME-VERSION, or #f on failure.  If
 the version part is omitted from the package name, then return the latest
 version."
-  (let-values (((name version) (package-name->name+version name-version)))
-    (let* ((url (hackage-cabal-url name version))
-           (port (http-fetch url))
-           (result (read-cabal (canonical-newline-port port))))
-      (close-port port)
-      result)))
+  (guard (c ((and (http-get-error? c)
+                  (= 404 (http-get-error-code c)))
+             #f))                       ;"expected" if package is unknown
+    (let-values (((name version) (package-name->name+version name-version)))
+      (let* ((url (hackage-cabal-url name version))
+             (port (http-fetch url))
+             (result (read-cabal (canonical-newline-port port))))
+        (close-port port)
+        result))))
 
 (define string->license
   ;; List of valid values from

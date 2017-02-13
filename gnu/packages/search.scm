@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,7 @@
 
 (define-module (gnu packages search)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ bsd-3 x11))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 x11))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -35,13 +36,13 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.4.2")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
               (sha256
-               (base32 "1kp18r97qm2zky9z6ym8csjg1kj81zvqn88n4cppl4lq54sw9hmf"))))
+               (base32 "0xg444bnxikqnxs31wsv930mvpwk4dm5zrr979371pm23i8ralkx"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux)))
@@ -159,6 +160,33 @@ words in close proximity to each other.  It handles context gracefully,
 accounting for new lines and paragraph changes.  It also has robust support
 for parsing HTML files.")
     (license gpl3+)))
+
+(define-public hyperestraier
+  (package
+    (name "hyperestraier")
+    (version "1.4.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://fallabs.com/" name "/"
+                            name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1qk3pxgzyrpcz5qfyd5xs2hw9q1cbb7j5zd4kp1diq501wcj2vs9"))))
+    (inputs
+     `(("qdbm" ,qdbm)
+       ("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+    (home-page "http://fallabs.com/hyperestraier")
+    (synopsis "Full-text search system")
+    (description "Hyper Estraier can be used to integrate full-text
+search into applications, using either the provided command line and CGI
+interfaces, or a C API.")
+    (license lgpl2.1+)))
 
 (define-public mlocate
   (package

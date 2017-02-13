@@ -40,7 +40,8 @@
             mod-muc-configuration
             ssl-configuration
 
-            %default-modules-enabled))
+            %default-modules-enabled
+            prosody-configuration-pidfile))
 
 ;;; Commentary:
 ;;;
@@ -592,7 +593,7 @@ See also @url{http://prosody.im/doc/modules/mod_muc}."
                                   (zero? (system* #$prosodyctl-bin #$@args))))))
     (list (shepherd-service
            (documentation "Run the Prosody XMPP server")
-           (provision '(prosody))
+           (provision '(prosody xmpp-daemon))
            (requirement '(networking syslogd user-processes))
            (start (prosodyctl-action "start"))
            (stop (prosodyctl-action "stop"))))))
@@ -621,6 +622,7 @@ See also @url{http://prosody.im/doc/modules/mod_muc}."
                   (serialize-prosody-configuration config)))))
          (config-file (plain-file "prosody.cfg.lua" config-str)))
     #~(begin
+        (use-modules (guix build utils))
         (define %user (getpw "prosody"))
 
         (mkdir-p #$config-dir)

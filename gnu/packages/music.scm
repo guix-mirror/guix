@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -842,7 +843,7 @@ your own lessons.")
 (define-public powertabeditor
   (package
     (name "powertabeditor")
-    (version "2.0.0-alpha8")
+    (version "2.0.0-alpha9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -851,27 +852,20 @@ your own lessons.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gaa2x209v3azql8ak3r1n9a9qbxjx2ssirvwdxwklv2lmfqkm82"))
+                "1zjdz1qpkl83xr6dkap8airqcyjs3mxc5dzfyhrrvkyr7dics7ii"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Remove bundled sources for external libraries
                   (delete-file-recursively "external")
+                  ;; Use only system libraries
                   (substitute* "CMakeLists.txt"
-                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") "")
-                    (("add_subdirectory\\(external\\)") ""))
-                  (substitute* "test/CMakeLists.txt"
-                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") ""))
-
-                  ;; Add install target
-                  (substitute* "source/CMakeLists.txt"
-                    (("qt5_use_modules")
-                     (string-append
-                      "install(TARGETS powertabeditor "
-                      "RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)\n"
-                      "install(FILES data/tunings.json DESTINATION "
-                      "${CMAKE_INSTALL_PREFIX}/share/powertabeditor/)\n"
-                      "qt5_use_modules")))
+                    (("include\\( PTE_ThirdParty \\)")
+                     "\
+include(third_party/Qt)
+include(third_party/boost)
+add_library( Catch INTERFACE IMPORTED )
+add_library( rapidjson INTERFACE IMPORTED )"))
                   #t))))
     (build-system cmake-build-system)
     (arguments
@@ -882,42 +876,45 @@ your own lessons.")
        ;; CMake appears to lose the RUNPATH for some reason, so it has to be
        ;; explicitly set with CMAKE_INSTALL_RPATH.
        (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
-             "-DCMAKE_ENABLE_PRECOMPILED_HEADERS=OFF" ; if ON pte_tests cannot be built
              (string-append "-DCMAKE_INSTALL_RPATH="
                             (string-join (map (match-lambda
                                                 ((name . directory)
                                                  (string-append directory "/lib")))
-                                              %build-inputs) ";")))
+                                              %build-inputs) ";"))
+             "-DPTE_DATA_DIR=share/powertabeditor")
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'check
-          (lambda _
-            (zero? (system* "bin/pte_tests"
-                            ;; Exclude this failing test
-                            "~Formats/PowerTabOldImport/Directions"))))
-         (add-before
-          'configure 'fix-tests
-          (lambda _
-            ;; Tests cannot be built with precompiled headers
-            (substitute* "test/CMakeLists.txt"
-              (("cotire\\(pte_tests\\)") ""))
-            #t))
-         (add-before
-          'configure 'remove-third-party-libs
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; Link with required static libraries, because we're not
-            ;; using the bundled version of withershins.
-            (substitute* '("source/CMakeLists.txt"
-                           "test/CMakeLists.txt")
-              (("target_link_libraries\\((powertabeditor|pte_tests)" _ target)
-               (string-append "target_link_libraries(" target " "
-                              (assoc-ref inputs "binutils")
-                              "/lib/libbfd.a "
-                              (assoc-ref inputs "libiberty")
-                              "/lib/libiberty.a "
-                              "dl")))
-            #t)))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "bin/pte_tests"
+                             ;; FIXME: one test fails.
+                             "exclude:Formats/PowerTabOldImport/Directions"))))
+         (add-after 'unpack 'set-target-directories
+           (lambda _
+             (substitute* "cmake/PTE_Executable.cmake"
+               (("set\\( install_dir.*")
+                "set( install_dir bin )\n"))
+             (substitute* "cmake/PTE_Paths.cmake"
+               (("set\\( PTE_DATA_DIR .*")
+                "set( PTE_DATA_DIR share/powertabeditor )\n"))
+             ;; Tests hardcode the data directory as "data"
+             (substitute* "test/CMakeLists.txt"
+               (("\\$\\{PTE_DATA_DIR\\}") "data"))
+             #t))
+         (add-before 'configure 'remove-third-party-libs
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Link with required static libraries, because we're not
+             ;; using the bundled version of withershins.
+             (substitute* "source/build/CMakeLists.txt"
+               (("withershins" line)
+                (string-append line "\n"
+                               (assoc-ref inputs "binutils")
+                               "/lib/libbfd.a\n"
+                               (assoc-ref inputs "libiberty")
+                               "/lib/libiberty.a\n"
+                               "dl\n"
+                               "z\n")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("alsa-lib" ,alsa-lib)
@@ -1686,6 +1683,35 @@ synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
     (license license:gpl2)))
+
+(define-public libgig
+  (package
+    (name "libgig")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.linuxsampler.org/packages/"
+                                  "libgig-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wr8mwjmqpnyz6bx9757lspiii1zzn8zfbqsvn2ipzpgqkxv6kaz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libuuid" ,util-linux)
+       ("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://linuxsampler.org/libgig/")
+    (synopsis "C++ library for working with Gigasampler (.gig) files")
+    (description
+     "Libgig is a C++ library for loading, modifying existing and creating new
+Gigasampler (.gig) files and DLS (Downloadable Sounds) Level 1/2 files, KORG
+sample based instruments (.KSF and .KMP files), SoundFont v2 (.sf2) files and
+AKAI sampler data.  The package includes a couple of command line tools based
+on the library.")
+    ;; The library and tools are released under the GPL, except the AKAI
+    ;; classes which are released under the LGPL.
+    (license (list license:gpl2+ license:lgpl2.1+))))
 
 (define-public jack-keyboard
   (package
@@ -2746,3 +2772,51 @@ collections and wantlists, inventory, and orders.")
 
 (define-public python2-discogs-client
   (package-with-python2 python-discogs-client))
+
+(define-public libsmf
+  (package
+    (name "libsmf")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       ;; SF download page says development moved, but the link it points to
+       ;; is gone (https://github.com/nilsgey/libsmf).  Someone else adopted
+       ;; it but made no release so far (https://github.com/stump/libsmf).
+       (uri (string-append "mirror://sourceforge/libsmf/libsmf/"
+                           version "/libsmf-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16c0n40h0r56gzbh5ypxa4dwp296dan3jminml2qkb4lvqarym6k"))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "static")) ; 88KiB of .a files
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (mkdir-p slib)
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t))))))
+    (inputs
+     `(("readline" ,readline)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://libsmf.sourceforge.net/")
+    (synopsis "Standard MIDI File format library")
+    (description
+     "LibSMF is a C library for handling SMF (\"*.mid\") files.  It transparently handles
+conversions between time and pulses, tempo map handling and more.  The only dependencies
+are a C compiler and glib.  Full API documentation and examples are included.")
+    (license license:bsd-2)))

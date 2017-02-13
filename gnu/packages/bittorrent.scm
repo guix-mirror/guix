@@ -2,9 +2,11 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,11 +26,13 @@
 (define-module (gnu packages bittorrent)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -170,6 +174,49 @@ XML-RPC over SCGI.")
     (home-page "https://github.com/rakshasa/rtorrent")
     (license l:gpl2+)))
 
+(define-public tremc
+  (let ((commit "401f2303c9b5a6e2e7b0808617d794576d4aa29e")
+        (revision "0"))
+    (package
+      (name "tremc")
+      (version (string-append "0.9.0-" revision "." (string-take commit 7)))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/louipc/tremc.git")
+                 (commit commit)))
+          (sha256
+           (base32
+            "1h2720zn35iggmf9av65g119b0bhskwm1ng0zbkjryaf38nfzpin"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f ; no test suite
+         #:phases
+         (modify-phases %standard-phases
+           ;; The software is just a Python script that must be
+           ;; copied into place.
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (man (string-append out "/share/man/man1"))
+                      ;; FIXME install zsh completions
+                      (completions (string-append out "/etc/bash_completion.d")))
+                 (install-file "tremc" bin)
+                 (install-file "tremc.1" man)
+                 (install-file
+                   (string-append
+                     "completion/bash/"
+                     "transmission-remote-cli-bash-completion.sh")
+                   completions)))))))
+      (synopsis "Console client for the Transmission BitTorrent daemon")
+      (description "Tremc is a console client, with a curses interface, for the
+Transmission BitTorrent daemon.")
+      (home-page "https://github.com/louipc/tremc")
+      (license l:gpl3+))))
+
 (define-public transmission-remote-cli
   (package
     (name "transmission-remote-cli")
@@ -207,9 +254,11 @@ XML-RPC over SCGI.")
                           completions)))))))
     (synopsis "Console client for the Transmission BitTorrent daemon")
     (description "Transmission-remote-cli is a console client, with a curses
-interface, for the Transmission BitTorrent daemon.")
+interface, for the Transmission BitTorrent daemon.  This package is no longer
+maintained upstream.")
     (home-page "https://github.com/fagga/transmission-remote-cli")
-    (license l:gpl3+)))
+    (license l:gpl3+)
+    (properties `((superseded . ,tremc)))))
 
 (define-public aria2
   (package
@@ -326,3 +375,41 @@ the distributed hash table (DHT) and Peer Exchange.  Hashing is multi-threaded
 and will take advantage of multiple processor cores where possible.")
     (license (list l:public-domain      ; sha1.*, used to build without OpenSSL
                    l:gpl2+))))          ; with permission to link with OpenSSL
+
+(define-public libtorrent-rasterbar
+  (package
+    (name "libtorrent-rasterbar")
+    (version "1.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
+                "1_0_10" "/libtorrent-rasterbar-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjcr892hzmcngvpw5bycjci4dk49v763lsnpvbwsjmim2ncwrd8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost-libdir="
+                            (assoc-ref %build-inputs "boost")
+                            "/lib")
+             "--enable-python-binding"
+             "--enable-tests")
+       #:make-flags (list
+                     (string-append "LDFLAGS=-Wl,-rpath="
+                                    (assoc-ref %outputs "out") "/lib"))))
+    (inputs `(("boost" ,boost)
+              ("openssl" ,openssl)))
+    (native-inputs `(("python" ,python-2)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "http://www.rasterbar.com/products/libtorrent/")
+    (synopsis "Feature complete BitTorrent implementation")
+    (description
+     "libtorrent-rasterbar is a feature complete C++ BitTorrent implementation
+focusing on efficiency and scalability.  It runs on embedded devices as well as
+desktops.")
+    (license l:bsd-2)))
+
+

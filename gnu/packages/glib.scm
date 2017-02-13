@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
@@ -30,6 +30,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages enlightenment)
@@ -38,6 +39,8 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -134,7 +137,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.48.2")
+   (version "2.50.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -142,7 +145,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1x6kwrk1zyd3csv0ca3pmwc4bnkc33agn95cds15h6nbi4apappj"))
+              "1xgvmiqbhla6grpmbidqs3bl6zrb9mjknfsh7r4hb3163xy76s5y"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -152,6 +155,7 @@ shared NFS home directories.")
     `(("pcre" ,pcre))) ; in the Requires.private field of glib-2.0.pc
    (inputs
     `(("coreutils" ,coreutils)
+      ("util-linux" ,util-linux)  ; for libmount
       ("libffi" ,libffi)
       ("zlib" ,zlib)
       ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
@@ -279,14 +283,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.48.0")
+    (version "1.50.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "0xsqwxhfqzr79av89mg766kxpb2i41bd0vwspk01xjdzrnn5l9zs"))
+              (base32 "1i9pccig8mv6qf0c1z8fcapays190nmr7j6pyc7cfhzmcv39fr8w"))
              (modules '((guix build utils)))
              (snippet
               '(substitute* "tools/g-ir-tool-template.in"
@@ -427,7 +431,7 @@ translated.")
 (define dbus-glib
   (package
     (name "dbus-glib")
-    (version "0.106")
+    (version "0.108")
     (source (origin
              (method url-fetch)
              (uri
@@ -435,7 +439,7 @@ translated.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "0in0i6v68ixcy0ip28i84hdczf10ykq9x682qgcvls6gdmq552dk"))))
+               "0b307hw9j41npzr6niw1bs6ryp87m5yafg492gqwvsaj4dz0qd4z"))))
     (build-system gnu-build-system)
     (propagated-inputs ; according to dbus-glib-1.pc
      `(("dbus" ,dbus)
@@ -482,7 +486,7 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.48.1")
+    (version "2.50.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -490,7 +494,7 @@ has an ease of use unmatched by other C++ callback libraries.")
                                  "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "1pvw2mrm03p51p03179rb6fk9p42iykkwj1jcdv7jr265xymy8nw"))))
+               "152yz5w0lx0y5j9ml72az7pc83p4l92bc0sb8whpcazldqy6wwnz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
@@ -563,7 +567,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.20.0")
+    (version "3.22.0")
     (source
      (origin
        (method url-fetch)
@@ -572,7 +576,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "0ikzh3l7g1gjh8jj8vg6mdvrb25svp63gxcam4m0i404yh0lgari"))))
+         "1ryblpc4wbhxcwf7grgib4drrab5xi6p78ihhrx0zj7g13xrrch8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
@@ -663,7 +667,6 @@ many applications simultaneously.
 This package provides the library for GLib applications.")
     (license license:lgpl2.1+)))
 
-
 (define-public dbus-c++
   (package
     (name "dbus-c++")
@@ -702,4 +705,47 @@ This package provides the library for GLib applications.")
 programming langauage.  It also contains the utility
 @command{dbuscxx-xml2cpp}.")
     (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
+    (license license:lgpl2.1+)))
+
+(define-public appstream-glib
+  (package
+    (name "appstream-glib")
+    (version "0.6.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://people.freedesktop.org/~hughsient/"
+                                  "appstream-glib/releases/"
+                                  "appstream-glib-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08mrf4k0jhnpdd4fig2grmi2vbxkgdhrwk0d0zq0j1wp5ip7arwp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libarchive" ,libarchive)
+       ("libsoup" ,libsoup)
+       ("nettle" ,nettle)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:configure-flags
+       '("--disable-firmware" "--disable-dep11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "libappstream-glib/as-self-test.c"
+               (("g_test_add_func.*as_test_store_local_appdata_func);") "")
+               (("g_test_add_func.*as_test_store_speed_appdata_func);") "")
+               (("g_test_add_func.*as_test_store_speed_desktop_func);") ""))
+             #t)))))
+    (home-page "https://github.com/hughsie/appstream-glib")
+    (synopsis "Library for reading and writing AppStream metadata")
+    (description "This library provides objects and helper methods to help
+reading and writing @uref{https://www.freedesktop.org/wiki/Distributions/AppStream,AppStream}
+metadata.")
     (license license:lgpl2.1+)))

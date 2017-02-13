@@ -22,6 +22,7 @@
   #:use-module (guix base32)
   #:use-module (guix hash)
   #:use-module (guix tests)
+  #:use-module (guix build-system python)
   #:use-module ((guix build utils) #:select (delete-file-recursively which))
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
@@ -90,6 +91,15 @@ baz > 13.37")
                            (uri
                             "https://pypi.python.org/packages/a2/3b/4756e6a0ceb14e084042a2a65c615d68d25621c6fd446d0fc10d14c4ce7d/certbot-0.8.1.tar.gz"))))))
 
+(test-equal "guix-package->pypi-name, several URLs"
+  "cram"
+  (guix-package->pypi-name
+   (dummy-package "foo"
+                  (source
+                   (dummy-origin
+                    (uri (list "https://bitheap.org/cram/cram-0.7.tar.gz"
+                               (pypi-uri "cram" "0.7"))))))))
+
 (test-assert "pypi->guix-package"
   ;; Replace network resources with sample data.
     (mock ((guix import utils) url-fetch
@@ -108,7 +118,7 @@ baz > 13.37")
                ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
                (_ (error "Unexpected URL: " url)))))
           (mock ((guix http-client) http-fetch
-                 (lambda (url)
+                 (lambda (url . rest)
                    (match url
                      ("https://pypi.python.org/pypi/foo/json"
                       (values (open-input-string test-json)
@@ -130,8 +140,7 @@ baz > 13.37")
                      ('propagated-inputs
                       ('quasiquote
                        (("python-bar" ('unquote 'python-bar))
-                        ("python-baz" ('unquote 'python-baz))
-                        ("python-setuptools" ('unquote 'python-setuptools)))))
+                        ("python-baz" ('unquote 'python-baz)))))
                      ('home-page "http://example.com")
                      ('synopsis "summary")
                      ('description "summary")
@@ -172,7 +181,7 @@ baz > 13.37")
                  (delete-file-recursively "foo-1.0.0.dist-info")))
              (_ (error "Unexpected URL: " url)))))
         (mock ((guix http-client) http-fetch
-               (lambda (url)
+               (lambda (url . rest)
                  (match url
                    ("https://pypi.python.org/pypi/foo/json"
                     (values (open-input-string test-json)
@@ -194,8 +203,7 @@ baz > 13.37")
                    ('propagated-inputs
                     ('quasiquote
                      (("python-bar" ('unquote 'python-bar))
-                      ("python-baz" ('unquote 'python-baz))
-                      ("python-setuptools" ('unquote 'python-setuptools)))))
+                      ("python-baz" ('unquote 'python-baz)))))
                    ('home-page "http://example.com")
                    ('synopsis "summary")
                    ('description "summary")

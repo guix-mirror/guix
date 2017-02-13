@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1601,6 +1602,7 @@ accept from local for any relay
     (($ <opensmtpd-configuration> package config-file)
      (let ((smtpd (file-append package "/sbin/smtpd")))
        #~(begin
+           (use-modules (guix build utils))
            ;; Create mbox and spool directories.
            (mkdir-p "/var/mail")
            (mkdir-p "/var/spool/smtpd")

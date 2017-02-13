@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,7 +24,6 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix grafts)
-  #:use-module (guix combinators)
 
   ;; Use the procedure that destructures "NAME-VERSION" forms.
   #:use-module ((guix utils) #:hide (package-name->name+version))
@@ -99,8 +98,10 @@ found.  Return #f if no build log was found."
 
 (define (register-root store paths root)
   "Register ROOT as an indirect GC root for all of PATHS."
-  (let* ((root (string-append (canonicalize-path (dirname root))
-                              "/" root)))
+  (let* ((root (if (string-prefix? "/" root)
+                   root
+                   (string-append (canonicalize-path (dirname root))
+                                  "/" root))))
     (catch 'system-error
       (lambda ()
         (match paths
@@ -344,8 +345,8 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:keep-failed? (assoc-ref opts 'keep-failed?)
                      #:keep-going? (assoc-ref opts 'keep-going?)
                      #:rounds (assoc-ref opts 'rounds)
-                     #:build-cores (or (assoc-ref opts 'cores) 0)
-                     #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
+                     #:build-cores (assoc-ref opts 'cores)
+                     #:max-build-jobs (assoc-ref opts 'max-jobs)
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
                      #:substitute-urls (assoc-ref opts 'substitute-urls)
@@ -462,7 +463,6 @@ options handled by 'set-build-options-from-command-line', and listed in
     (substitutes? . #t)
     (build-hook? . #t)
     (print-build-trace? . #t)
-    (max-silent-time . 3600)
     (verbosity . 0)))
 
 (define (show-help)
@@ -486,6 +486,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -d, --derivations      return the derivation paths of the given packages"))
   (display (_ "
       --check            rebuild items to check for non-determinism issues"))
+  (display (_ "
+      --repair           repair the specified items"))
   (display (_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
@@ -534,6 +536,12 @@ must be one of 'package', 'all', or 'transitive'~%")
                  (lambda (opt name arg result . rest)
                    (apply values
                           (alist-cons 'build-mode (build-mode check)
+                                      result)
+                          rest)))
+         (option '("repair") #f #f
+                 (lambda (opt name arg result . rest)
+                   (apply values
+                          (alist-cons 'build-mode (build-mode repair)
                                       result)
                           rest)))
          (option '(#\s "system") #t #f

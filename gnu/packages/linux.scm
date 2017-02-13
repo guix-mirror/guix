@@ -19,6 +19,9 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
+;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +46,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
@@ -61,8 +65,10 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -332,27 +338,26 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
+(define %linux-libre-version "4.9.9")
+(define %linux-libre-hash "0grk94jym0wz581c7pimia0rszq4h2xqjmf818i4l4qrjd0bnqvk")
+
 (define-public linux-libre
-  (make-linux-libre "4.9.3"
-                    "1jd2rz58lcha9ac35glr26lc6hfi49fvpiwshgpd6ygf4irrs82w"
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.42"
-                    "1jd43yvycizgqdmwp9rpj7gpjy37mah8jlqaiskjb0hivyk495yz"
+  (make-linux-libre "4.4.48"
+                    "0g7ram0b5b7p0c6v5m5im6m5pwa348mhkhf67rs036lzvcw1bvyk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.37"
-                    "0q79cxmrz0j5wh7z1dc103q6q6qf7rqgjl7ka8lvn4vl32pr0kq1"
+  (make-linux-libre "4.1.38"
+                    "165kmzglhg63hn7y4q7r6cb2dpsljxiq1czvgyx0bkd1vd2bcvsa"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
-
-;; Avoid rebuilding kernel variants when there is a minor version bump.
-(define %linux-libre-version "4.9.3")
-(define %linux-libre-hash "1jd2rz58lcha9ac35glr26lc6hfi49fvpiwshgpd6ygf4irrs82w")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -1590,14 +1595,14 @@ system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ppv953gn2zylcagr4z6zg5y2x93dxrml29plypg6xgbq3hrv2bs"))
+                "124swm93dm4ca0pifgkrand3r9gvj3019d4zkfxsj9djpvv0mnaz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1758,14 +1763,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.166")
+    (version "2.02.168")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "150v0mawd2swdvypcmkjd3h3s4n5i1220h6sxx94a8jvp1kb0871"))
+                "03b62hcsj9z37ckd8c21wwpm07s9zblq7grfh58yzcs1vp6x38r3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2465,7 +2470,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "3.4")
+    (version "4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2473,13 +2478,14 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0248v9f28mrbwabl94ck22gfim29sqhkf70wrpfi52nk4x3bxl17"))))
+                "1ad3mma641946wn5lsllwf0lifw9lps34fv1nnkhyfpd9krffshx"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "INSTALL=install"
+                      (list "CC=gcc"
+                            "INSTALL=install"
                             "CHECK_RUN_DIR=0"
                             ;; TODO: tell it where to find 'sendmail'
                             ;; (string-append "MAILCMD=" <???> "/sbin/sendmail")
@@ -2656,7 +2662,7 @@ is flexible, efficient and uses a modular implementation.")
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
-    (version "1.2.5")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2664,7 +2670,7 @@ is flexible, efficient and uses a modular implementation.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i0sh0s6wnm4dqxli3drva871wgbbm57qjf592vnswna9hc6bvim"))))
+                "1rvq4hapy2anal1vg1yidv4x8rg4iw5sxfwqixkw0q2qsxb54471"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2723,7 +2729,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.9")
+    (version "4.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2731,7 +2737,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "18y88avadn4wb3xmczd6pfcjr7ik62dw4phk6fmkms2j8vmvl9z2"))))
+                "1ppy2y9vypxw9awchari21yd3s2d7w2a9q3f4jq7dnjy5gyrnjj6"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2902,6 +2908,7 @@ from userspace.")
                (base32
                 "180y5y09h30ryf2vim8j30a2npwz1iv9ly5yjmh3wjdkwh2jrdyp"))
               (modules '((guix build utils)))
+              (patches (search-patches "ntfs-3g-CVE-2017-0358.patch"))
               (snippet
                ;; Install under $prefix.
                '(substitute* '("src/Makefile.in" "ntfsprogs/Makefile.in")
@@ -3116,14 +3123,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "147")
+    (version "148")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "10xxmqpd348ifbs7w8j0m53agp28r6imv237ha3kmhp632hmyf1d"))
+                "1d5g09ndfsnl56vyhb5xw0zxspnh0f937biw3agqhdfbvw40j9jr"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3361,4 +3368,169 @@ running boot option, and more.")
 monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 @code{tapestat}, @code{cifsiostat}, @code{pidstat}, @code{sar}, @code{sadc},
 @code{sadf} and @code{sa}.")
+    (license license:gpl2+)))
+
+(define-public light
+  (package
+    (name "light")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/haikarainen/" name
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r5gn6c0jcxknzybl6059dplxv46dpahchqq4gymrs7z8bp0hilp"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'patch-makefile
+           (lambda _
+             (substitute* "Makefile" (("chown") "#")))))))
+    (native-inputs
+     `(("help2man" ,help2man)))
+    (home-page "https://haikarainen.github.io/light")
+    (synopsis "GNU/Linux application to control backlights")
+    (description
+     "Light is a program to send commands to screen backlight controllers
+under GNU/Linux.  Features include:
+
+@itemize
+@item It does not rely on X.
+@item Light can automatically figure out the best controller to use, making
+full use of underlying hardware.
+@item It is possible to set a minimum brightness value, as some controllers
+set the screen to be pitch black at a vaĺue of 0 (or higher).
+@end itemize
+
+Light is the successor of lightscript.")
+    (license license:gpl3+)))
+
+(define-public tlp
+  (package
+    (name "tlp")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/linrunner/"
+                    (string-upcase name)
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xksm8ar6dbq0azbfz8qs9yyzqg1j333lyd5znc074rz8inj4yw8"))))
+    (inputs `(("bash" ,bash)
+              ("dbus" ,dbus)
+              ("ethtool" ,ethtool)
+              ("eudev" ,eudev)
+              ("grep" ,grep)
+              ("hdparm" ,hdparm)
+              ("inetutils" ,inetutils)
+              ("iw" ,iw)
+              ("kmod" ,kmod)
+              ("pciutils" ,pciutils)
+              ("perl" ,perl)
+              ("rfkill" ,rfkill)
+              ("sed" ,sed)
+              ("usbutils" ,usbutils)
+              ("util-linux" ,util-linux)
+              ("wireless-tools" ,wireless-tools)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'setenv
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "TLP_WITH_SYSTEMD" "0")
+               (setenv "TLP_NO_INIT" "1")
+               (setenv "TLP_NO_PMUTILS" "1")
+               (setenv "TLP_SBIN" (string-append out "/bin"))
+               (setenv "TLP_BIN" (string-append out "/bin"))
+               (setenv "TLP_TLIB" (string-append out "/share/tlp-pm"))
+               (setenv "TLP_ULIB" (string-append out "/lib/udev"))
+               (setenv "TLP_CONF" (string-append out "/etc/tlp"))
+               (setenv "TLP_SHCPL"
+                       (string-append out "/share/bash-completion/completions"))
+               (setenv "TLP_MAN" (string-append out "/share/man")))))
+         (delete 'check)
+         (replace 'install
+           (lambda _
+             (system "make install-tlp install-man")))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (bin-files (find-files bin ".*")))
+               (define (bin-directory input-name)
+                 (string-append (assoc-ref inputs input-name) "/bin"))
+               (define (sbin-directory input-name)
+                 (string-append (assoc-ref inputs input-name) "/sbin"))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("PATH" ":" prefix
+                               ,(append
+                                 (map bin-directory '("bash"
+                                                      "coreutils"
+                                                      "dbus"
+                                                      "eudev"
+                                                      "grep"
+                                                      "inetutils"
+                                                      "kmod"
+                                                      "perl"
+                                                      "sed"
+                                                      "usbutils"
+                                                      "util-linux"))
+                                 (map sbin-directory '("ethtool"
+                                                       "hdparm"
+                                                       "iw"
+                                                       "pciutils"
+                                                       "rfkill"
+                                                       "wireless-tools"))))))
+                         bin-files)))))))
+    (home-page "http://linrunner.de/en/tlp/tlp.html")
+    (synopsis "Power management tool for Linux")
+    (description "TLP is a power management tool for Linux.  It comes with
+a default configuration already optimized for battery life.  Nevertheless,
+TLP is customizable to fulfil system requirements.  TLP settings are applied
+every time the power supply source is changed.")
+
+    ;; 'COPYING' is a custom version that says that one file is GPLv3+ and the
+    ;; rest is GPLv2+.
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public lshw
+  (package
+    (name "lshw")
+    (version "B.02.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ezix.org/software/"
+                                  "files/lshw-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0brwra4jld0d53d7jsgca415ljglmmx1l2iazpj4ndilr48yy8mf"))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:phases (modify-phases %standard-phases (delete 'configure))
+        #:tests? #f ; no tests
+        #:make-flags
+          (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (synopsis "List hardware information")
+    (description
+     "@command{lshw} (Hardware Lister) is a small tool to provide
+detailed information on the hardware configuration of the machine.
+It can report exact memory configuration, firmware version, mainboard
+configuration, CPU version and speed, cache configuration, bus speed,
+and more on DMI-capable x86 or EFI (IA-64) systems and on some PowerPC
+machines (PowerMac G4 is known to work).")
+    (home-page "https://www.ezix.org/project/wiki/HardwareLiSter")
     (license license:gpl2+)))

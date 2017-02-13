@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
@@ -15,11 +15,12 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
+;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +80,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
   #:use-module (gnu packages tls)
@@ -86,11 +88,12 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages docbook)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
-                           bsd-2))
+                           bsd-2 x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -247,10 +250,87 @@ aliasing facilities to work just as they would on normal mail.")
 operating systems.")
     (license gpl2+)))
 
+(define-public neomutt
+  (package
+    (inherit mutt)
+    (name "neomutt")
+    (version "20170113")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/" name "/" name
+                           "/archive/" name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cqr77q263b5qcmdw6g0qixdpk6gmzgzpa03v226nr55v2ips9jg"))))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("gdbm" ,gdbm)
+       ("gpgme" ,gpgme)
+       ("ncurses" ,ncurses)
+       ("gnutls" ,gnutls)
+       ("openssl" ,openssl) ;For smime
+       ("perl" ,perl)
+       ("libxslt" ,libxslt)
+       ("libidn" ,libidn)
+       ("libxml2" ,libxml2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("notmuch" ,notmuch)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list "--enable-smtp"
+             "--enable-imap"
+             "--enable-pop"
+             "--enable-gpgme"
+
+             ;; database, implies header caching
+             "--without-tokyocabinet"
+             "--without-qdbm"
+             "--without-bdb"
+             "--without-lmdb"
+             "--with-gdbm"
+
+             "--with-gnutls"
+             "--without-ssl"
+             "--with-sasl"
+
+             "--with-regex"
+             "--enable-smime"
+             "--enable-notmuch"
+             "--with-idn"
+
+             ;; If we do not set this, neomutt wants to check
+             ;; whether the path exists, which it does not
+             ;; in the chroot. The workaround is this.
+             "--with-mailpath=/var/mail"
+
+             "--with-external-dotlock"
+             "--enable-nntp"
+             "--enable-compressed"
+
+             (string-append "--with-curses="
+                            (assoc-ref %build-inputs "ncurses")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (zero? (system* "sh" "autoreconf" "-vfi")))))))
+    (home-page "https://www.neomutt.org/")
+    (synopsis "Command-line mail reader based on Mutt")
+    (description
+     "NeoMutt is a command-line mail reader which is based on mutt.
+It adds a large amount of features to mutt, and they all find their way
+into mutt, so it is not a fork but a large set of feature patches.")))
+
 (define-public gmime
   (package
     (name "gmime")
-    (version "2.6.20")
+    (version "2.6.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -258,7 +338,7 @@ operating systems.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0rfzbgsh8ira5p76kdghygl5i3fvmmx4wbw5rp7f8ajc4vxp18g0"))))
+                "0fjmsphvz8srsmcdl4v13p2z4jp2migaybyny444hal4snbr0py2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -327,7 +407,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.12")
+    (version "7.0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -335,7 +415,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1m1lp7wxnra8k7lsqc8xlm5giy3i89wvmp35jjb1gf4yslpddnkz"))))
+                "1kl72wcxnxb4y5lm2f7ymwjsisnnpwb4w971ajkxlsiwjhzq8i7p"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -376,6 +456,57 @@ and corrections.  It is based on a Bayesian filter.")
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
     (license gpl2+)))
+
+(define-public emacs-mew
+  (package
+    (name "emacs-mew")
+    (version "6.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://mew.org/Release/mew-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03fzky2kz73vgx4cbps2psbbnrgqgkk5q7jwfldisymkzr9iz03y"))))
+    (native-inputs
+     `(("emacs" ,emacs)))
+    (propagated-inputs
+     `(("ruby-sqlite3" ,ruby-sqlite3) ; optional for the database of messages
+       ("ruby" ,ruby))) ; to set GEM_PATH so ruby-sqlite3 is found at runtime
+    (build-system gnu-build-system)
+    (arguments
+     (let ((elisp-dir "/share/emacs/site-lisp/guix.d/mew")
+           (icon-dir  "/share/mew"))
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:configure-flags
+         (list (string-append "--with-elispdir=" %output ,elisp-dir)
+               (string-append "--with-etcdir=" %output ,icon-dir))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'configure 'patch-mew-icon-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               (emacs-substitute-sexps "mew-key.el"
+                 ("(def.* mew-icon-directory"
+                  `(progn
+                    (add-to-list 'image-load-path 'mew-icon-directory)
+                    ,(string-append (assoc-ref outputs "out") ,icon-dir))))
+               #t))
+           (add-after 'install 'generate-autoloads
+             (lambda* (#:key outputs #:allow-other-keys)
+               (emacs-generate-autoloads
+                "mew" (string-append (assoc-ref outputs "out") ,elisp-dir))
+               #t)))
+         #:tests? #f)))
+    (home-page "http://www.mew.org")
+    (synopsis "Emacs e-mail client")
+    (description "Mew (Messaging in the Emacs World) is a user interface
+for text messages, multimedia messages (MIME), news articles and
+security functionality including PGP, S/MIME, SSH, and SSL.")
+    (license bsd-3)))
 
 (define-public mu
   (package
@@ -732,6 +863,27 @@ framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
     (license (non-copyleft "file://COPYING"))))
+
+(define-public compface
+  (package
+    (name "compface")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.heanet.ie/mirrors/"
+                                  "ftp.xemacs.org/aux/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09b89wg63hg502hsz592cd2h87wdprb1dq1k1y07n89hym2q56d6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))
+    (synopsis "Portrait image compressor")
+    (description "This packages takes your 48x48x1 portrait image and
+compresses it.")
+    (home-page "http://www.cs.indiana.edu/pub/faces/")
+    (license (x11-style "file://README"))))
 
 (define-public claws-mail
   (package
@@ -1536,10 +1688,10 @@ powerful user customization features.")
                         "contrib/mmuegel" "devtools/bin/configure.sh")
                   (find-files "." ".*\\.m4")
                   (find-files "." ".*\\.cf"))
-               (("/bin/sh") (which "bash")))
+               (("/bin/sh") (which "sh")))
 
              (substitute* "devtools/bin/Build"
-               (("SHELL=/bin/sh") (string-append "SHELL=" (which "bash"))))
+               (("SHELL=/bin/sh") (string-append "SHELL=" (which "sh"))))
              #t))
          (replace 'configure
            (lambda _
@@ -1740,3 +1892,62 @@ the GNU Mailman 3 REST API.")
 
 (define-public python2-mailmanclient
   (package-with-python2 python-mailmanclient))
+
+(define-public mlmmj
+  (package
+    (name "mlmmj")
+    (version "1.2.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://mlmmj.org/releases/mlmmj-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "1piwvcxkqadjwk5x8jicaiyz9nngmaj3w13ghdqgaki32xd7zk9v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl))) ; For "contrib/web/"
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       ;; mlmmj-receive-strip is a replacement for mlmmj-receive
+       ;; It opens the files control/mimedeny and control/mimestrip to get a list
+       ;; of mimetypes for parts of multipart/mime messages that should be denied
+       ;; or stripped. The parts then get stripped directly when the mail is
+       ;; received. mlmmj-receive-strip also appends an extra header
+       ;; X-ThisMailContainsUnwantedMimeParts: Y when the mail contains unwanted
+       ;; mime parts
+       (list "--enable-receive-strip")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'install-contrib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/mlmmj"))
+                    (contrib (string-append share "/contrib/web"))
+                    (texts (string-append share "/listtexts")))
+               (copy-recursively "contrib/web/" contrib)
+               (copy-recursively "listtexts" texts)
+               (rename-file texts (string-append share "/texts"))
+               #t))))))
+    (home-page "http://mlmmj.org")
+    (synopsis "Mailing list managing made joyful")
+    (description
+     "Mlmmj is a simple and slim mailing list manager (MLM) inspired by ezmlm.
+It works with many different Mail Transport Agents (MTAs) and is simple for a
+system adminstrator to install, configure and integrate with other software.
+As it uses very few resources, and requires no daemons, it is ideal for
+installation on systems where resources are limited.  Its features include:
+@enumerate
+@item Archive, Custom headers / footer,
+@item Fully automated bounce handling (similar to ezmlm),
+@item Complete requeueing functionality, Moderation functionality, Subject prefix,
+@item Subscribers only posting, Regular expression access control,
+@item Functionality to retrieve old posts, Web interface, Digests,
+@item No-mail subscription, VERP support,
+@item Delivery Status Notification (RFC1891) support,
+@item Rich and customisable texts for automated operations.
+@end enumerate\n")
+    (license license:expat)))

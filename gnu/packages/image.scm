@@ -312,7 +312,8 @@ collection of tools for doing simple manipulations of TIFF images.")
                                  "libtiff-CVE-2016-10093.patch"
                                  "libtiff-divide-by-zero-tiffcp.patch"
                                  "libtiff-assertion-failure.patch"
-                                 "libtiff-CVE-2016-10094.patch"))))))
+                                 "libtiff-CVE-2016-10094.patch"
+                                 "libtiff-CVE-2017-5225.patch"))))))
 
 (define-public libwmf
   (package
@@ -497,7 +498,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
          (base32
           "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
         (patches
-          (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"))))))
+          (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"
+                          "openjpeg-CVE-2016-9572-CVE-2016-9573.patch"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)

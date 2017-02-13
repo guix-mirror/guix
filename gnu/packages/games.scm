@@ -10,20 +10,21 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
+;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,6 +105,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -176,22 +178,23 @@ scriptable with Guile.")
 (define-public abbaye
   (package
     (name "abbaye")
-    (version "1.13")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/"
-                           "google-code-archive-downloads/v2/code.google.com/"
-                           "abbaye-for-linux/abbaye-for-linux-src-"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/nevat/abbayedesmorts-gpl/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wgvckgqa2084rbskxif58wbb83xbas8s1i8s7d57xbj08ryq8rk"))))
+         "1a67b0hq6271dd7pvwndjq29cwn2n8gawwz17xafa3k1hrhf8vw3"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Unbundle fonts.
+        '(delete-file-recursively "fonts"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:modules ((ice-9 match)
-                  (guix build gnu-build-system)
-                  (guix build utils))
+     '(#:make-flags '("CC=gcc")
        #:phases (modify-phases %standard-phases
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -201,10 +204,8 @@ scriptable with Guile.")
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
-                      (for-each (lambda (file)
-                                  (substitute* file
-                                    (("/usr") (assoc-ref outputs "out"))))
-                                '("makefile" "src/pantallas.c" "src/comun.h"))))
+                      (substitute* "Makefile"
+                        (("/usr") (assoc-ref outputs "out")))))
                   (add-before 'install 'make-install-dirs
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((prefix (assoc-ref outputs "out")))
@@ -216,15 +217,66 @@ scriptable with Guile.")
                   (delete 'configure))
        #:tests? #f)) ;; No check target.
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("sdl-union" ,(sdl-union))))
-    (home-page "http://code.google.com/p/abbaye-for-linux/")
+    (inputs `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer)))))
+    (home-page "https://github.com/nevat/abbayedesmorts-gpl")
     (synopsis "GNU/Linux port of the indie game \"l'Abbaye des Morts\"")
     (description "L'Abbaye des Morts is a 2D platform game set in 13th century
 France.  The Cathars, who preach about good Christian beliefs, were being
 expelled by the Catholic Church out of the Languedoc region in France.  One of
 them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
-    (license license:gpl3+)))
+    (license license:gpl3)))
+
+(define-public angband
+  (package
+    (name "angband")
+    (version "4.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://rephial.org/downloads/4.0/"
+                           "angband-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lpq2kms7hp421vrasx2bkkn9w08kr581ldwik3v0hlq6h7rlxhd"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; So, some of the sounds/graphics/tilesets are under different
+        ;; licenses... some of them even nonfree!  This is a console-only
+        ;; version of this package so we just remove them.
+        ;; In the future, if someone tries to make a graphical variant of
+        ;; this package, they can deal with that mess themselves. :)
+        '(begin
+           (for-each
+            (lambda (subdir)
+              (let ((lib-subdir (string-append "lib/" subdir)))
+                (delete-file-recursively lib-subdir)))
+            '("fonts" "icons" "sounds" "tiles"))
+           (substitute* "lib/Makefile"
+             ;; And don't try to invoke makefiles in the directories we removed
+             (("gamedata customize help screens fonts tiles sounds icons user")
+              "gamedata customize help screens user"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                                 ;no check target
+       #:configure-flags (list (string-append "--bindir=" %output "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen.sh
+           (lambda _
+             (substitute* "acinclude.m4"
+               (("ncursesw5-config") "ncursesw6-config"))
+             (zero? (system* "sh" "autogen.sh"))))))) 
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://rephial.org/")
+    (synopsis "Dungeon exploration roguelike")
+    (description "Angband is a Classic dungeon exploration roguelike.  Explore
+the depths below Angband, seeking riches, fighting monsters, and preparing to
+fight Morgoth, the Lord of Darkness.")
+    (license license:gpl2)))
 
 (define-public pingus
   (package
@@ -942,7 +994,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.7.3")
+    (version "0.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -950,7 +1002,7 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "1lg3z7jhzmsjym53qss8mbydny8hafwjnfsc7x91hrr9zrkwblly"))))
+                "0d2j4ybdjmimg67v2fndgahgq4fvgz3fpfb3a4l1ar75n6hy776s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1254,7 +1306,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.6.12.24")
+    (version "1.7.1.21")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1262,7 +1314,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "1g64pid26vcv1ay002bzz6ymabwrmy3wmklywpcgpvrhynm6f2cq"))))
+                "0q9hk9jgz5jja1mmba5iafxwavk6991kjpmdxdkgbam0hk15pqmz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2159,42 +2211,45 @@ http://lavachat.symlynx.com/unix/")
 
 (define-public red-eclipse
   (let ((data-sources
-         '(("acerspyro"   "0hqwa3b65l8mz73mcdsvrwbc14mrx1qn52073p5zh69pqd0mlfi0")
-           ("actors"      "0v87wifqwam5j6vsiidmcvw22i51h9h4skgwhi511mxkwryrp26h")
-           ("appleflap"   "0bkh1v125dwd5jhb4rrc1sl0jdlbb2ib53ihbxa66x1p8l27aklw")
-           ("blendbrush"  "1wh88fshsy492kjvadql2ik1q5pqgcj84jz0hc93ngag8xibxhfi")
-           ("caustics"    "0pc5bnd4fmxh06cm3h8045wgiy894f9x5a943n28gymdyql7q4f6")
-           ("crosshairs"  "1w9acqhxw5nm690862msl5jjbk8qlizxm1vv7p95lgm7q7pg0yxx")
-           ("elyvisions"  "04q31lp5jm8b9crf81s6k1jvrn90i1ay3s6vk103iv8g4amsfhdx")
-           ("fonts"       "1rsfk2d9xk0aaazvrcxk4z5n2cnys7pixadh521mv7zrxbx2d95x")
-           ("freezurbern" "0b2xg5x79yxanr30dhw3zr6dsc6x9w7v7aghbh9kp292j31l280m")
-           ("john"        "07pgjg1rxl3bmwriy2yl3g63nnryjws8jl0ry1cza3p9wd59f8rz")
-           ("jojo"        "0lkzd5pwfqan1gaaz22r5iz4z2nq8dkzycddwa0cxavmq8qmj281")
-           ("jwin"        "0mnyp1inhabw56mw5wkhfd4k6z0lvyhr6cjj6hnj3bz2dip2y2zm")
-           ("luckystrike" "1d89xnvahmzlgm0bjh3zhf02vxx1q16b70x2cihbl05dic1v75pr")
-           ("maps"        "19gy8kl7w2llsklym32hnlnd05z2dhq5dhdxhq5ss5na67skv5by")
-           ("mayhem"      "1si2gnsf732ml8ygkhg27ckvic9wafqmkgq0ab1ifpfpy606sa8d")
-           ("mikeplus64"  "0l48czyglbc0d4ack8xz9imarb6r4l29krq0mf3ld7yrxbc296vr")
-           ("misc"        "0fri1l3i1s1pzvr7aah4a7d9h2i877c21x184z80v4jpqv4228f3")
-           ("nobiax"      "1jv2yv2qj9qbxhaj1nd70v5142dpg074gkkh3bw2anchi8pzyhs8")
-           ("particles"   "0gwj6m5197gpwddqb3pwlkaiafgfszqysaz2h1bx60qzh5crgsf9")
-           ("philipk"     "0ngccscmvlgc2z96vira7phr87f65l4v7immbl697zmc5fda6k68")
-           ("projectiles" "1ig6dag5989rgwrhvmz7xz5q8gf5slgnda8h8zmiyhvrnal09hbp")
-           ("props"       "0g3sgrlgmk9zrl67d9pa93hzb4xx3wwznfxa1h3wwilld0m7gzhx")
-           ("skyboxes"    "0lvpzc741vkmy2rnra41ij91wq3pdl28xamy6vapq61mf44xmmvj")
-           ("sounds"      "0jmvvixcx7kv34sxjs4x7vqsyhir6l5av6b3lm8m8rsfi0sdvqml")
-           ("textures"    "1yx01k9yn2v1k79sa68wa51qw1zk03b8irkvxyd14ygibkicvgnb")
-           ("torley"      "1286srp05nfjban6ca124njyil70gr7bm6aqn5p0vz0xr00l4dw5")
-           ("trak"        "1079fg2cbm95psxic3r63i94z3cnbf04wlid2hqnw308s9l9q36c")
-           ("ulukai"      "0yd80ivn51ya60m4cg4bw13wxgijkjagfgskdphy9adgsaqq9n7b")
-           ("unnamed"     "0l21dhw7kbav59p7ysn6dr2sqzjivwxafml4023yznlhxx5fic4m")
-           ("vanities"    "1aqi32lf7y64fv1y00mpixckjr9wj8p1prgyxjiv7s3hf5q7n2b3")
-           ("vegetation"  "0253fdn5sxywrjb79krhvq2884almxpysn6dn0hi6ylpjzl78zrn")
-           ("weapons"     "0y2zsx6g6k9izshgix9id3y01hsisd88mp5zrlm5x9v8y0sf6kf8")
-           ("wicked"      "0ib0325dn6vzpx3p4cr6bhg9qhj8c5s20xyzy88xjc3y2pazbdvx"))))
+         '(("acerspyro"   "0zmg78scrfdv33h7vszqvzylcqjwg7d5b0j2riav3rjfh326j8xx")
+           ("actors"      "0l00rsvppqzdpsikm5qpj38jiygirszxlzay2nxp4g4n2qjq0m4a")
+           ("appleflap"   "0jhfr7f13hk3nswwxqc4jajriipr6zz6j63v955nv4sgxs7lzbjd")
+           ("blendbrush"  "1nk0zaisbqf2khrivq8ls6z2lnh6d51m133m2ppxk7k4c9gq1imq")
+           ("caustics"    "1hq08k476wayi0kmk4ps8h6jr75yinq04f1r2p8r79xsdpxq9my5")
+           ("crosshairs"  "1gmrmjm7i7n9py0qrzamk7ygi63yx1mr2pp6iwz2vwngprl03n8m")
+           ("dziq"        "0gr36ydrv8syjxv7w9dw3ix8waaq201fzxr0klkqp260p8xp215s")
+           ("elyvisions"  "05syxlpsap6nfwxnnd0ls7qj1p4vhw2jxi41pi5inwpfifapfphz")
+           ("fonts"       "184syks602xc657q08973w5ji50x5zssvd4vp2q2ig8m68iyr51c")
+           ("freezurbern" "020gpgcpy4rqjd9d18npfm96j8f02jcjnccbxcgzk1yb58y687ya")
+           ("john"        "0hj5kwlb2gb0gsnl9bk7dkqlk8r7vxcw8gxpgrb3kfn8d9cwcb7k")
+           ("jojo"        "0fij06040r7s5p7jksxm7wxi9jqwkhhm8iywys0dagk8j2wcbvsz")
+           ("jwin"        "0ysfynjvypc8dszf7rsvk02jgw8fmsli49vy2xpm83zpkrqpddgf")
+           ("luckystrike" "1bm0xdqjv35ry5xwbzw3a3v1xf2gj1jwfg29nyl6w3ch0h6crr11")
+           ("maps"        "0c9d1zxmpnngwhchzw6xb6cf84cx8xyycmdqcvyhamrd95d96qma")
+           ("mayhem"      "133pdql7ari159skd9qdmw0p1m73x32d1v6jswkz0xwk8vgxmkil")
+           ("mikeplus64"  "1d5npn9wlw0mviz9vhzzcsj98jvfh1wbvlh1nyqfj4ws5nfxhs7x")
+           ("misc"        "19x2ps6yxnfrz0xdhqdwncaq25ds7i4w2l8sdfi95yh2r7c5k1qn")
+           ("nieb"        "15029nipl92cb0jbh46z00k51hf3jk4v05pwx266b6b11bapdz0c")
+           ("nobiax"      "0k9apim5z4ihd5ajmnbq4gyh24w872dv0mr5v8wqn31a8gxzahhp")
+           ("particles"   "06827r9pnhzjil381xiwcbc93v9nxin7qlr59yrvk9gdzxmklk9m")
+           ("philipk"     "1l6fhl6qz471vjn05hvk29bm8dhwnzqbmi2hdylpa9k998nzkfc1")
+           ("projectiles" "03ay8ik52n3vx723swqlnl5gpkzf1v1gadwj3zcnh43ch7nd2bqh")
+           ("props"       "1yxz7gfmb79sqqrkyfdzp4ar9rf5f1kpfij4nrkk1l8vbw9liksc")
+           ("skyboxes"    "1mm98mhb6yhb006p1hlic91jcwjxhq79mblxciwbqqa9c5g4yki6")
+           ("snipergoth"  "1vlpmwlg71g6l5b706gp82bc07i5bbw2zphzynm2fx49za0zdi44")
+           ("sounds"      "156g5wh8cvdh6zr33haqm566sd28ylnzdf2h4pqzpxbb2i19vbfg")
+           ("textures"    "0wkhl5cgymr9kslzhksi83hs15rb0q01xvax5khi6b4dcl3mrmsh")
+           ("torley"      "1xlag6ndjyqafl984n6d9zi96dv9aif7vrc2nvikc3iwgjwlbxav")
+           ("trak"        "12x9ix8zkqn9svy56qmdgj4x2814qh25f4srplgq691lqn9qjhvd")
+           ("ulukai"      "0gz1hd8hca2biskc85hw4jjacpsmqg9x4w6cwrka8x987xmc92k5")
+           ("unnamed"     "09v8fjy6jqypm1i121kilg3z6zpw7dm0i4gxhd9b7ihprvzvy8r7")
+           ("vanities"    "0m3vfq9l71pbb80qz4s3k8r5azmm158chqbw8snch09ymxm6h462")
+           ("vegetation"  "07yzm9lbzr624j4i652ny5p762p83gadg40c1k8gwff4y7yk55gn")
+           ("weapons"     "05fsp17gdrhjqdwia7rwdw9gcijaqwcnny8lf6krms43xmn8cj0x")
+           ("wicked"      "0jjgwzdibr5my369gwvmvbklpjlwq939zgf643rv0168xc087xb2"))))
     (package
       (name "red-eclipse")
-      (version "1.5.6")
+      (version "1.5.8")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://github.com/red-eclipse/base"
@@ -2202,7 +2257,7 @@ http://lavachat.symlynx.com/unix/")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1sv3xhng18sl655sd46lpmqbqz32h32s7nwz68bdr9z9w3iwkf66"))))
+                  "1ah92axwcai0fhgm7pvfb2dxvfdiwwyh8iqyiffndh6782hxz3bc"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f            ; no check target
@@ -2789,7 +2844,7 @@ the GNU GPL.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.1")
+    (version "2.01.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceforge.net/projects/tintin"
@@ -2797,7 +2852,7 @@ the GNU GPL.")
                                   "/tintin" "-" version ".tar.gz"))
               (sha256
                (base32
-                "195wrfcys8yy953gdrl1gxryhjnx9lg1vqgxm3dyzm8bi18aa2yc"))))
+                "13h39agyhlhm17zyqlb56bmbbxpimikyf5pana3gd3ylvqy1xq81"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -3068,3 +3123,69 @@ symbols, the game needs graphics to render the non-euclidean world.")
 for Un*x systems with X11.")
     (home-page "http://olofson.net/kobodl/")
     (license license:gpl2+)))
+
+(define-public freeciv
+  (package
+   (name "freeciv")
+   (version "2.5.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://download.gna.org/freeciv/"
+           "stable/freeciv-" version ".tar.bz2"))
+     (sha256
+      (base32
+       "16wrnsx5rmbz6rjs03bhy0vn20i6n6g73lx7fjpai98ixhzc5bfg"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("curl" ,curl)
+      ("cyrus-sasl" ,cyrus-sasl)
+      ("gtk+" ,gtk+)
+      ("sdl-mixer" ,sdl-mixer)
+      ("zlib" ,zlib)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "http://www.freeciv.org/")
+   (synopsis "Turn based empire building strategy game")
+   (description "Freeciv is a turn based empire building strategy game
+inspired by the history of human civilization.  The game commences in
+prehistory and your mission is to lead your tribe from the Stone Age
+to the Space Age.")
+   (license license:gpl2+)))
+
+(define-public no-more-secrets
+  (package
+    (name "no-more-secrets")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/bartobri/no-more-secrets/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "038flwqr0kqv55im2v76xjn01zbvvkb3nzb5ridwm2kbnk9cgg4v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list "CC=gcc" "all-ncurses"
+                          (string-append "prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://github.com/bartobri/no-more-secrets")
+    (synopsis "Recreation of data decryption effect in \"Sneakers\"")
+    (description
+     "@code{No More Secrets} provides a command line tool called \"nms\"
+that recreates the famous data decryption effect seen on screen in the 1992
+movie \"Sneakers\".
+
+This command works on piped data.  Pipe any ASCII or UTF-8 text to nms, and
+it will apply the hollywood effect, initially showing encrypted data, then
+starting a decryption sequence to reveal the original plaintext characters.")
+    (license license:expat)))

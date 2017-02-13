@@ -90,7 +90,7 @@
              (substitute* '("src/mp3track.cc"
                             "src/streamtrack.cc"
                             "src/oggtrack.cc")
-               (("/bin/sh") (which "bash")))
+               (("/bin/sh") (which "sh")))
              #t)))))
     (home-page "http://thekonst.net/en/orpheus")
     (synopsis "Text-mode audio player")

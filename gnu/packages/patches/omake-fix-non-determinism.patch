@@ -1,0 +1,41 @@
+From 2e7e254160506dc00f1beabf170512a8e932934b Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Sat, 31 Dec 2016 15:43:38 +0100
+Subject: [PATCH] fix build date in binary
+
+---
+ src/magic/omake_gen_magic.ml | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
+
+diff --git a/src/magic/omake_gen_magic.ml b/src/magic/omake_gen_magic.ml
+index b2419ba..fad52f5 100644
+--- a/src/magic/omake_gen_magic.ml
++++ b/src/magic/omake_gen_magic.ml
+@@ -150,7 +150,7 @@ let ir_magic = "%s"
+ let obj_magic = "%s"
+ let lib_dir = "%s"
+ let version = "%s"
+-let version_message = "OMake %s:\\n\\tbuild [%s %s %d %02d:%02d:%02d %d]\\n\\ton %s"
++let version_message = "OMake %s"
+ |}
+        default_save_interval
+        digest_len
+@@ -160,15 +160,7 @@ let version_message = "OMake %s:\\n\\tbuild [%s %s %d %02d:%02d:%02d %d]\\n\\ton
+        (digest_files ".omo.magic" ".omo" omo_files)
+        (String.escaped libdir)
+        (String.escaped (shorten_version version))
+-       (String.escaped version)
+-       [|"Sun"; "Mon"; "Tue"; "Wed"; "Thu"; "Fri"; "Sat"|].(tm.tm_wday)
+-       [|"Jan"; "Feb"; "Mar"; "Apr"; "May"; "Jun"; "Jul"; "Aug"; "Sep"; "Oct"; "Nov"; "Dec"|].(tm.tm_mon)
+-       tm.tm_mday
+-       tm.tm_hour
+-       tm.tm_min
+-       tm.tm_sec
+-       (tm.tm_year + 1900)
+-       (String.escaped (Unix.gethostname ()));
++       (String.escaped version);
+   List.iter
+     (fun (name,value) ->
+        Printf.fprintf buf "let %s = %S\n" name value
+--
+2.11.0

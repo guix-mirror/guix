@@ -72,7 +72,7 @@
                    test-source)
                   (_ (error "Unexpected URL: " url))))))))
         (mock ((guix http-client) http-fetch
-               (lambda (url)
+               (lambda (url . rest)
                  (match url
                    ("https://api.metacpan.org/release/Foo-Bar"
                     (values (open-input-string test-json)

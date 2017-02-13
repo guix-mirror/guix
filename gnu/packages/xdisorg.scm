@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -75,7 +75,14 @@
                                   "/files/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))))
+                "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Do not record a timestamp and file name in gzipped man
+               ;; pages (this is equivalent to 'gzip --no-name'.)
+               '(substitute* "setup.py"
+                  (("gzip\\.open\\(gzfile, 'w', 9\\)")
+                   "gzip.GzipFile('', 'wb', 9, open(gzfile, 'wb'), 0.)")))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
@@ -749,14 +756,14 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.12")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "022d0097dk2glgb6772zpcsqm1w42sbsbr3i72pdhzq6naqawys8"))))
+                "0qiikh95b9crybkwgcbbv9y80hb7lsbvvmvaia4gbgbdyagwb2m0"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -781,7 +788,7 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.29.0")
+    (version "0.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -789,7 +796,7 @@ Wacom tablet applet.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "15lbzjkaf690i69qy0n0ibwczbclqq1nx0418c6a567by5v7wl48"))))
+                "0idhkigl0pnyp08sqm6bqfb4h20v6rjrb71z1gdv59gk7d7qwpgi"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -837,7 +844,6 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
        ("libxxf86vm" ,libxxf86vm)
-       ("libjpeg" ,libjpeg)
        ("glib" ,glib)))                           ;for Geoclue2 support
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")
@@ -852,7 +858,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.35")
+    (version "5.36")
     (source
      (origin
        (method url-fetch)
@@ -861,7 +867,7 @@ color temperature should be set to match the lamps in your room.")
                        version ".tar.gz"))
        (sha256
         (base32
-         "08kbb0ry7ih436ab4i5g6lnhaaz13zkcdmbdibrn4j5gm5qq8v0y"))))
+         "0v60mdhvv42jla5hljp77igng11kxpah5fs9j7ci65kz0hw552vb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -913,7 +919,7 @@ demos.  It also acts as a nice screen locker.")
     (license (license:non-copyleft
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
-               "/main/x/xscreensaver/xscreensaver_5.34-2_copyright")))))
+               "/main/x/xscreensaver/xscreensaver_5.36-1_copyright")))))
 
 (define-public xdpyprobe
   (package

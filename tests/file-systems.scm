@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-file-systems)
+  #:use-module (guix store)
+  #:use-module (guix modules)
   #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors))
@@ -49,5 +51,33 @@
       (and (eq? proc 'uuid)
            (string-contains message "invalid UUID")
            (equal? form '(uuid "foobar"))))))
+
+(test-assert "file-system-needed-for-boot?"
+  (let-syntax ((dummy-fs (syntax-rules ()
+                           ((_ directory)
+                            (file-system
+                              (device "foo")
+                              (mount-point directory)
+                              (type "ext4"))))))
+    (parameterize ((%store-prefix "/gnu/guix/store"))
+      (and (file-system-needed-for-boot? (dummy-fs "/"))
+           (file-system-needed-for-boot? (dummy-fs "/gnu"))
+           (file-system-needed-for-boot? (dummy-fs "/gnu/guix"))
+           (file-system-needed-for-boot? (dummy-fs "/gnu/guix/store"))
+           (not (file-system-needed-for-boot?
+                 (dummy-fs "/gnu/guix/store/foo")))
+           (not (file-system-needed-for-boot? (dummy-fs "/gn")))
+           (not (file-system-needed-for-boot?
+                 (file-system
+                   (inherit (dummy-fs (%store-prefix)))
+                   (device "/foo")
+                   (flags '(bind-mount read-only)))))))))
+
+(test-assert "does not pull (guix config)"
+  ;; This module is meant both for the host side and "build side", so make
+  ;; sure it doesn't pull in (guix config), which depends on the user's
+  ;; config.
+  (not (member '(guix config)
+               (source-module-closure '((gnu system file-systems))))))
 
 (test-end)

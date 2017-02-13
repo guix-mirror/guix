@@ -36,23 +36,19 @@
 (define-public lftp
   (package
     (name "lftp")
-    (version "4.7.4")
+    (version "4.7.5")
     (source (origin
               (method url-fetch)
-              ;; XXX: Downloads from main site redirects to 'get.html' and
-              ;; returns HTTP 200, leading Guix to download that instead.
-              ;; Try official mirror first. See:
-              ;; https://github.com/lavv17/lftp/issues/299 and
-              ;; https://lftp.tech/get.html (mirror list)
-              (uri (list (string-append "ftp://ftp.st.ryukoku.ac.jp/pub/network/"
-                                        "ftp/lftp/lftp-" version ".tar.xz")
-                         (string-append "https://lftp.tech/ftp/lftp-"
+              ;; See https://lftp.tech/get.html for mirrors.
+              (uri (list (string-append "https://lftp.tech/ftp/lftp-"
                                         version ".tar.xz")
                          (string-append "https://lftp.tech/ftp/old/lftp-"
-                                        version ".tar.xz")))
+                                        version ".tar.xz")
+                         (string-append "ftp://ftp.st.ryukoku.ac.jp/pub/network/"
+                                        "ftp/lftp/lftp-" version ".tar.xz")))
               (sha256
                (base32
-                "0b6r1gbpazvml1hvfjm2ccsfxibrjrm3fir912j6kxxn538w8rxz"))))
+                "1n6h3y5jz1rxlx7ap46vykgm0q2rvzr7c5s5ry5l32z3lbmwbdak"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

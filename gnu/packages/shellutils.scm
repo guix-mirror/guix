@@ -58,14 +58,14 @@ between various shells or commands.")
 (define-public trash-cli
   (package
     (name "trash-cli")
-    (version "0.17.1.1")
+    (version "0.17.1.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trash-cli" version))
        (sha256
         (base32
-         "019sjab29jkps8zkf8icihhf3ng4lx9y4p1lxjd3wbnnynphc4is"))))
+         "01q0cl04ljf214z6s3g256gsxx3pqsgaf6ac1zh0vrq5bnhnr85h"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

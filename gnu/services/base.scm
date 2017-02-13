@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -36,6 +36,7 @@
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages terminals)
@@ -99,6 +100,18 @@
             %default-authorized-guix-keys
             guix-configuration
             guix-configuration?
+
+            guix-configuration-guix
+            guix-configuration-build-group
+            guix-configuration-build-accounts
+            guix-configuration-authorize-key?
+            guix-configuration-authorized-keys
+            guix-configuration-use-substitutes?
+            guix-configuration-substitute-urls
+            guix-configuration-extra-options
+            guix-configuration-log-file
+            guix-configuration-lsof
+
             guix-service
             guix-service-type
             guix-publish-configuration
@@ -301,13 +314,26 @@ FILE-SYSTEM."
                         #:select (mount-file-system))
                        ,@%default-modules)))))))
 
+(define (file-system-shepherd-services file-systems)
+  "Return the list of Shepherd services for FILE-SYSTEMS."
+  (let* ((file-systems (filter file-system-mount? file-systems)))
+    (define sink
+      (shepherd-service
+       (provision '(file-systems))
+       (requirement (cons* 'root-file-system 'user-file-systems
+                           (map file-system->shepherd-service-name
+                                file-systems)))
+       (documentation "Target for all the initially-mounted file systems")
+       (start #~(const #t))
+       (stop #~(const #f))))
+
+    (cons sink (map file-system-shepherd-service file-systems))))
+
 (define file-system-service-type
   (service-type (name 'file-systems)
                 (extensions
                  (list (service-extension shepherd-root-service-type
-                                          (lambda (file-systems)
-                                            (filter-map file-system-shepherd-service
-                                                        file-systems)))
+                                          file-system-shepherd-services)
                        (service-extension fstab-service-type
                                           identity)))
                 (compose concatenate)
@@ -354,93 +380,89 @@ in KNOWN-MOUNT-POINTS when it is stopped."
 (define user-processes-service-type
   (shepherd-service-type
    'user-processes
-   (match-lambda
-     ((requirements grace-delay)
-      (shepherd-service
-       (documentation "When stopped, terminate all user processes.")
-       (provision '(user-processes))
-       (requirement (cons* 'root-file-system 'user-file-systems
-                           (map file-system->shepherd-service-name
-                                requirements)))
-       (start #~(const #t))
-       (stop #~(lambda _
-                 (define (kill-except omit signal)
-                   ;; Kill all the processes with SIGNAL except those listed
-                   ;; in OMIT and the current process.
-                   (let ((omit (cons (getpid) omit)))
-                     (for-each (lambda (pid)
-                                 (unless (memv pid omit)
-                                   (false-if-exception
-                                    (kill pid signal))))
-                               (processes))))
+   (lambda (grace-delay)
+     (shepherd-service
+      (documentation "When stopped, terminate all user processes.")
+      (provision '(user-processes))
+      (requirement '(file-systems))
+      (start #~(const #t))
+      (stop #~(lambda _
+                (define (kill-except omit signal)
+                  ;; Kill all the processes with SIGNAL except those listed
+                  ;; in OMIT and the current process.
+                  (let ((omit (cons (getpid) omit)))
+                    (for-each (lambda (pid)
+                                (unless (memv pid omit)
+                                  (false-if-exception
+                                   (kill pid signal))))
+                              (processes))))
 
-                 (define omitted-pids
-                   ;; List of PIDs that must not be killed.
-                   (if (file-exists? #$%do-not-kill-file)
-                       (map string->number
-                            (call-with-input-file #$%do-not-kill-file
-                              (compose string-tokenize
-                                       (@ (ice-9 rdelim) read-string))))
-                       '()))
+                (define omitted-pids
+                  ;; List of PIDs that must not be killed.
+                  (if (file-exists? #$%do-not-kill-file)
+                      (map string->number
+                           (call-with-input-file #$%do-not-kill-file
+                             (compose string-tokenize
+                                      (@ (ice-9 rdelim) read-string))))
+                      '()))
 
-                 (define (now)
-                   (car (gettimeofday)))
+                (define (now)
+                  (car (gettimeofday)))
 
-                 (define (sleep* n)
-                   ;; Really sleep N seconds.
-                   ;; Work around <http://bugs.gnu.org/19581>.
-                   (define start (now))
-                   (let loop ((elapsed 0))
-                     (when (> n elapsed)
-                       (sleep (- n elapsed))
-                       (loop (- (now) start)))))
+                (define (sleep* n)
+                  ;; Really sleep N seconds.
+                  ;; Work around <http://bugs.gnu.org/19581>.
+                  (define start (now))
+                  (let loop ((elapsed 0))
+                    (when (> n elapsed)
+                      (sleep (- n elapsed))
+                      (loop (- (now) start)))))
 
-                 (define lset= (@ (srfi srfi-1) lset=))
+                (define lset= (@ (srfi srfi-1) lset=))
 
-                 (display "sending all processes the TERM signal\n")
+                (display "sending all processes the TERM signal\n")
 
-                 (if (null? omitted-pids)
-                     (begin
-                       ;; Easy: terminate all of them.
-                       (kill -1 SIGTERM)
-                       (sleep* #$grace-delay)
-                       (kill -1 SIGKILL))
-                     (begin
-                       ;; Kill them all except OMITTED-PIDS.  XXX: We would
-                       ;; like to (kill -1 SIGSTOP) to get a fixed list of
-                       ;; processes, like 'killall5' does, but that seems
-                       ;; unreliable.
-                       (kill-except omitted-pids SIGTERM)
-                       (sleep* #$grace-delay)
-                       (kill-except omitted-pids SIGKILL)
-                       (delete-file #$%do-not-kill-file)))
+                (if (null? omitted-pids)
+                    (begin
+                      ;; Easy: terminate all of them.
+                      (kill -1 SIGTERM)
+                      (sleep* #$grace-delay)
+                      (kill -1 SIGKILL))
+                    (begin
+                      ;; Kill them all except OMITTED-PIDS.  XXX: We would
+                      ;; like to (kill -1 SIGSTOP) to get a fixed list of
+                      ;; processes, like 'killall5' does, but that seems
+                      ;; unreliable.
+                      (kill-except omitted-pids SIGTERM)
+                      (sleep* #$grace-delay)
+                      (kill-except omitted-pids SIGKILL)
+                      (delete-file #$%do-not-kill-file)))
 
-                 (let wait ()
-                   (let ((pids (processes)))
-                     (unless (lset= = pids (cons 1 omitted-pids))
-                       (format #t "waiting for process termination\
+                (let wait ()
+                  (let ((pids (processes)))
+                    (unless (lset= = pids (cons 1 omitted-pids))
+                      (format #t "waiting for process termination\
  (processes left: ~s)~%"
-                               pids)
-                       (sleep* 2)
-                       (wait))))
+                              pids)
+                      (sleep* 2)
+                      (wait))))
 
-                 (display "all processes have been terminated\n")
-                 #f))
-       (respawn? #f))))))
+                (display "all processes have been terminated\n")
+                #f))
+      (respawn? #f)))))
 
-(define* (user-processes-service file-systems #:key (grace-delay 4))
+(define* (user-processes-service #:key (grace-delay 4))
   "Return the service that is responsible for terminating all the processes so
 that the root file system can be re-mounted read-only, just before
 rebooting/halting.  Processes still running GRACE-DELAY seconds after SIGTERM
 has been sent are terminated with SIGKILL.
 
-The returned service will depend on 'root-file-system' and on all the shepherd
-services corresponding to FILE-SYSTEMS.
+The returned service will depend on 'file-systems', meaning that it is
+considered started after all the auto-mount file systems have been mounted.
 
 All the services that spawn processes must depend on this one so that they are
 stopped before 'kill' is called."
-  (service user-processes-service-type
-           (list (filter file-system-mount? file-systems) grace-delay)))
+  (service user-processes-service-type grace-delay))
 
 
 ;;;
@@ -1525,8 +1547,10 @@ This service is not part of @var{%base-services}."
         (mingetty-service (mingetty-configuration
                            (tty "tty6")))
 
-        (static-networking-service "lo" "127.0.0.1"
-                                   #:provision '(loopback))
+        (service static-networking-service-type
+                 (list (static-networking (interface "lo")
+                                          (ip "127.0.0.1")
+                                          (provision '(loopback)))))
         (syslog-service)
         (urandom-seed-service)
         (guix-service)
@@ -1535,6 +1559,10 @@ This service is not part of @var{%base-services}."
         ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
         ;; used, so enable them by default.  The FUSE and ALSA rules are
         ;; less critical, but handy.
-        (udev-service #:rules (list lvm2 fuse alsa-utils crda))))
+        (udev-service #:rules (list lvm2 fuse alsa-utils crda))
+
+        (service special-files-service-type
+                 `(("/bin/sh" ,(file-append (canonical-package bash)
+                                            "/bin/sh"))))))
 
 ;;; base.scm ends here

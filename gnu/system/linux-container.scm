@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,24 +30,9 @@
   #:use-module (gnu services)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
-  #:export (mapping->file-system
-            system-container
+  #:export (system-container
             containerized-operating-system
             container-script))
-
-(define (mapping->file-system mapping)
-  "Return a file system that realizes MAPPING."
-  (match mapping
-    (($ <file-system-mapping> source target writable?)
-     (file-system
-       (mount-point target)
-       (device source)
-       (type "none")
-       (flags (if writable?
-                  '(bind-mount)
-                  '(bind-mount read-only)))
-       (check? #f)
-       (create-mount-point? #t)))))
 
 (define (containerized-operating-system os mappings)
   "Return an operating system based on OS for use in a Linux container
@@ -66,7 +51,7 @@ containerized OS."
             (operating-system-file-systems os)))
 
   (define (mapping->fs fs)
-    (file-system (inherit (mapping->file-system fs))
+    (file-system (inherit (file-system-mapping->bind-mount fs))
       (needed-for-boot? #t)))
 
   (operating-system (inherit os)

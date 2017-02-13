@@ -48,7 +48,7 @@ FAT-specific file attributes.")
 (define-public exfat-utils
   (package
     (name "exfat-utils")
-    (version "1.2.5")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -56,7 +56,7 @@ FAT-specific file attributes.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1qhvjd6dmzhxjdnm4cklajbr03wsjjvkxrsjij517a33napcl93s"))))
+                "0hxcz0y3rd79nycjlzaca9wh9qj64rw8rzm0xk4jk9ljry96csxr"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/relan/exfat")
     (synopsis "Utilities to manipulate exFAT file systems")

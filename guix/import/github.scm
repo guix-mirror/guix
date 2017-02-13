@@ -19,21 +19,38 @@
 (define-module (guix import github)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
   #:use-module (json)
   #:use-module (guix utils)
   #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import utils)
-  #:use-module (guix import json)
   #:use-module (guix packages)
   #:use-module (guix upstream)
+  #:use-module (guix http-client)
   #:use-module (web uri)
   #:export (%github-updater))
+
+(define (json-fetch* url)
+  "Return a representation of the JSON resource URL (a list or hash table), or
+#f if URL returns 403 or 404."
+  (guard (c ((and (http-get-error? c)
+                  (let ((error (http-get-error-code c)))
+                    (or (= 403 error)
+                        (= 404 error))))
+             #f))     ;; "expected" if there is an authentification error (403),
+                      ;; or if package is unknown (404).
+    ;; Note: github.com returns 403 if we omit a 'User-Agent' header.
+    (let* ((port   (http-fetch url))
+           (result (json->scm port)))
+      (close-port port)
+      result)))
 
 (define (find-extension url)
   "Return the extension of the archive e.g. '.tar.gz' given a URL, or
 false if none is recognized"
   (find (lambda (x) (string-suffix? x url))
-        (list ".tar.gz" ".tar.bz2" ".tar.xz" ".zip" ".tar" ".tgz" ".love")))
+        (list ".tar.gz" ".tar.bz2" ".tar.xz" ".zip" ".tar"
+              ".tgz" ".tbz" ".love")))
 
 (define (updated-github-url old-package new-version)
   ;; Return a url for the OLD-PACKAGE with NEW-VERSION.  If no source url in
@@ -41,7 +58,7 @@ false if none is recognized"
 
   (define (updated-url url)
     (if (string-prefix? "https://github.com/" url)
-        (let ((ext     (find-extension url))
+        (let ((ext     (or (find-extension url) ""))
               (name    (package-name old-package))
               (version (package-version old-package))
               (prefix  (string-append "https://github.com/"
@@ -125,7 +142,7 @@ the package e.g. 'bedtools2'.  Return #f if there is no releases"
                    "https://api.github.com/repos/"
                    (github-user-slash-repository url)
                    "/releases"))
-         (json (json-fetch
+         (json (json-fetch*
                 (if token
                     (string-append api-url "?access_token=" token)
                     api-url))))

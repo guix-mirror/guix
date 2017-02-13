@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,44 +22,55 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config))
 
 (define-public mg
   (package
     (name "mg")
-    (version "20050429")
+    (version "20161005")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://homepage.boetes.org/software/mg/mg-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19kib0aha4a40izzds7r63qfb2akq4sily6k28fl0n0zdgq0cna1"))
+                "0qaydk2cy765n9clghmi5gdnpwn15y2v0fj6r0jcm0v7d89vbz5p"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (substitute* "Makefile.in"
-                    (("-Werror") "")
-                    (("-lcurses") "-lncurses")
-                    (("/usr/bin/install") "install -D")
-                    (("/usr/bin/strip") "strip"))))))
+                  (substitute* "GNUmakefile"
+                    (("/usr/bin/") ""))))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("ncurses" ,ncurses)))
+     `(("libbsd" ,libbsd)
+       ("ncurses" ,ncurses)))
     (arguments
      ;; No test suite available.
      '(#:tests? #f
-       #:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (substitute* "Makefile.in"
-                     (("(prefix=[[:blank:]]*)/usr/local" all prefix)
-                      (string-append prefix (assoc-ref outputs "out")))))
-                 %standard-phases)))
+       #:make-flags (list (string-append "prefix=" %output)
+                          "CURSES_LIBS=-lncurses"
+                          "CC=gcc")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'install 'patch-tutorial-location
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "mg.1"
+                        (("/usr") (assoc-ref outputs "out")))
+                      #t))
+                  (add-after 'install 'install-tutorial
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (doc (string-append out "/share/doc/mg")))
+                        (install-file "tutorial" doc)
+                        #t))))))
     (home-page "http://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
-     "mg is Micro GNU Emacs; this is a portable version of the mg maintained
-by the OpenBSD team.")
+     "Mg (mg) is a GNU Emacs style editor, with which it is \"broadly\"
+compatible.  This is a portable version of the mg maintained by the OpenBSD
+team.")
     (license public-domain)))

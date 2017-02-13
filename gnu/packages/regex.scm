@@ -27,7 +27,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2016-11-01")
+     (version "2017-01-01")
      (source (origin
                (method url-fetch)
                (uri
@@ -37,7 +37,7 @@
                (file-name (string-append name "-" version ".tar.gz"))
                (sha256
                 (base32
-                 "0scn3rimfxz0kqxxasap04kv9cbzjsgi7krkqmyhbi710fgr9vh1"))))
+                 "0yij1ajh66h3pj3kfz7y0ldrsww8rlpjzaavyr5lchl98as1jq74"))))
      (build-system gnu-build-system)
      (arguments
       `(#:test-target "test"
@@ -50,7 +50,8 @@
             (lambda* (#:key outputs #:allow-other-keys)
               ;; No make target for shared-only; delete the static version.
               (delete-file (string-append (assoc-ref outputs "out")
-                                          "/lib/libre2.a")))))))
+                                          "/lib/libre2.a"))
+              #t)))))
      (home-page "https://github.com/google/re2")
      (synopsis "Fast, safe, thread-friendly regular expression engine")
      (description "RE2 is a fast, safe, thread-friendly alternative to

@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
@@ -158,4 +160,28 @@ for unprivileged applications.")
 PolicyKit API through a Qt-styled API.  It is mainly a wrapper around
 QAction and QAbstractButton that lets you integrate those two component
 easily with PolicyKit.")
+    (license lgpl2.0+)))
+
+(define-public polkit-gnome
+  (package
+    (name "polkit-gnome")
+    (version "0.105")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0sckmcbxyj6sbrnfc5p5lnw27ccghsid6v6wxq09mgxqcd4lk10p"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+)
+              ("polkit" ,polkit)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "Legacy polkit authentication agent for GNOME")
+    (description "PolicyKit-gnome provides a D-Bus session bus service
+that is used to bring up authentication dialogs used for obtaining
+privileges.")
+    (home-page "http://www.freedesktop.org/wiki/Software/polkit/")
     (license lgpl2.0+)))

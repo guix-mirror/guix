@@ -38,8 +38,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages imagemagick))
+  #:use-module (gnu packages xorg))
 
 (define-public babl
   (package
@@ -102,7 +101,7 @@ provided as well as the framework to add new color models and data types.")
             (("g_object_unref \\(buffer.\\);") ""))
 
           (substitute* "tests/compositions/Makefile"
-            (("/bin/sh") (which "bash"))))
+            (("/bin/sh") (which "sh"))))
         %standard-phases)))
     (inputs
      `(("babl" ,babl)

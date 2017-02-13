@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,11 +24,13 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -65,6 +68,40 @@ minimalistic appearance.  Openbox uses the *box visual style, while providing
 a greater number of options for theme developers than previous *box
 implementations.")
     (home-page "http://openbox.org/wiki/Main_Page")
+    (license gpl2+)))
+
+(define-public obconf
+  (package
+    (name "obconf")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://openbox.org/dist/" name
+                           "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fanjdmd8727kk74x5404vi8v7s4kpq48l583d12fsi4xvsfb8vi"))))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("imlib2" ,imlib2)
+       ("libglade" ,libglade)
+       ("openbox" ,openbox)
+       ("startup-notification" ,startup-notification)
+       ("libsm" ,libsm)
+       ("librsvg" ,librsvg)
+       ("libxft" ,libxft)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-nls")))
+    (home-page "http://openbox.org/wiki/ObConf:About")
+    (synopsis "Openbox configuration tool")
+    (description
+     "Obconf is a tool for configuring the Openbox window manager.
+You can configure its appearance, themes, and much more.")
     (license gpl2+)))
 
 ;;; openbox.scm ends here

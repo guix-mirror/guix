@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,15 +32,15 @@
 (define-public tvtime
   (package
     (name "tvtime")
-    (version "1.0.10")
+    (version "1.0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://linuxtv.org/downloads/tvtime/tvtime-"
+                    "https://linuxtv.org/downloads/tvtime/tvtime-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1mk6dni82n8jv5wsrrpqzcwrg9ccx9vijb5sbm7gqm2y0h40q5y9"))))
+                "1367rl3n6qxwf30lqyz234zpb43s9xjhig3hrvbg7cbqcl8g4fs0"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

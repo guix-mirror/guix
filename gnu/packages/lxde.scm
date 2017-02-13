@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
 (define-public libfm
   (package
     (name "libfm")
-    (version "1.2.4")
+    (version "1.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -41,7 +42,7 @@
                                   "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bsh4p7h2glhxf1cc1lvbxyb4qy0y1zsnl9izf7vrldkikrgc13q"))))
+                "0nlvfwh09gbq8bkbvwnw6iqr918rrs9gc9ljb9pjspyg408bn1n7"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+-2)))
@@ -143,16 +144,20 @@ toolkit.  It allows users to monitor and control of running processes.")
 (define-public lxterminal
   (package
     (name "lxterminal")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/LXTerminal"
                                   "%20%28terminal%20emulator%29/LXTerminal%20"
-                                  version "/" name "-" version ".tar.gz"))
+                                  version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1brb506vmnncih8nyvlrckrrn6msbsvz2vwbm7bsqwigcnchwjqp"))))
+                "1yf76s15zvfw0h42b0ay1slpq47khgjmcry8ki2z812zar9lchia"))))
     (build-system gnu-build-system)
+    (arguments
+     `(;; Tests for "po" fail with "No rule to make target '../src/encoding.c'
+       ;; needed by 'lxterminal.pot'. Stop."
+       #:tests? #f))
     (inputs `(("gtk+" ,gtk+-2)
               ("vte"  ,vte/gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
@@ -168,7 +173,7 @@ performance, all instances of the terminal are sharing a single process.")
 (define-public menu-cache
   (package
     (name "menu-cache")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/" name "/"
@@ -176,7 +181,7 @@ performance, all instances of the terminal are sharing a single process.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ngxvwfj9drabqi3lyzgpi0d0za6431sy2ijb010filrj54jdiqa"))))
+                "1m8j40npykfcfqs43kc0fmksal2jfmfi8lnb3mq3xy1lvvrfv0vg"))))
     (build-system gnu-build-system)
     (inputs `(("glib"  ,glib)
               ("libfm" ,libfm-extra)))
@@ -190,7 +195,7 @@ speed up the access to freedesktop.org defined application menus.")
 (define-public pcmanfm
   (package
     (name "pcmanfm")
-    (version "1.2.4")
+    (version "1.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/"
@@ -198,7 +203,7 @@ speed up the access to freedesktop.org defined application menus.")
                                   "%29/PCManFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04z3vd9si24yi4c8calqncdpb9b6mbj4cs4f3fs86i6j05gvpk9q"))))
+                "0rxdh0dfzc84l85c54blq42gczygq8adhr3l9hqzy1dp530cm1hc"))))
     (build-system gnu-build-system)
     ;; (#:configure-flags '("--sysconfdir=/etc")) suggested in README.
     (inputs `(("gtk+"   ,gtk+-2)

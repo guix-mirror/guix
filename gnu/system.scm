@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -293,8 +293,7 @@ a container or that of a \"bare metal\" system."
          (other-fs  (non-boot-file-system-service os))
          (unmount   (user-unmount-service known-fs))
          (swaps     (swap-services os))
-         (procs     (user-processes-service
-                     (service-parameters other-fs)))
+         (procs     (user-processes-service))
          (host-name (host-name-service (operating-system-host-name os)))
          (entries   (operating-system-directory-base-entries
                      os #:container? container?)))

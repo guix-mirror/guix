@@ -3,9 +3,9 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -37,6 +37,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
@@ -77,7 +78,12 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages fontutils))
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages less)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo))
 
 (define-public libotr
   (package
@@ -110,37 +116,16 @@ keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license (list license:lgpl2.1 license:gpl2))))
 
-;; These patches together fix https://github.com/bitlbee/bitlbee/pull/55, are
-;; already upstream, and should be unnecessary when the next bitlbee comes
-;; out.
-(define %bitlbee-buddy-nick-change-patch
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/bitlbee/bitlbee/commit/a42fda42.patch")
-    (sha256
-     (base32
-      "1mzjhcdn0rxir5mzgqz9kv142ai38p1iq2lajqx89wb7x0bp51zx"))))
-(define %bitlbee-always-use-nicks-patch
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/bitlbee/bitlbee/commit/3320d6d9.patch")
-    (sha256
-     (base32
-      "14d9kb5zdzh5hzakdvrbviz83rix0j2lq9rzb58b2fn92fp8yixd"))))
-
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.4.2")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0mza8lnfwibmklz8hdzg4f7p83hblf4h6fbf7d732kzpvra5bj39"))
-              (patches
-               (list %bitlbee-buddy-nick-change-patch
-                     %bitlbee-always-use-nicks-patch))))
+               (base32 "0sgsn0fv41rga46mih3fyv65cvfa6rvki8x92dn7bczbi7yxfdln"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
@@ -461,7 +446,7 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.6")
+    (version "0.16.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -469,7 +454,7 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "1p3qwzy07f0wkika9yigyiq167l2k6wn12flqa7x55z4ihbysmqk"))))
+                "13sxz0hpvyj2yvcbsfqq9yn0hp1d1zsxsj40r0v16jlibha5da9n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -492,12 +477,11 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)))
-    (propagated-inputs
+    (inputs
      `(("python2-nbxmpp" ,python2-nbxmpp)
        ("python2-pyopenssl" ,python2-pyopenssl)
-       ("python2-gnupg" ,python2-gnupg)))
-    (inputs
-     `(("python2-pygtk" ,python2-pygtk)
+       ("python2-gnupg" ,python2-gnupg)
+       ("python2-pygtk" ,python2-pygtk)
        ("python" ,python-2)))
     (home-page "https://gajim.org/")
     (synopsis "Jabber (XMPP) client")
@@ -824,7 +808,7 @@ connect with friends and family without anyone else listening in.")
                (("mkdir -p \\$\\{DESTDIR\\}/usr") "")
                (("/usr/local") "")
                (("/usr") "")
-               (("#!/bin/sh") (string-append "#!" (which "bash")))
+               (("#!/bin/sh") (string-append "#!" (which "sh")))
                (("python2") (which "python"))
                (("/opt/openssl-compat-bitcoin/lib/")
                 (string-append (assoc-ref inputs "openssl") "/lib/")))
@@ -1119,5 +1103,124 @@ MUDs and also the psyced implementation of the Protocol for SYnchronous
 Conferencing (PSYC).  psycLPC is a fork of LDMud with some new features and
 many bug fixes.")
     (license license:gpl2))))
+
+(define-public loudmouth
+  (package
+    (name "loudmouth")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mcabber.com/files/loudmouth/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0b6kd5gpndl9nzis3n6hcl0ldz74bnbiypqgqa1vgb0vrcar8cjl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("libidn" ,libidn)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("check" ,check)
+       ("glib" ,glib "bin") ; gtester
+       ("gtk-doc" ,gtk-doc)))
+    (home-page "https://mcabber.com/")
+    (description
+     "Loudmouth is a lightweight and easy-to-use C library for programming
+with the XMPP (formerly known as Jabber) protocol.  It is designed to be
+easy to get started with and yet extensible to let you do anything the XMPP
+protocol allows.")
+    (synopsis "Asynchronous XMPP library")
+    ;; The files have LGPL2.0+ headers, but COPYING specifies LGPL2.1.
+    (license license:lgpl2.0+)))
+
+(define-public mcabber
+  (package
+    (name "mcabber")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mcabber.com/files/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0ixdzk5b3s31a4bdfqgqrsiq7vbgdzhqr49p9pz9cq9bgn0h1wm0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list "--enable-otr"
+                               "--enable-aspell")))
+    (inputs
+     `(("gpgme" ,gpgme)
+       ("libotr" ,libotr)
+       ("aspell" ,aspell)
+       ("libidn" ,libidn)
+       ("glib" ,glib)
+       ("ncurses" ,ncurses)
+       ("loudmouth" ,loudmouth)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://mcabber.com")
+    (description
+     "Mcabber is a small XMPP (Jabber) console client, which includes features
+such as SASL and TLS support, @dfn{Multi-User Chat} (MUC) support, logging,
+command-completion, OpenPGP encryption, @dfn{Off-the-Record Messaging} (OTR)
+support, and more.")
+    (synopsis "Small XMPP console client")
+    (license license:gpl2+)))
+
+(define-public freetalk
+  (package
+    (name "freetalk")
+    (version "4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/freetalk/freetalk-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1rmrn7a1bb7vm26yaklrvx008a9qhwc32s57dwrlf40lv9gffwny"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "sh" "autogen.sh"))))
+         ;; For 'system' commands in Scheme code.
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bash      (assoc-ref inputs "bash"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (less      (assoc-ref inputs "less")))
+               (wrap-program (string-append out "/bin/freetalk")
+                 `("PATH" ":" prefix
+                   ,(map (lambda (dir)
+                           (string-append dir "/bin"))
+                         (list bash coreutils less))))
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("bash" ,bash)
+       ("glib" ,glib)
+       ("guile" ,guile-2.0)
+       ("less" ,less)
+       ("loudmouth" ,loudmouth)
+       ("readline" ,readline)))
+    (synopsis "Extensible console-based Jabber client")
+    (description
+     "GNU Freetalk is a command-line Jabber/XMPP chat client.  It notably uses
+the Readline library to handle input, so it features convenient navigation of
+text as well as tab-completion of buddy names, commands and English words.  It
+is also scriptable and extensible via Guile.")
+    (home-page "https://www.gnu.org/software/freetalk")
+    (license license:gpl3+)))
 
 ;;; messaging.scm ends here

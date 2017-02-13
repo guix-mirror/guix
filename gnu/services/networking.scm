@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,17 +31,26 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ntp)
   #:use-module (gnu packages wicd)
   #:use-module (gnu packages gnome)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (%facebook-host-aliases
             static-networking
+
+            static-networking?
+            static-networking-interface
+            static-networking-ip
+            static-networking-netmask
+            static-networking-gateway
+
             static-networking-service
             static-networking-service-type
             dhcp-client-service
@@ -64,9 +74,17 @@
 
             wicd-service-type
             wicd-service
-            network-manager-service
+
+            network-manager-configuration
+            network-manager-configuration?
+            network-manager-configuration-dns
+            network-manager-service-type
+
             connman-service
-            wpa-supplicant-service-type))
+            wpa-supplicant-service-type
+
+            openvswitch-service-type
+            openvswitch-configuration))
 
 ;;; Commentary:
 ;;;
@@ -115,88 +133,138 @@ fe80::1%lo0 apps.facebook.com\n")
   (ip static-networking-ip)
   (netmask static-networking-netmask
            (default #f))
-  (gateway static-networking-gateway)
-  (provision static-networking-provision)
-  (name-servers static-networking-name-servers))
+  (gateway static-networking-gateway              ;FIXME: doesn't belong here
+           (default #f))
+  (provision static-networking-provision
+             (default #f))
+  (name-servers static-networking-name-servers    ;FIXME: doesn't belong here
+                (default '())))
+
+(define static-networking-shepherd-service
+  (match-lambda
+    (($ <static-networking> interface ip netmask gateway provision
+                            name-servers)
+     (let ((loopback? (and provision (memq 'loopback provision))))
+       (shepherd-service
+
+        ;; Unless we're providing the loopback interface, wait for udev to be up
+        ;; and running so that INTERFACE is actually usable.
+        (requirement (if loopback? '() '(udev)))
+
+        (documentation
+         "Bring up the networking interface using a static IP address.")
+        (provision (or provision
+                       (list (symbol-append 'networking-
+                                            (string->symbol interface)))))
+
+        (start #~(lambda _
+                   ;; Return #t if successfully started.
+                   (let* ((addr     (inet-pton AF_INET #$ip))
+                          (sockaddr (make-socket-address AF_INET addr 0))
+                          (mask     (and #$netmask
+                                         (inet-pton AF_INET #$netmask)))
+                          (maskaddr (and mask
+                                         (make-socket-address AF_INET
+                                                              mask 0)))
+                          (gateway  (and #$gateway
+                                         (inet-pton AF_INET #$gateway)))
+                          (gatewayaddr (and gateway
+                                            (make-socket-address AF_INET
+                                                                 gateway 0))))
+                     (configure-network-interface #$interface sockaddr
+                                                  (logior IFF_UP
+                                                          #$(if loopback?
+                                                                #~IFF_LOOPBACK
+                                                                0))
+                                                  #:netmask maskaddr)
+                     (when gateway
+                       (let ((sock (socket AF_INET SOCK_DGRAM 0)))
+                         (add-network-route/gateway sock gatewayaddr)
+                         (close-port sock))))))
+        (stop #~(lambda _
+                  ;; Return #f is successfully stopped.
+                  (let ((sock (socket AF_INET SOCK_STREAM 0)))
+                    (when #$gateway
+                      (delete-network-route sock
+                                            (make-socket-address
+                                             AF_INET INADDR_ANY 0)))
+                    (set-network-interface-flags sock #$interface 0)
+                    (close-port sock)
+                    #f)))
+        (respawn? #f))))))
+
+(define (static-networking-etc-files interfaces)
+  "Return a /etc/resolv.conf entry for INTERFACES or the empty list."
+  (match (delete-duplicates
+          (append-map static-networking-name-servers
+                      interfaces))
+    (()
+     '())
+    ((name-servers ...)
+     (let ((content (string-join
+                     (map (cut string-append "nameserver " <>)
+                          name-servers)
+                     "\n" 'suffix)))
+       `(("resolv.conf"
+          ,(plain-file "resolv.conf"
+                       (string-append "\
+# Generated by 'static-networking-service'.\n"
+                                      content))))))))
+
+(define (static-networking-shepherd-services interfaces)
+  "Return the list of Shepherd services to bring up INTERFACES, a list of
+<static-networking> objects."
+  (define (loopback? service)
+    (memq 'loopback (shepherd-service-provision service)))
+
+  (let ((services (map static-networking-shepherd-service interfaces)))
+    (match (remove loopback? services)
+      (()
+       ;; There's no interface other than 'loopback', so we assume that the
+       ;; 'networking' service will be provided by dhclient or similar.
+       services)
+      ((non-loopback ...)
+       ;; Assume we're providing all the interfaces, and thus, provide a
+       ;; 'networking' service.
+       (cons (shepherd-service
+              (provision '(networking))
+              (requirement (append-map shepherd-service-provision
+                                       services))
+              (start #~(const #t))
+              (stop #~(const #f))
+              (documentation "Bring up all the networking interfaces."))
+             services)))))
 
 (define static-networking-service-type
-  (shepherd-service-type
-   'static-networking
-   (match-lambda
-     (($ <static-networking> interface ip netmask gateway provision
-                             name-servers)
-      (let ((loopback? (memq 'loopback provision)))
-        (shepherd-service
-
-         ;; Unless we're providing the loopback interface, wait for udev to be up
-         ;; and running so that INTERFACE is actually usable.
-         (requirement (if loopback? '() '(udev)))
-
-         (documentation
-          "Bring up the networking interface using a static IP address.")
-         (provision provision)
-         (start #~(lambda _
-                    ;; Return #t if successfully started.
-                    (let* ((addr     (inet-pton AF_INET #$ip))
-                           (sockaddr (make-socket-address AF_INET addr 0))
-                           (mask     (and #$netmask
-                                          (inet-pton AF_INET #$netmask)))
-                           (maskaddr (and mask
-                                          (make-socket-address AF_INET
-                                                               mask 0)))
-                           (gateway  (and #$gateway
-                                          (inet-pton AF_INET #$gateway)))
-                           (gatewayaddr (and gateway
-                                             (make-socket-address AF_INET
-                                                                  gateway 0))))
-                      (configure-network-interface #$interface sockaddr
-                                                   (logior IFF_UP
-                                                           #$(if loopback?
-                                                                 #~IFF_LOOPBACK
-                                                                 0))
-                                                   #:netmask maskaddr)
-                      (when gateway
-                        (let ((sock (socket AF_INET SOCK_DGRAM 0)))
-                          (add-network-route/gateway sock gatewayaddr)
-                          (close-port sock))))
-
-                    #$(if (pair? name-servers)
-                          #~(call-with-output-file "/etc/resolv.conf"
-                              (lambda (port)
-                                (display
-                                 "# Generated by 'static-networking-service'.\n"
-                                 port)
-                                (for-each (lambda (server)
-                                            (format port "nameserver ~a~%"
-                                                    server))
-                                          '#$name-servers)
-                                #t))
-                          #t)))
-         (stop #~(lambda _
-                   ;; Return #f is successfully stopped.
-                   (let ((sock (socket AF_INET SOCK_STREAM 0)))
-                     (when #$gateway
-                       (delete-network-route sock
-                                             (make-socket-address
-                                              AF_INET INADDR_ANY 0)))
-                     (set-network-interface-flags sock #$interface 0)
-                     (close-port sock)
-                     #f)))
-         (respawn? #f)))))))
+  ;; The service type for statically-defined network interfaces.
+  (service-type (name 'static-networking)
+                (extensions
+                 (list
+                  (service-extension shepherd-root-service-type
+                                     static-networking-shepherd-services)
+                  (service-extension etc-service-type
+                                     static-networking-etc-files)))
+                (compose concatenate)
+                (extend append)))
 
 (define* (static-networking-service interface ip
                                     #:key
-                                    netmask gateway
-                                    (provision '(networking))
+                                    netmask gateway provision
                                     (name-servers '()))
   "Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
-it must be a string specifying the default network gateway."
-  (service static-networking-service-type
-           (static-networking (interface interface) (ip ip)
-                              (netmask netmask) (gateway gateway)
-                              (provision provision)
-                              (name-servers name-servers))))
+it must be a string specifying the default network gateway.
+
+This procedure can be called several times, one for each network
+interface of interest.  Behind the scenes what it does is extend
+@code{static-networking-service-type} with additional network interfaces
+to handle."
+  (simple-service 'static-network-interface
+                  static-networking-service-type
+                  (list (static-networking (interface interface) (ip ip)
+                                           (netmask netmask) (gateway gateway)
+                                           (provision provision)
+                                           (name-servers name-servers)))))
 
 (define dhcp-client-service-type
   (shepherd-service-type
@@ -327,6 +395,7 @@ restrict -6 ::1\n"))
   "Return the activation gexp for CONFIG."
   (with-imported-modules '((guix build utils))
     #~(begin
+        (use-modules (guix build utils))
         (define %user
           (getpw "ntpd"))
 
@@ -560,13 +629,29 @@ project's documentation} for more information."
   DaemonPort = " (number->string port) "
 " extra-settings))))
 
-       (list (shepherd-service
-              (provision '(bitlbee))
-              (requirement '(user-processes loopback))
-              (start #~(make-forkexec-constructor
-                        (list (string-append #$bitlbee "/sbin/bitlbee")
-                              "-n" "-F" "-u" "bitlbee" "-c" #$conf)))
-              (stop  #~(make-kill-destructor))))))))
+       (with-imported-modules (source-module-closure
+                               '((gnu build shepherd)
+                                 (gnu system file-systems)))
+         (list (shepherd-service
+                (provision '(bitlbee))
+
+                ;; Note: If networking is not up, then /etc/resolv.conf
+                ;; doesn't get mapped in the container, hence the dependency
+                ;; on 'networking'.
+                (requirement '(user-processes networking))
+
+                (modules '((gnu build shepherd)
+                           (gnu system file-systems)))
+                (start #~(make-forkexec-constructor/container
+                          (list #$(file-append bitlbee "/sbin/bitlbee")
+                                "-n" "-F" "-u" "bitlbee" "-c" #$conf)
+
+                          #:pid-file "/var/run/bitlbee.pid"
+                          #:mappings (list (file-system-mapping
+                                            (source "/var/lib/bitlbee")
+                                            (target source)
+                                            (writable? #t)))))
+                (stop  #~(make-kill-destructor)))))))))
 
 (define %bitlbee-accounts
   ;; User group and account to run BitlBee.
@@ -679,40 +764,58 @@ and @command{wicd-curses} user interfaces."
 ;;; NetworkManager
 ;;;
 
+(define-record-type* <network-manager-configuration>
+  network-manager-configuration make-network-manager-configuration
+  network-manager-configuration?
+  (network-manager network-manager-configuration-network-manager
+                   (default network-manager))
+  (dns network-manager-configuration-dns
+       (default "default")))
+
 (define %network-manager-activation
   ;; Activation gexp for NetworkManager.
   #~(begin
       (use-modules (guix build utils))
       (mkdir-p "/etc/NetworkManager/system-connections")))
 
-(define (network-manager-shepherd-service network-manager)
-  "Return a shepherd service for NETWORK-MANAGER."
-  (list (shepherd-service
-         (documentation "Run the NetworkManager.")
-         (provision '(networking))
-         (requirement '(user-processes dbus-system wpa-supplicant loopback))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$network-manager
-                                        "/sbin/NetworkManager")
-                         "--no-daemon")))
-         (stop #~(make-kill-destructor)))))
+(define network-manager-shepherd-service
+  (match-lambda
+    (($ <network-manager-configuration> network-manager dns)
+     (let
+         ((conf (plain-file "NetworkManager.conf"
+                            (string-append "
+[main]
+dns=" dns "
+"))))
+     (list (shepherd-service
+            (documentation "Run the NetworkManager.")
+            (provision '(networking))
+            (requirement '(user-processes dbus-system wpa-supplicant loopback))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$network-manager
+                                           "/sbin/NetworkManager")
+                            (string-append "--config=" #$conf)
+                            "--no-daemon")))
+            (stop #~(make-kill-destructor))))))))
 
 (define network-manager-service-type
-  (service-type (name 'network-manager)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          network-manager-shepherd-service)
-                       (service-extension dbus-root-service-type list)
-                       (service-extension polkit-service-type list)
-                       (service-extension activation-service-type
-                                          (const %network-manager-activation))
-                       ;; Add network-manager to the system profile.
-                       (service-extension profile-service-type list)))))
+  (let
+      ((config->package
+        (match-lambda
+         (($ <network-manager-configuration> network-manager)
+          (list network-manager)))))
 
-(define* (network-manager-service #:key (network-manager network-manager))
-  "Return a service that runs NetworkManager, a network connection manager
-that attempting to keep active network connectivity when available."
-  (service network-manager-service-type network-manager))
+    (service-type
+     (name 'network-manager)
+     (extensions
+      (list (service-extension shepherd-root-service-type
+                               network-manager-shepherd-service)
+            (service-extension dbus-root-service-type config->package)
+            (service-extension polkit-service-type config->package)
+            (service-extension activation-service-type
+                               (const %network-manager-activation))
+            ;; Add network-manager to the system profile.
+            (service-extension profile-service-type config->package))))))
 
 
 ;;;
@@ -785,5 +888,63 @@ configure networking."
                                           wpa-supplicant-shepherd-service)
                        (service-extension dbus-root-service-type list)
                        (service-extension profile-service-type list)))))
+
+
+;;;
+;;; Open vSwitch
+;;;
+
+(define-record-type* <openvswitch-configuration>
+  openvswitch-configuration make-openvswitch-configuration
+  openvswitch-configuration?
+  (package openvswitch-configuration-package
+           (default openvswitch)))
+
+(define openvswitch-activation
+  (match-lambda
+    (($ <openvswitch-configuration> package)
+     (let ((ovsdb-tool (file-append package "/bin/ovsdb-tool")))
+       (with-imported-modules '((guix build utils))
+         #~(begin
+             (use-modules (guix build utils))
+             (mkdir-p "/var/run/openvswitch")
+             (mkdir-p "/var/lib/openvswitch")
+             (let ((conf.db "/var/lib/openvswitch/conf.db"))
+               (unless (file-exists? conf.db)
+                 (system* #$ovsdb-tool "create" conf.db)))))))))
+
+(define openvswitch-shepherd-service
+  (match-lambda
+    (($ <openvswitch-configuration> package)
+     (let ((ovsdb-server (file-append package "/sbin/ovsdb-server"))
+           (ovs-vswitchd (file-append package "/sbin/ovs-vswitchd")))
+       (list
+        (shepherd-service
+         (provision '(ovsdb))
+         (documentation "Run the Open vSwitch database server.")
+         (start #~(make-forkexec-constructor
+                   (list #$ovsdb-server "--pidfile"
+                         "--remote=punix:/var/run/openvswitch/db.sock")
+                   #:pid-file "/var/run/openvswitch/ovsdb-server.pid"))
+         (stop #~(make-kill-destructor)))
+        (shepherd-service
+         (provision '(vswitchd))
+         (requirement '(ovsdb))
+         (documentation "Run the Open vSwitch daemon.")
+         (start #~(make-forkexec-constructor
+                   (list #$ovs-vswitchd "--pidfile")
+                   #:pid-file "/var/run/openvswitch/ovs-vswitchd.pid"))
+         (stop #~(make-kill-destructor))))))))
+
+(define openvswitch-service-type
+  (service-type
+   (name 'openvswitch)
+   (extensions
+    (list (service-extension activation-service-type
+                             openvswitch-activation)
+          (service-extension profile-service-type
+                             (compose list openvswitch-configuration-package))
+          (service-extension shepherd-root-service-type
+                             openvswitch-shepherd-service)))))
 
 ;;; networking.scm ends here

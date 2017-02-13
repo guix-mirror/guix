@@ -19,6 +19,7 @@
 
 (define-module (gnu packages libidn)
   #:use-module (gnu packages)
+  #:use-module (gnu packages libunistring)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -51,14 +52,16 @@ Java libraries.")
 (define-public libidn2
   (package
     (name "libidn2")
-    (version "0.11")
+    (version "0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/libidn/libidn2-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1zxzhzx14q2b1xkx746pz4lawvqd8d055yy84n52ndwb4pf7nfax"))))
+                "13v8kh4d5nfkymai88zlw3h7k4x9khrpdpv97waf4ah8ykzrxb9g"))))
+    (inputs
+     `(("libunistring" ,libunistring)))
     (build-system gnu-build-system)
     (synopsis "Internationalized domain name library for IDNA2008")
     (description "Libidn2 is an internationalized domain library implementing

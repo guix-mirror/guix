@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,7 @@
 (define-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix config)
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module (guix serialization)
   #:use-module (guix monads)
   #:autoload   (guix base32) (bytevector->base32-string)
@@ -67,6 +67,7 @@
             query-path-hash
             hash-part->path
             query-path-info
+            add-data-to-store
             add-text-to-store
             add-to-store
             build-things
@@ -138,7 +139,7 @@
             direct-store-path
             log-file))
 
-(define %protocol-version #x10f)
+(define %protocol-version #x161)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -266,12 +267,15 @@
     (path-info deriver hash refs registration-time nar-size)))
 
 (define-syntax write-arg
-  (syntax-rules (integer boolean string string-list string-pairs
+  (syntax-rules (integer boolean bytevector
+                 string string-list string-pairs
                  store-path store-path-list base16)
     ((_ integer arg p)
      (write-int arg p))
     ((_ boolean arg p)
      (write-int (if arg 1 0) p))
+    ((_ bytevector arg p)
+     (write-bytevector arg p))
     ((_ string arg p)
      (write-string arg p))
     ((_ string-list arg p)
@@ -537,14 +541,14 @@ encoding conversion errors."
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
                             rounds                ;number of build rounds
-                            (max-build-jobs 1)
+                            max-build-jobs
                             timeout
-                            (max-silent-time 3600)
+                            max-silent-time
                             (use-build-hook? #t)
                             (build-verbosity 0)
                             (log-type 0)
                             (print-build-trace #t)
-                            (build-cores (current-processor-count))
+                            build-cores
                             (use-substitutes? #t)
 
                             ;; Client-provided substitute URLs.  If it is #f,
@@ -570,20 +574,36 @@ encoding conversion errors."
                           ...)))))
     (write-int (operation-id set-options) socket)
     (send (boolean keep-failed?) (boolean keep-going?)
-          (boolean fallback?) (integer verbosity)
-          (integer max-build-jobs) (integer max-silent-time))
+          (boolean fallback?) (integer verbosity))
+    (when (< (nix-server-minor-version server) #x61)
+      (let ((max-build-jobs (or max-build-jobs 1))
+            (max-silent-time (or max-silent-time 3600)))
+        (send (integer max-build-jobs) (integer max-silent-time))))
     (when (>= (nix-server-minor-version server) 2)
       (send (boolean use-build-hook?)))
     (when (>= (nix-server-minor-version server) 4)
       (send (integer build-verbosity) (integer log-type)
             (boolean print-build-trace)))
-    (when (>= (nix-server-minor-version server) 6)
-      (send (integer build-cores)))
+    (when (and (>= (nix-server-minor-version server) 6)
+               (< (nix-server-minor-version server) #x61))
+      (let ((build-cores (or build-cores (current-processor-count))))
+        (send (integer build-cores))))
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
       (let ((pairs `(,@(if timeout
                            `(("build-timeout" . ,(number->string timeout)))
+                           '())
+                     ,@(if max-silent-time
+                           `(("build-max-silent-time"
+                              . ,(number->string max-silent-time)))
+                           '())
+                     ,@(if max-build-jobs
+                           `(("build-max-jobs"
+                              . ,(number->string max-build-jobs)))
+                           '())
+                     ,@(if build-cores
+                           `(("build-cores" . ,(number->string build-cores)))
                            '())
                      ,@(if substitute-urls
                            `(("substitute-urls"
@@ -653,24 +673,30 @@ string).  Raise an error if no such path exists."
   "Return the info (hash, references, etc.) for PATH."
   path-info)
 
-(define add-text-to-store
+(define add-data-to-store
   ;; A memoizing version of `add-to-store', to avoid repeated RPCs with
   ;; the very same arguments during a given session.
   (let ((add-text-to-store
-         (operation (add-text-to-store (string name) (string text)
+         (operation (add-text-to-store (string name) (bytevector text)
                                        (string-list references))
                     #f
                     store-path)))
-    (lambda* (server name text #:optional (references '()))
-      "Add TEXT under file NAME in the store, and return its store path.
+    (lambda* (server name bytes #:optional (references '()))
+      "Add BYTES under file NAME in the store, and return its store path.
 REFERENCES is the list of store paths referred to by the resulting store
 path."
-      (let ((args  `(,text ,name ,references))
-            (cache (nix-server-add-text-to-store-cache server)))
+      (let* ((args  `(,bytes ,name ,references))
+             (cache (nix-server-add-text-to-store-cache server)))
         (or (hash-ref cache args)
-            (let ((path (add-text-to-store server name text references)))
+            (let ((path (add-text-to-store server name bytes references)))
               (hash-set! cache args path)
               path))))))
+
+(define* (add-text-to-store store name text #:optional (references '()))
+  "Add TEXT under file NAME in the store, and return its store path.
+REFERENCES is the list of store paths referred to by the resulting store
+path."
+  (add-data-to-store store name (string->utf8 text) references))
 
 (define true
   ;; Define it once and for all since we use it as a default value for
@@ -1266,11 +1292,10 @@ valid inputs."
 (define store-regexp*
   ;; The substituter makes repeated calls to 'store-path-hash-part', hence
   ;; this optimization.
-  (memoize
-   (lambda (store)
-     "Return a regexp matching a file in STORE."
-     (make-regexp (string-append "^" (regexp-quote store)
-                                 "/([0-9a-df-np-sv-z]{32})-([^/]+)$")))))
+  (mlambda (store)
+    "Return a regexp matching a file in STORE."
+    (make-regexp (string-append "^" (regexp-quote store)
+                                "/([0-9a-df-np-sv-z]{32})-([^/]+)$"))))
 
 (define (store-path-package-name path)
   "Return the package name part of PATH, a file name in the store."

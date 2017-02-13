@@ -64,7 +64,7 @@
                             "lib/internal/v8_prof_polyfill.js"
                             "test/parallel/test-stdio-closed.js")
                (("'/bin/sh'")
-                (string-append "'" (which "bash") "'")))
+                (string-append "'" (which "sh") "'")))
 
              ;; Fix hardcoded /usr/bin/env references.
              (substitute* '("test/parallel/test-child-process-default-options.js"

@@ -27,7 +27,7 @@
   #:use-module (guix download)
   #:use-module (gnu artwork)
   #:use-module (gnu system file-systems)
-  #:autoload   (gnu packages grub) (grub)
+  #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages compression) (gzip)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
   #:use-module (ice-9 match)
@@ -94,8 +94,8 @@ denoting a file name."
 (define %background-image
   (grub-image
    (aspect-ratio 4/3)
-   (file #~(string-append #$%artwork-repository
-                          "/grub/GuixSD-fully-black-4-3.svg"))))
+   (file (file-append %artwork-repository
+                      "/grub/GuixSD-fully-black-4-3.svg"))))
 
 (define %default-theme
   ;; Default theme contributed by Felipe López.
@@ -108,7 +108,7 @@ denoting a file name."
   grub-configuration make-grub-configuration
   grub-configuration?
   (grub            grub-configuration-grub           ; package
-                   (default (@ (gnu packages grub) grub)))
+                   (default (@ (gnu packages bootloaders) grub)))
   (device          grub-configuration-device)        ; string
   (menu-entries    grub-configuration-menu-entries   ; list
                    (default '()))

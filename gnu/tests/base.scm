@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,10 +77,17 @@ When INITIALIZATION is true, it must be a one-argument procedure that is
 passed a gexp denoting the marionette, and it must return gexp that is
 inserted before the first test.  This is used to introduce an extra
 initialization step, such as entering a LUKS passphrase."
+  (define special-files
+    (service-parameters
+     (fold-services (operating-system-services os)
+                    #:target-type special-files-service-type)))
+
   (define test
-    (with-imported-modules '((gnu build marionette))
+    (with-imported-modules '((gnu build marionette)
+                             (guix build syscalls))
       #~(begin
           (use-modules (gnu build marionette)
+                       (guix build syscalls)
                        (srfi srfi-1)
                        (srfi srfi-26)
                        (srfi srfi-64)
@@ -118,6 +125,18 @@ grep --version
 info --version")
                                     marionette)))
 
+          (test-equal "special files"
+            '#$special-files
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 match))
+
+                (map (match-lambda
+                       ((file target)
+                        (list file (readlink file))))
+                     '#$special-files))
+             marionette))
+
           (test-assert "accounts"
             (let ((users (marionette-eval '(begin
                                              (use-modules (ice-9 match))
@@ -143,6 +162,63 @@ info --version")
               (lset= eq?
                      (pk 'services services)
                      '(root #$@(operating-system-shepherd-service-names os)))))
+
+          (test-assert "homes"
+            (let ((homes
+                   '#$(map user-account-home-directory
+                           (filter user-account-create-home-directory?
+                                   (operating-system-user-accounts os)))))
+              (marionette-eval
+               `(begin
+                  (use-modules (gnu services herd) (srfi srfi-1))
+
+                  ;; Home directories are supposed to exist once 'user-homes'
+                  ;; has been started.
+                  (start-service 'user-homes)
+
+                  (every (lambda (home)
+                           (and (file-exists? home)
+                                (file-is-directory? home)))
+                         ',homes))
+               marionette)))
+
+          (test-assert "skeletons in home directories"
+            (let ((users+homes
+                   '#$(filter-map (lambda (account)
+                                    (and (user-account-create-home-directory?
+                                          account)
+                                         (not (user-account-system? account))
+                                         (list (user-account-name account)
+                                               (user-account-home-directory
+                                                account))))
+                                  (operating-system-user-accounts os))))
+              (marionette-eval
+               `(begin
+                  (use-modules (srfi srfi-1) (ice-9 ftw)
+                               (ice-9 match))
+
+                  (every (match-lambda
+                           ((user home)
+                            ;; Make sure HOME has all the skeletons...
+                            (and (null? (lset-difference string=?
+                                                         (scandir "/etc/skel/")
+                                                         (scandir home)))
+
+                                 ;; ... and that everything is user-owned.
+                                 (let* ((pw  (getpwnam user))
+                                        (uid (passwd:uid pw))
+                                        (gid (passwd:gid pw))
+                                        (st  (lstat home)))
+                                   (define (user-owned? file)
+                                     (= uid (stat:uid (lstat file))))
+
+                                   (and (= uid (stat:uid st))
+                                        (eq? 'directory (stat:type st))
+                                        (every user-owned?
+                                               (find-files home
+                                                           #:directories? #t)))))))
+                         ',users+homes))
+               marionette)))
 
           (test-equal "login on tty1"
             "root\n"
@@ -175,6 +251,45 @@ info --version")
                             (loop (+ i 1)))
                           (apply throw args)))))
                marionette)))
+
+          ;; There should be one utmpx entry for the user logged in on tty1.
+          (test-equal "utmpx entry"
+            '(("root" "tty1" #f))
+            (marionette-eval
+             '(begin
+                (use-modules (guix build syscalls)
+                             (srfi srfi-1))
+
+                (filter-map (lambda (entry)
+                              (and (equal? (login-type USER_PROCESS)
+                                           (utmpx-login-type entry))
+                                   (list (utmpx-user entry) (utmpx-line entry)
+                                         (utmpx-host entry))))
+                            (utmpx-entries)))
+             marionette))
+
+          ;; Likewise for /var/log/wtmp (used by 'last').
+          (test-assert "wtmp entry"
+            (match (marionette-eval
+                    '(begin
+                       (use-modules (guix build syscalls)
+                                    (srfi srfi-1))
+
+                       (define (entry->list entry)
+                         (list (utmpx-user entry) (utmpx-line entry)
+                               (utmpx-host entry) (utmpx-login-type entry)))
+
+                       (call-with-input-file "/var/log/wtmp"
+                         (lambda (port)
+                           (let loop ((result '()))
+                             (if (eof-object? (peek-char port))
+                                 (map entry->list (reverse result))
+                                 (loop (cons (read-utmpx port) result)))))))
+                    marionette)
+              (((users lines hosts types) ..1)
+               (every (lambda (type)
+                        (eqv? type (login-type LOGIN_PROCESS)))
+                      types))))
 
           (test-assert "host name resolution"
             (match (marionette-eval

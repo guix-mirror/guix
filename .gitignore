@@ -11,6 +11,7 @@
 /INSTALL
 /aclocal.m4
 /autom4te.cache
+/build-aux/ar-lib
 /build-aux/compile
 /build-aux/config.guess
 /build-aux/config.rpath
@@ -128,4 +129,4 @@ stamp-h[0-9]
 tmp
 /doc/os-config-lightweight-desktop.texi
 /nix/scripts/download
-/etc/indent-package.el
+/etc/indent-code.el

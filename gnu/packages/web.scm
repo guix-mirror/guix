@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -13,10 +13,11 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -87,16 +88,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.23")
+    (version "2.4.25")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0n2yx3gjlpr4kgqx845fj6amnmg25r2l6a7rzab5hxnpmar985hc"))
-             (patches (search-patches "httpd-CVE-2016-8740.patch"))
-             (patch-flags '("-p0"))))
+               "1cl0bkqg6srb1sypga0cn8dcmdyxldavij73zmmkxvlz3kgw4zpq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -127,14 +126,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.11.6")
+    (version "1.11.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1gc5phrzm2hbpvryaya6rlvasa00vjips4hv5q1rqbcfa6xsnlri"))))
+                "0j2pcara9ir2xj3m2mjzf7wz46mdy51c0kal61cp0ldm2qgvf8nw"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -146,7 +145,7 @@ and its related documentation.")
          (add-before 'configure 'patch-/bin/sh
            (lambda _
              (substitute* "auto/feature"
-               (("/bin/sh") (which "bash")))
+               (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -527,7 +526,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.16.1")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -535,7 +534,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "1srrd0iyz9p5xgl8q0hrzqg7p8cl9ar0cdb8f54hls4kllf3f80l"))))
+                "0jyxwc6bcvkcahkwcq237a0x209cysb63n5lak5m7zbglbb2jmq2"))))
     (build-system gnu-build-system)
     (inputs
      `(("icu4c" ,icu4c)
@@ -3968,3 +3967,102 @@ useful for users behind restrictive firewalls.  As long as Web traffic is
 allowed, even through a HTTP-only proxy, httptunnel can be combined with other
 tools like SSH (Secure Shell) to reach the outside world.")
     (license l:gpl2+)))
+
+(define-public stunnel
+  (package
+  (name "stunnel")
+  (version "5.39")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1vjdn32iw11zqsygwxbjmqgs4644dk3ql1h8ap890ls6a1x0i318"))))
+  (build-system gnu-build-system)
+  (inputs `(("openssl" ,openssl)))
+  (arguments
+   `(#:configure-flags
+     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))))
+  (home-page "https://www.stunnel.org")
+  (synopsis "TLS proxy for clients or servers")
+  (description "Stunnel is a proxy designed to add TLS encryption
+functionality to existing clients and servers without any changes in the
+programs' code.  Its architecture is optimized for security, portability, and
+scalability (including load-balancing), making it suitable for large
+deployments.")
+  (license l:gpl2+)))
+
+(define-public xinetd
+  (package
+    (name "xinetd")
+    (version "2.3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://github.com/xinetd-org/xinetd/archive/xinetd-2-3-15.tar.gz")
+       (patches (search-patches "xinetd-CVE-2013-4342.patch" "xinetd-fix-fd-leak.patch"))
+       (sha256
+        (base32
+         "0k59x52cbzp5fw0n8zn0y54j1ps0x9b72y8k5grzswjdmgs2a2v2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-loadavg")
+       #:tests? #f )) ; no tests
+    (home-page "https://github.com/xinetd-org/xinetd")
+    (synopsis "Internet services daemon")
+    (description "@code{xinetd}, a more secure replacement for @code{inetd},
+listens for incoming requests over a network and launches the appropriate
+service for that request.  Requests are made using port numbers as identifiers
+and xinetd usually launches another daemon to handle the request.  It can be
+used to start services with both privileged and non-privileged port numbers.")
+    (license (l:fsf-free "file://COPYRIGHT"))))
+
+(define-public tidy-html
+  (package
+    (name "tidy-html")
+    (version "5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/htacg/tidy-html5/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kbwzh15dlapp3s3vff2qgz0yfcf8hwsnx5q4igwa6pimhak8lw0"))))
+    (build-system cmake-build-system)
+    (outputs '("out"
+               "static")) ; 1.0MiB of .a files
+    (arguments
+     `(#:tests? #f ; No tests available
+       #:configure-flags (list "-DCMAKE_BUILD_TYPE=Release")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (mkdir-p slib)
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t))))))
+    (native-inputs
+     `(("libxslt" ,libxslt)))
+    (home-page "http://www.html-tidy.org/")
+    (synopsis "HTML Tidy with HTML5 support")
+    (description
+     "Tidy is a console application which corrects and cleans up
+HTML and XML documents by fixing markup errors and upgrading
+legacy code to modern standards.
+
+Tidy also provides @code{libtidy}, a C static and dynamic library that
+developers can integrate into their applications to make use of the
+functions of Tidy.")
+    (license l:bsd-3)))

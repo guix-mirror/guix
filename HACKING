@@ -3,7 +3,7 @@
 #+TITLE: Hacking GNU Guix and Its Incredible Distro
 
 Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
-Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+Copyright © 2015, 2017 Mathieu Lirzin <mthl@gnu.org>
 Copyright © 2017 Leo Famulari <leo@famulari.name>
 
   Copying and distribution of this file, with or without modification,
@@ -14,7 +14,7 @@ Copyright © 2017 Leo Famulari <leo@famulari.name>
 
 See the manual for useful hacking informations, either by running
 
-  info -f doc/guix.info "(guix) Contributing"
+  info -f doc/guix.info "Contributing"
 
 or by checking the [[http://www.gnu.org/software/guix/manual/guix.html#Contributing][web copy of the manual]].
 

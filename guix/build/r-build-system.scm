@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,6 +84,7 @@
          (params       (append configure-flags
                                (list "--install-tests"
                                      (string-append "--library=" site-library)
+                                     "--built-timestamp=1970-01-01"
                                      ".")))
          (site-path    (string-append site-library ":"
                                       (generate-site-path inputs))))

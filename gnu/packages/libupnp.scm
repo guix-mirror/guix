@@ -26,17 +26,15 @@
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.6.20")
+    (version "1.6.21")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/pupnp/pupnp/libUPnP%20"
                           version "/" name "-" version ".tar.bz2"))
-      (patches (search-patches "libupnp-CVE-2016-6255.patch"
-                               "libupnp-CVE-2016-8863.patch"))
       (sha256
        (base32
-        "0qrsdsb1qm85hc4jy04qph895613d148f0x1mmk6z99y3q43fdgf"))))
+        "16x3z6jg1krwyydmbd0z59z5c9x4pniaajmfmnp5pmx18q43qgxg"))))
     (build-system gnu-build-system)
     (arguments
      ;; The tests require a network device capable of multicasting which is

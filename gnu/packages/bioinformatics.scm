@@ -468,6 +468,47 @@ frames} (ORFs) using ribosome profiling (ribo-seq) data.  This package
 provides the Ribotaper pipeline.")
     (license license:gpl3+)))
 
+(define-public ribodiff
+  (package
+    (name "ribodiff")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ratschlab/RiboDiff/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wpbwmfv05wdjxv7ikm664f7s7p7cqr8jnw99zrda0q67rl50aaj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Generate an installable executable script wrapper.
+         (add-after 'unpack 'patch-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("^(.*)packages=.*" line prefix)
+                (string-append line "\n"
+                               prefix "scripts=['scripts/TE.py'],\n")))
+             #t)))))
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("python-matplotlib" ,python2-matplotlib)
+       ("python-scipy" ,python2-scipy)
+       ("python-statsmodels" ,python2-statsmodels)))
+    (home-page "http://public.bmi.inf.ethz.ch/user/zhongy/RiboDiff/")
+    (synopsis "Detect translation efficiency changes from ribosome footprints")
+    (description "RiboDiff is a statistical tool that detects the protein
+translational efficiency change from Ribo-Seq (ribosome footprinting) and
+RNA-Seq data.  It uses a generalized linear model to detect genes showing
+difference in translational profile taking mRNA abundance into account.  It
+facilitates us to decipher the translational regulation that behave
+independently with transcriptional regulation.")
+    (license license:gpl3+)))
+
 (define-public bioawk
   (package
     (name "bioawk")
@@ -2010,7 +2051,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.31")
+    (version "0.8.34")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2019,7 +2060,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0nh79f4rpgq8vmlga743r7vd0z0ik6spy34f7vfq0v9lcmvfr7xq"))))
+                "0jvr34g346gbz7z1zb9bs0vplivm9p4cxk0lbzklvdpa7g236p39"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2726,6 +2767,69 @@ several alignment strategies enable effective alignment of RNA-seq reads, in
 particular, reads spanning multiple exons.")
     (license license:gpl3+)))
 
+(define-public hisat2
+  (package
+    (name "hisat2")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       ;; FIXME: a better source URL is
+       ;; (string-append "ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2"
+       ;;                "/downloads/hisat2-" version "-source.zip")
+       ;; with hash "0lywnr8kijwsc2aw10dwxic0n0yvip6fl3rjlvc8zzwahamy4x7g"
+       ;; but it is currently unavailable.
+       (uri "https://github.com/infphilo/hisat2/archive/cba6e8cb.tar.gz")
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mf2hdsyv7cd97xm9mp9a4qws02yrj95y6w6f6cdwnq0klp81r50"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags (list "CC=gcc" "CXX=g++" "allall")
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-deterministic
+           (lambda _
+             (substitute* "Makefile"
+               (("`date`") "0"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (doc (string-append out "/share/doc/hisat2/")))
+               (for-each
+                (cut install-file <> bin)
+                (find-files "."
+                            "hisat2(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))
+               (mkdir-p doc)
+               (install-file "doc/manual.inc.html" doc))
+             #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)                 ; needed for archive from ftp
+       ("perl" ,perl)
+       ("pandoc" ,ghc-pandoc)))         ; for documentation
+    (home-page "http://ccb.jhu.edu/software/hisat2/index.shtml")
+    (synopsis "Graph-based alignment of genomic sequencing reads")
+    (description "HISAT2 is a fast and sensitive alignment program for mapping
+next-generation sequencing reads (both DNA and RNA) to a population of human
+genomes (as well as to a single reference genome).  In addition to using one
+global @dfn{graph FM} (GFM) index that represents a population of human
+genomes, HISAT2 uses a large set of small GFM indexes that collectively cover
+the whole genome.  These small indexes, combined with several alignment
+strategies, enable rapid and accurate alignment of sequencing reads.  This new
+indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
+    ;; HISAT2 contains files from Bowtie2, which is released under
+    ;; GPLv2 or later.  The HISAT2 source files are released under
+    ;; GPLv3 or later.
+    (license license:gpl3+)))
+
 (define-public hmmer
   (package
     (name "hmmer")
@@ -3383,7 +3487,6 @@ that a read originated from a particular isoform.")
     (version "3.8.1551")
     (source (origin
               (method url-fetch/tarbomb)
-              (file-name (string-append name "-" version))
               (uri (string-append
                     "http://www.drive5.com/muscle/muscle_src_"
                     version ".tar.gz"))
@@ -5148,17 +5251,41 @@ sequence.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
+(define-public r-centipede
+  (package
+    (name "r-centipede")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.r-forge.r-project.org/"
+                                  "src/contrib/CENTIPEDE_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hsx6qgwr0i67fhy9257zj7s0ppncph2hjgbia5nn6nfmj0ax6l9"))))
+    (build-system r-build-system)
+    (home-page "http://centipede.uchicago.edu/")
+    (synopsis "Predict transcription factor binding sites")
+    (description
+     "CENTIPEDE applies a hierarchical Bayesian mixture model to infer regions
+of the genome that are bound by particular transcription factors.  It starts
+by identifying a set of candidate binding sites, and then aims to classify the
+sites according to whether each site is bound or not bound by a transcription
+factor.  CENTIPEDE is an unsupervised learning algorithm that discriminates
+between two different types of motif instances using as much relevant
+information as possible.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-1")
+    (version "2.4-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "0i0c7rc0nzgbysd1nlxzxd2rvy75qcnw3yc7nggzqjzzj5d7yzsd"))))
+         "12wf64izrpq9z3ix7mgm5421mq0xsm8dw5qblvcrz452nfhjf5w9"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -5610,7 +5737,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.3.4")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -5620,31 +5747,12 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1xyraxmhyx62mxx8z7c8waygvcijwkh48ms1ar60w2cv2y2sn4al"))
-       (modules '((guix build utils)))
+         "007q9a50hdw4vs2iajabvbw7qccml4r8cbqzyi5ipkkf42jk3vnr"))
+       (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
-           ;; Remove bundled cityhash and '-mtune=native'.
-           (substitute* "src/Makefile.am"
-             (("^AM_CXXFLAGS=-I\\$\\{srcdir\\}/cityhash \
--O3 -mtune=native -Wall -Wsign-compare")
-              (string-append "AM_CXXFLAGS=-lcityhash"
-                             " -O3 -Wall -Wsign-compare"))
-             (("^__top_builddir__bin_vsearch_SOURCES = city.h \\\\")
-              "__top_builddir__bin_vsearch_SOURCES = \\")
-             (("^city.h \\\\") "\\")
-             (("^citycrc.h \\\\") "\\")
-             (("^libcityhash_a.*") "")
-             (("noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a \
-libcityhash.a")
-              "noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a")
-             (("__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
-libcpu_sse2.a libcityhash.a")
-              "__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
-libcpu_sse2.a -lcityhash"))
-           (substitute* "src/vsearch.h"
-             (("^\\#include \"city.h\"") "#include <city.h>")
-             (("^\\#include \"citycrc.h\"") "#include <citycrc.h>"))
+           ;; Remove bundled cityhash sources.  The vsearch source is adjusted
+           ;; for this in the patch.
            (delete-file "src/city.h")
            (delete-file "src/citycrc.h")
            (delete-file "src/city.cc")
@@ -6186,7 +6294,8 @@ names in their natural, rather than lexicographic, order.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-limma" ,r-limma)
-       ("r-locfit" ,r-locfit)))
+       ("r-locfit" ,r-locfit)
+       ("r-statmod" ,r-statmod))) ;for estimateDisp
     (home-page "http://bioinf.wehi.edu.au/edgeR")
     (synopsis "EdgeR does empirical analysis of digital gene expression data")
     (description "This package can do differential expression analysis of
@@ -6744,6 +6853,37 @@ dependencies between GO terms can be implemented and applied.")
     (description
      "This package provides infrastructure shared by all Biostrings-based
 genome data packages and support for efficient SNP representation.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-hsapiens-1000genomes-hs37d5
+  (package
+    (name "r-bsgenome-hsapiens-1000genomes-hs37d5")
+    (version "0.99.1")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.1000genomes.hs37d5_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1cg0g5fqmsvwyw2p9hp2yy4ilk21jkbbrnpgqvb5c36ihjwvc7sr"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.1000genomes.hs37d5")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "http://www.bioconductor.org/packages/BSgenome.Hsapiens.1000genomes.hs37d5/")
+    (synopsis "Full genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens from
+1000genomes phase2 reference genome sequence (hs37d5), based on NCBI GRCh37.")
     (license license:artistic2.0)))
 
 (define-public r-impute
@@ -7630,6 +7770,71 @@ for DNA and protein sequences.  This package supports several sequence
 kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
     (license license:gpl2+)))
 
+(define-public r-tximport
+  (package
+    (name "r-tximport")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "tximport" version))
+              (sha256
+               (base32
+                "1k5a7dad6zqg936s17f6cmwgqp11x24z9zhxndsgwbscgpyhpcb0"))))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/tximport")
+    (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
+    (description
+     "This package provides tools to import transcript-level abundance,
+estimated counts and transcript lengths, and to summarize them into matrices
+for use with downstream gene-level analysis packages.  Average transcript
+length, weighted by sample-specific transcript abundance estimates, is
+provided as a matrix which can be used as an offset for different expression
+of gene-level counts.")
+    (license license:gpl2+)))
+
+(define-public r-rhdf5
+  (package
+    (name "r-rhdf5")
+    (version "2.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "rhdf5" version))
+              (sha256
+               (base32
+                "0pb04li55ysag30s7rap7nnivc0rqmgsmpj43kin0rxdabfn1w0k"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-smallhdf5
+           (lambda* (#:key outputs #:allow-other-keys)
+             (system* "tar" "-xzvf"
+                      "src/hdf5source/hdf5small.tgz" "-C" "src/" )
+             (substitute* "src/Makevars"
+               (("^.*cd hdf5source &&.*$") "")
+               (("^.*gunzip -dc hdf5small.tgz.*$") "")
+               (("^.*rm -rf hdf5.*$") "")
+               (("^.*mv hdf5source/hdf5 ..*$") ""))
+             (substitute* "src/hdf5/configure"
+               (("/bin/mv") "mv"))
+             #t)))))
+    (propagated-inputs
+     `(("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("perl" ,perl)
+       ("zlib" ,zlib)))
+    (home-page "http://bioconductor.org/packages/rhdf5")
+    (synopsis "HDF5 interface to R")
+    (description
+     "This R/Bioconductor package provides an interface between HDF5 and R.
+HDF5's main features are the ability to store and access very large and/or
+complex datasets and a wide variety of metadata on mass storage (disk) through
+a completely portable file format.  The rhdf5 package is thus suited for the
+exchange of large and/or complex datasets between R and other software
+package, and for letting R applications work on datasets that are larger than
+the available RAM.")
+    (license license:artistic2.0)))
+
 (define-public emboss
   (package
     (name "emboss")
@@ -7885,7 +8090,9 @@ replacement for strverscmp.")
        ("python-pyyaml" ,python-pyyaml)
        ("python-click" ,python-click)
        ("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)))
+       ("python-numpy" ,python-numpy)
+       ;; MultQC checks for the presence of nose at runtime.
+       ("python-nose" ,python-nose)))
     (home-page "http://multiqc.info")
     (synopsis "Aggregate bioinformatics analysis reports")
     (description
@@ -7984,3 +8191,382 @@ immunoprecipitation and target enrichment on small gene panels.  Thereby,
 CopywriteR constitutes a widely applicable alternative to available copy
 number detection tools.")
     (license license:gpl2)))
+
+(define-public r-sva
+  (package
+    (name "r-sva")
+    (version "3.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "sva" version))
+       (sha256
+        (base32
+         "1wc1fjm6dzlsqqagm43y57w8jh8nsh0r0m8z1p6ximcb5gxqh7hn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genefilter" ,r-genefilter)))
+    (home-page "http://bioconductor.org/packages/sva")
+    (synopsis "Surrogate variable analysis")
+    (description
+     "This package contains functions for removing batch effects and other
+unwanted variation in high-throughput experiment.  It also contains functions
+for identifying and building surrogate variables for high-dimensional data
+sets.  Surrogate variables are covariates constructed directly from
+high-dimensional data like gene expression/RNA sequencing/methylation/brain
+imaging data that can be used in subsequent analyses to adjust for unknown,
+unmodeled, or latent sources of noise.")
+    (license license:artistic2.0)))
+
+(define-public r-seqminer
+  (package
+    (name "r-seqminer")
+    (version "5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seqminer" version))
+       (sha256
+        (base32
+         "0y0gc5lws3hdxasjb84m532ics6imb7qg9sl1zy62h503jh4j9gw"))))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://seqminer.genomic.codes")
+    (synopsis "Read nucleotide sequence data (VCF, BCF, and METAL formats)")
+    (description
+     "This package provides tools to integrate nucleotide sequencing
+data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
+    ;; Any version of the GPL is acceptable
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-raremetals2
+  (package
+    (name "r-raremetals2")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://genome.sph.umich.edu/w/images/"
+                           "b/b7/RareMETALS2_" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z5ljcgvnm06ja9lm85a3cniq7slxcy37aqqkxrdidr79an5fs4s"))))
+    (properties `((upstream-name . "RareMETALS2")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-seqminer" ,r-seqminer)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-compquadform" ,r-compquadform)
+       ("r-getopt" ,r-getopt)))
+    (home-page "http://genome.sph.umich.edu/wiki/RareMETALS2")
+    (synopsis "Analyze gene-level association tests for binary trait")
+    (description
+     "The R package rareMETALS2 is an extension of the R package rareMETALS.
+It was designed to meta-analyze gene-level association tests for binary trait.
+While rareMETALS offers a near-complete solution for meta-analysis of
+gene-level tests for quantitative trait, it does not offer the optimal
+solution for binary trait.  The package rareMETALS2 offers improved features
+for analyzing gene-level association tests in meta-analyses for binary
+trait.")
+    (license license:gpl3)))
+
+(define-public r-maldiquant
+  (package
+    (name "r-maldiquant")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MALDIquant" version))
+       (sha256
+        (base32
+         "067xbmy10mpsvmv77g62chd7wwhdhcfn5hmp5fisbnz2h5rq0q60"))))
+    (properties `((upstream-name . "MALDIquant")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/MALDIquant")
+    (synopsis "Quantitative analysis of mass spectrometry data")
+    (description
+     "This package provides a complete analysis pipeline for matrix-assisted
+laser desorption/ionization-time-of-flight (MALDI-TOF) and other
+two-dimensional mass spectrometry data.  In addition to commonly used plotting
+and processing methods it includes distinctive features, namely baseline
+subtraction methods such as morphological filters (TopHat) or the
+statistics-sensitive non-linear iterative peak-clipping algorithm (SNIP), peak
+alignment using warping functions, handling of replicated measurements as well
+as allowing spectra with different resolutions.")
+    (license license:gpl3+)))
+
+(define-public r-protgenerics
+  (package
+    (name "r-protgenerics")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ProtGenerics" version))
+       (sha256
+        (base32
+         "0hb3vrrvfx6lcfalmjxm8dmigfmi5nba0pzjfgsrzd35c8mbfc6f"))))
+    (properties `((upstream-name . "ProtGenerics")))
+    (build-system r-build-system)
+    (home-page "https://github.com/lgatto/ProtGenerics")
+    (synopsis "S4 generic functions for proteomics infrastructure")
+    (description
+     "This package provides S4 generic functions needed by Bioconductor
+proteomics packages.")
+    (license license:artistic2.0)))
+
+(define-public r-mzr
+  (package
+    (name "r-mzr")
+    (version "2.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "mzR" version))
+       (sha256
+        (base32
+         "0ipmhg6l3pf648rdx5g2ha7l5ppd3cja6afxhdw76x8ga3633x0r"))))
+    (properties `((upstream-name . "mzR")))
+    (build-system r-build-system)
+    (inputs
+     `(("netcdf" ,netcdf)))
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "https://github.com/sneumann/mzR/")
+    (synopsis "Parser for mass spectrometry data files")
+    (description
+     "The mzR package provides a unified API to the common file formats and
+parsers available for mass spectrometry data.  It comes with a wrapper for the
+ISB random access parser for mass spectrometry mzXML, mzData and mzML files.
+The package contains the original code written by the ISB, and a subset of the
+proteowizard library for mzML and mzIdentML.  The netCDF reading code has
+previously been used in XCMS.")
+    (license license:artistic2.0)))
+
+(define-public r-affyio
+  (package
+    (name "r-affyio")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affyio" version))
+       (sha256
+        (base32
+         "1svsl4mpk06xm505pap913x69ywks99262krag8y4ygpllj7dfyy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/bmbolstad/affyio")
+    (synopsis "Tools for parsing Affymetrix data files")
+    (description
+     "This package provides routines for parsing Affymetrix data files based
+upon file format information.  The primary focus is on accessing the CEL and
+CDF file formats.")
+    (license license:lgpl2.0+)))
+
+(define-public r-affy
+  (package
+    (name "r-affy")
+    (version "1.52.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affy" version))
+       (sha256
+        (base32
+         "1snq71ligf0wvaxa6zfrl13ydw0zfhspmhdyfk8q3ba3np4cz344"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affyio" ,r-affyio)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "http://bioconductor.org/packages/affy")
+    (synopsis "Methods for affymetrix oligonucleotide arrays")
+    (description
+     "This package contains functions for exploratory oligonucleotide array
+analysis.")
+    (license license:lgpl2.0+)))
+
+(define-public r-vsn
+  (package
+    (name "r-vsn")
+    (version "3.42.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "vsn" version))
+       (sha256
+        (base32
+         "0mgl0azys2g90simf8wx6jdwd7gyg3m4pf12n6w6507jixm2cg97"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-limma" ,r-limma)))
+    (home-page "http://bioconductor.org/packages/release/bioc/html/vsn.html")
+    (synopsis "Variance stabilization and calibration for microarray data")
+    (description
+     "The package implements a method for normalising microarray intensities,
+and works for single- and multiple-color arrays.  It can also be used for data
+from other technologies, as long as they have similar format.  The method uses
+a robust variant of the maximum-likelihood estimator for an
+additive-multiplicative error model and affine calibration.  The model
+incorporates data calibration step (a.k.a.  normalization), a model for the
+dependence of the variance on the mean intensity and a variance stabilizing
+data transformation.  Differences between transformed intensities are
+analogous to \"normalized log-ratios\".  However, in contrast to the latter,
+their variance is independent of the mean, and they are usually more sensitive
+and specific in detecting differential transcription.")
+    (license license:artistic2.0)))
+
+(define-public r-mzid
+  (package
+    (name "r-mzid")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "mzID" version))
+       (sha256
+        (base32
+         "1zn896cpfvqp1qmq5c4vcj933hb8rxwb6gkck1wqvr7393rpqy1q"))))
+    (properties `((upstream-name . "mzID")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-iterators" ,r-iterators)
+       ("r-plyr" ,r-plyr)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-xml" ,r-xml)))
+    (home-page "http://bioconductor.org/packages/mzID")
+    (synopsis "Parser for mzIdentML files")
+    (description
+     "This package provides a parser for mzIdentML files implemented using the
+XML package.  The parser tries to be general and able to handle all types of
+mzIdentML files with the drawback of having less pretty output than a vendor
+specific parser.")
+    (license license:gpl2+)))
+
+(define-public r-pcamethods
+  (package
+    (name "r-pcamethods")
+    (version "1.66.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "pcaMethods" version))
+       (sha256
+        (base32
+         "18mawhxw57pgpn87qha4mwki24gqja7wpqha8q496476vyap11xw"))))
+    (properties `((upstream-name . "pcaMethods")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/hredestig/pcamethods")
+    (synopsis "Collection of PCA methods")
+    (description
+     "This package provides Bayesian PCA, Probabilistic PCA, Nipals PCA,
+Inverse Non-Linear PCA and the conventional SVD PCA.  A cluster based method
+for missing value estimation is included for comparison.  BPCA, PPCA and
+NipalsPCA may be used to perform PCA on incomplete data as well as for
+accurate missing value estimation.  A set of methods for printing and plotting
+the results is also provided.  All PCA methods make use of the same data
+structure (pcaRes) to provide a common interface to the PCA results.")
+    (license license:gpl3+)))
+
+(define-public r-msnbase
+  (package
+    (name "r-msnbase")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MSnbase" version))
+       (sha256
+        (base32
+         "0jjjs29dcwsjaxzfqxy98ycpg3rwxzzchkj77my3cjgdc00sm66n"))))
+    (properties `((upstream-name . "MSnbase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-digest" ,r-digest)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-impute" ,r-impute)
+       ("r-iranges" ,r-iranges)
+       ("r-maldiquant" ,r-maldiquant)
+       ("r-mzid" ,r-mzid)
+       ("r-mzr" ,r-mzr)
+       ("r-pcamethods" ,r-pcamethods)
+       ("r-plyr" ,r-plyr)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-vsn" ,r-vsn)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/lgatto/MSnbase")
+    (synopsis "Base functions and classes for MS-based proteomics")
+    (description
+     "This package provides basic plotting, data manipulation and processing
+of mass spectrometry based proteomics data.")
+    (license license:artistic2.0)))
+
+(define-public r-msnid
+  (package
+    (name "r-msnid")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MSnID" version))
+       (sha256
+        (base32
+         "0fkk3za39cxi0jyxmagmycjdslr2xf6vg3ylz14jyffqi0blw9d5"))))
+    (properties `((upstream-name . "MSnID")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-data-table" ,r-data-table)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dplyr" ,r-dplyr)
+       ("r-foreach" ,r-foreach)
+       ("r-iterators" ,r-iterators)
+       ("r-msnbase" ,r-msnbase)
+       ("r-mzid" ,r-mzid)
+       ("r-mzr" ,r-mzr)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-r-cache" ,r-r-cache)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "http://bioconductor.org/packages/MSnID")
+    (synopsis "Utilities for LC-MSn proteomics identifications")
+    (description
+     "This package extracts @dfn{tandem mass spectrometry} (MS/MS) ID data
+from mzIdentML (leveraging the mzID package) or text files.  After collating
+the search results from multiple datasets it assesses their identification
+quality and optimize filtering criteria to achieve the maximum number of
+identifications while not exceeding a specified false discovery rate.  It also
+contains a number of utilities to explore the MS/MS results and assess missed
+and irregular enzymatic cleavages, mass measurement accuracy, etc.")
+    (license license:artistic2.0)))

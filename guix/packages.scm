@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -28,6 +28,7 @@
   #:use-module (guix base32)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
+  #:use-module (guix memoization)
   #:use-module (guix build-system)
   #:use-module (guix search-paths)
   #:use-module (guix gexp)
@@ -62,6 +63,7 @@
             package
             package?
             package-name
+            package-upstream-name
             package-version
             package-full-name
             package-source
@@ -295,6 +297,12 @@ name of its URI."
                                       (number->string (object-address
                                                        package)
                                                       16)))))
+
+(define (package-upstream-name package)
+  "Return the upstream name of PACKAGE, which could be different from the name
+it has in Guix."
+  (or (assq-ref (package-properties package) 'upstream-name)
+      (package-name package)))
 
 (define (hidden-package p)
   "Return a \"hidden\" version of P--i.e., one that 'fold-packages' and thus,
@@ -690,38 +698,19 @@ in INPUTS and their transitive propagated inputs."
          `(assoc-ref ,alist ,(label input)))
        (transitive-inputs inputs)))
 
-(define-syntax define-memoized/v
-  (lambda (form)
-    "Define a memoized single-valued unary procedure with docstring.
-The procedure argument is compared to cached keys using `eqv?'."
-    (syntax-case form ()
-      ((_ (proc arg) docstring body body* ...)
-       (string? (syntax->datum #'docstring))
-       #'(define proc
-           (let ((cache (make-hash-table)))
-             (define (proc arg)
-               docstring
-               (match (hashv-get-handle cache arg)
-                 ((_ . value)
-                  value)
-                 (_
-                  (let ((result (let () body body* ...)))
-                    (hashv-set! cache arg result)
-                    result))))
-             proc))))))
-
-(define-memoized/v (package-transitive-supported-systems package)
-  "Return the intersection of the systems supported by PACKAGE and those
+(define package-transitive-supported-systems
+  (mlambdaq (package)
+    "Return the intersection of the systems supported by PACKAGE and those
 supported by its dependencies."
-  (fold (lambda (input systems)
-          (match input
-            ((label (? package? p) . _)
-             (lset-intersection
-              string=? systems (package-transitive-supported-systems p)))
-            (_
-             systems)))
-        (package-supported-systems package)
-        (bag-direct-inputs (package->bag package))))
+    (fold (lambda (input systems)
+            (match input
+              ((label (? package? p) . _)
+               (lset-intersection
+                string=? systems (package-transitive-supported-systems p)))
+              (_
+               systems)))
+          (package-supported-systems package)
+          (bag-direct-inputs (package->bag package)))))
 
 (define* (supported-package? package #:optional (system (%current-system)))
   "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
@@ -768,14 +757,15 @@ package and returns its new name after rewrite."
       (_
        input)))
 
-  (define-memoized/v (replace p)
-    "Return a variant of P with its inputs rewritten."
-    (package
-      (inherit p)
-      (name (rewrite-name (package-name p)))
-      (inputs (map rewrite (package-inputs p)))
-      (native-inputs (map rewrite (package-native-inputs p)))
-      (propagated-inputs (map rewrite (package-propagated-inputs p)))))
+  (define replace
+    (mlambdaq (p)
+      ;; Return a variant of P with its inputs rewritten.
+      (package
+        (inherit p)
+        (name (rewrite-name (package-name p)))
+        (inputs (map rewrite (package-inputs p)))
+        (native-inputs (map rewrite (package-native-inputs p)))
+        (propagated-inputs (map rewrite (package-propagated-inputs p))))))
 
   replace)
 

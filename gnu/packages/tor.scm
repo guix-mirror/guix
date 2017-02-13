@@ -2,7 +2,8 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tor)
-  #:use-module ((guix licenses) #:select (bsd-3 gpl3+ gpl2+ gpl2))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -39,15 +40,19 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.2.9.8")
+    (version "0.2.9.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0sklgmx4nikcfhqd606kvpwy1l8840w24ikli1xjjx25739k7pgv"))))
+               "0hqdk5p6dw4bpn7c8gmhyi8jjkhc37112pfw5nx4gl0g4lmmscik"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-expensive-hardening"
+                               "--enable-gcc-hardening"
+                               "--enable-linker-hardening")))
     (native-inputs
      `(("python" ,python-2)))  ; for tests
     (inputs
@@ -69,7 +74,7 @@ To @code{torify} applications (to take measures to ensure that an application,
 which has not been designed for use with Tor such as ssh, will use only Tor for
 internet connectivity, and also ensures that there are no leaks from DNS, UDP or
 the application layer) you need to install @code{torsocks}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public torsocks
   (package
@@ -91,7 +96,7 @@ way with Tor.  It ensures that DNS requests are handled safely and explicitly
 rejects UDP traffic from the application you're using.")
 
     ;; All the files explicitly say "version 2 only".
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public privoxy
   (package
@@ -135,7 +140,7 @@ access, and removing ads and other obnoxious Internet junk.  Privoxy has a
 flexible configuration and can be customized to suit individual needs and
 tastes.  It has application for both stand-alone systems and multi-user
 networks.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public onionshare
   (package
@@ -221,5 +226,68 @@ using a third party filesharing service.  You host the file on your own computer
 and use a Tor hidden service to make it temporarily accessible over the
 internet.  The other user just needs to use Tor Browser to download the file
 from you.")
-    (license (list gpl3+
-                   bsd-3)))) ; onionshare/socks.py
+    (license (list license:gpl3+
+                   license:bsd-3))))    ; onionshare/socks.py
+
+(define-public nyx
+  ;; The last ‘arm’ relase was 5 years ago.  Meanwhile, python3 support has
+  ;; been added and the software was renamed to ‘nyx’.
+  (let ((commit "fea209127484d9b304b908a4711c9528b1d065bc")
+        (revision "1"))                 ; Guix package revision
+    (package
+      (name "nyx")
+      (version (string-append "1.9-"
+                              revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (file-name (string-append name "-" version "-checkout"))
+         (uri (git-reference
+               (url "https://git.torproject.org/nyx.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1g0l4988076xg5gs0x0nxzlg58rfx5g5agmklvyh4yp03vxncdb9"))))
+      (build-system python-build-system)
+      (native-inputs
+       `(("python-mock" ,python-mock)
+         ("python-pep8" ,python-pep8)
+         ("python-pyflakes" ,python-pyflakes)))
+      (inputs
+       `(("python-stem" ,python-stem)))
+      (arguments
+       `(#:configure-flags
+         (list (string-append "--man-page="
+                              (assoc-ref %outputs "out")
+                              "/share/man/man1/nyx.1")
+               (string-append "--sample-path="
+                              (assoc-ref %outputs "out")
+                              "/share/doc/nyx/nyxrc.sample"))
+         #:use-setuptools? #f           ; setup.py still uses distutils
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (zero? (system* "./run_tests.py" "--unit")))))))
+      ;; A Nyx home page is ‘being worked on’.  Use Arm's for now, which at
+      ;; least mentions the new source repository:
+      (home-page "http://www.atagar.com/arm/")
+      (synopsis "Tor relay status monitor")
+      (description "Nyx (formerly Anonymizing Relay Monitor or \"arm\")
+monitors the performance of relays participating in the
+@uref{https://www.torproject.org/, Tor anonymity network}.  It displays this
+information visually and in real time, using a curses-based terminal interface.
+This makes Nyx well-suited for remote shell connections and servers without a
+graphical display.  It's like @command{top} for Tor, providing detailed
+statistics and status reports on:
+
+@enumerate
+@item connections (with IP address, hostname, fingerprint, and consensus data),
+@item bandwidth, processor, and memory usage,
+@item the relay's current configuration,
+@item logged events,
+@item and much more.
+@end enumerate
+
+Potential client and exit connections are scrubbed of sensitive information.")
+      (license license:gpl3+))))

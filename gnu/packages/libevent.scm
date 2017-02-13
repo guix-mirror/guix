@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
 (define-public libevent
   (package
     (name "libevent")
-    (version "2.0.22")
+    (version "2.1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -41,13 +42,16 @@
                    version "-stable/libevent-" version "-stable.tar.gz"))
              (sha256
               (base32
-               "18qz9qfwrkakmazdlwxvjmw8p76g70n3faikwvdwznns1agw9hki"))
-             (patches (search-patches "libevent-dns-tests.patch"))))
+               "1hhxnxlr0fsdv7bdmzsnhdz16fxf3jg2r6vyljcl3kj6pflcap4n"))
+             (patches (search-patches "libevent-2.1-dns-tests.patch"
+                                      ;; XXX: Try removing this for > 2.1.8.
+                                      ;; https://github.com/libevent/libevent/issues/452
+                                      "libevent-2.1-skip-failing-test.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(;; Dependencies used for the tests and for `event_rpcgen.py'.
-       ("which" ,which)
-       ("python" ,python-wrapper)))
+     `(("python" ,python-2)))           ; for 'event_rpcgen.py'
+    (native-inputs
+     `(("which" ,which)))
     (home-page "http://libevent.org/")
     (synopsis "Event notification library")
     (description
@@ -62,10 +66,28 @@ then add or remove events dynamically without having to change the event
 loop.")
     (license bsd-3)))
 
+(define-public libevent-2.0
+  (package
+    (inherit libevent)
+    (version "2.0.22")
+    (source (origin
+          (method url-fetch)
+          (uri (string-append
+                "https://github.com/libevent/libevent/releases/download/release-"
+                version "-stable/libevent-" version "-stable.tar.gz"))
+          (sha256
+           (base32
+            "18qz9qfwrkakmazdlwxvjmw8p76g70n3faikwvdwznns1agw9hki"))
+          (patches (search-patches
+                    "libevent-dns-tests.patch"
+                    "libevent-2.0-evdns-fix-remote-stack-overread.patch"
+                    "libevent-2.0-evutil-fix-buffer-overflow.patch"
+                    "libevent-2.0-evdns-fix-searching-empty-hostnames.patch"))))))
+
 (define-public libev
   (package
     (name "libev")
-    (version "4.23")
+    (version "4.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/libev/Attic/libev-"
@@ -73,7 +95,7 @@ loop.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "0ynxxm7giy4hg3qp9q8wshqw1jla9sxbsbi2pwsdsl1v1hz79zn7"))))
+                "08gqsza1czx0nf62nkk183jb0946yzjsymaacxbzdgcs8z9r6dcp"))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/libev.html")
     (synopsis "Event loop loosely modelled after libevent")
@@ -89,7 +111,7 @@ programs.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.9.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libuv/libuv/archive/v"
@@ -97,7 +119,7 @@ programs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1sx5lahhg2w92y6mgyg7c7nrx2biyyxd5yiqkmq8n4w01lm2gf7q"))))
+                "0yhw86011l2dg2prms0d86szygrix4pxpgnyzs7iljy2xk3fxivf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -116,7 +138,7 @@ programs.")
 
                      ;; libuv.pc is installed only when pkg-config is found.
                      ("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/joyent/libuv")
+    (home-page "https://github.com/libuv/libuv")
     (synopsis "Library for asynchronous I/O")
     (description
      "libuv is a multi-platform support library with a focus on asynchronous

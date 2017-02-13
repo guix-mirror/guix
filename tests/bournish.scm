@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,17 @@
      (getcwd)
      ((@@ (guix build bournish) ls-command-implementation)))
   (read-and-compile (open-input-string "cd /foo\npwd\nls")
+                    #:from %bournish-language #:to 'scheme))
+
+(test-equal "rm"
+  '(for-each delete-file (list "foo" "bar"))
+  (read-and-compile (open-input-string "rm foo bar\n")
+                    #:from %bournish-language #:to 'scheme))
+
+(test-equal "rm -r"
+  '(for-each (@ (guix build utils) delete-file-recursively)
+             (list "/foo" "/bar"))
+  (read-and-compile (open-input-string "rm -r /foo /bar\n")
                     #:from %bournish-language #:to 'scheme))
 
 (test-end "bournish")

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +39,7 @@
 (define-public kdevelop
   (package
     (name "kdevelop")
-    (version "5.0.2")
+    (version "5.0.3")
     (source
       (origin
         (method url-fetch)
@@ -48,7 +48,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "0rl6csmzf14gf0r0mk7z2lj7cq8fggf5qmlbxq6j68vp2q0pj0cv"))))
+          "00gn2c66pyd9qaa0zhn2lqam0zsg7fbyi13hk32wclxq73y8v98p"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -98,15 +98,18 @@
              (let* ((out  (assoc-ref outputs "out"))
                     (kdevplatform (assoc-ref inputs "kdevplatform"))
                     (kio (assoc-ref inputs "kio"))
+                    (kcmutils (assoc-ref inputs "kcmutils"))
                     (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
                     (qtdeclarative (assoc-ref inputs "qtdeclarative"))
-                    (plugins "/lib/plugins")
+                    (profile "$HOME/.guix-profile")
                     (qml "/qml"))
                (wrap-program (string-append out "/bin/kdevelop")
+                 `("XDG_DATA_DIRS" ":" prefix
+                   ,(map (lambda (s) (string-append s "/share"))
+                         (list profile out kdevplatform kcmutils)))
                  `("QT_PLUGIN_PATH" ":" prefix
-                   (,(string-append out plugins)
-                    ,(string-append kdevplatform plugins)
-                    ,(string-append kio plugins)))
+                   ,(map (lambda (s) (string-append s "/lib/plugins"))
+                         (list profile out kdevplatform kio)))
                  `("QML2_IMPORT_PATH" ":" prefix
                    (,(string-append qtquickcontrols qml)
                     ,(string-append qtdeclarative qml))))))))))
@@ -145,14 +148,14 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
 (define-public kdevplatform
   (package
     (name "kdevplatform")
-    (version "5.0.2")
+    (version "5.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/KDE/kdevplatform/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1m8c0ixv91diyy9bvq53d4jik4zrnf7bix7clad4ywxnlpcs4ahr"))
+                "1k40wg08iwyswnpbs4bfh4yq38pp0qi78shjh4pf7yfa2kbid30j"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (native-inputs

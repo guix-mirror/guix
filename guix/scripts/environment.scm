@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,12 +59,6 @@ directories in PROFILE, the store path of a profile."
 
 (define %default-shell
   (or (getenv "SHELL") "/bin/sh"))
-
-(define %network-configuration-files
-  '("/etc/resolv.conf"
-    "/etc/nsswitch.conf"
-    "/etc/services"
-    "/etc/hosts"))
 
 (define (purify-environment)
   "Unset almost all environment variables.  A small number of variables such
@@ -408,21 +402,7 @@ host file systems to mount inside the container."
                      ;; When in Rome, do as Nix build.cc does: Automagically
                      ;; map common network configuration files.
                      (if network?
-                         (filter-map (lambda (file)
-                                       (and (file-exists? file)
-                                            (file-system-mapping
-                                             (source file)
-                                             (target file)
-                                             ;; XXX: On some GNU/Linux
-                                             ;; systems, /etc/resolv.conf is a
-                                             ;; symlink to a file in a tmpfs
-                                             ;; which, for an unknown reason,
-                                             ;; cannot be bind mounted
-                                             ;; read-only within the
-                                             ;; container.
-                                             (writable?
-                                              (string=? "/etc/resolv.conf")))))
-                                     %network-configuration-files)
+                         %network-file-mappings
                          '())
                      ;; Mappings for the union closure of all inputs.
                      (map (lambda (dir)
@@ -432,7 +412,8 @@ host file systems to mount inside the container."
                              (writable? #f)))
                           reqs)))
             (file-systems (append %container-file-systems
-                                  (map mapping->file-system mappings))))
+                                  (map file-system-mapping->bind-mount
+                                       mappings))))
        (exit/status
         (call-with-container file-systems
           (lambda ()
@@ -531,8 +512,10 @@ message if any test fails."
 
 (define (register-gc-root target root)
   "Make ROOT an indirect root to TARGET.  This is procedure is idempotent."
-  (let* ((root (string-append (canonicalize-path (dirname root))
-                              "/" root)))
+  (let* ((root (if (string-prefix? "/" root)
+                   root
+                   (string-append (canonicalize-path (dirname root))
+                                  "/" root))))
     (catch 'system-error
       (lambda ()
         (symlink target root)

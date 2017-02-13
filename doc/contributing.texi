@@ -256,12 +256,17 @@ If you do not use Emacs, please make sure to let your editor knows these
 rules.  To automatically indent a package definition, you can also run:
 
 @example
-./etc/indent-package.el gnu/packages/@var{file}.scm @var{package}
+./etc/indent-code.el gnu/packages/@var{file}.scm @var{package}
 @end example
 
 @noindent
 This automatically indents the definition of @var{package} in
-@file{gnu/packages/@var{file}.scm} by running Emacs in batch mode.
+@file{gnu/packages/@var{file}.scm} by running Emacs in batch mode.  To
+indent a whole file, omit the second argument:
+
+@example
+./etc/indent-code.el gnu/services/@var{file}.scm
+@end example
 
 We require all top-level procedures to carry a docstring.  This
 requirement can be relaxed for simple private procedures in the
@@ -277,7 +282,19 @@ keyword parameters for procedures that take more than four parameters.
 Development is done using the Git distributed version control system.
 Thus, access to the repository is not strictly necessary.  We welcome
 contributions in the form of patches as produced by @code{git
-format-patch} sent to the @email{guix-devel@@gnu.org, mailing list}.
+format-patch} sent to the @email{guix-patches@@gnu.org} mailing list.
+
+This mailing list is backed by a Debbugs instance accessible at
+@uref{https://bugs.gnu.org/guix-patches}, which allows us to keep track
+of submissions.  Each message sent to that mailing list gets a new
+tracking number assigned; people can then follow up on the submission by
+sending email to @code{@var{NNN}@@debbugs.gnu.org}, where @var{NNN} is
+the tracking number.  When sending a patch series, please first send one
+message to @email{guix-patches@@gnu.org}, and then send subsequent
+patches to @email{@var{NNN}@@debbugs.gnu.org} to make sure they are kept
+together.  See @uref{https://debbugs.gnu.org/Advanced.html, the Debbugs
+documentation}, for more information.
+
 Please write commit logs in the ChangeLog format (@pxref{Change Logs,,,
 standards, GNU Coding Standards}); you can check the commit history for
 examples.
@@ -374,7 +391,7 @@ or a package update along with fixes to that package.
 
 @item
 Please follow our code formatting rules, possibly running the
-@command{etc/indent-package.el} script to do that automatically for you
+@command{etc/indent-code.el} script to do that automatically for you
 (@pxref{Formatting Code}).
 
 @end enumerate

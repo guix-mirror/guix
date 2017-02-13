@@ -54,7 +54,7 @@
 (define-record-type* <mapped-device> mapped-device
   make-mapped-device
   mapped-device?
-  (source    mapped-device-source)                ;string
+  (source    mapped-device-source)                ;string | list of strings
   (target    mapped-device-target)                ;string
   (type      mapped-device-type))                 ;<mapped-device-kind>
 

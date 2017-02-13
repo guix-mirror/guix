@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,6 +91,11 @@
        (not (direct-store-path? (%store-prefix)))))
 
 (test-skip (if %store 0 13))
+
+(test-equal "add-data-to-store"
+  #vu8(1 2 3 4 5)
+  (call-with-input-file (add-data-to-store %store "data" #vu8(1 2 3 4 5))
+    get-bytevector-all))
 
 (test-assert "valid-path? live"
   (let ((p (add-text-to-store %store "hello" "hello, world")))
@@ -947,5 +952,30 @@
          (not (path-info-deriver (query-path-info %store b)))
          (string=? (derivation-file-name d)
                    (path-info-deriver (query-path-info %store o))))))
+
+(test-equal "build-cores"
+  (list 0 42)
+  (with-store store
+    (let* ((build  (add-text-to-store store "build.sh"
+                                      "echo $NIX_BUILD_CORES > $out"))
+           (bash   (add-to-store store "bash" #t "sha256"
+                                 (search-bootstrap-binary "bash"
+                                                          (%current-system))))
+           (drv1   (derivation store "the-thing" bash
+                               `("-e" ,build)
+                               #:inputs `((,bash) (,build))
+                               #:env-vars `(("x" . ,(random-text)))))
+           (drv2   (derivation store "the-thing" bash
+                               `("-e" ,build)
+                               #:inputs `((,bash) (,build))
+                               #:env-vars `(("x" . ,(random-text))))))
+      (and (build-derivations store (list drv1))
+           (begin
+             (set-build-options store #:build-cores 42)
+             (build-derivations store (list drv2)))
+           (list (call-with-input-file (derivation->output-path drv1)
+                   read)
+                 (call-with-input-file (derivation->output-path drv2)
+                   read))))))
 
 (test-end "store")

@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -57,6 +57,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -75,6 +76,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ocr)
@@ -442,14 +444,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.2.2")
+    (version "3.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1z7d5y5crhsl5fm74236rdwbkd4jj5frx1l4iizjfym1w4gvs09z"))))
+               "0ymg1mkg1n0770gmjfqp79p5ijxq04smfrsrrxc8pjc0y0agyf3f"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -471,6 +473,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
@@ -580,7 +583,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
           (lambda* (#:key outputs configure-flags #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* "configure"
-                (("#! /bin/sh") (string-append "#!" (which "bash"))))
+                (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
               (zero? (apply system*
@@ -610,14 +613,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.10")
+    (version "2.8.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ca84kc715xm7wmbnj1z4jfhxj8c7rxhy4cqwrd8cnih0l196j1c"))))
+               "1rhz7rhmhhh8bjcj3dc82haisn3qjbzqlr7k6d6v7064jgn3maiq"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -796,7 +799,7 @@ treaming protocols.")
             (let ((out (assoc-ref outputs "out"))
                   (libx11 (assoc-ref inputs "libx11")))
               (substitute* "configure"
-                (("#! /bin/sh") (string-append "#!" (which "bash"))))
+                (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
               (zero? (system*
@@ -891,7 +894,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
-       #:configure-flags (list "--enable-libmpv-shared" "--enable-zsh-comp")
+       #:configure-flags (list "--enable-libmpv-shared"
+                               "--enable-zsh-comp"
+                               "--disable-build-date")
        ;; No check function defined.
        #:tests? #f))
     (home-page "https://mpv.io/")
@@ -932,7 +937,7 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://storage.googleapis.com/"
@@ -940,7 +945,7 @@ access to mpv's powerful playback capabilities.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1basd6dda5di9p7jhc0f4f52wzm9c3hsravqspw6ibpcn5gbpbyh"))
+                "06d8hqjkfs6wl45qf4pwh1kpbvkx6cwywd5y8d4lgagvjwm0qb0w"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -970,7 +975,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.01.10")
+    (version "2017.02.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -978,7 +983,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0clr6vj9lg96fffc9xv2apr7an6lljnli1b8clfj4dap1i0d34v4"))))
+                "1grq3aqa1zc0xdq1y6vqnk0y0vcd1j2jjn85696hw98mi0w1am73"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1228,7 +1233,7 @@ for use with HTML5 video.")
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
              (substitute* "ffmpeg-2.7.6/configure"
-               (("#! /bin/sh") (string-append "#!" (which "bash"))))
+               (("#! /bin/sh") (string-append "#!" (which "sh"))))
              (system* "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
                       ;; avoid non-determinism in the archive
                       "--sort=name" "--mtime=@0"
@@ -1485,7 +1490,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.16.6")
+    (version "17.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1493,7 +1498,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00vwdnf0gnwp029sznsr0s4lcky3brxbmpy0ch7igjpk5sf6mkqp"))))
+                "02cfhpkcsq718zwhwwsm48gjggf95qr38hqpi0kwrvsy18ll0msm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1513,9 +1518,11 @@ be used for realtime video capture via Linux-specific APIs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
        ("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("jack" ,jack-1)
        ("jansson" ,jansson)
@@ -1525,6 +1532,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)
+       ("speex" ,speex)
        ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")
@@ -1859,3 +1867,62 @@ of modern, widely supported codecs.")
     (description
      "Openh264 is a library which can decode H264 video streams.")
     (license license:bsd-2)))
+
+(define-public libmp4v2
+  (package
+    (name "libmp4v2")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; XXX: The new location of upstream is uncertain and will become relevant the
+       ;; moment when the googlecode archive shuts down. It is past the date it
+       ;; should've been turned off. I tried to communicate with upstream, but this
+       ;; wasn't very responsive and not very helpful. The short summary is, it is
+       ;; chaos when it comes to the amount of forks and only time will tell where
+       ;; the new upstream location is.
+       (uri (string-append "https://storage.googleapis.com/google-"
+                           "code-archive-downloads/v2/"
+                           "code.google.com/mp4v2/mp4v2-" version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0f438bimimsvxjbdp4vsr8hjw2nwggmhaxgcw07g2z361fkbj683"))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "static")) ; 3.7MiB .a file
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-dates
+           (lambda _
+             ;; Make the build reproducible.
+             (substitute* "configure"
+               (("PROJECT_build=\"`date`\"") "PROJECT_build=\"\"")
+               (("ac_abs_top_builddir=$ac_pwd") "ac_abs_top_builddir=\"\""))
+             #t))
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (mkdir-p slib)
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t))))))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("dejagnu" ,dejagnu)))
+    (home-page "https://code.google.com/archive/p/mp4v2/")
+    (synopsis "API to create and modify mp4 files")
+    (description
+     "The MP4v2 library provides an API to create and modify mp4 files as defined by
+ISO-IEC:14496-1:2001 MPEG-4 Systems.  This file format is derived from Apple's QuickTime
+file format that has been used as a multimedia file format in a variety of platforms and
+applications.  It is a very powerful and extensible format that can accommodate
+practically any type of media.")
+    (license license:mpl1.1)))

@@ -31,6 +31,7 @@
   #:use-module (ice-9 vlist)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix memoization)
   #:use-module (guix combinators)
   #:use-module (guix monads)
   #:use-module (guix hash)
@@ -556,12 +557,11 @@ that form."
      (display ")" port))))
 
 (define derivation->string
-  (memoize
-   (lambda (drv)
-     "Return the external representation of DRV as a string."
-     (with-fluids ((%default-port-encoding "UTF-8"))
-       (call-with-output-string
-        (cut write-derivation drv <>))))))
+  (mlambda (drv)
+    "Return the external representation of DRV as a string."
+    (with-fluids ((%default-port-encoding "UTF-8"))
+      (call-with-output-string
+        (cut write-derivation drv <>)))))
 
 (define* (derivation->output-path drv #:optional (output "out"))
   "Return the store path of its output OUTPUT.  Raise a
@@ -583,12 +583,14 @@ DRV."
 
 (define derivation-path->output-path
   ;; This procedure is called frequently, so memoize it.
-  (memoize
-   (lambda* (path #:optional (output "out"))
-     "Read the derivation from PATH (`/gnu/store/xxx.drv'), and return the store
+  (let ((memoized (mlambda (path output)
+                    (derivation->output-path (call-with-input-file path
+                                               read-derivation)
+                                             output))))
+    (lambda* (path #:optional (output "out"))
+      "Read the derivation from PATH (`/gnu/store/xxx.drv'), and return the store
 path of its output OUTPUT."
-     (derivation->output-path (call-with-input-file path read-derivation)
-                              output))))
+      (memoized path output))))
 
 (define (derivation-path->output-paths path)
   "Read the derivation from PATH (`/gnu/store/xxx.drv'), and return the
@@ -615,23 +617,21 @@ in SIZE bytes."
           (loop (+ 1 i))))))
 
 (define derivation-path->base16-hash
-  (memoize
-   (lambda (file)
-     "Return a string containing the base16 representation of the hash of the
+  (mlambda (file)
+    "Return a string containing the base16 representation of the hash of the
 derivation at FILE."
-     (call-with-input-file file
-       (compose bytevector->base16-string
-                derivation-hash
-                read-derivation)))))
+    (call-with-input-file file
+      (compose bytevector->base16-string
+               derivation-hash
+               read-derivation))))
 
 (define derivation-hash            ; `hashDerivationModulo' in derivations.cc
-  (memoize
-   (lambda (drv)
+  (mlambda (drv)
     "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
     (match drv
       (($ <derivation> ((_ . ($ <derivation-output> path
-                                (? symbol? hash-algo) (? bytevector? hash)
-                                (? boolean? recursive?)))))
+                                                    (? symbol? hash-algo) (? bytevector? hash)
+                                                    (? boolean? recursive?)))))
        ;; A fixed-output derivation.
        (sha256
         (string->utf8
@@ -641,14 +641,14 @@ derivation at FILE."
                         ":" (bytevector->base16-string hash)
                         ":" path))))
       (($ <derivation> outputs inputs sources
-          system builder args env-vars)
+                       system builder args env-vars)
        ;; A regular derivation: replace the path of each input with that
        ;; input's hash; return the hash of serialization of the resulting
        ;; derivation.
        (let* ((inputs (map (match-lambda
-                            (($ <derivation-input> path sub-drvs)
-                             (let ((hash (derivation-path->base16-hash path)))
-                               (make-derivation-input hash sub-drvs))))
+                             (($ <derivation-input> path sub-drvs)
+                              (let ((hash (derivation-path->base16-hash path)))
+                                (make-derivation-input hash sub-drvs))))
                            inputs))
               (drv    (make-derivation outputs
                                        (sort (coalesce-duplicate-inputs inputs)
@@ -661,7 +661,7 @@ derivation at FILE."
          ;; the SHA256 port's `write' method gets called for every single
          ;; character.
          (sha256
-          (string->utf8 (derivation->string drv)))))))))
+          (string->utf8 (derivation->string drv))))))))
 
 (define (store-path type hash name)               ; makeStorePath
   "Return the store path for NAME/HASH/TYPE."
@@ -915,18 +915,17 @@ recursively."
     (define rewritten-input
       ;; Rewrite the given input according to MAPPING, and return an input
       ;; in the format used in 'derivation' calls.
-      (memoize
-       (lambda (input loop)
-         (match input
-           (($ <derivation-input> path (sub-drvs ...))
-            (match (vhash-assoc path mapping)
-              ((_ . (? derivation? replacement))
-               (cons replacement sub-drvs))
-              ((_ . replacement)
-               (list replacement))
-              (#f
-               (let* ((drv (loop (call-with-input-file path read-derivation))))
-                 (cons drv sub-drvs)))))))))
+      (mlambda (input loop)
+        (match input
+          (($ <derivation-input> path (sub-drvs ...))
+           (match (vhash-assoc path mapping)
+             ((_ . (? derivation? replacement))
+              (cons replacement sub-drvs))
+             ((_ . replacement)
+              (list replacement))
+             (#f
+              (let* ((drv (loop (call-with-input-file path read-derivation))))
+                (cons drv sub-drvs))))))))
 
     (let loop ((drv drv))
       (let* ((inputs       (map (cut rewritten-input <> loop)
@@ -1057,13 +1056,13 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
 (define search-path*
   ;; A memoizing version of 'search-path' so 'imported-modules' does not end
   ;; up looking for the same files over and over again.
-  (memoize (lambda (path file)
-             "Search for FILE in PATH and memoize the result.  Raise a
+  (mlambda (path file)
+    "Search for FILE in PATH and memoize the result.  Raise a
 '&file-search-error' condition if it could not be found."
-             (or (search-path path file)
-                 (raise (condition
-                         (&file-search-error (file file)
-                                             (path path))))))))
+    (or (search-path path file)
+        (raise (condition
+                (&file-search-error (file file)
+                                    (path path)))))))
 
 (define (module->source-file-name module)
   "Return the file name corresponding to MODULE, a Guile module name (a list

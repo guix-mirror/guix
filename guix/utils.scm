@@ -33,7 +33,7 @@
   #:use-module (ice-9 binary-ports)
   #:autoload   (rnrs io ports) (make-custom-binary-input-port)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
-  #:use-module (guix combinators)
+  #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 vlist)
@@ -771,11 +771,10 @@ be determined."
   (column        location-column))                ; 0-indexed column
 
 (define location
-  (memoize
-   (lambda (file line column)
-     "Return the <location> object for the given FILE, LINE, and COLUMN."
-     (and line column file
-          (make-location file line column)))))
+  (mlambda (file line column)
+    "Return the <location> object for the given FILE, LINE, and COLUMN."
+    (and line column file
+         (make-location file line column))))
 
 (define (source-properties->location loc)
   "Return a location object based on the info in LOC, an alist as returned

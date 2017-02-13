@@ -5,6 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -45,7 +46,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages base)
+  #:use-module (srfi srfi-1))
 
 (define-public libtasn1
   (package
@@ -226,9 +228,23 @@ required structures.")
                 "1zyl2z63s68hx1dpxqx0lykmlf3rwrzlrf44sq3h7dvjmr1z55qf"))))
     (replacement #f)))
 
+(define-public gnutls/guile-2.2
+  ;; GnuTLS for Guile 2.2.  This is supported by GnuTLS >= 3.5.5.
+  (package
+    (inherit gnutls-3.5.8)
+    (name "guile2.2-gnutls")
+    (arguments
+     ;; Remove '--with-guile-site-dir=…/2.0'.
+     (substitute-keyword-arguments (package-arguments gnutls-3.5.8)
+       ((#:configure-flags flags)
+        `(cdr ,flags))))
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs gnutls-3.5.8))))))
+
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl-1.0.2k)
    (version "1.0.2j")
    (source (origin
              (method url-fetch)
@@ -366,11 +382,31 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
-(define-public openssl-next
+(define openssl-1.0.2k
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0c")
+    (version "1.0.2k")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                  name "-" version ".tar.gz")
+                   (string-append "ftp://ftp.openssl.org/source/old/"
+                                  (string-trim-right version char-set:letter)
+                                  "/" name "-" version ".tar.gz")))
+        (sha256
+         (base32
+          "1h6qi35w6hv6rd73p4cdgdzg732pdrfgpp37cgwz1v9a3z37ffbb"))
+        (patches (search-patches "openssl-runpath.patch"
+                                 "openssl-c-rehash-in.patch"))))))
+
+(define-public openssl-next
+  (package
+    (inherit openssl)
+    (replacement #f)
+    (name "openssl")
+    (version "1.1.0d")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -381,7 +417,7 @@ required structures.")
               (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "1xfn5ydl14myd9wgxm4nxy5a42cpp1g12ijf3g9m4mz0l90n8hzw"))))
+                "1pv0zql3r73qpjini90hn29l28d65b7i777zav0larbmi6gbnpkx"))))
     (outputs '("out"
                "doc"        ;1.3MiB of man3 pages
                "static"))   ; 5.5MiB of .a files
@@ -470,13 +506,14 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.9.3")
+    ;; Remember to update the hash of certbot when updating python-acme.
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
-        (base32
-         "16a02bb0apnk1bm68bcabdmmwd6rnvnjzanrmcb46bpbapwz3vx6"))))
+       (base32
+        "0kk95iqxygrg0cd66kq8kbyalg2x5pz9hn1175cgwgf1vy72adfv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -519,13 +556,15 @@ security, and applying best practice development processes.")
 (define-public certbot
   (package
     (name "certbot")
-    (version "0.9.3")
+    ;; Certbot and python-acme are developed in the same repository, and their
+    ;; versions should remain synchronized.
+    (version (package-version python-acme))
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1c7k4lfq5j78d1rvrwrb9082ngwibz92cwkf4kazaa9b76w9q538"))))
+                "1wis5kgqcsrs60kkcmbrbx8z9yasmwa6lg9ir5im232hdm4285vc"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -568,9 +607,10 @@ security, and applying best practice development processes.")
        ("python2-requests" ,python2-requests)
        ("python2-pytz" ,python2-pytz)))
     (synopsis "Let's Encrypt client by the Electronic Frontier Foundation")
-    (description "Tool to automatically receive and install X.509 certificates
-to enable TLS on servers.  The client will interoperate with the Let’s Encrypt CA which
-will be issuing browser-trusted certificates for free.")
+    (description "Certbot automatically receives and installs X.509 certificates
+to enable Transport Layer Security (TLS) on servers.  It interoperates with the
+Let’s Encrypt certificate authority (CA), which issues browser-trusted
+certificates for free.")
     (home-page "https://certbot.eff.org/")
     (license license:asl2.0)))
 
@@ -715,7 +755,7 @@ number generator")
 (define-public acme-client
   (package
     (name "acme-client")
-    (version "0.1.15")
+    (version "0.1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://kristaps.bsd.lv/" name "/"
@@ -723,7 +763,7 @@ number generator")
                                   version ".tgz"))
               (sha256
                (base32
-                "07p723391whrswl4rir0l1k03l457sjscnj0cfaxr8mfnkx4y3wi"))))
+                "00q05b3b1dfnfp7sr1nbd212n0mqrycl3cr9lbs51m7ncaihbrz9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no test suite

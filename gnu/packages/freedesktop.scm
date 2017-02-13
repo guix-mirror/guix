@@ -5,8 +5,9 @@
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,14 +88,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.5.3")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qx623nyr49sxv49ilb0j85skgk1dhkr82vd577ywyjf7d96q84i"))))
+                "0cjq4mjqx8c7iiign330s34dvpw38rlv8byaxlx68p3kim8lylxp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cairo" ,cairo)
@@ -750,14 +751,14 @@ messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
 (define-public telepathy-mission-control
   (package
     (name "telepathy-mission-control")
-    (version "5.16.3")
+    (version "5.16.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://telepathy.freedesktop.org/releases/"
-                                  name "/" name "-" version ".tar.bz2"))
+                                  name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0zcbx69k0d3p2pjh3g7sa3q2zkd5xchxkqsmlfn3fwxaz0pmsmvi"))))
+                "1jz6wwgsfxixha6ys2hbzbk5faqnj9kh2m5qdlgx5anqgandsscp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.

@@ -7,13 +7,14 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
@@ -45,7 +47,9 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages valgrind)
+  #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public zlib
@@ -361,6 +365,44 @@ LZO is written in ANSI C.  Both the source code and the compressed data
 format are designed to be portable across platforms.")
     (license license:gpl2+)))
 
+(define-public python-lzo
+  (package
+    (name "python-lzo")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-lzo" version))
+       (sha256
+        (base32
+         "11p3ifg14p086byhhin6azx5svlkg8dzw2b5abixik97xd6fm81q"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "check"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setuppy
+           (lambda _
+             (substitute* "setup.py"
+               (("include_dirs.append\\(.*\\)")
+                (string-append "include_dirs.append('"
+                               (assoc-ref %build-inputs "lzo")
+                               "/include/lzo"
+                               "')")))
+             #t)))))
+    (inputs
+     `(("lzo" ,lzo)))
+    (home-page "https://github.com/jd-boyd/python-lzo")
+    (synopsis "Python bindings for the LZO data compression library")
+    (description
+     "Python-LZO provides Python bindings for LZO, i.e. you can access
+the LZO library from your Python scripts thereby compressing ordinary
+Python strings.")
+    (license license:gpl2+)))
+
+(define-public python2-lzo
+  (package-with-python2 python-lzo))
+
 (define-public lzop
   (package
     (name "lzop")
@@ -631,6 +673,31 @@ time for compression ratio.")
     ;; The libraries (lz4, lz4hc, and xxhash are BSD licenced. The command
     ;; line interface programs (lz4, fullbench, fuzzer, datagen) are GPL2+.
     (license (list license:bsd-2 license:gpl2+))))
+
+(define-public python-lz4
+  (package
+    (name "python-lz4")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lz4" version))
+       (sha256
+        (base32
+         "1irad4sq4hdr30fr53smvv3zzk4rddcf9b4jx19w8s9xsxhr1x3b"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/python-lz4/python-lz4")
+    (synopsis "LZ4 Bindings for Python")
+    (description
+     "This package provides python bindings for the lz4 compression library
+by Yann Collet.  The project contains bindings for the LZ4 block format and
+the LZ4 frame format.")
+    (license license:bsd-3)))
+
+(define-public python2-lz4
+  (package-with-python2 python-lz4))
 
 (define-public squashfs-tools
   (package
@@ -923,7 +990,8 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
                   (delete-file-recursively "CPP/7zip/Archive/Rar")
                   (delete-file-recursively "CPP/7zip/Compress/Rar")
                   #t))
-              (patches (search-patches "p7zip-remove-unused-code.patch"))))
+              (patches (search-patches "p7zip-CVE-2016-9296.patch"
+                                       "p7zip-remove-unused-code.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1001,3 +1069,62 @@ handles the 7z format which features very high compression ratios.")
     (description "gzstream is a small library for providing zlib
 functionality in a C++ iostream.")
     (license license:lgpl2.1+)))
+
+(define-public zpaq
+  (package
+    (name "zpaq")
+    (version "7.15")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "http://mattmahoney.net/dc/zpaq"
+                           (string-delete #\. version) ".zip"))
+       (sha256
+        (base32
+         "066l94yyladlfzri877nh2dhkvspagjn3m5bmv725fmhkr9c4pp8"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete irrelevant pre-compiled binaries.
+        '(for-each delete-file (find-files "." "\\.exe$")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no ‘configure’ script
+       #:make-flags
+       (list
+        (string-append "CPPFLAGS=-Dunix"
+                       ,(match (or (%current-target-system)
+                                   (%current-system))
+                               ("x86_64-linux"  "")
+                               ("i686-linux"    "")
+                               (_               " -DNOJIT")))
+        ;; These should be safe, lowest-common-denominator instruction sets,
+        ;; allowing for some optimisation while remaining reproducible.
+        (string-append "CXXFLAGS=-O3 -DNDEBUG"
+                       ,(match (or (%current-target-system)
+                                   (%current-system))
+                               ("x86_64-linux"  " -march=nocona -mtune=generic")
+                               ("i686-linux"    " -march=i686 -mtune=generic")
+                               ("armhf-linux"   " -mtune=generic-armv7-a")
+                               (_               "")))
+        (string-append "PREFIX="
+                       (assoc-ref %outputs "out")))))
+    (native-inputs
+     `(("perl" ,perl)))                 ; for pod2man
+    (home-page "http://mattmahoney.net/dc/zpaq.html")
+    (synopsis "Incremental journaling archiver")
+    (description "ZPAQ is a command-line archiver for realistic situations with
+many duplicate and already compressed files.  It backs up only those files
+modified since the last update.  All previous versions remain untouched and can
+be independently recovered.  Identical files are only stored once (known as
+@dfn{de-duplication}).  Archives can also be encrypted.
+
+ZPAQ is intended to back up user data, not entire operating systems.  It ignores
+owner and group IDs, ACLs, extended attributes, or special file types like
+devices, sockets, or named pipes.  It does not follow or restore symbolic links
+or junctions, and always follows hard links.")
+    (license (list license:public-domain
+                   ;; libzpaq.cpp contains a mix of public-domain and
+                   ;; expat-licenced (or ‘MIT’) code.
+                   license:expat))))

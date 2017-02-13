@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,9 +25,10 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (activate-users+groups
+            activate-user-home
             activate-etc
             activate-setuid-programs
-            activate-/bin/sh
+            activate-special-files
             activate-modprobe
             activate-firmware
             activate-ptrace-attach
@@ -84,16 +85,27 @@
     (chmod file (logior #o600 (stat:perms stat)))))
 
 (define* (copy-account-skeletons home
-                                 #:optional (directory %skeleton-directory))
-  "Copy the account skeletons from DIRECTORY to HOME."
+                                 #:key
+                                 (directory %skeleton-directory)
+                                 uid gid)
+  "Copy the account skeletons from DIRECTORY to HOME.  When UID is an integer,
+make it the owner of all the files created; likewise for GID."
+  (define (set-owner file)
+    (when (or uid gid)
+      (chown file (or uid -1) (or gid -1))))
+
   (let ((files (scandir directory (negate dot-or-dot-dot?)
                         string<?)))
     (mkdir-p home)
+    (set-owner home)
     (for-each (lambda (file)
                 (let ((target (string-append home "/" file)))
                   (copy-recursively (string-append directory "/" file)
                                     target
                                     #:log (%make-void-port "w"))
+                  (for-each set-owner
+                            (find-files target (const #t)
+                                        #:directories? #t))
                   (make-file-writable target)))
               files)))
 
@@ -220,7 +232,7 @@ numeric gid or #f."
                      #:supplementary-groups supplementary-groups
                      #:comment comment
                      #:home home
-                     #:create-home? create-home?
+                     #:create-home? (and create-home? system?)
                      #:shell shell
                      #:password password)
 
@@ -267,6 +279,25 @@ numeric gid or #f."
                              (match groups
                                (((names . _) ...)
                                 names)))))
+
+(define (activate-user-home users)
+  "Create and populate the home directory of USERS, a list of tuples, unless
+they already exist."
+  (define ensure-user-home
+    (match-lambda
+      ((name uid group supplementary-groups comment home create-home?
+             shell password system?)
+       (unless (or (not home) (directory-exists? home))
+         (let* ((pw  (getpwnam name))
+                (uid (passwd:uid pw))
+                (gid (passwd:gid pw)))
+           (mkdir-p home)
+           (chown home uid gid)
+           (unless system?
+             (copy-account-skeletons home
+                                     #:uid uid #:gid gid)))))))
+
+  (for-each ensure-user-home users))
 
 (define (activate-etc etc)
   "Install ETC, a directory in the store, as the source of static files for
@@ -352,10 +383,23 @@ copy SOURCE to TARGET."
 
   (for-each make-setuid-program programs))
 
-(define (activate-/bin/sh shell)
-  "Change /bin/sh to point to SHELL."
-  (symlink shell "/bin/sh.new")
-  (rename-file "/bin/sh.new" "/bin/sh"))
+(define (activate-special-files special-files)
+  "Install the files listed in SPECIAL-FILES.  Each element of SPECIAL-FILES
+is a pair where the first element is the name of the special file and the
+second element is the name it should appear at, such as:
+
+  ((\"/bin/sh\" \"/gnu/store/…-bash/bin/sh\")
+   (\"/usr/bin/env\" \"/gnu/store/…-coreutils/bin/env\"))
+"
+  (define install-special-file
+    (match-lambda
+      ((target file)
+       (let ((pivot (string-append target ".new")))
+         (mkdir-p (dirname target))
+         (symlink file pivot)
+         (rename-file pivot target)))))
+
+  (for-each install-special-file special-files))
 
 (define (activate-modprobe modprobe)
   "Tell the kernel to use MODPROBE to load modules."

@@ -20,7 +20,7 @@ Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
-Copyright @copyright{} 2015, 2016 Leo Famulari@*
+Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
@@ -30,7 +30,9 @@ Copyright @copyright{} 2016 ng0@*
 Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
-Copyright @copyright{} 2017 Clément Lassieur
+Copyright @copyright{} 2017 Clément Lassieur@*
+Copyright @copyright{} 2017 Mathieu Othacehe@*
+Copyright @copyright{} 2017 Federico Beffa
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -208,6 +210,7 @@ Services
 * Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
@@ -450,6 +453,7 @@ If your host distro uses the Upstart init system:
 
 @example
 # ln -s ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+# initctl reload-configuration
 # start guix-daemon
 @end example
 
@@ -1684,6 +1688,20 @@ of packages:
        (list guile-2.0 "debug")))
 @end example
 
+@findex specification->package+output
+In this example we have to know which modules define the @code{emacs}
+and @code{guile-2.0} variables to provide the right
+@code{use-package-modules} line, which can be cumbersome.  We can
+instead provide regular package specifications and let
+@code{specification->package-output} look up the corresponding package
+objects, like this:
+
+@example
+(packages->manifest
+ (map (compose list specification->package+output)
+      '("emacs" "guile@@2.0" "guile@@2.0:debug")))
+@end example
+
 @item --roll-back
 @cindex rolling back
 @cindex undoing transactions
@@ -2273,11 +2291,14 @@ traverses @emph{all the files in the store}, this command can take a
 long time, especially on systems with a slow disk drive.
 
 @cindex repairing the store
+@cindex corruption, recovering from
 Using @option{--verify=repair} or @option{--verify=contents,repair}
 causes the daemon to try to repair corrupt store items by fetching
 substitutes for them (@pxref{Substitutes}).  Because repairing is not
 atomic, and thus potentially dangerous, it is available only to the
-system administrator.
+system administrator.  A lightweight alternative, when you know exactly
+which items in the store are corrupt, is @command{guix build --repair}
+(@pxref{Invoking guix build}).
 
 @item --optimize
 @cindex deduplication
@@ -2317,7 +2338,9 @@ instance, when user @code{root} runs @command{guix pull}, this has no
 effect on the version of Guix that user @code{alice} sees, and vice
 versa@footnote{Under the hood, @command{guix pull} updates the
 @file{~/.config/guix/latest} symbolic link to point to the latest Guix,
-and the @command{guix} command loads code from there.}.
+and the @command{guix} command loads code from there.  Currently, the
+only way to roll back an invocation of @command{guix pull} is to
+manually update this symlink to point to the previous Guix.}.
 
 The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
@@ -2331,6 +2354,20 @@ Download the source tarball of Guix from @var{url}.
 
 By default, the tarball is taken from its canonical address at
 @code{gnu.org}, for the stable branch of Guix.
+
+With some Git servers, this can be used to deploy any version of Guix.
+For example, to download and deploy version 0.12.0 of Guix from the
+canonical Git repo:
+
+@example
+guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
+@end example
+
+It can also be used to deploy arbitrary Git revisions:
+
+@example
+guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
+@end example
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -3257,6 +3294,49 @@ specified with the @code{#:glib} parameter.
 Both phases are executed after the @code{install} phase.
 @end defvr
 
+@defvr {Scheme Variable} ocaml-build-system
+This variable is exported by @code{(guix build-sytem ocaml)}.  It implements
+a build procedure for @uref{https://ocaml.org, OCaml} packages, which consists
+of choosing the correct set of commands to run for each package.  OCaml
+packages can expect many different commands to be run.  This build system will
+try some of them.
+
+When the package has a @file{setup.ml} file present at the top-level, it will
+run @code{ocaml setup.ml -configure}, @code{ocaml setup.ml -build} and
+@code{ocaml setup.ml -install}.  The build system will assume that this file
+was generated by @uref{http://oasis.forge.ocamlcore.org/, OASIS} and will take
+care of setting the prefix and enabling tests if they are not disabled.  You
+can pass configure and build flags with the @code{#:configure-flags} and
+@code{#:build-flags}.  The @code{#:test-flags} key can be passed to change the
+set of flags used to enable tests.  The @code{#:use-make?} key can be used to
+bypass this system in the build and install phases.
+
+When the package has a @file{configure} file, it is assumed that it is a
+hand-made configure script that requires a different argument format than
+in the @code{gnu-build-system}.  You can add more flags with the
+@code{#:configure-flags} key.
+
+When the package has a @file{Makefile} file (or @code{#:use-make?} is
+@code{#t}), it will be used and more flags can be passed to the build and
+install phases with the @code{#:make-flags} key.
+
+Finally, some packages do not have these files and use a somewhat standard
+location for its build system.  In that case, the build system will run
+@code{ocaml pkg/pkg.ml} or @code{ocaml pkg/build.ml} and take care of
+providing the path to the required findlib module.  Additional flags can
+be passed via the @code{#:build-flags} key.  Install is taken care of by
+@command{opam-installer}.  In this case, the @code{opam} package must
+be added to the @code{native-inputs} field of the package definition.
+
+Note that most OCaml packages assume they will be installed in the same
+directory as OCaml, which is not what we want in guix.  In particular, they
+will install @file{.so} files in their module's directory, which is usually
+fine because it is in the OCaml compiler directory.  In guix though, these
+libraries cannot be found and we use @code{CAML_LD_LIBRARY_PATH}.  This
+variable points to @file{lib/ocaml/site-lib/stubslibs} and this is where
+@file{.so} libraries should be installed.
+@end defvr
+
 @defvr {Scheme Variable} python-build-system
 This variable is exported by @code{(guix build-system python)}.  It
 implements the more or less standard build procedure used by Python
@@ -3356,6 +3436,16 @@ not found, the build system looks for @code{Setup.lhs} instead.
 
 Which Haskell compiler is used can be specified with the @code{#:haskell}
 parameter which defaults to @code{ghc}.
+@end defvr
+
+@defvr {Scheme Variable} dub-build-system
+This variable is exported by @code{(guix build-system dub)}.  It
+implements the Dub build procedure used by D packages, which
+involves running @code{dub build} and @code{dub run}.
+Installation is done by copying the files manually.
+
+Which D compiler is used can be specified with the @code{#:ldc}
+parameter which defaults to @code{ldc}.
 @end defvr
 
 @defvr {Scheme Variable} emacs-build-system
@@ -4477,7 +4567,7 @@ guix build --quiet --keep-going \
 
 @var{package-or-derivation} may be either the name of a package found in
 the software distribution such as @code{coreutils} or
-@code{coreutils-8.20}, or a derivation such as
+@code{coreutils@@8.20}, or a derivation such as
 @file{/gnu/store/@dots{}-coreutils-8.19.drv}.  In the former case, a
 package with the corresponding name (and optionally version) is searched
 for among the GNU distribution modules (@pxref{Package Modules}).
@@ -4857,6 +4947,14 @@ background information and tools.
 When used in conjunction with @option{--keep-failed}, the differing
 output is kept in the store, under @file{/gnu/store/@dots{}-check}.
 This makes it easy to look for differences between the two results.
+
+@item --repair
+@cindex repairing store items
+@cindex corruption, recovering from
+Attempt to repair the specified store items, if they are corrupt, by
+re-downloading or rebuilding them.
+
+This operation is not atomic and thus restricted to @code{root}.
 
 @item --derivations
 @itemx -d
@@ -5253,6 +5351,34 @@ package name by an at-sign and a version number as in the following example:
 guix import hackage mtl@@2.1.3.1
 @end example
 
+@item stackage
+@cindex stackage
+The @code{stackage} importer is a wrapper around the @code{hackage} one.
+It takes a package name, looks up the package version included in a
+long-term support (LTS) @uref{https://www.stackage.org, Stackage}
+release and uses the @code{hackage} importer to retrieve its metadata.
+Note that it is up to you to select an LTS release compatible with the
+GHC compiler used by Guix.
+
+Specific command-line options are:
+
+@table @code
+@item --no-test-dependencies
+@itemx -t
+Do not include dependencies required only by the test suites.
+@item --lts-version=@var{version}
+@itemx -r @var{version}
+@var{version} is the desired LTS release version.  If omitted the latest
+release is used.
+@end table
+
+The command below imports metadata for the @code{HTTP} Haskell package
+included in the LTS Stackage release version 7.18:
+
+@example
+guix import stackage --lts-version=7.18 HTTP
+@end example
+
 @item elpa
 @cindex elpa
 Import metadata from an Emacs Lisp Package Archive (ELPA) package
@@ -5417,6 +5543,8 @@ the updater for @uref{https://rubygems.org, RubyGems} packages.
 the updater for @uref{https://github.com, GitHub} packages.
 @item hackage
 the updater for @uref{https://hackage.haskell.org, Hackage} packages.
+@item stackage
+the updater for @uref{https://www.stackage.org, Stackage} packages.
 @item crate
 the updater for @uref{https://crates.io, Crates} packages.
 @end table
@@ -5629,7 +5757,7 @@ single output for a package that could easily be split (@pxref{Packages
 with Multiple Outputs}).  Such are the typical issues that
 @command{guix size} can highlight.
 
-The command can be passed a package specification such as @code{gcc-4.8}
+The command can be passed a package specification such as @code{gcc@@4.8}
 or @code{guile:debug}, or a file name in the store.  Consider this
 example:
 
@@ -6048,7 +6176,7 @@ guix environment --ad-hoc -e '(@@ (gnu) %base-packages)'
 
 starts a shell with all the GuixSD base packages available.
 
-The above commands only the use default output of the given packages.
+The above commands only use the default output of the given packages.
 To select other outputs, two element tuples can be specified:
 
 @example
@@ -6411,6 +6539,11 @@ The one option that matters is:
 @item --substitute-urls=@var{urls}
 Consider @var{urls} the whitespace-separated list of substitute source
 URLs to compare to.
+
+@item --verbose
+@itemx -v
+Show details about matches (identical contents) in addition to
+information about mismatches.
 
 @end table
 
@@ -6917,6 +7050,11 @@ the partition layout you want:
 cfdisk
 @end example
 
+If your disk uses the GUID Partition Table (GPT) format and you plan to
+install BIOS-based GRUB (which is the default), make sure a BIOS Boot
+Partition is available (@pxref{BIOS installation,,, grub, GNU GRUB
+manual}).
+
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
@@ -6965,6 +7103,26 @@ swap partition on @file{/dev/sda2}, you would run:
 mkswap /dev/sda2
 swapon /dev/sda2
 @end example
+
+Alternatively, you may use a swap file.  For example, assuming that in
+the new system you want to use the file @file{/swapfile} as a swap file,
+you would run@footnote{This example will work for many types of file
+systems (e.g., ext4).  However, for copy-on-write file systems (e.g.,
+btrfs), the required steps may be different.  For details, see the
+manual pages for @command{mkswap} and @command{swapon}.}:
+
+@example
+# This is 10 GiB of swap space.  Adjust "count" to change the size.
+dd if=/dev/zero of=/mnt/swapfile bs=1MiB count=10240
+# For security, make the file readable and writable only by root.
+chmod 600 /mnt/swapfile
+mkswap /mnt/swapfile
+swapon /mnt/swapfile
+@end example
+
+Note that if you have encrypted the root partition and created a swap
+file in its file system as described above, then the encryption also
+protects the swap file, just like any other file in that file system.
 
 @node Proceeding with the Installation
 @subsection Proceeding with the Installation
@@ -7068,8 +7226,8 @@ disk image, follow these steps:
 
 @enumerate
 @item
-First, retrieve the GuixSD installation image as described previously
-(@pxref{USB Stick Installation}).
+First, retrieve and decompress the GuixSD installation image as
+described previously (@pxref{USB Stick Installation}).
 
 @item
 Create a disk image that will hold the installed system.  To make a
@@ -7086,7 +7244,7 @@ Boot the USB installation image in an VM:
 
 @example
 qemu-system-x86_64 -m 1024 -smp 1 \
-  -net default -net nic,model=virtio -boot menu=on \
+  -net user -net nic,model=virtio -boot menu=on \
   -drive file=guixsd.img \
   -drive file=guixsd-usb-install-@value{VERSION}.@var{system}
 @end example
@@ -7419,9 +7577,12 @@ A list of file systems.  @xref{File Systems}.
 
 @item @code{swap-devices} (default: @code{'()})
 @cindex swap devices
-A list of strings identifying devices to be used for ``swap space''
-(@pxref{Memory Concepts,,, libc, The GNU C Library Reference Manual}).
-For example, @code{'("/dev/sda3")}.
+A list of strings identifying devices or files to be used for ``swap
+space'' (@pxref{Memory Concepts,,, libc, The GNU C Library Reference
+Manual}).  For example, @code{'("/dev/sda3")} or @code{'("/swapfile")}.
+It is possible to specify a swap file in a file system on a mapped
+device, provided that the necessary device mapping and file system are
+also specified.  @xref{Mapped Devices} and @ref{File Systems}.
 
 @item @code{users} (default: @code{%base-user-accounts})
 @itemx @code{groups} (default: @var{%base-groups})
@@ -7763,6 +7924,13 @@ and use it as follows:
   (target "home")
   (type luks-device-mapping))
 @end example
+
+@cindex swap encryption
+It is also desirable to encrypt swap space, since swap space may contain
+sensitive data.  One way to accomplish that is to use a swap file in a
+file system on a device mapped via LUKS encryption.  In this way, the
+swap file is encrypted because the entire device is encrypted.
+@xref{Preparing for Installation,,Disk Partitioning}, for an example.
 
 A RAID device formed of the partitions @file{/dev/sda1} and @file{/dev/sdb1}
 may be declared as follows:
@@ -8115,6 +8283,7 @@ declaration.
 * Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Miscellaneous Services::      Other services.
@@ -8143,6 +8312,50 @@ this:
 (cons* (avahi-service) (lsh-service) %base-services)
 @end example
 @end defvr
+
+@defvr {Scheme Variable} special-files-service-type
+This is the service that sets up ``special files'' such as
+@file{/bin/sh}; an instance of it is part of @code{%base-services}.
+
+The value associated with @code{special-files-service-type} services
+must be a list of tuples where the first element is the ``special file''
+and the second element is its target.  By default it is:
+
+@cindex @file{/bin/sh}
+@cindex @file{sh}, in @file{/bin}
+@example
+`(("/bin/sh" ,(file-append @var{bash} "/bin/sh")))
+@end example
+
+@cindex @file{/usr/bin/env}
+@cindex @file{env}, in @file{/usr/bin}
+If you want to add, say, @code{/usr/bin/env} to your system, you can
+change it to:
+
+@example
+`(("/bin/sh" ,(file-append @var{bash} "/bin/sh"))
+  ("/usr/bin/env" ,(file-append @var{coreutils} "/bin/env")))
+@end example
+
+Since this is part of @code{%base-services}, you can use
+@code{modify-services} to customize the set of special files
+(@pxref{Service Reference, @code{modify-services}}).  But the simple way
+to add a special file is @i{via} the @code{extra-special-file} procedure
+(see below.)
+@end defvr
+
+@deffn {Scheme Procedure} extra-special-file @var{file} @var{target}
+Use @var{target} as the ``special file'' @var{file}.
+
+For example, adding the following lines to the @code{services} field of
+your operating system declaration leads to a @file{/usr/bin/env}
+symlink:
+
+@example
+(extra-special-file "/usr/bin/env"
+                    (file-append coreutils "/bin/env"))
+@end example
+@end deffn
 
 @deffn {Scheme Procedure} host-name-service @var{name}
 Return a service that sets the host name to @var{name}.
@@ -8690,11 +8903,21 @@ Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces.
 @end deffn
 
+@defvr {Scheme Variable} static-networking-service-type
+This is the type for statically-configured network interfaces.
+@c TODO Document <static-networking> data structures.
+@end defvr
+
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
        [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
 it must be a string specifying the default network gateway.
+
+This procedure can be called several times, one for each network
+interface of interest.  Behind the scenes what it does is extend
+@code{static-networking-service-type} with additional network interfaces
+to handle.
 @end deffn
 
 @cindex wicd
@@ -8712,11 +8935,41 @@ and @command{wicd-curses} user interfaces.
 @end deffn
 
 @cindex NetworkManager
-@deffn {Scheme Procedure} network-manager-service @
-       [#:network-manager @var{network-manager}]
-Return a service that runs NetworkManager, a network connection manager
-attempting to keep network connectivity active when available.
-@end deffn
+
+@defvr {Scheme Variable} network-manager-service-type
+This is the service type for the
+@uref{https://wiki.gnome.org/Projects/NetworkManager, NetworkManager}
+service. The value for this service type is a
+@code{network-manager-configuration} record.
+@end defvr
+
+@deftp {Data Type} network-manager-configuration
+Data type representing the configuration of NetworkManager.
+
+@table @asis
+@item @code{network-manager} (default: @code{network-manager})
+The NetworkManager package to use.
+
+@item @code{dns} (default: @code{"default"})
+Processing mode for DNS, which affects how NetworkManager uses the
+@code{resolv.conf} configuration file.
+
+@table @samp
+@item default
+NetworkManager will update @code{resolv.conf} to reflect the nameservers
+provided by currently active connections.
+
+@item dnsmasq
+NetworkManager will run @code{dnsmasq} as a local caching nameserver,
+using a "split DNS" configuration if you are connected to a VPN, and
+then update @code{resolv.conf} to point to the local nameserver.
+
+@item none
+NetworkManager will not modify @code{resolv.conf}.
+@end table
+
+@end table
+@end deftp
 
 @cindex Connman
 @deffn {Scheme Procedure} connman-service @
@@ -9011,6 +9264,23 @@ Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
 sockets.
 @end deffn
 
+@deffn {Scheme Variable} openvswitch-service-type
+This is the type of the @uref{http://www.openvswitch.org, Open vSwitch}
+service, whose value should be an @code{openvswitch-configuration}
+object.
+@end deffn
+
+@deftp {Data Type} openvswitch-configuration
+Data type representing the configuration of Open vSwitch, a multilayer
+virtual switch which is designed to enable massive network automation
+through programmatic extension.
+
+@table @asis
+@item @code{package} (default: @var{openvswitch})
+Package object of the Open vSwitch.
+
+@end table
+@end deftp
 
 @node X Window
 @subsubsection X Window
@@ -9206,6 +9476,7 @@ makes the good ol' XlockMore usable.
 @node Printing Services
 @subsubsection Printing Services
 
+@cindex printer support with CUPS
 The @code{(gnu services cups)} module provides a Guix service definition
 for the CUPS printing service.  To add printer support to a GuixSD
 system, add a @code{cups-service} to the operating system definition:
@@ -9226,13 +9497,17 @@ as GNOME's printer configuration services.  By default, configuring a
 CUPS service will generate a self-signed certificate if needed, for
 secure connections to the print server.
 
-One way you might want to customize CUPS is to enable or disable the web
-interface.  You can do that directly, like this:
+Suppose you want to enable the Web interface of CUPS and also add
+support for HP printers @i{via} the @code{hplip} package.  You can do
+that directly, like this (you need to use the @code{(gnu packages cups)}
+module):
 
 @example
 (service cups-service-type
          (cups-configuration
-           (web-interface? #f)))
+           (web-interface? #t)
+           (extensions
+             (list cups-filters hplip))))
 @end example
 
 The available configuration parameters follow.  Each parameter
@@ -12277,6 +12552,7 @@ The @code{(gnu services web)} module provides the following service:
        [#:log-directory ``/var/log/nginx''] @
        [#:run-directory ``/var/run/nginx''] @
        [#:server-list '()] @
+       [#:upstream-list '()] @
        [#:config-file @code{#f}]
 
 Return a service that runs @var{nginx}, the nginx web server.
@@ -12288,8 +12564,10 @@ arguments should match what is in @var{config-file} to ensure that the
 directories are created when the service is activated.
 
 As an alternative to using a @var{config-file}, @var{server-list} can be
-used to specify the list of @dfn{server blocks} required on the host.  For
-this to work, use the default value for @var{config-file}.
+used to specify the list of @dfn{server blocks} required on the host and
+@var{upstream-list} can be used to specify a list of @dfn{upstream
+blocks} to configure.  For this to work, use the default value for
+@var{config-file}.
 
 @end deffn
 
@@ -12331,6 +12609,11 @@ default server for connections matching no other server.
 @item @code{root} (default: @code{"/srv/http"})
 Root of the website nginx will serve.
 
+@item @code{locations} (default: @code{'()})
+A list of @dfn{nginx-location-configuration} or
+@dfn{nginx-named-location-configuration} records to use within this
+server block.
+
 @item @code{index} (default: @code{(list "index.html")})
 Index files to look for when clients ask for a directory.  If it cannot be found,
 Nginx will send the list of files in the directory.
@@ -12345,6 +12628,421 @@ you don't have a key or you don't want to use HTTPS.
 
 @item @code{server-tokens?} (default: @code{#f})
 Whether the server should add its configuration to response.
+
+@end table
+@end deftp
+
+@node VPN Services
+@subsubsection VPN Services
+@cindex VPN (virtual private network)
+@cindex virtual private network (VPN)
+
+The @code{(gnu services vpn)} module provides services related to
+@dfn{virtual private networks} (VPNs).  It provides a @emph{client} service for
+your machine to connect to a VPN, and a @emph{servire} service for your machine
+to host a VPN.  Both services use @uref{https://openvpn.net/, OpenVPN}.
+
+@deffn {Scheme Procedure} openvpn-client-service @
+       [#:config (openvpn-client-configuration)]
+
+Return a service that runs @command{openvpn}, a VPN daemon, as a client.
+@end deffn
+
+@deffn {Scheme Procedure} openvpn-server-service @
+       [#:config (openvpn-server-configuration)]
+
+Return a service that runs @command{openvpn}, a VPN daemon, as a server.
+
+Both can be run simultaneously.
+@end deffn
+
+@c %automatically generated documentation
+
+Available @code{openvpn-client-configuration} fields are:
+
+@deftypevr @code{openvpn-client-configuration} parameter package openvpn
+The OpenVPN package.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string pid-file
+The OpenVPN pid file.
+
+Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter proto proto
+The protocol (UDP or TCP) used to open a channel between clients and
+servers.
+
+Defaults to @samp{udp}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter dev dev
+The device type used to represent the VPN connection.
+
+Defaults to @samp{tun}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string ca
+The certificate authority to check connections against.
+
+Defaults to @samp{"/etc/openvpn/ca.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string cert
+The certificate of the machine the daemon is running on.  It should be
+signed by the authority given in @code{ca}.
+
+Defaults to @samp{"/etc/openvpn/client.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter string key
+The key of the machine the daemon is running on.  It must be the key whose
+certificate is @code{cert}.
+
+Defaults to @samp{"/etc/openvpn/client.key"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean comp-lzo?
+Whether to use the lzo compression algorithm.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean persist-key?
+Don't re-read key files across SIGUSR1 or --ping-restart.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter boolean persist-tun?
+Don't close and reopen TUN/TAP device or run up/down scripts across
+SIGUSR1 or --ping-restart restarts.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter number verbosity
+Verbosity level.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter tls-auth-client tls-auth
+Add an additional layer of HMAC authentication on top of the TLS control
+channel to protect against DoS attacks.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter key-usage verify-key-usage?
+Whether to check the server certificate has server usage extension.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter bind bind?
+Bind to a specific local port number.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter resolv-retry resolv-retry?
+Retry resolving server address.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-client-configuration} parameter openvpn-remote-list remote
+A list of remote servers to connect to.
+
+Defaults to @samp{()}.
+
+Available @code{openvpn-remote-configuration} fields are:
+
+@deftypevr @code{openvpn-remote-configuration} parameter string name
+Server name.
+
+Defaults to @samp{"my-server"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-remote-configuration} parameter number port
+Port number the server listens to.
+
+Defaults to @samp{1194}.
+
+@end deftypevr
+
+@end deftypevr
+@c %end of automatic openvpn-client documentation
+
+@c %automatically generated documentation
+
+Available @code{openvpn-server-configuration} fields are:
+
+@deftypevr @code{openvpn-server-configuration} parameter package openvpn
+The OpenVPN package.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string pid-file
+The OpenVPN pid file.
+
+Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter proto proto
+The protocol (UDP or TCP) used to open a channel between clients and
+servers.
+
+Defaults to @samp{udp}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter dev dev
+The device type used to represent the VPN connection.
+
+Defaults to @samp{tun}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string ca
+The certificate authority to check connections against.
+
+Defaults to @samp{"/etc/openvpn/ca.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string cert
+The certificate of the machine the daemon is running on.  It should be
+signed by the authority given in @code{ca}.
+
+Defaults to @samp{"/etc/openvpn/client.crt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string key
+The key of the machine the daemon is running on.  It must be the key whose
+certificate is @code{cert}.
+
+Defaults to @samp{"/etc/openvpn/client.key"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean comp-lzo?
+Whether to use the lzo compression algorithm.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean persist-key?
+Don't re-read key files across SIGUSR1 or --ping-restart.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean persist-tun?
+Don't close and reopen TUN/TAP device or run up/down scripts across
+SIGUSR1 or --ping-restart restarts.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number verbosity
+Verbosity level.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter tls-auth-server tls-auth
+Add an additional layer of HMAC authentication on top of the TLS control
+channel to protect against DoS attacks.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number port
+Specifies the port number on which the server listens.
+
+Defaults to @samp{1194}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter ip-mask server
+An ip and mask specifying the subnet inside the virtual network.
+
+Defaults to @samp{"10.8.0.0 255.255.255.0"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter cidr6 server-ipv6
+A CIDR notation specifying the IPv6 subnet inside the virtual network.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string dh
+The Diffie-Hellman parameters file.
+
+Defaults to @samp{"/etc/openvpn/dh2048.pem"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string ifconfig-pool-persist
+The file that records client IPs.
+
+Defaults to @samp{"/etc/openvpn/ipp.txt"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter gateway redirect-gateway?
+When true, the server will act as a gateway for its clients.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter boolean client-to-client?
+When true, clients are alowed to talk to each other inside the VPN.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter keepalive keepalive
+Causes ping-like messages to be sent back and forth over the link so
+that each side knows when the other side has gone down.  @code{keepalive}
+requires a pair.  The first element is the period of the ping sending,
+and the second element is the timeout before considering the other side
+down.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter number max-clients
+The maximum number of clients.
+
+Defaults to @samp{100}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter string status
+The status file.  This file shows a small report on current connection.
+It is trunkated and rewritten every minute.
+
+Defaults to @samp{"/var/run/openvpn/status"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-server-configuration} parameter openvpn-ccd-list client-config-dir
+The list of configuration for some clients.
+
+Defaults to @samp{()}.
+
+Available @code{openvpn-ccd-configuration} fields are:
+
+@deftypevr @code{openvpn-ccd-configuration} parameter string name
+Client name.
+
+Defaults to @samp{"client"}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask iroute
+Client own network
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask ifconfig-push
+Client VPN IP.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@end deftypevr
+
+
+@c %end of automatic openvpn-server documentation
+
+
+@deftp {Data Type} nginx-upstream-configuration
+Data type representing the configuration of an nginx @code{upstream}
+block.  This type has the following parameters:
+
+@table @asis
+@item @code{name}
+Name for this group of servers.
+
+@item @code{servers}
+Specify the addresses of the servers in the group.  The address can be
+specified as a IP address (e.g. @samp{127.0.0.1}), domain name
+(e.g. @samp{backend1.example.com}) or a path to a UNIX socket using the
+prefix @samp{unix:}.  For addresses using an IP address or domain name,
+the default port is 80, and a different port can be specified
+explicitly.
+
+@end table
+@end deftp
+
+@deftp {Data Type} nginx-location-configuration
+Data type representing the configuration of an nginx @code{location}
+block.  This type has the following parameters:
+
+@table @asis
+@item @code{uri}
+URI which this location block matches.
+
+@anchor{nginx-location-configuration body}
+@item @code{body}
+Body of the location block, specified as a string. This can contain many
+configuration directives.  For example, to pass requests to a upstream
+server group defined using an @code{nginx-upstream-configuration} block,
+the following directive would be specified in the body @samp{proxy_pass
+http://upstream-name;}.
+
+@end table
+@end deftp
+
+@deftp {Data Type} nginx-named-location-configuration
+Data type representing the configuration of an nginx named location
+block.  Named location blocks are used for request redirection, and not
+used for regular request processing.  This type has the following
+parameters:
+
+@table @asis
+@item @code{name}
+Name to identify this location block.
+
+@item @code{body}
+@xref{nginx-location-configuration body}, as the body for named location
+blocks can be used in a similar way to the
+@code{nginx-location-configuration body}.  One restriction is that the
+body of a named location block cannot contain location blocks.
 
 @end table
 @end deftp
@@ -12533,6 +13231,9 @@ Cuirass jobs.
 Location of sqlite database which contains the build results and previously
 added specifications.
 
+@item @code{port} (default: @code{8080})
+Port number used by the HTTP server.
+
 @item @code{specifications} (default: @code{#~'()})
 A gexp (@pxref{G-Expressions}) that evaluates to a list of specifications,
 where a specification is an association list
@@ -12546,6 +13247,10 @@ from source.
 
 @item @code{one-shot?} (default: @code{#f})
 Only evaluate specifications and build derivations once.
+
+@item @code{load-path} (default: @code{'()})
+This allows users to define their own packages and make them visible to
+cuirass as in @command{guix build} command.
 
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -76,7 +76,18 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0qjy3rcrn89n42y5iz60kgr0rrl29hpnj8mq2yvbc1wrcizmvzfs"))))
+               "0qjy3rcrn89n42y5iz60kgr0rrl29hpnj8mq2yvbc1wrcizmvzfs"))
+             (patches (search-patches "qemu-CVE-2016-10155.patch"
+                                      "qemu-CVE-2017-2615.patch"
+                                      "qemu-CVE-2017-5525.patch"
+                                      "qemu-CVE-2017-5526.patch"
+                                      "qemu-CVE-2017-5552.patch"
+                                      "qemu-CVE-2017-5578.patch"
+                                      "qemu-CVE-2017-5579.patch"
+                                      "qemu-CVE-2017-5667.patch"
+                                      "qemu-CVE-2017-5856.patch"
+                                      "qemu-CVE-2017-5898.patch"
+                                      "qemu-CVE-2017-5931.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:

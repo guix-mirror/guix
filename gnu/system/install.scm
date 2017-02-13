@@ -28,11 +28,11 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages disk)
-  #:use-module (gnu packages grub)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages nvi)
@@ -388,7 +388,7 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
-                     parted ddrescue
+                     parted gptfdisk ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
                      mdadm

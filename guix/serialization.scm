@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
   #:export (write-int read-int
             write-long-long read-long-long
             write-padding
-            write-string
+            write-bytevector write-string
             read-string read-latin1-string read-maybe-utf8-string
             write-string-list read-string-list
             write-string-pairs
@@ -102,14 +102,16 @@
         (or (zero? m)
             (put-bytevector p zero 0 (- 8 m)))))))
 
-(define (write-string s p)
-  (let* ((s (string->utf8 s))
-         (l (bytevector-length s))
+(define (write-bytevector s p)
+  (let* ((l (bytevector-length s))
          (m (modulo l 8))
          (b (make-bytevector (+ 8 l (if (zero? m) 0 (- 8 m))))))
     (bytevector-u32-set! b 0 l (endianness little))
     (bytevector-copy! s 0 b 8 l)
     (put-bytevector p b)))
+
+(define (write-string s p)
+  (write-bytevector (string->utf8 s) p))
 
 (define (read-byte-string p)
   (let* ((len (read-int p))

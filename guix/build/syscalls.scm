@@ -21,10 +21,12 @@
 (define-module (guix build syscalls)
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
+  #:autoload   (ice-9 binary-ports) (get-bytevector-n)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-19)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
@@ -126,7 +128,23 @@
             window-size-x-pixels
             window-size-y-pixels
             terminal-window-size
-            terminal-columns))
+            terminal-columns
+
+            utmpx?
+            utmpx-login-type
+            utmpx-pid
+            utmpx-line
+            utmpx-id
+            utmpx-user
+            utmpx-host
+            utmpx-termination-status
+            utmpx-exit-status
+            utmpx-session-id
+            utmpx-time
+            utmpx-address
+            login-type
+            utmpx-entries
+            (read-utmpx-from-port . read-utmpx)))
 
 ;;; Commentary:
 ;;;
@@ -900,6 +918,15 @@ bytevector BV at INDEX."
   ;; The most terrible interface, live from Scheme.
   (syscall->procedure int "ioctl" (list int unsigned-long '*)))
 
+(define (bytes->string bytes)
+  "Read BYTES, a list of bytes, and return the null-terminated string decoded
+from there, or #f if that would be an empty string."
+  (match (take-while (negate zero?) bytes)
+    (()
+     #f)
+    (non-zero
+     (list->string (map integer->char non-zero)))))
+
 (define (bytevector->string-list bv stride len)
   "Return the null-terminated strings found in BV every STRIDE bytes.  Read at
 most LEN bytes from BV."
@@ -911,9 +938,7 @@ most LEN bytes from BV."
        (reverse result))
       (_
        (loop (drop bytes stride)
-             (cons (list->string (map integer->char
-                                      (take-while (negate zero?) bytes)))
-                   result))))))
+             (cons (bytes->string bytes) result))))))
 
 (define* (network-interface-names #:optional sock)
   "Return the names of existing network interfaces.  This is typically limited
@@ -1479,5 +1504,109 @@ always a positive integer."
         (if (memv errno (list ENOTTY EINVAL ENOSYS))
             (fall-back)
             (apply throw args))))))
+
+
+;;;
+;;; utmpx.
+;;;
+
+(define-record-type <utmpx-entry>
+  (utmpx type pid line id user host termination exit
+         session time address)
+  utmpx?
+  (type           utmpx-login-type)               ;login-type
+  (pid            utmpx-pid)
+  (line           utmpx-line)                     ;device name
+  (id             utmpx-id)
+  (user           utmpx-user)                     ;user name
+  (host           utmpx-host)                     ;host name | #f
+  (termination    utmpx-termination-status)
+  (exit           utmpx-exit-status)
+  (session        utmpx-session-id)               ;session ID, for windowing
+  (time           utmpx-time)                     ;entry time
+  (address        utmpx-address))
+
+(define-c-struct %utmpx                           ;<utmpx.h>
+  sizeof-utmpx
+  (lambda (type pid line id user host termination exit session
+                seconds useconds address %reserved)
+    (utmpx type pid
+           (bytes->string line) id
+           (bytes->string user)
+           (bytes->string host) termination exit
+           session
+           (make-time time-utc (* 1000 useconds) seconds)
+           address))
+  read-utmpx
+  write-utmpx!
+  (type           short)
+  (pid            int)
+  (line           (array uint8 32))
+  (id             (array uint8 4))
+  (user           (array uint8 32))
+  (host           (array uint8 256))
+  (termination    short)
+  (exit           short)
+  (session        int32)
+  (time-seconds   int32)
+  (time-useconds  int32)
+  (address-v6     (array int32 4))
+  (%reserved      (array uint8 20)))
+
+(define-bits login-type
+  %unused-login-type->symbols
+  (define EMPTY 0)                      ;No valid user accounting information.
+  (define RUN_LVL 1)                    ;The system's runlevel.
+  (define BOOT_TIME 2)                  ;Time of system boot.
+  (define NEW_TIME 3)                   ;Time after system clock changed.
+  (define OLD_TIME 4)                   ;Time when system clock changed.
+
+  (define INIT_PROCESS 5)                ;Process spawned by the init process.
+  (define LOGIN_PROCESS 6)               ;Session leader of a logged in user.
+  (define USER_PROCESS 7)                ;Normal process.
+  (define DEAD_PROCESS 8)                ;Terminated process.
+
+  (define ACCOUNTING 9))                 ;System accounting.
+
+(define setutxent
+  (let ((proc (syscall->procedure void "setutxent" '())))
+    (lambda ()
+      "Open the user accounting database."
+      (proc))))
+
+(define endutxent
+  (let ((proc (syscall->procedure void "endutxent" '())))
+    (lambda ()
+      "Close the user accounting database."
+      (proc))))
+
+(define getutxent
+  (let ((proc (syscall->procedure '* "getutxent" '())))
+    (lambda ()
+      "Return the next entry from the user accounting database."
+      (let ((ptr (proc)))
+        (if (null-pointer? ptr)
+            #f
+            (read-utmpx (pointer->bytevector ptr sizeof-utmpx)))))))
+
+(define (utmpx-entries)
+  "Return the list of entries read from the user accounting database."
+  (setutxent)
+  (let loop ((entries '()))
+    (match (getutxent)
+      (#f
+       (endutxent)
+       (reverse entries))
+      ((? utmpx? entry)
+       (loop (cons entry entries))))))
+
+(define (read-utmpx-from-port port)
+  "Read a utmpx entry from PORT.  Return either the EOF object or a utmpx
+entry."
+  (match (get-bytevector-n port sizeof-utmpx)
+    ((? eof-object? eof)
+     eof)
+    ((? bytevector? bv)
+     (read-utmpx bv))))
 
 ;;; syscalls.scm ends here

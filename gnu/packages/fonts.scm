@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -15,6 +15,8 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,11 +39,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -241,7 +245,7 @@ package provides the TrueType (TTF) files.")
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.0.24")
+    (version "0.0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -249,7 +253,7 @@ package provides the TrueType (TTF) files.")
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "0r4jnc2x9yncf40lixjb1pqgpq8rzbi2fz33pshlqzjgx2d69bcw"))))
+                "0zvkd8cm1cg2919v1js9qmzwa02sjl7qajj3gcvgqvai1fm2i8hl"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
@@ -504,6 +508,49 @@ ko (Korean) locales for @code{fontconfig}.")
     ;; GPLv2 with font embedding exception
     (license license:gpl2)))
 
+(define-public font-wqy-microhei
+  (package
+    (name "font-wqy-microhei")
+    (version "0.2.0-beta")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/wqy/wqy-microhei/"
+                                  version "/wqy-microhei-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gi1yxqph8xx869ichpzzxvx6y50wda5hi77lrpacdma4f0aq0i8"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
+                                    (assoc-ref %build-inputs "gzip") "/bin"))
+               (font-dir (string-append (assoc-ref %outputs "out")
+                                        "/share/fonts/wenquanyi")))
+           (mkdir-p font-dir)
+           (setenv "PATH" PATH)
+           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (install-file "wqy-microhei/wqy-microhei.ttc" font-dir)))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (home-page "http://wenq.org/wqy2/")
+    (synopsis "CJK font")
+    (description
+     "WenQuanYi Micro Hei is a Sans-Serif style (also known as Hei, Gothic or
+Dotum among the Chinese/Japanese/Korean users) high quality CJK outline font.
+It was derived from \"Droid Sans Fallback\" and \"Droid Sans\" released by
+Google Inc.  This font contains all the unified CJK Han glyphs in the range of
+U+4E00-U+9FC3 defined in Unicode Standard 5.1, together with many other
+languages unicode blocks, including Latins, Extended Latins, Hanguls and
+Kanas.  The font file is extremely compact (~4M) compared with most known CJK
+fonts.")
+    ;; This font is licensed under Apache2.0 or GPLv3 with font embedding
+    ;; exceptions.
+    (license license:gpl3)))
+
 (define-public font-tex-gyre
   (package
     (name "font-tex-gyre")
@@ -714,8 +761,7 @@ display all Unicode symbols.")
                      (mkdir-p font-dir)
                      (chdir "roboto-hinted")
                      (for-each (lambda (ttf)
-                                 (copy-file ttf
-                                            (string-append font-dir "/" ttf)))
+                                 (install-file ttf font-dir))
                                (find-files "." "\\.ttf$"))))))
     (home-page "https://github.com/google/roboto")
     (synopsis "The Roboto family of fonts")
@@ -951,3 +997,196 @@ designed to work well in user interface environments.")
     (synopsis "Mozilla's monospace font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
+
+(define-public font-awesome
+  (package
+   (name "font-awesome")
+   (version "4.7.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://fontawesome.io/assets/"
+                                name "-" version ".zip"))
+            (sha256
+             (base32
+              "1frhmw41lnnm9rda2zs202pvfi5vzlrsw4xfp4mswl0qgws61mcd"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let* ((font-dir (string-append %output
+                                                  "/share/fonts/opentype"))
+                         (source (assoc-ref %build-inputs "source"))
+                         (src-otf-file (string-append "font-awesome-"
+                                                      ,version
+                                                      "/fonts/FontAwesome.otf"))
+                         (dest-otf-file (string-append font-dir "/FontAwesome.otf"))
+                         (unzip (assoc-ref %build-inputs "unzip")))
+                    (setenv "PATH" (string-append unzip "/bin"))
+                    (mkdir-p font-dir)
+                    (system* "unzip" source "-d" ".")
+                    (copy-file src-otf-file dest-otf-file)))))
+   (home-page "http://fontawesome.io")
+   (synopsis "Font that contains a rich iconset")
+   (description
+    "Font Awesome is a full suite of pictographic icons for easy scalable
+vector graphics.")
+   (license license:silofl1.1)))
+
+(define-public font-comic-neue
+  (package
+   (name "font-comic-neue")
+   (version "2.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://www.comicneue.com/comic-neue-" version ".zip"))
+            (sha256
+             (base32
+              "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+   (build-system trivial-build-system)
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let ((font-dir (string-append %output
+                                                 "/share/fonts/truetype"))
+                        (source (assoc-ref %build-inputs "source"))
+                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                               "/bin/unzip")))
+                    (mkdir-p font-dir)
+                    (system* unzip source)
+                    (with-directory-excursion
+                     (string-append "Web")
+                     (for-each (lambda (ttf)
+                                 (install-file ttf font-dir))
+                               (find-files "." "\\.ttf$")))))))
+   (native-inputs `(("unzip" ,unzip)))
+   (home-page "http://www.comicneue.com/")
+   (synopsis "Font that fixes the shortcomings of Comic Sans")
+   (description
+    "Comic Neue is a font that attempts to create a respectable casual
+typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
+   (license license:silofl1.1)))
+
+(define-public font-iosevka
+  (package
+   (name "font-iosevka")
+   (version "1.11.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/be5invis/Iosevka/releases/download/v"
+                  version "/iosevka-pack-" version ".zip"))
+            (sha256
+             (base32
+              "0d8prdk7s5z94sdfd0y92cvqq531yqrlg7hnadbnhd7fs9jqr5hj"))))
+   (build-system trivial-build-system)
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let ((font-dir (string-append %output
+                                                 "/share/fonts/truetype"))
+                        (source (assoc-ref %build-inputs "source"))
+                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                               "/bin/unzip")))
+                    (mkdir-p font-dir)
+                    (system* unzip "-d" font-dir source)))))
+   (native-inputs `(("unzip" ,unzip)))
+   (home-page "https://be5invis.github.io/Iosevka/")
+   (synopsis "Coders' typeface, built from code")
+   (description
+    "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
+by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
+programming.  Iosevka is completely generated from its source code.")
+   (license (list license:silofl1.1  ; build artifacts (i.e. the fonts)
+                  license:bsd-3))))  ; supporting code
+
+(define-public font-go
+  (let ((commit "b7f8df6bc082334698d4505fb85fa05e99156b72")
+        (revision "1"))
+    (package
+     (name "font-go")
+     (version (string-append "20161115-" revision "." (string-take commit 7)))
+     (source (origin
+              (file-name (string-append "go-image-" version "-checkout"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://go.googlesource.com/image")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1ywxs6dmcyzwwsmnan3qqza7znprnbvmdi260x6sjmydz6dyq2zs"))))
+     (build-system trivial-build-system)
+     (arguments
+      `(#:modules ((guix build utils))
+        #:builder (begin
+                    (use-modules (guix build utils))
+                    (let ((font-dir (string-append %output
+                                                   "/share/fonts/truetype"))
+                          (source (assoc-ref %build-inputs "source")))
+                      (mkdir-p font-dir)
+                      (with-directory-excursion
+                       (string-append source "/font/gofont/ttfs")
+                       (for-each (lambda (ttf)
+                                   (install-file ttf font-dir))
+                                 (find-files "." "\\.ttf$")))))))
+     (home-page "https://blog.golang.org/go-fonts")
+     (synopsis "The Go font family")
+     (description
+      "The Go font family is a set of WGL4 TrueType fonts from the Bigelow &
+Holmes type foundry, released under the same license as the Go programming
+language.  It includes a set of proportional, sans-serif fonts, and a set of
+monospace, slab-serif fonts.")
+     (license (package-license go-1.4)))))
+
+(define-public font-google-material-design-icons
+  (package
+   (name "font-google-material-design-icons")
+   (version "3.0.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                   "https://github.com/google/material-design-icons/archive/"
+                    version ".tar.gz"))
+            (sha256
+             (base32
+              "183n0qv3q8w6n27libarq1fhc4mqv2d3sasbfmbn7x9r5pw9c6ga"))
+            (file-name (string-append name "-" version ".tar.gz"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("tar" ,tar)
+      ("gzip" ,gzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let* ((font-dir (string-append %output
+                                                  "/share/fonts/truetype"))
+                         (source (assoc-ref %build-inputs "source"))
+                         (font-filename "MaterialIcons-Regular.ttf")
+                         (src-ttf-file (string-append "material-design-icons-"
+                                                      ,version
+                                                      "/iconfont/"
+                                                      font-filename))
+                         (dest-ttf-file (string-append font-dir font-filename))
+                         (gzip (assoc-ref %build-inputs "gzip"))
+                         (tar (assoc-ref %build-inputs "tar")))
+                    (setenv "PATH" (string-append gzip "/bin:"
+                                                  tar "/bin:"))
+                    (system* "tar" "xf" source)
+                    (mkdir-p font-dir)
+                    (copy-file src-ttf-file dest-ttf-file)))))
+   (home-page "http://google.github.io/material-design-icons")
+   (synopsis "Icon font of Google Material Design icons")
+   (description
+    "Material design system icons are simple, modern, friendly, and sometimes
+quirky.  Each icon is created using our design guidelines to depict in simple
+and minimal forms the universal concepts used commonly throughout a UI.
+Ensuring readability and clarity at both large and small sizes, these icons
+have been optimized for beautiful display on all common platforms and display
+resolutions.")
+   (license license:asl2.0)))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,12 +57,16 @@
                     (default 60))
   (database         cuirass-configuration-database ;string (file-name)
                     (default "/var/run/cuirass/cuirass.db"))
+  (port             cuirass-configuration-port ;integer (port)
+                    (default 8080))
   (specifications   cuirass-configuration-specifications)
                                   ;gexp that evaluates to specification-alist
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
                     (default #f))
   (one-shot?        cuirass-configuration-one-shot? ;boolean
-                    (default #f)))
+                    (default #f))
+  (load-path        cuirass-configuration-load-path
+                    (default '())))
 
 (define (cuirass-shepherd-service config)
   "Return a <shepherd-service> for the Cuirass service with CONFIG."
@@ -74,9 +79,11 @@
          (group            (cuirass-configuration-group config))
          (interval         (cuirass-configuration-interval config))
          (database         (cuirass-configuration-database config))
+         (port             (cuirass-configuration-port config))
          (specs            (cuirass-configuration-specifications config))
          (use-substitutes? (cuirass-configuration-use-substitutes? config))
-         (one-shot?        (cuirass-configuration-one-shot? config)))
+         (one-shot?        (cuirass-configuration-one-shot? config))
+         (load-path        (cuirass-configuration-load-path config)))
      (list (shepherd-service
             (documentation "Run Cuirass.")
             (provision '(cuirass))
@@ -87,9 +94,12 @@
                             "--specifications"
                             #$(scheme-file "cuirass-specs.scm" specs)
                             "--database" #$database
+                            "--port" #$(number->string port)
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
-                            #$@(if one-shot? '("--one-shot") '()))
+                            #$@(if one-shot? '("--one-shot") '())
+                            #$@(if (null? load-path) '()
+                                 `("--load-path" ,(string-join load-path ":"))))
                       #:user #$user
                       #:group #$group
                       #:log-file #$log-file))
