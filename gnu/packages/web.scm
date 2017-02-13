@@ -65,11 +65,13 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
@@ -4076,11 +4078,15 @@ w3c webidl files and a binding configuration file.")
        (sha256
         (base32
          "174sjx0566agckwmlj4w2cip5qbxdiafyhlp185a1qprxx84pbjr"))
-       (patches (search-patches "netsurf-system-utf8proc.patch"))))
+       (patches (search-patches "netsurf-system-utf8proc.patch"
+                                "netsurf-y2038-tests.patch"
+                                "netsurf-longer-test-timeout.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("nsgenbind" ,nsgenbind)
+       ("libidn" ,libidn)               ;only for tests
+       ("check" ,check)
        ("perl" ,perl)
        ("perl-html-parser" ,perl-html-parser)
        ("pkg-config" ,pkg-config)))
@@ -4097,7 +4103,8 @@ w3c webidl files and a binding configuration file.")
        ("libnsgif" ,libnsgif)
        ("libnspsl" ,libnspsl)
        ("libnsutils" ,libnsutils)
-       ("libsvgtiny" ,libsvgtiny)))
+       ("libsvgtiny" ,libsvgtiny)
+       ("miscfiles" ,miscfiles)))
     (arguments
      `(#:make-flags `("CC=gcc" "BUILD_CC=gcc"
                       ,(string-append "PREFIX=" %output)
@@ -4105,7 +4112,7 @@ w3c webidl files and a binding configuration file.")
                                       (assoc-ref %build-inputs
                                                  "netsurf-buildsystem")
                                       "/share/netsurf-buildsystem"))
-       #:tests? #f
+       #:test-target "test"
        #:modules ((ice-9 rdelim)
                   (ice-9 match)
                   (srfi srfi-1)
@@ -4143,6 +4150,12 @@ w3c webidl files and a binding configuration file.")
                        (map rec x))
                       (x x)))
                   out)))
+             #t))
+         (add-before 'check 'patch-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("test/bloom.c" "test/hashtable.c")
+               (("/usr/share/dict/words")
+                (string-append (assoc-ref inputs "miscfiles") "/share/web2")))
              #t))
          (add-after 'install 'install-more
            (lambda* (#:key outputs #:allow-other-keys)
