@@ -604,6 +604,9 @@ and building documentation from them.")
         (base32
          "0cz8ym4i1n4rgljlqhyhfkpgdmid7nkb909k8r8nk186m9cmpla2"))))
     (build-system python-build-system)
+    ;; FIXME: Incompatible sphinx version.
+    (arguments
+     '(#:tests? #f))
     (propagated-inputs
       `(("python-requests" ,python-requests)))
     (native-inputs
