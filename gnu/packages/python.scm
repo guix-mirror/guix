@@ -8488,6 +8488,8 @@ minimal and fast API targetting the following uses:
          (base32
           "0k3vypszmgmaipgw9xscvgm79h2zd6p6ci8gdp5sxl6g5kbqr9fy"))))
     (build-system python-build-system)
+    ;; TODO: Tests require packaging 'hiredis'.
+    (arguments '(#:tests? #f))
     (home-page "https://github.com/benjolitz/trollius-redis")
     (synopsis "Port of asyncio-redis to trollius")
     (description "@code{trollius-redis} is a Redis client for Python
