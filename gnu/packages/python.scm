@@ -5633,6 +5633,7 @@ contributor license agreement extension for python-openid.")
         (base32
          "05zrh78alav24rxkbqlpbad6d3x2nljk6z6j7kflxf3vdqa7w969"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; No tests.
     (home-page "https://github.com/puiterwijk/python-openid-teams/")
     (synopsis "Implementation of the OpenID teams extension for python-openid")
     (description
