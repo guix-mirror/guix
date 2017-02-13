@@ -477,12 +477,11 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)))
-    (propagated-inputs
+    (inputs
      `(("python2-nbxmpp" ,python2-nbxmpp)
        ("python2-pyopenssl" ,python2-pyopenssl)
-       ("python2-gnupg" ,python2-gnupg)))
-    (inputs
-     `(("python2-pygtk" ,python2-pygtk)
+       ("python2-gnupg" ,python2-gnupg)
+       ("python2-pygtk" ,python2-pygtk)
        ("python" ,python-2)))
     (home-page "https://gajim.org/")
     (synopsis "Jabber (XMPP) client")
