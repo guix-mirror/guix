@@ -756,14 +756,14 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.12")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "022d0097dk2glgb6772zpcsqm1w42sbsbr3i72pdhzq6naqawys8"))))
+                "0qiikh95b9crybkwgcbbv9y80hb7lsbvvmvaia4gbgbdyagwb2m0"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
