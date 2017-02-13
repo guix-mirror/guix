@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -446,7 +446,7 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.6")
+    (version "0.16.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -454,7 +454,7 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "1p3qwzy07f0wkika9yigyiq167l2k6wn12flqa7x55z4ihbysmqk"))))
+                "13sxz0hpvyj2yvcbsfqq9yn0hp1d1zsxsj40r0v16jlibha5da9n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
