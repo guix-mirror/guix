@@ -9271,7 +9271,8 @@ available in Django, but is a standalone package.")
      `(("python-markupsafe" ,python-markupsafe)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
     (home-page "http://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
