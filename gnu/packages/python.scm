@@ -3580,7 +3580,9 @@ association studies (GWAS) on extremely large data sets.")
        (uri (pypi-uri "pygit2" version))
        (sha256
         (base32
-         "0wf5rp0fvrw7j3j18dvwjq6xqlbm611wd55aphrfpps0v1gxh3ny"))))
+         "0wf5rp0fvrw7j3j18dvwjq6xqlbm611wd55aphrfpps0v1gxh3ny"))
+       (patches
+        (search-patches "python-pygit2-disable-network-tests.patch"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
