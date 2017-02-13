@@ -91,9 +91,7 @@
           (grep* "sourceLibrary" "dub.sdl") ; note: format is different!
           (grep* "sourceLibrary" "dub.json"))
     #t
-    (let ((status (zero? (apply system* `("dub" "build" ,@dub-build-flags)))))
-      (system* "dub" "run") ; might fail for "targetType": "library"
-      status)))
+    (zero? (apply system* `("dub" "build" ,@dub-build-flags)))))
 
 (define* (check #:key tests? #:allow-other-keys)
   (if tests?
