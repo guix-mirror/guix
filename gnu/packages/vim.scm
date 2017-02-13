@@ -63,6 +63,7 @@
              (uri (string-append "https://github.com/vim/vim/archive/v"
                                  version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
+             (patches (search-patches "vim-CVE-2017-5953.patch"))
              (sha256
               (base32
                "04samk2bakyixbxyc3p0g6ypls45105sikibg0wc6lmak9bqjs85"))))
