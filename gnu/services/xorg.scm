@@ -109,7 +109,6 @@ Section \"Files\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-fbdev "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-ati "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-modesetting "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-cirrus "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-intel "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-mach64 "/lib/xorg/modules/drivers\"
@@ -147,7 +146,6 @@ EndSection
   (list xf86-video-vesa
         xf86-video-fbdev
         xf86-video-ati
-        xf86-video-modesetting
         xf86-video-cirrus
         xf86-video-intel
         xf86-video-mach64
