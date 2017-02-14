@@ -239,6 +239,63 @@ you can fill in on the fly.")
     (home-page "https://github.com/Shougo/neosnippet-snippets")
     (license license:expat))))
 
+;; The released tarball is too old for our Vim.
+(define-public vim-neosnippet
+  (let ((commit "1bd7e23c79b73da16eb0c9469b25c376d3594583")
+        (revision "1"))
+  (package
+    (name "vim-neosnippet")
+    (version (string-append "4.2-" revision "." (string-take commit 7)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Shougo/neosnippet.vim/")
+             (commit commit)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "0k80syscmpnj38ks1fq02ds59g0r4jlg9ll7z4qc048mgi35alw5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (doc (string-append vimfiles "/doc"))
+                    (ftdetect (string-append vimfiles "/ftdetect"))
+                    (ftplugin (string-append vimfiles "/ftplugin"))
+                    (indent (string-append vimfiles "/indent"))
+                    (plugin (string-append vimfiles "/plugin"))
+                    (rplugin (string-append vimfiles "/rplugin"))
+                    (syntax (string-append vimfiles "/syntax")))
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "doc" doc)
+               (copy-recursively "ftdetect" ftdetect)
+               (copy-recursively "ftplugin" ftplugin)
+               (copy-recursively "indent" indent)
+               (copy-recursively "plugin" plugin)
+               (copy-recursively "rplugin" rplugin)
+               (copy-recursively "syntax" syntax)
+               #t))))))
+    (synopsis "Snippet support for Vim")
+    (description
+     "@code{neosnippet}, is a plugin for Vim which adds snippet support to Vim.
+Snippets are small templates for commonly used code that you can fill in on
+the fly.  To use snippets can increase your productivity in Vim a lot.
+The functionality of this plug-in is quite similar to plug-ins like
+@code{snipMate.vim} or @code{snippetsEmu.vim}.  But since you can choose
+snippets with the neocomplcache / neocomplete interface, you might have less
+trouble using them, because you do not have to remember each snippet name.")
+    (home-page "https://github.com/Shougo/neosnippet.vim/")
+    (license license:expat))))
+
 (define-public vim-scheme
   (let ((commit "93827987c10f2d5dc519166a761f219204926d5f")
         (revision "1"))
