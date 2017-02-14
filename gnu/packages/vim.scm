@@ -200,6 +200,45 @@ features than Vim's built-in completion.")
     (home-page "https://github.com/Shougo/neocomplete.vim/")
     (license license:expat)))
 
+;; There are no release tarballs.
+(define-public vim-neosnippet-snippets
+  (let ((commit "8e2b1c0cab9ed9a832b3743dbb65e9966a64331a")
+        (revision "1"))
+    (package
+      (name "vim-neosnippet-snippets")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shougo/neosnippet-snippets")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "151wpvbj6jb9jdkbhj3b77f5sq7y328spvwfbqyj1y32rg4ifmc6"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles")))
+                 (copy-recursively "neosnippets"
+                                   (string-append vimfiles "/neosnippets"))
+               #t))))))
+    (synopsis "Snippets for neosnippet")
+    (description
+     "@code{neosnippet-snippets} provides standard snippets for the Vim plugin
+@code{neosnippet}.  Snippets are small templates for commonly used code that
+you can fill in on the fly.")
+    (home-page "https://github.com/Shougo/neosnippet-snippets")
+    (license license:expat))))
+
 (define-public vim-scheme
   (let ((commit "93827987c10f2d5dc519166a761f219204926d5f")
         (revision "1"))
