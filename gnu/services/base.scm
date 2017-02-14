@@ -38,6 +38,7 @@
                 #:select (canonical-package glibc))
   #:use-module (gnu packages bash)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
@@ -73,6 +74,11 @@
             login-configuration?
             login-service-type
             login-service
+
+            agetty-configuration
+            agetty-configuration?
+            agetty-service
+            agetty-service-type
 
             mingetty-configuration
             mingetty-configuration?
@@ -729,6 +735,222 @@ Return a service that sets up Unicode support in @var{tty} and loads
   "Return a service configure login according to @var{config}, which specifies
 the message of the day, among other things."
   (service login-service-type config))
+
+(define-record-type* <agetty-configuration>
+  agetty-configuration make-agetty-configuration
+  agetty-configuration?
+  (agetty           agetty-configuration-agetty   ;<package>
+                    (default util-linux))
+  (tty              agetty-configuration-tty)     ;string
+  (term             agetty-term                   ;string | #f
+                    (default #f))
+  (baud-rate        agetty-baud-rate              ;string | #f
+                    (default #f))
+  (auto-login       agetty-auto-login             ;list of strings | #f
+                    (default #f))
+  (login-program    agetty-login-program          ;gexp
+                    (default (file-append shadow "/bin/login")))
+  (login-pause?     agetty-login-pause?           ;Boolean
+                    (default #f))
+  (eight-bits?      agetty-eight-bits?            ;Boolean
+                    (default #f))
+  (no-reset?        agetty-no-reset?              ;Boolean
+                    (default #f))
+  (remote?          agetty-remote?                ;Boolean
+                    (default #f))
+  (flow-control?    agetty-flow-control?          ;Boolean
+                    (default #f))
+  (host             agetty-host                   ;string | #f
+                    (default #f))
+  (no-issue?        agetty-no-issue?              ;Boolean
+                    (default #f))
+  (init-string      agetty-init-string            ;string | #f
+                    (default #f))
+  (no-clear?        agetty-no-clear?              ;Boolean
+                    (default #f))
+  (local-line       agetty-local-line             ;always | never | auto
+                    (default #f))
+  (extract-baud?    agetty-extract-baud?          ;Boolean
+                    (default #f))
+  (skip-login?      agetty-skip-login?            ;Boolean
+                    (default #f))
+  (no-newline?      agetty-no-newline?            ;Boolean
+                    (default #f))
+  (login-options    agetty-login-options          ;string | #f
+                    (default #f))
+  (chroot           agetty-chroot                 ;string | #f
+                    (default #f))
+  (hangup?          agetty-hangup?                ;Boolean
+                    (default #f))
+  (keep-baud?       agetty-keep-baud?             ;Boolean
+                    (default #f))
+  (timeout          agetty-timeout                ;integer | #f
+                    (default #f))
+  (detect-case?     agetty-detect-case?           ;Boolean
+                    (default #f))
+  (wait-cr?         agetty-wait-cr?               ;Boolean
+                    (default #f))
+  (no-hints?        agetty-no-hints?              ;Boolean
+                    (default #f))
+  (no-hostname?     agetty-no hostname?           ;Boolean
+                    (default #f))
+  (long-hostname?   agetty-long-hostname?         ;Boolean
+                    (default #f))
+  (erase-characters agetty-erase-characters       ;string | #f
+                    (default #f))
+  (kill-characters  agetty-kill-characters        ;string | #f
+                    (default #f))
+  (chdir            agetty-chdir                  ;string | #f
+                    (default #f))
+  (delay            agetty-delay                  ;integer | #f
+                    (default #f))
+  (nice             agetty-nice                   ;integer | #f
+                    (default #f))
+  ;; "Escape hatch" for passing arbitrary command-line arguments.
+  (extra-options    agetty-extra-options          ;list of strings
+                    (default '()))
+;;; XXX Unimplemented for now!
+;;; (issue-file     agetty-issue-file             ;file-like
+;;;                 (default #f))
+  )
+
+(define agetty-shepherd-service
+  (match-lambda
+    (($ <agetty-configuration> agetty tty term baud-rate auto-login
+        login-program login-pause? eight-bits? no-reset? remote? flow-control?
+        host no-issue? init-string no-clear? local-line extract-baud?
+        skip-login? no-newline? login-options chroot hangup? keep-baud? timeout
+        detect-case? wait-cr? no-hints? no-hostname? long-hostname?
+        erase-characters kill-characters chdir delay nice extra-options)
+     (list
+       (shepherd-service
+         (documentation "Run agetty on a tty.")
+         (provision (list (symbol-append 'term- (string->symbol tty))))
+
+         ;; Since the login prompt shows the host name, wait for the 'host-name'
+         ;; service to be done.  Also wait for udev essentially so that the tty
+         ;; text is not lost in the middle of kernel messages (see also
+         ;; mingetty-shepherd-service).
+         (requirement '(user-processes host-name udev))
+
+         (start #~(make-forkexec-constructor
+                    (list #$(file-append util-linux "/sbin/agetty")
+                          #$@extra-options
+                          #$@(if eight-bits?
+                                 #~("--8bits")
+                                 #~())
+                          #$@(if no-reset?
+                                 #~("--noreset")
+                                 #~())
+                          #$@(if remote?
+                                 #~("--remote")
+                                 #~())
+                          #$@(if flow-control?
+                                 #~("--flow-control")
+                                 #~())
+                          #$@(if host
+                                 #~("--host" #$host)
+                                 #~())
+                          #$@(if no-issue?
+                                 #~("--noissue")
+                                 #~())
+                          #$@(if init-string
+                                 #~("--init-string" #$init-string)
+                                 #~())
+                          #$@(if no-clear?
+                                 #~("--noclear")
+                                 #~())
+;;; FIXME This doesn't work as expected. According to agetty(8), if this option
+;;; is not passed, then the default is 'auto'. However, in my tests, when that
+;;; option is selected, agetty never presents the login prompt, and the
+;;; term-ttyS0 service respawns every few seconds.
+                          #$@(if local-line
+                                 #~(#$(match local-line
+                                        ('auto "--local-line=auto")
+                                        ('always "--local-line=always")
+                                        ('never "-local-line=never")))
+                                 #~())
+                          #$@(if extract-baud?
+                                 #~("--extract-baud")
+                                 #~())
+                          #$@(if skip-login?
+                                 #~("--skip-login")
+                                 #~())
+                          #$@(if no-newline?
+                                 #~("--nonewline")
+                                 #~())
+                          #$@(if login-options
+                                 #~("--login-options" #$login-options)
+                                 #~())
+                          #$@(if chroot
+                                 #~("--chroot" #$chroot)
+                                 #~())
+                          #$@(if hangup?
+                                 #~("--hangup")
+                                 #~())
+                          #$@(if keep-baud?
+                                 #~("--keep-baud")
+                                 #~())
+                          #$@(if timeout
+                                 #~("--timeout" #$(number->string timeout))
+                                 #~())
+                          #$@(if detect-case?
+                                 #~("--detect-case")
+                                 #~())
+                          #$@(if wait-cr?
+                                 #~("--wait-cr")
+                                 #~())
+                          #$@(if no-hints?
+                                 #~("--nohints?")
+                                 #~())
+                          #$@(if no-hostname?
+                                 #~("--nohostname")
+                                 #~())
+                          #$@(if long-hostname?
+                                 #~("--long-hostname")
+                                 #~())
+                          #$@(if erase-characters
+                                 #~("--erase-chars" #$erase-characters)
+                                 #~())
+                          #$@(if kill-characters
+                                 #~("--kill-chars" #$kill-characters)
+                                 #~())
+                          #$@(if chdir
+                                 #~("--chdir" #$chdir)
+                                 #~())
+                          #$@(if delay
+                                 #~("--delay" #$(number->string delay))
+                                 #~())
+                          #$@(if nice
+                                 #~("--nice" #$(number->string nice))
+                                 #~())
+                          #$@(if auto-login
+                                 (list "--autologin" auto-login)
+                                 '())
+                          #$@(if login-program
+                                 #~("--login-program" #$login-program)
+                                 #~())
+                          #$@(if login-pause?
+                                 #~("--login-pause")
+                                 #~())
+                          #$tty
+                          #$@(if baud-rate
+                                 #~(#$baud-rate)
+                                 #~())
+                          #$@(if term
+                                 #~(#$term)
+                                 #~()))))
+         (stop #~(make-kill-destructor)))))))
+
+(define agetty-service-type
+  (service-type (name 'agetty)
+                (extensions (list (service-extension shepherd-root-service-type
+                                                     agetty-shepherd-service)))))
+
+(define* (agetty-service config)
+  "Return a service to run agetty according to @var{config}, which specifies
+the tty to run, among other things."
+  (service agetty-service-type config))
 
 (define-record-type* <mingetty-configuration>
   mingetty-configuration make-mingetty-configuration
