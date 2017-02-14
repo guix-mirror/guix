@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -198,6 +199,46 @@ the current buffer.  Neocomplete can be customized easily and has many more
 features than Vim's built-in completion.")
     (home-page "https://github.com/Shougo/neocomplete.vim/")
     (license license:expat)))
+
+(define-public vim-scheme
+  (let ((commit "93827987c10f2d5dc519166a761f219204926d5f")
+        (revision "1"))
+    (package
+      (name "vim-scheme")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.foldling.org/vim-scheme.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1ynjr1109dxgj0lz261gmzz3wf5ap1m6j6hnvl3lcyv66a4y8pjv"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (after (string-append vimfiles "/after"))
+                      (syntax (string-append vimfiles "/syntax"))
+                      (ftplugin (string-append vimfiles "/ftplugin")))
+                 (copy-recursively "after" after)
+                 (copy-recursively "ftplugin" ftplugin)
+                 (copy-recursively "syntax" syntax)
+                 #t))))))
+      (synopsis "Scheme syntax for Vim")
+      (description
+       "@code{vim-scheme} provides Scheme support for Vim (R7RS and CHICKEN).")
+      (home-page "http://foldling.org/git/vim-scheme.git/")
+      (license license:public-domain))))
 
 (define-public neovim
   (package
