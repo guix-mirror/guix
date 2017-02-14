@@ -3790,3 +3790,23 @@ customizable by the user.")
 Additionally it can display the number of unread emails in the
 mode-line.")
     (license license:gpl3+)))
+
+(define-public emacs-pretty-mode
+  (package
+    (name "emacs-pretty-mode")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/akatov/pretty-mode/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fan7m4vnqs8kpg7r54kx3g7faadkpkf9kzarfv8n57kq8w157pl"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/akatov/pretty-mode")
+    (synopsis "Redisplay parts of the buffer as Unicode symbols")
+    (description
+     "Emacs minor mode for redisplaying parts of the buffer as pretty symbols.")
+    (license license:gpl3+)))
