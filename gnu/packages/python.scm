@@ -9108,12 +9108,9 @@ interface to the Amazon Web Services (AWS) API.")
       ("python-s3transfer" ,python-s3transfer)
       ("python-docutils" ,python-docutils)
       ("python-rsa" ,python-rsa)))
-   (native-inputs
-    `(("python-mock" ,python-mock)
-      ("python-nose" ,python-nose)
-      ("python-sphinx" ,python-sphinx)
-      ("python-tox" ,python-tox)
-      ("python-wheel" ,python-wheel)))
+   (arguments
+    ;; FIXME: The 'pypi' release does not contain tests.
+    '(#:tests? #f))
    (home-page "https://aws.amazon.com/cli/")
    (synopsis "Command line client for AWS")
    (description "AWS CLI provides a unified command line interface to the
