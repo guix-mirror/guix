@@ -434,25 +434,26 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
 (define* (common-qemu-options image shared-fs)
   "Return the a string-value gexp with the common QEMU options to boot IMAGE,
 with '-virtfs' options for the host file systems listed in SHARED-FS."
-  (define (virtfs-option fs)
-    #~(string-append "-virtfs local,path=\"" #$fs
-                     "\",security_model=none,mount_tag=\""
-                     #$(file-system->mount-tag fs)
-                     "\" "))
 
-  #~(string-append
-     ;; Only enable kvm if we see /dev/kvm exists.
+  (define (virtfs-option fs)
+    #~(format #f "-virtfs local,path=~s,security_model=none,mount_tag=~s"
+              #$fs #$(file-system->mount-tag fs)))
+
+  #~(;; Only enable kvm if we see /dev/kvm exists.
      ;; This allows users without hardware virtualization to still use these
      ;; commands.
-     #$(if (file-exists? "/dev/kvm")
-           " -enable-kvm "
-           "")
-     " -no-reboot -net nic,model=virtio \
-  " #$@(map virtfs-option shared-fs) " \
-  -vga std \
-  -drive file=" #$image
-  ",if=virtio,cache=writeback,werror=report,readonly \
-  -m 256"))
+     #$@(if (file-exists? "/dev/kvm")
+            '("-enable-kvm")
+            '())
+
+     "-no-reboot"
+     "-net nic,model=virtio"
+
+     #$@(map virtfs-option shared-fs)
+     "-vga std"
+     (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly"
+             #$image)
+     "-m 256"))
 
 (define* (system-qemu-image/shared-store-script os
                                                 #:key
@@ -479,25 +480,31 @@ it is mostly useful when FULL-BOOT?  is true."
                                 os
                                 #:full-boot? full-boot?
                                 #:disk-image-size disk-image-size)))
+    (define kernel-arguments
+      #~(list "--root=/dev/vda1"
+              (string-append "--system=" #$os-drv)
+              (string-append "--load=" #$os-drv "/boot")
+              #$@(if graphic? #~() #~("console=ttyS0"))
+              #+@(operating-system-kernel-arguments os)))
+
+    (define qemu-exec
+      #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))
+              #$@(if full-boot?
+                     #~()
+                     #~("-kernel" #$(operating-system-kernel-file os)
+                        "-initrd" #$(file-append os-drv "/initrd")
+                        (format #f "-append ~s"
+                                (string-join #$kernel-arguments " "))))
+              #$@(common-qemu-options image
+                                      (map file-system-mapping-source
+                                           (cons %store-mapping mappings)))))
+
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)
-            (display
-             (string-append "#!" #$bash "/bin/sh
-exec " #$qemu "/bin/" #$(qemu-command (%current-system))
-
-#$@(if full-boot?
-       #~()
-       #~(" -kernel " #$(operating-system-kernel-file os) " \
-            -initrd " #$os-drv "/initrd \
-            -append \"" #$(if graphic? "" "console=ttyS0 ")
-            "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1 "
-            (string-join (list #+@(operating-system-kernel-arguments os))) "\" "))
-#$(common-qemu-options image
-                       (map file-system-mapping-source
-                            (cons %store-mapping mappings)))
-" \"$@\"\n")
-             port)
+            (format port "#!~a~% exec ~a \"$@\"~%"
+                    #$(file-append bash "/bin/sh")
+                    (string-join #$qemu-exec " "))
             (chmod port #o555))))
 
     (gexp->derivation "run-vm.sh" builder)))
