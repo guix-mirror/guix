@@ -452,6 +452,47 @@ and powerline symbols, etc.")
     (home-page "https://github.com/vim-airline/vim-airline")
     (license license:expat)))
 
+;; There are no tarball releases.
+(define-public vim-airline-themes
+  (let ((commit "6026eb78bf362cb3aa875aff8487f65728d0f7d8")
+        (revision "1"))
+    (package
+      (name "vim-airline-themes")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vim-airline/vim-airline-themes")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "13ijkavh1r0935cn2rjsfbdd1q3ka8bi26kw0bdkrqlrqxwvpss8"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (doc (string-append vimfiles "/doc"))
+                      (plugin (string-append vimfiles "/plugin"))
+                      (autoload (string-append vimfiles "/autoload")))
+                 (copy-recursively "doc" doc)
+                 (copy-recursively "autoload" autoload)
+                 (copy-recursively "plugin" plugin)
+                 #t))))))
+      (synopsis "Collection of themes for Vim-airline")
+      (description
+       "@code{vim-airline-themes} is a collection of themes for @code{vim-airline}.")
+      (home-page "https://github.com/vim-airline/vim-airline-themes")
+      (license license:expat))))
+
 (define-public neovim
   (package
     (name "neovim")
