@@ -267,6 +267,8 @@ operating systems.")
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
+       ("lmdb" ,lmdb)
+       ("tokyocabinet" ,tokyocabinet)
        ("gpgme" ,gpgme)
        ("ncurses" ,ncurses)
        ("gnutls" ,gnutls)
@@ -289,10 +291,11 @@ operating systems.")
              "--enable-gpgme"
 
              ;; database, implies header caching
-             "--without-tokyocabinet"
+             ;; neomutt supports building multiple backends
+             "--with-tokyocabinet"
              "--without-qdbm"
              "--without-bdb"
-             "--without-lmdb"
+             "--with-lmdb"
              "--with-gdbm"
 
              "--with-gnutls"
