@@ -141,7 +141,8 @@ made available under the /xchg CIFS share."
                          (gnu build vm))
 
             (let ((inputs  '#$(list qemu coreutils))
-                  (linux   (string-append #$linux "/bzImage"))
+                  (linux   (string-append #$linux "/"
+                                          #$(system-linux-image-file-name)))
                   (initrd  (string-append #$initrd "/initrd"))
                   (loader  #$loader)
                   (graphs  '#$(match references-graphs
@@ -487,7 +488,7 @@ exec " #$qemu "/bin/" #$(qemu-command (%current-system))
 
 #$@(if full-boot?
        #~()
-       #~(" -kernel " #$(operating-system-kernel os) "/bzImage \
+       #~(" -kernel " #$(operating-system-kernel-file os) " \
             -initrd " #$os-drv "/initrd \
             -append \"" #$(if graphic? "" "console=ttyS0 ")
             "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1 "

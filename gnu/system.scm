@@ -97,6 +97,8 @@
             operating-system-locale-directory
             operating-system-boot-script
 
+            system-linux-image-file-name
+
             boot-parameters
             boot-parameters?
             boot-parameters-label
@@ -255,9 +257,10 @@ from the initrd."
 (define* (system-linux-image-file-name #:optional (system (%current-system)))
   "Return the basename of the kernel image file for SYSTEM."
   ;; FIXME: Evaluate the conditional based on the actual current system.
-  (if (string-prefix? "mips" (%current-system))
-      "vmlinuz"
-      "bzImage"))
+  (cond
+   ((string-prefix? "arm" (%current-system)) "zImage")
+   ((string-prefix? "mips" (%current-system)) "vmlinuz")
+   (else "bzImage")))
 
 (define (operating-system-kernel-file os)
   "Return an object representing the absolute file name of the kernel image of
