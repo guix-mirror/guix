@@ -365,7 +365,7 @@ of the GNU system as described by OS."
        (check? #f)
        (create-mount-point? #t)))))
 
-(define (virtualized-operating-system os mappings)
+(define* (virtualized-operating-system os mappings #:optional (full-boot? #f))
   "Return an operating system based on OS suitable for use in a virtualized
 environment with the store shared with the host.  MAPPINGS is a list of
 <file-system-mapping> to realize in the virtualized OS."
@@ -381,6 +381,15 @@ environment with the store shared with the host.  MAPPINGS is a list of
                          (string-prefix? "/dev/" source)))))
             (operating-system-file-systems os)))
 
+  (define virtual-file-systems
+    (cons (file-system
+            (mount-point "/")
+            (device "/dev/vda1")
+            (type "ext4"))
+
+          (append (map mapping->file-system mappings)
+                  user-file-systems)))
+
   (operating-system (inherit os)
     (initrd (lambda (file-systems . rest)
               (apply base-initrd file-systems
@@ -391,17 +400,16 @@ environment with the store shared with the host.  MAPPINGS is a list of
     ;; Disable swap.
     (swap-devices '())
 
-    (file-systems (cons* (file-system
-                           (mount-point "/")
-                           (device "/dev/vda1")
-                           (type "ext4"))
-
-                         (file-system (inherit
-                                       (mapping->file-system %store-mapping))
-                            (needed-for-boot? #t))
-
-                         (append (map mapping->file-system mappings)
-                                 user-file-systems)))))
+    ;; XXX: When FULL-BOOT? is true, do not add a 9p mount for /gnu/store
+    ;; since that would lead the bootloader config to look for the kernel and
+    ;; initrd in it.
+    (file-systems (if full-boot?
+                      virtual-file-systems
+                      (cons
+                       (file-system
+                         (inherit (mapping->file-system %store-mapping))
+                         (needed-for-boot? #t))
+                       virtual-file-systems)))))
 
 (define* (system-qemu-image/shared-store
           os
@@ -474,7 +482,7 @@ When FULL-BOOT? is true, the returned script runs everything starting from the
 bootloader; otherwise it directly starts the operating system kernel.  The
 DISK-IMAGE-SIZE parameter specifies the size in bytes of the root disk image;
 it is mostly useful when FULL-BOOT?  is true."
-  (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings))
+  (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings full-boot?))
                        (os-drv (operating-system-derivation os))
                        (image  (system-qemu-image/shared-store
                                 os
