@@ -372,6 +372,45 @@ trouble using them, because you do not have to remember each snippet name.")
       (home-page "https://github.com/notpratheek/vim-luna")
       (license license:expat))))
 
+;; There are no tarball releases.
+(define-public vim-context-filetype
+  (let ((commit "5e85f8cae26806f391aefe2661791a6de53bcea2")
+        (revision "1"))
+    (package
+      (name "vim-context-filetype")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shougo/context_filetype.vim")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0alvrfhmd91zkd9h83s8wvgyq4iakcf6rybsyjd369qbgpcqky89"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (doc (string-append vimfiles "/doc"))
+                      (autoload (string-append vimfiles "/autoload")))
+                 (copy-recursively "doc" doc)
+                 (copy-recursively "autoload" autoload)
+                 #t))))))
+      (synopsis "Context filetype library for Vim")
+      (description
+       "@code{vim-context-filetype} is context filetype library for Vim script.")
+      (home-page "https://github.com/Shougo/context_filetype.vim")
+      (license license:expat)))) ; ??? check again
+
 (define-public neovim
   (package
     (name "neovim")
