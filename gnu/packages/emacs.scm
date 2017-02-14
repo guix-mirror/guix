@@ -3501,6 +3501,30 @@ known loosely as deftheme.  Many mode-specific customizations are included.")
        "@code{danneskjold-theme} is a high-contrast theme for Emacs.")
       (license license:gpl3+))))
 
+(define-public emacs-dream-theme
+  (let* ((commit "107a11d74365046f28a1802a2bdb5e69e4a7488b")
+         (revision "1"))
+    (package
+      (name "emacs-dream-theme")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/djcb/dream-theme")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0za18nfkq4xqm35k6006vsixcbmvmxqgma4iw5sw37h8vmcsdylk"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/djcb/dream-theme")
+      (synopsis "High-contrast Emacs theme")
+      (description
+       "@code{dream-theme} is a dark, clean theme for Emacs.  It is inspired
+by zenburn, sinburn and similar themes, but slowly diverging from them.")
+      (license license:gpl3+))))
+
 (define-public emacs-auto-complete
   (package
     (name "emacs-auto-complete")
