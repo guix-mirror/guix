@@ -336,6 +336,42 @@ trouble using them, because you do not have to remember each snippet name.")
       (home-page "http://foldling.org/git/vim-scheme.git/")
       (license license:public-domain))))
 
+(define-public vim-luna
+  (let ((commit "633619953dcf8577168e255230f96b05f28d6371")
+        (revision "1"))
+    (package
+      (name "vim-luna")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/notpratheek/vim-luna")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0ka3qbhsh8lix1vyj4678j7dnchkd8khhirrnn3aylxxf8fpqyg8"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (colors (string-append vimfiles "/colors")))
+                 (copy-recursively "colors" colors)
+                 #t))))))
+      (synopsis "Dark color theme for Vim")
+      (description
+       "@code{vim-luna} is a dark color theme for Vim.")
+      (home-page "https://github.com/notpratheek/vim-luna")
+      (license license:expat))))
+
 (define-public neovim
   (package
     (name "neovim")
