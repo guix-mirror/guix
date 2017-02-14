@@ -1951,3 +1951,38 @@ installation on systems where resources are limited.  Its features include:
 @item Rich and customisable texts for automated operations.
 @end enumerate\n")
     (license license:expat)))
+
+(define-public blists
+  (package
+    (name "blists")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.openwall.net/pub/projects/"
+                           "blists/blists-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gp51kmb8yv8d693wcpdslmwlbw5w2kgz4kxhrcaf7y89w8wy4qd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "bindex" bin)
+               (install-file "bit" bin)
+               #t))))))
+    (home-page "http://www.openwall.com/blists/")
+    (synopsis "Web interface to mailing list archives")
+    (description
+     "Blists is a web interface to mailing list archives that works off
+indexed mbox files.  There are two programs: @code{bindex} and @code{bit}.
+@code{bindex} generates or updates the index file (incremental updates
+are supported).  @code{bit} is a CGI/SSI program that generates web pages
+on the fly.  Both programs are written in C and are very fast.")
+    (license license:expat)))
