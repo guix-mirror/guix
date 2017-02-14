@@ -8769,14 +8769,14 @@ document.")
 (define-public python-botocore
   (package
    (name "python-botocore")
-   (version "1.4.62")
+   (version "1.5.10")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "botocore" version))
      (sha256
       (base32
-       "1zxczlwqy9bl27d9bc5x99mb5mcsxm350240lp5nx7014xb311lj"))))
+       "1hqvqwhgfcch4knm1l02ynx7qd1igxk3pj34c1x2b0r79jca524n"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-dateutil" ,python-dateutil-2)
