@@ -106,14 +106,16 @@ takes a bytevector and returns #t when it's a valid superblock."
     (bytevector-copy! bv start result 0 size)
     result))
 
-(define (null-terminated-latin1->string bv)
-  "Return the volume name of SBLOCK as a string of at most 256 characters, or
-#f if SBLOCK has no volume name."
-    ;; This is a Latin-1, nul-terminated string.
-    (let ((bytes (take-while (negate zero?) (bytevector->u8-list bv))))
+(define (latin1->string bv terminator)
+  "Return a string of BV, a latin1 bytevector, or #f.  TERMINATOR is a predicate
+that takes a number and returns #t when a termination character is found."
+    (let ((bytes (take-while (negate terminator) (bytevector->u8-list bv))))
       (if (null? bytes)
           #f
           (list->string (map integer->char bytes)))))
+
+(define null-terminated-latin1->string
+  (cut latin1->string <> zero?))
 
 
 ;;;
@@ -190,6 +192,51 @@ if DEVICE does not contain a btrfs file system."
   (match (status:exit-val
           (system* "btrfs" "device" "scan"))
     (0 'pass)
+    (_ 'fatal-error)))
+
+
+;;;
+;;; FAT32 file systems.
+;;;
+
+;; <http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-107.pdf>.
+
+(define-syntax %fat32-endianness
+  ;; Endianness of fat file systems.
+  (identifier-syntax (endianness little)))
+
+(define (fat32-superblock? sblock)
+  "Return #t when SBLOCK is a fat32 superblock."
+  (bytevector=? (sub-bytevector sblock 82 8)
+                (string->utf8 "FAT32   ")))
+
+(define (read-fat32-superblock device)
+  "Return the raw contents of DEVICE's fat32 superblock as a bytevector, or
+#f if DEVICE does not contain a fat32 file system."
+  (read-superblock device 0 90 fat32-superblock?))
+
+(define (fat32-superblock-uuid sblock)
+  "Return the Volume ID of a fat superblock SBLOCK as a 4-byte bytevector."
+  (sub-bytevector sblock 67 4))
+
+(define (fat32-uuid->string uuid)
+  "Convert fat32 UUID, a 4-byte bytevector, to its string representation."
+  (let ((high  (bytevector-uint-ref uuid 0 %fat32-endianness 2))
+        (low (bytevector-uint-ref uuid 2 %fat32-endianness 2)))
+    (format #f "~:@(~x-~x~)" low high)))
+
+(define (fat32-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 11 characters, or
+#f if SBLOCK has no volume name.  The volume name is a latin1 string.
+Trailing spaces are trimmed."
+  (string-trim-right (latin1->string (sub-bytevector sblock 71 11) (lambda (c) #f)) #\space))
+
+(define (check-fat32-file-system device)
+  "Return the health of a fat file system on DEVICE."
+  (match (status:exit-val
+          (system* "fsck.vfat" "-v" "-a" device))
+    (0 'pass)
+    (1 'errors-corrected)
     (_ 'fatal-error)))
 
 
@@ -307,13 +354,17 @@ partition field reader that returned a value."
   (list (partition-field-reader read-ext2-superblock
                                 ext2-superblock-volume-name)
         (partition-field-reader read-btrfs-superblock
-                                btrfs-superblock-volume-name)))
+                                btrfs-superblock-volume-name)
+        (partition-field-reader read-fat32-superblock
+                                fat32-superblock-volume-name)))
 
 (define %partition-uuid-readers
   (list (partition-field-reader read-ext2-superblock
                                 ext2-superblock-uuid)
         (partition-field-reader read-btrfs-superblock
-                                btrfs-superblock-uuid)))
+                                btrfs-superblock-uuid)
+        (partition-field-reader read-fat32-superblock
+                                fat32-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -481,6 +532,7 @@ the following:
     (cond
      ((string-prefix? "ext" type) check-ext2-file-system)
      ((string-prefix? "btrfs" type) check-btrfs-file-system)
+     ((string-suffix? "fat" type) check-fat32-file-system)
      (else #f)))
 
   (if check-procedure
