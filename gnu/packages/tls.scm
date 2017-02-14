@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
@@ -793,3 +794,31 @@ then ported to the GNU / Linux environment.")
     ;; acme-client is distributed under the ISC license, but the files 'jsmn.h'
     ;; and 'jsmn.c' are distributed under the Expat license.
     (license (list license:isc license:expat))))
+
+;; The "-apache" variant is the upstreamed prefered variant. A "-gpl"
+;; variant exists in addition to the "-apache" one.
+(define-public mbedtls-apache
+  (package
+    (name "mbedtls-apache")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; XXX: The download links on the website are script redirection links
+       ;; which effectively lead to the format listed in the uri here.
+       (uri (string-append "https://tls.mbed.org/download/mbedtls-"
+                           version "-apache.tgz"))
+       (sha256
+        (base32
+         "03bzbfidigljva6xj49k38q3kwlbj75lrky4a0ainylzsfg5bhy1"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (synopsis "Small TLS library")
+    (description
+     "@code{mbed TLS}, formerly known as PolarSSL, makes it trivially easy
+for developers to include cryptographic and SSL/TLS capabilities in their
+(embedded) products, facilitating this functionality with a minimal
+coding footprint.")
+    (home-page "https://tls.mbed.org")
+    (license license:asl2.0)))
