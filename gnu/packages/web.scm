@@ -4410,6 +4410,61 @@ developers can integrate into their applications to make use of the
 functions of Tidy.")
     (license l:bsd-3)))
 
+(define-public hiawatha
+  (package
+    (name "hiawatha")
+    (version "10.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.hiawatha-webserver.org/files/"
+                           "hiawatha-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; We use our packaged mbedtls, so delete the included copy.
+        '(delete-file-recursively "mbedtls"))
+       (sha256
+        (base32
+         "0m2llzm72s29c32abnj03532m85fawvi8ybjpx6s3mgvx2yvq3p4"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No tests included
+       #:configure-flags (list (string-append "-DUSE_SYSTEM_MBEDTLS=on")
+                               (string-append "-DENABLE_TOMAHAWK=on")
+                               (string-append "-DWEBROOT_DIR="
+                                              (assoc-ref %outputs "out")
+                                              "/share/hiawatha/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-empty-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               ;; The directories in "var" are empty, remove them.
+               (delete-file-recursively (string-append out "/var"))
+               #t)))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'hiawatha' finds 'mbedtls'.
+             (let* ((out (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin"))
+                    (mbed (assoc-ref inputs "mbedtls-apache")))
+               (wrap-program (string-append sbin "/hiawatha")
+                 `("PATH" ":" prefix (,mbed)))))))))
+    (inputs
+     ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha"
+     `(("mbedtls-apache" ,mbedtls-apache) ;Hiawatha includes this version.
+       ("zlib" ,zlib)
+       ("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)))
+    (home-page "https://www.hiawatha-webserver.org")
+    (synopsis "Webserver with focus on security")
+    (description
+     "Hiawatha has been written with security in mind.  This resulted in a
+highly secure webserver in both code and features.  Hiawatha can stop SQL
+injections, XSS and CSRF attacks and exploit attempts.  Via a specially
+crafted monitoring tool, you can keep track of all your webservers.")
+    (license l:gpl2)))
+
 (define-public qutebrowser
   (package
     (name "qutebrowser")
