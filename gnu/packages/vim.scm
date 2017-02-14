@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -157,6 +157,47 @@ configuration files.")
        ("ruby" ,ruby)
        ("tcl" ,tcl)
        ,@(package-inputs vim)))))
+
+(define-public vim-neocomplete
+  (package
+    (name "vim-neocomplete")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Shougo/neocomplete.vim/"
+                           "archive/ver." version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1307gbrdwam2akq9w2lpijc41740i4layk2qkd9sjkqxfch5lni2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (doc (string-append vimfiles "/doc"))
+                    (plugin (string-append vimfiles "/plugin")))
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "doc" doc)
+               (copy-recursively "plugin" plugin)
+               #t))))))
+    (synopsis "Next generation completion framework for Vim")
+    (description
+     "@code{neocomplete}, an abbreviation of 'neo-completion with cache',
+is a plugin for Vim.
+It provides keyword completion system by maintaining a cache of keywords in
+the current buffer.  Neocomplete can be customized easily and has many more
+features than Vim's built-in completion.")
+    (home-page "https://github.com/Shougo/neocomplete.vim/")
+    (license license:expat)))
 
 (define-public neovim
   (package
