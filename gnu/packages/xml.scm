@@ -652,14 +652,14 @@ used.")
 (define-public perl-xml-compile-wsdl11
   (package
     (name "perl-xml-compile-wsdl11")
-    (version "3.05")
+    (version "3.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-WSDL11-" version ".tar.gz"))
               (sha256
                (base32
-                "1a50in1qrbzx3924wvrhgfm5fcxz5cd95f3z9z2xgln27q1zssc4"))))
+                "0vbq05cpynm3jj81fw1k4nsb3wv4zngi6blvi1jhdarmh2rfg1x2"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
