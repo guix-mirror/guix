@@ -9790,6 +9790,7 @@ commands into documents, helping you to keep your command examples up to date.")
                (base32
                 "08ycivzf7bh4a1zcyp31hbyqs1b2c9r26raa3vxjwwmbfqr3iw4f"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; No tests.
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)
        ("python-zope-interface" ,python-zope-interface)))
