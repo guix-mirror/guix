@@ -5549,6 +5549,32 @@ for clients and servers.")
 for clients and servers.")
     (license license:asl2.0)))
 
+;; This is named "python3-openid" upstream, but python-python3-openid
+;; is too much of an tautology.
+(define-public python-openid
+  (package
+    (name "python-openid")
+    (version "3.0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python3-openid" version))
+       (sha256
+        (base32
+         "1x3nh3fycqfn43jp5j5pb4q4y2jxp4mdka4absaa3bc0078qd758"))))
+    (propagated-inputs
+     `(("python-defusedxml" ,python-defusedxml)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)))
+    (build-system python-build-system)
+    (home-page "https://github.com/necaris/python3-openid")
+    (synopsis "OpenID support for modern servers and consumers")
+    (description
+     "This library provides OpenID authentication for Python, both
+for clients and servers.  This package provides the Python 3 port
+of python-openid.")
+    (license license:asl2.0)))
+
 (define-public python-urwidtrees
   (package
     (name "python-urwidtrees")
