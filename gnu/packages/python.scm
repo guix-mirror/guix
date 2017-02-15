@@ -6250,6 +6250,20 @@ complexity of Python source code.")
         (base32
          "02gn2wxvh9vnf7m7dld7ca4l60mg5c370hv3swwppkngwaqmcw67"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "py.test" "-v")))))))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-mock" ,python-mock)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://gitlab.com/pycqa/flake8-polyfill")
     (synopsis "Polyfill package for Flake8 plugins")
     (description
