@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -1068,3 +1068,24 @@ XSLT and EXSLT.")
 XLSM) format spreadsheets into plaintext @dfn{comma separated values} (CSV)
 files.  It is designed to be fast and to handle large input files.")
     (license license:gpl2+)))
+
+(define-public python-defusedxml
+  (package
+    (name "python-defusedxml")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "defusedxml" version))
+       (sha256
+        (base32
+         "0y147zy3jqmk6ly7fbhqmzn1hf41xcb53f2vcc3m8x4ba5d1smfd"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/tiran/defusedxml")
+    (synopsis "XML bomb protection for Python stdlib modules")
+    (description
+     "Defusedxml provides XML bomb protection for Python stdlib modules.")
+    (license license:psfl)))
+
+(define-public python2-defusedxml
+  (package-with-python2 python-defusedxml))
