@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -40,6 +40,7 @@
 
 (define-module (gnu packages mail)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
@@ -64,6 +65,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
@@ -71,6 +73,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -86,6 +89,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
@@ -96,7 +100,7 @@
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
-                           bsd-2 x11-style agpl3))
+                           bsd-2 x11-style agpl3 asl2.0))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -2214,3 +2218,68 @@ Options can be specified in environment variables, configuration files, and
 the command line allowing maximum configurability and ease of use for
 operators and scripters.")
     (license gpl2+)))
+
+(define-public alpine
+  (package
+    (name "alpine")
+    (version "2.21")
+    (source
+     (origin
+       (method url-fetch)
+       ;; There are two versions: the plain continuation of Alpine without extra
+       ;; patches and the version which adds extra fixes. Every distro uses
+       ;; the patched version, and so do we to not break expectations.
+       ;; http://patches.freeiz.com/alpine/readme/README.patches
+       (uri (string-append "http://patches.freeiz.com/alpine/patches/alpine-"
+                           version "/alpine-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1k9hcfjywfk3mpsl71hjza3nk6icgf1b6xxzgx10kdzg5yci5x5m"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:configure-flags (list (string-append "--with-ssl-include-dir="
+                                              (assoc-ref %build-inputs "openssl")
+                                              "/include/openssl")
+                               (string-append "--with-ssl-dir="
+                                              (assoc-ref %build-inputs "openssl"))
+                               (string-append "--with-ssl-certs-dir="
+                                              "/etc/ssl/certs/")
+                               (string-append "--with-ssl-lib-dir="
+                                              (assoc-ref %build-inputs "openssl")
+                                              "/lib")
+                               (string-append "--with-interactive-spellcheck="
+                                              (assoc-ref %build-inputs "aspell")
+                                              "/bin/aspell"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; This removes time-dependent code to make alpine reproducible.
+             (substitute* "pico/blddate.c"
+               (("%02d-%s-%d") "1970-01-01"))
+             (substitute* (list "alpine/Makefile.in"
+                                "web/src/alpined.d/Makefile.in")
+               (("`date`") "1970-01-01"))
+             #t)))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("gnutls" ,gnutls)
+       ("openldap" ,openldap)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("mit-krb5" ,mit-krb5)
+       ("aspell" ,aspell)
+       ("tcl" ,tcl)
+       ("linux-pam" ,linux-pam)))
+    (home-page "http://patches.freeiz.com/alpine/")
+    (synopsis "Alternatively Licensed Program for Internet News and Email")
+    (description
+     "Alpine is a text-based mail and news client.  Alpine includes several
+tools and applications:
+@enumerate
+@item alpine, the Alpine mailer
+@item pico, the standalone text editor, GNU nano's predecessor
+@item pilot, the standalone file system navigator
+@end enumerate\n")
+    (license asl2.0)))
