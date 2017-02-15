@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -189,3 +190,34 @@ them do this.")
 
 (define-public python2-django-filter
   (package-with-python2 python-django-filter))
+
+(define-public python-django-allauth
+  (package
+    (name "python-django-allauth")
+    (version "0.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-allauth" version))
+       (sha256
+        (base32
+         "1fslqc5qqb0b66yscvkyjwfv8cnbfx5nlkpnwimyb3pf1nc1w7r3"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-openid" ,python-openid)
+       ("python-requests" ,python-requests)
+       ("python-requests-oauthlib" ,python-requests-oauthlib)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/pennersr/django-allauth")
+    (synopsis "Set of Django applications addressing authentication")
+    (description
+     "Integrated set of Django applications addressing authentication,
+registration, account management as well as 3rd party (social)
+account authentication.")
+    (license license:expat)))
+
+(define-public python2-django-allauth
+  (package-with-python2 python-django-allauth))
