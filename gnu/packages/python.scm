@@ -10824,18 +10824,12 @@ It uses LR parsing and does extensive error checking.")
              (uri (pypi-uri "tabulate" version))
              (sha256
               (base32
-               "1inqhspd4frxnp08c32yndr0lc4px1xfkqah184i5w09gkhvi843"))
-             ;; Fix tests
-             (modules '((guix build utils)))
-             (snippet '(substitute* '("test/test_cli.py"
-                                      "test/test_input.py"
-                                      "test/test_output.py"
-                                      "test/test_regression.py")
-                         (("from common") "from nose.tools")))))
+               "1inqhspd4frxnp08c32yndr0lc4px1xfkqah184i5w09gkhvi843"))))
     (build-system python-build-system)
-    (native-inputs
-     `(;; For testing
-       ("python-nose" ,python-nose)))
+    (arguments
+     ;; FIXME: The pypi release tarball is missing a 'test/common.py'
+     ;; and the latest release is not tagged in the upstream repository.
+     '(#:tests? #f))
     (home-page "https://bitbucket.org/astanin/python-tabulate")
     (synopsis "Pretty-print tabular data")
     (description
