@@ -2101,6 +2101,36 @@ interacting with Mailman.")
        `(("python2-openid" ,python2-openid)
          ,@(package-propagated-inputs base))))))
 
+(define-public postorius
+  (package
+    (name "postorius")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "postorius" version "+post2.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wymcpv2icjjy8h1ni52p6dr7wwxf71ivqgbqhzx4i82yqphcaq5"))))
+    (build-system python-build-system)
+    (arguments
+     `(; One test dependency relies on Persona, which was shut down in
+       ;; November 2016.
+       #:tests? #f
+       ;; The part of the frontend of Mailman is still python 2.7.
+       #:python ,python-2))
+    (inputs
+     `(("python2-django" ,python2-django)
+       ("python2-django-mailman3" ,python2-django-mailman3)
+       ("python2-mailmanclient" ,python2-mailmanclient)))
+    (home-page "https://gitlab.com/mailman/postorius")
+    (synopsis "Web user interface for GNU Mailman")
+    (description
+     "Postorius is a Django app which provides a web user interface
+to access GNU Mailman.")
+    (license (list gpl3+ lgpl3+))))
+
 (define-public blists
   (package
     (name "blists")
