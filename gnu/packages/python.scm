@@ -8642,6 +8642,7 @@ files for use with Python.")
              (sha256
               (base32
                "1d7gam3mn8v4in4p16yn3v10vps7nnaz6ilw99j4klij39dqd37p"))))
+    (arguments '(#:tests? #f)) ; No tests.
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
