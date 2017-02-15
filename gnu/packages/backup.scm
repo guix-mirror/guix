@@ -67,6 +67,7 @@
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)     ;setsid command, for the tests
+       ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
        ("mock" ,python2-mock)))
     (propagated-inputs
@@ -83,16 +84,18 @@
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'build 'patch-source ; embed gpg store name
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "duplicity/gpginterface.py"
-              (("self.call = 'gpg'")
-               (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))))
+         (add-before 'build 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; embed gpg store name
+             (substitute* "duplicity/gpginterface.py"
+               (("self.call = 'gpg'")
+                (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
+             (substitute* '("testing/functional/__init__.py"
+                            "testing/overrides/bin/lftp")
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-before 'check 'check-setup
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "testing/functional/__init__.py"
-               (("/bin/sh") (which "sh")))
              (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
              (setenv "TZDIR"          ;some timestamp checks need TZDIR
                      (string-append (assoc-ref inputs "tzdata")
