@@ -32,11 +32,16 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xml))
 
 (define-public lftp
   (package
@@ -186,3 +191,41 @@ as required.")
      "This package provides some basic functionality to build high-performing,
 platform-independent programs.")
     (license gpl2+)))
+
+(define-public filezilla
+  (package
+    (name "filezilla")
+    (version "3.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://sourceforge.net/projects/" name
+                           "/files/FileZilla_Client/" version
+                           "/FileZilla_" version "_src" ".tar.bz2"))
+       (sha256
+        (base32
+         "1bacrl8lj90hqbh129hpbgqj78k1i84j83rkzn507jnykj4x8p9x"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("pugixml" ,pugixml)
+       ("xdg-utils" ,xdg-utils)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("gnutls" ,gnutls)
+       ("gtk+" ,gtk+)
+       ("libfilezilla" ,libfilezilla)
+       ("libidn" ,libidn)
+       ("nettle" ,nettle)
+       ("sqlite" ,sqlite)
+       ("wxwidgets" ,wxwidgets)))
+    (home-page "https://filezilla-project.org")
+    (synopsis "Full-featured graphical FTP/FTPS/SFTP client")
+    (description
+     "Filezilla client supports FTP, FTP over SSL/TLS (FTPS),
+SSH File Transfer Protocol (SFTP), HTTP/1.1, SOCKS5, FTP-Proxy, IPv6
+and others features such as bookmarks, drag and drop, filename filters,
+directory comparison and more.")
+    (license gpl2+)
+    (properties '((upstream-name . "FileZilla")))))
