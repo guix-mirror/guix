@@ -12967,6 +12967,15 @@ protocols written in pure Python.")
         (base32
          "0yb99rl2mbsaamj571s1mf6vgniqh23v98k4632150hjkwv9fqxc"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "python" "test/test_pbkdf2.py")))))))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))  ; optional
     (home-page "http://www.dlitz.net/software/python-pbkdf2/")
