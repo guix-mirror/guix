@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,10 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
@@ -158,4 +163,26 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
 maintaining a web page or other FTP archive.  It synchronizes a set of
 local files to a remote server by performing uploads and remote deletes
 as required.")
+    (license gpl2+)))
+
+(define-public libfilezilla
+  (package
+    (name "libfilezilla")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.filezilla-project.org/"
+                           name "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0340v5xs48f28q2d16ldb9359dkzlhl4l449mgyv3qabnlz2pl21"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)))
+    (home-page "https://lib.filezilla-project.org")
+    (synopsis "Cross-platform C++ library used by Filezilla client")
+    (description
+     "This package provides some basic functionality to build high-performing,
+platform-independent programs.")
     (license gpl2+)))
