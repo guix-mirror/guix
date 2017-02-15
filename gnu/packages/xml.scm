@@ -741,7 +741,7 @@ the form of functions.")
 (define-public pugixml
   (package
     (name "pugixml")
-    (version "1.7")
+    (version "1.8.1")
     (source
      (origin
       (method url-fetch)
@@ -749,17 +749,10 @@ the form of functions.")
                           version "/pugixml-" version ".tar.gz"))
       (sha256
        (base32
-        "1jpml475kbhs1aqwa48g2cbfxlrb9qp115m2j9yryxhxyr30vqgv"))))
+        "0fcgggry5x5bn0zhb09ij9hb0p45nb0sv0d9fw3cm1cf62hp9n80"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f
-       #:out-of-source? #f
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'chdir
-                   (lambda _
-                     (chdir "scripts")
-                     #t)))))
+     `(#:tests? #f))                    ; no tests
     (home-page "http://pugixml.org")
     (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
     (description
