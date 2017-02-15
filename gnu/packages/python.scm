@@ -12240,6 +12240,8 @@ English stemmer.")
                (base32
                 "0zm9ap4p5dzln8f1m2immadaxv2xpg8jg4w53y52rhfl7pdb58vy"))))
     (build-system python-build-system)
+    ;; FIXME: The 'pypi' release archive does not contain tests.
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)))
     (home-page "https://bitbucket.org/ecollins/cloud_sptheme")
