@@ -245,14 +245,14 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-requests-mock
   (package
     (name "python-requests-mock")
-    (version "1.0.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "requests-mock" version))
        (sha256
         (base32
-         "0gcjjwsckhqixyffflc54i59x41jnbb37bli077vabii1bjmkin6"))))
+         "0jr997dvk6zbmhvbpcv3rajrgag69mcsm1ai3w3rgk2jdh6rg1mx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests" ,python-requests)
