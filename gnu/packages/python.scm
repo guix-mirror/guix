@@ -12995,6 +12995,9 @@ a file-like object from which an arbitrarly-sized key can be read.")
         (base32
          "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1"))))
     (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests require packaging 'pymaging'.
+     '(#:tests? #f))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)     ; for SVG output
        ("python-pillow" ,python-pillow) ; for PNG output
