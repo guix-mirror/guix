@@ -221,3 +221,27 @@ account authentication.")
 
 (define-public python2-django-allauth
   (package-with-python2 python-django-allauth))
+
+(define-public python-django-gravatar2
+  (package
+    (name "python-django-gravatar2")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-gravatar2" version))
+       (sha256
+        (base32
+         "1v4qyj6kms321yw0z2g1kch6b2dskmv6fjd6sfxzwr4xshq9mccl"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/twaddington/django-gravatar")
+    (synopsis "Gravatar support for Django, improved version")
+    (description
+     "Essential Gravatar support for Django.  Features helper methods,
+templatetags and a full test suite.")
+    (license license:expat)))
+
+(define-public python2-django-gravatar2
+  (package-with-python2 python-django-gravatar2))
