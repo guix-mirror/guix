@@ -50,6 +50,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages django)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
@@ -2061,6 +2062,44 @@ installation on systems where resources are limited.  Its features include:
 @item Rich and customisable texts for automated operations.
 @end enumerate\n")
     (license license:expat)))
+
+(define-public python-django-mailman3
+  (package
+    (name "python-django-mailman3")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-mailman3" version))
+       (sha256
+        (base32
+         "1adxyh8knw9knjlh73xq0jpn5adml0ck4alsv0swakm95wfyx46z"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-django" ,python-django)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-requests-oauthlib" ,python-requests-oauthlib)
+       ("python-openid" ,python-openid)
+       ("python-mailmanclient" ,python-mailmanclient)
+       ("python-django-allauth" ,python-django-allauth)
+       ("python-django-gravatar2" ,python-django-gravatar2)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://gitlab.com/mailman/django-mailman3")
+    (synopsis "Django library for Mailman UIs")
+    (description
+     "Libraries and templates for Django-based interfaces
+interacting with Mailman.")
+    (license gpl3+)))
+
+(define-public python2-django-mailman3
+  (let ((base (package-with-python2
+               python-django-mailman3)))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-openid" ,python2-openid)
+         ,@(package-propagated-inputs base))))))
 
 (define-public blists
   (package
