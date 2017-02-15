@@ -9922,6 +9922,16 @@ presume or force a developer to use a particular tool or library.")
         (base32
          "04l5743j2dici46038sqlzvf0xzpg8rf7s9ld2x24xv7f4idg990"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'drop-failing-test
+           (lambda _
+             ;; FIXME: This file tries resolving an external server, which
+             ;; fails. Try to patch out the offending section instead of
+             ;; deleting the whole thing.
+             (delete-file "tests/test_recaptcha.py")
+             #t)))))
     (propagated-inputs
      `(("python-flask-babel" ,python-flask-babel)
        ("python-babel" ,python-babel)
