@@ -53,6 +53,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
@@ -78,8 +79,10 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages storage)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -2582,6 +2585,67 @@ arrays when needed.")
        ((#:allowed-references _ '("out"))
         '("out"))))                               ;refer only self
     (synopsis "Statically-linked 'mdadm' command for use in an initrd")))
+
+(define-public multipath-tools
+  (package
+    (name "multipath-tools")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://git.opensvc.com/?p=multipath-tools/"
+                                  ".git;a=snapshot;h=" version ";sf=tgz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12smwmljrkl2afc06dghd2253rqnfawvzr818a2xpxr06f44f9qy"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop bundled valgrind headers.
+                  (delete-file-recursively "third-party")
+                  (substitute* '("multipathd/main.c"
+                                 "libmultipath/debug.c")
+                    (("#include \"../third-party/")
+                     "#include \""))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; No tests.
+       #:make-flags (list (string-append "DESTDIR="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'set-CC
+           (lambda _
+             (setenv "CC" "gcc")
+             #t)))))
+    (native-inputs
+     `(("valgrind" ,valgrind)))
+    (inputs
+     `(("ceph:lib" ,ceph "lib")
+       ("libaio" ,libaio)
+       ("liburcu" ,liburcu)
+       ("lvm2" ,lvm2)
+       ("readline" ,readline)
+       ("udev" ,eudev)))
+    (home-page "http://christophe.varoqui.free.fr/")
+    (synopsis "Access block devices through multiple paths")
+    (description
+     "This package provides the following binaries to drive the
+Linux Device Mapper multipathing driver:
+@enumerate
+@item @command{multipath} - Device mapper target autoconfig.
+@item @command{multipathd} - Multipath daemon.
+@item @command{mpathpersist} - Manages SCSI persistent reservations on
+@code{dm} multipath devices.
+@item @command{kpartx} - Create device maps from partition tables.
+@end enumerate")
+    (license (list license:gpl2+             ; Main distribution.
+                   license:lgpl2.0+))))      ; libmpathcmd/mpath_cmd.h
 
 (define-public libaio
   (package
