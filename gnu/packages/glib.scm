@@ -67,7 +67,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.10.14")
+    (version "1.10.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -75,7 +75,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "10x0wvv2ly4lyyfd42k4xw0ar5qdbi9cksw3l5fcwf1y6mq8y8r3"))
+                "121kqkjsd3vgf8vca8364xl44qa5086h7qy5zs5f1l78ldpbmc57"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
