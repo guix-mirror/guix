@@ -37,6 +37,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages scheme)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
@@ -382,3 +383,51 @@ primitives that you are used to from Bash and IPython.  It works on all major
 systems including Linux, Mac OSX, and Windows.  Xonsh is meant for the daily
 use of experts and novices alike.")
     (license bsd-2)))
+
+(define-public scsh
+  (let ((commit "114432435e4eadd54334df6b37fcae505079b49f")
+        (revision "1"))
+    (package
+      (name "scsh")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/scheme/scsh")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1ghk08akiz7hff1pndi8rmgamgcrn2mv9asbss9l79d3c2iaav3q"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'replace-rx
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((rx (assoc-ref inputs "scheme48-rx"))
+                      (rxpath (string-append rx "/share/scheme48-"
+                                             ,(package-version scheme48)
+                                             "/rx")))
+                 (delete-file-recursively "rx")
+                 (symlink rxpath "rx"))
+               #t))
+           (add-before 'configure 'autoreconf
+             (lambda _
+               (zero? (system* "autoreconf")))))))
+      (inputs
+       `(("scheme48" ,scheme48)
+         ("scheme48-rx" ,scheme48-rx)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (home-page "https://github.com/scheme/scsh")
+      (synopsis "Unix shell embedded in Scheme")
+      (description
+       "Scsh is a Unix shell embedded in Scheme.  Scsh has two main
+components: a process notation for running programs and setting up pipelines
+and redirections, and a complete syscall library for low-level access to the
+operating system.")
+      (license bsd-3))))
