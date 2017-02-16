@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -805,3 +805,42 @@ Using Scheme, a dialect of the Lisp programming language, the book explains
 core computer science concepts such as abstraction in programming,
 metalinguistic abstraction, recursion, interpreters, and modular programming.")
       (license cc-by-sa4.0))))
+
+(define-public scheme48-rx
+  (let* ((commit "d3231ad13de2b44e3ee173b1c9d09ff165e8b6d5")
+         (revision "1"))
+    (package
+      (name "scheme48-rx")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/scheme/rx")
+               (commit commit)))
+         (sha256
+          (base32
+           "1nmziaibgmfi346kzidj6xyad0vm7724qymbzgxvdzyrqji6v6yz"))
+         (file-name (string-append name "-" version "-checkout"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((share (string-append %output
+                                       "/share/scheme48-"
+                                       ,(package-version scheme48)
+                                       "/rx")))
+             (chdir (assoc-ref %build-inputs "source"))
+             (mkdir-p share)
+             (copy-recursively "." share)))))
+      (native-inputs
+       `(("source" ,source)
+         ("scheme48" ,scheme48)))
+      (home-page "https://github.com/scheme/rx/")
+      (synopsis "SRE String pattern-matching library for scheme48")
+      (description
+       "String pattern-matching library for scheme48 based on the SRE
+regular-expression notation.")
+      (license bsd-3))))
