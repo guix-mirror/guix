@@ -91,7 +91,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "0kn2n9qr9cksg2cl78f3w0yd24368d35djhi6w5x3gbdxk23ywq3"))
+                "19djav128nkhjxgfhwhc32i5y9d9c3karbh5yg67kqrdranyvh7q"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
               (snippet
@@ -99,12 +99,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                   ((".*INSTALL.*sysconfdir.*fish.*") "")))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ;; XXX These are needed to bootstrap the 2.5.0 tarball, and can probably
-       ;; be removed along with the ‘bootstrap’ phase on the next update.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     `(("doxygen" ,doxygen)))
     (inputs
      `(("bc" ,bc)
        ("ncurses" ,ncurses)
@@ -125,10 +120,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                                "/bin/bc")))
              (substitute* "share/functions/fish_update_completions.fish"
                (("python") (which "python")))
-             #t))
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+             #t)))))
     (synopsis "The friendly interactive shell")
     (description
      "Fish (friendly interactive shell) is a shell focused on interactive use,
