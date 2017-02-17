@@ -1288,6 +1288,15 @@ Python 3.3+.")
        (base32
         "16rmxy9y0qhqqna2v49i7nzwm09as699rbyvh4raw7w602w55c3k"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'delete-failing-test
+           (lambda _
+             ;; XXX: These tests require locales that are unavailable
+             ;; in the build environment.
+             (delete-file "test/test_DateTimeParserGenerator.py")
+             #t)))))
     (inputs
      `(("icu4c" ,icu4c)))
     (home-page "http://pyicu.osafoundation.org/")
