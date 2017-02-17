@@ -93,6 +93,27 @@
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
+(define-public aris
+  (package
+   (name "aris")
+   (version "2.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/" name "/" name "-" version ".tar.gz"))
+            (sha256 (base32
+                     "1hlvpzrh7hzzf533diyfiabzskddi8zx92av9hwkjw3l46z7qv01"))))
+   (build-system gnu-build-system)
+   (inputs `(("gtk+" ,gtk+)
+             ("libxml2" ,libxml2)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (synopsis "Logical proof program")
+   (description
+    "Aris is a logical proof program, and supports propositional and predicate
+logic, Boolean algebra, and arithmetical logic in the form of abstract
+sequences (seqlog).")
+   (license license:gpl3+)
+   (home-page "http://www.gnu.org/software/aris/")))
+
 (define-public c-graph
   (package
    (name "c-graph")
