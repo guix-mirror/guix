@@ -3210,11 +3210,20 @@ and is very extensible.")
     (build-system python-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'set-HOME
-        ;; some tests require access to "$HOME"
-        (lambda _ (setenv "HOME" "/tmp"))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           ;; Running tests from the source directory requires
+           ;; an "inplace" build with paths relative to CWD.
+           ;; http://scikit-learn.org/stable/developers/advanced_installation.html#testing
+           ;; Use the installed version instead.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; some tests require access to "$HOME"
+             (setenv "HOME" "/tmp")
+             ;; Step out of the source directory just to be sure.
+             (chdir "..")
+             (zero? (system* "nosetests" "-v" "sklearn")))))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
