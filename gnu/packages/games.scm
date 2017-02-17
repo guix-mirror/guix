@@ -1294,7 +1294,7 @@ on the screen and keyboard to display letters.")
        ("ghc-sdl" ,ghc-sdl)
        ("ghc-sdl-image" ,ghc-sdl-image)
        ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
-    (home-page "http://raincat.bysusanlin.com/")
+    (home-page "http://www.bysusanlin.com/raincat/")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
 students through GCS during the Fall 2008 semester.  Raincat features game
