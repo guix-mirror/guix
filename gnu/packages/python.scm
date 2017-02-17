@@ -4036,6 +4036,7 @@ atlas_libs = openblas
     (description "The SciPy library is one of the core packages that make up
 the SciPy stack.  It provides many user-friendly and efficient numerical
 routines such as routines for numerical integration and optimization.")
+    (properties `((python2-variant . ,(delay python2-scipy))))
     (license license:bsd-3)))
 
 (define-public python2-scipy
