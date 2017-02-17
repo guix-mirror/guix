@@ -314,14 +314,14 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
-                                  "tomb-" version ".tar.gz"))
+                                  "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "11msj38fdmymiqcmwq1883kjqi5zr01ybdjj58rfjjrw4zw2w5y0"))))
+                "1j90ab8x4cf10167yw4cs4frz694gb0qwkhgqiz1ly7mnr8ysmby"))))
     (build-system gnu-build-system)
     (inputs
      `(("zsh" ,zsh)
