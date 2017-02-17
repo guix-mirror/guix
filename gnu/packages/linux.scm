@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -194,11 +194,10 @@
 (define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
 for ARCH and optionally VARIANT, or #f if there is no such configuration."
-  (let* ((name (string-append "linux-libre-"
-                              (if variant (string-append variant "-") "")
+  (let* ((name (string-append (if variant (string-append variant "-") "")
                               (if (string=? "i386" arch) "i686" arch) ".conf"))
-         (file (string-append "gnu/packages/" name)))
-    (search-path %load-path file)))
+         (file (string-append "linux-libre/" name)))
+    (search-auxiliary-file file)))
 
 (define %default-extra-linux-options
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
