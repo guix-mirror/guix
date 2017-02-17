@@ -3,6 +3,10 @@ and popen(3) need to be tweaked to use the right shell.  For the bootstrap
 glibc, we just use whatever `sh' can be found in $PATH.  The final glibc
 instead uses the hard-coded absolute file name of `bash'.
 
+The second part that touches fcntl-linux.h reverts a change from glibc-2.25
+which would require the statically compiled glibc used in bootstrapping to
+depend on the linux kernel headers.
+
 --- a/sysdeps/posix/system.c
 +++ b/sysdeps/posix/system.c
 @@ -134,7 +134,7 @@ do_system (const char *line)
@@ -26,3 +30,23 @@ instead uses the hard-coded absolute file name of `bash'.
        _IO__exit (127);
      }
    _IO_close (child_end);
+
+--- a/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
++++ b/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
+@@ -318,7 +318,15 @@ struct f_owner_ex
+ 
+  
+ /* Flags for fallocate.  */
++# define FALLOC_FL_KEEP_SIZE           1 /* Don't extend size of file
++                                            even if offset + len is
++                                            greater than file size.  */
++# define FALLOC_FL_PUNCH_HOLE          2 /* Create a hole in the file.  */
++# define FALLOC_FL_COLLAPSE_RANGE      8 /* Remove a range of a file
++                                            without leaving a
++                                            hole.  */
++# define FALLOC_FL_ZERO_RANGE          16 /* Convert a range of a
++                                             file to zeros.  */
+-# include <linux/falloc.h>
+ 
+  
+ /* File handle structure.  */
