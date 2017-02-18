@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
+;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
@@ -2082,14 +2082,14 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.4")
+    (version "15.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "1p1d18hrfmqcnghip3shkzcs5qkz6j99jvkdkqfi7pqdvjc323cs"))))
+                "128s718nnraiznbg2rajjqb7cfkdg24hy6spdd9narb4f4dsbbv9"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+)
               ("librsvg" ,librsvg)
