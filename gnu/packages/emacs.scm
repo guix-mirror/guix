@@ -144,7 +144,9 @@
                           (string-append lisp-dir "/guix-emacs.el"))
                (with-output-to-file (string-append lisp-dir "/site-start.el")
                  (lambda ()
-                   (display "(require 'guix-emacs nil t)")))
+                   (display
+                    (string-append "(when (require 'guix-emacs nil t)\n"
+                                   "  (guix-emacs-autoload-packages))\n"))))
                #t))))))
     (inputs
      `(("gnutls" ,gnutls)
