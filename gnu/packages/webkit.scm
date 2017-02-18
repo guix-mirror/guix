@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,14 +53,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.14.4")
+    (version "2.14.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1b73rcyfqjyg5rqw6f4760b2h1kixwva88clp2wl9vnl3psjvbni"))))
+                "17rnjs7yl198bkghzcc2cgh30sb5i03irb6wag3xchwv7b1z3a1w"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
