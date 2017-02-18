@@ -604,9 +604,15 @@ and building documentation from them.")
         (base32
          "09mxqyabi68f3s3arvdhlhq0mn38vf74jbsfcg84151hcj6czhnl"))))
     (build-system python-build-system)
-    ;; FIXME: Incompatible sphinx version.
     (arguments
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Note: Upstream tests would have also built the release notes.
+             ;; That only would work if we were in a git checkout.
+             ;; Therefore, we don't do it here.
+             (zero? (system* "python" "setup.py" "build_sphinx")))))))
     (propagated-inputs
       `(("python-requests" ,python-requests)))
     (native-inputs
