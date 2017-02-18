@@ -595,14 +595,14 @@ and building documentation from them.")
 (define-public python-oslosphinx
   (package
     (name "python-oslosphinx")
-    (version "4.3.0")
+    (version "4.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslosphinx" version))
        (sha256
         (base32
-         "0cz8ym4i1n4rgljlqhyhfkpgdmid7nkb909k8r8nk186m9cmpla2"))))
+         "09mxqyabi68f3s3arvdhlhq0mn38vf74jbsfcg84151hcj6czhnl"))))
     (build-system python-build-system)
     ;; FIXME: Incompatible sphinx version.
     (arguments
