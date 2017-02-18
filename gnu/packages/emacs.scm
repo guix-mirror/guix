@@ -133,19 +133,15 @@
                (("/bin/pwd")
                 "pwd"))))
          (add-after 'install 'install-site-start
-           ;; Copy guix-emacs.el from Guix and add it to site-start.el.  This
-           ;; way, Emacs packages provided by Guix and installed in
+           ;; Use 'guix-emacs' in "site-start.el".  This way, Emacs packages
+           ;; provided by Guix and installed in
            ;; ~/.guix-profile/share/emacs/site-lisp/guix.d/PACKAGE-VERSION are
            ;; automatically found.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((guix-src (assoc-ref inputs "guix-src"))
-                    (out      (assoc-ref outputs "out"))
-                    (lisp-dir (string-append out "/share/emacs/site-lisp"))
-                    (unpack   (assoc-ref %standard-phases 'unpack)))
-               (mkdir "guix")
-               (with-directory-excursion "guix"
-                 (apply unpack (list #:source guix-src))
-                 (install-file "emacs/guix-emacs.el" lisp-dir))
+             (let* ((out      (assoc-ref outputs "out"))
+                    (lisp-dir (string-append out "/share/emacs/site-lisp")))
+               (copy-file (assoc-ref inputs "guix-emacs.el")
+                          (string-append lisp-dir "/guix-emacs.el"))
                (with-output-to-file (string-append lisp-dir "/site-start.el")
                  (lambda ()
                    (display "(require 'guix-emacs nil t)")))
@@ -175,13 +171,13 @@
        ("libsm" ,libsm)
        ("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
-       ("guix-src" ,(package-source guix))
 
        ;; multilingualization support
        ("libotf" ,libotf)
        ("m17n-lib" ,m17n-lib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("guix-emacs.el" ,(search-auxiliary-file "emacs/guix-emacs.el"))
+       ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
 
     (native-search-paths
