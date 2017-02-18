@@ -2130,7 +2130,8 @@ protocol.")
        (uri (pypi-uri "pbr" version))
        (sha256
         (base32
-         "177kd9kbv1hvf2ban7l3x9ymzbi1md4hkaymwbgnz7ihf312hr0q"))))
+         "177kd9kbv1hvf2ban7l3x9ymzbi1md4hkaymwbgnz7ihf312hr0q"))
+       (patches (search-patches "python-pbr-fix-man-page-support.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
