@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
@@ -632,3 +634,33 @@ data on your platform, so the seed itself will be as random as possible.
 Networking and Cryptography library.  These libraries have a stated goal
 of improving usability, security and speed.")
     (license license:asl2.0)))
+
+(define-public crypto++
+  (package
+    (name "crypto++")
+    (version "5.6.5")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://cryptopp.com/cryptopp"
+                                  (string-join (string-split version #\.) "")
+                                  ".zip"))
+              (sha256
+               (base32
+                "0d1cqdz369ivi082k59025wvxzywvkizw7i0pf5h0a1izs3g8pm7"))
+              (patches
+               (search-patches "crypto++-fix-dos-in-asn.1-decoders.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://cryptopp.com/")
+    (synopsis "C++ class library of cryptographic schemes")
+    (description "Crypto++ is a C++ class library of cryptographic schemes.")
+    ;; The compilation is distributed under the Boost license; the individual
+    ;; files in the compilation are in the public domain.
+    (license (list license:boost1.0 license:public-domain))))
