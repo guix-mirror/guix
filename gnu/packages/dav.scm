@@ -67,8 +67,13 @@ clients.")
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
-         ;; vdirsyncer requires itself to be installed in order to build
-         ;; the manpage.
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv "DETERMINISTIC_TESTS" "true")
+             (setenv "DAV_SERVER" "radicale")
+             (setenv "REMOTESTORAGE_SERVER" "skip")
+             (zero? (system* "make" "test"))))
          (add-after 'install 'manpage
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
@@ -77,16 +82,7 @@ clients.")
                "docs/_build/man/vdirsyncer.1"
                (string-append
                  (assoc-ref outputs "out")
-                 "/share/man/man1"))))
-         ;; vdirsyncer requires itself to be installed in order to run the test
-         ;; suite.
-         (delete 'check)
-         (add-after 'install 'check-later
-           (lambda _
-             (setenv "DETERMINISTIC_TESTS" "true")
-             (setenv "DAV_SERVER" "radicale")
-             (setenv "REMOTESTORAGE_SERVER" "skip")
-             (zero? (system* "make" "test")))))))
+                 "/share/man/man1")))))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ("python-sphinx" ,python-sphinx)
