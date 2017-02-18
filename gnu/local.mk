@@ -5,7 +5,7 @@
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
-# Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+# Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -976,6 +976,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
+  %D%/packages/patches/wxwidgets-fix-windowGTK.patch		\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
