@@ -213,7 +213,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
                                          "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
-                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ ]*).*$"
+                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ \t]*).*$"
                     _ gnu-user suffix)
                    (format #f "#define ~a_DYNAMIC_LINKER~a \"~a\"~%"
                            gnu-user suffix
