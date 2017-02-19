@@ -1006,6 +1006,40 @@ etc.).  The package is structured to make adding new modules easy.")
             "python"
             (package-inputs pycrypto)))))))
 
+(define-public python-eventlet
+  (package
+    (name "python-eventlet")
+    (version "0.20.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "eventlet" version))
+       (sha256
+        (base32
+         "0f3q55mq4n021wb7qa53pz3ix6i2py64sap66vsaqm2scjw83m9s"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-greenlet" ,python-greenlet)))
+    (home-page "http://eventlet.net")
+    (synopsis "Concurrent networking library for Python")
+    (description
+     "Eventlet is a concurrent networking library for Python that
+allows you to change how you run your code, not how you write it.
+It uses @code{epoll} or @code{libevent} for highly scalable non-blocking I/O.
+Coroutines ensure that the developer uses a blocking style of programming
+that is similar to threading, but provide the benefits of non-blocking I/O.
+The event dispatch is implicit, which means you can easily use @code{Eventlet}
+from the Python interpreter, or as a small part of a larger application.")
+  (license license:expat)))
+
+(define-public python2-eventlet
+  (let ((base (package-with-python2
+                (strip-python2-variant python-eventlet))))
+    (package (inherit base)
+      (propagated-inputs
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-propagated-inputs base))))))
+
 (define-public python-keyring
   (package
     (name "python-keyring")
