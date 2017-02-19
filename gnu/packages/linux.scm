@@ -106,6 +106,7 @@
           ((string-prefix? "mips" arch) "mips")
           ((string-prefix? "arm" arch) "arm")
           ((string-prefix? "aarch64" arch) "arm64")
+          ((string-prefix? "alpha" arch) "alpha")
           (else arch))))
 
 (define (linux-libre-urls version)
