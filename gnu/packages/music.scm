@@ -1794,7 +1794,7 @@ computer's keyboard.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://qtractor.sourceforge.net/")
+    (home-page "http://qtractor.org/")
     (synopsis "Audio/MIDI multi-track sequencer")
     (description
      "Qtractor is an Audio/MIDI multi-track sequencer application.  It uses
