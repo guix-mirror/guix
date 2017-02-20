@@ -68,13 +68,14 @@
    (version "1.6.25")
    (source (origin
             (method url-fetch)
-
-            ;; Note: upstream removes older tarballs.
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
                                       version "/libpng-" version ".tar.xz")
                        (string-append
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src"
-                        "/libpng15/libpng-" version ".tar.xz")))
+                        "/libpng16/libpng-" version ".tar.xz")
+                       (string-append
+                        "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
+                        "/libpng16/libpng-" version ".tar.xz")))
             (patches (search-patches "libpng-CVE-2016-10087.patch"))
             (sha256
              (base32 "04c8inn745hw25wz2dc5vll5n5d2gsndj01i4srwzgz8861qvzh9"))))
@@ -97,11 +98,13 @@ library.  It supports almost all PNG features and is extensible.")
     (source
      (origin
        (method url-fetch)
-       ;; Note: upstream removes older tarballs.
        (uri (list (string-append "mirror://sourceforge/libpng/libpng12/"
                                  version "/libpng-" version ".tar.xz")
                   (string-append
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                   "/libpng12/libpng-" version ".tar.xz")
+                  (string-append
+                   "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
         (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
