@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
+;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -583,7 +583,7 @@ attachments, create new maildirs, and so on.")
 (define-public alot
   (package
     (name "alot")
-    (version "0.4")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               ;; package author intends on distributing via github rather
@@ -594,13 +594,14 @@ attachments, create new maildirs, and so on.")
               (file-name (string-append "alot-" version ".tar.gz"))
               (sha256
                (base32
-                "0sl1kl2fhkv208llnbny4blcvrfdk4vx6bcw5pnyh9ylwb0pipi2"))))
+                "0wax30hjzmkqfml7hig1dqw1v1y63yc0cgbzl96x58b9h2ggqx3a"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       ;; python 3 is currently unsupported, more info:
+     `(;; python 3 is currently unsupported, more info:
        ;; https://github.com/pazz/alot/blob/master/docs/source/faq.rst
        #:python ,python-2))
+    (native-inputs
+     `(("python2-mock" ,python2-mock)))
     (inputs
      `(("python2-magic" ,python2-magic)
        ("python2-configobj" ,python2-configobj)
