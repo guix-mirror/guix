@@ -9263,15 +9263,33 @@ NetworkManager will not modify @code{resolv.conf}.
 @end deftp
 
 @cindex Connman
-@deffn {Scheme Procedure} connman-service @
-       [#:connman @var{connman}]
-Return a service that runs @url{https://01.org/connman,Connman}, a network
-connection manager.
+@deffn {Scheme Variable} connman-service-type
+This is the service type to run @url{https://01.org/connman,Connman},
+a network connection manager.
 
-This service adds the @var{connman} package to the global profile, providing
-several the @command{connmanctl} command to interact with the daemon and
-configure networking."
+Its value must be an
+@code{connman-configuration} record as in this example:
+
+@example
+(service connman-service-type
+         (connman-configuration
+           (disable-vpn? #t)))
+@end example
+
+See below for details about @code{connman-configuration}.
 @end deffn
+
+@deftp {Data Type} connman-configuration
+Data Type representing the configuration of connman.
+
+@table @asis
+@item @code{connman} (default: @var{connman})
+The connman package to use.
+
+@item @code{disable-vpn?} (default: @code{#f})
+When true, enable connman's vpn plugin.
+@end table
+@end deftp
 
 @cindex WPA Supplicant
 @defvr {Scheme Variable} wpa-supplicant-service-type

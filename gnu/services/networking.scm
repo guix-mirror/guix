@@ -80,7 +80,10 @@
             network-manager-configuration-dns
             network-manager-service-type
 
-            connman-service
+            connman-configuration
+            connman-configuration?
+            connman-service-type
+
             wpa-supplicant-service-type
 
             openvswitch-service-type
@@ -822,45 +825,54 @@ dns=" dns "
 ;;; Connman
 ;;;
 
-(define %connman-activation
-  ;; Activation gexp for Connman.
-  #~(begin
-      (use-modules (guix build utils))
-      (mkdir-p "/var/lib/connman/")
-      (mkdir-p "/var/lib/connman-vpn/")))
+(define-record-type* <connman-configuration>
+  connman-configuration make-connman-configuration
+  connman-configuration?
+  (connman      connman-configuration-connman
+                (default connman))
+  (disable-vpn? connman-configuration-disable-vpn?
+                (default #f)))
 
-(define (connman-shepherd-service connman)
+(define (connman-activation config)
+  (let ((disable-vpn? (connman-configuration-disable-vpn? config)))
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+          (mkdir-p "/var/lib/connman/")
+          (unless #$disable-vpn?
+            (mkdir-p "/var/lib/connman-vpn/"))))))
+
+(define (connman-shepherd-service config)
   "Return a shepherd service for Connman"
-  (list (shepherd-service
-         (documentation "Run Connman")
-         (provision '(networking))
-         (requirement '(user-processes dbus-system loopback wpa-supplicant))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$connman
-                                        "/sbin/connmand")
-                         "-n" "-r")))
-         (stop #~(make-kill-destructor)))))
+  (and
+   (connman-configuration? config)
+   (let ((connman      (connman-configuration-connman config))
+         (disable-vpn? (connman-configuration-disable-vpn? config)))
+     (list (shepherd-service
+            (documentation "Run Connman")
+            (provision '(networking))
+            (requirement
+             '(user-processes dbus-system loopback wpa-supplicant))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$connman
+                                           "/sbin/connmand")
+                            "-n" "-r"
+                            #$@(if disable-vpn? '("--noplugin=vpn") '()))))
+            (stop #~(make-kill-destructor)))))))
 
 (define connman-service-type
-  (service-type (name 'connman)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          connman-shepherd-service)
-                       (service-extension dbus-root-service-type list)
-                       (service-extension activation-service-type
-                                          (const %connman-activation))
-                       ;; Add connman to the system profile.
-                       (service-extension profile-service-type list)))))
-
-(define* (connman-service #:key (connman connman))
-  "Return a service that runs @url{https://01.org/connman,Connman}, a network
-connection manager.
-
-This service adds the @var{connman} package to the global profile, providing
-several the @command{connmanctl} command to interact with the daemon and
-configure networking."
-  (service connman-service-type connman))
-
+  (let ((connman-package (compose list connman-configuration-connman)))
+    (service-type (name 'connman)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            connman-shepherd-service)
+                         (service-extension dbus-root-service-type
+                                            connman-package)
+                         (service-extension activation-service-type
+                                            connman-activation)
+                         ;; Add connman to the system profile.
+                         (service-extension profile-service-type
+                                            connman-package))))))
 
 
 ;;;
