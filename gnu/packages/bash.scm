@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,7 +69,8 @@
    (8 "1firw915mjm03hbbw9a70ch3cpgrgnvqjpllgdnn6csr8q04f546")
    (9 "0g1l56kvw61rpw7dqa9fcl9llkl693h73g631hrhxlm030ddssqb")
    (10 "01lfhrkdsdkdz8ypzapr614ras23x7ckjnr60aa5bzkaqprccrc4")
-   (11 "038p7mhnq9m65g505hi3827jkf9f35nd1cy00w8mwafpyxp44mnx")))
+   (11 "038p7mhnq9m65g505hi3827jkf9f35nd1cy00w8mwafpyxp44mnx")
+   (12 "0gh6lbb1rwpk44pvbamm6vzdfi50xnwkqd9v7s8cjwk3pz973hps")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
