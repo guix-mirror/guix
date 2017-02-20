@@ -4886,13 +4886,13 @@ child application and control it as if a human were typing commands.")
 (define-public python-setuptools-scm
   (package
     (name "python-setuptools-scm")
-    (version "1.11.1")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "setuptools_scm" version))
               (sha256
                (base32
-                "1gqr73i150yzj3mz32854vj93x07yr52kn8fdckwa41ll8wgficc"))))
+                "0bwyc5markib0i7i2qlyhdzxhiywzxbkfiapldma8m91m82jvwfs"))))
     (build-system python-build-system)
     (home-page "https://github.com/pypa/setuptools_scm/")
     (synopsis "Manage Python package versions in SCM metadata")
