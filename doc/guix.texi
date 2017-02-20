@@ -9511,6 +9511,22 @@ equivalent role to password authentication, you should disable either
 @item @code{print-last-log?} (default: @code{#t})
 Specifies whether @command{sshd} should print the date and time of the
 last user login when a user logs in interactively.
+
+@item @code{subsystems} (default: @code{'(("sftp" "internal-sftp"))})
+Configures external subsystems (e.g. file transfer daemon).
+
+This is a list of two-element lists, each of which containing the
+subsystem name and a command (with optional arguments) to execute upon
+subsystem request.
+
+The command @command{internal-sftp} implements an in-process SFTP
+server.  Alternately, one can specify the @command{sftp-server} command:
+@example
+(service openssh-service-type
+         (openssh-configuration
+          (subsystems
+           '(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
+@end example
 @end table
 @end deftp
 
