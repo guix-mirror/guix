@@ -65,7 +65,7 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.25")
+   (version "1.6.28")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -76,9 +76,8 @@
                        (string-append
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                         "/libpng16/libpng-" version ".tar.xz")))
-            (patches (search-patches "libpng-CVE-2016-10087.patch"))
             (sha256
-             (base32 "04c8inn745hw25wz2dc5vll5n5d2gsndj01i4srwzgz8861qvzh9"))))
+             (base32 "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
