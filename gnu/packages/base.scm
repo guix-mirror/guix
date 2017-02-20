@@ -313,6 +313,7 @@ used to apply commands with arbitrarily long arguments.")
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
+      #:parallel-tests? #f            ; race condition fixed after 8.26
       #:phases (alist-cons-before
                 'build 'patch-shell-references
                 (lambda* (#:key inputs #:allow-other-keys)
