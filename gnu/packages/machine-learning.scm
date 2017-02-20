@@ -504,20 +504,21 @@ and a QP solver.")
 (define-public dlib
   (package
     (name "dlib")
-    (version "19.1")
+    (version "19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://dlib.net/files/dlib-" version ".tar.bz2"))
               (sha256
                (base32
-                "0p2pvcdalc6jhb6r99ybvjd9x74sclr0ngswdg9j2xl5pj7knbr4"))
+                "0jh840b3ynlqsvbpswzg994yk539zbhx2sk6lybd23qyd2b8zgi8"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete ~13MB of bundled dependencies.
                   (delete-file-recursively "dlib/external")
-                  (delete-file-recursively "docs/dlib/external")))))
+                  (delete-file-recursively "docs/dlib/external")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -532,8 +533,7 @@ and a QP solver.")
          (add-after 'disable-asserts 'disable-failing-tests
            (lambda _
              ;; One test times out on MIPS, so we need to disable it.
-             ;; The rest is known to fail on non-x86_64 platforms in the current release.
-             ;; Some have been fixed in git; this list should be readjusted next update.
+             ;; Others are flaky on some platforms.
              (let* ((system ,(or (%current-target-system)
                                  (%current-system)))
                     (disabled-tests (cond
@@ -543,15 +543,14 @@ and a QP solver.")
                                      ((string-prefix? "armhf" system)
                                       '("learning_to_track" "max_cost_assignment"))
                                      ((string-prefix? "i686" system)
-                                      '("optimization" "matrix2" "mpc"))
+                                      '("optimization"))
                                      (else '()))))
-               ;; The following test fails due a bug in openblas < 0.2.18.
-               (append! disabled-tests '("empirical_map"))
                (for-each
                 (lambda (test)
                   (substitute* "dlib/test/makefile"
-                    (((string-append "SRC \\+= " test "\\.cpp")) "")) #t)
-                disabled-tests))))
+                    (((string-append "SRC \\+= " test "\\.cpp")) "")))
+                disabled-tests)
+               #t)))
          (replace 'check
            (lambda _
              ;; No test target, so we build and run the unit tests here.
@@ -562,7 +561,9 @@ and a QP solver.")
                       (zero? (system* "./dtest" "--runall")))))))
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
-             (delete-file (string-append (assoc-ref outputs "out") "/lib/libdlib.a")))))))
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libdlib.a"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
