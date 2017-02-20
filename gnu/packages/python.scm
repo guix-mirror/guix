@@ -22,7 +22,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
+;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -14227,6 +14227,32 @@ specified to apply on the key before comparison (e.g. @code{string.lower})).")
 Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
     (license license:gpl2)))
+
+(define-public python-attrs
+  (package
+    (name "python-attrs")
+    (version "17.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "attrs" version))
+              (sha256
+               (base32
+                "04gx08ikpk26wnq22f7l42gapcvk8iz1512r927k6sadz6cinkax"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/python-attrs/attrs/")
+    (synopsis "Attributes without boilerplate")
+    (description "@code{attrs} is a Python package with class decorators that
+ease the chores of implementing the most common attribute-related object
+protocols.")
+    (license license:expat)))
+
+(define-public python2-attrs
+  (package-with-python2 python-attrs))
 
 (define-public python2-cliapp
   (package
