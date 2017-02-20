@@ -1060,3 +1060,62 @@ suddenly a lot of network traffic, you can fire up NetHogs and immediately see
 which PID is causing this.  This makes it easy to identify programs that have
 gone wild and are suddenly taking up your bandwidth.")
     (license license:gpl2+)))
+
+(define-public openvswitch
+  (package
+    (name "openvswitch")
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://openvswitch.org/releases/openvswitch-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "036gq741j9kqsjlp693nff838c9wjd1c56nswl9vyyd1lsmj0yrh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; FIXME: many tests fail with:
+       ;;    […]
+       ;;    test -e $OVS_RUNDIR/ovs-vswitchd.pid
+       ;;    ovs-appctl -t ovs-vswitchd exit
+       ;;    hard failure
+       #:tests? #f
+       #:configure-flags
+       '("--enable-shared"
+         "--localstatedir=/var"
+         "--with-dbdir=/var/lib/openvswitch")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda _
+             (zero? (system* "make"
+                             ;; Don't try to create directories under /var.
+                             "RUNDIR=/tmp"
+                             "PKIDIR=/tmp"
+                             "LOGDIR=/tmp"
+                             "DBDIR=/tmp"
+                             "install")))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ;; for testing
+       ("util-linux" ,util-linux)))
+    (propagated-inputs
+     `(("python-six" ,python2-six)))
+    (inputs
+     `(("libcap-ng" ,libcap-ng)
+       ("openssl" ,openssl)))
+    (synopsis "Virtual network switch")
+    (home-page "http://www.openvswitch.org/")
+    (description
+     "Open vSwitch is a multilayer virtual switch.  It is designed to enable
+massive network automation through programmatic extension, while still
+supporting standard management interfaces and protocols (e.g. NetFlow, sFlow,
+IPFIX, RSPAN, CLI, LACP, 802.1ag).")
+    (license                            ; see debian/copyright for detail
+     (list license:lgpl2.1              ; xenserver and utilities/bugtool
+           license:gpl2                 ; datapath
+           license:bsd-2 license:bsd-3
+           license:asl2.0))))           ; all other

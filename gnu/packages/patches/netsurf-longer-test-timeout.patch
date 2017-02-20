@@ -1,0 +1,20 @@
+Increase the timeout on dictionary tests to accommodate slower machines.
+
+--- netsurf-3.6/test/hashtable.c
++++ netsurf-3.6/test/hashtable.c
+@@ -286,6 +286,7 @@
+ 	tcase_add_checked_fixture(tc_dict_s,
+ 				  dicts_hashtable_create,
+ 				  dict_hashtable_teardown);
++	tcase_set_timeout(tc_dict_s, 30);
+ 
+ 	tcase_add_test(tc_dict_s, hashtable_dict_test);
+ 
+@@ -297,6 +298,7 @@
+ 	tcase_add_checked_fixture(tc_dict_l,
+ 				  dictl_hashtable_create,
+ 				  dict_hashtable_teardown);
++	tcase_set_timeout(tc_dict_l, 30);
+ 
+ 	tcase_add_test(tc_dict_l, hashtable_dict_test);
+ 

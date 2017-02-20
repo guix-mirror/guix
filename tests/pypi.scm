@@ -118,7 +118,7 @@ baz > 13.37")
                ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
                (_ (error "Unexpected URL: " url)))))
           (mock ((guix http-client) http-fetch
-                 (lambda (url)
+                 (lambda (url . rest)
                    (match url
                      ("https://pypi.python.org/pypi/foo/json"
                       (values (open-input-string test-json)
@@ -181,7 +181,7 @@ baz > 13.37")
                  (delete-file-recursively "foo-1.0.0.dist-info")))
              (_ (error "Unexpected URL: " url)))))
         (mock ((guix http-client) http-fetch
-               (lambda (url)
+               (lambda (url . rest)
                  (match url
                    ("https://pypi.python.org/pypi/foo/json"
                     (values (open-input-string test-json)

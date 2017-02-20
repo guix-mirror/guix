@@ -348,10 +348,13 @@ everything from small to very large projects with speed and efficiency.")
     (inputs
      `(("libssh2" ,libssh2)
        ("libcurl" ,curl)
-       ("python" ,python-wrapper)
-       ("openssl" ,openssl)))
+       ("python" ,python-wrapper)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; These two libraries are in 'Requires.private' in libgit2.pc.
+     `(("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (home-page "https://libgit2.github.com/")
     (synopsis "Library providing Git core methods")
     (description

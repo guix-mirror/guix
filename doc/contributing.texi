@@ -282,7 +282,19 @@ keyword parameters for procedures that take more than four parameters.
 Development is done using the Git distributed version control system.
 Thus, access to the repository is not strictly necessary.  We welcome
 contributions in the form of patches as produced by @code{git
-format-patch} sent to the @email{guix-devel@@gnu.org, mailing list}.
+format-patch} sent to the @email{guix-patches@@gnu.org} mailing list.
+
+This mailing list is backed by a Debbugs instance accessible at
+@uref{https://bugs.gnu.org/guix-patches}, which allows us to keep track
+of submissions.  Each message sent to that mailing list gets a new
+tracking number assigned; people can then follow up on the submission by
+sending email to @code{@var{NNN}@@debbugs.gnu.org}, where @var{NNN} is
+the tracking number.  When sending a patch series, please first send one
+message to @email{guix-patches@@gnu.org}, and then send subsequent
+patches to @email{@var{NNN}@@debbugs.gnu.org} to make sure they are kept
+together.  See @uref{https://debbugs.gnu.org/Advanced.html, the Debbugs
+documentation}, for more information.
+
 Please write commit logs in the ChangeLog format (@pxref{Change Logs,,,
 standards, GNU Coding Standards}); you can check the commit history for
 examples.

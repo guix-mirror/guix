@@ -47,7 +47,7 @@
 (test-assert "gem->guix-package"
   ;; Replace network resources with sample data.
   (mock ((guix http-client) http-fetch
-         (lambda (url)
+         (lambda (url . rest)
            (match url
              ("https://rubygems.org/api/v1/gems/foo.json"
               (values (open-input-string test-json)

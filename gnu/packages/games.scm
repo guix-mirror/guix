@@ -10,12 +10,12 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
+;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
@@ -226,6 +226,57 @@ expelled by the Catholic Church out of the Languedoc region in France.  One of
 them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
     (license license:gpl3)))
+
+(define-public angband
+  (package
+    (name "angband")
+    (version "4.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://rephial.org/downloads/4.0/"
+                           "angband-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lpq2kms7hp421vrasx2bkkn9w08kr581ldwik3v0hlq6h7rlxhd"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; So, some of the sounds/graphics/tilesets are under different
+        ;; licenses... some of them even nonfree!  This is a console-only
+        ;; version of this package so we just remove them.
+        ;; In the future, if someone tries to make a graphical variant of
+        ;; this package, they can deal with that mess themselves. :)
+        '(begin
+           (for-each
+            (lambda (subdir)
+              (let ((lib-subdir (string-append "lib/" subdir)))
+                (delete-file-recursively lib-subdir)))
+            '("fonts" "icons" "sounds" "tiles"))
+           (substitute* "lib/Makefile"
+             ;; And don't try to invoke makefiles in the directories we removed
+             (("gamedata customize help screens fonts tiles sounds icons user")
+              "gamedata customize help screens user"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                                 ;no check target
+       #:configure-flags (list (string-append "--bindir=" %output "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen.sh
+           (lambda _
+             (substitute* "acinclude.m4"
+               (("ncursesw5-config") "ncursesw6-config"))
+             (zero? (system* "sh" "autogen.sh"))))))) 
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://rephial.org/")
+    (synopsis "Dungeon exploration roguelike")
+    (description "Angband is a Classic dungeon exploration roguelike.  Explore
+the depths below Angband, seeking riches, fighting monsters, and preparing to
+fight Morgoth, the Lord of Darkness.")
+    (license license:gpl2)))
 
 (define-public pingus
   (package
@@ -1243,7 +1294,7 @@ on the screen and keyboard to display letters.")
        ("ghc-sdl" ,ghc-sdl)
        ("ghc-sdl-image" ,ghc-sdl-image)
        ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
-    (home-page "http://raincat.bysusanlin.com/")
+    (home-page "http://www.bysusanlin.com/raincat/")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
 students through GCS during the Fall 2008 semester.  Raincat features game
@@ -2031,14 +2082,14 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.3")
+    (version "15.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "128s718nnraiznbg2rajjqb7cfkdg24hy6spdd9narb4f4dsbbv9"))))
+                "1p1d18hrfmqcnghip3shkzcs5qkz6j99jvkdkqfi7pqdvjc323cs"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+)
               ("librsvg" ,librsvg)

@@ -65,7 +65,7 @@
 (test-assert "crate->guix-package"
   ;; Replace network resources with sample data.
   (mock ((guix http-client) http-fetch
-         (lambda (url)
+         (lambda (url . rest)
            (match url
              ("https://crates.io/api/v1/crates/foo"
               (open-input-string test-crate))

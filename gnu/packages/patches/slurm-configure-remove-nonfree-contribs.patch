@@ -1,19 +1,19 @@
-From 53eda9102b969a4be2882cea4befee03591a7436 Mon Sep 17 00:00:00 2001
-From: Pjotr Prins <pjotr.public01@thebird.nl>
-Date: Fri, 12 Feb 2016 12:43:33 +0100
-Subject: [PATCH] Remove contribs
+From 49d83e24a8e66977056fc9920812265c16806500 Mon Sep 17 00:00:00 2001
+From: carolili <carolili@iki.fi>
+Date: Thu, 9 Feb 2017 19:24:49 +0000
+Subject: [PATCH] Removing contribs
 
 ---
- configure.ac | 20 --------------------
- 1 file changed, 20 deletions(-)
+ configure.ac | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index fedf354..e010732 100644
+index 1cf1051..5d76b44 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -438,26 +438,6 @@ dnl All slurm Makefiles:
+@@ -435,28 +435,6 @@ dnl All slurm Makefiles:
+ 
  AC_CONFIG_FILES([Makefile
- 		 config.xml
  		 auxdir/Makefile
 -		 contribs/Makefile
 -		 contribs/cray/Makefile
@@ -27,7 +27,9 @@ index fedf354..e010732 100644
 -		 contribs/perlapi/libslurm/perl/Makefile.PL
 -		 contribs/perlapi/libslurmdb/Makefile
 -		 contribs/perlapi/libslurmdb/perl/Makefile.PL
+-		 contribs/seff/Makefile
 -		 contribs/torque/Makefile
+-		 contribs/openlava/Makefile
 -		 contribs/phpext/Makefile
 -		 contribs/phpext/slurm_php/config.m4
 -		 contribs/sgather/Makefile
@@ -39,5 +41,5 @@ index fedf354..e010732 100644
  		 doc/man/Makefile
  		 doc/man/man1/Makefile
 -- 
-2.1.4
+2.11.0
 

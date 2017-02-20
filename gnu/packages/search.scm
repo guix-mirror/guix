@@ -217,10 +217,10 @@ conflict with slocate compatibility.")
     (version "2.4.7")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://swish-e.org/distribution/"
-                                        "swish-e-" version ".tar.gz")
-                         ;; The upstream swish-e.org appears to be down... so
-                         ;; use debian's copy as a fallback.
+              (uri (list (string-append
+                          "https://web.archive.org/web/20160730145202/"
+                          "http://swish-e.org/distribution/"
+                          "swish-e-" version ".tar.gz")
                          (string-append "http://http.debian.net/debian/pool/"
                                         "main/s/swish-e/swish-e_" version
                                         ".orig.tar.gz")))
@@ -264,7 +264,8 @@ conflict with slocate compatibility.")
                          (list (string-append out "/lib/swish-e/swishspider")
                                (string-append out "/bin/swish-filter-test")))
                         #t))))))
-    (home-page "http://swish-e.org")
+    (home-page (string-append "https://web.archive.org/web/20160730145202/"
+                              "http://swish-e.org"))
     (synopsis "Web indexing system")
     (description
      "Swish-e is Simple Web Indexing System for Humans - Enhanced.  Swish-e

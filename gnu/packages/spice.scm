@@ -96,7 +96,7 @@
 (define-public virglrenderer
   (package
     (name "virglrenderer")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -104,7 +104,7 @@
                 "virglrenderer-" version ".tar.bz2"))
               (sha256
                (base32
-                "1dj0j8nbyr7nrpds4dqlp43ji8ixjyqhgw6ywlz1r9dn6cs5m5d1"))))
+                "06kf0q4l52gzx5p63l8850hff8pmhp7xv1hk8zgx2apbw18y6jd5"))))
     (build-system gnu-build-system)
     (inputs
       `(("libepoxy" ,libepoxy)
@@ -121,35 +121,35 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.12.11")
+    (version "0.12.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                "http://www.spice-space.org/download/releases/"
+                "https://www.spice-space.org/download/releases/"
                 "spice-protocol-" version ".tar.bz2"))
               (sha256
                (base32
-                "0c33kg3vdz3nnl2wjfbgmszz5hbjbvsw6map35dj9hxnpwwf9fi2"))))
+                "00wx81f2ml62g3maw63jq9w217zym921rdi38h7lpm5m8ckxraqp"))))
     (build-system gnu-build-system)
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
 Environments) is a remote-display system built for virtual environments
 which allows users to view a desktop computing environment.")
-    (home-page "http://www.spice-space.org")
+    (home-page "https://www.spice-space.org")
     (license (list license:bsd-3 license:lgpl2.1+))))
 
 (define-public spice-gtk
   (package
     (name "spice-gtk")
-    (version "0.32")
+    (version "0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                "http://spice-space.org/download/gtk/"
+                "https://spice-space.org/download/gtk/"
                 "spice-gtk-" version ".tar.bz2"))
               (sha256
                (base32
-                "00pf94xh2xf0h1g13lnavxrysd0d0x22l5jl108cvq1mjc4z8j2c"))))
+                "0fdgx9k4vgmasp8i2n0swrkapq8f212igcg7wsgvr3mbhsvk7bvx"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
@@ -194,7 +194,7 @@ which allows users to view a desktop computing environment.")
               #t)))))
     (synopsis "Gtk client and libraries for SPICE remote desktop servers")
     (description "Gtk client and libraries for SPICE remote desktop servers.")
-    (home-page "http://www.spice-space.org")
+    (home-page "https://www.spice-space.org")
     (license (list license:lgpl2.1+ license:lgpl2.0+))))
 
 (define-public spice
@@ -208,7 +208,11 @@ which allows users to view a desktop computing environment.")
                 "spice-" version ".tar.bz2"))
               (sha256
                (base32
-                "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))))
+                "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))
+              (patches
+               (search-patches "spice-CVE-2016-9577.patch"
+                               "spice-CVE-2016-9578-1.patch"
+                               "spice-CVE-2016-9578-2.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("openssl" ,openssl)

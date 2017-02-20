@@ -342,6 +342,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
   %D%/packages/shellutils.scm			\
+  %D%/packages/simh.scm				\
   %D%/packages/skarnet.scm			\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
@@ -460,6 +461,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
   %D%/tests/mail.scm				\
+  %D%/tests/messaging.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/web.scm
 
@@ -633,6 +635,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-linker-flags.patch			\
+  %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
@@ -765,7 +768,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
-  %D%/packages/patches/netsurf-about.patch			\
+  %D%/packages/patches/netsurf-system-utf8proc.patch		\
+  %D%/packages/patches/netsurf-y2038-tests.patch		\
+  %D%/packages/patches/netsurf-longer-test-timeout.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
   %D%/packages/patches/ninja-tests.patch			\
@@ -864,7 +869,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-5552.patch			\
   %D%/packages/patches/qemu-CVE-2017-5578.patch			\
   %D%/packages/patches/qemu-CVE-2017-5579.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5667.patch			\
   %D%/packages/patches/qemu-CVE-2017-5856.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5898.patch			\
+  %D%/packages/patches/qemu-CVE-2017-5931.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
@@ -881,10 +889,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
+  %D%/packages/patches/screen-CVE-2017-5618.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/serf-comment-style-fix.patch		\
   %D%/packages/patches/serf-deflate-buckets-test-fix.patch	\
+  %D%/packages/patches/shadow-4.4-su-snprintf-fix.patch         \
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\
@@ -892,6 +902,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   %D%/packages/patches/soprano-find-clucene.patch		\
+  %D%/packages/patches/spice-CVE-2016-9577.patch		\
+  %D%/packages/patches/spice-CVE-2016-9578-1.patch		\
+  %D%/packages/patches/spice-CVE-2016-9578-2.patch		\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
@@ -936,6 +949,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
+  %D%/packages/patches/vdirsyncer-test-suite-slow-machines.patch	\
+  %D%/packages/patches/vim-CVE-2017-5953.patch			\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\

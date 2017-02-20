@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -200,7 +200,7 @@ sequential processes (CSP) concurrent programming features added.")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.7.4")
+    (version "1.7.5")
     (source
      (origin
        (method url-fetch)
@@ -208,7 +208,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1k0lnsk5i9swi209wh535lpnpczsh6l8m1pfncmilrdsx48r262c"))))
+         "058q57zmi23rflingzhy1b87yl69mb62ql2psfxqr7q7l89lb0sf"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -282,18 +282,7 @@ sequential processes (CSP) concurrent programming features added.")
                     ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
                     ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
                     ("syscall/exec_linux_test.go"
-                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")
-                    ;; This test broke when tzdata updated to 2016g:
-                    ;; https://github.com/golang/go/issues/17276
-
-                    ;; Applying the upstream patch causes the failure of another
-                    ;; test, because that test requires upstream's mtimes to be
-                    ;; preserved, but applying the patch and re-packing the
-                    ;; tarball causes mtimes to be set to Unix epoch.
-                    ;; https://github.com/golang/go/issues/17535
-
-                    ;; TODO Try re-enabling this test for Go > 1.7.3.
-                    ("time/time_test.go" "(.+)(TestLoadFixed.+)")))
+                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
 
                  (substitute* "../misc/cgo/testsanitizers/test.bash"
                    (("(CC=)cc" all var) (string-append var "gcc")))

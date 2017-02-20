@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -27,7 +27,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages guile)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages bash)
@@ -55,8 +55,10 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -129,7 +131,7 @@ the Scheme language which can be easily embedded in other applications to
 provide a convenient means of extending the functionality of the application
 without requiring the source code to be rewritten.")
    (home-page "http://www.gnu.org/software/guile/")
-   (license lgpl2.0+)))
+   (license license:lgpl2.0+)))
 
 (define-public guile-2.0
   (package
@@ -204,7 +206,7 @@ the Scheme language which can be easily embedded in other applications to
 provide a convenient means of extending the functionality of the application
 without requiring the source code to be rewritten.")
    (home-page "http://www.gnu.org/software/guile/")
-   (license lgpl3+)))
+   (license license:lgpl3+)))
 
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
@@ -307,6 +309,66 @@ applicable."
             (files '("lib/guile/2.0/site-ccache"
                      "share/guile/site/2.0")))))))
 
+;; There has not been any release yet.
+(define-public guildhall
+  (let ((commit "2fe2cc539f4b811bbcd69e58738db03eb5a2b778")
+        (revision "1"))
+    (package
+      (name "guildhall")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ijp/guildhall.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "115bym7bg66h3gs399yb2vkzc2ygriaqsn4zbrg8f054mgy8wzn1"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Tests fail without this fix because they try to load the bash
+           ;; executable as a Scheme file.  See bug report at
+           ;; https://github.com/ijp/guildhall/issues/22
+           (add-after 'unpack 'fix-bug-22
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("TESTS_ENVIRONMENT=.*")
+                  "AM_TESTS_ENVIRONMENT=srcdir=$(abs_top_srcdir)/tests/
+TEST_EXTENSIONS = .scm
+SCM_LOG_COMPILER= $(top_builddir)/env $(GUILE)
+AM_SCM_LOG_FLAGS =  --no-auto-compile -s")
+                 ;; FIXME: one of the database tests fails for unknown
+                 ;; reasons.  It does not fail when run outside of Guix.
+                 (("tests/database.scm") ""))
+               #t))
+           (add-before 'configure 'autogen
+             (lambda _
+               (zero? (system* "sh" "autogen.sh")))))))
+      (inputs
+       `(("guile" ,guile-2.0)))
+      (native-inputs
+       `(("zip" ,zip) ; for tests
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)))
+      (synopsis "Package manager for Guile")
+      (description
+       "Guildhall is a package manager written for Guile Scheme.  A guild is
+an association of independent craftspeople.  A guildhall is where they meet.
+This Guildhall aims to make a virtual space for Guile wizards and journeyfolk
+to share code.
+
+On a practical level, Guildhall lets you share Scheme modules and programs
+over the internet, and install code that has been shared by others.  Guildhall
+can handle dependencies, so when a program requires several libraries, and
+each of those has further dependencies, all of the prerequisites for the
+program can be installed in one go.")
+      (home-page "https://github.com/ijp/guildhall")
+      (license license:gpl3+))))
+
 
 ;;;
 ;;; Extensions.
@@ -361,7 +423,7 @@ provides several tools for web development: database access, templating
 frameworks, session management, URL-remapping for RESTful, page caching, and
 more.")
     (home-page "https://www.gnu.org/software/artanis/")
-    (license (list gpl3+ lgpl3+))))     ;dual license
+    (license (list license:gpl3+ license:lgpl3+)))) ;dual license
 
 (define-public guile-reader
   (package
@@ -396,7 +458,7 @@ Guile-Reader’s approach is similar to Common Lisp’s “read table”, but
 hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
     (home-page "http://www.nongnu.org/guile-reader/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-ncurses
   (package
@@ -437,7 +499,7 @@ many readers as needed).")
     (description
      "guile-ncurses provides Guile language bindings for the ncurses
 library.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public mcron
   (package
@@ -461,7 +523,7 @@ library.")
 tasks on a schedule, such as every hour or every Monday.  Mcron is written in
 Guile, so its configuration can be written in Scheme; the original cron
 format is also supported.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public mcron2
   ;; This is mthl's mcron development branch, not yet merged in mcron.
@@ -550,7 +612,7 @@ format is also supported.")
 pure Scheme.  The library can be used to read and write iCalendar data.
 
 The library is shipped with documentation in Info format and usage examples.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-lib
   (package
@@ -594,7 +656,7 @@ for Guile\".")
     ;; The whole is under GPLv3+, but some modules are under laxer
     ;; distribution terms such as LGPL and public domain.  See `COPYING' for
     ;; details.
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-json
   (package
@@ -632,7 +694,7 @@ specification.  These are the main features:
 @item Unicode support for strings.
 @item Allows JSON pretty printing.
 @end itemize\n")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public guile2.2-json
   (package-for-guile-2.2 guile-json))
@@ -718,7 +780,7 @@ This is Ian Price's r6rs packaged version of miniKanren, which deviates
 slightly from miniKanren mainline.
 
 See http://minikanren.org/ for more on miniKanren generally.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public guile2.2-minikanren
   (package-for-guile-2.2 guile-minikanren))
@@ -803,7 +865,7 @@ See http://minikanren.org/ for more on miniKanren generally.")
      "Irregex is an s-expression based alternative to your classic
 string-based regular expressions.  It implements SRFI 115 and is deeply
 inspired by the SCSH regular expression system.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public guile2.2-irregex
   (package-for-guile-2.2 guile-irregex))
@@ -831,10 +893,22 @@ inspired by the SCSH regular expression system.")
        #:builder
        (begin
          (use-modules (guix build utils)
-                      (system base compile))
+                      (ice-9 rdelim)
+                      (ice-9 popen))
+
+         ;; Avoid warnings we can safely ignore
+         (setenv "GUILE_AUTO_COMPILE" "0")
 
          (let* ((out (assoc-ref %outputs "out"))
-                (module-dir (string-append out "/share/guile/site/2.0"))
+                (effective-version
+                 (read-line
+                  (open-pipe* OPEN_READ
+                              (string-append
+                               (assoc-ref %build-inputs "guile")
+                               "/bin/guile")
+                              "-c" "(display (effective-version))")))
+                (module-dir (string-append out "/share/guile/site/"
+                                           effective-version))
                 (source (assoc-ref %build-inputs "source"))
                 (doc (string-append out "/share/doc"))
                 (guild (string-append (assoc-ref %build-inputs "guile")
@@ -842,7 +916,10 @@ inspired by the SCSH regular expression system.")
                 (gdbm.scm-dest
                  (string-append module-dir "/gdbm.scm"))
                 (gdbm.go-dest
-                 (string-append module-dir "/gdbm.go")))
+                 (string-append module-dir "/gdbm.go"))
+                (compile-file
+                 (lambda (in-file out-file)
+                   (system* guild "compile" "-o" out-file in-file))))
            ;; Make installation directories.
            (mkdir-p module-dir)
            (mkdir-p doc)
@@ -860,8 +937,7 @@ inspired by the SCSH regular expression system.")
                       (assoc-ref %build-inputs "gdbm"))))
 
            ;; compile to the destination
-           (compile-file gdbm.scm-dest
-                         #:output-file gdbm.go-dest)))))
+           (compile-file gdbm.scm-dest gdbm.go-dest)))))
     (inputs
      `(("guile" ,guile-2.0)))
     (propagated-inputs
@@ -871,7 +947,10 @@ inspired by the SCSH regular expression system.")
     (description
      "Guile bindings to the GDBM key-value storage system, using
 Guile's foreign function interface.")
-    (license gpl3+)))
+    (license license:gpl3+)))
+
+(define-public guile2.2-gdbm-ffi
+  (package-for-guile-2.2 guile-gdbm-ffi))
 
 (define-public guile-sqlite3
   (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
@@ -922,7 +1001,7 @@ Guile's foreign function interface.")
       (synopsis "Access SQLite databases from Guile")
       (description
        "This package provides Guile bindings to the SQLite database system.")
-      (license gpl3+))))
+      (license license:gpl3+))))
 
 (define-public haunt
   (package
@@ -971,7 +1050,7 @@ Guile's foreign function interface.")
 Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-config
   (package
@@ -998,7 +1077,7 @@ parameter parsing using getopt-long; basic GNU command-line parameter
 generation (--help, --usage, --version); automatic output generation for the
 above command-line parameters.")
     (home-page "https://github.com/a-sassmannshausen/guile-config")
-    (license agpl3+)))
+    (license license:agpl3+)))
 
 (define-public guile-redis
   (package
@@ -1031,7 +1110,7 @@ above command-line parameters.")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public guile2.2-redis
   (package-for-guile-2.2 guile-redis))
@@ -1110,7 +1189,7 @@ key-value cache and store.")
     (description "Wisp is a syntax for Guile which provides a Python-like
 whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-sly
   (package
@@ -1145,7 +1224,7 @@ users and in some situations.")
 features a functional reactive programming interface and live coding
 capabilities.")
     (home-page "http://dthompson.us/pages/software/sly.html")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public g-wrap
   (package
@@ -1183,7 +1262,7 @@ wrappers for C functions.  Given a definition of the types and prototypes for
 a given C interface, G-Wrap will automatically generate the C code that
 provides access to that interface and its types from the Scheme level.")
     (home-page "http://www.nongnu.org/g-wrap/index.html")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public guile-dbi
   (package
@@ -1221,7 +1300,7 @@ provides access to that interface and its types from the Scheme level.")
 SQL databases.  Database programming with guile-dbi is generic in that the same
 programming interface is presented regardless of which database system is used.
 It currently supports MySQL, Postgres and SQLite3.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public guile-dbd-sqlite3
   (package
@@ -1248,7 +1327,7 @@ It currently supports MySQL, Postgres and SQLite3.")
     (description
      "guile-dbi is a library for Guile that provides a convenient interface to
 SQL databases.  This package implements the interface for SQLite.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public guile-xosd
   (package
@@ -1277,7 +1356,7 @@ SQL databases.  This package implements the interface for SQLite.")
      "Guile-XOSD provides Guile bindings for @code{libxosd},
 @uref{http://sourceforge.net/projects/libxosd/, the X On Screen Display
 library}.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-daemon
   (package
@@ -1302,7 +1381,7 @@ library}.")
      "Guile-Daemon is a small Guile program that loads your initial
 configuration file, and then reads and evaluates Guile expressions that
 you send to a FIFO file.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-commonmark
   (package
@@ -1338,7 +1417,7 @@ to transform a CommonMark document to SXML.  guile-commonmark tries to closely
 follow the @uref{http://commonmark.org/, CommonMark spec}, the main difference
 is no support for parsing block and inline level HTML.")
     (home-page "https://github.com/OrangeShark/guile-commonmark")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public guile2.2-commonmark
   (package-for-guile-2.2 guile-commonmark))
@@ -1421,7 +1500,7 @@ of the C programming language, to be used on bytevectors.  C's type
 system works on raw memory, and Guile works on bytevectors which are
 an abstraction over raw memory.  It's also more powerful than the C
 type system, elevating types to first-class status.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-aspell
   (package
@@ -1457,7 +1536,7 @@ type system, elevating types to first-class status.")
     (description
      "guile-aspell is a Guile Scheme library for comparing a string against a
 dictionary and suggesting spelling corrections.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-bash
   ;; This project is currently retired.  It was initially announced here:
@@ -1527,7 +1606,7 @@ enable -f ~/.guix-profile/lib/bash/libguile-bash.so scm
 @end example
 
 and then run @command{scm example.scm}.")
-      (license gpl3+))))
+      (license license:gpl3+))))
 
 (define-public guile-8sync
   (package
@@ -1560,6 +1639,44 @@ and then run @command{scm example.scm}.")
 library for GNU Guile based on the actor model.
 
 Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
+
+(define-public guile-git
+  (let ((revision "0")
+        (commit "969514aa7224217bc3c1a4c5312a9469ac5f13d5"))
+    (package
+      (name "guile-git")
+      (version (string-append "0.0-" revision "." (string-take commit 7)))
+      (home-page "https://gitlab.com/amirouche/guile-git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "079l8y6pjkmahb4k6dfqh3hk34pg540rrl29aixyvv86w9bdfjil"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))
+
+         ;; Test suite is not parallel-safe: the tests open same-named repos.
+         #:parallel-tests? #f))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.0)
+         ("libgit2" ,libgit2)))
+      (propagated-inputs
+       `(("guile-bytestructures" ,guile-bytestructures)))
+      (synopsis "Guile bindings for libgit2")
+      (description
+       "This package provides Guile bindings to libgit2, a library to
+manipulate repositories of the Git version control system.")
+      (license license:gpl3+))))
 
 ;;; guile.scm ends here

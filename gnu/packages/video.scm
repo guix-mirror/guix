@@ -444,14 +444,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ifwjh68zw0mwq9swmfjqk2ck84gysi0w8hrkw2yddqhr8m51kjl"))))
+               "0ymg1mkg1n0770gmjfqp79p5ijxq04smfrsrrxc8pjc0y0agyf3f"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -473,6 +473,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
@@ -612,14 +613,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.10")
+    (version "2.8.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ca84kc715xm7wmbnj1z4jfhxj8c7rxhy4cqwrd8cnih0l196j1c"))))
+               "1rhz7rhmhhh8bjcj3dc82haisn3qjbzqlr7k6d6v7064jgn3maiq"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -974,7 +975,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.02.07")
+    (version "2017.02.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -982,7 +983,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1grq3aqa1zc0xdq1y6vqnk0y0vcd1j2jjn85696hw98mi0w1am73"))))
+                "1c2rx8hj960wg2sffpvg2513rl9grkwcpn4xk612ibfq4m7h3991"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

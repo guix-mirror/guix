@@ -438,7 +438,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.10.1")
+    (version "2.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -446,7 +446,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1a3gsarl0zrk1dydqn93kx7pnwm7pb7av7g17pj5m7b7kc66k7jv"))))
+               "09qcc3a61irxi89x7q82hdy8dk0liiwyz66632wzcd881mhrhx18"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -574,7 +574,7 @@ support for Git-SVN.")
               (file-name (string-append "magit-popup-" version ".el"))
               (sha256
                (base32
-                "0s04jnskmggwn69ln05qfwwa32va0q5ri7dwx917wkqz17w5zi62"))))
+                "08b6ypfiq8zavjfq0wcdh26xziwq7rqvvv3lfpib9101146kzx6d"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -3410,14 +3410,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170124")
+    (version "20170210")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0mcnjwvily0xv1xl11dj18lg38llvrxja2j9mwn6vql8n5y1srxi"))))
+                "15415wh3w8d4c8hd7qfrfdjnjb1zppmrkg8cdp7hw2ilyr90c0bn"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -3499,6 +3499,30 @@ known loosely as deftheme.  Many mode-specific customizations are included.")
       (synopsis "High-contrast Emacs theme")
       (description
        "@code{danneskjold-theme} is a high-contrast theme for Emacs.")
+      (license license:gpl3+))))
+
+(define-public emacs-dream-theme
+  (let* ((commit "107a11d74365046f28a1802a2bdb5e69e4a7488b")
+         (revision "1"))
+    (package
+      (name "emacs-dream-theme")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/djcb/dream-theme")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0za18nfkq4xqm35k6006vsixcbmvmxqgma4iw5sw37h8vmcsdylk"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/djcb/dream-theme")
+      (synopsis "High-contrast Emacs theme")
+      (description
+       "@code{dream-theme} is a dark, clean theme for Emacs.  It is inspired
+by zenburn, sinburn and similar themes, but slowly diverging from them.")
       (license license:gpl3+))))
 
 (define-public emacs-auto-complete
@@ -3789,4 +3813,24 @@ customizable by the user.")
      "This package provides desktop notifications for mu4e.
 Additionally it can display the number of unread emails in the
 mode-line.")
+    (license license:gpl3+)))
+
+(define-public emacs-pretty-mode
+  (package
+    (name "emacs-pretty-mode")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/akatov/pretty-mode/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fan7m4vnqs8kpg7r54kx3g7faadkpkf9kzarfv8n57kq8w157pl"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/akatov/pretty-mode")
+    (synopsis "Redisplay parts of the buffer as Unicode symbols")
+    (description
+     "Emacs minor mode for redisplaying parts of the buffer as pretty symbols.")
     (license license:gpl3+)))

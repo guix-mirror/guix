@@ -40,6 +40,8 @@
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
+             (patches (search-patches "screen-CVE-2017-5618.patch"))
+             (patch-flags '("-p2"))
              (sha256
               (base32 "1c7grw03a9iwvqbxfd6hmjb681rp8gb55zsxm7b3apqqcb1sghq1"))))
     (build-system gnu-build-system)

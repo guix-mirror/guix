@@ -31,6 +31,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ntp)
   #:use-module (gnu packages wicd)
   #:use-module (gnu packages gnome)
@@ -80,7 +81,10 @@
             network-manager-service-type
 
             connman-service
-            wpa-supplicant-service-type))
+            wpa-supplicant-service-type
+
+            openvswitch-service-type
+            openvswitch-configuration))
 
 ;;; Commentary:
 ;;;
@@ -884,5 +888,63 @@ configure networking."
                                           wpa-supplicant-shepherd-service)
                        (service-extension dbus-root-service-type list)
                        (service-extension profile-service-type list)))))
+
+
+;;;
+;;; Open vSwitch
+;;;
+
+(define-record-type* <openvswitch-configuration>
+  openvswitch-configuration make-openvswitch-configuration
+  openvswitch-configuration?
+  (package openvswitch-configuration-package
+           (default openvswitch)))
+
+(define openvswitch-activation
+  (match-lambda
+    (($ <openvswitch-configuration> package)
+     (let ((ovsdb-tool (file-append package "/bin/ovsdb-tool")))
+       (with-imported-modules '((guix build utils))
+         #~(begin
+             (use-modules (guix build utils))
+             (mkdir-p "/var/run/openvswitch")
+             (mkdir-p "/var/lib/openvswitch")
+             (let ((conf.db "/var/lib/openvswitch/conf.db"))
+               (unless (file-exists? conf.db)
+                 (system* #$ovsdb-tool "create" conf.db)))))))))
+
+(define openvswitch-shepherd-service
+  (match-lambda
+    (($ <openvswitch-configuration> package)
+     (let ((ovsdb-server (file-append package "/sbin/ovsdb-server"))
+           (ovs-vswitchd (file-append package "/sbin/ovs-vswitchd")))
+       (list
+        (shepherd-service
+         (provision '(ovsdb))
+         (documentation "Run the Open vSwitch database server.")
+         (start #~(make-forkexec-constructor
+                   (list #$ovsdb-server "--pidfile"
+                         "--remote=punix:/var/run/openvswitch/db.sock")
+                   #:pid-file "/var/run/openvswitch/ovsdb-server.pid"))
+         (stop #~(make-kill-destructor)))
+        (shepherd-service
+         (provision '(vswitchd))
+         (requirement '(ovsdb))
+         (documentation "Run the Open vSwitch daemon.")
+         (start #~(make-forkexec-constructor
+                   (list #$ovs-vswitchd "--pidfile")
+                   #:pid-file "/var/run/openvswitch/ovs-vswitchd.pid"))
+         (stop #~(make-kill-destructor))))))))
+
+(define openvswitch-service-type
+  (service-type
+   (name 'openvswitch)
+   (extensions
+    (list (service-extension activation-service-type
+                             openvswitch-activation)
+          (service-extension profile-service-type
+                             (compose list openvswitch-configuration-package))
+          (service-extension shepherd-root-service-type
+                             openvswitch-shepherd-service)))))
 
 ;;; networking.scm ends here

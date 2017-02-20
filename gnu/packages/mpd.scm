@@ -31,6 +31,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages gcc) ; GCC@5 for MPD >= 0.20
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -74,7 +75,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.19.21")
+    (version "0.20.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -83,7 +84,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0c0p61p3jfh89pnqwd9nrw55krfvvnzhkpdq53g6njvg0aybh1c3"))))
+                "0a4psqsf71vc6hfgyv55jclsx8yb7lf4w840qlq6cq8j3hsjaavi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -116,7 +117,8 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("pulseaudio" ,pulseaudio)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("gcc" ,gcc-5) ; Fails to build with GCC@4.
+                     ("pkg-config" ,pkg-config)))
     ;; Missing optional inputs:
     ;;   libyajl
     ;;   libcdio_paranoia

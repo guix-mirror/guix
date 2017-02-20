@@ -607,14 +607,14 @@ a schema.")
 (define-public perl-xml-compile-soap
   (package
     (name "perl-xml-compile-soap")
-    (version "3.20")
+    (version "3.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-SOAP-" version ".tar.gz"))
               (sha256
                (base32
-                "0qplb77qr97pc9yis51jmphl9gbq9xyf8abldpxkwvdn6iqlbgx5"))))
+                "0rxidh7kjyhnw2y789bqbwccnp8n0m3xskn524y9c752s64qpjcz"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
@@ -635,14 +635,14 @@ used.")
 (define-public perl-xml-compile-wsdl11
   (package
     (name "perl-xml-compile-wsdl11")
-    (version "3.05")
+    (version "3.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-WSDL11-" version ".tar.gz"))
               (sha256
                (base32
-                "1a50in1qrbzx3924wvrhgfm5fcxz5cd95f3z9z2xgln27q1zssc4"))))
+                "0vbq05cpynm3jj81fw1k4nsb3wv4zngi6blvi1jhdarmh2rfg1x2"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -724,7 +724,7 @@ the form of functions.")
 (define-public pugixml
   (package
     (name "pugixml")
-    (version "1.7")
+    (version "1.8.1")
     (source
      (origin
       (method url-fetch)
@@ -732,17 +732,10 @@ the form of functions.")
                           version "/pugixml-" version ".tar.gz"))
       (sha256
        (base32
-        "1jpml475kbhs1aqwa48g2cbfxlrb9qp115m2j9yryxhxyr30vqgv"))))
+        "0fcgggry5x5bn0zhb09ij9hb0p45nb0sv0d9fw3cm1cf62hp9n80"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f
-       #:out-of-source? #f
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'chdir
-                   (lambda _
-                     (chdir "scripts")
-                     #t)))))
+     `(#:tests? #f))                    ; no tests
     (home-page "http://pugixml.org")
     (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
     (description
