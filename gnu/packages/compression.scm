@@ -45,6 +45,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1217,3 +1218,43 @@ speed.")
                    license:bsd-2         ; quite a few files have but 2 clauses
                    license:public-domain ; zlibWrapper/examples/fitblk*
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
+
+(define-public pzstd
+  (package
+    (name "pzstd")
+    (version (package-version zstd))
+    (source (package-source zstd))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("googletest", googletest)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _ (chdir "contrib/pzstd")))
+         (delete 'configure)            ; no configure script
+         (add-before 'check 'compile-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" "tests" make-flags))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name)))
+               (mkdir-p doc)
+               (install-file "README.md" doc)
+               #t))))
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (home-page (package-home-page zstd))
+    (synopsis "Threaded implementation of the Zstandard compression algorithm")
+    (description "Parallel Zstandard (PZstandard or @command{pzstd}) is a
+multi-threaded implementation of the @uref{http://zstd.net/, Zstandard
+compression algorithm}.  It is fully compatible with the original Zstandard file
+format and command-line interface, and can be used as a drop-in replacement.
+
+Compression is distributed over multiple processor cores to improve performance,
+as is the decompression of data compressed in this manner.  Data compressed by
+other implementations will only be decompressed by two threads: one performing
+the actual decompression, the other input and output.")
+    (license (package-license zstd))))
