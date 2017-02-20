@@ -14228,6 +14228,27 @@ Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
     (license license:gpl2)))
 
+(define-public python-incremental
+  (package
+    (name "python-incremental")
+    (version "17.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "incremental" version))
+       (sha256
+        (base32
+         "1cylxdz1cnkm5g3pklna3h2n0i0rks95ir1pnpxfnvpkmab1cxbv"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/hawkowl/incremental")
+    (synopsis "Library for versioning Python projects")
+    (description "Incremental is a small library that versions your Python
+projects.")
+    (license license:expat)))
+
+(define-public python2-incremental
+  (package-with-python2 python-incremental))
+
 (define-public python-automat
   (package
     (name "python-automat")
