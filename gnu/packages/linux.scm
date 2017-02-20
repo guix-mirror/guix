@@ -338,12 +338,18 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.9.11")
-(define %linux-libre-hash "1gypfg2984zr4z7hihnl3bbpxnk1mrqbynb6xd8ad2v2z04aw13q")
+(define %linux-libre-version "4.10")
+(define %linux-libre-hash "167zzgkivpqsp07did25wjqsswddzp3gifcdkq7xk00llxlmspla")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    %intel-compatible-systems
+                    #:configuration-file kernel-config))
+
+(define-public linux-libre-4.9
+  (make-linux-libre "4.9.11"
+                    "1gypfg2984zr4z7hihnl3bbpxnk1mrqbynb6xd8ad2v2z04aw13q"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
