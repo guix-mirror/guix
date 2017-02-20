@@ -197,7 +197,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "13.0.4")
+    (version "13.0.5")
     (source
       (origin
         (method url-fetch)
@@ -205,7 +205,7 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "09p740qvmf4vqnpgxxlizk0dhdhj6i519qsbbrc8hpxxyzl7qpd9"))
+          "11zgynii1wz17131ml1mmblpwib8m88zz2jwi5h5llh1r3iagkmz"))
         (patches
          (search-patches "mesa-wayland-egl-symbols-check-mips.patch"))))
     (build-system gnu-build-system)
