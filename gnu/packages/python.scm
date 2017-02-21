@@ -5209,17 +5209,18 @@ tools for mocking system commands and recording calls to those.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "4.0.3")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "1h2gp1p06sww9rzfkfzqy489bh47gj3910y2b1wdk3dcx1cqz4is"))))
+        (base32 "1qhjwa9cyz1np7rhv3p4ip13lkgbqsad62l24xkwiq1ic2gwiqbf"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
      `(("python-pyzmq" ,python-pyzmq)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
        ("python-terminado" ,python-terminado)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
@@ -5232,16 +5233,19 @@ tools for mocking system commands and recording calls to those.")
        ("python-jsonschema" ,python-jsonschema)
        ("python-traitlets" ,python-traitlets)
        ("python-ipykernel" ,python-ipykernel)
+       ("python-nbformat" ,python-nbformat)
        ("python-pygments" ,python-pygments)))
     (inputs
      `(("readline" ,readline)
        ("which" ,which)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)
        ("python-requests" ,python-requests) ;; for tests
        ("python-testpath" ,python-testpath)
        ("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
+       ("python-shpinx-rtd-theme" ,python-sphinx-rtd-theme)
        ("texlive" ,texlive)
        ("texinfo" ,texinfo)))
     (arguments
@@ -5255,15 +5259,16 @@ tools for mocking system commands and recording calls to those.")
                    (html (string-append doc "/html"))
                    (man1 (string-append data "/man/man1"))
                    (info (string-append data "/info"))
-                   (examples (string-append doc "/examples")))
+                   (examples (string-append doc "/examples"))
+                   (python-arg (string-append "PYTHON=" (which "python"))))
               (setenv "LANG" "en_US.utf8")
               ;; Make installed package available for running the tests
               (add-installed-pythonpath inputs outputs)
               (with-directory-excursion "docs"
                 ;; FIXME: pdf fails to build
                 ;;(system* "make" "pdf" "PAPER=a4")
-                (system* "make" "html")
-                (system* "make" "info"))
+                (system* "make" python-arg "html")
+                (system* "make" python-arg "info"))
               (copy-recursively "docs/man" man1)
               (copy-recursively "examples" examples)
               (copy-recursively "docs/build/html" html)
@@ -5313,10 +5318,12 @@ computing.")
   (let ((ipython (package-with-python2 (strip-python2-variant python-ipython))))
     (package
       (inherit ipython)
-      ;; FIXME: some tests are failing
-      (arguments
-       `(#:tests? #f ,@(package-arguments ipython)))
       ;; FIXME: add pyreadline once available.
+      (propagated-inputs
+       `(("python2-backports-shutil-get-terminal-size"
+          ,python2-backports-shutil-get-terminal-size)
+         ("python2-pathlib2" ,python2-pathlib2)
+         ,@(package-propagated-inputs ipython)))
       (native-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-native-inputs ipython))))))
