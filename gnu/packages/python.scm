@@ -4079,16 +4079,16 @@ functions.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "0.16.0")
+    (version "0.18.1")
     (source
      (origin
        (method url-fetch)
-; http://downloads.sourceforge.net/project/scipy/scipy/0.16.1/scipy-0.16.1.tar.gz
-       (uri (string-append "mirror://sourceforge/scipy/scipy/" version
-                           "/scipy-" version ".tar.xz"))
+       (uri (string-append "https://github.com/scipy/scipy/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0wa0a4skpda3gx7lb12yn19nhbairlyxrvda2lz2bcawk3x5qzz2"))))
+         "17slsrfawjp7if6qrlx03zhgp05350ginxx8ddpw9zqx43x905sn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -4098,21 +4098,16 @@ functions.")
      `(("lapack" ,lapack)
        ("openblas" ,openblas)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-sphinx" ,python-sphinx-1.2.3)
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
        ("gfortran" ,gfortran)
-       ("texlive" ,texlive)
        ("perl" ,perl)))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (substitute* "scipy/integrate/tests/test_quadpack.py"
-               (("libm.so") "libm.so.6"))
-             #t))
          (add-before 'build 'configure-openblas
            (lambda* (#:key inputs #:allow-other-keys)
              (call-with-output-file "site.cfg"
@@ -4132,40 +4127,44 @@ atlas_libs = openblas
                          (assoc-ref inputs "openblas")
                          (assoc-ref inputs "openblas"))))
              #t))
-           (delete 'check)
-           (add-after 'install 'install-doc
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                      (doc (string-append data "/doc/" ,name "-" ,version))
-                      (html (string-append doc "/html"))
-                      (pyver ,(string-append "PYVER=")))
-                 ;; Make installed package available for building the
-                 ;; documentation
-                 (add-installed-pythonpath inputs outputs)
-                 (with-directory-excursion "doc"
-                   ;; Fix generation of images for mathematical expressions.
-                   (substitute* (find-files "source" "conf\\.py")
-                     (("pngmath_use_preview = True")
-                      "pngmath_use_preview = False"))
-                   (mkdir-p html)
-                   (system* "make" "html" pyver)
-                   (system* "make" "latex" "PAPER=a4" pyver)
-                   (system* "make" "-C" "build/latex" "all-pdf" "PAPER=a4" pyver)
-                   (copy-file "build/latex/scipy-ref.pdf"
-                              (string-append doc "/scipy-ref.pdf"))
-                   (with-directory-excursion "build/html"
-                     (for-each (lambda (file)
-                                 (let* ((dir (dirname file))
-                                        (tgt-dir (string-append html "/" dir)))
-                                   (install-file file html)))
-                               (find-files "." ".*"))))
-                 #t)))
-           (add-after 'install-doc 'check
-             (lambda _
-               ;; Tests can only be run after the library has been installed and not
-               ;; within the source directory.
-               (with-directory-excursion "/tmp"
-                 (zero? (system* "python" "-c" "import scipy; scipy.test()"))))))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html"))
+                    (pyver ,(string-append "PYVER=")))
+               ;; Make installed package available for building the
+               ;; documentation
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "doc"
+                 ;; Fix generation of images for mathematical expressions.
+                 (substitute* (find-files "source" "conf\\.py")
+                   (("pngmath_use_preview = True")
+                    "pngmath_use_preview = False"))
+                 (mkdir-p html)
+                 (system* "make" "html" pyver)
+                 (with-directory-excursion "build/html"
+                   (for-each (lambda (file)
+                               (let* ((dir (dirname file))
+                                      (tgt-dir (string-append html "/" dir)))
+                                 (install-file file html)))
+                             (find-files "." ".*")))))
+             #t))
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "scipy/integrate/tests/test_quadpack.py"
+               (("libm.so") "libm.so.6"))
+             #t))
+           ;; Tests can only be run after the library has been installed and not
+           ;; within the source directory.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "/tmp"
+               (zero? (system* "python" "-c"
+                               "import scipy; scipy.test('full')")))
+             #t)))))
     (home-page "http://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
@@ -4175,15 +4174,8 @@ routines such as routines for numerical integration and optimization.")
     (license license:bsd-3)))
 
 (define-public python2-scipy
-  (let ((scipy (package-with-python2
-                (strip-python2-variant python-scipy))))
-    (package (inherit scipy)
-             ;; Make sure to use special packages for Python 2 instead
-             ;; of those automatically rewritten by package-with-python2.
-             (native-inputs
-              `(("python2-sphinx" ,python2-sphinx-1.2.3)
-                ,@(fold alist-delete (package-native-inputs scipy)
-                        '("python-sphinx")))))))
+  (package-with-python2
+   (strip-python2-variant python-scipy)))
 
 (define-public python-socksipy-branch
   (package
