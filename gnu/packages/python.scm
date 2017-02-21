@@ -89,6 +89,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages shells)
@@ -3869,21 +3870,20 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "1.4.3")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/matplotlib/matplotlib"
-                           "/matplotlib-" version
-                           "/matplotlib-" version ".tar.gz"))
+       (uri (string-append
+             "https://github.com/matplotlib/matplotlib/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1dn05cvd0g984lzhh72wa0z93psgwshbbg93fkab6slx5m3l95av"))
-       (patches (search-patches "matplotlib-setupext-tk.patch"))))
+         "0w3k5m5qb3wsd7yhvmg042xddvligklvcq2visk2c5wnph3hhsln"))))
     (build-system python-build-system)
-    (outputs '("out" "doc"))
     (propagated-inputs ; the following packages are all needed at run time
-     `(("python-pyparsing" ,python-pyparsing)
+     `(("python-cycler" ,python-cycler)
+       ("python-pyparsing" ,python-pyparsing)
        ("python-pygobject" ,python-pygobject)
        ("gobject-introspection" ,gobject-introspection)
        ("python-tkinter" ,python "tk")
@@ -3915,17 +3915,13 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ("glib" ,glib)
        ;; FIXME: Add backends when available.
        ;("python-wxpython" ,python-wxpython)
-       ;("python-pyqt" ,python-pyqt)
+       ("python-pyqt" ,python-pyqt)
        ("tcl" ,tcl)
        ("tk" ,tk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx-1.2.3)
-       ("python-numpydoc" ,python-numpydoc)
        ("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("texlive" ,texlive)
-       ("texinfo" ,texinfo)))
+       ("python-mock" ,python-mock)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -3944,26 +3940,68 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 basedirlist = ~a,~a~%
  [rc_options]~%
 backend = TkAgg~%"
-                           (assoc-ref inputs "tcl")
-                           (assoc-ref inputs "tk"))))
-               #t)))
-         (add-after 'install 'install-doc
+                        (assoc-ref inputs "tcl")
+                        (assoc-ref inputs "tk")))))
+             #t)))))
+    (home-page "http://matplotlib.org")
+    (synopsis "2D plotting library for Python")
+    (description
+     "Matplotlib is a Python 2D plotting library which produces publication
+quality figures in a variety of hardcopy formats and interactive environments
+across platforms.  Matplotlib can be used in Python scripts, the python and
+ipython shell, web application servers, and six graphical user interface
+toolkits.")
+    (license license:psfl)
+    (properties `((python2-variant . ,(delay python2-matplotlib))))))
+
+(define-public python2-matplotlib
+  (let ((matplotlib (package-with-python2
+                     (strip-python2-variant python-matplotlib))))
+    (package (inherit matplotlib)
+      ;; Make sure to use special packages for Python 2 instead
+      ;; of those automatically rewritten by package-with-python2.
+      (propagated-inputs
+       `(("python2-pycairo" ,python2-pycairo)
+         ("python2-functools32" ,python2-functools32)
+         ("python2-pygobject-2" ,python2-pygobject-2)
+         ("python2-subprocess32" ,python2-subprocess32)
+         ("python2-tkinter" ,python-2 "tk")
+         ,@(fold alist-delete (package-propagated-inputs matplotlib)
+                 '("python-pycairo" "python-pygobject" "python-tkinter")))))))
+
+(define-public python-matplotlib-documentation
+  (package
+    (name "python-matplotlib-documentation")
+    (version (package-version python-matplotlib))
+    (source (package-source python-matplotlib))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-colorspacious" ,python-colorspacious)
+       ("python-sphinx" ,python-sphinx)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-ipython" ,python-ipython)
+       ("texlive" ,texlive)
+       ("texinfo" ,texinfo)
+       ,@(package-native-inputs python-matplotlib)))
+    (arguments
+     `(#:tests? #f ; we're only generating documentation
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+             (let* ((data (string-append (assoc-ref outputs "out") "/share"))
                     (doc (string-append data "/doc/" ,name "-" ,version))
                     (info (string-append data "/info"))
                     (html (string-append doc "/html")))
                ;; Make installed package available for building the
                ;; documentation
-               (add-installed-pythonpath inputs outputs)
                (with-directory-excursion "doc"
                  ;; Produce pdf in 'A4' format.
                  (substitute* (find-files "." "conf\\.py")
                    (("latex_paper_size = 'letter'")
                     "latex_paper_size = 'a4'"))
-                 (substitute* "users/intro.rst"
-                   ;; Fix reST markup error (see <https://github.com/sphinx-doc/sphinx/issues/3044>)
-                   (("[[][*][]]") "[#]"))
                  (mkdir-p html)
                  (mkdir-p info)
                  ;; The doc recommends to run the 'html' target twice.
@@ -3985,35 +4023,15 @@ backend = TkAgg~%"
                  (copy-file "build/texinfo/matplotlib.info"
                             (string-append info "/matplotlib.info"))
                  (copy-file "build/latex/Matplotlib.pdf"
-                            (string-append doc "/Matplotlib.pdf")))
-                 #t))))))
-    (home-page "http://matplotlib.org")
-    (synopsis "2D plotting library for Python")
-    (description
-     "Matplotlib is a Python 2D plotting library which produces publication
-quality figures in a variety of hardcopy formats and interactive environments
-across platforms.  Matplotlib can be used in Python scripts, the python and
-ipython shell, web application servers, and six graphical user interface
-toolkits.")
-    (license license:psfl)
-    (properties `((python2-variant . ,(delay python2-matplotlib))))))
+                            (string-append doc "/Matplotlib.pdf"))))
+             #t)))))
+    (home-page (package-home-page python-matplotlib))
+    (synopsis "Documentation for the python-matplotlib package")
+    (description (package-description python-matplotlib))
+    (license (package-license python-matplotlib))))
 
-(define-public python2-matplotlib
-  (let ((matplotlib (package-with-python2
-                     (strip-python2-variant python-matplotlib))))
-    (package (inherit matplotlib)
-      ;; Make sure to use special packages for Python 2 instead
-      ;; of those automatically rewritten by package-with-python2.
-      (native-inputs
-       `(("python2-sphinx" ,python2-sphinx-1.2.3)
-         ,@(fold alist-delete (package-native-inputs matplotlib)
-                 '("python-sphinx"))))
-      (propagated-inputs
-       `(("python2-pycairo" ,python2-pycairo)
-         ("python2-pygobject-2" ,python2-pygobject-2)
-         ("python2-tkinter" ,python-2 "tk")
-         ,@(fold alist-delete (package-propagated-inputs matplotlib)
-                 '("python-pycairo" "python-pygobject" "python-tkinter")))))))
+(define-public python2-matplotlib-documentation
+  (package-with-python2 python-matplotlib-documentation))
 
 (define-public python2-pysnptools
   (package
