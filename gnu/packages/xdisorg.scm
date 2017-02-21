@@ -796,7 +796,9 @@ Wacom tablet applet.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0idhkigl0pnyp08sqm6bqfb4h20v6rjrb71z1gdv59gk7d7qwpgi"))))
+                "0idhkigl0pnyp08sqm6bqfb4h20v6rjrb71z1gdv59gk7d7qwpgi"))
+              (patches
+               (search-patches "xf86-input-wacom-xorg-abi-25.patch"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
