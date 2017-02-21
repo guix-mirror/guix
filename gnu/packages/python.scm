@@ -14228,6 +14228,32 @@ Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
     (license license:gpl2)))
 
+(define-public python-m2r
+  (package
+    (name "python-m2r")
+    (version "0.1.12")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "m2r" version))
+              (sha256
+               (base32
+                "1axrwnf425sz4qz3c0qc7yhhki4myzb8rki7pczcsgzznzmqdyxd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-mistune" ,python-mistune)))
+    (native-inputs
+     `(("python-pygments" ,python-pygments)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/miyakogi/m2r")
+    (synopsis "Markdown to reStructuredText converter")
+    (description "M2R converts a markdown file including reST markups to valid
+reST format.")
+    (license license:expat)))
+
+(define-public python2-m2r
+  (package-with-python2 python-m2r))
+
 (define-public python-constantly
   (package
     (name "python-constantly")
