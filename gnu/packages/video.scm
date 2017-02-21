@@ -136,6 +136,11 @@
                                                       (%current-system))
                                             '("--host=mips64el-unknown-linux-gnu")
                                             '())
+                                      ;; The same is also true with aarch64.
+                                      ,@(if (string=? "aarch64-linux"
+                                                      (%current-system))
+                                            '("--host=aarch64-unknown-linux-gnu")
+                                            '())
                                       (string-append "--with-ncurses="
                                                      ncurses)))))))))
     (home-page "http://aa-project.sourceforge.net/aalib/")
