@@ -3826,6 +3826,30 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
 (define-public python2-cycler
   (package-with-python2 python-cycler))
 
+(define-public python-colorspacious
+  (package
+    (name "python-colorspacious")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/njsmith/colorspacious/archive/v"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version))
+        (sha256
+         (base32 "1vflh5jm32qb0skza2i8pjacv09w6gq84fqpp2nj77s0rbmzgr4k"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/njsmith/colorspacious")
+    (synopsis "Python library for colorspace conversions")
+    (description "@code{colorspacious} is a Python library that lets you
+convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.")
+    (license license:expat)))
+
+(define-public python2-colorspacious
+  (package-with-python2 python-colorspacious))
+
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
