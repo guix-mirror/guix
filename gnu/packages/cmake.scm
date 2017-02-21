@@ -32,13 +32,14 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages xml))
 
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.6.1")
+    (version "3.7.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.cmake.org/files/v"
@@ -46,7 +47,7 @@
                                  "/cmake-" version ".tar.gz"))
              (sha256
               (base32
-               "04ggm9c0zklxypm6df1v4klrrd85m6vpv13kasj42za283n9ivi8"))
+               "1q6a60695prpzzsmczm2xrgxdb61fyjznb04dr6yls6iwv24c4nw"))
              (patches (search-patches "cmake-fix-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -72,7 +73,8 @@
                  "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
                  "Tests/CMakeLists.txt"
                  "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+           #t))
          (add-before 'configure 'set-paths
            (lambda _
              ;; Help cmake's bootstrap process to find system libraries
@@ -80,7 +82,8 @@
                (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
                (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
                ;; Get verbose output from failed tests
-               (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE"))))
+               (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")
+               #t)))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -106,6 +109,7 @@
        ("expat"      ,expat)
        ("bzip2"      ,bzip2)
        ("ncurses"    ,ncurses) ; required for ccmake
+       ("libuv"      ,libuv)
        ("libarchive" ,libarchive)))
     (native-search-paths
      (list (search-path-specification
