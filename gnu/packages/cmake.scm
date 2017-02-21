@@ -97,8 +97,6 @@
              (begin
                (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
                (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
-               ;; Get verbose output from failed tests
-               (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")
                #t)))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -117,7 +115,15 @@
                        "--mandir=share/man"
                        ,(string-append
                          "--docdir=share/doc/cmake-"
-                         (version-major+minor version))))))))))
+                         (version-major+minor version)))))))
+         (add-before 'check 'set-test-environment
+           (lambda _
+             ;; Get verbose output from failed tests.
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")
+             ;; Run tests in parallel.
+             (setenv "CTEST_PARALLEL_LEVEL"
+                     (number->string (parallel-job-count)))
+             #t)))))
     (inputs
      `(("file"       ,file)
        ("curl"       ,curl)
