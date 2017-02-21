@@ -33,7 +33,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;;
@@ -6086,6 +6086,29 @@ connection to each user.")
 
 (define-public python2-backports-abc
   (package-with-python2 python-backports-abc))
+
+(define-public python2-backports-shutil-get-terminal-size
+  (package
+    (name "python2-backports-shutil-get-terminal-size")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "backports.shutil_get_terminal_size" version))
+       (sha256
+        (base32
+         "107cmn7g3jnbkp826zlj8rrj19fam301qvaqf0f3905f5217lgki"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/chrippa/backports.shutil_get_terminal_size")
+    (synopsis "Backport of Python 3.3's @code{shutil.get_terminal_size}")
+    (description
+     "This package provides a backport of the @code{get_terminal_size
+function} from Python 3.3's @code{shutil}.
+Unlike the original version it is written in pure Python rather than C,
+so it might be a tiny bit slower.")
+    (license license:expat)))
 
 (define-public python-waf
   (package
