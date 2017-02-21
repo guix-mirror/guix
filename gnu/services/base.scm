@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -1114,7 +1114,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (log-file         guix-configuration-log-file   ;string
                     (default "/var/log/guix-daemon.log"))
   (lsof             guix-configuration-lsof       ;<package>
-                    (default lsof)))
+                    (default lsof))
+  (http-proxy       guix-http-proxy               ;string | #f
+                    (default #f)))
 
 (define %default-guix-configuration
   (guix-configuration))
@@ -1125,7 +1127,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
     (($ <guix-configuration> guix build-group build-accounts
                              authorize-key? keys
                              use-substitutes? substitute-urls extra-options
-                             log-file lsof)
+                             log-file lsof http-proxy)
      (list (shepherd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
@@ -1142,7 +1144,10 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
                 ;; Add 'lsof' (for the GC) to the daemon's $PATH.
                 #:environment-variables
-                (list (string-append "PATH=" #$lsof "/bin"))
+                (list (string-append "PATH=" #$lsof "/bin")
+                      #$@(if http-proxy
+                             (list (string-append "http_proxy=" http-proxy))
+                             '()))
 
                 #:log-file #$log-file))
             (stop #~(make-kill-destructor)))))))
