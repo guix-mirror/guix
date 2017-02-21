@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,7 +79,7 @@ addr2line, and more.")
               (base32
                "0vf7s9dwk2xkmhb79aigqm0x0yfbw1j0b9ksm51207qwr179n6jr"))))
     (build-system gnu-build-system)
-    (arguments '(#:phases (alist-replace
+    (arguments `(#:phases (alist-replace
                            'configure
                            (lambda* (#:key outputs #:allow-other-keys)
                              ;; This old `configure' script doesn't support
@@ -87,7 +88,12 @@ addr2line, and more.")
                                (setenv "CONFIG_SHELL" (which "bash"))
                                (zero?
                                 (system* "./configure"
-                                         (string-append "--prefix=" out)))))
+                                         (string-append "--prefix=" out)
+                                       ,@(if (string=? "aarch64-linux"
+                                                       (%current-system))
+                                             '("--host=aarch64-unknown-linux-gnu")
+                                             '())
+                         ))))
                            %standard-phases)))
     (home-page "http://www.mr511.de/software/english.html")
     (synopsis "ELF object file access library")
