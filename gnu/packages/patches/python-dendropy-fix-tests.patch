@@ -1,0 +1,41 @@
+This patch fixes two test failures.  It was downloaded from:
+https://github.com/jeetsukumaran/DendroPy/commit/93f984bba7a6c588a28ca87f4e557ce283809453
+
+From 93f984bba7a6c588a28ca87f4e557ce283809453 Mon Sep 17 00:00:00 2001
+From: jeetsukumaran <jeetsukumaran@gmail.com>
+Date: Tue, 21 Feb 2017 16:41:01 -0500
+Subject: [PATCH] Update to Python 3 container and iteration semantics
+
+---
+ dendropy/dataio/newickreader.py | 3 ++-
+ dendropy/datamodel/treemodel.py | 3 +++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/dendropy/dataio/newickreader.py b/dendropy/dataio/newickreader.py
+index 6dcf3c5..f978729 100644
+--- a/dendropy/dataio/newickreader.py
++++ b/dendropy/dataio/newickreader.py
+@@ -303,7 +303,8 @@ def tree_iter(self,
+                     taxon_symbol_map_fn=taxon_symbol_mapper.require_taxon_for_symbol)
+             yield tree
+             if tree is None:
+-                raise StopIteration
++                # raise StopIteration
++                return
+ 
+     def _read(self,
+             stream,
+diff --git a/dendropy/datamodel/treemodel.py b/dendropy/datamodel/treemodel.py
+index 0ecfe31..73146f0 100644
+--- a/dendropy/datamodel/treemodel.py
++++ b/dendropy/datamodel/treemodel.py
+@@ -772,6 +772,9 @@ def __hash__(self):
+     def __eq__(self, other):
+         return self is other
+ 
++    def __lt__(self, other):
++        return id(self) < id(other)
++
+     ###########################################################################
+     ### Basic Structure
+ 

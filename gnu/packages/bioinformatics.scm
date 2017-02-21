@@ -1981,7 +1981,8 @@ accessing bigWig files.")
        (uri (pypi-uri "DendroPy" version))
        (sha256
         (base32
-         "15c7s3d5gf19ljsxvq5advaa752wfi7pwrdjyhzmg85hccyvp47p"))))
+         "15c7s3d5gf19ljsxvq5advaa752wfi7pwrdjyhzmg85hccyvp47p"))
+       (patches (search-patches "python-dendropy-fix-tests.patch"))))
     (build-system python-build-system)
     (home-page "http://packages.python.org/DendroPy/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
