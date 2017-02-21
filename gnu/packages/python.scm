@@ -3465,24 +3465,26 @@ between language specification and implementation aspects.")
 
 ;; This version of numpy is missing the documentation and is only used to
 ;; build matplotlib which is required to build numpy's documentation.
-(define python-numpy-bootstrap
+(define-public python-numpy
   (package
-    (name "python-numpy-bootstrap")
-    (version "1.10.4")
+    (name "python-numpy")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/numpy/NumPy/" version
-                           "/numpy-" version ".tar.gz"))
+       (uri (string-append
+             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bjjhvncraka5s6i4lg644jrxij6bvycxy7an20gcz3a0m11iygp"))))
+         "025d4j4aakcp8w5i5diqh812cbbjgac7jszx1j56ivrbi1i8vv7d"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
        ("lapack" ,lapack)))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
        ("gfortran" ,gfortran)))
     (arguments
      `(#:phases
@@ -3531,8 +3533,8 @@ and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
     (license license:bsd-3)))
 
-(define python2-numpy-bootstrap
-  (package-with-python2 python-numpy-bootstrap))
+(define-public python2-numpy
+  (package-with-python2 python-numpy))
 
 (define-public python-munch
   (package
@@ -3589,69 +3591,83 @@ Models, is a program for performing both single-SNP and SNP-set genome-wide
 association studies (GWAS) on extremely large data sets.")
     (license license:asl2.0)))
 
-(define-public python-numpy
-  (package (inherit python-numpy-bootstrap)
-    (name "python-numpy")
-    (outputs '("out" "doc"))
-    (inputs
-     `(("which" ,which)
-       ,@(package-inputs python-numpy-bootstrap)))
-    (propagated-inputs
-     `(("python-matplotlib" ,python-matplotlib)
-       ("python-pyparsing" ,python-pyparsing)
-       ,@(package-propagated-inputs python-numpy-bootstrap)))
+(define-public python-numpy-documentation
+  (package
+    (name "python-numpy-documentation")
+    (version (package-version python-numpy))
+    (source (package-source python-numpy))
+    (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
        ("texlive" ,texlive)
        ("texinfo" ,texinfo)
        ("perl" ,perl)
-       ,@(package-native-inputs python-numpy-bootstrap)))
+       ("scipy-sphinx-theme"
+        ,(origin ; The build script expects scipy-sphinx-theme as a git submodule
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/scipy/scipy-sphinx-theme.git")
+                 (commit "c466764e22")))
+           (sha256
+            (base32
+                "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl"))))
+       ,@(package-native-inputs python-numpy)))
     (arguments
-     `(,@(substitute-keyword-arguments
-             (package-arguments python-numpy-bootstrap)
-           ((#:phases phases)
-            `(alist-cons-after
-              'install 'install-doc
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                ;; Make installed package available for building the
-                ;; documentation
-                (add-installed-pythonpath inputs outputs)
-                (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                       (doc (string-append
-                             data "/doc/" ,name "-"
-                             ,(package-version python-numpy-bootstrap)))
-                       (info (string-append data "/info"))
-                       (html (string-append doc "/html"))
-                       (pyver ,(string-append "PYVER=")))
-                  (with-directory-excursion "doc"
-                    (mkdir-p html)
-                    (system* "make" "html" pyver)
-                    (system* "make" "latex" "PAPER=a4" pyver)
-                    (system* "make" "-C" "build/latex"
-                             "all-pdf" "PAPER=a4" pyver)
-                    ;; FIXME: Generation of the info file fails.
-                    ;; (system* "make" "info" pyver)
-                    ;; (mkdir-p info)
-                    ;; (copy-file "build/texinfo/numpy.info"
-                    ;;            (string-append info "/numpy.info"))
-                    (for-each (lambda (file)
-                                (copy-file (string-append "build/latex" file)
-                                           (string-append doc file)))
-                              '("/numpy-ref.pdf" "/numpy-user.pdf"))
-                    (with-directory-excursion "build/html"
-                      (for-each (lambda (file)
-                                  (let* ((dir (dirname file))
-                                         (tgt-dir (string-append html "/" dir)))
-                                    (unless (equal? "." dir)
-                                      (mkdir-p tgt-dir))
-                                    (install-file file html)))
-                                (find-files "." ".*"))))))
-              ,phases)))))))
+     `(#:tests? #f ; we're only generating the documentation
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "out") "/share"))
+                    (doc (string-append
+                          data "/doc/" ,name "-"
+                          ,(package-version python-numpy)))
+                    (info-reader (string-append data "/info"))
+                    (html (string-append doc "/html"))
+                    (scipy-sphinx-theme "scipy-sphinx-theme")
+                    (sphinx-theme-checkout (assoc-ref inputs scipy-sphinx-theme))
+                    (pyver ,(string-append "PYVER=")))
+               (with-directory-excursion "doc"
+                 (copy-recursively sphinx-theme-checkout scipy-sphinx-theme)
+                 (mkdir-p html)
+                 (system* "make" "html" pyver)
+                 (system* "make" "latex" "PAPER=a4" pyver)
+                 (system* "make" "-C" "build/latex"
+                          "all-pdf" "PAPER=a4" pyver)
+                 ;; FIXME: Generation of the info file fails.
+                 ;; (system* "make" "info" pyver)
+                 ;; (mkdir-p info)
+                 ;; (copy-file "build/texinfo/numpy.info"
+                 ;;            (string-append info "/numpy.info"))
+                 (for-each (lambda (file)
+                             (copy-file (string-append "build/latex" file)
+                                        (string-append doc file)))
+                           '("/numpy-ref.pdf" "/numpy-user.pdf"))
+                 (with-directory-excursion "build/html"
+                   (for-each (lambda (file)
+                               (let* ((dir (dirname file))
+                                      (tgt-dir (string-append html "/" dir)))
+                                 (unless (equal? "." dir)
+                                   (mkdir-p tgt-dir))
+                                 (install-file file html)))
+                             (find-files "." ".*")))))
+             #t)))))
+    (home-page (package-home-page python-numpy))
+    (synopsis "Documentation for the python-numpy package")
+    (description (package-description python-numpy))
+    (license (package-license python-numpy))))
 
-(define-public python2-numpy
-  (package-with-python2 python-numpy))
+(define-public python2-numpy-documentation
+  (let ((numpy-documentation (package-with-python2 python-numpy-documentation)))
+    (package
+      (inherit numpy-documentation)
+      (native-inputs `(("python2-functools32" ,python2-functools32)
+                       ,@(package-native-inputs numpy-documentation))))))
 
 (define-public python-pygit2
   (package
@@ -3872,7 +3888,7 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("python-tkinter" ,python "tk")
        ("python-dateutil" ,python-dateutil)
-       ("python-numpy" ,python-numpy-bootstrap)
+       ("python-numpy" ,python-numpy)
        ("python-pillow" ,python-pillow)
        ("python-pytz" ,python-pytz)
        ("python-six" ,python-six)
