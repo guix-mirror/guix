@@ -274,14 +274,14 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1c0d5ivy9n44hykvw2ggrvqrnn7naw3wg11vbvgwzgi8g5gr4h4m"))))
+                "1c8sha5vm8w346wcbvgnjihisxfyvrr3qlbmfb5sp201p9f17d6n"))))
     (build-system gnu-build-system)
     (arguments `(#:parallel-tests? #f))
     (native-inputs
@@ -331,7 +331,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -339,7 +339,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "09biddxw3ar797kxf9mywjkb2iwky6my39gpp51ni846y7lqdq05"))))
+                "0cshmw4ql4cr36v90bbi4qi6plvb6b9dbpnc3w9m17rv5siw4ymc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -372,9 +372,11 @@ applications, X servers (rootless or fullscreen) or other display servers.")
              ;; Use elogind instead of systemd
              (substitute* "configure"
                (("libsystemd-login >= 198") "libelogind"))
-             (substitute* '("src/launcher-logind.c" "src/weston-launch.c")
+             (substitute* '("libweston/launcher-logind.c"
+                            "libweston/weston-launch.c")
                (("#include <systemd/sd-login.h>")
-                "#include <elogind/sd-login.h>"))))
+                "#include <elogind/sd-login.h>"))
+             #t))
          (add-after 'configure 'patch-confdefs.h
            (lambda _
              (system "echo \"#define HAVE_SYSTEMD_LOGIN_209 1\" >> confdefs.h")))

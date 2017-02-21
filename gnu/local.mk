@@ -575,6 +575,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gcj-arm-mode.patch			\
+  %D%/packages/patches/gdk-pixbuf-list-dir.patch		\
   %D%/packages/patches/gd-fix-chunk-size-on-boundaries.patch	\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\

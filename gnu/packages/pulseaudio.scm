@@ -42,14 +42,14 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (version "1.0.26")
+    (version "1.0.27")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "14jhla289cj45946h0hq2an0a9g4wkwb3v4571bla6ixfvn20rfd"))))
+               "1h7s61nhf7vklh9sdsbbqzb6x287q4x4j1jc5gmjragl4wprb4d3"))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)

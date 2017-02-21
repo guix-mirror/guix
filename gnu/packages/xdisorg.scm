@@ -138,14 +138,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.6.1")
+    (version "0.7.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xkbcommon.org/download/" name "-"
+             (uri (string-append "https://xkbcommon.org/download/" name "-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0q47xa1szlxwgvwmhv4b7xwawnykz1hnc431d84nj8dlh2q8f22v"))))
+               "12z6hih3n1r0asp2hzp9qsiwdfkfz46jwp06x8kprr0r5rfk0nds"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -162,7 +162,7 @@ avoiding password prompts when X11 forwarding has already been setup.")
              (string-append "--with-x-locale-root="
                             (assoc-ref %build-inputs "libx11")
                             "/share/X11/locale"))))
-    (home-page "http://xkbcommon.org/")
+    (home-page "https://xkbcommon.org/")
     (synopsis "Library to handle keyboard descriptions")
     (description "Xkbcommon is a library to handle keyboard descriptions,
 including loading them from disk, parsing them and handling their
@@ -273,7 +273,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.68")
+    (version "2.4.75")
     (source
       (origin
         (method url-fetch)
@@ -283,7 +283,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1px91j6imaaq2fy8ksvgldmv0cdz3w379jqiciqvqa99jajxjjsv"))
+          "0kq5hmck0gq7b29fr8jp94njc7jpkpbyws12s63w4b21xw750nid"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (inputs

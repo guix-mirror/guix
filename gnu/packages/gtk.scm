@@ -432,7 +432,8 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))))
+              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))
+            (patches (search-patches "gdk-pixbuf-list-dir.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")

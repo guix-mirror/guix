@@ -3729,7 +3729,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.19")
+    (version "2.20")
     (source
       (origin
         (method url-fetch)
@@ -3739,7 +3739,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "09sqyi430bbg13pp8j0j60p9p9xn2lpqx38xw1lyv77bp63d3pw3"))))
+            "0d619g4r0w1f6q5qmaqjnsc0956gi02fqgpisqffzqy4acjwggyi"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
@@ -4800,7 +4800,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.8")
+    (version "1.7.9")
     (source
       (origin
         (method url-fetch)
@@ -4810,7 +4810,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1fr7mi4nbcxsa88qin9g2ipmzh595ydxy9qnabzl270laf6zmwnq"))))
+            "0idg1wc01hndvaa820fvfs7phvd1ymf0lldmq6386i7rhkzvirn2"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)

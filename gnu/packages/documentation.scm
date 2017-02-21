@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages docbook)
@@ -99,8 +101,18 @@ markup) can be customized and extended by the user.")
        ("flex" ,flex)
        ("libxml2" ,libxml2) ; provides xmllint for the tests
        ("python" ,python-2))) ; for creating the documentation
+    (inputs
+     `(("bash" ,bash-minimal)))
     (arguments
-     `(#:test-target "tests"))
+     `(#:test-target "tests"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-sh
+                              (lambda* (#:key inputs #:allow-other-keys)
+                                (substitute* "src/portable.cpp"
+                                  (("/bin/sh")
+                                   (string-append
+                                    (assoc-ref inputs "bash") "/bin/sh")))
+                                #t)))))
     (home-page "http://www.stack.nl/~dimitri/doxygen/")
     (synopsis "Generate documentation from annotated sources")
     (description "Doxygen is the de facto standard tool for generating
