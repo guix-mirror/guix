@@ -2824,7 +2824,7 @@ X server.")
       (inputs `(("mesa" ,mesa)
                 ("udev" ,eudev)
                 ("libx11" ,libx11)
-                ("libxfont" ,libxfont)
+                ("libxfont" ,libxfont2)
                 ("xorg-server" ,xorg-server)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
