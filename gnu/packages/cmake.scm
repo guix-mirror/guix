@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages cmake)
-  #:use-module ((guix licenses) #:select (bsd-3))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -48,7 +49,23 @@
              (sha256
               (base32
                "1q6a60695prpzzsmczm2xrgxdb61fyjznb04dr6yls6iwv24c4nw"))
-             (patches (search-patches "cmake-fix-tests.patch"))))
+             (patches (search-patches "cmake-fix-tests.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Drop bundled software.
+                 (with-directory-excursion "Utilities"
+                   (for-each delete-file-recursively
+                             '("cmbzip2"
+                               ;"cmcompress"
+                               "cmcurl"
+                               "cmexpat"
+                               ;"cmjsoncpp"
+                               ;"cmlibarchive"
+                               "cmliblzma"
+                               "cmlibuv"
+                               "cmzlib"))
+                   #t)))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -68,7 +85,6 @@
                  "Source/CTest/cmCTestBatchTestHandler.cxx"
                  "Source/cmLocalUnixMakefileGenerator3.cxx"
                  "Source/cmExecProgramCommand.cxx"
-                 "Utilities/cmbzip2/Makefile-libbz2_so"
                  "Utilities/Release/release_cmake.cmake"
                  "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
                  "Tests/CMakeLists.txt"
@@ -91,7 +107,7 @@
                        "./configure"
                        (string-append "--prefix=" out)
                        "--system-libs"
-                       "--no-system-jsoncpp" ; not packaged yet
+                       "--no-system-jsoncpp" ; FIXME: Circular dependency.
                        ;; By default, the man pages and other docs land
                        ;; in PREFIX/man and PREFIX/doc, but we want them
                        ;; in share/{man,doc}.  Note that unlike
@@ -122,4 +138,8 @@
 CMake is used to control the software compilation process using simple platform
 and compiler independent configuration files.  CMake generates native makefiles
 and workspaces that can be used in the compiler environment of your choice.")
-    (license bsd-3)))
+    (license (list license:bsd-3             ; cmake
+                   license:bsd-4             ; cmcompress
+                   license:bsd-2             ; cmlibarchive
+                   license:expat             ; cmjsoncpp is dual MIT/public domain
+                   license:public-domain)))) ; cmlibarchive/archive_getdate.c
