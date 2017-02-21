@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1653,6 +1654,38 @@ and then run @command{scm example.scm}.")
 library for GNU Guile based on the actor model.
 
 Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
+    (license license:lgpl3+)))
+
+(define-public guile-fibers
+  (package
+    (name "guile-fibers")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wingolog.org/pub/fibers/fibers-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-next)))
+    (synopsis "Lightweight concurrency facility for Guile")
+    (description
+     "Fibers is a Guile library that implements a a lightweight concurrency
+facility, inspired by systems like Concurrent ML, Go, and Erlang.  A fiber is
+like a \"goroutine\" from the Go language: a lightweight thread-like
+abstraction.  Systems built with Fibers can scale up to millions of concurrent
+fibers, tens of thousands of concurrent socket connections, and many parallel
+cores.  The Fibers library also provides Concurrent ML-like channels for
+communication between fibers.
+
+Note that Fibers makes use of some Guile 2.1/2.2-specific features and
+is not available for Guile 2.0.")
+    (home-page "https://github.com/wingo/fibers")
     (license license:lgpl3+)))
 
 (define-public guile-git
