@@ -14228,6 +14228,39 @@ Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
     (license license:gpl2)))
 
+(define-public python-automat
+  (package
+    (name "python-automat")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Automat" version))
+              (sha256
+               (base32
+                "1a7nsrljysfmdqmpn2apfa1gg6rfah4y9sizvns8gb08rx7d07rw"))))
+    (build-system python-build-system)
+    ;; We disable the tests because they require python-twisted, while
+    ;; python-twisted depends on python-automat.  Twisted is optional, but the
+    ;; tests fail if it is not available.  Also see
+    ;; <https://github.com/glyph/automat/issues/71>.
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-m2r" ,python-m2r)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-graphviz" ,python-graphviz)))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-attrs" ,python-attrs)))
+    (home-page "https://github.com/glyph/Automat")
+    (synopsis "Self-service finite-state machines")
+    (description "Automat is a library for concise, idiomatic Python
+expression of finite-state automata (particularly deterministic finite-state
+transducers).")
+    (license license:expat)))
+
+(define-public python2-automat
+  (package-with-python2 python-automat))
+
 (define-public python-m2r
   (package
     (name "python-m2r")
