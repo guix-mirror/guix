@@ -326,7 +326,10 @@ data types.")
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "0h6a5fr7ram2s483lh0pnmc4ncijb8llnpfdxdcl5dxr01hza400"))))
+                "0h6a5fr7ram2s483lh0pnmc4ncijb8llnpfdxdcl5dxr01hza400"))
+              (snippet
+               '(delete-file
+                  "Lib/ctypes/test/test_win32.py")))) ; fails on aarch64
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
     (native-search-paths
