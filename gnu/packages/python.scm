@@ -14228,6 +14228,27 @@ Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
     (license license:gpl2)))
 
+(define-public python-constantly
+  (package
+    (name "python-constantly")
+    (version "15.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "constantly" version))
+              (sha256
+               (base32
+                "0dgwdla5kfpqz83hfril716inm41hgn9skxskvi77605jbmp4qsq"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/twisted/constantly")
+    (synopsis "Symbolic constants in Python")
+    (description "Constantly is a Python library that provides symbolic
+constant support.  It includes collections and constants with text, numeric,
+and bit flag values.")
+    (license license:expat)))
+
+(define-public python2-constantly
+  (package-with-python2 python-constantly))
+
 (define-public python-attrs
   (package
     (name "python-attrs")
