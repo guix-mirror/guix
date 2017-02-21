@@ -79,22 +79,22 @@ addr2line, and more.")
               (base32
                "0vf7s9dwk2xkmhb79aigqm0x0yfbw1j0b9ksm51207qwr179n6jr"))))
     (build-system gnu-build-system)
-    (arguments `(#:phases (alist-replace
-                           'configure
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             ;; This old `configure' script doesn't support
-                             ;; variables passed as arguments.
-                             (let ((out (assoc-ref outputs "out")))
-                               (setenv "CONFIG_SHELL" (which "bash"))
-                               (zero?
-                                (system* "./configure"
-                                         (string-append "--prefix=" out)
-                                       ,@(if (string=? "aarch64-linux"
-                                                       (%current-system))
-                                             '("--host=aarch64-unknown-linux-gnu")
-                                             '())
-                         ))))
-                           %standard-phases)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This old `configure' script doesn't support
+             ;; variables passed as arguments.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                       ,@(if (string=? "aarch64-linux"
+                                       (%current-system))
+                             '("--host=aarch64-unknown-linux-gnu")
+                             '())))))))))
     (home-page "http://www.mr511.de/software/english.html")
     (synopsis "ELF object file access library")
     (description "Libelf is a C library to access ELF object files.")
