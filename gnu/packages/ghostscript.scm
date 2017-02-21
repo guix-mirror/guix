@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -271,25 +272,19 @@ architecture.")
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ; nothing to check, just files to copy
-      #:modules ((guix build gnu-build-system)
-                 (guix build utils)
-                 (srfi srfi-1)) ; for alist-delete
       #:phases
-       (alist-delete
-        'configure
-       (alist-delete
-        'build
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (dir (string-append out "/share/fonts/type1/ghostscript")))
-            (mkdir-p dir)
-            (for-each
-              (lambda (file)
-                (copy-file file (string-append dir "/" file)))
-              (find-files "." "pfb|afm"))))
-       %standard-phases)))))
+      (modify-phases %standard-phases
+        (delete 'configure)
+        (delete 'build)
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (dir (string-append out "/share/fonts/type1/ghostscript")))
+              (mkdir-p dir)
+              (for-each
+                (lambda (file)
+                  (copy-file file (string-append dir "/" file)))
+                (find-files "." "pfb|afm"))))))))
    (synopsis "Free replacements for the PostScript fonts")
    (description
     "Ghostscript fonts provides fonts and font metrics customarily distributed with
