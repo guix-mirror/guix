@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -210,7 +210,44 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))))
+                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))
+    (arguments
+     `(#:tests? #f                            ; no check target available
+       #:disallowed-references ("doc")
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out"))
+                (doc (assoc-ref outputs "doc")))
+            ;; '--docdir' is not honored, so we need to patch.
+            (substitute* "dist/Makefile.in"
+              (("docdir[[:blank:]]*=.*")
+               (string-append "docdir = " doc "/share/doc/bdb")))
+
+            (zero?
+             (system* "./dist/configure"
+                      (string-append "--prefix=" out)
+                      (string-append "CONFIG_SHELL=" (which "bash"))
+                      (string-append "SHELL=" (which "bash"))
+
+                      ;; Bdb doesn't recognize aarch64 as an architecture.
+                      ,@(if (string=? "aarch64-linux" (%current-system))
+                            '("--build=aarch64-unknown-linux-gnu")
+                            '())
+
+                      ;; Remove 7 MiB of .a files.
+                      "--disable-static"
+
+                      ;; The compatibility mode is needed by some packages,
+                      ;; notably iproute2.
+                      "--enable-compat185"
+
+                      ;; The following flag is needed so that the inclusion
+                      ;; of db_cxx.h into C++ files works; it leads to
+                      ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                      "--enable-cxx"))))
+                 %standard-phases)))))
 
 (define-public leveldb
   (package
