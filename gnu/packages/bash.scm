@@ -281,7 +281,7 @@ can apply to a patch-level 0 Bash."
 (define-public bash-completion
   (package
     (name "bash-completion")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -289,7 +289,7 @@ can apply to a patch-level 0 Bash."
                     version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xlhd09sb2w3bw8qaypxgkr0782w082mcbx8zf7yzjgy0996pxy0"))
+                "1kwmii1z1ljx5i4z702ynsr8jgrq64bj9w9hl3n2aa2kcl659fdh"))
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
