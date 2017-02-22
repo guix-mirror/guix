@@ -968,6 +968,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
+  %D%/packages/patches/xcb-proto-python3-print.patch		\
+  %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-input-wacom-xorg-abi-25.patch	\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\

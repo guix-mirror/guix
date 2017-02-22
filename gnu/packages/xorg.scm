@@ -2053,21 +2053,24 @@ emulate a TI-30 or an HP-10C.")
 (define-public xcb-proto
   (package
     (name "xcb-proto")
-    (version "1.11")
+    (version "1.12")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-proto-"
+               "https://xcb.freedesktop.org/dist/xcb-proto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0bp3f53l9fy5x3mn1rkj1g81aiyzl90wacwvqdgy831aa3kfxb5l"))))
+           "01j91946q8f34l1mbvmmgvyc393sm28ym4lxlacpiav4qsjan8jr"))
+        (patches
+         (search-patches "xcb-proto-python3-whitespace.patch"
+                         "xcb-proto-python3-print.patch"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("pkg-config" ,pkg-config) ("python" ,python-minimal-wrapper)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://xcb.freedesktop.org/")
     (synopsis "XML-XCB protocol descriptions")
     (description
      "XCB-Proto provides the XML-XCB protocol descriptions that libxcb
