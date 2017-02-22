@@ -811,17 +811,25 @@ images more compressible.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.7")
+    (version "4.16")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "158iwk0pl2mfw93m1843xb7a2zb8p6lh0qim07rca6f1ff4dk764"))))
+               "1vzhmpcy989i4k12q4cc438yal2ghhm6x7ychscjbhcf2yspqj4q"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* "strace.c"
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (native-inputs `(("perl" ,perl)))
-    (home-page "http://strace.sourceforge.net/")
+    (home-page "https://strace.io/")
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
