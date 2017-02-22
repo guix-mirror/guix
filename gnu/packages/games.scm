@@ -175,6 +175,49 @@ You may even apply photos to the faces instead of colors.  The game is
 scriptable with Guile.")
     (license license:gpl3+)))
 
+(define-public gnushogi
+  (package
+    (name "gnushogi")
+    (version "1.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gnushogi/gnushogi-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0a9bsl2nbnb138lq0h14jfc5xvz7hpb2bcsj4mjn6g1hcsl4ik0y"))))
+    (arguments `(#:tests? #f)) ;; No check target.
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/gnushogi/")
+    (synopsis "The game of Shogi (Japanese chess)")
+    (description  "GNU Shogi is a program that plays the game Shogi (Japanese
+Chess).  It is similar to standard chess but this variant is far more complicated.")
+    (license license:gpl3+)))
+
+(define-public xshogi
+  (package
+    (name "xshogi")
+    (version "1.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gnushogi/xshogi-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1dns0nhymak44by18sv48m4xb2skiwbi2i3nb9hl6w9iwd2i2brf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxaw" ,libxaw)
+       ("libxt" ,libxt)))
+    (home-page "http://www.gnu.org/software/gnushogi/")
+    (synopsis "User interface for @code{gnushogi}")
+    (description  "A graphical user interface for the package @code{gnushogi}.")
+    ;; Contains a copy of GPLv3 but the licence notices simply
+    ;; state "GNU General Public Licence" without specifying a version.
+    (license license:gpl1+)))
+
 (define-public abbaye
   (package
     (name "abbaye")
