@@ -351,19 +351,49 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre "4.9.11"
                     "1gypfg2984zr4z7hihnl3bbpxnk1mrqbynb6xd8ad2v2z04aw13q"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4")
+                            (file-name "linux-libre-CVE-2017-6074.patch")
+                            (sha256
+                             (base32
+                              "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.50"
                     "0c157kk0vgrb1fsyy4q3czqdg4npgql82n6p303afy8ylh2w6d3l"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4")
+                            (file-name "linux-libre-CVE-2017-6074.patch")
+                            (sha256
+                             (base32
+                              "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
 
 (define-public linux-libre-4.1
   (make-linux-libre "4.1.38"
                     "165kmzglhg63hn7y4q7r6cb2dpsljxiq1czvgyx0bkd1vd2bcvsa"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4")
+                            (file-name "linux-libre-CVE-2017-6074.patch")
+                            (sha256
+                             (base32
+                              "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
