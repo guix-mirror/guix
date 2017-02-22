@@ -724,6 +724,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
+  %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
   %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\

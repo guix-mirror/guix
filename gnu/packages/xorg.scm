@@ -4933,15 +4933,17 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.11.1")
+    (version "1.12")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://xorg/individual/xcb/"
+        (uri (string-append "https://xcb.freedesktop.org/dist/"
                             name "-" version ".tar.bz2"))
         (sha256
           (base32
-           "0c4xyvdyx5adh8dzyhnrmvwwz24gri4z1czxmxqm63i0gmngs85p"))))
+           "0nvv0la91cf8p5qqlb3r5xnmg1jn2wphn4fb5jfbr6byqsvv3psa"))
+        (patches
+         (search-patches "libxcb-python-3.5-compat.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)
@@ -4955,7 +4957,7 @@ protocol.")
         ("python" ,python-minimal-wrapper)))
     (arguments
      `(#:configure-flags '("--enable-xkb")))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://xcb.freedesktop.org/")
     (synopsis "The X C Binding (XCB) library")
     (description
      "libxcb provides an interface to the X Window System protocol,
