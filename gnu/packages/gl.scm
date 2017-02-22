@@ -456,25 +456,20 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.3.1")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/anholt/libepoxy/archive/v"
+                    "https://github.com/anholt/libepoxy/releases/download/v"
+                    (version-major+minor version) "/libepoxy-"
                     version
-                    ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+                    ".tar.xz"))
               (sha256
                (base32
-                "1d1brhwfmlzgnphmdwlvn5wbcrxsdyzf1qfcf8nb89xqzznxs037"))
-              (patches (search-patches "libepoxy-gl-null-checks.patch"))))
+                "0hdbaapbxjjfdqsdvag460kfjvs800da5sngi2sc46wj9aqhda95"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after
-           'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vif"))))
          (add-before
            'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -485,23 +480,10 @@ OpenGL graphics API.")
                (substitute* (find-files "." "\\.[ch]$")
                  (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
-
-               ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
-               ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
-               ;; better to make this a normal patch, but for now we do it here
-               ;; to prevent rebuilding on other platforms.
-               ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                               (%current-system)))
-                     '((substitute* '"test/dlwrap.c"
-                         (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
-                     '())
                #t))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
      `(("mesa" ,mesa)))

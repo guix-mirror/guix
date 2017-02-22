@@ -673,7 +673,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libcmis-fix-test-onedrive.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
-  %D%/packages/patches/libepoxy-gl-null-checks.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libevent-2.0-CVE-2016-10195.patch	\
   %D%/packages/patches/libevent-2.0-CVE-2016-10196.patch	\
