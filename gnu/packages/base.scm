@@ -7,6 +7,7 @@
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,7 +87,8 @@ command-line arguments, multiple languages, and so on.")
             (sha256
              (base32
               "1dcasjp3a578nrvzrcn38mpizb8w1q6mvfzhjmcqqgkf0nsivj72"))
-            (patches (search-patches "grep-timing-sensitive-test.patch"))))
+            (patches (search-patches "grep-timing-sensitive-test.patch"
+                                     "grep-gnulib-lock.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
    (arguments
