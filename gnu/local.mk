@@ -901,6 +901,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/serf-comment-style-fix.patch		\
   %D%/packages/patches/serf-deflate-buckets-test-fix.patch	\
   %D%/packages/patches/shadow-4.4-su-snprintf-fix.patch         \
+  %D%/packages/patches/shadow-CVE-2017-2616.patch		\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\

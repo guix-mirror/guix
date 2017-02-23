@@ -276,7 +276,8 @@ client and server, a telnet client and server, and an rsh client and server.")
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"))
+              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"
+                                       "shadow-CVE-2017-2616.patch"))
               (sha256
                (base32
                 "0g7hf55ar2pafg5g3ldx0fwzjk36wf4xb21p4ndanbjm3c2a9ab1"))))
