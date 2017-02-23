@@ -469,7 +469,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "3.4.47")
+    (version "4.4.47")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -478,27 +478,20 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kfp7k55bxc5h6h0wv8bwmsc5ny66h9ra2z4dzs4yzszq16544pv"))))
+                "0bfq2p158b26s913afbh6vvs4mhxs897q9zwb0hhifyx8i85863i"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f              ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((slop (string-append (assoc-ref inputs "slop")
-                                        "/bin/slop")))
-               ;; "slop" command is hardcoded in the source; replace it
-               ;; with the full file name.
-               (substitute* "src/main.cpp"
-                 (("^( +slopcommand.*)\"slop\"" all front)
-                  (string-append front "\"" slop "\"")))))))))
+     '(#:tests? #f))            ; no "check" target
     (inputs
-     `(("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
+     `(("glm" ,glm)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libxcomposite" ,libxcomposite)
        ("libxfixes" ,libxfixes)
-       ("imlib2" ,imlib2)
-       ("slop" ,slop)))
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("slop" ,slop)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/naelstrof/maim")
     (synopsis "Screenshot utility for X Window System")
     (description
