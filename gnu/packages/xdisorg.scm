@@ -51,6 +51,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -437,7 +438,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "4.3.21")
+    (version "5.3.21")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -446,15 +447,14 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0z0p4a3p5mc6fjh5f8js9ppb0maxyvfxpiw2n6nqc5nim1kv6bim"))))
+                "0qlyksiaknd40jabra0fv71k4qc4y6dgxihjmmv9a1g4hdmmqklb"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))  ; no "check" target
+    (arguments
+     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-std=gnu++11")
+       #:tests? #f)) ; no "check" target
     (inputs
-     `(("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
+     `(("glm" ,glm)
        ("libxext" ,libxext)
-       ("imlib2" ,imlib2)
-       ("glew" ,glew)
        ("mesa" ,mesa)))
     (home-page "https://github.com/naelstrof/slop")
     (synopsis "Select a region and print its bounds to stdout")
