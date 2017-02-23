@@ -865,7 +865,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.0.27.1")
+    (version "1.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -873,10 +873,9 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))
-             (patches (search-patches "alsa-lib-mips-atomic-fix.patch"))))
+               "174n2psp0328xcy2f1ayls67598bxli6q9cf00d2qnac3012aa3i"))))
     (build-system gnu-build-system)
-    (home-page "http://www.alsa-project.org/")
+    (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
      "The Advanced Linux Sound Architecture (ALSA) provides audio and
