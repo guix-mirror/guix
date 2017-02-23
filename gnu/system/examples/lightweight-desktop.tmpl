@@ -4,7 +4,7 @@
 
 (use-modules (gnu) (gnu system nss))
 (use-service-modules desktop)
-(use-package-modules wm ratpoison certs)
+(use-package-modules wm ratpoison certs suckless)
 
 (operating-system
   (host-name "antelope")
@@ -33,8 +33,8 @@
 
   ;; Add a bunch of window managers; we can choose one at
   ;; the log-in screen with F1.
-  (packages (cons* ratpoison i3-wm xmonad  ;window managers
-                   nss-certs               ;for HTTPS access
+  (packages (cons* ratpoison i3-wm i3status dmenu xmonad ;window managers
+                   nss-certs                             ;for HTTPS access
                    %base-packages))
 
   ;; Use the "desktop" services, which include the X11
