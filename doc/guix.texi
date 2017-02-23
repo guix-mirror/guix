@@ -8615,6 +8615,9 @@ The lsof package to use.
 The HTTP proxy used for downloading fixed-output derivations and
 substitutes.
 
+@item @code{tmpdir} (default: @code{#f})
+A directory path where the @command{guix-daemon} will perform builds.
+
 @end table
 @end deftp
 

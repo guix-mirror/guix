@@ -1116,6 +1116,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (lsof             guix-configuration-lsof       ;<package>
                     (default lsof))
   (http-proxy       guix-http-proxy               ;string | #f
+                    (default #f))
+  (tmpdir           guix-tmpdir                   ;string | #f
                     (default #f)))
 
 (define %default-guix-configuration
@@ -1127,7 +1129,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
     (($ <guix-configuration> guix build-group build-accounts
                              authorize-key? keys
                              use-substitutes? substitute-urls extra-options
-                             log-file lsof http-proxy)
+                             log-file lsof http-proxy tmpdir)
      (list (shepherd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
@@ -1147,6 +1149,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                 (list (string-append "PATH=" #$lsof "/bin")
                       #$@(if http-proxy
                              (list (string-append "http_proxy=" http-proxy))
+                             '())
+                      #$@(if tmpdir
+                             (list (string-append "TMPDIR=" tmpdir))
                              '()))
 
                 #:log-file #$log-file))
