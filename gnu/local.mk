@@ -953,6 +953,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-overflow-long-fsize.patch		\
   %D%/packages/patches/unzip-remove-build-date.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
+  %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/vdirsyncer-test-suite-slow-machines.patch	\
