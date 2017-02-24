@@ -11434,6 +11434,55 @@ parsing UK postcodes.")
 (define-public python2-ukpostcodeparser
   (package-with-python2 python-ukpostcodeparser))
 
+(define-public python-faker
+  (package
+  (name "python-faker")
+  (version "0.7.9")
+  (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "Faker" version))
+            (sha256
+             (base32
+              "1fh2p2yz0fsdr4fqwxgddwbvfb6qn6vp8yx0qwqzra27yq5d1wsm"))
+            (patches
+             (search-patches "python-faker-fix-build-32bit.patch"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                (for-each delete-file (find-files "." "\\.pyc$"))
+                #t))))
+  (build-system python-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+       (replace 'check
+         (lambda _
+           (zero? (system* "python" "-m" "unittest" "-v" "tests")))))))
+  (native-inputs
+   `(;; For testing
+     ("python-email-validator" ,python-email-validator)
+     ("python-mock" ,python-mock)
+     ("python-ukpostcodeparser" ,python-ukpostcodeparser)))
+  (propagated-inputs
+   `(("python-dateutil" ,python-dateutil)
+     ("python-six" ,python-six)))
+  (home-page "https://github.com/joke2k/faker")
+  (synopsis "Python package that generates fake data")
+  (description
+   "Faker is a Python package that generates fake data such as names,
+addresses, and phone numbers.")
+  (license license:expat)
+  (properties `((python2-variant . ,(delay python2-faker))))))
+
+(define-public python2-faker
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-faker))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-ipaddress" ,python2-ipaddress)
+         ,@(package-propagated-inputs base))))))
+
 (define-public python-fake-factory
   (package
   (name "python-fake-factory")
@@ -11468,13 +11517,15 @@ parsing UK postcodes.")
    "Faker is a Python package that generates fake data such as names,
 addresses, and phone numbers.")
   (license license:expat)
-  (properties `((python2-variant . ,(delay python2-fake-factory))))))
+  (properties `((python2-variant . ,(delay python2-fake-factory))
+                (superseded . ,python-faker)))))
 
 (define-public python2-fake-factory
   (let ((base (package-with-python2 (strip-python2-variant
                                      python-fake-factory))))
     (package
       (inherit base)
+      (properties `((superseded . ,python2-faker)))
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
          ,@(package-propagated-inputs base))))))
@@ -11541,7 +11592,7 @@ mocks, stubs and fakes.")
      `(("python-arrow" ,python-arrow)
        ("python-blinker" ,python-blinker)
        ("python-cleo" ,python-cleo)
-       ("python-fake-factory" ,python-fake-factory)
+       ("python-faker" ,python-faker)
        ("python-inflection" ,python-inflection)
        ("python-lazy-object-proxy" ,python-lazy-object-proxy)
        ("python-pyaml" ,python-pyaml)

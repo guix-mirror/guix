@@ -2,10 +2,10 @@ These tests fail on 32-bit due to an overflow.
 
 Upstream bug URL: https://github.com/joke2k/faker/issues/408
 
-diff --git a/faker/tests/__init__.py b/faker/tests/__init__.py
+diff --git a/tests/__init__.py b/tests/__init__.py
 index 6026772..58b6b83 100644
---- a/faker/tests/__init__.py
-+++ b/faker/tests/__init__.py
+--- a/tests/__init__.py
++++ b/tests/__init__.py
 @@ -384,7 +384,6 @@ class FactoryTestCase(unittest.TestCase):
          provider = Provider
          # test century
