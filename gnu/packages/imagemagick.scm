@@ -162,11 +162,12 @@ script.")
     (license (package-license imagemagick))))
 
 (define-public graphicsmagick
-  (let ((changeset "56c8cae")  ; 3e01b
-        (revision "1"))
+  (let ((changeset "6156b4c2992d855ece6079653b3b93c3229fc4b8")
+        (revision "2"))
     (package
       (name "graphicsmagick")
-      (version (string-append "1.3.25-" revision "." changeset))
+      (version (string-append "1.3.25-" revision "."
+                              (string-take changeset 7)))
       (source (origin
                 (method hg-fetch)
                 (uri (hg-reference
@@ -179,7 +180,7 @@ script.")
                 ;;                    "/GraphicsMagick-" version ".tar.xz"))
                 (sha256
                  (base32
-                  "1s9apvkn0kxr6i4i5wlkfw1prja02rgk689n3cf822zc0dkycxdh"))))
+                  "08yfsn8mrqkwpax43vv1crfr55rcf004wwpzsinr5c6m0asqr08b"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags
