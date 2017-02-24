@@ -240,32 +240,32 @@ written by Paul Haahr and Byron Rakitzis.")
      `(("ncurses" ,ncurses)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'patch-test-scripts
-        (lambda _
-          ;; Take care of pwd
-          (substitute* '("tests/commands.at" "tests/variables.at")
-            (("/bin/pwd") (which "pwd")))
-          ;; The .at files create shell scripts without shebangs. Erk.
-          (substitute* "tests/commands.at"
-            (("./output.sh") "/bin/sh output.sh"))
-          (substitute* "tests/syntax.at"
-            (("; other_script.csh") "; /bin/sh other_script.csh"))
-          ;; Now, let's generate the test suite and patch it
-          (system* "make" "tests/testsuite")
+        (modify-phases %standard-phases
+          (add-before 'check 'patch-test-scripts
+            (lambda _
+              ;; Take care of pwd
+              (substitute* '("tests/commands.at" "tests/variables.at")
+                (("/bin/pwd") (which "pwd")))
+              ;; The .at files create shell scripts without shebangs. Erk.
+              (substitute* "tests/commands.at"
+                (("./output.sh") "/bin/sh output.sh"))
+              (substitute* "tests/syntax.at"
+                (("; other_script.csh") "; /bin/sh other_script.csh"))
+              ;; Now, let's generate the test suite and patch it
+              (system* "make" "tests/testsuite")
 
-          ;; This file is ISO-8859-1 encoded.
-          (with-fluids ((%default-port-encoding #f))
-            (substitute* "tests/testsuite"
-              (("/bin/sh") (which "sh")))))
-        (alist-cons-after
-         'install 'post-install
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let* ((out (assoc-ref %outputs "out"))
-                 (bin (string-append out "/bin")))
-           (with-directory-excursion bin
-             (symlink "tcsh" "csh"))))
-         %standard-phases))))
+              ;; This file is ISO-8859-1 encoded.
+              (with-fluids ((%default-port-encoding #f))
+                (substitute* "tests/testsuite"
+                  (("/bin/sh") (which "sh"))))
+              #t))
+          (add-after 'install 'post-install
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref %outputs "out"))
+                     (bin (string-append out "/bin")))
+                (with-directory-excursion bin
+                  (symlink "tcsh" "csh"))
+                #t))))))
     (home-page "http://www.tcsh.org/")
     (synopsis "Unix shell based on csh")
     (description
