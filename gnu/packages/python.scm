@@ -11228,7 +11228,10 @@ parsing UK postcodes.")
             (uri (pypi-uri "fake-factory" version))
             (sha256
              (base32
-              "0vs0dkmg0dlaxf8w6q2i3k0i03gmp56ablldv7ci9x3nbadkn71g"))))
+              "0vs0dkmg0dlaxf8w6q2i3k0i03gmp56ablldv7ci9x3nbadkn71g"))
+            (patches
+             (search-patches
+              "python-fake-factory-fix-build-32bit.patch"))))
   (build-system python-build-system)
   (arguments
    '(#:phases
