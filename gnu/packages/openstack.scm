@@ -860,6 +860,10 @@ permanence.")
 (define-public python2-swiftclient
   (let ((swiftclient (package-with-python2 python-swiftclient)))
     (package (inherit swiftclient)
+      (arguments
+       `(#:python ,python-2
+         ;; FIXME: subunit.run discover: error: no such option: --list
+         #:tests? #f))
       (propagated-inputs
        `(("python2-futures" ,python2-futures)
          ("python2-requests" ,python2-requests)
