@@ -198,7 +198,7 @@ living in the same process.")
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
-       ("libidn" ,libidn)
+       ("libidn2" ,libidn2)
        ("nettle" ,nettle)
        ("zlib" ,zlib)))
     (home-page "https://www.gnu.org/software/gnutls/")
