@@ -35,6 +35,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages apr)
@@ -50,6 +51,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
@@ -1307,3 +1309,104 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
     (description "Stagit creates static pages for git repositories, the results can
 be served with a HTTP file server of your choice.")
     (license license:expat)))
+
+;; Darcs has no https support: http://irclog.perlgeek.de/darcs/2016-09-17
+;; http://darcs.net/manual/Configuring_darcs.html#SECTION00440070000000000000
+;; and results of search engines will show that if the protocol is http, https
+;; is never mentioned.
+(define-public darcs
+  (package
+    (name "darcs")
+    (version "2.12.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/darcs/"
+                           "darcs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jfwiwl5k8wspciq1kpmvh5yap4japrf97s9pvhcybxxhaj3ds28"))
+       (modules '((guix build utils)))
+       ;; Remove time-dependent code for reproducibility.
+       (snippet
+        '(begin
+           (substitute* "darcs/darcs.hs"
+             (("__DATE__") "\"1970-01-01\"")
+             (("__TIME__") "\"00:00:00\""))
+           (substitute* "src/impossible.h"
+             (("__DATE__") "\"\"")
+             (("__TIME__") "\"\""))))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
+                           "-fnetwork-uri" "-fhttp" "--flag=executable"
+                           "--flag=library")
+       #:tests? #f)) ; 20 failing shell tests out of over 400
+    (inputs
+     `(("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-split" ,ghc-split)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-findbin" ,ghc-findbin)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-array" ,ghc-array)
+       ("ghc-async" ,ghc-async)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-binary" ,ghc-binary)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-cryptohash" ,ghc-cryptohash)
+       ("ghc-data-ordlist" ,ghc-data-ordlist)
+       ("ghc-directory" ,ghc-directory)
+       ("ghc-fgl" ,ghc-fgl)
+       ("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-graphviz" ,ghc-graphviz)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-haskeline" ,ghc-haskeline)
+       ("ghc-html" ,ghc-html)
+       ("ghc-mmap" ,ghc-mmap)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-process" ,ghc-process)
+       ("ghc-random" ,ghc-random)
+       ("ghc-regex-applicative" ,ghc-regex-applicative)
+       ("ghc-regex-compat-tdfa" ,ghc-regex-compat-tdfa)
+       ("ghc-sandi" ,ghc-sandi)
+       ("ghc-shelly" ,ghc-shelly)
+       ("ghc-tar" ,ghc-tar)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-zip-archive" ,ghc-zip-archive)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-http" ,ghc-http)
+       ("curl" ,curl)
+       ("ghc" ,ghc)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("libiconv" ,libiconv)
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://darcs.net")
+    (synopsis "Distributed Revision Control System")
+    (description
+     "Darcs is a revision control system.  It is:
+
+@enumerate
+@item Distributed: Every user has access to the full command set, removing boundaries
+between server and client or committer and non-committers.
+@item Interactive: Darcs is easy to learn and efficient to use because it asks you
+questions in response to simple commands, giving you choices in your work flow.
+You can choose to record one change in a file, while ignoring another.  As you update
+from upstream, you can review each patch name, even the full diff for interesting
+patches.
+@item Smart: Originally developed by physicist David Roundy, darcs is based on a
+unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
+@end enumerate")
+    (license license:gpl2)))
