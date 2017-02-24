@@ -218,7 +218,7 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (version "6.18.01")
+    (version "6.20.00")
     (source (origin
               (method url-fetch)
               ;; Old tarballs are moved to old/.
@@ -228,16 +228,16 @@ written by Paul Haahr and Byron Rakitzis.")
                                         "old/tcsh-" version ".tar.gz")))
               (sha256
                (base32
-                "1a4z9kwgx1iqqzvv64si34m60gj34p7lp6rrcrb59s7ka5wa476q"))
+                "17ggxkkn5skl0v1x0j6hbv5l0sgnidfzwv16992sqkdm983fg7dq"))
               (patches (search-patches "tcsh-fix-autotest.patch"
-                                       "tcsh-do-not-define-BSDWAIT.patch"
                                        "tcsh-fix-out-of-bounds-read.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("autoconf" ,autoconf)
-       ("coreutils" ,coreutils)
-       ("ncurses" ,ncurses)))
+       ("perl" ,perl)))
+    (inputs
+     `(("ncurses" ,ncurses)))
     (arguments
      `(#:phases
        (alist-cons-before
