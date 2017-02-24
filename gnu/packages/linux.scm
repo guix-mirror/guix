@@ -364,8 +364,8 @@ https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabc
                               "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.50"
-                    "0c157kk0vgrb1fsyy4q3czqdg4npgql82n6p303afy8ylh2w6d3l"
+  (make-linux-libre "4.4.51"
+                    "13iahlhpqmy880nq2zljc6j6zmr2axlayabaqp3firs6brnnmr9r"
                     %intel-compatible-systems
                     #:configuration-file kernel-config
                     #:patches
