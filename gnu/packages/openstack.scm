@@ -605,10 +605,16 @@ in transmittable and storable formats, such as JSON and MessagePack.")
     (synopsis "Release notes manager")
     (description "Reno is a tool for storing release notes in a git repository
 and building documentation from them.")
+    (properties `((python2-variant . ,(delay python2-reno))))
     (license asl2.0)))
 
 (define-public python2-reno
-  (package-with-python2 python-reno))
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-reno)))
+           (arguments
+            `(#:python ,python-2
+              ;; FIXME: 'subunit.run discover: error: no such option: --list'
+              #:tests? #f))))
 
 (define-public python-oslosphinx
   (package
