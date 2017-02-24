@@ -438,7 +438,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "5.3.21")
+    (version "5.3.27")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -447,14 +447,14 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qlyksiaknd40jabra0fv71k4qc4y6dgxihjmmv9a1g4hdmmqklb"))))
+                "0yid1qd5l0g22cmm3mmmbg639404i7069nw5g843llb5yfc54bs0"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-std=gnu++11")
-       #:tests? #f)) ; no "check" target
+     '(#:tests? #f)) ; no "check" target
     (inputs
      `(("glm" ,glm)
        ("libxext" ,libxext)
+       ("libxrender" ,libxrender)
        ("mesa" ,mesa)))
     (home-page "https://github.com/naelstrof/slop")
     (synopsis "Select a region and print its bounds to stdout")
