@@ -5183,20 +5183,26 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; this package does not even have a setup.py
+       #:modules ((guix build python-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:imported-modules (,@%python-build-system-modules
+                           (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (delete 'install)
          (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((dir (string-append
-                                (assoc-ref outputs "out")
-                                "/lib/python"
-                                (string-take (string-take-right
-                                              (assoc-ref inputs "python") 5) 3)
-                                "/site-packages/testpath")))
-                      (mkdir-p dir)
-                      (copy-recursively "testpath" dir))
-                    #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((version (last
+                              (string-split (assoc-ref inputs "python") #\-)))
+                    (x.y (string-join (take (string-split version #\.) 2)
+                                        "."))
+                    (dir (string-append
+                          (assoc-ref outputs "out")
+                          "/lib/python" x.y "/site-packages/testpath")))
+               (mkdir-p dir)
+               (copy-recursively "testpath" dir))
+             #t)))))
     (home-page "https://github.com/takluyver/testpath")
     (synopsis "Test utilities for code working with files and commands")
     (description
