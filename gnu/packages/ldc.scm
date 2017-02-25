@@ -181,7 +181,7 @@ latest DMD frontend and uses LLVM as backend.")
     (package
       (inherit ldc-bootstrap)
       (name "ldc")
-      (version "1.1.0")
+      (version "1.1.1")
       ;; Beta version needed to compile various scientific tools that require
       ;; the newer beta versions, and won't compile successfully with the
       ;; older stable version.
@@ -193,7 +193,7 @@ latest DMD frontend and uses LLVM as backend.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "10zkrmx9bcmhfxvgykm3fkjamzc8js96wm032bv0fyil5c9ja2y1"))))
+                  "0yjiwg8pnlm2286bwdkwasaqw6ys7lymrqvhh5xyb1adha1ndcav"))))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
