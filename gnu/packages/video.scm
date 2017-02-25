@@ -263,7 +263,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public x265
   (package
     (name "x265")
-    (version "2.1")
+    (version "2.3")
     (source
       (origin
         (method url-fetch)
@@ -271,7 +271,7 @@ H.264 (MPEG-4 AVC) video streams.")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "0hx6sr9l7586gs4qds2sj0i1m5brxkaqq3cwmibhfb559fpvkz48"))
+          "07z4ydxg0lk6j43h0wlh2xddb91cy4y4mny2ln71d4278b1hllj7"))
         (modules '((guix build utils)))
         (snippet
          '(delete-file-recursively "source/compat/getopt"))))
