@@ -212,7 +212,7 @@ Chess).  It is similar to standard chess but this variant is far more complicate
      `(("libxaw" ,libxaw)
        ("libxt" ,libxt)))
     (home-page "http://www.gnu.org/software/gnushogi/")
-    (synopsis "User interface for @code{gnushogi}")
+    (synopsis "User interface for gnushogi")
     (description  "A graphical user interface for the package @code{gnushogi}.")
     ;; Contains a copy of GPLv3 but the licence notices simply
     ;; state "GNU General Public Licence" without specifying a version.
