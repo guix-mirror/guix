@@ -229,6 +229,7 @@ fonts to/from the WOFF2 format.")
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
+            (patches (search-patches "fontconfig-charwidth-symbol-conflict.patch"))
             (sha256 (base32
                      "1wy7svvp7df6bjpg1m5vizb3ngd7rhb20vpclv3x3qa71khs6jdl"))))
    (build-system gnu-build-system)
