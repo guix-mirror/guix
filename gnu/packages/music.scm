@@ -3407,3 +3407,30 @@ the electronic or dubstep genre.")
 designed to make a developer's life easy when trying to use the APIs provided
 by The Echo Nest.")
     (license license:gpl2+)))
+
+(define-public libmygpo-qt
+  (package
+    (name "libmygpo-qt")
+    (version "1.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://stefan.derkits.at/files/"
+                                  "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
+              (sha256
+               (base32
+                "1wsgh2vjnd52rkvpncj1ycpbp84sj9hh12ija46b42z9mmqf2jm4"))
+              (patches
+               (search-patches "libmygpo-qt-fix-jsoncreatortest.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_WITH_QT4=OFF")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qt" ,qtbase)))
+    (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
+    (synopsis "Qt/C++ library wrapping the gpodder web service")
+    (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the
+@url{https://gpodder.net} APIs.  It allows applications to discover, manage
+and track podcasts.")
+    (license license:lgpl2.1+)))

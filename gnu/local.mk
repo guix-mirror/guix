@@ -822,6 +822,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
+  %D%/packages/patches/libmygpo-qt-fix-jsoncreatortest.patch	\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
