@@ -40,6 +40,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
@@ -99,6 +100,7 @@
        ("libXcomposite" ,libxcomposite)
        ("ncurses" ,ncurses)
        ("openal" ,openal)
+       ("pulseaudio" ,pulseaudio)
        ("unixodbc" ,unixodbc)
        ("zlib" ,zlib)))
     (arguments
