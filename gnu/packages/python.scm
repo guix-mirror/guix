@@ -3089,24 +3089,6 @@ sources.")
       (propagated-inputs `(("python2-pytz" ,python2-pytz)
                        ,@(package-propagated-inputs base))))))
 
-;; This is needed for python-matplotlib@1.4 and python-scipy@0.16, at least.
-;; Try removing this when they are updated.
-(define-public python-sphinx-1.2.3
-  (package (inherit python-sphinx)
-           (version "1.2.3")
-           (source (origin
-                     (method url-fetch)
-                     (uri (pypi-uri "Sphinx" version))
-                     (sha256
-                      (base32
-                       "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
-           ;; XXX: "'NoneType' object has no attribute 'split'".
-           (arguments '(#:tests? #f))))
-
-(define-public python2-sphinx-1.2.3
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-sphinx-1.2.3)))))
-
 (define-public python-sphinx-rtd-theme
   (package
     (name "python-sphinx-rtd-theme")
