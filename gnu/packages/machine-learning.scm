@@ -504,14 +504,14 @@ and a QP solver.")
 (define-public dlib
   (package
     (name "dlib")
-    (version "19.2")
+    (version "19.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://dlib.net/files/dlib-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jh840b3ynlqsvbpswzg994yk539zbhx2sk6lybd23qyd2b8zgi8"))
+                "0gfy83av717qymv53yv7ki6mgh6mdw4xcxxbjk8lrs72f8qvnrcw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -541,7 +541,7 @@ and a QP solver.")
                                       '("object_detector" ; timeout
                                         "data_io"))
                                      ((string-prefix? "armhf" system)
-                                      '("learning_to_track" "max_cost_assignment"))
+                                      '("learning_to_track"))
                                      ((string-prefix? "i686" system)
                                       '("optimization"))
                                      (else '()))))
