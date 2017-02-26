@@ -165,8 +165,9 @@
 
 (define-configuration unix-listener-configuration
   (path
-   (file-name (configuration-missing-field 'unix-listener 'path))
-   "The file name on which to listen.")
+   (string (configuration-missing-field 'unix-listener 'path))
+   "Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.")
   (mode
    (string "0600")
    "The access mode for the socket.")
@@ -184,8 +185,9 @@
 
 (define-configuration fifo-listener-configuration
   (path
-   (file-name (configuration-missing-field 'fifo-listener 'path))
-   "The file name on which to listen.")
+   (string (configuration-missing-field 'fifo-listener 'path))
+   "Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.")
   (mode
    (string "0600")
    "The access mode for the socket.")

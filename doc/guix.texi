@@ -10930,8 +10930,9 @@ Defaults to @samp{()}.
 
 Available @code{unix-listener-configuration} fields are:
 
-@deftypevr {@code{unix-listener-configuration} parameter} file-name path
-The file name on which to listen.
+@deftypevr {@code{unix-listener-configuration} parameter} string path
+Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.
 @end deftypevr
 
 @deftypevr {@code{unix-listener-configuration} parameter} string mode
@@ -10952,8 +10953,9 @@ Defaults to @samp{""}.
 
 Available @code{fifo-listener-configuration} fields are:
 
-@deftypevr {@code{fifo-listener-configuration} parameter} file-name path
-The file name on which to listen.
+@deftypevr {@code{fifo-listener-configuration} parameter} string path
+Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.
 @end deftypevr
 
 @deftypevr {@code{fifo-listener-configuration} parameter} string mode
