@@ -581,6 +581,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-fix-truecolor-format-correction.patch	\
+  %D%/packages/patches/gd-freetype-test-failure.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\

@@ -51,7 +51,8 @@
               (base32
                "1rp4v7n1dq38b92kl7gkvpvqqkw7nvdfnz6d5kip5klkxfki6zqk"))
              (patches (search-patches "gd-fix-gd2-read-test.patch"
-                                      "gd-fix-tests-on-i686.patch"))))
+                                      "gd-fix-tests-on-i686.patch"
+                                      "gd-freetype-test-failure.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
