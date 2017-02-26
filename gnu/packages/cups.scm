@@ -166,6 +166,14 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
              (substitute* "Makedefs.in"
                (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
                (("/bin/sh") (which "sh")))))
+         ;; Make the compressed manpages writable so that the
+         ;; reset-gzip-timestamps phase does not error out.
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (for-each (lambda (file) (chmod file #o644))
+                         (find-files man "\\.gz")))))
          (add-before 'build 'patch-tests
            (lambda _
              (substitute* "test/ippserver.c"
