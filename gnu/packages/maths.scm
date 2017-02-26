@@ -83,6 +83,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages scheme)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -2958,3 +2959,54 @@ algorithm for LCS.  It is a fast program to compute the approximate
 Longest Commons Subsequence of a set of strings.")
       (home-page "https://github.com/gdv/Reduce-Expand-for-LCS")
       (license license:gpl3+))))
+
+(define-public jacal
+  (package
+    (name "jacal")
+    (version "1c4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://groups.csail.mit.edu/mac/ftpdir/scm/jacal-"
+                    version ".zip"))
+              (sha256 (base32
+                       "055zrn12a1dmy0dqkwrkq3fklbhg3yir6vn0lacp4mvbg8573a3q"))
+              (patches (search-patches "jacal-fix-texinfo.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+                     ;; Don't use upstream's script - it really doesn't fit into
+                     ;; Guix's functional paradigm.
+                     (lambda* (#:key inputs outputs #:allow-other-keys)
+                       (substitute* "Makefile"
+                         (("^install: install-script") "install: "))))
+         (add-after 'install 'post-install
+                    ;; Instead, we provide our own simplified script.
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((wrapper (string-append (assoc-ref outputs "out")
+                                                    "/bin/jacal")))
+                        (format (open wrapper (logior O_WRONLY O_CREAT))
+                                (string-append "#!~a\nexec ~a/bin/scm -ip1 "
+                                "-e '(slib:load \"~a/lib/jacal/math\") "
+                                "(math)' \"$@\"\n")
+                                (which  "bash")
+                                (assoc-ref inputs "scm")
+                                (assoc-ref outputs "out"))
+                        (chmod wrapper #o555))))
+         (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (zero? (system* "./configure"
+                                    (string-append "--prefix="
+                                                   (assoc-ref outputs "out")))))))))
+    (inputs `(("scm" ,scm)))
+    (native-inputs `(("unzip" ,unzip)
+                     ("texinfo" ,texinfo)))
+    (synopsis "Symbolic mathematics system")
+    (description "GNU JACAL is an interactive symbolic mathematics program based on
+Scheme.  It manipulate and simplify a range of mathematical expressions such
+as equations, scalars, vectors, and matrices.")
+    (home-page "http://www.gnu.org/software/jacal")
+    (license license:gpl3+)))
+
