@@ -882,3 +882,64 @@ utility functions for all standard Scheme implementations.")
               "http://people.csail.mit.edu/jaffer/SLIB_COPYING.txt"
               "Or see COPYING in the distribution."))))
 
+(define-public scm
+  (package
+    (name "scm")
+    (version "5f2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://groups.csail.mit.edu/mac/ftpdir/scm/scm-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "050ijb51jm1cij9g3r89zl9rawsrikhbb5y8zb7lspb7bsxq5w99"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (zero? (system* "./configure"
+                                    (string-append "--prefix="
+                                                   (assoc-ref outputs "out"))))))
+         (add-before 'build 'pre-build
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (substitute* "Makefile"
+                         (("ginstall-info") "install-info"))))
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (setenv "SCHEME_LIBRARY_PATH"
+                            (string-append (assoc-ref inputs "slib")
+                                           "/lib/slib/"))
+                    (and
+                     (zero? (system* "make" "scmlit" "CC=gcc"))
+                     (zero? (system* "make" "all")))))
+         (add-after 'install 'post-install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((req
+                             (string-append (assoc-ref outputs "out")
+                                            "/lib/scm/require.scm")))
+                        (and
+                         (delete-file req)
+                         (format (open req (logior O_WRONLY O_CREAT))
+                                 "(define (library-vicinity) ~s)\n"
+                                 (string-append (assoc-ref inputs "slib")
+                                                "/lib/slib/"))
+
+                         ;; We must generate the slibcat file
+                         (zero? (system*
+                                 (string-append
+                                  (assoc-ref outputs "out")
+                                  "/bin/scm")
+                                 "-br" "new-catalog")))))))))
+    (inputs `(("slib" ,slib)))
+    (native-inputs `(("unzip" ,unzip)
+                     ("texinfo" ,texinfo)))
+    (home-page "http://people.csail.mit.edu/jaffer/SCM")
+    (synopsis "Scheme implementation conforming to R5RS and IEEE P1178")
+    (description "GNU SCM is an implementation of Scheme.  This
+implementation includes Hobbit, a Scheme-to-C compiler, which can
+generate C files whose binaries can be dynamically or statically
+linked with a SCM executable.")
+    (license lgpl3+)))
