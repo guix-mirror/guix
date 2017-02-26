@@ -1,0 +1,31 @@
+Fix build failure due to conflicting declaration of
+keyboard_lookup_key() in gperf-3.1:
+
+https://bugs.gentoo.org/show_bug.cgi?id=604864
+
+Patch copied from upstream source repository:
+
+https://github.com/gentoo/eudev/commit/5bab4d8de0dcbb8e2e7d4d5125b4aea1652a0d60
+
+From 5bab4d8de0dcbb8e2e7d4d5125b4aea1652a0d60 Mon Sep 17 00:00:00 2001
+From: "Anthony G. Basile" <blueness@gentoo.org>
+Date: Thu, 5 Jan 2017 16:21:17 -0500
+Subject: [PATCH] src/udev/udev-builtin-keyboard.c: fix build with gperf 3.1
+
+Signed-off-by: Anthony G. Basile <blueness@gentoo.org>
+---
+ src/udev/udev-builtin-keyboard.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/udev/udev-builtin-keyboard.c b/src/udev/udev-builtin-keyboard.c
+index 73171c3..fad3520 100644
+--- a/src/udev/udev-builtin-keyboard.c
++++ b/src/udev/udev-builtin-keyboard.c
+@@ -28,7 +28,6 @@
+ 
+ #include "udev.h"
+ 
+-static const struct key *keyboard_lookup_key(const char *str, unsigned len);
+ #include "keyboard-keys-from-name.h"
+ #include "keyboard-keys-to-name.h"
+ 

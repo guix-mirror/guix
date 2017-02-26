@@ -1741,7 +1741,8 @@ from the module-init-tools project.")
               (sha256
                (base32
                 "06gyyl90n85x8i7lfhns514y1kg1ians13l467admyzy3kjxkqsp"))
-              (patches (search-patches "eudev-rules-directory.patch"))))
+              (patches (search-patches "eudev-rules-directory.patch"
+                                       "eudev-conflicting-declaration.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
