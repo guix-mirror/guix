@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -706,7 +707,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                                            "-file" temp)))
                      (display "yes\n" port)
                      (when (not (zero? (status:exit-val (close-pipe port))))
-                       (error "failed to import" cert)))
+                       (format #t "failed to import ~a\n" cert)))
                    (delete-file temp)))
 
                ;; This is necessary because the certificate directory contains
@@ -719,6 +720,15 @@ build process and its dependencies, whereas Make uses Makefile format.")
                                        "/lib/security"))
                (mkdir-p (string-append (assoc-ref outputs "jdk")
                                        "/jre/lib/security"))
+
+               ;; The cacerts files we are going to overwrite are chmod'ed as
+               ;; read-only (444) in icedtea-8 (which derives from this
+               ;; package).  We have to change this so we can overwrite them.
+               (chmod (string-append (assoc-ref outputs "out")
+                                     "/lib/security/" keystore) #o644)
+               (chmod (string-append (assoc-ref outputs "jdk")
+                                     "/jre/lib/security/" keystore) #o644)
+
                (install-file keystore
                              (string-append (assoc-ref outputs "out")
                                             "/lib/security"))
@@ -1023,9 +1033,6 @@ build process and its dependencies, whereas Make uses Makefile format.")
                     (find-files "openjdk.src/jdk/src/solaris/native"
                                 "\\.c|\\.h"))
                    #t)))
-             ;; FIXME: This phase is needed but fails with this version of
-             ;; IcedTea.
-             (delete 'install-keystore)
              (replace 'install
                (lambda* (#:key outputs #:allow-other-keys)
                  (let ((doc (string-append (assoc-ref outputs "doc")
