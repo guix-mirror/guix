@@ -1063,7 +1063,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.9.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1071,7 +1071,7 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1i0n071hiqxw1gisngw2jln3kcp9sh47n6fj5hdwqrvp7w20zwy0"))))
+                "1a59y1zkddvr7z0lh2y9iasbh9wpfc1n39p56xcd6jkhzk0y3c92"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1080,6 +1080,7 @@ packet filter.")
                             (string-append "BASH_COMPDIR=" out
                                            "/etc/bash_completion.d")
                             (string-append "LIBDIR=" out "/lib")
+                            (string-append "HDRDIR=" out "/include")
                             (string-append "SBINDIR=" out "/sbin")
                             (string-append "CONFDIR=" out "/etc")
                             (string-append "DOCDIR=" out "/share/doc/"
