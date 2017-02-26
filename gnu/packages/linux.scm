@@ -1732,7 +1732,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1740,7 +1740,7 @@ from the module-init-tools project.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "099w62ncq78nxpxizf910mx18hc8x4qvzw3azjd00fir89wmyjnq"))
+                "06gyyl90n85x8i7lfhns514y1kg1ians13l467admyzy3kjxkqsp"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
