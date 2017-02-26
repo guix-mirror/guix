@@ -93,13 +93,21 @@ remote applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))))
+              "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
+            (patches
+             (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))
    (build-system gnu-build-system)
    ;; The installed libssh2.pc file does not include paths to libgcrypt and
    ;; zlib libraries, so we need to propagate the inputs.
    (propagated-inputs `(("libgcrypt" ,libgcrypt)
                         ("zlib" ,zlib)))
-   (arguments '(#:configure-flags `("--with-libgcrypt")))
+   (arguments '(#:configure-flags `("--with-libgcrypt")
+                #:phases (modify-phases %standard-phases
+                           (add-before 'configure 'autoreconf
+                             (lambda _
+                               (zero? (system* "autoreconf" "-v")))))))
+   (native-inputs `(("autoconf" ,autoconf)
+                    ("automake" ,automake)))
    (synopsis "Client-side C library implementing the SSH2 protocol")
    (description
     "libssh2 is a library intended to allow software developers access to
