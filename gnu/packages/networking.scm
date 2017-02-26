@@ -11,6 +11,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
+;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,7 +81,7 @@
     (description "GNU MAC Changer is a utility for viewing and changing MAC
 addresses of networking devices.  New addresses may be set explicitly or
 randomly.  They can include MAC addresses of the same or other hardware vendors
-or, more generally, MAC addresses of the same category of hardware.") 
+or, more generally, MAC addresses of the same category of hardware.")
     (license license:gpl2+)))
 
 (define-public miredo
@@ -1119,3 +1120,24 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
            license:gpl2                 ; datapath
            license:bsd-2 license:bsd-3
            license:asl2.0))))           ; all other
+
+(define-public speedtest-cli
+  (package
+    (name "speedtest-cli")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/sivel/speedtest-cli/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ir9fqwr7cl9kfq7dgh9vkydkwf59wsx0cwbzbffw8i313xhzxa1"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/sivel/speedtest-cli")
+    (synopsis "Internet bandwidth tester")
+    (description
+     "Command line interface for testing internet bandwidth using
+speedtest.net.")
+    (license license:asl2.0)))
