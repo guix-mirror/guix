@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,8 +26,8 @@
 (define-module (gnu packages scheme)
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3
-                          cc-by-sa4.0))
+                #:select (gpl2+ lgpl2.0+ lgpl2.1+ lgpl3+ asl2.0 bsd-3
+                          cc-by-sa4.0 non-copyleft))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages zip)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)
@@ -844,3 +846,39 @@ metalinguistic abstraction, recursion, interpreters, and modular programming.")
        "String pattern-matching library for scheme48 based on the SRE
 regular-expression notation.")
       (license bsd-3))))
+
+(define-public slib
+  (package
+    (name "slib")
+    (version "3b5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://groups.csail.mit.edu/mac/ftpdir/scm/slib-"
+                                 version ".zip"))
+             (sha256
+              (base32
+               "0q0p2d53p8qw2592yknzgy2y1p5a9k7ppjx0cfrbvk6242c4mdpq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There is no check target.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-bin-share
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (delete-file-recursively
+                       (string-append (assoc-ref outputs "out") "/bin"))))
+         (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (zero? (system* "./configure"
+                                    (string-append "--prefix="
+                                                   (assoc-ref outputs "out")))))))))
+    (native-inputs `(("unzip" ,unzip)
+                     ("texinfo" ,texinfo)))
+    (home-page "http://people.csail.mit.edu/jaffer/SLIB/")
+    (synopsis "Compatibility and utility library for Scheme")
+    (description "SLIB is a portable Scheme library providing compatibility and
+utility functions for all standard Scheme implementations.")
+    (license (non-copyleft
+              "http://people.csail.mit.edu/jaffer/SLIB_COPYING.txt"
+              "Or see COPYING in the distribution."))))
+
