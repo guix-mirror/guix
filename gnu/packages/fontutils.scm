@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -255,6 +255,11 @@ fonts to/from the WOFF2 format.")
             "PYTHON=false")
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'fix-tests-for-freetype-2.7.1
+          (lambda _
+            (substitute* "test/run-test.sh"
+              (("\\\| sort") "| cut -d' ' -f2 | sort"))
+            #t))
         (replace 'install
                  (lambda _
                    ;; Don't try to create /var/cache/fontconfig.
