@@ -499,6 +499,9 @@ provides the Ribotaper pipeline.")
        ("python-matplotlib" ,python2-matplotlib)
        ("python-scipy" ,python2-scipy)
        ("python-statsmodels" ,python2-statsmodels)))
+    (native-inputs
+     `(("python-mock" ,python2-mock)
+       ("python-nose" ,python2-nose)))
     (home-page "http://public.bmi.inf.ethz.ch/user/zhongy/RiboDiff/")
     (synopsis "Detect translation efficiency changes from ribosome footprints")
     (description "RiboDiff is a statistical tool that detects the protein
