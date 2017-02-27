@@ -2008,7 +2008,9 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "16.12.2")
+    ;; Versions 16.12.0 to 16.12.2 have a bug which causes output lines to
+    ;; overlap. See <https://debbugs.gnu.org/25793>
+    (version "16.04.2")
     (source
      (origin
        (method url-fetch)
@@ -2016,7 +2018,7 @@ point numbers.")
                            version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0y22zhyhyxj2cbhzvs9c4pxr44i55ryfy5xi96d39bg2nbgs9h22"))))
+         "1fpqzk1921isiqrpgpf433ldq41924qs9sy99fl1zn5661b2l73n"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
