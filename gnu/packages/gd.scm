@@ -53,7 +53,8 @@
                "1rp4v7n1dq38b92kl7gkvpvqqkw7nvdfnz6d5kip5klkxfki6zqk"))
              (patches (search-patches "gd-fix-gd2-read-test.patch"
                                       "gd-fix-tests-on-i686.patch"
-                                      "gd-freetype-test-failure.patch"))))
+                                      "gd-freetype-test-failure.patch"
+                                      "gd-php-73968-Fix-109-XBM-reading.patch"))))
     (build-system gnu-build-system)
     (arguments
       ;; As recommended by github.com/libgd/libgd/issues/278 to fix rounding
