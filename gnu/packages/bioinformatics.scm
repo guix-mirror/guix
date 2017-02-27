@@ -238,7 +238,7 @@ instance, it implements several methods to assess contig-wise read coverage.")
 (define-public bamtools
   (package
     (name "bamtools")
-    (version "2.3.0")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -247,7 +247,7 @@ instance, it implements several methods to assess contig-wise read coverage.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1brry29bw2xr2l9pqn240rkqwayg85b8qq78zk2zs6nlspk4d018"))))
+                "0jr024kcrhjb82cm69i7p5fcg5375zlc1h3qh2n1v368hcd0qflk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
