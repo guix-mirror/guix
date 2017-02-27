@@ -1020,7 +1020,7 @@ external rate conversion.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://www.netfilter.org/projects/iptables/files/iptables-"
+                   "mirror://netfilter.org/iptables/iptables-"
                    version ".tar.bz2"))
              (sha256
               (base32
@@ -3726,7 +3726,7 @@ machines (PowerMac G4 is known to work).")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://www.netfilter.org/projects/libmnl/files/"
+        (uri (string-append "mirror://netfilter.org/libmnl/"
                             "libmnl-" version ".tar.bz2"))
         (sha256
          (base32
@@ -3748,7 +3748,7 @@ re-use code and to avoid re-inventing the wheel.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://www.netfilter.org/projects/libnftnl/files/"
+        (uri (string-append "mirror://netfilter.org/libnftnl/"
                             "libnftnl-" version ".tar.bz2"))
         (sha256
          (base32
