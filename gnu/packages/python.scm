@@ -815,14 +815,14 @@ concepts.")
 (define-public python-netcdf4
   (package
     (name "python-netcdf4")
-    (version "1.2.6")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "netCDF4" version))
        (sha256
         (base32
-         "1qcymsfxsdfr4sx0vl7ih5d14z66k6c9sjy4gb6rjaksk5387zvg"))))
+         "1fllizmnpw0zkzzm4j9pgamarlzfn3kmv9zrm0w65q1y31h9ni0c"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)))
