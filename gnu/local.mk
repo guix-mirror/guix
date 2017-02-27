@@ -578,10 +578,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gcj-arm-mode.patch			\
   %D%/packages/patches/gdk-pixbuf-list-dir.patch		\
-  %D%/packages/patches/gd-fix-chunk-size-on-boundaries.patch	\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
-  %D%/packages/patches/gd-fix-truecolor-format-correction.patch	\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
   %D%/packages/patches/gd-php-73968-Fix-109-XBM-reading.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
