@@ -1,0 +1,13 @@
+Traverse the entities hash's keys in sorted order to ensure reproducibility.
+
+--- libhubbub-0.3.3/build/make-entities.pl
++++ libhubbub-0.3.3/build/make-entities.pl
+@@ -86,7 +86,7 @@
+ 
+ my $trie;
+ 
+-foreach my $key (keys %entities) {
++foreach my $key (sort keys %entities) {
+    $trie = insert_node($trie, $key, $entities{$key});
+ }
+ 

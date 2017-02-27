@@ -526,18 +526,16 @@ interface (API).")
 (define-public python-pygame
   (package
     (name "python-pygame")
-    (version "1.9.1")
+    (version "1.9.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pygame.org/ftp/pygame-"
-                                  version "release.tar.gz"))
+              (uri (pypi-uri "pygame" version))
               (sha256
                (base32
-                "0cyl0ww4fjlf289pjxa53q4klyn55ajvkgymw0qrdgp4593raq52"))))
+                "1hlydiyygl444bq5m5g8n3jsxsgrdyxlm42ipmfbw36wkf0j243m"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f ; Tests require pygame to be installed first.
+     `(#:tests? #f ; Tests require pygame to be installed first.
        #:phases
        (modify-phases %standard-phases
          ;; Set the paths to the dependencies manually because
@@ -553,6 +551,7 @@ interface (API).")
                    (smpeg-ref (assoc-ref inputs "libsmpeg"))
                    (png-ref   (assoc-ref inputs "libpng"))
                    (jpeg-ref  (assoc-ref inputs "libjpeg"))
+                   (freetype-ref (assoc-ref inputs "freetype"))
                    (v4l-ref   (assoc-ref inputs "v4l-utils"))
                    (out-ref   (assoc-ref outputs "out")))
                (substitute* "Setup.in"
@@ -582,9 +581,14 @@ interface (API).")
                  (("JPEG = -ljpeg")
                   (string-append "JPEG = -I" jpeg-ref "/include -L"
                                  jpeg-ref "/lib -ljpeg")))
+
+               (substitute* "Setup.in"
+                 (("FREETYPE = -lfreetype")
+                  (string-append "FREETYPE = -I" freetype-ref "/include/freetype2 -L"
+                                 freetype-ref "/lib -lfreetype")))
+
                (substitute* "Setup.in"
                  (("^pypm") "#pypm"))
-               (substitute* "src/movie.c")
                ;; Create a path to a header file provided by v4l-utils.
                (system* "mkdir" "linux")
                (system* "ln" "--symbolic"
@@ -592,7 +596,8 @@ interface (API).")
                         "linux/videodev.h")
                (system* "ln" "--symbolic" "Setup.in" "Setup")))))))
     (inputs
-     `(("sdl" ,sdl)
+     `(("freetype" ,freetype)
+       ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("sdl-mixer" ,sdl-mixer)
        ("sdl-ttf" ,sdl-ttf)
@@ -619,3 +624,6 @@ to create fully featured games and multimedia programs in the python language.")
                    license:psfl
                    license:public-domain
                    license:lgpl2.1+))))
+
+(define-public python2-pygame
+  (package-with-python2 python-pygame))

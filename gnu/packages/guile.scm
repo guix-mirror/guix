@@ -3,13 +3,14 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -232,7 +234,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "2.1.5")
+    (version "2.1.7")
     (replacement #f)
     (source (origin
               (method url-fetch)
@@ -240,7 +242,7 @@ without requiring the source code to be rewritten.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0r9y4hw17dlxahik4zsccfb2f3p2a07wqndfm251bgmam9hln6gi"))
+                "0qf2664bglv5rrj4c99cc7gry7v9x0sqdyzgfg8zi8gm5wbcmqda"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -321,6 +323,66 @@ applicable."
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.0/site-ccache"
                      "share/guile/site/2.0")))))))
+
+;; There has not been any release yet.
+(define-public guildhall
+  (let ((commit "2fe2cc539f4b811bbcd69e58738db03eb5a2b778")
+        (revision "1"))
+    (package
+      (name "guildhall")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ijp/guildhall.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "115bym7bg66h3gs399yb2vkzc2ygriaqsn4zbrg8f054mgy8wzn1"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Tests fail without this fix because they try to load the bash
+           ;; executable as a Scheme file.  See bug report at
+           ;; https://github.com/ijp/guildhall/issues/22
+           (add-after 'unpack 'fix-bug-22
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("TESTS_ENVIRONMENT=.*")
+                  "AM_TESTS_ENVIRONMENT=srcdir=$(abs_top_srcdir)/tests/
+TEST_EXTENSIONS = .scm
+SCM_LOG_COMPILER= $(top_builddir)/env $(GUILE)
+AM_SCM_LOG_FLAGS =  --no-auto-compile -s")
+                 ;; FIXME: one of the database tests fails for unknown
+                 ;; reasons.  It does not fail when run outside of Guix.
+                 (("tests/database.scm") ""))
+               #t))
+           (add-before 'configure 'autogen
+             (lambda _
+               (zero? (system* "sh" "autogen.sh")))))))
+      (inputs
+       `(("guile" ,guile-2.0)))
+      (native-inputs
+       `(("zip" ,zip) ; for tests
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)))
+      (synopsis "Package manager for Guile")
+      (description
+       "Guildhall is a package manager written for Guile Scheme.  A guild is
+an association of independent craftspeople.  A guildhall is where they meet.
+This Guildhall aims to make a virtual space for Guile wizards and journeyfolk
+to share code.
+
+On a practical level, Guildhall lets you share Scheme modules and programs
+over the internet, and install code that has been shared by others.  Guildhall
+can handle dependencies, so when a program requires several libraries, and
+each of those has further dependencies, all of the prerequisites for the
+program can be installed in one go.")
+      (home-page "https://github.com/ijp/guildhall")
+      (license license:gpl3+))))
 
 
 ;;;
@@ -846,10 +908,22 @@ inspired by the SCSH regular expression system.")
        #:builder
        (begin
          (use-modules (guix build utils)
-                      (system base compile))
+                      (ice-9 rdelim)
+                      (ice-9 popen))
+
+         ;; Avoid warnings we can safely ignore
+         (setenv "GUILE_AUTO_COMPILE" "0")
 
          (let* ((out (assoc-ref %outputs "out"))
-                (module-dir (string-append out "/share/guile/site/2.0"))
+                (effective-version
+                 (read-line
+                  (open-pipe* OPEN_READ
+                              (string-append
+                               (assoc-ref %build-inputs "guile")
+                               "/bin/guile")
+                              "-c" "(display (effective-version))")))
+                (module-dir (string-append out "/share/guile/site/"
+                                           effective-version))
                 (source (assoc-ref %build-inputs "source"))
                 (doc (string-append out "/share/doc"))
                 (guild (string-append (assoc-ref %build-inputs "guile")
@@ -857,7 +931,10 @@ inspired by the SCSH regular expression system.")
                 (gdbm.scm-dest
                  (string-append module-dir "/gdbm.scm"))
                 (gdbm.go-dest
-                 (string-append module-dir "/gdbm.go")))
+                 (string-append module-dir "/gdbm.go"))
+                (compile-file
+                 (lambda (in-file out-file)
+                   (system* guild "compile" "-o" out-file in-file))))
            ;; Make installation directories.
            (mkdir-p module-dir)
            (mkdir-p doc)
@@ -875,8 +952,7 @@ inspired by the SCSH regular expression system.")
                       (assoc-ref %build-inputs "gdbm"))))
 
            ;; compile to the destination
-           (compile-file gdbm.scm-dest
-                         #:output-file gdbm.go-dest)))))
+           (compile-file gdbm.scm-dest gdbm.go-dest)))))
     (inputs
      `(("guile" ,guile-2.0)))
     (propagated-inputs
@@ -1578,6 +1654,38 @@ and then run @command{scm example.scm}.")
 library for GNU Guile based on the actor model.
 
 Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
+    (license license:lgpl3+)))
+
+(define-public guile-fibers
+  (package
+    (name "guile-fibers")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wingolog.org/pub/fibers/fibers-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-next)))
+    (synopsis "Lightweight concurrency facility for Guile")
+    (description
+     "Fibers is a Guile library that implements a a lightweight concurrency
+facility, inspired by systems like Concurrent ML, Go, and Erlang.  A fiber is
+like a \"goroutine\" from the Go language: a lightweight thread-like
+abstraction.  Systems built with Fibers can scale up to millions of concurrent
+fibers, tens of thousands of concurrent socket connections, and many parallel
+cores.  The Fibers library also provides Concurrent ML-like channels for
+communication between fibers.
+
+Note that Fibers makes use of some Guile 2.1/2.2-specific features and
+is not available for Guile 2.0.")
+    (home-page "https://github.com/wingo/fibers")
     (license license:lgpl3+)))
 
 (define-public guile-git

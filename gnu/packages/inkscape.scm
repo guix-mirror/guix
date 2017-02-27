@@ -44,7 +44,7 @@
 (define-public inkscape
   (package
     (name "inkscape")
-    (version "0.92.0")
+    (version "0.92.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://media.inkscape.org/dl/"
@@ -52,7 +52,7 @@
                                   "inkscape-" version ".tar.bz2"))
               (sha256
                (base32
-                "0mmssxnxsvb3bpm7ck5pqvwyacrz1nkyacs571jx8j04l1cw3d5q"))))
+                "01chr3vh728dkg7l7lilwgmh5nrp784khdhjgpqjbq9dh2zhax15"))))
     (build-system cmake-build-system)
     (inputs
      `(("aspell" ,aspell)

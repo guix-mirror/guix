@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,7 +110,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
@@ -118,15 +119,38 @@ libenca and several charset conversion libraries and tools.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "140vib1m6n5kwzkw1n9fbsi5gl6xymbd7yndwqx1sj15aakak776"))))
+        (base32 "0q1jhdkk4f9b0zb8s2ql3sba3br5nvjsmbsaybmgj064k9hwbk15"))))
     (build-system gnu-build-system)
+    (inputs                  ;test data that is otherwise downloaded with curl
+     `(("NormalizationTest.txt"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://www.unicode.org/Public/9.0.0/ucd/"
+                               "NormalizationTest.txt"))
+           (sha256
+            (base32 "1fxrz0bilsbwl685336aqi88k62i6nqhm62rvy4zhg3bcm4dhj1d"))))
+       ("GraphemeBreakTest.txt"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://www.unicode.org/Public/9.0.0/ucd/"
+                               "auxiliary/GraphemeBreakTest.txt"))
+           (sha256
+            (base32 "0qbhyhmf0778lc2hcwlpizrvmdxwpk959v2q2wb8abv09ba7wvn7"))))))
     (arguments
-     '(#:tests? #f ;no "check" target
-       #:make-flags (list "CC=gcc"
+     '(#:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'check 'check-data
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each (lambda (i)
+                         (copy-file (assoc-ref inputs i)
+                                    (string-append "data/" i)))
+                       '("NormalizationTest.txt" "GraphemeBreakTest.txt"))
+             (substitute* "data/GraphemeBreakTest.txt"
+               (("÷") "/")
+               (("×") "+")))))))
     (home-page "http://julialang.org/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode

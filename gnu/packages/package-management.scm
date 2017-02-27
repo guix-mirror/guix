@@ -445,13 +445,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "63")
+    (version "77")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "12q5d2nszql1g4jf2ss863v0wpvvhrkaivqzhy6af9m9zwvw0p0k"))))
+                "0wrb6pl88611frxj19kq3vikhbld40fy1ncrskb1iayxsmbfcbn9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -464,12 +464,7 @@ transactions from C or Python.")
                         (("'python-magic',") ""))))
                   (add-after 'unpack 'embed-tool-references
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "diffoscope/difference.py"
-                        (("@tool_required\\('colordiff'\\)") "")
-                        (("\\[\"colordiff\"")
-                         (string-append "[\"" (which "colordiff") "\"")))
-                      (substitute* "diffoscope/comparators/utils.py"
-                        (("@tool_required\\('xxd'\\)") "")
+                      (substitute* "diffoscope/comparators/utils/compare.py"
                         (("\\['xxd',")
                          (string-append "['" (which "xxd") "',")))
                       (substitute* "diffoscope/comparators/elf.py"

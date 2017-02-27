@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
@@ -464,14 +464,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
         (base32
-         "1vdbqsa1a31s98fxkinl052q8nnpvbxnb83qanxfpi2p6c2zdr0b"))))
+         "1q2khqpj9rlcgdmkypjdq1kswvhjf72bq0zk2cv669cc2dj8z51x"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -3495,14 +3495,14 @@ objects.")
 (define-public python2-fastlmm
   (package
     (name "python2-fastlmm")
-    (version "0.2.26")
+    (version "0.2.21")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "fastlmm" version ".zip"))
        (sha256
         (base32
-         "0yxrx9xzai4fyrsi7c2p31kxvpq9czmv1p0wax5ic07m6izbszxg"))))
+         "1q8c34rpmwkfy3r4d5172pzdkpfryj561897z9r3x22gq7813x1m"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2)) ; only Python 2.7 is supported
@@ -3732,6 +3732,36 @@ transcendental functions).")
 
 (define-public python2-numexpr
   (package-with-python2 python-numexpr))
+
+(define-public python-cycler
+  (package
+    (name "python-cycler")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "cycler" version))
+              (sha256
+               (base32
+                "1n69n23fak1gjxlrbhqisi2b9pv3ckrfj98llx3p53953082syyd"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: The current version requires 'coveralls' which we don't have.
+     ;; Enable this for the next release which uses 'python-pytest'.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "http://matplotlib.org/cycler/")
+    (synopsis "Composable keyword argument iterator")
+    (description
+     "When using @code{matplotlib} and plotting more than one line, it is
+common to want to be able to want to be able to cycle over one or more artist
+styles; but the plotting logic can quickly become involved.
+To address this and enable easy cycling over arbitrary @code{kwargs}, the
+@code{Cycler} class was developed.")
+    (license license:bsd-3)))
+
+(define-public python2-cycler
+  (package-with-python2 python-cycler))
 
 (define-public python-matplotlib
   (package
@@ -5563,9 +5593,9 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
               (strip-python2-variant python-beautifulsoup4)))
     (arguments `(#:python ,python-2))))
 
-(define-public python2-cssutils
+(define-public python-cssutils
   (package
-    (name "python2-cssutils")
+    (name "python-cssutils")
     (version "1.0.1")
     (source
       (origin
@@ -5576,12 +5606,9 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
           "0qwha9x1wml2qmipbcz03gndnlwhzrjdvw9i09si247a90l8p8fq"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python2-mock" ,python2-mock) ; for the tests
-        ("unzip" ,unzip))) ; for unpacking the source
+      `(("unzip" ,unzip))) ; for unpacking the source
     (arguments
-     `(#:python ,python-2 ; Otherwise tests fail with a syntax error.
-       #:tests? #f ; The tests apparently download an external URL.
-       ))
+     `(#:tests? #f))                    ;tests require python-pbr < 1.7.0
     (home-page "http://cthedot.de/cssutils/")
     (synopsis
       "CSS Cascading Style Sheets library for Python")
@@ -5590,6 +5617,9 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 Cascading Style Sheets.  Currently it provides a DOM only and no rendering
 options.")
     (license license:lgpl3+)))
+
+(define-public python2-cssutils
+  (package-with-python2 python-cssutils))
 
 (define-public python-cssselect
   (package
@@ -8650,13 +8680,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.11.2")
+    (version "3.11.3")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "17rcy6rb9kqjf4p707ivmx7phjq7ngcz3bf7zriwxrqgrjagj7ag"))))
+               "086jslw8cg2hni79j267p1dy6d27m7q5hi39ni2clh9waqbdf5v3"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -9095,14 +9125,14 @@ document.")
 (define-public python-botocore
   (package
    (name "python-botocore")
-   (version "1.4.62")
+   (version "1.5.10")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "botocore" version))
      (sha256
       (base32
-       "1zxczlwqy9bl27d9bc5x99mb5mcsxm350240lp5nx7014xb311lj"))))
+       "1hqvqwhgfcch4knm1l02ynx7qd1igxk3pj34c1x2b0r79jca524n"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Many tests are failing.
@@ -9129,14 +9159,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.11.43")
+   (version "1.11.47")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri name version))
      (sha256
       (base32
-       "1x94jmy8ygld8g4pf35zdankh4dx8g8qn3q9j3hrbawqw0vkrp3y"))))
+       "0p0pila0k99fm87q1gb24wyd34ags0vkh37h1fa6hklq4mi69i1w"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-colorama" ,python-colorama)
@@ -13200,3 +13230,26 @@ Sorted dictionaries are also provided.  Currently only with @dfn{Key Sorted
 Order} (KSO, no sorting function can be specified, but a transform can be
 specified to apply on the key before comparison (e.g. @code{string.lower})).")
     (license license:expat)))
+
+(define-public python-pypeg2
+  (package
+    (name "python-pypeg2")
+    (version "2.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyPEG2" version))
+       (sha256
+        (base32
+         "0v8ziaam2r637v94ra4dbjw6jzxz99gs5x4i585kgag1v204yb9b"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-lxml" ,python-lxml)))
+    (arguments
+     ;;https://bitbucket.org/fdik/pypeg/issues/36/test-failures-on-py35
+     '(#:tests? #f))
+    (home-page "https://fdik.org/pyPEG/")
+    (synopsis "Parsering Expression Grammars in Python")
+    (description "PyPEG is an intrinsic parser interpreter framework for
+Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
+parse many formal languages.")
+    (license license:gpl2)))

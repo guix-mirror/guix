@@ -1,0 +1,25 @@
+These two test cases fail for us on i686.
+
+See https://en.wikipedia.org/wiki/Year_2038_problem
+
+--- netsurf-3.6/test/time.c
++++ netsurf-3.6/test/time.c
+@@ -77,18 +77,10 @@
+ 		.expected = "Tue, 12 Jun 2001 12:12:12 GMT"
+ 	},
+ 	{
+-		.test     = "Thu, 16 Jul 2207 12:45:12 GMT",
+-		.expected = "Thu, 16 Jul 2207 12:45:12 GMT"
+-	},
+-	{
+ 		.test     = "Thu, 16 Aug 2007 19:45:12 GMT",
+ 		.expected = "Thu, 16 Aug 2007 19:45:12 GMT"
+ 	},
+ 	{
+-		.test     = "Tue, 16 Sep 3456 00:45:12 GMT",
+-		.expected = "Tue, 16 Sep 3456 00:45:12 GMT"
+-	},
+-	{
+ 		.test     = "Sun, 16 Oct 1988 19:45:59 GMT",
+ 		.expected = "Sun, 16 Oct 1988 19:45:59 GMT"
+ 	},

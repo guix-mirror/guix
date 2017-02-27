@@ -36,7 +36,7 @@
 (define-public ola
   (package
     (name "ola")
-    (version "0.10.2")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -45,7 +45,7 @@
               (patches (search-patches "ola-readdir-r.patch"))
               (sha256
                (base32
-                "09zx1c8nkj29shfdzkahrh9397m3mwnsy0gj7jrb63f89f3n2vlq"))))
+                "1yf1yy9n64n73zjq2bwc0gik0dd3n05297hdrrma2qvb0imzm5h1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)

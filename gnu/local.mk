@@ -605,7 +605,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-gets-undeclared.patch		\
   %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
-  %D%/packages/patches/gst-plugins-base-fix-test-on-32bit.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
@@ -634,6 +633,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-linker-flags.patch			\
+  %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
@@ -691,7 +691,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
   %D%/packages/patches/libpng-CVE-2016-10087.patch		\
-  %D%/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtiff-CVE-2016-10092.patch		\
@@ -771,7 +770,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
-  %D%/packages/patches/netsurf-about.patch			\
+  %D%/packages/patches/netsurf-system-utf8proc.patch		\
+  %D%/packages/patches/netsurf-y2038-tests.patch		\
+  %D%/packages/patches/netsurf-longer-test-timeout.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
   %D%/packages/patches/ninja-tests.patch			\
@@ -902,6 +903,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/serf-comment-style-fix.patch		\
   %D%/packages/patches/serf-deflate-buckets-test-fix.patch	\
   %D%/packages/patches/shadow-4.4-su-snprintf-fix.patch         \
+  %D%/packages/patches/shadow-CVE-2017-2616.patch		\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\
@@ -953,8 +955,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-overflow-long-fsize.patch		\
   %D%/packages/patches/unzip-remove-build-date.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
+  %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
+  %D%/packages/patches/vdirsyncer-test-suite-slow-machines.patch	\
+  %D%/packages/patches/vim-CVE-2017-5953.patch			\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\

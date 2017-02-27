@@ -21,12 +21,13 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (guix import json)
   #:use-module (guix import hackage)
   #:use-module (guix memoization)
   #:use-module (guix packages)
   #:use-module (guix upstream)
-  #:use-module (guix ui)
   #:export (stackage->guix-package
             %stackage-updater))
 
@@ -49,6 +50,9 @@
     ((_ ("packages" pkg ...)) pkg)
     (_ '())))
 
+(define (leave-with-message fmt . args)
+  (raise (condition (&message (message (apply format #f fmt args))))))
+
 (define stackage-lts-info-fetch
   ;; "Retrieve the information about the LTS Stackage release VERSION."
   (memoize
@@ -59,7 +63,7 @@
             (lts-info (json-fetch url)))
        (if lts-info
            (reverse lts-info)
-           (leave (_ "LTS release version not found: ~A~%") version))))))
+           (leave-with-message "LTS release version not found: ~a" version))))))
 
 (define (stackage-package-name pkg-info)
   (assoc-ref pkg-info "name"))
@@ -99,7 +103,7 @@ included in the Stackage LTS release."
         (hackage->guix-package name-version
                                #:include-test-dependencies?
                                include-test-dependencies?)
-        (leave (_ "package not found: ~A~%") package-name))))
+        (leave-with-message "~a: Stackage package not found" package-name))))
 
 
 ;;;

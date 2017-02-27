@@ -2025,3 +2025,258 @@ structured values at speeds sufficient to saturate a gigabit connection.  The
 protocol is also heavily optimized for size, making it ideal for long-term
 storage of large amounts of data.")
     (license license:asl2.0)))
+
+(define-public ocaml-fieldslib
+  (package
+    (name "ocaml-fieldslib")
+    (version "113.33.03")
+    (source (janestreet-origin "fieldslib" version
+               "1rm3bn54bzk2hlq8f3w067ak8s772w4a8f78i3yh79vxfzq8ncvv"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/fieldslib/")
+    (synopsis "Syntax extension to record fields")
+    (description "Syntax extension to define first class values representing
+record fields, to get and set record fields, iterate and fold over all fields
+of a record and create new record values.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-core
+  (package
+    (name "ocaml-ppx-core")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_core" version
+               "0f69l4czhgssnhb5ds2j9dbqjyz8dp1y3i3x0i4h6pxnms20zbxa"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (inputs `(("ppx-tools" ,ocaml-ppx-tools)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_core/")
+    (synopsis "Standard library for ppx rewriters")
+    (description "Ppx_core is a standard library for OCaml AST transformers.
+It contains:
+@enumerate
+@item various auto-generated AST traversal using an open recursion scheme
+@item helpers for building AST fragments
+@item helpers for matching AST fragments
+@item a framework for dealing with attributes and extension points.
+@end enumerate")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-optcomp
+  (package
+    (name "ocaml-ppx-optcomp")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_optcomp" version
+               "13an8p2r7sd0d5lv54mlzrxdni47408bwqi3bjcx4m6005170q30"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_optcomp/")
+    (synopsis "Optional compilation for OCaml")
+    (description "Ppx_optcomp stands for Optional Compilation.  It is a tool
+used to handle optional compilations of pieces of code depending of the word
+size, the version of the compiler, ...")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-driver
+  (package
+    (name "ocaml-ppx-driver")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_driver" version
+              "011zzr45897j49b7iiybb29k7pspcx36mlnp7nh6pxb8b0ga76fh"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-optcomp" ,ocaml-ppx-optcomp)))
+    (propagated-inputs
+     `(("ppx-optcomp" ,ocaml-ppx-optcomp)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_driver/")
+    (synopsis "Feature-full driver for OCaml AST transformers")
+    (description "A driver is an executable created from a set of OCaml AST
+transformers linked together with a command line frontend.  The aim is to
+provide a tool that can be used to:
+@enumerate
+@item easily view the pre-processed version of a file, no need to construct a
+      complex command line: @command{ppx file.ml} will do
+@item use a single executable to run several transformations: no need to fork
+      many times just for pre-processing
+@item improved errors for misspelled/misplaced attributes and extension points.
+@end enumerate")
+    (license license:asl2.0)))
+
+(define-public ocaml-cppo
+  (package
+    (name "ocaml-cppo")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/mjambon/cppo/archive/v" version
+                            ".tar.gz"))
+        (sha256 (base32
+                  "02gma6nw09vfnd6h7bl3n70lwz7m9z2svplxyfh6h5bf4lqgqzjv"))
+        (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:make-flags (list (string-append "BINDIR="
+                                         (assoc-ref %outputs "out") "/bin"))
+       #:tests? #f))
+    (home-page "https://github.com/mjambon/cppo")
+    (synopsis "Equivalent of the C preprocessor for OCaml programs")
+    (description "Cppo is an equivalent of the C preprocessor for OCaml
+programs.  It allows the definition of simple macros and file inclusion.  Cpp ois:
+@enumerate
+@item more OCaml-friendly than cpp
+@item easy to learn without consulting a manual
+@item reasonably fast
+@item simple to install and to maintain.
+@end enumerate")
+    (license license:bsd-3)))
+
+;; this package is not reproducible. This is related to temporary filenames
+;; such as findlib_initxxxxx where xxxxx is random.
+(define-public ocaml-ppx-deriving
+  (package
+    (name "ocaml-ppx-deriving")
+    (version "4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/whitequark/ppx_deriving//archive/v"
+                            version ".tar.gz"))
+        (sha256 (base32
+                  "1fr16g121j6zinwcprzlhx2py4271n9jzs2m9hq2f3qli2b1p0vl"))
+        (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("cppo" ,ocaml-cppo)
+       ("ounit" ,ocaml-ounit)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("result" ,ocaml-result)
+       ("ppx-tools" ,ocaml-ppx-tools)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+           (add-before 'install 'fix-environment
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; the installation procedures looks for the installed module
+               (setenv "OCAMLPATH"
+                       (string-append (getenv "OCAMLPATH") ":"
+                                      (getenv "OCAMLFIND_DESTDIR"))))))))
+    (home-page "https://github.com/whitequark/ppx_deriving/")
+    (synopsis "Type-driven code generation for OCaml >=4.02")
+    (description "Ppx_deriving provides common infrastructure for generating
+code based on type definitions, and a set of useful plugins for common tasks.")
+    (license license:expat)))
+
+(define-public ocaml-ppx-type-conv
+  (package
+    (name "ocaml-ppx-type-conv")
+    (version "113.33.03")
+    (source
+      (janestreet-origin "ppx_type_conv" version
+        "1sp602ads2f250nv4d4rgw54d14k7flyhb4w8ff084f657hhmxv2"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-deriving" ,ocaml-ppx-deriving)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("result" ,ocaml-result)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-driver" ,ocaml-ppx-driver)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_type_conv/")
+    (synopsis "Support Library for type-driven code generators")
+    (description "The type_conv library factors out functionality needed by
+different preprocessors that generate code from type specifications.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-inline-test
+  (package
+    (name "ocaml-ppx-inline-test")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_inline_test" version
+              "0859ni43fl39dd5g6cxfhq0prxmx59bd2bfq8jafp593ba4q0icq"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+      `(("ppx-driver" ,ocaml-ppx-driver)
+        ("ppx-tools" ,ocaml-ppx-tools)
+        ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_inline_test/")
+    (synopsis "Syntax extension for writing in-line tests in ocaml code")
+    (description "Syntax extension for writing in-line tests in ocaml code.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-bench
+  (package
+    (name "ocaml-ppx-bench")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_bench" version
+                   "1hky3y17qpb925rymf97wv54di9gaqdmkix7wpkjw14qzl512b68"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_bench/")
+    (synopsis "Syntax extension for writing in-line benchmarks in ocaml code")
+    (description "Syntax extension for writing in-line benchmarks in ocaml code.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-compare
+  (package
+    (name "ocaml-ppx-compare")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_compare" version
+              "0bfhi33kq9l4q6zzc6svki2csracz5j4731c3npcy6cs73jynn0z"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_compare/")
+    (synopsis "Generation of comparison functions from types")
+    (description "Generation of fast comparison functions from type expressions
+and definitions.  Ppx_compare is a ppx rewriter that derives comparison functions
+from type representations.  The scaffolded functions are usually much faster
+than ocaml's Pervasives.compare.  Scaffolding functions also gives you more
+flexibility by allowing you to override them for a specific type and more safety
+by making sure that you only compare comparable values.")
+    (license license:asl2.0)))

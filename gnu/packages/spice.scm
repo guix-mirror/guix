@@ -66,7 +66,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                        (url "http://cgit.freedesktop.org/spice/usbredir")
+                        (url "https://anongit.freedesktop.org/git/spice/usbredir.git")
                         (commit commit)))
                 (sha256
                  (base32

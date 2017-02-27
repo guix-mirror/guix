@@ -338,8 +338,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.9.9")
-(define %linux-libre-hash "0grk94jym0wz581c7pimia0rszq4h2xqjmf818i4l4qrjd0bnqvk")
+(define %linux-libre-version "4.10")
+(define %linux-libre-hash "167zzgkivpqsp07did25wjqsswddzp3gifcdkq7xk00llxlmspla")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -347,9 +347,15 @@ It has been modified to remove all non-free binary blobs.")
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
+(define-public linux-libre-4.9
+  (make-linux-libre "4.9.13"
+                    "16miggwcwfpm7kx0yz256x887rky9wgmp1grg850lf8sdkiz0a1p"
+                    %intel-compatible-systems
+                    #:configuration-file kernel-config))
+
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.48"
-                    "0g7ram0b5b7p0c6v5m5im6m5pwa348mhkhf67rs036lzvcw1bvyk"
+  (make-linux-libre "4.4.52"
+                    "1fzcq9bbsxiij2fh6kgwrp417sy2j5gnbzs0wwlmznj7mvysl7qg"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -357,7 +363,17 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre "4.1.38"
                     "165kmzglhg63hn7y4q7r6cb2dpsljxiq1czvgyx0bkd1vd2bcvsa"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4")
+                            (file-name "linux-libre-CVE-2017-6074.patch")
+                            (sha256
+                             (base32
+                              "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -459,6 +475,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
+    (replacement util-linux/fixed)
     (version "2.28.1")
     (source (origin
               (method url-fetch)
@@ -538,6 +555,17 @@ block devices, UUIDs, TTYs, and many other tools.")
     ;; explicitly defined license.
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
+
+(define util-linux/fixed
+  (package
+    (inherit util-linux)
+    (source
+      (origin
+        (inherit (package-source util-linux))
+        (patches
+          (append
+            (origin-patches (package-source util-linux))
+            (search-patches "util-linux-CVE-2017-2616.patch")))))))
 
 (define-public procps
   (package
@@ -805,17 +833,25 @@ images more compressible.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.7")
+    (version "4.16")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "158iwk0pl2mfw93m1843xb7a2zb8p6lh0qim07rca6f1ff4dk764"))))
+               "1vzhmpcy989i4k12q4cc438yal2ghhm6x7ychscjbhcf2yspqj4q"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* "strace.c"
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (native-inputs `(("perl" ,perl)))
-    (home-page "http://strace.sourceforge.net/")
+    (home-page "https://strace.io/")
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
@@ -1007,7 +1043,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.9.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1015,7 +1051,7 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1i0n071hiqxw1gisngw2jln3kcp9sh47n6fj5hdwqrvp7w20zwy0"))))
+                "1a59y1zkddvr7z0lh2y9iasbh9wpfc1n39p56xcd6jkhzk0y3c92"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1024,6 +1060,7 @@ packet filter.")
                             (string-append "BASH_COMPDIR=" out
                                            "/etc/bash_completion.d")
                             (string-append "LIBDIR=" out "/lib")
+                            (string-append "HDRDIR=" out "/include")
                             (string-append "SBINDIR=" out "/sbin")
                             (string-append "CONFDIR=" out "/etc")
                             (string-append "DOCDIR=" out "/share/doc/"

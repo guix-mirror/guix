@@ -37,6 +37,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages scheme)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
@@ -90,7 +91,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "0kn2n9qr9cksg2cl78f3w0yd24368d35djhi6w5x3gbdxk23ywq3"))
+                "19djav128nkhjxgfhwhc32i5y9d9c3karbh5yg67kqrdranyvh7q"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
               (snippet
@@ -98,12 +99,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                   ((".*INSTALL.*sysconfdir.*fish.*") "")))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ;; XXX These are needed to bootstrap the 2.5.0 tarball, and can probably
-       ;; be removed along with the ‘bootstrap’ phase on the next update.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     `(("doxygen" ,doxygen)))
     (inputs
      `(("bc" ,bc)
        ("ncurses" ,ncurses)
@@ -124,10 +120,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                                "/bin/bc")))
              (substitute* "share/functions/fish_update_completions.fish"
                (("python") (which "python")))
-             #t))
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+             #t)))))
     (synopsis "The friendly interactive shell")
     (description
      "Fish (friendly interactive shell) is a shell focused on interactive use,
@@ -349,14 +342,14 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "1pb1am26wl21g798lpl091j95900py7jj4g98rs9qkhywiln4z4q"))
+            "1wa5g1gxk4aw8jazp3fqmr7mlkdmnva83x28i9xd3s99lv0qb3dd"))
         (modules '((guix build utils)))
         (snippet
          `(begin
@@ -382,3 +375,51 @@ primitives that you are used to from Bash and IPython.  It works on all major
 systems including Linux, Mac OSX, and Windows.  Xonsh is meant for the daily
 use of experts and novices alike.")
     (license bsd-2)))
+
+(define-public scsh
+  (let ((commit "114432435e4eadd54334df6b37fcae505079b49f")
+        (revision "1"))
+    (package
+      (name "scsh")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/scheme/scsh")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1ghk08akiz7hff1pndi8rmgamgcrn2mv9asbss9l79d3c2iaav3q"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'replace-rx
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((rx (assoc-ref inputs "scheme48-rx"))
+                      (rxpath (string-append rx "/share/scheme48-"
+                                             ,(package-version scheme48)
+                                             "/rx")))
+                 (delete-file-recursively "rx")
+                 (symlink rxpath "rx"))
+               #t))
+           (add-before 'configure 'autoreconf
+             (lambda _
+               (zero? (system* "autoreconf")))))))
+      (inputs
+       `(("scheme48" ,scheme48)
+         ("scheme48-rx" ,scheme48-rx)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (home-page "https://github.com/scheme/scsh")
+      (synopsis "Unix shell embedded in Scheme")
+      (description
+       "Scsh is a Unix shell embedded in Scheme.  Scsh has two main
+components: a process notation for running programs and setting up pipelines
+and redirections, and a complete syscall library for low-level access to the
+operating system.")
+      (license bsd-3))))

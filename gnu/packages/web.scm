@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -51,6 +51,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
@@ -64,11 +65,13 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
@@ -76,6 +79,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
@@ -126,14 +130,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.11.9")
+    (version "1.11.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0j2pcara9ir2xj3m2mjzf7wz46mdy51c0kal61cp0ldm2qgvf8nw"))))
+                "0gak6pcsn1m8fsz0g95z4b72nn12ivy35vlxrmagfcvnn2mkr2vp"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -3727,49 +3731,389 @@ can easily be invoked on a single file.  Your partner can access the file with
 tools they trust (e.g. wget).")
     (license l:gpl2+)))
 
-(define-public netsurf
+(define netsurf-buildsystem
   (package
-    (name "netsurf")
-    (version "3.5")
+    (name "netsurf-buildsystem")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download.netsurf-browser.org/"
-                           "netsurf/releases/source-full/netsurf-all-"
-                           version ".tar.gz"))
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           "buildsystem-" version ".tar.gz"))
        (sha256
         (base32
-         "1vdldzcv42wykajmw8vbql0f1yd44gbx30kywfrrh2x3064ly609"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "Makefile"
-             ;; Do not clobber PKG_CONFIG_PATH from the environment
-             (("PKG_CONFIG_PATH = \\$")
-              "PKG_CONFIG_PATH := $(PKG_CONFIG_PATH):$")
-             ;; Honor make variables
-             (("shell cc") "shell $(CC)"))))
-       (patches (search-patches "netsurf-about.patch"))))
+         "0wdgvasrjik1dgvvpqbppbpyfzkqd1v45x3g9rq7p67n773azinv"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build))))
+    (home-page "http://www.netsurf-browser.org")
+    (synopsis "Build system for the Netsurf project")
+    (description
+     "This package provides the shared build system for Netsurf project
+libraries.")
+    (license l:expat)))
+
+(define netsurf-buildsystem-arguments
+  `(#:make-flags `("COMPONENT_TYPE=lib-shared"
+                   "CC=gcc" "BUILD_CC=gcc"
+                   ,(string-append "PREFIX=" %output)
+                   ,(string-append "NSSHARED="
+                                   (assoc-ref %build-inputs
+                                              "netsurf-buildsystem")
+                                   "/share/netsurf-buildsystem"))
+    #:test-target "test"
+    #:phases (modify-phases %standard-phases
+               (delete 'configure))))
+
+(define-public libparserutils
+  (package
+    (name "libparserutils")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "01gzlsabgl6x0icd8758d9jqs8rrf9574bdkjainn04w3fs3znf5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)))                 ;for test harness
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libparserutils/")
+    (synopsis "Parser building library")
+    (description
+     "LibParserUtils is a library for building efficient parsers, written in
+C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
+(define-public hubbub
+  (package
+    (name "hubbub")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           "lib" name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "101781iw32p47386fxqr01nrkywi12w17ajh02k2vlga4z8zyv86"))
+       (patches (search-patches "hubbub-sort-entities.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("doxygen" ,doxygen)
+       ("json-c" ,json-c)
+       ("perl" ,perl)))
+    (propagated-inputs
+     `(("libparserutils" ,libparserutils))) ;for libhubbub.pc
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/hubbub/")
+    (synopsis "HTML5 compliant parsing library")
+    (description
+     "Hubbub is an HTML5 compliant parsing library, written in C, which can
+parse both valid and invalid web content.  It is developed as part of the
+NetSurf project.")
+    (license l:expat)))
+
+(define-public libwapcaplet
+  (package
+    (name "libwapcaplet")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0cs1dd2afjgc3wf5gqg434hv6jdabrp9qvlpl4dp53nhkyfywna3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("check" ,check)))               ;for tests
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libwapcaplet/")
+    (synopsis "String internment library")
+    (description
+     "LibWapcaplet provides a reference counted string internment system
+designed to store small strings and allow rapid comparison of them.  It is
+developed as part of the Netsurf project.")
+    (license l:expat)))
+
+(define-public libcss
+  (package
+    (name "libcss")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0qp4p1q1dwgdra4pkrzd081zjzisxkgwx650ijx323j8bj725daf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)))
+    (propagated-inputs                  ;needed for libcss.pc
+     `(("libparserutils" ,libparserutils)
+       ("libwapcaplet" ,libwapcaplet)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libcss/")
+    (synopsis "CSS parser and selection library")
+    (description
+     "LibCSS is a CSS (Cascading Style Sheet) parser and selection engine,
+written in C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
+(define-public libdom
+  (package
+    (name "libdom")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0qy7c8b229aiamyqqjgp6m1jlzc3fpl8s9dk33kxzkj70na8l7hv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)                   ;for test harness
+       ("perl-libxml" ,perl-libxml)
+       ("perl-switch" ,perl-switch)
+       ("perl-xml-xpath" ,perl-xml-xpath)))
+    (inputs
+     `(("libparserutils" ,libparserutils)
+       ("libwapcaplet" ,libwapcaplet)))
+    (propagated-inputs
+     `(("expat" ,expat)                 ;needed for headers and linking
+       ("hubbub" ,hubbub)))             ;for libdom.pc
+    (arguments
+     `(#:tests? #f                 ;TODO: re-enable. tests take a looong time.
+       ,@netsurf-buildsystem-arguments))
+    (home-page "http://www.netsurf-browser.org/projects/libdom/")
+    (synopsis "Implementation of the W3C DOM")
+    (description
+     "LibDOM is an implementation of the W3C DOM, written in C.  It is
+developed as part of the NetSurf project.")
+    (license l:expat)))
+
+(define-public libsvgtiny
+  (package
+    (name "libsvgtiny")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0w5hab9x1saz4lq2s9w47x1r64fbzcsl5bvdjph9c9dq68qv3f8a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("gperf" ,gperf)))
+    (inputs
+     `(("libwapcaplet" ,libwapcaplet)))
+    (propagated-inputs
+     `(("libdom" ,libdom)))             ;for libsvgtiny.pc
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libsvgtiny/")
+    (synopsis "Library for parsing SVG files")
+    (description
+     "Libsvgtiny takes some SVG as input and returns a list of paths and texts
+which can be rendered easily, as defined in
+@url{http://www.w3.org/TR/SVGMobile/}.  It is developed as part of the NetSurf
+project.")
+    (license l:expat)))
+
+(define-public libnsbmp
+  (package
+    (name "libnsbmp")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0y4a0gn4l6lq4z9183wix0mdsgalqyw24k19k8jr8sz4h3lb7jrb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libnsbmp/")
+    (synopsis "Decoding library for BMP and ICO files")
+    (description
+     "Libnsbmp is a decoding library for BMP and ICO image file formats,
+written in C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
+(define-public libnsgif
+  (package
+    (name "libnsgif")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "1ldsyscsgqwc8g5481h9nqmwirpp1pp57hmss450hr0mqra26g0k"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/projects/libnsgif/")
+    (synopsis "Decoding library for GIF files")
+    (description
+     "Libnsgif is a decoding library for the GIF image file format, written in
+C.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
+(define-public libnsutils
+  (package
+    (name "libnsutils")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0wrxn4rcn7xrfnkmf60jafqn3n1kicgsdpnakd821q56bmqvzf0m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Utility library for NetSurf")
+    (description
+     "Libnsutils provides a small number of useful utility routines.  It is
+developed as part of the NetSurf project.")
+    (license l:expat)))
+
+(define-public libnspsl
+  (package
+    (name "libnspsl")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0x3frscrp9bzxlm9ama5laxjr3zi8cg20r8lhsamw4x4zyyk145y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Library to generate a static Public Suffix List")
+    (description
+     "Libnspsl is a library to generate a static code representation of the
+Public Suffix List.  It is developed as part of the NetSurf project.")
+    (license l:expat)))
+
+(define-public nsgenbind
+  (package
+    (name "nsgenbind")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "078gpbfcs96bgcba0ygha0ph9jzqr6ry5s3a8p6sl61px2908s66"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (arguments
+     (substitute-keyword-arguments netsurf-buildsystem-arguments
+       ((#:make-flags flags)
+        `(delete "COMPONENT_TYPE=lib-shared" ,flags))))
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Generate JavaScript to DOM bindings")
+    (description
+     "@code{nsgenbind} is a tool to generate JavaScript to DOM bindings from
+w3c webidl files and a binding configuration file.")
+    (license l:expat)))
+
+(define-public netsurf
+  (package
+    (name "netsurf")
+    (version "3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/netsurf/"
+                           "releases/source/netsurf-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "174sjx0566agckwmlj4w2cip5qbxdiafyhlp185a1qprxx84pbjr"))
+       (patches (search-patches "netsurf-system-utf8proc.patch"
+                                "netsurf-y2038-tests.patch"
+                                "netsurf-longer-test-timeout.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("nsgenbind" ,nsgenbind)
+       ("libidn" ,libidn)               ;only for tests
+       ("check" ,check)
        ("perl" ,perl)
        ("perl-html-parser" ,perl-html-parser)
-       ("flex" ,flex)
-       ("bison" ,bison)))
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("gperf" ,gperf)
-       ("curl" ,curl)
+     `(("curl" ,curl)
+       ("gtk+" ,gtk+-2)
        ("openssl" ,openssl)
+       ("utf8proc" ,utf8proc)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg)
-       ("expat" ,expat)))
+       ("libcss" ,libcss)
+       ("libdom" ,libdom)
+       ("libnsbmp" ,libnsbmp)
+       ("libnsgif" ,libnsgif)
+       ("libnspsl" ,libnspsl)
+       ("libnsutils" ,libnsutils)
+       ("libsvgtiny" ,libsvgtiny)
+       ("miscfiles" ,miscfiles)))
     (arguments
      `(#:make-flags `("CC=gcc" "BUILD_CC=gcc"
-                      ,(string-append "PREFIX=" %output))
-       #:parallel-build? #f         ;parallel builds not supported
-       #:tests? #f                  ;no way to easily run from release tarball
+                      ,(string-append "PREFIX=" %output)
+                      ,(string-append "NSSHARED="
+                                      (assoc-ref %build-inputs
+                                                 "netsurf-buildsystem")
+                                      "/share/netsurf-buildsystem"))
+       #:test-target "test"
        #:modules ((ice-9 rdelim)
                   (ice-9 match)
                   (srfi srfi-1)
@@ -3777,18 +4121,11 @@ tools they trust (e.g. wget).")
                   ,@%glib-or-gtk-build-system-modules)
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (call-with-output-file "netsurf/Makefile.config"
-               (lambda (port)
-                 (format port "~
-                         NETSURF_GTK_RESOURCES := $(PREFIX)/share/netsurf/~@
-                         ")))
-             #t))
+         (delete 'configure)
          (add-after 'build 'adjust-welcome
            (lambda _
              ;; First, fix some unended tags and simple substitutions
-             (substitute* "netsurf/gtk/res/welcome.html"
+             (substitute* "frontends/gtk/res/welcome.html"
                (("<(img|input)([^>]*)>" _ tag contents)
                 (string-append "<" tag contents " />"))
                (("Licence") "License") ;prefer GNU spelling
@@ -3799,7 +4136,7 @@ tools they trust (e.g. wget).")
                (("Google Search") "DuckDuckGo Search")
                (("name=\"btnG\"") ""))
              ;; Remove default links so it doesn't seem we're endorsing them
-             (with-atomic-file-replacement "netsurf/gtk/res/welcome.html"
+             (with-atomic-file-replacement "frontends/gtk/res/welcome.html"
                (lambda (in out)
                  ;; Leave the DOCTYPE header as is
                  (display (read-line in 'concat) out)
@@ -3815,22 +4152,28 @@ tools they trust (e.g. wget).")
                       (x x)))
                   out)))
              #t))
+         (add-before 'check 'patch-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("test/bloom.c" "test/hashtable.c")
+               (("/usr/share/dict/words")
+                (string-append (assoc-ref inputs "miscfiles") "/share/web2")))
+             #t))
          (add-after 'install 'install-more
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (desktop (string-append out "/share/applications/"
                                             "netsurf.desktop")))
                (mkdir-p (dirname desktop))
-               (copy-file "netsurf/gtk/res/netsurf-gtk.desktop"
+               (copy-file "frontends/gtk/res/netsurf-gtk.desktop"
                           desktop)
                (substitute* desktop
                  (("netsurf-gtk") (string-append out "/bin/netsurf"))
                  (("netsurf.png") (string-append out "/share/netsurf/"
                                                  "netsurf.xpm")))
-               (install-file "netsurf/Docs/netsurf-gtk.1"
+               (install-file "Docs/netsurf-gtk.1"
                              (string-append out "/share/man/man1/"))
                #t))))))
-    (home-page "https://www.netsurf-browser.org")
+    (home-page "http://www.netsurf-browser.org")
     (synopsis "Web browser")
     (description
      "NetSurf is a lightweight web browser that has its own layout and
@@ -4066,3 +4409,68 @@ Tidy also provides @code{libtidy}, a C static and dynamic library that
 developers can integrate into their applications to make use of the
 functions of Tidy.")
     (license l:bsd-3)))
+
+(define-public qutebrowser
+  (package
+    (name "qutebrowser")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/The-Compiler/"
+                           "qutebrowser/releases/download/v" version "/"
+                           "qutebrowser-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pf91nc0xcykahc3x7ww525c9czm8zpg80nxl8n2mrzc4ilgvass"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml)
+       ("libxml2" ,libxml2)             ;for xmllint
+       ("libxslt" ,libxslt)))           ;for xsltproc
+    (inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-cssutils" ,python-cssutils)
+       ("python-jinja2" ,python-jinja2)
+       ("python-markupsafe" ,python-markupsafe)
+       ("python-pygments" ,python-pygments)
+       ("python-pypeg2" ,python-pypeg2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-pyqt" ,python-pyqt)
+       ("qtwebkit" ,qtwebkit)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-more
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (app (string-append out "/share/applications"))
+                    (hicolor (string-append out "/share/icons/hicolor")))
+               (system* "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
+               (install-file "doc/qutebrowser.1"
+                             (string-append out "/share/man/man1"))
+
+               (for-each
+                (lambda (i)
+                  (let ((src  (format #f "icons/qutebrowser-~dx~d.png" i i))
+                        (dest (format #f "~a/~dx~d/apps/qutebrowser.png"
+                                      hicolor i i)))
+                    (mkdir-p (dirname dest))
+                    (copy-file src dest)))
+                '(16 24 32 48 64 128 256 512))
+               (install-file "icons/qutebrowser.svg"
+                             (string-append hicolor "/scalable/apps"))
+
+               (substitute* "qutebrowser.desktop"
+                 (("Exec=qutebrowser")
+                  (string-append "Exec=" out "/bin/qutebrowser")))
+               (install-file "qutebrowser.desktop" app)
+               #t))))))
+    (home-page "https://qutebrowser.org/")
+    (synopsis "Minimal, keyboard-focused, vim-like web browser")
+    (description "qutebrowser is a keyboard-focused browser with a minimal
+GUI.  It is based on PyQt5 and QtWebKit.")
+    (license l:gpl3+)))

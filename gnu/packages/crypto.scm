@@ -314,14 +314,14 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
-                                  "tomb-" version ".tar.gz"))
+                                  "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "11msj38fdmymiqcmwq1883kjqi5zr01ybdjj58rfjjrw4zw2w5y0"))))
+                "1j90ab8x4cf10167yw4cs4frz694gb0qwkhgqiz1ly7mnr8ysmby"))))
     (build-system gnu-build-system)
     (inputs
      `(("zsh" ,zsh)
@@ -382,7 +382,7 @@ user's graphical desktop.")
 (define-public scrypt
   (package
     (name "scrypt")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
@@ -390,7 +390,7 @@ user's graphical desktop.")
                             version ".tgz"))
         (sha256
          (base32
-          "1m39hpfby0fdjam842773i5w7pa0qaj7f0r22jnchxsj824vqm0p"))))
+          "0xy5yhrwwv13skv9im9vm76rybh9f29j2dh4hlh2x01gvbkza8a6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

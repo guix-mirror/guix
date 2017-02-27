@@ -93,6 +93,29 @@
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
+(define-public aris
+  (package
+    (name "aris")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/" name "/" name "-" version ".tar.gz"))
+              (sha256 (base32
+                       "1q1887ryqdr9sn0522hc7p16kqwlxxyz5dkmma8ar2nxplhgll7q"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+)
+              ("libxml2" ,libxml2)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Natural deduction first-order logic interface")
+    (description "Aris is a program for performing logical proofs.  It supports
+propositional and predicate logic, as well as Boolean algebra and
+arithmetical logic.  In addition to its predefined inference and equivalence
+rules, Aris also supports references to older proofs.  Its use of standard
+logical symbols and its natural deduction interface make it easy to use for
+beginners.")
+    (license license:gpl3+)
+    (home-page "http://www.gnu.org/software/aris/")))
+
 (define-public c-graph
   (package
    (name "c-graph")

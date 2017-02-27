@@ -98,15 +98,16 @@ Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
                            (reverse opts))))
     (match args
       ((package-name)
-       (let ((sexp (stackage->guix-package
-                    package-name
-                    #:include-test-dependencies?
-                    (assoc-ref opts 'include-test-dependencies?)
-                    #:lts-version (assoc-ref opts 'lts-version))))
-         (unless sexp
-           (leave (_ "failed to download cabal file for package '~a'~%")
-                  package-name))
-         sexp))
+       (with-error-handling
+        (let ((sexp (stackage->guix-package
+                     package-name
+                     #:include-test-dependencies?
+                     (assoc-ref opts 'include-test-dependencies?)
+                     #:lts-version (assoc-ref opts 'lts-version))))
+          (unless sexp
+            (leave (_ "failed to download cabal file for package '~a'~%")
+                   package-name))
+          sexp)))
       (()
        (leave (_ "too few arguments~%")))
       ((many ...)

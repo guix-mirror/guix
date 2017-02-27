@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages python))
 
 (define-public radicale
@@ -58,14 +59,21 @@ clients.")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
+             (patches
+               (search-patches "vdirsyncer-test-suite-slow-machines.patch"))
              (sha256
               (base32
                "044f01fjd8dpz4y9dm3qcc1a8cihcxxbr1sz6y6fkvglpb6k85y5"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
-         ;; vdirsyncer requires itself to be installed in order to build
-         ;; the manpage.
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv "DETERMINISTIC_TESTS" "true")
+             (setenv "DAV_SERVER" "radicale")
+             (setenv "REMOTESTORAGE_SERVER" "skip")
+             (zero? (system* "make" "test"))))
          (add-after 'install 'manpage
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
@@ -74,16 +82,7 @@ clients.")
                "docs/_build/man/vdirsyncer.1"
                (string-append
                  (assoc-ref outputs "out")
-                 "/share/man/man1"))))
-         ;; vdirsyncer requires itself to be installed in order to run the test
-         ;; suite.
-         (delete 'check)
-         (add-after 'install 'check-later
-           (lambda _
-             (setenv "DETERMINISTIC_TESTS" "true")
-             (setenv "DAV_SERVER" "radicale")
-             (setenv "REMOTESTORAGE_SERVER" "skip")
-             (zero? (system* "make" "test")))))))
+                 "/share/man/man1")))))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ("python-sphinx" ,python-sphinx)

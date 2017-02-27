@@ -27,17 +27,17 @@
 (define-public jemalloc
   (package
     (name "jemalloc")
-    (version "4.2.0")
+    (version "4.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.canonware.com/download/jemalloc/"
-                    name "-" version ".tar.bz2"))
+                    "https://github.com/jemalloc/jemalloc/releases/download/"
+                    version "/jemalloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jvasihaizawz44j02bri47bd905flns03nkigipys81p6pds5mj"))))
+                "0cxhhybcbi02szavlxzwhvmqvddi7kgy71qxz2nz3lhqjwzadbm7"))))
     (build-system gnu-build-system)
-    (home-page "http://www.canonware.com/jemalloc/")
+    (home-page "http://jemalloc.net/")
     (synopsis "General-purpose scalable concurrent malloc implementation")
     (description
      "This library providing a malloc(3) implementation that emphasizes

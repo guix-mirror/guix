@@ -2906,32 +2906,6 @@ the same level of support for generic VGA or 8514/A adapters.")
      "xf86-video-mga is a Matrox video driver for the Xorg X server.")
     (license license:x11)))
 
-(define-public xf86-video-modesetting
-  (package
-    (name "xf86-video-modesetting")
-    (version "0.9.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "mirror://xorg/individual/driver/xf86-video-modesetting-"
-              version ".tar.bz2"))
-        (sha256
-         (base32
-           "0p6pjn5bnd2wr3lmas4b12zcq12d9ilvssga93fzlg90fdahikwh"))))
-    (build-system gnu-build-system)
-    (inputs `(("libdrm" ,libdrm)
-              ("xf86driproto" ,xf86driproto)
-              ("libx11" ,libx11)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
-    (synopsis "\"Modesetting\" video driver for X server")
-    (description
-     "This is a generic \"modesetting\" video driver, that relies on the Linux
-kernel mode setting (KMS).")
-    (license license:x11)))
-
 (define-public xf86-video-neomagic
   (package
     (name "xf86-video-neomagic")

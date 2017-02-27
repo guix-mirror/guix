@@ -139,11 +139,17 @@ tables, and it understands a variety of different formats.")
          ;; no install target
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man8")))
                (install-file "gdisk" bin)
                (install-file "sgdisk" bin)
                (install-file "cgdisk" bin)
-               (install-file "fixparts" bin)))))))
+               (install-file "fixparts" bin)
+               (install-file "cgdisk.8" man)
+               (install-file "fixparts.8" man)
+               (install-file "gdisk.8" man)
+               (install-file "sgdisk.8" man)))))))
     (home-page "http://www.rodsbooks.com/gdisk/")
     (synopsis "Low-level GPT disk partitioning and formatting")
     (description "GPT fdisk (aka gdisk) is a text-mode partitioning tool that
@@ -296,14 +302,14 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "0.27.0")
+    (version "0.28.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "1gg7k63jd6128mmzciwqmgixqhyqnninimaqyvjbx1hv0q6gd310"))))
+        (base32 "0cyk8lpimm6wani8khw0szwqkgw5wpq2mfnfxkbgfm2774a1z2bn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Tests require a network connection.

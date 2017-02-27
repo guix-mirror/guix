@@ -123,6 +123,7 @@ SYSTEM."
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"
     "arm-linux-gnueabihf"
+    "aarch64-linux-gnu"
     "i686-w64-mingw32"))
 
 (define %guixsd-supported-systems

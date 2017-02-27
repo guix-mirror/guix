@@ -51,6 +51,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -437,7 +438,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "4.3.21")
+    (version "5.3.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -446,15 +447,14 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0z0p4a3p5mc6fjh5f8js9ppb0maxyvfxpiw2n6nqc5nim1kv6bim"))))
+                "12fkwardd33xbaisjv93r49jh1dmqw323zjsd9m8kxcyv1rimsig"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))  ; no "check" target
+    (arguments
+     '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
+     `(("glm" ,glm)
        ("libxext" ,libxext)
-       ("imlib2" ,imlib2)
-       ("glew" ,glew)
+       ("libxrender" ,libxrender)
        ("mesa" ,mesa)))
     (home-page "https://github.com/naelstrof/slop")
     (synopsis "Select a region and print its bounds to stdout")
@@ -469,7 +469,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "3.4.47")
+    (version "4.4.59")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -478,27 +478,20 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kfp7k55bxc5h6h0wv8bwmsc5ny66h9ra2z4dzs4yzszq16544pv"))))
+                "0h8z4wm7zgxj1vlp98n12dyiwjwphhnl6yh8aaz3krm5v2kyy6hc"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f              ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((slop (string-append (assoc-ref inputs "slop")
-                                        "/bin/slop")))
-               ;; "slop" command is hardcoded in the source; replace it
-               ;; with the full file name.
-               (substitute* "src/main.cpp"
-                 (("^( +slopcommand.*)\"slop\"" all front)
-                  (string-append front "\"" slop "\"")))))))))
+     '(#:tests? #f))            ; no "check" target
     (inputs
-     `(("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
+     `(("glm" ,glm)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libxcomposite" ,libxcomposite)
        ("libxfixes" ,libxfixes)
-       ("imlib2" ,imlib2)
-       ("slop" ,slop)))
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("slop" ,slop)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/naelstrof/maim")
     (synopsis "Screenshot utility for X Window System")
     (description

@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
+;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
@@ -174,6 +174,49 @@ you to set the size of the cube (the default is 3x3) or to change the colors.
 You may even apply photos to the faces instead of colors.  The game is
 scriptable with Guile.")
     (license license:gpl3+)))
+
+(define-public gnushogi
+  (package
+    (name "gnushogi")
+    (version "1.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gnushogi/gnushogi-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0a9bsl2nbnb138lq0h14jfc5xvz7hpb2bcsj4mjn6g1hcsl4ik0y"))))
+    (arguments `(#:tests? #f)) ;; No check target.
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/gnushogi/")
+    (synopsis "The game of Shogi (Japanese chess)")
+    (description  "GNU Shogi is a program that plays the game Shogi (Japanese
+Chess).  It is similar to standard chess but this variant is far more complicated.")
+    (license license:gpl3+)))
+
+(define-public xshogi
+  (package
+    (name "xshogi")
+    (version "1.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gnushogi/xshogi-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1dns0nhymak44by18sv48m4xb2skiwbi2i3nb9hl6w9iwd2i2brf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxaw" ,libxaw)
+       ("libxt" ,libxt)))
+    (home-page "http://www.gnu.org/software/gnushogi/")
+    (synopsis "User interface for gnushogi")
+    (description  "A graphical user interface for the package @code{gnushogi}.")
+    ;; Contains a copy of GPLv3 but the licence notices simply
+    ;; state "GNU General Public Licence" without specifying a version.
+    (license license:gpl1+)))
 
 (define-public abbaye
   (package
@@ -1294,7 +1337,7 @@ on the screen and keyboard to display letters.")
        ("ghc-sdl" ,ghc-sdl)
        ("ghc-sdl-image" ,ghc-sdl-image)
        ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
-    (home-page "http://raincat.bysusanlin.com/")
+    (home-page "http://www.bysusanlin.com/raincat/")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
 students through GCS during the Fall 2008 semester.  Raincat features game
@@ -2082,14 +2125,14 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.3")
+    (version "15.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "128s718nnraiznbg2rajjqb7cfkdg24hy6spdd9narb4f4dsbbv9"))))
+                "1p1d18hrfmqcnghip3shkzcs5qkz6j99jvkdkqfi7pqdvjc323cs"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+)
               ("librsvg" ,librsvg)
