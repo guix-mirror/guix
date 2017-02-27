@@ -348,20 +348,10 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.12"
-                    "0yl4khibxb2aiqm479y5ywwlzi5s3rrcqsg4zgn7wpshncb4l1ar"
+  (make-linux-libre "4.9.13"
+                    "16miggwcwfpm7kx0yz256x887rky9wgmp1grg850lf8sdkiz0a1p"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4")
-                            (file-name "linux-libre-CVE-2017-6074.patch")
-                            (sha256
-                             (base32
-                              "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.51"
