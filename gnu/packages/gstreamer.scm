@@ -386,7 +386,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.10.3")
+    (version "1.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -394,7 +394,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1aajayv63ardkbmcg7pnh2d87r067325a5wzinwihaw6n5jw2sws"))))
+                "12r68ri03mgbbwsxyn6yklgfsq32rwvyq83zw0aq7m73fp5gx83c"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-system-libav")
