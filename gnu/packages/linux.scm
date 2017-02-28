@@ -1096,10 +1096,10 @@ allows a system administrator to make use of all iproute2 features, including
 traffic control.
 
 iproute2 is usually shipped in a package called iproute or iproute2 and
-consists of several tools, of which the most important are ip and tc.  ip
-controls IPv4 and IPv6 configuration and tc stands for traffic control.  Both
-tools print detailed usage messages and are accompanied by a set of
-manpages.")
+consists of several tools, of which the most important are @command{ip} and
+@command{tc}.  @command{ip} controls IPv4 and IPv6 configuration and
+@command{tc} stands for traffic control.  Both tools print detailed usage
+messages and are accompanied by a set of manpages.")
     (license license:gpl2+)))
 
 (define-public net-tools
