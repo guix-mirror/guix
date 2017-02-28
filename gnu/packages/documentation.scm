@@ -86,14 +86,14 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.11")
+    (version "1.8.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://ftp.stack.nl/pub/users/dimitri/"
                                  name "-" version ".src.tar.gz"))
              (sha256
               (base32
-               "0ja02pm3fpfhc5dkry00kq8mn141cqvdqqpmms373ncbwi38pl35"))
+               "0srzawqn3apzrg8hwycwrawdylmmjrndij4spw6xr1vspn3phrmg"))
              (patches (search-patches "doxygen-test.patch"))))
     (build-system cmake-build-system)
     (native-inputs
