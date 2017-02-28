@@ -96,6 +96,12 @@ trailing '?' removed."
   (unless (eq? val unset-field)
       (serialize-field* field-name (string-join val " "))))
 
+(define (space-separated-string-list? val)
+  (and (list? val)
+       (and-map (lambda (x)
+                  (and (string? x) (not (string-index x #\space))))
+                val)))
+
 (define space-separated-string-list/unset?
   (predicate/unset space-separated-string-list?))
 
@@ -118,9 +124,18 @@ trailing '?' removed."
                     (lambda (val)
                       (string-prefix? "/" val))))
 
+(define (serialize-field field-name val)
+  (format #t "~a ~a\n" (uglify-field-name field-name) val))
+
+(define (serialize-string field-name val)
+  (serialize-field field-name val))
+
 (define (serialize-file-name field-name val)
   (unless (eq? val unset-field)
     (serialize-string field-name val)))
+
+(define (serialize-space-separated-string-list field-name val)
+  (serialize-field field-name (string-join val " ")))
 
 (define (non-negative-integer? val)
   (and (exact-integer? val) (not (negative? val))))

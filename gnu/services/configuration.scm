@@ -39,14 +39,6 @@
             define-configuration
             validate-configuration
             generate-documentation
-            serialize-field
-            serialize-string
-            serialize-name
-            serialize-space-separated-string-list
-            space-separated-string-list?
-            serialize-file-name
-            file-name?
-            serialize-boolean
             serialize-package))
 
 ;;; Commentary:
@@ -140,40 +132,8 @@
                                            #,(id #'stem #'stem #'-fields))
                    conf))))))))
 
-(define (uglify-field-name field-name)
-  (let ((str (symbol->string field-name)))
-    (string-concatenate
-     (map string-titlecase
-          (string-split (if (string-suffix? "?" str)
-                            (substring str 0 (1- (string-length str)))
-                            str)
-                        #\-)))))
-
-(define (serialize-field field-name val)
-  (format #t "~a ~a\n" (uglify-field-name field-name) val))
-
 (define (serialize-package field-name val)
   #f)
-
-(define (serialize-string field-name val)
-  (serialize-field field-name val))
-
-(define (space-separated-string-list? val)
-  (and (list? val)
-       (and-map (lambda (x)
-                  (and (string? x) (not (string-index x #\space))))
-                val)))
-(define (serialize-space-separated-string-list field-name val)
-  (serialize-field field-name (string-join val " ")))
-
-(define (file-name? val)
-  (and (string? val)
-       (string-prefix? "/" val)))
-(define (serialize-file-name field-name val)
-  (serialize-string field-name val))
-
-(define (serialize-boolean field-name val)
-  (serialize-string field-name (if val "yes" "no")))
 
 ;; A little helper to make it easier to document all those fields.
 (define (generate-documentation documentation documentation-name)
