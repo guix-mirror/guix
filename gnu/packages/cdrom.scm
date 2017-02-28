@@ -6,6 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -496,3 +497,27 @@ session, and it can create M3U playlists.")
     (synopsis "Command-line program to extract audio CDs")
     (description "RipIT is used to extract audio from CDs.")
     (license gpl2)))
+
+(define-public ccd2cue
+  (package
+    (name "ccd2cue")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://gnu/ccd2cue/ccd2cue-" version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1icrkg25hwx4gsn3dski2172ia4ywjh8m1sa17zmjclnrgdwy9c7"))))
+    (build-system gnu-build-system)
+    (synopsis "CCD to CUE sheet conversion")
+    (description
+     "GNU ccd2cue is a preprocessor for CD burning software that allows
+the conversion of the proprietary CCD format to the CUE format, which
+is well-supported by free software.  These files are commonly
+distributed with CD images and are used to describe how tracks are
+laid out on the image.")
+    (home-page "http://www.gnu.org/software/ccd2cue")
+    (license gpl3+)))
