@@ -1187,6 +1187,48 @@ using lidsodium sealed boxes.
 @end enumerate\n")
       (license agpl3))))
 
+(define-public dovecot-libsodium-plugin
+  (let ((commit "044de73c01c35385df0105f6b387bec5d5317ce7")
+        (revision "1"))
+    (package
+      (name "dovecot-libsodium-plugin")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "13h07l7xy713zchnj2p9fhvq7fdl4zy1ai94li3ygkqjjj8hrgas"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("automake" ,automake)
+         ("autoconf" ,autoconf)
+         ("libtool" ,libtool)
+         ("dovecot" ,dovecot)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libsodium" ,libsodium)))
+      (arguments
+       `(#:tests? #f ;No tests exist.
+         #:configure-flags (list (string-append "--with-dovecot="
+                                                (assoc-ref %build-inputs "dovecot")
+                                                "/lib/dovecot"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autogen
+             (lambda _
+               (zero? (system* "./autogen.sh")))))))
+      (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
+      (synopsis "Libsodium password hashing schemes plugin for Dovecot")
+      (description
+       "@code{dovecot-libsodium-plugin} provides libsodium password
+hashing schemes plugin for @code{Dovecot}.")
+      (license gpl3+))))
+
 (define-public isync
   (package
     (name "isync")
