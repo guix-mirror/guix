@@ -69,6 +69,27 @@
 ;;;
 ;;; Code:
 
+(define (uglify-field-name field-name)
+  (let ((str (symbol->string field-name)))
+    (string-join (string-split (if (string-suffix? "?" str)
+                                   (substring str 0 (1- (string-length str)))
+                                   str)
+                               #\-)
+                 "_")))
+
+(define (serialize-field field-name val)
+  (format #t "~a=~a\n" (uglify-field-name field-name) val))
+
+(define (serialize-string field-name val)
+  (serialize-field field-name val))
+
+(define (space-separated-string-list? val)
+  (and (list? val)
+       (and-map (lambda (x)
+                  (and (string? x) (not (string-index x #\space))))
+                val)))
+(define (serialize-space-separated-string-list field-name val)
+  (serialize-field field-name (string-join val " ")))
 
 (define (comma-separated-string-list? val)
   (and (list? val)
@@ -78,12 +99,21 @@
 (define (serialize-comma-separated-string-list field-name val)
   (serialize-field field-name (string-join val ",")))
 
+(define (file-name? val)
+  (and (string? val)
+       (string-prefix? "/" val)))
+(define (serialize-file-name field-name val)
+  (serialize-string field-name val))
+
 (define (colon-separated-file-name-list? val)
   (and (list? val)
        ;; Trailing slashes not needed and not
        (and-map file-name? val)))
 (define (serialize-colon-separated-file-name-list field-name val)
   (serialize-field field-name (string-join val ":")))
+
+(define (serialize-boolean field-name val)
+  (serialize-string field-name (if val "yes" "no")))
 
 (define (non-negative-integer? val)
   (and (exact-integer? val) (not (negative? val))))
