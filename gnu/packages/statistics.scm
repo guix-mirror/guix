@@ -3226,14 +3226,17 @@ and tidyr provides no margins or aggregation.")
 (define-public r-hexbin
   (package
     (name "r-hexbin")
-    (version "1.27.1")
+    ;; The package tarball was updated in place, resulting in a change in the
+    ;; hash value.  We decided to bump the version to 1.27.1-1 instead of
+    ;; keeping the version at upstream's 1.27.1.
+    (version "1.27.1-1")
     (source
      (origin
        (method url-fetch)
-       (uri (cran-uri "hexbin" version))
+       (uri (cran-uri "hexbin" "1.27.1"))
        (sha256
         (base32
-         "0xi6fbf1fvyn2gffr052n3viibqzpr3603sgi4xaminbzja4syjh"))))
+         "025d609z1nyy684hwvp34b9mjzkgvild7fvfr95f941dmsikan87"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
