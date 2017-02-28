@@ -275,6 +275,14 @@ device-specific programs to convert and print many types of files.")
                   (string-append "cupsFileFind(\"cat\", \"" catpath "\""))
                  (("cupsFileFind\\(\"cat\", \"/bin:/usr/bin\"")
                   (string-append "cupsFileFind(\"cat\", \"" catpath "\""))))))
+         ;; Make the compressed manpages writable so that the
+         ;; reset-gzip-timestamps phase does not error out.
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (for-each (lambda (file) (chmod file #o644))
+                         (find-files man "\\.gz")))))
          (add-after 'install 'install-cups-filters-symlinks
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
