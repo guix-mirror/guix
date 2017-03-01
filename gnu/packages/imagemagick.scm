@@ -162,7 +162,7 @@ script.")
     (license (package-license imagemagick))))
 
 (define-public graphicsmagick
-  (let ((changeset "6156b4c2992d855ece6079653b3b93c3229fc4b8")
+  (let ((changeset "6156b4c2992d855ece6079653b3b93c3229fc4b8") ; fix CVE-2017-6335
         (revision "2"))
     (package
       (name "graphicsmagick")
