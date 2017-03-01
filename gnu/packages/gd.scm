@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +56,10 @@
                                       "gd-freetype-test-failure.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+      ;; As recommended by github.com/libgd/libgd/issues/278 to fix rounding
+      ;; issues on aarch64 and other architectures.
+     `(#:make-flags '("CFLAGS=-ffp-contract=off")
+       #:phases
        (modify-phases %standard-phases
          ;; This test is known to fail on i686-linux:
          ;; https://github.com/libgd/libgd/issues/359
@@ -64,7 +68,8 @@
            (lambda _
              (substitute* "tests/gdimagegrayscale/basic.c"
                (("return gdNumFailures\\(\\)")
-                 "return 0")))))))
+                 "return 0"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
