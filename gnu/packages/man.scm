@@ -202,7 +202,7 @@ automatically.")
 (define-public txt2man
   (package
     (name "txt2man")
-    (version "1.5.6")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -211,7 +211,7 @@ automatically.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0sjq687jknq65wbnjh2siq8hc09ydpnlmrkrnwl66mrhd4n9g7fz"))))
+         "168cj96974n2z0igin6j1ic1m45zyic7nm5ark7frq8j78rrx4zn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
