@@ -1718,13 +1718,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.42")
+    (version "4.43")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1i6m9zdnidn8268q1lz9fd8payk7s4pgwh5zlam9rr4dy6h6a67n"))))
+        (base32 "1q25jy51qfzsym9b2w0cqzscq2j492gn60dy6gbp88m8nwm4sdy8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Obscure test failures.
