@@ -923,7 +923,7 @@ can solve two kinds of problems:
 (define-public octave
   (package
     (name "octave")
-    (version "4.2.0")
+    (version "4.2.1")
     (source
      (origin
       (method url-fetch)
@@ -931,7 +931,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "19vvliwxgip0af812vny5xy5r8kacyj7v62203mh4z2n3p14b78i"))))
+        "09zhhch79jw3ynw39vizx0i2cbd2bjz3sp38pjdzraqrbivpwp92"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
