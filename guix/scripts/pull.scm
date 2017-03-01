@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,10 +30,13 @@
   #:use-module (guix monads)
   #:use-module ((guix build utils)
                 #:select (with-directory-excursion delete-file-recursively))
+  #:use-module ((guix build download)
+                #:select (%x509-certificate-directory))
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
                 #:select (%bootstrap-guile))
+  #:use-module ((gnu packages certs) #:select (le-certs))
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (srfi srfi-1)
@@ -45,7 +49,7 @@
 
 (define %snapshot-url
   ;; "http://hydra.gnu.org/job/guix/master/tarball/latest/download"
-  "http://git.savannah.gnu.org/cgit/guix.git/snapshot/master.tar.gz"
+  "https://git.savannah.gnu.org/cgit/guix.git/snapshot/master.tar.gz"
   )
 
 (define-syntax-rule (with-environment-variable variable value body ...)
@@ -221,11 +225,25 @@ contained therein."
                   (leave (_ "~A: unexpected argument~%") arg))
                 %default-options))
 
+  (define (use-le-certs? url)
+    (string-prefix? "https://git.savannah.gnu.org/" url))
+
+  (define (fetch-tarball store url)
+    (download-to-store store url "guix-latest.tar.gz"))
+
   (with-error-handling
     (let* ((opts  (parse-options))
            (store (open-connection))
            (url   (assoc-ref opts 'tarball-url)))
-      (let ((tarball (download-to-store store url "guix-latest.tar.gz")))
+      (let ((tarball
+             (if (use-le-certs? url)
+                 (let* ((drv (package-derivation store le-certs))
+                        (certs (string-append (derivation->output-path drv)
+                                              "/etc/ssl/certs")))
+                   (build-derivations store (list drv))
+                   (parameterize ((%x509-certificate-directory certs))
+                     (fetch-tarball store url)))
+                 (fetch-tarball store url))))
         (unless tarball
           (leave (_ "failed to download up-to-date source, exiting\n")))
         (parameterize ((%guile-for-build
