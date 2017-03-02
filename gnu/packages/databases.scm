@@ -215,7 +215,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public leveldb
   (package
     (name "leveldb")
-    (version "1.19")
+    (version "1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/google/leveldb"
@@ -223,7 +223,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00jjgs9xlwycfkg0xd7n1rj6v9zrx7xc7hann6zalrjyhap18ykx"))))
+                "0r36bcrj6b2afsp4aw1gjai3jbs1c7734pxpc1jz7hh9nasyiazm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc")
