@@ -803,7 +803,9 @@ the form of functions.")
         "0fcgggry5x5bn0zhb09ij9hb0p45nb0sv0d9fw3cm1cf62hp9n80"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ; no tests
+     `(#:configure-flags '("-DCMAKE_CXX_FLAGS=-shared -fPIC"
+                           "-DCMAKE_C_FLAGS=-shared -fPIC")
+       #:tests? #f))                    ; no tests
     (home-page "http://pugixml.org")
     (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
     (description
