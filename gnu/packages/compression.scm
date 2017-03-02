@@ -945,7 +945,7 @@ well as bzip2.")
 (define-public snappy
   (package
     (name "snappy")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -953,7 +953,7 @@ well as bzip2.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1wzf8yif5ym2gj52db6v5m1pxnmn258i38x7llk9x346y2nq47ig"))))
+                "0mq0nz8gbi1sp3y6xcg0a6wbvnd6gc717f3vh2xrjmfj5w9gwjqk"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/google/snappy")
     (synopsis "Fast compressor/decompressor")
