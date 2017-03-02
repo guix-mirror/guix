@@ -1068,22 +1068,6 @@ from knitr Rmarkdown.")
 the execution time of R expressions.")
     (license license:bsd-2)))
 
-(define-public r-codetools
-  (package
-    (name "r-codetools")
-    (version "0.2-14")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "codetools" version))
-              (sha256
-               (base32
-                "0y9r4m2b8xgavr89sc179knzwpz54xljbc1dinpq2q07i4xn0397"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/codetools/index.html")
-    (synopsis "Code analysis tools for R")
-    (description "This package provides code analysis tools for R.")
-    (license license:gpl3+)))
-
 (define-public r-pryr
   (package
     (name "r-pryr")
@@ -2568,7 +2552,7 @@ data.")
         (base32
          "0h7sjmvvsi35041jp47cxhsqzgf1y8jrw6fxii7n26i8g7nrh1sf"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/codetools")
+    (home-page "https://cran.r-project.org/web/packages/codetools")
     (synopsis "Code analysis tools for R")
     (description "This package provides code analysis tools for R to check R
 code for possible problems.")
