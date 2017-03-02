@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,7 +120,18 @@ common build settings used in software produced by the KDE community.")
     (arguments
      `(#:configure-flags
        '("-DCMAKE_CXX_FLAGS=-fPIC"
-         "-DPHONON_BUILD_PHONON4QT5=ON")))
+         "-DPHONON_BUILD_PHONON4QT5=ON"
+         "-DPHONON_INSTALL_QT_EXTENSIONS_INTO_SYSTEM_QT=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-installdir
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((regex (string-append "(INSTALL DESTINATION \")"
+                                         (assoc-ref inputs "qtbase"))))
+               (substitute* "cmake_install.cmake"
+                 ((regex all dest)
+                  (string-append dest (assoc-ref outputs "out")))))
+           #t)))))
     (home-page "https://phonon.kde.org")
     (synopsis "KDE's multimedia library")
     (description "KDE's multimedia library.")
