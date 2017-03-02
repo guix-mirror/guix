@@ -1339,3 +1339,32 @@ complex transformations and code analysis tools.")
     (description "The byte code generation library CGLIB is a high level API
 to generate and transform Java byte code.")
     (license license:asl2.0)))
+
+(define-public java-objenesis
+  (package
+    (name "java-objenesis")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/easymock/objenesis/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append "objenesis-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1va5qz1i2wawwavhnxfzxnfgrcaflz9p1pg03irrjh4nd3rz8wh6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "objenesis.jar"
+       #:source-dir "main/src/"
+       #:test-dir "main/src/test/"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://objenesis.org/")
+    (synopsis "Bypass the constructor when creating an object")
+    (description "Objenesis is a small Java library that serves one purpose:
+to instantiate a new object of a particular class.  It is common to see
+restrictions in libraries stating that classes must require a default
+constructor.  Objenesis aims to overcome these restrictions by bypassing the
+constructor on object instantiation.")
+    (license license:asl2.0)))
