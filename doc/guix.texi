@@ -11362,9 +11362,9 @@ The driver that the passdb should use.  Valid values include
 Defaults to @samp{"pam"}.
 @end deftypevr
 
-@deftypevr {@code{passdb-configuration} parameter} free-form-args args
-A list of key-value args to the passdb driver.
-Defaults to @samp{()}.
+@deftypevr {@code{passdb-configuration} parameter} space-separated-string-list args
+Space separated list of arguments to the passdb driver.
+Defaults to @samp{""}.
 @end deftypevr
 
 @end deftypevr
@@ -11381,9 +11381,9 @@ The driver that the userdb should use.  Valid values include
 Defaults to @samp{"passwd"}.
 @end deftypevr
 
-@deftypevr {@code{userdb-configuration} parameter} free-form-args args
-A list of key-value args to the userdb driver.
-Defaults to @samp{()}.
+@deftypevr {@code{userdb-configuration} parameter} space-separated-string-list args
+Space separated list of arguments to the userdb driver.
+Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{userdb-configuration} parameter} free-form-args override-fields

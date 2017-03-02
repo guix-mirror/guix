@@ -160,8 +160,8 @@
 @samp{pam}, @samp{passwd}, @samp{shadow}, @samp{bsdauth}, and
 @samp{static}.")
   (args
-   (free-form-args '())
-   "A list of key-value args to the passdb driver."))
+   (space-separated-string-list '())
+   "Space separated list of arguments to the passdb driver."))
 
 (define (serialize-passdb-configuration field-name val)
   (format #t "passdb {\n")
@@ -178,8 +178,8 @@
    "The driver that the userdb should use.  Valid values include
 @samp{passwd} and @samp{static}.")
   (args
-   (free-form-args '())
-   "A list of key-value args to the userdb driver.")
+   (space-separated-string-list '())
+   "Space separated list of arguments to the userdb driver.")
   (override-fields
    (free-form-args '())
    "Override fields from passwd."))
