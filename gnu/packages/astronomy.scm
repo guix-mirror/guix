@@ -118,24 +118,31 @@ programs for the manipulation and analysis of astronomical data.")
   (package
     (name "stellarium")
     (version "0.15.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/stellarium/Stellarium-sources/"
-                           version "/stellarium-" version ".tar.gz"))
-       (sha256
-        (base32
-         "04avigz8i8mi2x6x71bqr9np85n1p9qnvbj2hxr947f1jv22zr8g"))))
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/stellarium/"
+                                 "Stellarium-sources/"
+                                 version "/stellarium-" version ".tar.gz"))
+             (sha256
+              (base32
+               "04avigz8i8mi2x6x71bqr9np85n1p9qnvbj2hxr947f1jv22zr8g"))))
     (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f)) ; There are no tests.
-    (home-page "https://www.gnu.org/software/stellarium")
     (inputs `(("qt"   ,qt)
               ("zlib" ,zlib)))
-    (native-inputs `(("gettext" ,gettext-minimal)
-              ("perl" ,perl)))
-    (synopsis "Nocturnal sky renderering program")
-    (description "Stellarium renders a realistic image of the sky in real time.
-With Stellarium, you really see what you can see with your eyes, binoculars or a
-small telescope.")
+    (native-inputs `(("gettext" ,gettext-minimal) ; xgettext is used at compile time
+              ("perl" ,perl))) ; For pod2man
+    (arguments
+      `(#:test-target "tests"
+        #:phases (modify-phases %standard-phases
+                   (add-before 'check 'set-offscreen-display
+                     (lambda _
+                       (setenv "QT_QPA_PLATFORM" "offscreen")
+                       (setenv "HOME" "/tmp")
+                       #t)))))
+    (home-page "http://www.stellarium.org/")
+    (synopsis "3D sky viewer")
+    (description "Stellarium is a planetarium.  It shows a realistic sky in
+3D, just like what you see with the naked eye, binoculars, or a telescope.  It
+can be used to control telescopes over a serial port for tracking celestial
+objects.")
     (license license:gpl2+)))
