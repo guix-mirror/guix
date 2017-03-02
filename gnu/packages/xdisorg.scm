@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -1022,6 +1024,57 @@ The taskbar includes transparency and color settings for the font, icons,
 border, and background.  It also supports multihead setups, customized mouse
 actions, a built-in clock, a battery monitor and a system tray.")
     (license license:gpl2)))
+
+(define-public dzen
+  (let ((commit "488ab66019f475e35e067646621827c18a879ba1")
+        (revision "1"))
+    (package
+     (name "dzen")
+     (version (string-append "0.9.5-" ; Taken from `config.mk`.
+                             revision "." (string-take commit 7)))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/robm/dzen.git")
+                    (commit commit)))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0y47d6ii87vf4a517gi4fh0yl06f8b085sra77immnsasbq9pxnw"))))
+     (build-system gnu-build-system)
+     (arguments
+      `(#:tests? #f ; No test suite.
+        #:make-flags ; Replacement for `config.mk`.
+        (list
+         (string-append "VERSION = " ,version)
+         (string-append "PREFIX = " %output)
+         "MANPREFIX = ${PREFIX}/share/man"
+         "INCS = -I."
+         "LIBS = -lc -lX11 -lXinerama -lXpm $(shell pkg-config --libs xft)"
+         "CFLAGS = -Wall -Os ${INCS} -DVERSION=\\\"${VERSION}\\\"\
+         -DDZEN_XINERAMA -DDZEN_XPM -DDZEN_XFT $(shell pkg-config --cflags xft)"
+         "LDFLAGS = ${LIBS}"
+         "CC = gcc"
+         "LD = ${CC}")
+        #:phases
+        (modify-phases %standard-phases
+          (delete 'configure) ; No configuration script.
+          ;; Use own make-flags instead of `config.mk`.
+          (add-before 'build 'dont-include-config-mk
+            (lambda _
+              (substitute* "Makefile" (("include config.mk") ""))
+              #t)))))
+     (inputs
+      `(("libx11"      ,libx11)
+        ("libxft"      ,libxft)
+        ("libxpm"      ,libxpm)
+        ("libxinerama" ,libxinerama)))
+     (native-inputs `(("pkg-config" ,pkg-config)))
+     (synopsis "General purpose messaging, notification and menuing program for X11")
+     (description "Dzen is a general purpose messaging, notification and menuing
+program for X11.  It was designed to be fast, tiny and scriptable in any language.")
+     (home-page "https://github.com/robm/dzen")
+     (license license:expat))))
 
 (define-public xcb-util-xrm
   (package
