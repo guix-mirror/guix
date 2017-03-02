@@ -1473,3 +1473,47 @@ GNU @code{getopt_long}.  It also aims to make option parser configuration and
 retrieval of options and their arguments simple and expressive, without being
 overly clever.")
     (license license:expat)))
+
+(define-public java-commons-math3
+  (package
+    (name "java-commons-math3")
+    (version "3.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/math/source/"
+                                  "commons-math3-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "19l6yp44qc5g7wg816nbn5z3zq3xxzwimvbm4a8pczgvpi4i85s6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jar"
+       #:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
+             (junit    (assoc-ref %build-inputs "java-junit")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-core.jar")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; We want to build the jar in the build phase and run the tests
+         ;; later in a separate phase.
+         (add-after 'unpack 'untangle-targets
+           (lambda _
+             (substitute* "build.xml"
+               (("name=\"jar\" depends=\"test\"")
+                "name=\"jar\" depends=\"compile\""))
+             #t))
+         ;; There is no install target.
+         (replace 'install
+           (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/math/")
+    (synopsis "Apache Commons mathematics library")
+    (description "Commons Math is a library of lightweight, self-contained
+mathematics and statistics components addressing the most common problems not
+available in the Java programming language or Commons Lang.")
+    (license license:asl2.0)))
