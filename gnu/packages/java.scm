@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -855,10 +855,15 @@ IcedTea build harness.")
                   "02vmxa6gc6gizcri1fy797qmmm9y77vgi7gy9pwkk4agcw4zyr5p"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(substitute* "Makefile.am"
-                    ;; do not leak information about the build host
-                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
-                     "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+                 '(begin
+                    (substitute* "acinclude.m4"
+                      ;; Do not embed build time
+                      (("(DIST_ID=\"Custom build).*$" _ prefix)
+                       (string-append prefix "\"\n"))
+                      ;; Do not leak information about the build host
+                      (("DIST_NAME=\"\\$build_os\"")
+                       "DIST_NAME=\"guix\""))
+                    #t))))
       (arguments
        (substitute-keyword-arguments (package-arguments icedtea-7)
          ((#:configure-flags flags)
