@@ -32,6 +32,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
@@ -282,7 +283,7 @@ any X11 window.")
 (define-public password-store
   (package
     (name "password-store")
-    (version "1.6.5")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -290,7 +291,7 @@ any X11 window.")
                               name "-" version ".tar.xz"))
               (sha256
                (base32
-                "05bk3lrp5jwg0v338lvylp7glpliydzz4jf5pjr6k3kagrv3jyik"))))
+                "002mw7j0m33bw483rllzhcf41wp3ixka8yma6kqrfaj57jyw66hn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -302,7 +303,7 @@ any X11 window.")
              (let ((out (assoc-ref outputs "out"))
                    (path (map (lambda (pkg)
                                 (string-append (assoc-ref inputs pkg) "/bin"))
-                              '("coreutils" "getopt" "git" "gnupg" "pwgen"
+                              '("coreutils" "getopt" "git" "gnupg" "qrencode"
                                 "sed" "tree" "which" "xclip"))))
                (wrap-program (string-append out "/bin/pass")
                  `("PATH" ":" prefix (,(string-join path ":"))))
@@ -325,7 +326,7 @@ any X11 window.")
      `(("getopt" ,util-linux)
        ("git" ,git)
        ("gnupg" ,gnupg)
-       ("pwgen" ,pwgen)
+       ("qrencode" ,qrencode)
        ("sed" ,sed)
        ("tree" ,tree)
        ("which" ,which)
