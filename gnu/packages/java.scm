@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -1517,3 +1518,48 @@ overly clever.")
 mathematics and statistics components addressing the most common problems not
 available in the Java programming language or Commons Lang.")
     (license license:asl2.0)))
+
+(define-public java-jmh
+  (package
+    (name "java-jmh")
+    (version "1.17.5")
+    (source (origin
+              (method hg-fetch)
+              (uri (hg-reference
+                    (url "http://hg.openjdk.java.net/code-tools/jmh/")
+                    (changeset version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1fxyxhg9famwcg1prc4cgwb5wzyxqavn3cjm5vz8605xz7x5k084"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jmh-core.jar"
+       #:source-dir "jmh-core/src/main"
+       #:test-dir "jmh-core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; This seems to be a bug in the JDK.  It may not be necessary in
+         ;; future versions of the JDK.
+         (add-after 'unpack 'fix-bug
+           (lambda _
+             (with-directory-excursion
+                 "jmh-core/src/main/java/org/openjdk/jmh/runner/options"
+               (substitute* '("IntegerValueConverter.java"
+                              "ThreadsValueConverter.java")
+                 (("public Class<Integer> valueType")
+                  "public Class<? extends Integer> valueType")))
+             #t)))))
+    (inputs
+     `(("java-jopt-simple" ,java-jopt-simple)
+       ("java-commons-math3" ,java-commons-math3)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://openjdk.java.net/projects/code-tools/jmh/")
+    (synopsis "Benchmark harness for the JVM")
+    (description "JMH is a Java harness for building, running, and analysing
+nano/micro/milli/macro benchmarks written in Java and other languages
+targetting the JVM.")
+    ;; GPLv2 only
+    (license license:gpl2)))
