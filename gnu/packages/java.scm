@@ -1429,3 +1429,31 @@ constructor on object instantiation.")
     (description "EasyMock is a Java library that provides an easy way to use
 mock objects in unit testing.")
     (license license:asl2.0)))
+
+(define-public java-jopt-simple
+  (package
+    (name "java-jopt-simple")
+    (version "5.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://repo1.maven.org/maven2/"
+                                  "net/sf/jopt-simple/jopt-simple/"
+                                  version "/jopt-simple-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1v8bzmwmw6qq20gm42xyay6vrd567dra4vqwhgjnqqjz1gs9f8qa"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:jar-name "jopt-simple.jar"))
+    (home-page "https://pholser.github.io/jopt-simple/")
+    (synopsis "Java library for parsing command line options")
+    (description "JOpt Simple is a Java library for parsing command line
+options, such as those you might pass to an invocation of @code{javac}.  In
+the interest of striving for simplicity, as closely as possible JOpt Simple
+attempts to honor the command line option syntaxes of POSIX @code{getopt} and
+GNU @code{getopt_long}.  It also aims to make option parser configuration and
+retrieval of options and their arguments simple and expressive, without being
+overly clever.")
+    (license license:expat)))
