@@ -43,6 +43,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -136,6 +137,41 @@ common build settings used in software produced by the KDE community.")
     (synopsis "KDE's multimedia library")
     (description "KDE's multimedia library.")
     (license license:lgpl2.1+)))
+
+(define-public phonon-backend-gstreamer
+  (package
+    (name "phonon-backend-gstreamer")
+    (version "4.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/phonon/"
+                    name "/" version "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1wc5p1rqglf0n1avp55s50k7fjdzdrhg0gind15k8796w7nfbhyf"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("libxml2" ,libxml2)))
+    (arguments
+     `(#:configure-flags
+       '( "-DPHONON_BUILD_PHONON4QT5=ON")))
+    (home-page "https://phonon.kde.org")
+    (synopsis "Phonon backend which uses GStreamer")
+    (description "Phonon makes use of backend libraries to provide sound.
+Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
+    ;; license: source files mention "either version 2.1 or 3"
+    (license (list license:lgpl2.1 license:lgpl3))))
 
 (define-public gpgmepp
   (package
