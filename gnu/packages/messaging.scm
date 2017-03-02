@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1221,5 +1222,40 @@ text as well as tab-completion of buddy names, commands and English words.  It
 is also scriptable and extensible via Guile.")
     (home-page "https://www.gnu.org/software/freetalk")
     (license license:gpl3+)))
+
+(define-public libmesode
+  (package
+    (name "libmesode")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/boothj5/libmesode/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0iaj56fkd5bjvqpvq3324ni895rmbj1akbfqipjydnghfwaym4z6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (zero? (system* "./bootstrap.sh")))))))
+    (inputs
+     `(("expat" ,expat)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "C library for writing XMPP clients")
+    (description "Libmesode is a fork of libstrophe for use with Profanity
+XMPP Client.  In particular, libmesode provides extra TLS functionality such as
+manual SSL certificate verification.")
+    (home-page "https://github.com/boothj5/libmesode")
+    ;; Dual licensed.
+    (license (list license:gpl3+ license:x11))))
 
 ;;; messaging.scm ends here
