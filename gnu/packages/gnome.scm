@@ -5639,7 +5639,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 (define-public moka-icon-theme
   (package
     (name "moka-icon-theme")
-    (version "5.3.1")
+    (version "5.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/moka-project"
@@ -5648,7 +5648,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lnk7p8dsd9xh6cgz5krvlcr457w8yl4m6p6s5c2g5narsjswzrm"))))
+                "062rab0ggmgb3y0d6b3k5d47wsadi28cdnyyr2vqbjhza01dglci"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
