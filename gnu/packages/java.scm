@@ -1563,3 +1563,63 @@ nano/micro/milli/macro benchmarks written in Java and other languages
 targetting the JVM.")
     ;; GPLv2 only
     (license license:gpl2)))
+
+(define-public java-commons-collections4
+  (package
+    (name "java-commons-collections4")
+    (version "4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/collections/source/"
+                                  "commons-collections4-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1krfhvggympq4avk7gh6qafzf6b9ip6r1m4lmacikyx04039m0wl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
+             (junit    (assoc-ref %build-inputs "java-junit"))
+             (easymock (assoc-ref %build-inputs "java-easymock")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-core.jar")
+               (string-append "-Deasymock.jar=" easymock
+                              "/share/java/easymock.jar")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-easymock" ,java-easymock)))
+    (home-page "http://commons.apache.org/collections/")
+    (synopsis "Collections framework")
+    (description "The Java Collections Framework is the recognised standard
+for collection handling in Java.  Commons-Collections seek to build upon the
+JDK classes by providing new interfaces, implementations and utilities.  There
+are many features, including:
+
+@itemize
+@item @code{Bag} interface for collections that have a number of copies of
+  each object
+@item @code{BidiMap} interface for maps that can be looked up from value to
+  key as well and key to value
+@item @code{MapIterator} interface to provide simple and quick iteration over
+  maps
+@item Transforming decorators that alter each object as it is added to the
+  collection
+@item Composite collections that make multiple collections look like one
+@item Ordered maps and sets that retain the order elements are added in,
+  including an LRU based map
+@item Reference map that allows keys and/or values to be garbage collected
+  under close control
+@item Many comparator implementations
+@item Many iterator implementations
+@item Adapter classes from array and enumerations to collections
+@item Utilities to test or create typical set-theory properties of collections
+  such as union, intersection, and closure.
+@end itemize\n")
+    (license license:asl2.0)))
