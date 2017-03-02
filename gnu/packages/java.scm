@@ -1368,3 +1368,64 @@ restrictions in libraries stating that classes must require a default
 constructor.  Objenesis aims to overcome these restrictions by bypassing the
 constructor on object instantiation.")
     (license license:asl2.0)))
+
+(define-public java-easymock
+  (package
+    (name "java-easymock")
+    (version "3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/easymock/easymock/"
+                                  "archive/easymock-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yzg0kv256ndr57gpav46cyv4a1ns5sj722l50zpxk3j6sk9hnmi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "easymock.jar"
+       #:source-dir "core/src/main"
+       #:test-dir "core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; FIXME: Android support requires the following packages to be
+         ;; available: com.google.dexmaker.stock.ProxyBuilder
+         (add-after 'unpack 'delete-android-support
+           (lambda _
+             (with-directory-excursion "core/src/main/java/org/easymock/internal"
+               (substitute* "MocksControl.java"
+                 (("AndroidSupport.isAndroid\\(\\)") "false")
+                 (("return classProxyFactory = new AndroidClassProxyFactory\\(\\);") ""))
+               (delete-file "AndroidClassProxyFactory.java"))
+             #t))
+         (add-after 'unpack 'delete-broken-tests
+           (lambda _
+             (with-directory-excursion "core/src/test/java/org/easymock"
+               ;; This test depends on dexmaker.
+               (delete-file "tests2/ClassExtensionHelperTest.java")
+
+               ;; This is not a test.
+               (delete-file "tests/BaseEasyMockRunnerTest.java")
+
+               ;; This test should be executed with a different runner...
+               (delete-file "tests2/EasyMockAnnotationsTest.java")
+               ;; ...but deleting it means that we also have to delete these
+               ;; dependent files.
+               (delete-file "tests2/EasyMockRunnerTest.java")
+               (delete-file "tests2/EasyMockRuleTest.java")
+
+               ;; This test fails because the file "easymock.properties" does
+               ;; not exist.
+               (delete-file "tests2/EasyMockPropertiesTest.java"))
+             #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-cglib" ,java-cglib)
+       ("java-objenesis" ,java-objenesis)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://easymock.org")
+    (synopsis "Java library providing mock objects for unit tests")
+    (description "EasyMock is a Java library that provides an easy way to use
+mock objects in unit testing.")
+    (license license:asl2.0)))
