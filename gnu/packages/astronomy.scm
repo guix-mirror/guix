@@ -21,7 +21,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages maths)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public cfitsio
@@ -107,3 +113,29 @@ systems in a FITS image header.")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
 programs for the manipulation and analysis of astronomical data.")
     (license license:gpl3+)))
+
+(define-public stellarium
+  (package
+    (name "stellarium")
+    (version "0.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/stellarium/Stellarium-sources/"
+                           version "/stellarium-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04avigz8i8mi2x6x71bqr9np85n1p9qnvbj2hxr947f1jv22zr8g"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; There are no tests.
+    (home-page "https://www.gnu.org/software/stellarium")
+    (inputs `(("qt"   ,qt)
+              ("zlib" ,zlib)))
+    (native-inputs `(("gettext" ,gettext-minimal)
+              ("perl" ,perl)))
+    (synopsis "Nocturnal sky renderering program")
+    (description "Stellarium renders a realistic image of the sky in real time.
+With Stellarium, you really see what you can see with your eyes, binoculars or a
+small telescope.")
+    (license license:gpl2+)))
