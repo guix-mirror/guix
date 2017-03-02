@@ -279,7 +279,11 @@ The other options should be self-descriptive."
   (x11-forwarding?       openssh-configuration-x11-forwarding? ;Boolean
                          (default #f))
   (protocol-number       openssh-configuration-protocol-number ;integer
-                         (default 2)))
+                         (default 2))
+  (challenge-response-authentication? openssh-challenge-response-authentication?
+                                      (default #f)) ;Boolean
+  (use-pam?              openssh-configuration-use-pam?
+                         (default #t))) ;Boolean
 
 (define %openssh-accounts
   (list (user-group (name "sshd") (system? #t))
@@ -336,6 +340,12 @@ The other options should be self-descriptive."
                        "yes" "no"))
          (format port "PidFile ~a\n"
                  #$(openssh-configuration-pid-file config))
+         (format port "ChallengeResponseAuthentication ~a\n"
+                 #$(if (openssh-challenge-response-authentication? config)
+                       "yes" "no"))
+         (format port "UsePAM ~a\n"
+                 #$(if (openssh-configuration-use-pam? config)
+                       "yes" "no"))
          #t))))
 
 (define (openssh-shepherd-service config)
@@ -356,11 +366,20 @@ The other options should be self-descriptive."
                                              #:pid-file #$pid-file))
          (stop #~(make-kill-destructor)))))
 
+(define (openssh-pam-services config)
+  "Return a list of <pam-services> for sshd with CONFIG."
+  (list (unix-pam-service
+         "sshd"
+         #:allow-empty-passwords?
+         (openssh-configuration-allow-empty-passwords? config))))
+
 (define openssh-service-type
   (service-type (name 'openssh)
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           openssh-shepherd-service)
+                       (service-extension pam-root-service-type
+                                          openssh-pam-services)
                        (service-extension activation-service-type
                                           openssh-activation)
                        (service-extension account-service-type

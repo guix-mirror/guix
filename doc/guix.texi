@@ -9344,6 +9344,22 @@ enabled---in other words, @command{ssh} options @option{-X} and
 
 @item @code{protocol-number} (default: @code{2})
 The SSH protocol number to use.
+
+@item @code{challenge-response-authentication?} (default: @code{#f})
+Specifies whether challenge response authentication is allowed (e.g. via
+PAM).
+
+@item @code{use-pam?} (default: @code{#t})
+Enables the Pluggable Authentication Module interface.  If set to
+@code{#t}, this will enable PAM authentication using
+@code{challenge-response-authentication?} and
+@code{password-authentication?}, in addition to PAM account and session
+module processing for all authentication types.
+
+Because PAM challenge response authentication usually serves an
+equivalent role to password authentication, you should disable either
+@code{challenge-response-authentication?} or
+@code{password-authentication?}.
 @end table
 @end deftp
 
