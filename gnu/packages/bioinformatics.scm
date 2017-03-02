@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -2047,7 +2047,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.34")
+    (version "0.8.36")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2056,7 +2056,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0jvr34g346gbz7z1zb9bs0vplivm9p4cxk0lbzklvdpa7g236p39"))))
+                "092smzzjcg51n3x4h84k52ijpz9m40ri838j9k2i463ribc3c8rh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
