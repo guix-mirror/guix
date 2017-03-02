@@ -38,7 +38,6 @@
             openssh-configuration
             openssh-configuration?
             openssh-service-type
-            openssh-service
 
             dropbear-configuration
             dropbear-configuration?
