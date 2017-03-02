@@ -438,14 +438,14 @@ interaction.")
 (define-public podofo
   (package
     (name "podofo")
-    (version "0.9.3")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/podofo/podofo/" version
                                   "/podofo-" version ".tar.gz"))
               (sha256
                (base32
-                "1n12lbq9x15vqn7dc0hsccp56l5jdff1xrhvlfqlbklxx0qiw9pc"))))
+                "012kgfx5j5n6w4zkc1d290d2cwjk60jhzsjlr2x19g3yi75q2jc5"))))
     (build-system cmake-build-system)
     (inputs                                      ; TODO: Add cppunit for tests
      `(("lua" ,lua-5.1)
