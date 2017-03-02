@@ -764,6 +764,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
   %D%/packages/patches/mupdf-mujs-CVE-2016-10132.patch		\
   %D%/packages/patches/mupdf-mujs-CVE-2016-10133.patch		\
+  %D%/packages/patches/mupdf-CVE-2017-5896.patch		\
+  %D%/packages/patches/mupdf-CVE-2017-5991.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\

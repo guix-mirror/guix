@@ -11,6 +11,7 @@
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -550,7 +551,9 @@ and examining the file structure (pdfshow).")
           (append
             (origin-patches (package-source mupdf))
             (search-patches "mupdf-mujs-CVE-2016-10132.patch"
-                            "mupdf-mujs-CVE-2016-10133.patch")))))))
+                            "mupdf-mujs-CVE-2016-10133.patch"
+                            "mupdf-CVE-2017-5896.patch"
+                            "mupdf-CVE-2017-5991.patch")))))))
 
 (define-public qpdf
   (package
