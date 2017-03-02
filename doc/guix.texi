@@ -9352,6 +9352,10 @@ Because PAM challenge response authentication usually serves an
 equivalent role to password authentication, you should disable either
 @code{challenge-response-authentication?} or
 @code{password-authentication?}.
+
+@item @code{print-last-log?} (default: @code{#t})
+Specifies whether @command{sshd} should print the date and time of the
+last user login when a user logs in interactively.
 @end table
 @end deftp
 

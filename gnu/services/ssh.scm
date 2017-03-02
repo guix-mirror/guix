@@ -279,6 +279,8 @@ The other options should be self-descriptive."
   (challenge-response-authentication? openssh-challenge-response-authentication?
                                       (default #f)) ;Boolean
   (use-pam?              openssh-configuration-use-pam?
+                         (default #t)) ;Boolean
+  (print-last-log?       openssh-configuration-print-last-log?
                          (default #t))) ;Boolean
 
 (define %openssh-accounts
@@ -297,6 +299,14 @@ The other options should be self-descriptive."
       (use-modules (guix build utils))
       (mkdir-p "/etc/ssh")
       (mkdir-p (dirname #$(openssh-configuration-pid-file config)))
+
+      (define (touch file-name)
+        (call-with-output-file file-name (const #t)))
+
+      (let ((lastlog "/var/log/lastlog"))
+        (when #$(openssh-configuration-print-last-log? config)
+          (unless (file-exists? lastlog)
+            (touch lastlog))))
 
       ;; Generate missing host keys.
       (system* (string-append #$(openssh-configuration-openssh config)
@@ -335,6 +345,9 @@ The other options should be self-descriptive."
                        "yes" "no"))
          (format port "UsePAM ~a\n"
                  #$(if (openssh-configuration-use-pam? config)
+                       "yes" "no"))
+         (format port "PrintLastLog ~a\n"
+                 #$(if (openssh-configuration-print-last-log? config)
                        "yes" "no"))
          #t))))
 
