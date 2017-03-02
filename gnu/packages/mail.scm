@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -214,14 +214,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.7.2")
+    (version "1.8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1yazrl82s9fxmamnlvwmsxhwrxnwv6kwakgfmawda8ndhwb50lqm"))
+               "1axdcylyv0p194y6lj1jx127g5yc74zqzzxdc014cjw02bd1x125"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
