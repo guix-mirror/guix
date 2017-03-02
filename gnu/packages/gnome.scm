@@ -5674,7 +5674,7 @@ simple and consistent.")
 (define-public arc-icon-theme
   (package
     (name "arc-icon-theme")
-    (version "20160605")
+    (version "20161122")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/horst3180/arc-icon-theme"
@@ -5682,7 +5682,7 @@ simple and consistent.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1npf0ki0j0llrw9wbffhxxa1cdms0q7b8xlg9m943dd9g7pgdm2p"))))
+                "1ya1cqvv8q847c0rpcg6apzky87q3h04y8jz5nmi52qk6kg8si0b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
