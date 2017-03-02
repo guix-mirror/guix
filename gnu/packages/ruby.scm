@@ -1020,26 +1020,6 @@ features.")
     (home-page "https://github.com/chneukirchen/bacon")
     (license license:expat)))
 
-(define-public ruby-arel
-  (package
-    (name "ruby-arel")
-    (version "6.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "arel" version))
-              (sha256
-               (base32
-                "18wnfnzr2i5p3fygsddjbi1cimws6823nbk8drxidmnj8jz7h0ar"))))
-    (build-system ruby-build-system)
-    (arguments
-     '(#:tests? #f)) ; no test suite
-    (synopsis "SQL AST manager for Ruby")
-    (description "Arel is a SQL AST manager for Ruby.  It simplifies the
-generation of complex SQL queries and adapts to various relational database
-implementations.")
-    (home-page "https://github.com/rails/arel")
-    (license license:expat)))
-
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
@@ -1854,8 +1834,9 @@ net/http library.")
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/rails/arel")
     (synopsis "SQL AST manager for Ruby")
-    (description "Arel is a SQL AST manager for Ruby.  It simplifies the
-generation of complex SQL queries and is compatible with various RDBMSes.")
+    (description "Arel is an SQL @dfn{Abstract Syntax Tree} (AST) manager for
+Ruby.  It simplifies the generation of complex SQL queries and adapts to
+various relational database implementations.")
     (license license:expat)))
 
 (define-public ruby-minitar
