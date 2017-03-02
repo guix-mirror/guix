@@ -1082,6 +1082,9 @@ an Ant task that extends the built-in @code{jar} task.")
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; Tests require junit
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:make-flags (list (string-append "-Dversion=" ,version))
        #:build-target "core"
        #:phases
@@ -1133,10 +1136,23 @@ private Method[] allMethods = getSortedMethods();")))))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (install-file (string-append "build/hamcrest-core-"
-                                          ,version ".jar")
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/java")))))))
+             (let* ((target (string-append (assoc-ref outputs "out")
+                                           "/share/java/"))
+                    (version-suffix ,(string-append "-" version ".jar"))
+                    (install-without-version-suffix
+                     (lambda (jar)
+                       (copy-file jar
+                                  (string-append target
+                                                 (basename jar version-suffix)
+                                                 ".jar")))))
+               (mkdir-p target)
+               (for-each
+                install-without-version-suffix
+                (find-files "build"
+                            (lambda (name _)
+                              (and (string-suffix? ".jar" name)
+                                   (not (string-suffix? "-sources.jar" name)))))))
+             #t)))))
     (native-inputs
      `(("java-qdox-1.12" ,java-qdox-1.12)
        ("java-jarjar" ,java-jarjar)))
