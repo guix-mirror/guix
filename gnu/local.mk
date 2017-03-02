@@ -5,7 +5,7 @@
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
-# Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+# Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -559,6 +559,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
   %D%/packages/patches/fontconfig-charwidth-symbol-conflict.patch	\
+  %D%/packages/patches/fontconfig-path-max.patch		\
   %D%/packages/patches/fontforge-svg-modtime.patch		\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\

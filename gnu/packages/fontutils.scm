@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -229,7 +230,8 @@ fonts to/from the WOFF2 format.")
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
-            (patches (search-patches "fontconfig-charwidth-symbol-conflict.patch"))
+            (patches (search-patches "fontconfig-charwidth-symbol-conflict.patch"
+                                     "fontconfig-path-max.patch"))
             (sha256 (base32
                      "1wy7svvp7df6bjpg1m5vizb3ngd7rhb20vpclv3x3qa71khs6jdl"))))
    (build-system gnu-build-system)
