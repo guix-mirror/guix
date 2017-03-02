@@ -2206,6 +2206,7 @@ makes starting KDE applications faster and reduces memory consumption.")
                     "mirror://kde/stable/frameworks/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
+              (patches (search-patches "kio-CVE-2017-6410.patch"))
               (sha256
                (base32
                 "1hqc88c2idi9fkb7jy82csb0i740lghv0p2fg1gaglcarjdz7nia"))))

@@ -648,6 +648,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
+  %D%/packages/patches/kio-CVE-2017-6410.patch			\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
