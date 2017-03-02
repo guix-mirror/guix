@@ -44,6 +44,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -1292,5 +1293,39 @@ are both supported).")
     (home-page "http://strophe.im/libstrophe")
     ;; Dual licensed.
     (license (list license:gpl3+ license:x11))))
+
+(define-public profanity
+    (package
+        (name "profanity")
+        (version "0.5.1")
+        (source (origin
+                  (method url-fetch)
+                  (uri "http://www.profanity.im/profanity-0.5.1.tar.gz")
+                  (sha256
+                   (base32
+                     "1f7ylw3mhhnii52mmk40hyc4kqhpvjdr3hmsplzkdhsfww9kflg3"))))
+        (build-system gnu-build-system)
+        (inputs
+         `(("curl" ,curl)
+           ("expat" ,expat)
+           ("glib" ,glib)
+           ("gpgme" ,gpgme)
+           ("libmesode" ,libmesode)
+           ("libotr" ,libotr)
+           ("ncurses" ,ncurses)
+           ("openssl" ,openssl)
+           ("readline" ,readline)))
+        (native-inputs
+         `(("autoconf" ,autoconf)
+           ("autoconf-archive" ,autoconf-archive)
+           ("automake" ,automake)
+           ("cmocka" ,cmocka)
+           ("libtool" ,libtool)
+           ("pkg-config" ,pkg-config)))
+        (synopsis "Console-based XMPP client")
+        (description "Profanity is a console based XMPP client written in C
+using ncurses and libmesode, inspired by Irssi.")
+        (home-page "http://www.profanity.im")
+        (license license:gpl3+)))
 
 ;;; messaging.scm ends here
