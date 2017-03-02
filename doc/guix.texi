@@ -9332,18 +9332,10 @@ false, users have to use other authentication method.
 Authorized public keys are stored in @file{~/.ssh/authorized_keys}.
 This is used only by protocol version 2.
 
-@item @code{rsa-authentication?} (default: @code{#t})
-When true, users may log in using pure RSA authentication.  When false,
-users have to use other means of authentication.  This is used only by
-protocol 1.
-
 @item @code{x11-forwarding?} (default: @code{#f})
 When true, forwarding of X11 graphical client connections is
 enabled---in other words, @command{ssh} options @option{-X} and
 @option{-Y} will work.
-
-@item @code{protocol-number} (default: @code{2})
-The SSH protocol number to use.
 
 @item @code{challenge-response-authentication?} (default: @code{#f})
 Specifies whether challenge response authentication is allowed (e.g. via
