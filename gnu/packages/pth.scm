@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,8 +38,13 @@
         "0ckjqw5kz5m30srqi87idj7xhpw6bpki43mj07bazjm2qmh3cdbj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-build? #f))
-    (home-page "http://www.gnu.org/software/pth")
+     `(#:parallel-build? #f
+       #:configure-flags (list 
+                           ,@(if (string=? "aarch64-linux"
+                                           (%current-system))
+                               '("--host=aarch64-unknown-linux-gnu")
+                               '()))))
+    (home-page "https://www.gnu.org/software/pth")
     (synopsis "Portable thread library")
     (description
      "GNU Pth is a portable library providing non-preemptive, priority-based
