@@ -1305,3 +1305,37 @@ generate classes, directly in binary form.  The provided common
 transformations and analysis algorithms allow to easily assemble custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
+
+(define-public java-cglib
+  (package
+    (name "java-cglib")
+    (version "3.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cglib/cglib/archive/RELEASE_"
+                    (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
+                    ".tar.gz"))
+              (file-name (string-append "cglib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "162dvd4fln76ai8prfharf66pn6r56p3sxx683j5vdyccrd5hi1q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; FIXME: tests fail because junit runs
+       ;; "net.sf.cglib.transform.AbstractTransformTest", which does not seem
+       ;; to describe a test at all.
+       #:tests? #f
+       #:jar-name "cglib.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "cglib") #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-junit" ,java-junit)))
+    (home-page "https://github.com/cglib/cglib/")
+    (synopsis "Java byte code generation library")
+    (description "The byte code generation library CGLIB is a high level API
+to generate and transform Java byte code.")
+    (license license:asl2.0)))
