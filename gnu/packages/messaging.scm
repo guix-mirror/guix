@@ -1258,4 +1258,39 @@ manual SSL certificate verification.")
     ;; Dual licensed.
     (license (list license:gpl3+ license:x11))))
 
+(define-public libstrophe
+  (package
+    (name "libstrophe")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/strophe/libstrophe/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hzwdax4nsz0fncf5bjfza0cn0lc6xsf38y569ql1gg5hvwr6169"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (zero? (system* "./bootstrap.sh")))))))
+    (inputs
+     `(("expat" ,expat)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "C library for writing XMPP clients")
+    (description "Libstrophe is a minimal XMPP library written in C.  It has
+almost no external dependencies, only an XML parsing library (expat or libxml
+are both supported).")
+    (home-page "http://strophe.im/libstrophe")
+    ;; Dual licensed.
+    (license (list license:gpl3+ license:x11))))
+
 ;;; messaging.scm ends here
