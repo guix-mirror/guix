@@ -4703,7 +4703,8 @@ common definitions and porting layer.")
     (propagated-inputs
       `(("xproto" ,xproto)))
     (inputs
-      `(("xtrans" ,xtrans)))
+      `(("libbsd" ,libbsd)
+        ("xtrans" ,xtrans)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
