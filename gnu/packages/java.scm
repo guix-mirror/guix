@@ -1087,6 +1087,7 @@ an Ant task that extends the built-in @code{jar} task.")
                   (guix build utils)
                   (srfi srfi-1))
        #:make-flags (list (string-append "-Dversion=" ,version))
+       #:test-target "unit-test"
        #:build-target "core"
        #:phases
        (modify-phases %standard-phases
