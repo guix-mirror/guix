@@ -1447,6 +1447,42 @@ constructor on object instantiation.")
 mock objects in unit testing.")
     (license license:asl2.0)))
 
+(define-public java-jmock-1
+  (package
+    (name "java-jmock")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jmock-developers/"
+                                  "jmock-library/archive/" version ".tar.gz"))
+              (file-name (string-append "jmock-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xmrlhq0fszldkbv281k9463mv496143vvmqwpxp62yzjvdkx9w0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jars"
+       #:test-target "run.tests"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-jars "build")))))
+    (home-page "http://www.jmock.org")
+    (synopsis "Mock object library for test-driven development")
+    (description "JMock is a library that supports test-driven development of
+Java code with mock objects.  Mock objects help you design and test the
+interactions between the objects in your programs.
+
+The jMock library
+
+@itemize
+@item makes it quick and easy to define mock objects
+@item lets you precisely specify the interactions between
+  your objects, reducing the brittleness of your tests
+@item plugs into your favourite test framework
+@item is easy to extend.
+@end itemize\n")
+    (license license:bsd-3)))
+
 (define-public java-jopt-simple
   (package
     (name "java-jopt-simple")
