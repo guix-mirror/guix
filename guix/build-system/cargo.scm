@@ -64,7 +64,7 @@ to NAME and VERSION."
                       #:key
                       (tests? #t)
                       (test-target #f)
-                      (configure-flags #f)
+                      (cargo-build-flags ''("--release"))
                       (phases '(@ (guix build cargo-build-system)
                                   %standard-phases))
                       (outputs '("out"))
@@ -89,6 +89,7 @@ to NAME and VERSION."
                                  source))
                     #:system ,system
                     #:test-target ,test-target
+                    #:cargo-build-flags ,cargo-build-flags
                     #:tests? ,tests?
                     #:phases ,phases
                     #:outputs %outputs
