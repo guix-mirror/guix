@@ -48,6 +48,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
@@ -1247,7 +1248,8 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
             "1qp4yhxbfnpj34swa0fj635kkihdkwaiw7kf55cg5zqqg630kzl1"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)))
+      `(("libbsd" ,libbsd)
+        ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
