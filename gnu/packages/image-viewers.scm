@@ -212,7 +212,7 @@ your images.  Among its features are:
 (define-public catimg
   (package
     (name "catimg")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
@@ -221,10 +221,10 @@ your images.  Among its features are:
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "14g90zwh2d3s13hgyxypx2vc0rj1g58l6zcxhgc84wsyxfxd6xpb"))))
+         "1abkhrhw4r221lwn2vb8in3vmp6gxn3qlv34cqndr55v5gdpb9qz"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No check target
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -234,20 +234,22 @@ your images.  Among its features are:
                (substitute* "catimg"
                  ;; By replacing "convert", we also replace the "convert"
                  ;; in the message 'The version of convert is too old, don't
-                 ;; expect good results :('. This should not happen, but in
+                 ;; expect good results :('.  This should not happen, but in
                  ;; practice this error message should not affect us.
                  (("convert") convert))
                #t)))
          (replace 'build
            (lambda _
-             (zero? (system* "cmake" "-D"
-                             (string-append "CMAKE_INSTALL_PREFIX="
-                                            (assoc-ref %outputs "out"))
-                             "."))
-             (zero? (system* "make"))))
+             (let* ((out (assoc-ref %outputs "out"))
+                    (man (string-append out "/share/man/man1")))
+               (zero? (system* "cmake"
+                               (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                               (string-append "-DMAN_OUTPUT_PATH=" man)
+                               "."))
+               (zero? (system* "make")))))
          (add-before 'install 'install-script
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The bashscript lacks an file extension, we have to rename
+             ;; The bash script lacks an file extension.  We have to rename
              ;; it so that the C program and the bash script can be happy
              ;; side by side.
              (let* ((out (assoc-ref outputs "out"))
@@ -257,7 +259,7 @@ your images.  Among its features are:
                             (string-append bin "/catimg.sh"))
                #t))))))
     (inputs
-     `(("imagemagick" ,imagemagick))) ; For the bash script version
+     `(("imagemagick" ,imagemagick))) ; for the bash script version
     (home-page "https://github.com/posva/catimg")
     (synopsis "Render images in the terminal")
     (description
