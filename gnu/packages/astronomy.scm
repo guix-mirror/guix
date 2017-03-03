@@ -127,10 +127,12 @@ programs for the manipulation and analysis of astronomical data.")
               (base32
                "04avigz8i8mi2x6x71bqr9np85n1p9qnvbj2hxr947f1jv22zr8g"))))
     (build-system cmake-build-system)
-    (inputs `(("qt"   ,qt)
-              ("zlib" ,zlib)))
-    (native-inputs `(("gettext" ,gettext-minimal) ; xgettext is used at compile time
-              ("perl" ,perl))) ; For pod2man
+    (inputs
+     `(("qt"   ,qt)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal) ; xgettext is used at compile time
+       ("perl" ,perl))) ; For pod2man
     (arguments
       `(#:test-target "tests"
         #:phases (modify-phases %standard-phases
