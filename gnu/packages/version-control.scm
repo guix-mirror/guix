@@ -1337,16 +1337,21 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "1.35")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://www.fossil-scm.org/index.html/uv/download/"
-             "fossil-src-" version ".tar.gz"))
+       ;; Older downloads are moved to another URL.
+       (uri (list
+             (string-append
+              "https://www.fossil-scm.org/index.html/uv/download/"
+              "fossil-src-" version ".tar.gz")
+             (string-append
+              "https://www.fossil-scm.org/index.html/uv/"
+              "fossil-src-" version ".tar.gz")))
        (sha256
         (base32
-         "07ds6rhq69bhydpm9a01mgdhxf88p9b6y5hdnhn8gjc7ba92zyf1"))))
+         "0wfgacfg29dkl0c3l1rp5ji0kraa64gcbg5lh8p4m7mqdqcq53wv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
@@ -1375,9 +1380,6 @@ repository\" with git-annex.")
                     (lambda _
                       (setenv "USER" "guix")
                       (setenv "TZ" "UTC")
-                      ;; Fixing the th1 test would require many backports, so
-                      ;; just disable for now.
-                      (delete-file "test/th1.test")
                       #t)))))
     (home-page "https://fossil-scm.org")
     (synopsis "Software configuration management system")
