@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+# Copyright © 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -482,7 +482,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
-  %D%/packages/patches/arb-ldconfig.patch			\
   %D%/packages/patches/artanis-fix-Makefile.in.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\

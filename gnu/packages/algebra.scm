@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -311,7 +311,7 @@ fast arithmetic.")
 (define-public arb
   (package
    (name "arb")
-   (version "2.8.1")
+   (version "2.10.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -320,8 +320,7 @@ fast arithmetic.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
               (base32
-                "04hhcpshfkcq9fr4hixbhpps50yf9drk62xgkvlcaj5kb4nyrx7l"))
-            (patches (search-patches "arb-ldconfig.patch"))))
+                "0jwcv9ssvi8axb1y7m2h4ykgyl015cl6g28gfl92l4dgnag585ak"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h
