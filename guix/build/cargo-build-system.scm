@@ -19,13 +19,16 @@
 (define-module (guix build cargo-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
-            cargo-build))
+            cargo-build
+            generate-checksums))
 
 ;; Commentary:
 ;;
@@ -45,33 +48,101 @@
   "Replace Cargo.toml [dependencies] section with guix inputs."
   ;; Make sure Cargo.toml is writeable when the crate uses git-fetch.
   (chmod "Cargo.toml" #o644)
-  (let ((port (open-file "Cargo.toml" "a" #:encoding "utf-8")))
-    (format port "~%[replace]~%")
-    (for-each
-     (match-lambda
-       ((name . path)
-        (let ((crate (package-name->crate-name name)))
-          (when (and crate path)
-            (match (string-split (basename path) #\-)
-              ((_ ... version)
-               (format port "\"~a:~a\" = { path = \"~a/share/rust-source\" }~%"
-                       crate version path)))))))
-     inputs)
-    (close-port port))
+  (chmod "." #o755)
+  (if (not (file-exists? "vendor"))
+    (if (not (file-exists? "Cargo.lock"))
+      (begin
+        (substitute* "Cargo.toml"
+          ((".*32-sys.*") "
+")
+          ((".*winapi.*") "
+")
+          ((".*core-foundation.*") "
+"))
+        ;; Prepare one new directory with all the required dependencies.
+        ;; It's necessary to do this (instead of just using /gnu/store as the
+        ;; directory) because we want to hide the libraries in subdirectories
+        ;;   share/rust-source/... instead of polluting the user's profile root.
+        (mkdir "vendor")
+        (for-each
+          (match-lambda
+            ((name . path)
+             (let ((crate (package-name->crate-name name)))
+               (when (and crate path)
+                 (match (string-split (basename path) #\-)
+                   ((_ ... version)
+                    (symlink (string-append path "/share/rust-source")
+                             (string-append "vendor/" (basename path)))))))))
+          inputs)
+        ;; Configure cargo to actually use this new directory.
+        (mkdir-p ".cargo")
+        (let ((port (open-file ".cargo/config" "w" #:encoding "utf-8")))
+          (display "
+[source.crates-io]
+registry = 'https://github.com/rust-lang/crates.io-index'
+replace-with = 'vendored-sources'
+
+[source.vendored-sources]
+directory = '" port)
+          (display (getcwd) port)
+          (display "/vendor" port)
+          (display "'
+" port)
+          (close-port port)))))
+    (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+
+    ;(setenv "CARGO_HOME" "/gnu/store")
+    ; (setenv "CMAKE_C_COMPILER" cc)
   #t)
 
-(define* (build #:key (cargo-build-flags '("--release" "--frozen"))
+(define* (build #:key (cargo-build-flags '("--release"))
                 #:allow-other-keys)
   "Build a given Cargo package."
-  (if (file-exists? "Cargo.lock")
-      (zero? (apply system* `("cargo" "build" ,@cargo-build-flags)))
-      #t))
+  (zero? (apply system* `("cargo" "build" ,@cargo-build-flags))))
 
 (define* (check #:key tests? #:allow-other-keys)
   "Run tests for a given Cargo package."
   (if (and tests? (file-exists? "Cargo.lock"))
       (zero? (system* "cargo" "test"))
       #t))
+
+(define (file-sha256 file-name)
+  "Calculate the hexdigest of the sha256 checksum of FILE-NAME and return it."
+  (let ((port (open-pipe* OPEN_READ
+                          "sha256sum"
+                          "--"
+                          file-name)))
+    (let ((result (read-delimited " " port)))
+      (close-pipe port)
+      result)))
+
+;; Example dir-name: "/gnu/store/hwlr49riz3la33m6in2n898ly045ylld-rust-rand-0.3.15".
+(define (generate-checksums dir-name src-name)
+  "Given DIR-NAME, checksum all the files in it one by one and put the
+   result into the file \".cargo-checksum.json\" in the same directory.
+   Also includes the checksum of an extra file SRC-NAME as if it was
+   part of the directory DIR-NAME with name \"package\"."
+  (let* ((file-names (find-files dir-name "."))
+         (dir-prefix-name (string-append dir-name "/"))
+         (dir-prefix-name-len (string-length dir-prefix-name))
+         (checksums-file-name (string-append dir-name "/.cargo-checksum.json")))
+    (call-with-output-file checksums-file-name
+      (lambda (port)
+        (display "{\"files\":{" port)
+        (let ((sep ""))
+          (for-each (lambda (file-name)
+            (let ((file-relative-name (string-drop file-name dir-prefix-name-len)))
+                  (display sep port)
+                  (set! sep ",")
+                  (write file-relative-name port)
+                  (display ":" port)
+                  (write (file-sha256 file-name) port))) file-names))
+        (display "},\"package\":" port)
+        (write (file-sha256 src-name) port)
+        (display "}" port)))))
+
+(define (touch file-name)
+  (call-with-output-file file-name (const #t)))
 
 (define* (install #:key inputs outputs #:allow-other-keys)
   "Install a given Cargo package."
@@ -86,16 +157,19 @@
     ;; distributing crates as source and replacing
     ;; references in Cargo.toml with store paths.
     (copy-recursively "src" (string-append rsrc "/src"))
+    (touch (string-append rsrc "/.cargo-ok"))
+    (generate-checksums rsrc src)
     (install-file "Cargo.toml" rsrc)
     ;; When the package includes executables we install
     ;; it using cargo install. This fails when the crate
     ;; doesn't contain an executable.
     (if (file-exists? "Cargo.lock")
-        (system* "cargo" "install" "--root" out)
-        (mkdir out))))
+        (zero? (system* "cargo" "install" "--root" out))
+        (begin
+          (mkdir out)
+          #t))))
 
 (define %standard-phases
-  ;; 'configure' phase is not needed.
   (modify-phases gnu:%standard-phases
     (replace 'configure configure)
     (replace 'build build)
