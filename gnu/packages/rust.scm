@@ -44,7 +44,7 @@
   #:use-module (srfi srfi-26))
 
 ;; Should be one less than the current released version.
-(define %rust-bootstrap-binaries-version "1.13.0")
+(define %rust-bootstrap-binaries-version "1.14.0")
 
 (define %rust-bootstrap-binaries
   (origin
@@ -55,7 +55,7 @@
           "-i686-unknown-linux-gnu.tar.gz"))
     (sha256
      (base32
-      "0fcl7xgm2m21sjv1f27i3v692aa91lk8r867hl8d6l377w8k95r3"))))
+      "0h384prpabcl08mxs1bilyb0dbk0knpdylcnz4b84ij4idr7ap4d"))))
 
 (define (increment-rust-version rust-version major patch)
   (match (string-split rust-version #\.)
@@ -205,7 +205,7 @@ rustc-bootstrap and cargo-bootstrap packages.")
                     "rustc-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0srvmhhdbbcl21nzg9m9zni7k10h88lsy8k1ljz03g8mx79fv467"))))
+                "0wvn8m1nfg664b95qrdpfh72q1a6ir09rqkrnlzbkay2r7xf8mgn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cmake" ,cmake)
@@ -260,7 +260,7 @@ rustc-bootstrap and cargo-bootstrap packages.")
                             "--release-channel=stable"
                             "--enable-rpath"
                             "--enable-local-rust"
-                            ;;"--enable-rustbuild"
+                            "--disable-rustbuild" ; use Makefiles
                             "--disable-manage-submodules")))
                ;; Rust uses a custom configure script (no autoconf).
                (zero? (apply system* "./configure" flags)))))
