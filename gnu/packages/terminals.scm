@@ -166,6 +166,9 @@ insert mode and command mode where keybindings have different functions.")
                   (string-append "'" ncurses "/bin/tput'"))))
              #t)))))
     (inputs `(("ncurses" ,ncurses)))
+    (native-inputs
+     ;; For tests.
+     `(("python-requests" ,python-requests)))
     (home-page "https://asciinema.org")
     (synopsis "Terminal session recorder")
     (description

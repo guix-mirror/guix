@@ -48,7 +48,7 @@
        ("python-pytz" ,python-pytz)
        ("python-tzlocal" ,python-tzlocal)
        ("python-six" ,python-six)
-       ("python-dateutil" , python-dateutil-2)
+       ("python-dateutil" ,python-dateutil)
        ("python-parsedatetime" ,python-parsedatetime)))
     (home-page "http://maebert.github.io/jrnl/")
     (synopsis "Personal journal application")

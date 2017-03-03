@@ -646,6 +646,10 @@ using a stylus.")
                (base32
                 "0rz2pg04wnzjjm2f5a8ik9v8s54mv4xrjhv5liqjijqv6awh12gl"))))
     (build-system python-build-system)
+    (arguments
+     '(;; FIXME: There is one test failure, but it does not cause the
+       ;; build to fail. No time to investigate right now.
+       #:test-target "tests"))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
     (home-page "http://www.reportlab.com")

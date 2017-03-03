@@ -2061,6 +2061,8 @@ detailed track info including timbre, pitch, rhythm and loudness information.
                (base32
                 "0bml11gfkxqd3i2jxkn5k2xllc4rvxjcyhs8an05gcyy1zp2bwvb"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Requires unpackaged python-flaky.
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-mock" ,python-mock)

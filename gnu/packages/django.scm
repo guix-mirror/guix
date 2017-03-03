@@ -106,6 +106,10 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
                (base32
                 "0906hms6y6znjhpd0g4wmzv9vcla4brkdpsm4zha9zdj8g5vq2hd"))))
     (build-system python-build-system)
+    (arguments
+     ;; FIXME: Upstream uses a 'runtests.py' script that is not
+     ;; present in the pypi tarball.
+     '(#:tests? #f))
     (propagated-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/alsoicode/django-simple-math-captcha")
@@ -131,7 +135,8 @@ with arguments to the field constructor.")
                 "1mmc7zsz3dlhs6sx4sppkj1vgshabi362r1a8b8wpj1qfximpqcb"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; FIXME: How to run tests?
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-setuppy
            (lambda _
@@ -163,6 +168,12 @@ useful tools for testing Django applications and projects.")
                (base32
                 "0f78hmk8c903zwfzlsiw7ivgag81ymmb5hi73rzxbhnlg2v0l3fx"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "runtests.py")))))))
     (native-inputs
      `(("python-django" ,python-django)
        ("python-mock" ,python-mock)))

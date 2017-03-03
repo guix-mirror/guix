@@ -856,14 +856,18 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3.4-fix-tests.patch		\
   %D%/packages/patches/python-3.5-fix-tests.patch		\
+  %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
+  %D%/packages/patches/python-fake-factory-fix-build-32bit.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
+  %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
+  %D%/packages/patches/python-pyopenssl-skip-network-test.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\

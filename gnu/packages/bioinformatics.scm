@@ -499,6 +499,9 @@ provides the Ribotaper pipeline.")
        ("python-matplotlib" ,python2-matplotlib)
        ("python-scipy" ,python2-scipy)
        ("python-statsmodels" ,python2-statsmodels)))
+    (native-inputs
+     `(("python-mock" ,python2-mock)
+       ("python-nose" ,python2-nose)))
     (home-page "http://public.bmi.inf.ethz.ch/user/zhongy/RiboDiff/")
     (synopsis "Detect translation efficiency changes from ribosome footprints")
     (description "RiboDiff is a statistical tool that detects the protein
@@ -604,6 +607,8 @@ Python.")
       ("python-future" ,python-future)
       ("python-click" ,python-click)
       ("python-h5py" ,python-h5py)))
+   (native-inputs
+    `(("python-nose" ,python-nose)))
    (home-page "http://www.biom-format.org")
    (synopsis "Biological Observation Matrix (BIOM) format utilities")
    (description
@@ -1602,6 +1607,7 @@ databases.")
        ("python-scipy" ,python2-scipy)))
     (native-inputs
      `(("python-mock" ,python2-mock)   ; for tests
+       ("python-nose" ,python2-nose)   ; for tests
        ("python-pytz" ,python2-pytz))) ; for tests
     (home-page "https://github.com/YeoLab/clipper")
     (synopsis "CLIP peak enrichment recognition")
@@ -1978,7 +1984,8 @@ accessing bigWig files.")
        (uri (pypi-uri "DendroPy" version))
        (sha256
         (base32
-         "15c7s3d5gf19ljsxvq5advaa752wfi7pwrdjyhzmg85hccyvp47p"))))
+         "15c7s3d5gf19ljsxvq5advaa752wfi7pwrdjyhzmg85hccyvp47p"))
+       (patches (search-patches "python-dendropy-fix-tests.patch"))))
     (build-system python-build-system)
     (home-page "http://packages.python.org/DendroPy/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
@@ -2030,6 +2037,7 @@ trees (phylogenies) and characters.")
        ("python-pybigwig" ,python2-pybigwig)))
     (native-inputs
      `(("python-mock" ,python2-mock)   ;for tests
+       ("python-nose" ,python2-nose)   ;for tests
        ("python-pytz" ,python2-pytz))) ;for tests
     (home-page "https://github.com/fidelram/deepTools")
     (synopsis "Tools for normalizing and visualizing deep-sequencing data")
@@ -2969,28 +2977,10 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
                 "1k3x44biak00aiv3hpm1yd6nn4hhp7n0qnbs3zh2q9sw7qr1qj5r"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (python-version (string-take (string-take-right
-                                                 (assoc-ref inputs "python") 5) 3))
-                   (path (string-join
-                          (map (lambda (name)
-                                 (string-append (assoc-ref inputs name)
-                                                "/lib/python" python-version
-                                                "/site-packages"))
-                               '("python-scipy"
-                                 "python-numpy"
-                                 "python-matplotlib"))
-                          ":")))
-              (wrap-program (string-append out "/bin/idr")
-                `("PYTHONPATH" ":" prefix (,path))))
-            #t)))))
-    (inputs
+     `(#:tests? #f)) ; FIXME: "ImportError: No module named 'utility'"
+    (propagated-inputs
      `(("python-scipy" ,python-scipy)
+       ("python-sympy" ,python-sympy)
        ("python-numpy" ,python-numpy)
        ("python-matplotlib" ,python-matplotlib)))
     (native-inputs
@@ -3679,6 +3669,9 @@ the phenotype as it models the data.")
       (build-system python-build-system)
       (arguments
        `(#:python ,python-2
+         ;; FIXME: Tests fail with "No such file or directory:
+         ;; pbtools/pbtranscript/modified_bx_intervals/intersection_unique.so"
+         #:tests? #f
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'enter-directory

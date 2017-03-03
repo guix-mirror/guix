@@ -1210,7 +1210,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
      `(;; for the tests
        ("python2-six" ,python2-six)))
     (propagated-inputs
-     `(("python2-dateutil" ,python2-dateutil-2)
+     `(("python2-dateutil" ,python2-dateutil)
        ("python2-futures" ,python2-futures)
        ("python2-rauth" ,python2-rauth)
        ("python2-swiftclient" ,python2-swiftclient)))
