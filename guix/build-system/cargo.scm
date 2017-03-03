@@ -29,7 +29,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
-  #:export (cargo-build-system
+  #:export (%cargo-build-system-modules
+            cargo-build-system
             crate-url
             crate-url?
             crate-uri))
