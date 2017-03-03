@@ -4,7 +4,6 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -507,13 +506,13 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.11.1")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "0kk95iqxygrg0cd66kq8kbyalg2x5pz9hn1175cgwgf1vy72adfv"))))
+        "1pzv8fcfwdqzvvpyhgjz412is0b98yj9495k8sidzzqgbdmvlp50"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -564,7 +563,7 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1wis5kgqcsrs60kkcmbrbx8z9yasmwa6lg9ir5im232hdm4285vc"))))
+                "1dw86gb8lyap5ckjawmli1hxgbchw2g62g1lqfvxyqjv0df94waa"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
