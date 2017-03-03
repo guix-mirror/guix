@@ -104,7 +104,7 @@ convert it to structurally valid XHTML (or HTML).")
 (define-public cmark
   (package
     (name "cmark")
-    (version "0.26.1")
+    (version "0.27.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/jgm/cmark/archive/"
@@ -112,7 +112,7 @@ convert it to structurally valid XHTML (or HTML).")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1mpmcy4bbmc8m058zqs9dwx49lcfi7bdnfszsr9y66cwgylia1mm"))))
+               "1da62ispca9aal2a36gaj87175rv5013pl7x740vk32y6lclr6v6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"))
