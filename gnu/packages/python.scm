@@ -2476,13 +2476,13 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.9.1")
+    (version "2.13.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "0zsqrzlybf25xscgi7ja4s48y2abf9wvjkn47wh984qgs1fq2xy5"))))
+               "1s0wg4any4dsv5l3hqjxqk2zgb7pdbqhy9rhc8kh3aigfq4ws8jp"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-py" ,python-py)
