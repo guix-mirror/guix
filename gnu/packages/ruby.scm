@@ -1993,14 +1993,14 @@ for select languages.")
 (define-public ruby-pry
   (package
     (name "ruby-pry")
-    (version "0.10.1")
+    (version "0.10.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pry" version))
        (sha256
         (base32
-         "1j0r5fm0wvdwzbh6d6apnp7c0n150hpm9zxpm5xvcgfqr36jaj8z"))))
+         "05xbzyin63aj2prrv8fbq2d5df2mid93m81hz5bvf2v4hnzs42ar"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
