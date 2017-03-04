@@ -1003,7 +1003,8 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases
+     `(#:parallel-tests? #f ; May fail in some circumstances.
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'adjust-tests
            (lambda _
