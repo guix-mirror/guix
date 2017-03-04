@@ -883,15 +883,15 @@ using the curses.h library for screen control.")
 (define-public glulxe
   (package
    (name "glulxe")
-   (version "0.5.2")
+   (version "0.5.4")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://www.ifarchive.org/if-archive/programming/"
-                         "glulx/interpreters/glulxe/glulxe-052.tar.gz"))
+                         "glulx/interpreters/glulxe/glulxe-054.tar.gz"))
      (sha256
       (base32
-       "19iw6kl8ncqcy9pv4gsqfh3xsa1n94zd234rqavvmxccnf3nj19g"))))
+       "0vipydg6ra90yf9b3ipgppwxyb2xdhcxwvirgjy0v20wlf56zhhz"))))
    (build-system gnu-build-system)
    (inputs `(("glk" ,glkterm)))
    (arguments
@@ -916,7 +916,7 @@ using the curses.h library for screen control.")
 playing interactive fiction.  It was designed by Andrew Plotkin to relieve
 some of the restrictions in the venerable Z-machine format.  This is the
 reference interpreter, using Glk API.")
-   (license (license:fsf-free "file://README"))))
+   (license license:expat)))
 
 (define-public fizmo
   (package
