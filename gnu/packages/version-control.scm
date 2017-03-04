@@ -591,7 +591,7 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.5")
+    (version "3.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -600,7 +600,7 @@ also walk each side of a merge and test those changes individually.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xpqg04gyr4dhdhxx5lbk61lwwd5ml32530bigg2qy663icngwqm"))))
+                "07q33f86694s0x3k9lcmy1vzfw9appdrlmmb9j3bz4qkrxqdnwb9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
