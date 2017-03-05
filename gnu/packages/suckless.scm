@@ -47,6 +47,33 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages libbsd))
 
+(define-public blind
+  (package
+    (name "blind")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/blind-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1b36k8fg2gmabm69jckqja49i8y4rcbccgvv2wija15ciszrm1x9"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no check target
+       #:make-flags (list
+                     "CC=gcc"
+                     (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (synopsis "Command line video editing utilities")
+    (home-page "http://tools.suckless.org/blind/")
+    (description
+     "Blind is a collection of command line video editing utilities.  It uses
+a custom raw video format with a simple container.")
+    (license license:isc)))
+
 (define-public dwm
   (package
     (name "dwm")
