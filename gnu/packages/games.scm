@@ -2617,7 +2617,7 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2626,18 +2626,8 @@ tactics.")
                     name "-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1qb5nk0b3d0ia5zszmg4a3ydf4fiy39fmymb66vwkqn4djajdhzq"))))
+                "1646hpjq8bz2fkfkja1dah511hn7zd2r7da4w9c9blhad3p5732v"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f ; no check target
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "PREFIX=" out)
-               (string-append "BINDIR=" out "/bin/")))
-       #:phases
-       (modify-phases %standard-phases
-         ;; no configure script
-         (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
