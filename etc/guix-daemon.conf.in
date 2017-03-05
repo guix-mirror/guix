@@ -9,4 +9,4 @@ stop on runlevel [016]
 
 task
 
-exec @bindir@/guix-daemon --build-users-group=guixbuild
+exec @localstatedir@/guix/profiles/per-user/root/guix-profile/bin/guix-daemon --build-users-group=guixbuild
