@@ -632,32 +632,29 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.3")
+    (version "0.2.5")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0pwdd52vakni1fabaiav8v0ad7xp3bx8x3brijbr1mpgamm9dxqc"))))
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qbk485djgxqrbfjvk4b7w7y4x9xygf2qb8dqnl7885kajasx8qg"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-module-dir
-                    (lambda _
-                      (substitute* "src/Makefile.in"
-                        (("^moddir = ([[:graph:]]+)")
-                         "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
-                        (("^godir = ([[:graph:]]+)")
-                         "godir = \
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0")        ;to prevent guild errors
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-module-dir
+           (lambda _
+             (substitute* "src/Makefile.in"
+               (("^moddir = ([[:graph:]]+)")
+                "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
+               (("^godir = ([[:graph:]]+)")
+                "godir = \
 $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      ;; Work around a harmless test failure involving
-                      ;; two-spaces-after-period rendering.
-                      (zero? (system* "make" "check" ;"-C" "unit-tests"
-                                      "XFAIL_TESTS=texinfo.serialize.scm")))))))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)))
     (home-page "http://www.nongnu.org/guile-lib/")
