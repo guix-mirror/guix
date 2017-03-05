@@ -195,7 +195,7 @@ platform-independent programs.")
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.24.0")
+    (version "3.24.1")
     (source
      (origin
        (method url-fetch)
@@ -204,8 +204,11 @@ platform-independent programs.")
                            "/FileZilla_" version "_src" ".tar.bz2"))
        (sha256
         (base32
-         "1bacrl8lj90hqbh129hpbgqj78k1i84j83rkzn507jnykj4x8p9x"))))
+         "0ahcld3g6jj92nakm5i58wgmcv6f4l9yisw3aqbc2ry0gs679pg6"))))
     (build-system gnu-build-system)
+    (arguments
+      ;; Don't let filezilla phone home to check for updates.
+     '(#:configure-flags '("--disable-autoupdatecheck")))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
