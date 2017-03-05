@@ -209,13 +209,14 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
     (arguments
      `(#:configure-flags '("--cxx11"          ; required by gtkmm
                            "--no-phone-home"  ; don't contact ardour.org
-                           "--freedesktop")   ; install .desktop file
+                           "--freedesktop"    ; install .desktop file
+                           "--test")          ; build unit tests
        #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
           ,(ardour-rpath-phase (version-prefix version 1))))
-       #:tests? #f ; no check target
+       #:test-target "test"
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
