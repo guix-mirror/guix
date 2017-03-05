@@ -208,7 +208,8 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
     (build-system waf-build-system)
     (arguments
      `(#:configure-flags '("--cxx11"          ; required by gtkmm
-                           "--no-phone-home") ; don't contact ardour.org
+                           "--no-phone-home"  ; don't contact ardour.org
+                           "--freedesktop")   ; install .desktop file
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -256,6 +257,8 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
     (native-inputs
      `(("perl" ,perl)
        ("cppunit" ,cppunit)
+       ("itstool" ,itstool)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (home-page "http://ardour.org")
     (synopsis "Digital audio workstation")
