@@ -260,6 +260,8 @@ The other options should be self-descriptive."
 (define-record-type* <openssh-configuration>
   openssh-configuration make-openssh-configuration
   openssh-configuration?
+  (openssh               openssh-configuration-openssh ;package
+                         (default openssh))
   (pid-file              openssh-configuration-pid-file
                          (default "/var/run/sshd.pid"))
   (port-number           openssh-configuration-port-number ;integer
@@ -297,7 +299,8 @@ The other options should be self-descriptive."
       (mkdir-p (dirname #$(openssh-configuration-pid-file config)))
 
       ;; Generate missing host keys.
-      (system* (string-append #$openssh "/bin/ssh-keygen") "-A")))
+      (system* (string-append #$(openssh-configuration-openssh config)
+                              "/bin/ssh-keygen") "-A")))
 
 (define (openssh-config-file config)
   "Return the sshd configuration file corresponding to CONFIG."
@@ -342,7 +345,7 @@ The other options should be self-descriptive."
     (openssh-configuration-pid-file config))
 
   (define openssh-command
-    #~(list (string-append #$openssh "/sbin/sshd")
+    #~(list (string-append #$(openssh-configuration-openssh config) "/sbin/sshd")
             "-D" "-f" #$(openssh-config-file config)))
 
   (list (shepherd-service
