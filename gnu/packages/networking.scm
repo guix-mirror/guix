@@ -470,7 +470,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.4")
+    (version "2.2.5")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -479,7 +479,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "049r5962yrajhhz9r4dsnx403dab50d6091y2mw298ymxqszp9s2"))))
+         "1j4sc3pmy8l6k41007spglcqiabjlzc7f85pn3jmjr9ksv9qipbm"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)
