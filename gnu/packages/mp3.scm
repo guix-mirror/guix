@@ -230,7 +230,7 @@ pre-defined or user-specifiable output format.")
 (define-public libmp3splt
   (package
    (name "libmp3splt")
-   (version "0.8.1a")
+   (version "0.9.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/mp3splt/libmp3splt/"
@@ -238,7 +238,7 @@ pre-defined or user-specifiable output format.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0d20r1bd4fgp9kp7w3qixjgll34czck9dgw59mx2kbhb0mhh00d8"))))
+              "1p1mn2hsmj5cp40fnc8g1yfvk72p8pjxi866gjdkgjsqrr7xdvih"))))
    (build-system gnu-build-system)
    (inputs `(("libid3tag" ,libid3tag)
              ("libmad" ,libmad)
