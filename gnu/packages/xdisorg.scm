@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -689,9 +690,47 @@ compact configuration syntax.")
      ;; This sets the destination when installing the necessary terminal
      ;; capability data, which are not provided by 'ncurses'.  See
      ;; https://lists.gnu.org/archive/html/bug-ncurses/2009-10/msg00031.html
-     '(#:make-flags (list (string-append "TERMINFO="
+     `(#:make-flags (list (string-append "TERMINFO="
                                          (assoc-ref %outputs "out")
-                                         "/share/terminfo"))))
+                                         "/share/terminfo"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-desktop-urxvt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((output (assoc-ref outputs "out"))
+                    (desktop (string-append output "/share/applications")))
+               (mkdir-p desktop)
+               (with-output-to-file
+                   (string-append desktop "/urxvt.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=rxvt-unicode~@
+                           Comment=~@
+                           Exec=~a/bin/urxvt~@
+                           TryExec=~@*~a/bin/urxvt~@
+                           Icon=~@
+                           Type=Application~%"
+                           output)))
+               #t)))
+         (add-after 'install 'install-desktop-urxvtc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((output (assoc-ref outputs "out"))
+                    (desktop (string-append output "/share/applications")))
+               (mkdir-p desktop)
+               (with-output-to-file
+                   (string-append desktop "/urxvtc.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=rxvt-unicode~@
+                           Comment=Rxvt clone with XFT and unicode support~@
+                           Exec=~a/bin/urxvtc~@
+                           TryExec=~@*~a/bin/urxvtc~@
+                           Icon=~@
+                           Type=Application~%"
+                           output)))
+               #t))))))
     (inputs
      `(("libXft" ,libxft)
        ("libX11" ,libx11)))
