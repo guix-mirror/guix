@@ -221,55 +221,52 @@ in the Mozilla clients.")
                   (ice-9 match)
                   (srfi srfi-26))
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key system inputs #:allow-other-keys)
-          (setenv "CC" "gcc")
-          ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
-          (when (string-prefix? "x86_64" system)
-            (setenv "USE_64" "1"))
-          #t)
-        (alist-replace
-         'check
-         (lambda _
-           ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
-           ;; The later requires a working DNS or /etc/hosts.
-           (setenv "DOMSUF" "(none)")
-           (setenv "USE_IP" "TRUE")
-           (setenv "IP_ADDRESS" "127.0.0.1")
-           (zero? (system* "./nss/tests/all.sh")))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append (assoc-ref outputs "bin") "/bin"))
-                   (inc (string-append out "/include/nss"))
-                   (lib (string-append out "/lib/nss"))
-                   (obj (match (scandir "dist" (cut string-suffix? "OBJ" <>))
-                          ((obj) (string-append "dist/" obj)))))
-              ;; Install nss-config to $out/bin.
-              (install-file (string-append obj "/bin/nss-config")
-                            (string-append out "/bin"))
-              (delete-file (string-append obj "/bin/nss-config"))
-              ;; Install nss.pc to $out/lib/pkgconfig.
-              (install-file (string-append obj "/lib/pkgconfig/nss.pc")
-                            (string-append out "/lib/pkgconfig"))
-              (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
-              (rmdir (string-append obj "/lib/pkgconfig"))
-              ;; Install other files.
-              (copy-recursively "dist/public/nss" inc)
-              (copy-recursively (string-append obj "/bin") bin)
-              (copy-recursively (string-append obj "/lib") lib)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key system inputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
+             (when (string-prefix? "x86_64" system)
+               (setenv "USE_64" "1"))
+             #t))
+         (replace 'check
+           (lambda _
+             ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
+             ;; The later requires a working DNS or /etc/hosts.
+             (setenv "DOMSUF" "(none)")
+             (setenv "USE_IP" "TRUE")
+             (setenv "IP_ADDRESS" "127.0.0.1")
+             (zero? (system* "./nss/tests/all.sh"))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append (assoc-ref outputs "bin") "/bin"))
+                      (inc (string-append out "/include/nss"))
+                      (lib (string-append out "/lib/nss"))
+                      (obj (match (scandir "dist" (cut string-suffix? "OBJ" <>))
+                             ((obj) (string-append "dist/" obj)))))
+                 ;; Install nss-config to $out/bin.
+                 (install-file (string-append obj "/bin/nss-config")
+                               (string-append out "/bin"))
+                 (delete-file (string-append obj "/bin/nss-config"))
+                 ;; Install nss.pc to $out/lib/pkgconfig.
+                 (install-file (string-append obj "/lib/pkgconfig/nss.pc")
+                               (string-append out "/lib/pkgconfig"))
+                 (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
+                 (rmdir (string-append obj "/lib/pkgconfig"))
+                 ;; Install other files.
+                 (copy-recursively "dist/public/nss" inc)
+                 (copy-recursively (string-append obj "/bin") bin)
+                 (copy-recursively (string-append obj "/lib") lib)
 
-              ;; FIXME: libgtest1.so is installed in the above step, and it's
-              ;; (unnecessarily) linked with several NSS libraries, but
-              ;; without the needed rpaths, causing the 'validate-runpath'
-              ;; phase to fail.  Here we simply delete libgtest1.so, since it
-              ;; seems to be used only during the tests.
-              (delete-file (string-append lib "/libgtest1.so"))
+                 ;; FIXME: libgtest1.so is installed in the above step, and it's
+                 ;; (unnecessarily) linked with several NSS libraries, but
+                 ;; without the needed rpaths, causing the 'validate-runpath'
+                 ;; phase to fail.  Here we simply delete libgtest1.so, since it
+                 ;; seems to be used only during the tests.
+                 (delete-file (string-append lib "/libgtest1.so"))
 
-              #t))
-          %standard-phases)))))
+                 #t))))))
     (inputs
      `(("sqlite" ,sqlite)
        ("zlib" ,zlib)))
