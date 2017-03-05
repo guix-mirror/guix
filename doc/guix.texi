@@ -443,8 +443,15 @@ Run the daemon, and set it to automatically start on boot.
 If your host distro uses the systemd init system, this can be achieved
 with these commands:
 
+@c Versions of systemd that supported symlinked service files are not
+@c yet widely deployed, so we should suggest that users copy the service
+@c files into place.
+@c
+@c See this thread for more information:
+@c http://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
+
 @example
-# ln -s ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
+# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
         /etc/systemd/system/
 # systemctl start guix-daemon && systemctl enable guix-daemon
 @end example
@@ -452,8 +459,8 @@ with these commands:
 If your host distro uses the Upstart init system:
 
 @example
-# ln -s ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
 # initctl reload-configuration
+# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
 # start guix-daemon
 @end example
 
