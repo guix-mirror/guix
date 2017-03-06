@@ -6129,7 +6129,14 @@ connection to each user.")
          "107cmn7g3jnbkp826zlj8rrj19fam301qvaqf0f3905f5217lgki"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test" "-v")))))))
+    (native-inputs
+     `(("python2-pytest" ,python2-pytest)))
     (home-page "https://github.com/chrippa/backports.shutil_get_terminal_size")
     (synopsis "Backport of Python 3.3's @code{shutil.get_terminal_size}")
     (description
