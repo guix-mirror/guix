@@ -1165,16 +1165,13 @@ datetime module, available in Python 2.3+.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.18.1")
+    (version "0.19.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-              "https://pypi.python.org/packages/11/09/"
-              "e66eb844daba8680ddff26335d5b4fead77f60f957678243549a8dd4830d/"
-              "pandas-" version ".tar.gz"))
+       (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1ckpxrvvjj6zxmn68icd9hib8qcpx9b35f6izxnr25br5ilq7r6j"))))
+        (base32 "0540cnbwy2hc4hv2sxfs8i47xi91qzvzxfn80dl785ibiicly3vg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
