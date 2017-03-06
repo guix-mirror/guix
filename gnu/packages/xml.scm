@@ -849,9 +849,11 @@ code for classes that correspond to data structures defined by XMLSchema.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append
-            "https://fedorahosted.org/releases/x/m/xmlto/xmlto-"
-            version ".tar.bz2"))
+      ;; The old source on fedorahosted.org is offline permanently:
+      ;; <https://bugs.gnu.org/25989>
+      (uri (string-append "mirror://debian/pool/main/x/xmlto/"
+                          "xmlto_" version ".orig.tar.bz2"))
+      (file-name (string-append name "-" version ".tar.bz2"))
       (sha256
        (base32
         "0xhj8b2pwp4vhl9y16v3dpxpsakkflfamr191mprzsspg4xdyc0i"))))
