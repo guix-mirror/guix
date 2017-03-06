@@ -469,7 +469,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.0")
+    (version "2.5.1")
     (source
      (origin
       (method url-fetch)
@@ -478,7 +478,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "1bkfvapi4z826slycmicvs7hwgk4l82gd8w6nqvznldbammvyll6"))))
+        "1kc709scgd76vk7fld4jnb4wb5lxdv1cj8zsgyjb33xp4jlf06pp"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
