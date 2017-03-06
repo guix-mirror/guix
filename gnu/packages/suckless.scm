@@ -255,11 +255,20 @@ drawing.")
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         ;; Use the right file name for dmenu and xprop.
+         (add-before 'build 'set-dmenu-and-xprop-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "config.def.h"
+               (("dmenu") (string-append (assoc-ref inputs "dmenu") "/bin/dmenu"))
+               (("xprop") (string-append (assoc-ref inputs "xprop") "/bin/xprop")))
+             #t)))))
     (inputs
-     `(("glib-networking" ,glib-networking)
+     `(("dmenu" ,dmenu)
+       ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk/gtk+-2)))
+       ("webkitgtk" ,webkitgtk/gtk+-2)
+       ("xprop" ,xprop)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://surf.suckless.org/")
