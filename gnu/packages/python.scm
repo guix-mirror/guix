@@ -3837,6 +3837,14 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "nosetests" "--all-modules" "-v" "colorspacious")))))))
     (home-page "https://github.com/njsmith/colorspacious")
     (synopsis "Python library for colorspace conversions")
     (description "@code{colorspacious} is a Python library that lets you
