@@ -1,0 +1,18 @@
+This test tries to send a KeyboardInterrupt, which does
+not work in the build environment.
+
+--- a/test_subprocess32.py	2017-03-06 22:21:49.334045485 +0100
++++ b/test_subprocess32.py	2017-03-06 22:22:02.490439949 +0100
+@@ -1299,12 +1299,6 @@
+         getattr(p, method)(*args)
+         return p
+ 
+-    def test_send_signal(self):
+-        p = self._kill_process('send_signal', signal.SIGINT)
+-        _, stderr = p.communicate()
+-        self.assertIn('KeyboardInterrupt', stderr)
+-        self.assertNotEqual(p.wait(), 0)
+-
+     def test_kill(self):
+         p = self._kill_process('kill')
+         _, stderr = p.communicate()

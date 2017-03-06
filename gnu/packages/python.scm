@@ -9044,6 +9044,47 @@ authenticated session objects providing things like keep-alive.")
 3.2.3 for use with older versions of Python and PyPy.")
     (license license:expat)))
 
+(define-public python2-subprocess32
+  (package
+    (name "python2-subprocess32")
+    (version "3.2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "subprocess32" version))
+              (sha256
+               (base32
+                "14350dhhlhyz5gqzi3lihn9m6lvskx5mcb20srx1kgsk9i50li8y"))
+              (patches
+               (search-patches "python2-subprocess32-disable-input-test.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* '("subprocess32.py"
+                            "test_subprocess32.py")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; For some reason this package fails to import
+             ;; _posixsubprocess.so when PYTHONPATH is set to the build
+             ;; directory. Running tests after install is easier.
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "python" "test_subprocess32.py")))))))
+    (home-page "https://github.com/google/python-subprocess32")
+    (synopsis "Backport of the subprocess module from Python 3.2")
+    (description
+     "This is a backport of the @code{subprocess} standard library module
+from Python 3.2 and 3.3 for use on Python 2.  It includes bugfixes and some
+new features.  On POSIX systems it is guaranteed to be reliable when used
+in threaded applications.  It includes timeout support from Python 3.3 but
+otherwise matches 3.2’s API.")
+    (license license:psfl)))
+
 (define-public python2-futures
   (package
     (name "python2-futures")

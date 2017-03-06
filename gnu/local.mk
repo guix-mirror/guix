@@ -871,6 +871,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
+  %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2016-10155.patch			\
   %D%/packages/patches/qemu-CVE-2017-2615.patch			\
   %D%/packages/patches/qemu-CVE-2017-5525.patch			\
