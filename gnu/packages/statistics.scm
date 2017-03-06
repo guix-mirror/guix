@@ -1437,15 +1437,14 @@ building design matrices.")
 (define-public python-statsmodels
   (package
     (name "python-statsmodels")
-    (version "0.6.1")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/"
-                           "s/statsmodels/statsmodels-" version ".tar.gz"))
+       (uri (pypi-uri "statsmodels" version))
        (sha256
         (base32
-         "0xn67sqr0cc1lmlhzm71352hrb4hw7g318p5ff5q97pc98vl8kmy"))
+         "0j30v3932shnj9368c9jr3svkyrvfj90h2l7nxnqkbpv0svilhr6"))
        (patches (search-patches "python-statsmodels-fix-tests.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1457,7 +1456,9 @@ building design matrices.")
           (lambda _
             ;; Set the matplotlib backend to Agg to avoid problems using the
             ;; GTK backend without a display.
-            (substitute* (find-files "statsmodels/graphics/tests" "\\.py")
+            (substitute* (append (find-files "statsmodels/graphics/tests" "\\.py")
+                                 '("statsmodels/tsa/vector_ar/tests/test_var.py"
+                                   "statsmodels/duration/tests/test_survfunc.py"))
               (("import matplotlib\\.pyplot as plt" line)
                (string-append "import matplotlib;matplotlib.use('Agg');"
                               line)))
