@@ -217,14 +217,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.19")
+    (version "2.1.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1w4vccmb5l50lm4yrz9vkdj7whbfvzx543r55362kkj1aqgyvk26"))))
+                "157rrv3ly9j2k0acz43nhiba5hfl6h7048jvj55wwqjmgsmnyk6h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -243,11 +243,7 @@ compatible to GNU Pth.")
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
    (arguments
-    `(#:configure-flags '("--enable-gpg2-is-gpg"
-                          ;; Otherwise, the test suite looks for the `gpg`
-                          ;; executable in its installation directory in
-                          ;; /gnu/store before it has been installed.
-                          "--enable-gnupg-builddir-envvar")
+    `(#:configure-flags '("--enable-gpg2-is-gpg")
       #:phases
       (modify-phases %standard-phases
         (add-before 'configure 'patch-paths
@@ -263,27 +259,11 @@ compatible to GNU Pth.")
               (("/usr/bin/env gpgscm")
                (string-append (getcwd) "/tests/gpgscm/gpgscm")))
             #t))
-        (add-before 'build 'patch-test-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((coreutils (assoc-ref inputs "coreutils"))
-                   (cat (string-append coreutils "/bin/cat"))
-                   (pwd (string-append coreutils "/bin/pwd"))
-                   (true (string-append coreutils "/bin/true"))
-                   (false (string-append coreutils "/bin/false")))
-              (substitute* '("tests/inittests"
-                             "tests/pkits/inittests"
-                             "tests/Makefile"
-                             "tests/pkits/common.sh"
-                             "tests/pkits/Makefile"
-                            )
-               (("/bin/pwd") pwd))
-              (substitute* "common/t-exectool.c"
-                (("/bin/cat") cat))
-              (substitute* "common/t-exectool.c"
-                (("/bin/true") true))
-              (substitute* "common/t-exectool.c"
-                (("/bin/false") false))
-              #t))))))
+        ;; If this variable is undefined, /bin/pwd is invoked.
+        (add-before 'check 'set-gnupg-home
+          (lambda _
+            (setenv "GNUPGHOME" (getcwd))
+            #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
