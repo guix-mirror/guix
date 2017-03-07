@@ -1875,6 +1875,58 @@ in the @code{java.lang} package.  The following classes are included:
 It provides packages in the @code{javax.annotations} namespace.")
     (license license:asl2.0)))
 
+(define-public java-guava
+  (package
+    (name "java-guava")
+    ;; This is the last release of Guava that can be built with Java 7.
+    (version "20.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/guava/"
+                                  "releases/download/v" version
+                                  "/guava-" version "-sources.jar"))
+              (sha256
+               (base32
+                "1gawrs5gi6j5hcfxdgpnfli75vb9pfi4sn09pnc8xacr669yajwr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests included
+       #:jar-name "guava.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'trim-sources
+           (lambda _
+             (with-directory-excursion "src/com/google/common"
+               ;; Remove annotations to avoid extra dependencies:
+               ;; * "j2objc" annotations are used when converting Java to
+               ;;   Objective C;
+               ;; * "errorprone" annotations catch common Java mistakes at
+               ;;   compile time;
+               ;; * "IgnoreJRERequirement" is used for Android.
+               (substitute* (find-files "." "\\.java$")
+                 (("import com.google.j2objc.*") "")
+                 (("import com.google.errorprone.annotation.*") "")
+                 (("import org.codehaus.mojo.animal_sniffer.*") "")
+                 (("@CanIgnoreReturnValue") "")
+                 (("@LazyInit") "")
+                 (("@WeakOuter") "")
+                 (("@RetainedWith") "")
+                 (("@Weak") "")
+                 (("@ForOverride") "")
+                 (("@J2ObjCIncompatible") "")
+                 (("@IgnoreJRERequirement") "")))
+             #t)))))
+    (inputs
+     `(("java-jsr305" ,java-jsr305)))
+    (home-page "https://github.com/google/guava")
+    (synopsis "Google core libraries for Java")
+    (description "Guava is a set of core libraries that includes new
+collection types (such as multimap and multiset), immutable collections, a
+graph library, functional types, an in-memory cache, and APIs/utilities for
+concurrency, I/O, hashing, primitives, reflection, string processing, and much
+more!")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
