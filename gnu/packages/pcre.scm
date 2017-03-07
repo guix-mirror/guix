@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,16 +74,15 @@ POSIX regular expression API.")
 (define-public pcre2
   (package
     (name "pcre2")
-    (version "10.21")
+    (version "10.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcre/pcre2/"
                                   version "/pcre2-" version ".tar.bz2"))
 
-              (patches (search-patches "pcre2-CVE-2016-3191.patch"))
               (sha256
                (base32
-                "1q6lrj9b08l1q39vxipb0fi88x6ybvkr6439h8bjb9r8jd81fsn6"))))
+                "0vn5g0mkkp99mmzpissa06hpyj6pk9s4mlwbjqrjvw3ihy8rpiyz"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
@@ -95,7 +95,14 @@ POSIX regular expression API.")
                           "--enable-unicode-properties"
                           "--enable-pcre2-16"
                           "--enable-pcre2-32"
-                          "--enable-jit")))
+                          "--enable-jit")
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'patch-paths
+          (lambda _
+            (substitute* "RunGrepTest"
+              (("/bin/echo") (which "echo")))
+            #t)))))
    (synopsis "Perl Compatible Regular Expressions")
    (description
     "The PCRE library is a set of functions that implement regular expression
