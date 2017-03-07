@@ -295,6 +295,7 @@ as well as the classic centralized workflow.")
            (files '("etc/ssl/certs/ca-certificates.crt")))
           (search-path-specification
            (variable "GIT_EXEC_PATH")
+           (separator #f)                         ;single entry
            (files '("libexec/git-core")))))
 
    (synopsis "Distributed version control system")
