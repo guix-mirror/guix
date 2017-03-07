@@ -21,6 +21,7 @@
 (define-module (gnu packages bash)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages bison)
@@ -243,14 +244,17 @@ without modification.")
 
 (define* (url-fetch/reset-patch-level url hash-algo hash
                                       #:optional name
-                                      #:key (system (%current-system)) guile)
+                                      #:key (system (%current-system)))
   "Fetch the Bash patch from URL and reset its 'PATCHLEVEL' definition so it
 can apply to a patch-level 0 Bash."
+  ;; Note: Forcefully use %BOOTSTRAP-GUILE here to work around bootstrapping
+  ;; issues when using a daemon that lacks the "download" built-in.  See
+  ;; <https://bugs.gnu.org/25775>.
   (mlet* %store-monad ((name -> (or name (basename url)))
                        (patch (url-fetch url hash-algo hash
                                          (string-append name ".orig")
                                          #:system system
-                                         #:guile guile)))
+                                         #:guile %bootstrap-guile)))
     (gexp->derivation name
                       (with-imported-modules '((guix build utils))
                         #~(begin
@@ -259,7 +263,6 @@ can apply to a patch-level 0 Bash."
                             (substitute* #$output
                               (("PATCHLEVEL [0-6]+")
                                "PATCHLEVEL 0"))))
-                      #:guile-for-build guile
                       #:system system)))
 
 (define bash/fixed                        ;CVE-2017-5932 (RCE with completion)

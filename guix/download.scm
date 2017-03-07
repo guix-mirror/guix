@@ -418,10 +418,7 @@ GnuTLS itself and its dependencies.  See <http://bugs.gnu.org/22774>."
                        ;; hash of the expected result.
                        #:verify-certificate? #f)))))
 
-  (mlet %store-monad ((guile (package->derivation
-                              (or guile
-                                  (@@ (gnu packages bootstrap) %bootstrap-guile))
-                              system)))
+  (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation file-name builder
                       #:guile-for-build guile
                       #:system system
