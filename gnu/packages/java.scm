@@ -2149,6 +2149,21 @@ feature-rich package implementing the client side of the most recent HTTP
 standards and recommendations.")
     (license license:asl2.0)))
 
+(define-public java-httpcomponents-httpmime
+  (package (inherit java-httpcomponents-httpclient)
+    (name "java-httpcomponents-httpmime")
+    (arguments
+     `(#:jar-name "httpcomponents-httpmime.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "httpmime") #t)))))
+    (inputs
+     `(("java-httpcomponents-httpclient" ,java-httpcomponents-httpclient)
+       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
