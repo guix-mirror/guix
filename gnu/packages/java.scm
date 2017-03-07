@@ -2095,6 +2095,24 @@ NIO.
 This package provides the non-blocking I/O model library based on Java
 NIO.")))
 
+(define-public java-httpcomponents-httpcore-ab
+  (package (inherit java-httpcomponents-httpcore)
+    (name "java-httpcomponents-httpcore-ab")
+    (arguments
+     `(#:jar-name "httpcomponents-httpcore-ab.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "httpcore-ab") #t)))))
+    (inputs
+     `(("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ,@(package-inputs java-httpcomponents-httpcore)))
+    (synopsis "Apache HttpCore benchmarking tool")
+    (description "This package provides the HttpCore benchmarking tool.  It is
+an Apache AB clone based on HttpCore.")))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
