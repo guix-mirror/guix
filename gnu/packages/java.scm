@@ -1975,6 +1975,68 @@ logging implementations.  A library that uses the commons-logging API can be
 used with any logging implementation at runtime.")
     (license license:asl2.0)))
 
+;; This is the last release of the 1.x series.
+(define-public java-mockito-1
+  (package
+    (name "java-mockito")
+    (version "1.10.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://repo1.maven.org/maven2/"
+                                  "org/mockito/mockito-core/" version
+                                  "/mockito-core-" version "-sources.jar"))
+              (sha256
+               (base32
+                "0vmiwnwpf83g2q7kj1rislmja8fpvqkixjhawh7nxnygx6pq11kc"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "mockito.jar"
+       #:tests? #f ; no tests included
+       ;; FIXME: patch-and-repack does not support jars, so we have to apply
+       ;; patches in build phases.
+       #:phases
+       (modify-phases %standard-phases
+         ;; Mockito was developed against a different version of hamcrest,
+         ;; which does not require matcher implementations to provide an
+         ;; implementation of the "describeMismatch" method.  We add this
+         ;; simple definition to pass the build with our version of hamcrest.
+         (add-after 'unpack 'fix-hamcrest-build-error
+           (lambda _
+             (substitute* "src/org/mockito/internal/matchers/LocalizedMatcher.java"
+               (("public Matcher getActualMatcher\\(\\) .*" line)
+                (string-append "
+    public void describeMismatch(Object item, Description description) {
+        actualMatcher.describeMismatch(item, description);
+    }"
+                               line)))
+             #t))
+         ;; Mockito bundles cglib.  We have a cglib package, so let's use
+         ;; that instead.
+         (add-after 'unpack 'use-system-libraries
+           (lambda _
+             (with-directory-excursion "src/org/mockito/internal/creation/cglib"
+               (substitute* '("CGLIBHacker.java"
+                              "CglibMockMaker.java"
+                              "ClassImposterizer.java"
+                              "DelegatingMockitoMethodProxy.java"
+                              "MethodInterceptorFilter.java"
+                              "MockitoNamingPolicy.java"
+                              "SerializableMockitoMethodProxy.java"
+                              "SerializableNoOp.java")
+                 (("import org.mockito.cglib") "import net.sf.cglib")))
+             #t)))))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ("java-objenesis" ,java-objenesis)
+       ("java-cglib" ,java-cglib)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://mockito.org")
+    (synopsis "Mockito is a mock library for Java")
+    (description "Mockito is a mocking library for Java which lets you write
+tests with a clean and simple API.  It generates mocks using reflection, and
+it records all mock invocations, including methods arguments.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
