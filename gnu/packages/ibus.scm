@@ -42,7 +42,7 @@
 (define-public ibus
   (package
    (name "ibus")
-   (version "1.5.14")
+   (version "1.5.15")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/ibus/ibus/"
@@ -50,7 +50,7 @@
                                  version "/ibus-" version ".tar.gz"))
              (sha256
               (base32
-               "0g4x02d7j5w1lfn4zvmzsq93h17lajgn9d7hlvr6pws28vz40ax4"))))
+               "11g3jf6dgvmszvpgpva0y587kr0sffl79xmymvghrb1sdynvmxs1"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:tests? #f  ; tests fail because there's no connection to dbus
