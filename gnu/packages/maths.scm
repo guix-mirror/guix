@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
@@ -760,6 +760,34 @@ Swath).")
     (description "@code{h5check} is a validation tool for verifying that an
 HDF5 file is encoded according to the HDF File Format Specification.")
     (license (license:x11-style "file://COPYING"))))
+
+(define-public itpp
+  (package
+    (name "itpp")
+    (version "4.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/itpp/itpp/"
+                                  version "/itpp-"
+                                  version ".tar.gz"))
+       (sha256
+        (base32
+         "14ddy2xnb6sgp4hiax9v5sv4pr4l4dd4ps76nfha3nrpr1ikhcqm"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; Tests require googletest *sources*
+    (inputs `(("lapack" ,lapack)
+              ("fftw" ,fftw)))
+    (native-inputs `(("texlive-minimal" ,texlive-minimal)
+                     ("doxygen" ,doxygen)))
+    (home-page "http://itpp.sourceforge.net")
+    (synopsis "C++ library of maths, signal processing and communication classes")
+    (description "IT++ is a C++ library of mathematical, signal processing and
+communication classes and functions.  Its main use is in simulation of
+communication systems and for performing research in the area of
+communications.  The kernel of the library consists of generic vector and
+matrix classes, and a set of accompanying routines.  Such a kernel makes IT++
+similar to MATLAB, GNU Octave or SciPy.")
+    (license license:gpl3+)))
 
 (define-public netcdf
   (package
