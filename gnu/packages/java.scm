@@ -2264,6 +2264,34 @@ working with compressed files such as ar, cpio, Unix dump, tar, zip, gzip, XZ,
 Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4 and Z files.")
     (license license:asl2.0)))
 
+(define-public java-commons-net
+  (package
+    (name "java-commons-net")
+    (version "3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/net/source/"
+                                  "commons-net-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0n0cmnddk9qdqhjvka8pc6hd9mn2qi3166f1s6xk32h7rfy1adxr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; FIXME: MainTest.java tries to read "examples.properties" (which
+       ;; should be "resources/examples/examples.properties"), but gets "null"
+       ;; instead.
+       #:tests? #f
+       #:jar-name "commons-net.jar"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/net/")
+    (synopsis "Client library for many basic Internet protocols")
+    (description "The Apache Commons Net library implements the client side of
+many basic Internet protocols.  The purpose of the library is to provide
+fundamental protocol access, not higher-level abstractions.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
