@@ -237,7 +237,7 @@ Chinese pinyin input methods.")
 (define-public ibus-anthy
   (package
     (name "ibus-anthy")
-    (version "1.5.8")
+    (version "1.5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +245,7 @@ Chinese pinyin input methods.")
                     version "/ibus-anthy-" version ".tar.gz"))
               (sha256
                (base32
-                "1aj7vnfky7izl23xyjky78z3qas3q72l3kr8dnql2lnivsrb8q1y"))))
+                "1y8sf837rmp662bv6zakny0xcm7c9c5qda7f9kq9riv9ywpcbw6x"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
