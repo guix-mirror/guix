@@ -1852,6 +1852,29 @@ in the @code{java.lang} package.  The following classes are included:
 @end itemize\n")
     (license license:asl2.0)))
 
+(define-public java-jsr305
+  (package
+    (name "java-jsr305")
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "com/google/code/findbugs/"
+                                  "jsr305/" version "/jsr305-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1rh6jin9v7jqpq3kf1swl868l8i94r636n03pzpsmgr8v0lh9j2n"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "jsr305.jar"))
+    (home-page "http://findbugs.sourceforge.net/")
+    (synopsis "Annotations for the static analyzer called findbugs")
+    (description "This package provides annotations for the findbugs package.
+It provides packages in the @code{javax.annotations} namespace.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
