@@ -2192,6 +2192,34 @@ many basic Internet protocols.  The purpose of the library is to provide
 fundamental protocol access, not higher-level abstractions.")
     (license license:asl2.0)))
 
+(define-public java-jsch
+  (package
+    (name "java-jsch")
+    (version "0.1.54")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jsch/jsch/"
+                                  version "/jsch-" version ".zip"))
+              (sha256
+               (base32
+                "029rdddyq1mh3ghryh3ki99kba1xkf1d1swjv2vi6lk6zzjy2wdb"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "dist"
+       #:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-jars "dist")))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.jcraft.com/jsch/")
+    (synopsis "Pure Java implementation of SSH2")
+    (description "JSch is a pure Java implementation of SSH2.  JSch allows you
+to connect to an SSH server and use port forwarding, X11 forwarding, file
+transfer, etc., and you can integrate its functionality into your own Java
+programs.")
+    (license license:bsd-3)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
