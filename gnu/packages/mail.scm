@@ -272,9 +272,11 @@ operating systems.")
        ("gnutls" ,gnutls)
        ("openssl" ,openssl) ;For smime
        ("perl" ,perl)
+       ("kyotocabinet" ,kyotocabinet)
        ("libxslt" ,libxslt)
        ("libidn" ,libidn)
        ("libxml2" ,libxml2)
+       ("lmdb" ,lmdb)
        ("docbook-xsl" ,docbook-xsl)
        ("notmuch" ,notmuch)))
     (native-inputs
@@ -292,7 +294,9 @@ operating systems.")
              "--without-tokyocabinet"
              "--without-qdbm"
              "--without-bdb"
-             "--without-lmdb"
+             "--with-lmdb"
+             (string-append "--with-kyotocabinet="
+                            (assoc-ref %build-inputs "kyotocabinet"))
              "--with-gdbm"
 
              "--with-gnutls"
