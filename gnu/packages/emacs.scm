@@ -3832,3 +3832,23 @@ mode-line.")
     (description
      "Emacs minor mode for redisplaying parts of the buffer as pretty symbols.")
     (license license:gpl3+)))
+
+(define-public emacs-yasnippet
+  (package
+    (name "emacs-yasnippet")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/joaotavora/yasnippet/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15di6mkkf09b7qddpsrm0qln02hji3sx8blya5jxssi9wxxx9iq5"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/joaotavora/yasnippet")
+    (synopsis "Yet another snippet extension for Emacs")
+    (description
+     "YASnippet is a template system for Emacs.  It allows you to type an
+abbreviation and automatically expand it into function templates.")
+    (license license:gpl3+)))
