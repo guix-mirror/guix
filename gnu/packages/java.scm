@@ -1927,6 +1927,53 @@ concurrency, I/O, hashing, primitives, reflection, string processing, and much
 more!")
     (license license:asl2.0)))
 
+;; The java-commons-logging package provides adapters to many different
+;; logging frameworks.  To avoid an excessive dependency graph we try to build
+;; it with only a minimal set of adapters.
+(define-public java-commons-logging-minimal
+  (package
+    (name "java-commons-logging-minimal")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/logging/source/"
+                                  "commons-logging-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "10bwcy5w8d7y39n0krlwhnp8ds3kj5zhmzj0zxnkw0qdlsjmsrj9"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; avoid dependency on logging frameworks
+       #:jar-name "commons-logging-minimal.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-adapters-and-tests
+           (lambda _
+             ;; Delete all adapters except for NoOpLog, SimpleLog, and
+             ;; LogFactoryImpl.  NoOpLog is required to build; LogFactoryImpl
+             ;; is used by applications; SimpleLog is the only actually usable
+             ;; implementation that does not depend on another logging
+             ;; framework.
+             (for-each
+              (lambda (file)
+                (delete-file (string-append
+                              "src/main/java/org/apache/commons/logging/impl/" file)))
+              (list "Jdk13LumberjackLogger.java"
+                    "WeakHashtable.java"
+                    "Log4JLogger.java"
+                    "ServletContextCleaner.java"
+                    "Jdk14Logger.java"
+                    "AvalonLogger.java"
+                    "LogKitLogger.java"))
+             (delete-file-recursively "src/test")
+             #t)))))
+    (home-page "http://commons.apache.org/logging/")
+    (synopsis "Common API for logging implementations")
+    (description "The Logging package is a thin bridge between different
+logging implementations.  A library that uses the commons-logging API can be
+used with any logging implementation at runtime.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
