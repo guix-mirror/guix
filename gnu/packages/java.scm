@@ -2073,6 +2073,28 @@ NIO.
 This package provides the blocking I/O model library.")
     (license license:asl2.0)))
 
+(define-public java-httpcomponents-httpcore-nio
+  (package (inherit java-httpcomponents-httpcore)
+    (name "java-httpcomponents-httpcore-nio")
+    (arguments
+     `(#:jar-name "httpcomponents-httpcore-nio.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "httpcore-nio") #t)))))
+    (inputs
+     `(("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ,@(package-inputs java-httpcomponents-httpcore)))
+    (description "HttpCore is a set of low level HTTP transport components
+that can be used to build custom client and server side HTTP services with a
+minimal footprint.  HttpCore supports two I/O models: blocking I/O model based
+on the classic Java I/O and non-blocking, event driven I/O model based on Java
+NIO.
+
+This package provides the non-blocking I/O model library based on Java
+NIO.")))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
