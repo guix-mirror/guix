@@ -4093,9 +4093,9 @@ functions.")
 (define-public python2-rpy2
   (let ((rpy2 (package-with-python2 python-rpy2)))
     (package (inherit rpy2)
-      (native-inputs
+      (propagated-inputs
        `(("python2-singledispatch" ,python2-singledispatch)
-         ,@(package-native-inputs rpy2))))))
+         ,@(package-propagated-inputs rpy2))))))
 
 (define-public python-scipy
   (package
