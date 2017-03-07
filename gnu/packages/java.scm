@@ -2113,6 +2113,42 @@ NIO.")))
     (description "This package provides the HttpCore benchmarking tool.  It is
 an Apache AB clone based on HttpCore.")))
 
+(define-public java-httpcomponents-httpclient
+  (package
+    (name "java-httpcomponents-httpclient")
+    (version "4.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/httpcomponents/httpclient/"
+                                  "source/httpcomponents-client-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1428399s7qy3cim5wc6f3ks4gl9nf9vkjpfmnlap3jflif7g2pj1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "httpcomponents-httpclient.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "httpclient") #t)))))
+    (inputs
+     `(("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-codec" ,java-commons-codec)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
+       ("java-mockito" ,java-mockito-1)
+       ("java-junit" ,java-junit)))
+    (home-page "https://hc.apache.org/httpcomponents-client-ga/")
+    (synopsis "HTTP client library for Java")
+    (description "Although the @code{java.net} package provides basic
+functionality for accessing resources via HTTP, it doesn't provide the full
+flexibility or functionality needed by many applications.  @code{HttpClient}
+seeks to fill this void by providing an efficient, up-to-date, and
+feature-rich package implementing the client side of the most recent HTTP
+standards and recommendations.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
