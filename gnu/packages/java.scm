@@ -958,13 +958,13 @@ IcedTea build harness.")
 (define-public java-xz
   (package
    (name "java-xz")
-   (version "1.5")
+   (version "1.6")
    (source (origin
      (method url-fetch)
      (uri (string-append "http://tukaani.org/xz/xz-java-" version ".zip"))
      (sha256
       (base32
-       "0x6vn9dp9kxk83x2fp3394n95dk8fx9yg8jns9371iqsn0vy8ih1"))))
+       "1z3p1ri1gvl07inxn0agx44ck8n7wrzfmvkz8nbq3njn8r9wba8x"))))
    (build-system ant-build-system)
    (arguments
     `(#:tests? #f ; There are no tests to run.
