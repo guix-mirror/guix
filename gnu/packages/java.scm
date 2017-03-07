@@ -2037,6 +2037,42 @@ tests with a clean and simple API.  It generates mocks using reflection, and
 it records all mock invocations, including methods arguments.")
     (license license:asl2.0)))
 
+(define-public java-httpcomponents-httpcore
+  (package
+    (name "java-httpcomponents-httpcore")
+    (version "4.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache//httpcomponents/httpcore/"
+                                  "source/httpcomponents-core-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "02bwcf38y4vgwq7kj2s6q7qrmma641r5lacivm16kgxvb2j6h1vy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "httpcomponents-httpcore.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "httpcore") #t)))))
+    (inputs
+     `(("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-lang3" ,java-commons-lang3)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-mockito" ,java-mockito-1)))
+    (home-page "https://hc.apache.org/httpcomponents-core-4.4.x/index.html")
+    (synopsis "Low level HTTP transport components")
+    (description "HttpCore is a set of low level HTTP transport components
+that can be used to build custom client and server side HTTP services with a
+minimal footprint.  HttpCore supports two I/O models: blocking I/O model based
+on the classic Java I/O and non-blocking, event driven I/O model based on Java
+NIO.
+
+This package provides the blocking I/O model library.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
