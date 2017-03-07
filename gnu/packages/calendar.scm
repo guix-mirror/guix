@@ -84,13 +84,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "khal" version))
              (sha256
               (base32
-               "1ryh5c7408w8gpql5s9mkxkvz1ngnds3xm43p7r96ynx8prr9swp"))))
+               "1iva6cw2x3p2jzjj6bsyx7lc7yxin4fsd37j9c96j07x16p4imyl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -112,7 +112,8 @@ data units.")
                                    "/share/zoneinfo/Zulu"))
             (zero? (system* "py.test" "tests")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+      ;; XXX Uses tmpdir_factory, introduced in pytest 2.8.
+     `(("python-pytest" ,python-pytest-2.9.2)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-setuptools-scm" ,python-setuptools-scm)
        ;; Required for tests
