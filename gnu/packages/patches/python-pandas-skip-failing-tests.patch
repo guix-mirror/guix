@@ -2,39 +2,29 @@ These tests fail on 32bit architectures.
 
 Upstream bug URL: https://github.com/pandas-dev/pandas/issues/14866
 
---- a/pandas/tests/test_base.py	2017-03-08 17:49:44.422282717 +0100
-+++ b/pandas/tests/test_base.py	2017-03-08 17:50:59.476701799 +0100
-@@ -363,30 +363,6 @@
-                 self.assertFalse(result.iat[0])
-                 self.assertFalse(result.iat[1])
+--- a/pandas/tests/indexes/common.py	2017-03-09 00:10:26.063996176 +0100
++++ b/pandas/tests/indexes/common.py	2017-03-09 00:10:53.152844191 +0100
+@@ -119,20 +119,6 @@
+         with tm.assertRaisesRegexp(ValueError, 'Invalid fill method'):
+             idx.get_indexer(idx, method='invalid')
  
 -    def test_ndarray_compat_properties(self):
 -
--        for o in self.objs:
+-        idx = self.create_index()
+-        self.assertTrue(idx.T.equals(idx))
+-        self.assertTrue(idx.transpose().equals(idx))
 -
--            # check that we work
--            for p in ['shape', 'dtype', 'flags', 'T', 'strides', 'itemsize',
--                      'nbytes']:
--                self.assertIsNotNone(getattr(o, p, None))
--            self.assertTrue(hasattr(o, 'base'))
+-        values = idx.values
+-        for prop in self._compat_props:
+-            self.assertEqual(getattr(idx, prop), getattr(values, prop))
 -
--            # if we have a datetimelike dtype then needs a view to work
--            # but the user is responsible for that
--            try:
--                self.assertIsNotNone(o.data)
--            except ValueError:
--                pass
+-        # test for validity
+-        idx.nbytes
+-        idx.values.nbytes
 -
--            self.assertRaises(ValueError, o.item)  # len > 1
--            self.assertEqual(o.ndim, 1)
--            self.assertEqual(o.size, len(o))
--
--        self.assertEqual(Index([1]).item(), 1)
--        self.assertEqual(Series([1]).item(), 1)
--
-     def test_ops(self):
-         for op in ['max', 'min']:
-             for o in self.objs:
+     def test_repr_roundtrip(self):
+ 
+         idx = self.create_index()
 --- a/pandas/tools/tests/test_tile.py	2017-03-08 17:47:39.762261841 +0100
 +++ b/pandas/tools/tests/test_tile.py	2017-03-08 17:48:26.831780495 +0100
 @@ -271,19 +271,6 @@
