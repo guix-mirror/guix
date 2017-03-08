@@ -187,6 +187,8 @@ script.")
          (list "--with-frozenpaths"
                "--enable-shared=yes"
                "--with-x=yes"
+               "--with-quantum-depth=16" ; required by Octave
+               "--enable-quantum-library-names"
                (string-append "--with-gs-font-dir="
                               (assoc-ref %build-inputs "gs-fonts")
                               "/share/fonts/type1/ghostscript"))))
