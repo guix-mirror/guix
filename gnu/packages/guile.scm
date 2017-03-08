@@ -443,22 +443,18 @@ more.")
 (define-public guile-reader
   (package
     (name "guile-reader")
-    (version "0.6.1")
+    (version "0.6.2")
     (source  (origin
                (method url-fetch)
                (uri (string-append "mirror://savannah/guile-reader/guile-reader-"
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "020wz5w8z6g79nbqifg2n496wxwkcjzh8xizpv6mz0hczpl155ma"))))
+                 "0592s2s8ampqmqwilc4fvcild6rb9gy79di6vxv5kcdmv23abkgx"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
     (inputs `(("guile" ,guile-2.0)))
-    (arguments `(#:configure-flags
-                 (let ((out (assoc-ref %outputs "out")))
-                   (list (string-append "--with-guilemoduledir="
-                                        out "/share/guile/site/2.0")))))
     (synopsis "Framework for building readers for GNU Guile")
     (description
      "Guile-Reader is a simple framework for building readers for GNU Guile.
