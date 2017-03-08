@@ -13516,3 +13516,28 @@ need to do, such as parsing the command line for options, and
 iterating over input files.")
     (license license:gpl2+)))
 
+(define-public python2-ttystatus
+  (package
+    (name "python2-ttystatus")
+    (version "0.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/ttystatus/snapshot/ttystatus-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0b5g889jj23r2w1hi300cdldx6jvspanp0ybf5n1qvdvl150aamf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://liw.fi/ttystatus/")
+    (synopsis "Python library for showing progress reporting and
+status updates on terminals")
+    (description "@code{python2-ttystatus} is a python library for
+showing progress reporting and status updates on terminals, for
+command line programs.  Output is automatically adapted to the width
+of the terminal: truncated if it does not fit, and resized if the
+terminal size changes.")
+    (license license:gpl3+)))
