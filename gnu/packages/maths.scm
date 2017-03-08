@@ -1138,6 +1138,30 @@ modules is done either interactively using the graphical user interface or in
 ASCII text files using Gmsh's own scripting language.")
     (license license:gpl2+)))
 
+(define-public maxflow
+  (package
+    (name "maxflow")
+    (version "3.04")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gerddie/maxflow.git")
+                    (commit "42401fa54823d16b9da47716f04e5d9ef1605875")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0rll38whw55h0vcjrrwdnh9ascvxby0ph7n1l0d12z17cg215kkb"))))
+    (build-system cmake-build-system)
+    (home-page "http://pub.ist.ac.at/~vnk/software.html")
+    (synopsis "Library implementing Maxflow algorithm")
+    (description "An implementation of the maxflow algorithm described in
+@cite{An Experimental Comparison of Min-Cut/Max-Flow Algorithms for
+Energy Minimization in Computer Vision.\n
+Yuri Boykov and Vladimir Kolmogorov.\n
+In IEEE Transactions on Pattern Analysis and Machine Intelligence,\n
+September 2004}")
+    (license license:gpl3+)))
+
 (define-public petsc
   (package
     (name "petsc")
