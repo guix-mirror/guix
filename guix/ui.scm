@@ -635,16 +635,17 @@ report what is prerequisites are available for download."
 (define (right-arrow port)
   "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
 replacement if PORT is not Unicode-capable."
-  (with-fluids ((%default-port-encoding (port-encoding port)))
-    (let ((arrow "→"))
-      (catch 'encoding-error
-        (lambda ()
-          (call-with-output-string
-            (lambda (port)
-              (set-port-conversion-strategy! port 'error)
-              (display arrow port))))
-        (lambda (key . args)
-          "->")))))
+  (let ((encoding (port-encoding port))
+        (arrow "→"))
+    (catch 'encoding-error
+      (lambda ()
+        (call-with-output-string
+          (lambda (port)
+            (set-port-encoding! port encoding)
+            (set-port-conversion-strategy! port 'error)
+            (display arrow port))))
+      (lambda (key . args)
+        "->"))))
 
 (define* (show-manifest-transaction store manifest transaction
                                     #:key dry-run?)

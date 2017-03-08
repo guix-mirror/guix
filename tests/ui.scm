@@ -248,9 +248,12 @@ Second line" 24))
                             (lambda ()
                               (show-manifest-transaction store m t)))))
            (string-match "guile\t1.8.8 -> 2.0.9"
-                         (with-fluids ((%default-port-encoding "ISO-8859-1"))
-                           (with-error-to-string
-                            (lambda ()
-                              (show-manifest-transaction store m t)))))))))
+                         (with-error-to-string
+                           (lambda ()
+                             ;; In Guile 2.2, %DEFAULT-PORT-ENCODING doesn't
+                             ;; influence the encoding of string ports.
+                             (set-port-encoding! (current-error-port)
+                                                 "ISO-8859-1")
+                             (show-manifest-transaction store m t))))))))
 
 (test-end "ui")
