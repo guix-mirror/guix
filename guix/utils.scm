@@ -31,7 +31,7 @@
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
-  #:autoload   (rnrs io ports) (make-custom-binary-input-port)
+  #:use-module ((rnrs io ports) #:hide (bytevector->string))
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port))
