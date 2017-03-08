@@ -1044,6 +1044,31 @@ reflect changes made by political bodies to time zone boundaries, UTC offsets,
 and daylight-saving rules.")
     (license public-domain)))
 
+;;; A "fixed" version of tzdata, which is used in the test suites of
+;;; glib and R. We can update this whenever we are able to rebuild
+;;; thousands of packages (for example, in a core-updates rebuild).
+(define-public tzdata-2017a
+  (package
+    (inherit tzdata)
+    (version "2017a")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.iana.org/time-zones/repository"
+                            "/releases/tzdata" version ".tar.gz"))
+        (sha256
+         (base32
+          "1mmv4rvcs12lrvgghw4fidczvb69yv69cmzknghcvw1c196mqfnz"))))
+    (inputs `(("tzcode" ,(origin
+                          (method url-fetch)
+                          (uri (string-append
+                                "http://www.iana.org/time-zones/repository/releases/tzcode"
+                                version ".tar.gz"))
+                          (sha256
+                           (base32
+                            "1b1q7gnlsh5hjgs5065pvajd37rmbc3k9b8cgzad1vcrifswdwh2"))))))))
+
+
 (define-public libiconv
   (package
     (name "libiconv")

@@ -157,17 +157,18 @@ shared NFS home directories.")
     `(("coreutils" ,coreutils)
       ("util-linux" ,util-linux)  ; for libmount
       ("libffi" ,libffi)
-      ("zlib" ,zlib)
-      ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
+      ("zlib" ,zlib)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
       ("perl" ,perl)                              ; needed by GIO tests
-      ("bash" ,bash)))
+      ("bash" ,bash)
+      ("tzdata" ,tzdata-2017a)))                  ; for tests/gdatetime.c
    (arguments
-    '(#:phases
+    `(#:disallowed-references (,tzdata-2017a)
+      #:phases
       (modify-phases %standard-phases
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
