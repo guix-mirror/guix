@@ -13541,3 +13541,29 @@ command line programs.  Output is automatically adapted to the width
 of the terminal: truncated if it does not fit, and resized if the
 terminal size changes.")
     (license license:gpl3+)))
+
+(define-public python2-tracing
+  (package
+    (name "python2-tracing")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/python-tracing/snapshot/tracing-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "06cw4zg42fsvqy372vi2whj26w56vzg5axhzwdjc2bgwf03garbw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://liw.fi/tracing/")
+    (synopsis "Python debug logging helper")
+    (description "@code{python2-tracing} is a python library for
+logging debug messages.  It provides a way to turn debugging messages
+on and off, based on the filename they occur in.  It is much faster
+than using @code{logging.Filter} to accomplish the same thing, which
+matters when code is run in production mode.  The actual logging still
+happens using the @code{logging} library.")
+    (license license:gpl3+)))
