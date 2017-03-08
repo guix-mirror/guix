@@ -49,8 +49,9 @@
 ;;;
 ;;; Code:
 
-(define (id ctx . parts)
-  (datum->syntax ctx (apply symbol-append (map syntax->datum parts))))
+(define-syntax-rule (id ctx parts ...)
+  "Assemble PARTS into a raw (unhygienic) identifier."
+  (datum->syntax ctx (symbol-append (syntax->datum parts) ...)))
 
 (define-syntax define-maybe
   (lambda (x)
