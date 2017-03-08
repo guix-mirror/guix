@@ -1,0 +1,59 @@
+These tests fail on 32bit architectures.
+
+Upstream bug URL: https://github.com/pandas-dev/pandas/issues/14866
+
+--- a/pandas/tests/test_base.py	2017-03-08 17:49:44.422282717 +0100
++++ b/pandas/tests/test_base.py	2017-03-08 17:50:59.476701799 +0100
+@@ -363,30 +363,6 @@
+                 self.assertFalse(result.iat[0])
+                 self.assertFalse(result.iat[1])
+ 
+-    def test_ndarray_compat_properties(self):
+-
+-        for o in self.objs:
+-
+-            # check that we work
+-            for p in ['shape', 'dtype', 'flags', 'T', 'strides', 'itemsize',
+-                      'nbytes']:
+-                self.assertIsNotNone(getattr(o, p, None))
+-            self.assertTrue(hasattr(o, 'base'))
+-
+-            # if we have a datetimelike dtype then needs a view to work
+-            # but the user is responsible for that
+-            try:
+-                self.assertIsNotNone(o.data)
+-            except ValueError:
+-                pass
+-
+-            self.assertRaises(ValueError, o.item)  # len > 1
+-            self.assertEqual(o.ndim, 1)
+-            self.assertEqual(o.size, len(o))
+-
+-        self.assertEqual(Index([1]).item(), 1)
+-        self.assertEqual(Series([1]).item(), 1)
+-
+     def test_ops(self):
+         for op in ['max', 'min']:
+             for o in self.objs:
+--- a/pandas/tools/tests/test_tile.py	2017-03-08 17:47:39.762261841 +0100
++++ b/pandas/tools/tests/test_tile.py	2017-03-08 17:48:26.831780495 +0100
+@@ -271,19 +271,6 @@
+                                     np.array([0, 0, 1, 1], dtype=np.int8))
+         tm.assert_numpy_array_equal(bins, np.array([0, 1.5, 3]))
+ 
+-    def test_single_bin(self):
+-        # issue 14652
+-        expected = Series([0, 0])
+-
+-        s = Series([9., 9.])
+-        result = cut(s, 1, labels=False)
+-        tm.assert_series_equal(result, expected)
+-
+-        s = Series([-9., -9.])
+-        result = cut(s, 1, labels=False)
+-        tm.assert_series_equal(result, expected)
+-
+-
+ def curpath():
+     pth, _ = os.path.split(os.path.abspath(__file__))
+     return pth

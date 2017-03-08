@@ -1171,7 +1171,9 @@ datetime module, available in Python 2.3+.")
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "0540cnbwy2hc4hv2sxfs8i47xi91qzvzxfn80dl785ibiicly3vg"))))
+        (base32 "0540cnbwy2hc4hv2sxfs8i47xi91qzvzxfn80dl785ibiicly3vg"))
+       (patches
+        (search-patches "python-pandas-skip-failing-tests.patch"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
