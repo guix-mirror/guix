@@ -687,7 +687,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be removed:~%~{~a~%~}~%"
                          len)
                      remove))))
-      (_ #f))
+      (x #f))
     (match downgrade
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
@@ -705,7 +705,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be downgraded:~%~{~a~%~}~%"
                          len)
                      downgrade))))
-      (_ #f))
+      (x #f))
     (match upgrade
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
@@ -723,7 +723,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be upgraded:~%~{~a~%~}~%"
                          len)
                      upgrade))))
-      (_ #f))
+      (x #f))
     (match install
       ((($ <manifest-entry> name version output item _) ..1)
        (let ((len     (length name))
@@ -739,7 +739,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be installed:~%~{~a~%~}~%"
                          len)
                      install))))
-      (_ #f))))
+      (x #f))))
 
 (define-syntax with-error-handling
   (syntax-rules ()
@@ -820,7 +820,7 @@ converted to a space; sequences of more than one line break are preserved."
   (match (string-fold maybe-break
                       `(,column 0 ())
                       str)
-    ((_ _ chars)
+    ((column newlines chars)
      (list->string (reverse chars)))))
 
 
@@ -1024,7 +1024,7 @@ DURATION-RELATION with the current time."
        (valid-generations (iota n 1)))
       ((lst ..1)
        (valid-generations lst))
-      (_ #f)))
+      (x #f)))
 
   (define (filter-by-duration duration)
     (define (time-at-midnight time)
