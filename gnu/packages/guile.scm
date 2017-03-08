@@ -1063,6 +1063,10 @@ interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license license:gpl3+)))
 
+(define-public guile2.2-haunt
+  (package-for-guile-2.2
+   (package (inherit haunt) (name "guile2.2-haunt"))))
+
 (define-public guile-config
   (package
     (name "guile-config")
