@@ -3968,6 +3968,8 @@ toolkits.")
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
        ("python-ipython" ,python-ipython)
+       ("python-mock" ,python-mock)
+       ("graphviz" ,graphviz)
        ("texlive" ,texlive)
        ("texinfo" ,texinfo)
        ,@(package-native-inputs python-matplotlib)))
@@ -3975,42 +3977,41 @@ toolkits.")
      `(#:tests? #f ; we're only generating documentation
        #:phases
        (modify-phases %standard-phases
-         (delete 'build)
+         (replace 'build
+           (lambda _
+             (chdir "doc")
+             ;; Produce pdf in 'A4' format.
+             (substitute* "conf.py"
+               (("latex_paper_size = 'letter'") "")
+               ;; latex_paper_size is deprecated -> set paper size using
+               ;; latex_elements
+               (("latex_elements\\['pointsize'\\] = '11pt'" match)
+                ;; insert at a point where latex_elements{} is defined:
+                (string-append match "\nlatex_elements['papersize'] = 'a4paper'")))
+             (zero? (system* "python" "make.py" "html" "latex" "texinfo"))))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "out") "/share"))
-                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (doc (string-append data "/doc/python-matplotlib-" ,version))
                     (info (string-append data "/info"))
                     (html (string-append doc "/html")))
-               ;; Make installed package available for building the
-               ;; documentation
-               (with-directory-excursion "doc"
-                 ;; Produce pdf in 'A4' format.
-                 (substitute* (find-files "." "conf\\.py")
-                   (("latex_paper_size = 'letter'")
-                    "latex_paper_size = 'a4'"))
-                 (mkdir-p html)
-                 (mkdir-p info)
-                 ;; The doc recommends to run the 'html' target twice.
-                 (system* "python" "make.py" "html")
-                 (system* "python" "make.py" "html")
-                 (copy-recursively "build/html" html)
-                 (system* "python" "make.py" "latex")
-                 (system* "python" "make.py" "texinfo")
+               (mkdir-p html)
+               (mkdir-p info)
+               (copy-recursively "build/html" html)
+               (symlink (string-append html "/_images")
+                        (string-append info "/matplotlib-figures"))
+               (with-directory-excursion "build/texinfo"
+                 (substitute* "matplotlib.texi"
+                   (("@image\\{([^,]*)" all file)
+                    (string-append "@image{matplotlib-figures/" file)))
                  (symlink (string-append html "/_images")
-                          (string-append info "/matplotlib-figures"))
-                 (with-directory-excursion "build/texinfo"
-                   (substitute* "matplotlib.texi"
-                     (("@image\\{([^,]*)" all file)
-                      (string-append "@image{matplotlib-figures/" file)))
-                   (symlink (string-append html "/_images")
-                            "./matplotlib-figures")
-                   (system* "makeinfo" "--no-split"
-                            "-o" "matplotlib.info" "matplotlib.texi"))
-                 (copy-file "build/texinfo/matplotlib.info"
-                            (string-append info "/matplotlib.info"))
-                 (copy-file "build/latex/Matplotlib.pdf"
-                            (string-append doc "/Matplotlib.pdf"))))
+                          "./matplotlib-figures")
+                 (system* "makeinfo" "--no-split"
+                          "-o" "matplotlib.info" "matplotlib.texi"))
+               (copy-file "build/texinfo/matplotlib.info"
+                          (string-append info "/matplotlib.info"))
+               (copy-file "build/latex/Matplotlib.pdf"
+                          (string-append doc "/Matplotlib.pdf")))
              #t)))))
     (home-page (package-home-page python-matplotlib))
     (synopsis "Documentation for the python-matplotlib package")
