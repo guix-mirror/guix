@@ -311,8 +311,8 @@ return its return value."
     ((pkg . pkg*)
      (unless (null? pkg*)
        (warning (_ "ambiguous package specification `~a'~%") spec)
-       (warning (_ "choosing ~a from ~a~%")
-                (package-full-name pkg)
+       (warning (_ "choosing ~a@~a from ~a~%")
+                (package-name pkg) (package-version pkg)
                 (location->string (package-location pkg))))
      (when fallback?
        (warning (_ "deprecated NAME-VERSION syntax; \
