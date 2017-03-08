@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages rsync)
@@ -370,6 +372,42 @@ rdiff-backup can operate in a bandwidth efficient manner over a pipe, like
 rsync.  Thus you can use rdiff-backup and ssh to securely back a hard drive up
 to a remote location, and only the differences will be transmitted.  Finally,
 rdiff-backup is easy to use and settings have sensible defaults.")
+    (license license:gpl2+)))
+
+(define-public rsnapshot
+  (package
+    (name "rsnapshot")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/rsnapshot/rsnapshot/releases/download/"
+             version "/rsnapshot-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05jfy99a0xs6lvsjfp3wz21z0myqhmwl2grn3jr9clijbg282ah4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (substitute* '("t/cmd-post_pre-exec/conf/pre-true-post-true.conf"
+                            "t/backup_exec/conf/backup_exec_fail.conf"
+                            "t/backup_exec/conf/backup_exec.conf")
+               (("/bin/true") (which "true"))
+               (("/bin/false") (which "false")))
+             (zero? (system* "make" "test")))))))
+    (inputs
+     `(("perl" ,perl)
+       ("rsync" ,rsync)))
+    (home-page "http://rsnapshot.org")
+    (synopsis "Deduplicating snapshot backup utility based on rsync")
+    (description "rsnapshot is a filesystem snapshot utility based on rsync.
+rsnapshot makes it easy to make periodic snapshots of local machines, and
+remote machines over SSH.  To reduce the disk space required for each backup,
+rsnapshot uses hard links to deduplicate identical files.")
     (license license:gpl2+)))
 
 (define-public libchop
