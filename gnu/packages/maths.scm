@@ -72,6 +72,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
@@ -949,7 +950,9 @@ can solve two kinds of problems:
        ("libxft" ,libxft)
        ("mesa" ,mesa)
        ("glu" ,glu)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("curl" ,curl)
+       ("graphicsmagick" ,graphicsmagick)))
     (native-inputs
      `(("lzip" ,lzip)
        ("gfortran" ,gfortran)
