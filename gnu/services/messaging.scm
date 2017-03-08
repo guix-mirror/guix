@@ -95,21 +95,21 @@
                                  "" doc))
                            #'(doc ...) #'(target ...))))
          #`(begin
-             (define common-fields
+             (define #,(id #'stem #'common-fields)
                '(#,@(filter-map (make-pred #f) #'(field ...) #'(target ...))))
-             (define-configuration prosody-configuration
+             (define-configuration #,(id #'stem #'prosody-configuration)
                #,@(filter-map (make-pred 'global)
                               #'((field (field-type def) doc) ...)
                               #'(target ...)))
-             (define-configuration virtualhost-configuration
+             (define-configuration #,(id #'stem #'virtualhost-configuration)
                #,@(filter-map (make-pred 'virtualhost)
                               #'((field (new-field-type new-def) new-doc) ...)
                               #'(target ...)))
-             (define-configuration int-component-configuration
+             (define-configuration #,(id #'stem #'int-component-configuration)
                #,@(filter-map (make-pred 'int-component)
                               #'((field (new-field-type new-def) new-doc) ...)
                               #'(target ...)))
-             (define-configuration ext-component-configuration
+             (define-configuration #,(id #'stem #'ext-component-configuration)
                #,@(filter-map (make-pred 'ext-component)
                               #'((field (new-field-type new-def) new-doc) ...)
                               #'(target ...)))))))))
