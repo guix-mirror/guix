@@ -13567,3 +13567,34 @@ than using @code{logging.Filter} to accomplish the same thing, which
 matters when code is run in production mode.  The actual logging still
 happens using the @code{logging} library.")
     (license license:gpl3+)))
+
+(define-public python2-larch
+  (package
+    (name "python2-larch")
+    (version "1.20151025")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/larch/snapshot/larch-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1p4knkkavlqymgciz2wbcnfrdgdbafhg14maplnk4vbw0q8xs663"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-tracing" ,python2-tracing)))
+    (home-page "https://liw.fi/larch/")
+    (synopsis "Python copy-on-write B-tree library")
+    (description "@code{python2-larch} is an implementation of
+particular kind of B-tree, based on research by Ohad Rodeh.  See
+@url{http://liw.fi/larch/ohad-btrees-shadowing-clones.pdf} for details
+on the data structure.
+
+The distinctive feature of this B-tree is that a node is never
+(conceptually) modified.  Instead, all updates are done by
+copy-on-write.  This makes it easy to clone a tree, and modify only the
+clone, while other processes access the original tree.")
+    (license license:gpl3+)))
