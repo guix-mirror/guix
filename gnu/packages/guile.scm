@@ -471,6 +471,9 @@ many readers as needed).")
     (home-page "http://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
 
+(define-public guile2.2-reader
+  (package-for-guile-2.2 guile-reader))
+
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
