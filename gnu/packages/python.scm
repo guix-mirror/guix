@@ -30,7 +30,7 @@
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -13489,3 +13489,30 @@ specified to apply on the key before comparison (e.g. @code{string.lower})).")
 Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
     (license license:gpl2)))
+
+(define-public python2-cliapp
+  (package
+    (name "python2-cliapp")
+    (version "1.20160724")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/cliapp/snapshot/cliapp-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "025cyi75vxyghbm4hav8dz4fzwksshddavy9g9fwr440awcvw74f"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-pyaml" ,python2-pyaml)))
+    (home-page "https://liw.fi/cliapp/")
+    (synopsis "Python framework for command line programs")
+    (description "@code{python2-cliapp} is a python framework for
+command line programs.  It contains the typical stuff such programs
+need to do, such as parsing the command line for options, and
+iterating over input files.")
+    (license license:gpl2+)))
+
