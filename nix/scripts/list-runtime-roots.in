@@ -1,7 +1,7 @@
 #!@GUILE@ -ds
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,6 +132,9 @@ or the empty list."
                             (primitive-exit 1)))))))
         (define %file-rx
           (make-regexp "^n/(.*)$"))
+
+        ;; We're going to read it all.
+        (setvbuf pipe _IOFBF 16384)
 
         (let loop ((line  (read-line pipe))
                    (roots '()))
