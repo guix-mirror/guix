@@ -268,7 +268,7 @@ resulting archive to the standard output port."
               (let ((system (assoc-ref opts 'system)))
                 (format #t "~a\n"
                         (build-docker-image file #:system system))))
-             (_
+             (x
               ;; TODO: Remove this restriction.
               (leave (_ "only a single item can be exported to Docker~%")))))
           (format
