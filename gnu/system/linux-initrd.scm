@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (expression->initrd
+            raw-initrd
             base-initrd))
 
 
@@ -131,13 +133,79 @@ MODULES and taken from LINUX."
 
   (gexp->derivation "linux-modules" build-exp))
 
+(define* (raw-initrd file-systems
+                      #:key
+                      (linux linux-libre)
+                      (linux-modules '())
+                      (mapped-devices '())
+                      (helper-packages '())
+                      qemu-networking?
+                      volatile-root?)
+  "Return a monadic derivation that builds a raw initrd, with kernel
+modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
+mounted by the initrd, possibly in addition to the root file system specified
+on the kernel command line via '--root'. LINUX-MODULES is a list of kernel
+modules to be loaded at boot time. MAPPED-DEVICES is a list of device
+mappings to realize before FILE-SYSTEMS are mounted.
+HELPER-PACKAGES is a list of packages to be copied in the initrd. It may include
+e2fsck/static or other packages needed by the initrd to check root partition.
+
+When QEMU-NETWORKING? is true, set up networking with the standard QEMU
+parameters.
+When VOLATILE-ROOT? is true, the root file system is writable but any changes
+to it are lost."
+  (define device-mapping-commands
+    ;; List of gexps to open the mapped devices.
+    (map (lambda (md)
+           (let* ((source (mapped-device-source md))
+                  (target (mapped-device-target md))
+                  (type   (mapped-device-type md))
+                  (open   (mapped-device-kind-open type)))
+             (open source target)))
+         mapped-devices))
+
+  (mlet %store-monad ((kodir (flat-linux-module-directory linux
+                                                          linux-modules)))
+    (expression->initrd
+     (with-imported-modules (source-module-closure
+                             '((gnu build linux-boot)
+                               (guix build utils)
+                               (guix build bournish)
+                               (gnu build file-systems)))
+       #~(begin
+           (use-modules (gnu build linux-boot)
+                        (guix build utils)
+                        (guix build bournish) ;add the 'bournish' meta-command
+                        (srfi srfi-26)
+
+                        ;; FIXME: The following modules are for
+                        ;; LUKS-DEVICE-MAPPING.  We should instead propagate
+                        ;; this info via gexps.
+                        ((gnu build file-systems)
+                         #:select (find-partition-by-luks-uuid))
+                        (rnrs bytevectors))
+
+           (with-output-to-port (%make-void-port "w")
+             (lambda ()
+               (set-path-environment-variable "PATH" '("bin" "sbin")
+                                              '#$helper-packages)))
+
+           (boot-system #:mounts '#$(map file-system->spec file-systems)
+                        #:pre-mount (lambda ()
+                                      (and #$@device-mapping-commands))
+                        #:linux-modules '#$linux-modules
+                        #:linux-module-directory '#$kodir
+                        #:qemu-guest-networking? #$qemu-networking?
+                        #:volatile-root? '#$volatile-root?)))
+     #:name "raw-initrd")))
+
 (define* (base-initrd file-systems
                       #:key
                       (linux linux-libre)
                       (mapped-devices '())
                       qemu-networking?
-                      (virtio? #t)
                       volatile-root?
+                      (virtio? #t)
                       (extra-modules '()))
   "Return a monadic derivation that builds a generic initrd, with kernel
 modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
@@ -145,13 +213,11 @@ mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via '--root'.  MAPPED-DEVICES is a list of device
 mappings to realize before FILE-SYSTEMS are mounted.
 
-When QEMU-NETWORKING? is true, set up networking with the standard QEMU
-parameters.  When VIRTIO? is true, load additional modules so the initrd can
+QEMU-NETWORKING? and VOLATILE-ROOT? behaves as in raw-initrd.
+
+When VIRTIO? is true, load additional modules so the initrd can
 be used as a QEMU guest with the root file system on a para-virtualized block
 device.
-
-When VOLATILE-ROOT? is true, the root file system is writable but any changes
-to it are lost.
 
 The initrd is automatically populated with all the kernel modules necessary
 for FILE-SYSTEMS and for the given options.  However, additional kernel
@@ -224,49 +290,12 @@ loaded at boot time in the order in which they appear."
             (list unionfs-fuse/static)
             '())))
 
-  (define device-mapping-commands
-    ;; List of gexps to open the mapped devices.
-    (map (lambda (md)
-           (let* ((source (mapped-device-source md))
-                  (target (mapped-device-target md))
-                  (type   (mapped-device-type md))
-                  (open   (mapped-device-kind-open type)))
-             (open source target)))
-         mapped-devices))
-
-  (mlet %store-monad ((kodir (flat-linux-module-directory linux
-                                                          linux-modules)))
-    (expression->initrd
-     (with-imported-modules (source-module-closure
-                             '((gnu build linux-boot)
-                               (guix build utils)
-                               (guix build bournish)
-                               (gnu build file-systems)))
-       #~(begin
-           (use-modules (gnu build linux-boot)
-                        (guix build utils)
-                        (guix build bournish) ;add the 'bournish' meta-command
-                        (srfi srfi-26)
-
-                        ;; FIXME: The following modules are for
-                        ;; LUKS-DEVICE-MAPPING.  We should instead propagate
-                        ;; this info via gexps.
-                        ((gnu build file-systems)
-                         #:select (find-partition-by-luks-uuid))
-                        (rnrs bytevectors))
-
-           (with-output-to-port (%make-void-port "w")
-             (lambda ()
-               (set-path-environment-variable "PATH" '("bin" "sbin")
-                                              '#$helper-packages)))
-
-           (boot-system #:mounts '#$(map file-system->spec file-systems)
-                        #:pre-mount (lambda ()
-                                      (and #$@device-mapping-commands))
-                        #:linux-modules '#$linux-modules
-                        #:linux-module-directory '#$kodir
-                        #:qemu-guest-networking? #$qemu-networking?
-                        #:volatile-root? '#$volatile-root?)))
-     #:name "base-initrd")))
+  (raw-initrd file-systems
+              #:linux linux
+              #:linux-modules linux-modules
+              #:mapped-devices mapped-devices
+              #:helper-packages helper-packages
+              #:qemu-networking? qemu-networking?
+              #:volatile-root? volatile-root?))
 
 ;;; linux-initrd.scm ends here

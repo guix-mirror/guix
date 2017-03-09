@@ -13887,9 +13887,9 @@ kernel modules that may be needed to achieve that.
 
 The @code{initrd} field of an @code{operating-system} declaration allows
 you to specify which initrd you would like to use.  The @code{(gnu
-system linux-initrd)} module provides two ways to build an initrd: the
-high-level @code{base-initrd} procedure, and the low-level
-@code{expression->initrd} procedure.
+system linux-initrd)} module provides three ways to build an initrd: the
+high-level @code{base-initrd} procedure and the low-level
+@code{raw-initrd} and @code{expression->initrd} procedures.
 
 The @code{base-initrd} procedure is intended to cover most common uses.
 For example, if you want to add a bunch of kernel modules to be loaded
@@ -13910,9 +13910,16 @@ The @code{base-initrd} procedure also handles common use cases that
 involves using the system as a QEMU guest, or as a ``live'' system with
 volatile root file system.
 
-The initial RAM disk produced by @code{base-initrd} honors several
-options passed on the Linux kernel command line (that is, arguments
-passed @i{via} the @code{linux} command of GRUB, or the
+The @code{base-initrd} procedure is built from @code{raw-initrd} procedure.
+Unlike @code{base-initrd}, @code{raw-initrd} doesn't do anything high-level,
+such as trying to guess which kernel modules and packages should be included
+to the initrd. An example use of @code{raw-initrd} is when a user has
+a custom Linux kernel configuration and default kernel modules included by
+@code{base-initrd} are not available.
+
+The initial RAM disk produced by @code{base-initrd} or @code{raw-initrd}
+honors several options passed on the Linux kernel command line
+(that is, arguments passed @i{via} the @code{linux} command of GRUB, or the
 @code{-append} option of QEMU), notably:
 
 @table @code
@@ -13951,19 +13958,23 @@ Manual}, for more information on Guile's REPL.
 @end table
 
 Now that you know all the features that initial RAM disks produced by
-@code{base-initrd} provide, here is how to use it and customize it
-further.
+@code{base-initrd} and @code{raw-initrd} provide,
+here is how to use it and customize it further.
 
 @cindex initrd
 @cindex initial RAM disk
-@deffn {Monadic Procedure} base-initrd @var{file-systems} @
-       [#:qemu-networking? #f] [#:virtio? #t] [#:volatile-root? #f] @
-       [#:extra-modules '()] [#:mapped-devices '()]
-Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
+@deffn {Monadic Procedure} raw-initrd @var{file-systems} @
+       [#:linux-modules '()] [#:mapped-devices '()] @
+       [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
+Return a monadic derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via @code{--root}.
+@var{linux-modules} is a list of kernel modules to be loaded at boot time.
 @var{mapped-devices} is a list of device mappings to realize before
 @var{file-systems} are mounted (@pxref{Mapped Devices}).
+@var{helper-packages} is a list of packages to be copied in the initrd. It may
+include @code{e2fsck/static} or other packages needed by the initrd to check
+root partition.
 
 When @var{qemu-networking?} is true, set up networking with the standard QEMU
 parameters.  When @var{virtio?} is true, load additional modules so that the
@@ -13971,6 +13982,18 @@ initrd can be used as a QEMU guest with para-virtualized I/O drivers.
 
 When @var{volatile-root?} is true, the root file system is writable but any changes
 to it are lost.
+@end deffn
+
+@deffn {Monadic Procedure} base-initrd @var{file-systems} @
+       [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
+       [#:virtio? #t] [#:extra-modules '()]
+Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
+a list of file systems to be mounted by the initrd like for @code{raw-initrd}.
+@var{mapped-devices}, @var{qemu-networking?} and @var{volatile-root?}
+also behaves as in @code{raw-initrd}.
+
+When @var{virtio?} is true, load additional modules so that the
+initrd can be used as a QEMU guest with para-virtualized I/O drivers.
 
 The initrd is automatically populated with all the kernel modules necessary
 for @var{file-systems} and for the given options.  However, additional kernel
