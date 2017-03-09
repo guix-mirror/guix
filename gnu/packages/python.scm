@@ -3445,8 +3445,6 @@ producing implementations of dynamic languages, emphasizing a clean separation
 between language specification and implementation aspects.")
     (license license:expat)))
 
-;; This version of numpy is missing the documentation and is only used to
-;; build matplotlib which is required to build numpy's documentation.
 (define-public python-numpy
   (package
     (name "python-numpy")
