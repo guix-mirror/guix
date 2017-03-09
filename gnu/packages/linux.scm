@@ -2841,9 +2841,9 @@ easy administration.")
            (remove-store-references target)
            (chmod target #o555)))))
     (home-page (package-home-page btrfs-progs))
-    (synopsis "Statically-linked btrfs command from btrfsprogs")
-    (description "This package provides statically-linked command of btrfs taken
-from the btrfsprogs package.  It is meant to be used in initrds.")
+    (synopsis "Statically-linked btrfs command from btrfs-progs")
+    (description "This package provides the statically-linked @command{btrfs}
+from the btrfs-progs package.  It is meant to be used in initrds.")
     (license (package-license btrfs-progs))))
 
 (define-public freefall
