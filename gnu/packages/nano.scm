@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,7 +29,7 @@
 (define-public nano
   (package
     (name "nano")
-    (version "2.7.4")
+    (version "2.7.5")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +37,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "135wzlv77p9za8679j2jpfkpvainvyagrhkdxngp71ynabgc5zr3"))))
+        "01yrh66rph0vn9q9r2d2jji5yzaakxrj75j9fsm0g41m8qpy4sr2"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
@@ -45,7 +45,8 @@
     (home-page "https://www.nano-editor.org/")
     (synopsis "Small, user-friendly console text editor")
     (description
-     "GNU Nano is a small and simple text editor.  In addition to basic
-editing, it supports interactive search and replace, go to line and column
-number, auto-indentation and more.")
+     "GNU nano is a small and simple text editor for use in a terminal.  Besides
+basic editing, it supports: undo/redo, syntax highlighting, spell checking,
+justifying, auto-indentation, bracket matching, interactive search-and-replace
+(with regular expressions), and the editing of multiple files.")
     (license gpl3+))) ; some files are under GPLv2+

@@ -77,7 +77,7 @@ and freshness without requiring additional information from the user.")
 (define-public ldc-bootstrap
   (package
     (name "ldc")
-    (version "0.17.2")
+    (version "0.17.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -86,7 +86,7 @@ and freshness without requiring additional information from the user.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0iksl6cvhsiwnlh15b7s9v8f3grxk27jn0vja9n4sad7fvfwmmlc"))))
+                "135rgwwk82ccqp4n3fhqz4696jmvip90fg5ql2kccq5h1r71gb82"))))
     (build-system cmake-build-system)
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
     (arguments
@@ -140,7 +140,7 @@ and freshness without requiring additional information from the user.")
                  version ".tar.gz"))
            (sha256
             (base32
-             "07hh3ic3r755mq9hn9gfr0wlc5y8cr91xz2ydb6gqy4zy8jgp5s9"))
+             "0qywnvnp019mmmr74aw90ir9f03iz0hc7cgzna609agsar0b27jl"))
            (patches (search-patches "ldc-disable-tests.patch"))))
        ("druntime-src"
         ,(origin
@@ -150,7 +150,7 @@ and freshness without requiring additional information from the user.")
                  version ".tar.gz"))
            (sha256
             (base32
-             "1m1dhday9dl3s04njmd29z7ism2xn2ksb9qlrwzykdgz27b3dk6x"))))
+             "0z418n6x2fxac07sxpi4rl69069qiym4w6r9sjppn91q58qh8hjs"))))
        ("dmd-testsuite-src"
         ,(origin
            (method url-fetch)
@@ -159,7 +159,7 @@ and freshness without requiring additional information from the user.")
                  version ".tar.gz"))
            (sha256
             (base32
-             "0n7gvalxwfmia4gag53r9qhcnk2cqrw3n4icj1yri0zkgc27pm60"))))))
+             "196mkfax5y3yqm3gz7jhqhnkjwrvr2m4a8nc9k41l0511ldzsk9x"))))))
     (home-page "http://wiki.dlang.org/LDC")
     (synopsis "LLVM compiler for the D programming language")
     (description
@@ -181,7 +181,7 @@ latest DMD frontend and uses LLVM as backend.")
     (package
       (inherit ldc-bootstrap)
       (name "ldc")
-      (version "1.1.0")
+      (version "1.1.1")
       ;; Beta version needed to compile various scientific tools that require
       ;; the newer beta versions, and won't compile successfully with the
       ;; older stable version.
@@ -193,7 +193,7 @@ latest DMD frontend and uses LLVM as backend.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "10zkrmx9bcmhfxvgykm3fkjamzc8js96wm032bv0fyil5c9ja2y1"))))
+                  "0yjiwg8pnlm2286bwdkwasaqw6ys7lymrqvhh5xyb1adha1ndcav"))))
       (arguments
        `(#:phases
          (modify-phases %standard-phases

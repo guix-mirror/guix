@@ -6,7 +6,7 @@
 Description=Publish the GNU Guix store
 
 [Service]
-ExecStart=@bindir@/guix publish --user=nobody --port=8181
+ExecStart=@localstatedir@/guix/profiles/per-user/root/guix-profile/bin/guix publish --user=nobody --port=8181
 Environment=GUIX_LOCPATH=/root/.guix-profile/lib/locale
 RemainAfterExit=yes
 StandardOutput=syslog

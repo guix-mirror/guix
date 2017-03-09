@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -263,3 +265,38 @@ overlapping images, as well as some command line tools.")
 multi-resolution spline.  Enfuse merges different exposures of the same
 scene to produce an image that looks much like a tone-mapped image.")
     (license license:gpl2+)))
+
+(define-public lensfun
+  (package
+    (name "lensfun")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/lensfun/"
+                    version "/lensfun-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cfk8jjhs9nbfjfdy98plrj9ayi59aph0nx6ppslgjhlcvacm2xf"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; There are no tests to run.
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "https://sourceforge.net/projects/lensfun/")
+    (synopsis "Library to correct optical lens defects with a lens database")
+    (description "Digital photographs are not ideal.  Of course, the better is
+your camera, the better the results will be, but in any case if you look
+carefully at shots taken even by the most expensive cameras equipped with the
+most expensive lenses you will see various artifacts.  It is very hard to make
+ideal cameras, because there are a lot of factors that affect the final image
+quality, and at some point camera and lens designers have to trade one factor
+for another to achieve the optimal image quality, within the given design
+restrictions and budget.  But we all want ideal shots, don't we?  So that's
+what's Lensfun is all about: rectifying the defects introduced by your
+photographic equipment.")
+    ;; The libraries are licensed under the LGPL3, the programs are
+    ;; licensed GPL3, and the database is license CC-BY-SA 3.0.  See the
+    ;; README.md file for this clarification.
+    (license (list license:lgpl3 license:gpl3 license:cc-by-sa3.0))))

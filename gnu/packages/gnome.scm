@@ -5606,7 +5606,7 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20161119")
+    (version "20170302")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/horst3180/arc-theme"
@@ -5614,7 +5614,7 @@ functionality and behavior.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kbhaxmydyip3vdw4kf8rk776jcd9wf0w7z6h2i4naxdn4rsnw54"))))
+                "0igxpngnkf1wpsg872a9jg3c9f5z8afm312yfbillz16mk8w39cw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -5639,7 +5639,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 (define-public moka-icon-theme
   (package
     (name "moka-icon-theme")
-    (version "5.3.1")
+    (version "5.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/moka-project"
@@ -5648,7 +5648,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lnk7p8dsd9xh6cgz5krvlcr457w8yl4m6p6s5c2g5narsjswzrm"))))
+                "062rab0ggmgb3y0d6b3k5d47wsadi28cdnyyr2vqbjhza01dglci"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -5674,7 +5674,7 @@ simple and consistent.")
 (define-public arc-icon-theme
   (package
     (name "arc-icon-theme")
-    (version "20160605")
+    (version "20161122")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/horst3180/arc-icon-theme"
@@ -5682,7 +5682,7 @@ simple and consistent.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1npf0ki0j0llrw9wbffhxxa1cdms0q7b8xlg9m943dd9g7pgdm2p"))))
+                "1ya1cqvv8q847c0rpcg6apzky87q3h04y8jz5nmi52qk6kg8si0b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

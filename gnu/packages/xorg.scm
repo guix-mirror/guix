@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1721,7 +1722,7 @@ features and to query screensaver info on specific windows.")
 (define-public sessreg
   (package
     (name "sessreg")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
@@ -1731,7 +1732,7 @@ features and to query screensaver info on specific windows.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0z013rskwmdadd8cdlxvh4asmgim61qijyzfbqmr1q1mg1jpf4am"))))
+            "1qd66mg2bnppqz4xgdjzif2488zl82vx2c26ld3nb8pnyginm9vq"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
@@ -5669,6 +5670,61 @@ to answer a question.  Xmessage can also exit after a specified time.")
 provides DEC VT102/VT220 (VTxxx) and Tektronix 4014 compatible terminals for
 programs that cannot use the window system directly.")
     (license license:x11)))
+
+(define-public perl-x11-xcb
+  (package
+    (name "perl-x11-xcb")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/M/MS/MSTPLBG/"
+                    "X11-XCB-" version ".tar.gz"))
+              (sha256
+               (base32
+                "14mnvr1001py2z1n43l18yaw0plwvjg5pcsyc7k81sa0amw8ahzw"))))
+    (build-system perl-build-system)
+    (arguments
+     '(;; Disable parallel build to prevent a race condition.
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-Makefile
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               ;; XXX: Without this hack, attempts at using XCB.so fails with
+               ;; an error such as "XCB.so: undefined symbol: xcb_xinerama_id"
+               (("^LDDLFLAGS = ")
+                (string-append "LDDLFLAGS = "
+                               "-lxcb -lxcb-util -lxcb-xinerama -lxcb-icccm ")))
+             #t)))
+       ;; Tests require a running X11 server.
+       #:tests? #f))
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-data-dump" ,perl-data-dump)
+       ("perl-mouse" ,perl-mouse)
+       ("perl-mousex-nativetraits" ,perl-mousex-nativetraits)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-xml-descent" ,perl-xml-descent)
+       ("perl-xml-simple" ,perl-xml-simple)
+       ("perl-xs-object-magic" ,perl-xs-object-magic)))
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("xcb-proto" ,xcb-proto)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-wm" ,xcb-util-wm)))
+    (home-page "http://search.cpan.org/dist/X11-XCB")
+    (synopsis "Perl bindings for libxcb")
+    (description
+     "These bindings wrap @code{libxcb} (a C library to speak with X11,
+in many cases better than @code{Xlib}), and provides an object oriented
+interface to its methods (using @code{Mouse}).")
+    (license (package-license perl))))
 
 (define-public perl-x11-protocol
   (package

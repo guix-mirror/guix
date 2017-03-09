@@ -112,14 +112,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.11.1")
+   (version "2.12.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "05b4jw86w77c3pyh3nm6aw31vhxwzvhnx2x0bcfqmm15wg57k9y0"))))
+              "09r0lcjj5v2apj39f0ziqzjq2bi1jpnhszc9q4n0ab86g5j7c88q"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -132,7 +132,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0cfa3c2r7d86ksswxdl0jqdka9mai3446gg8380921gf779nwj39"))))))
+            "0ws7h04ijqr2l0pp9qbds65v9cd70v0qfpnhqncn9zqfspw5d0wb"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -592,7 +592,7 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.5")
+    (version "3.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -601,7 +601,7 @@ also walk each side of a merge and test those changes individually.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xpqg04gyr4dhdhxx5lbk61lwwd5ml32530bigg2qy663icngwqm"))))
+                "07q33f86694s0x3k9lcmy1vzfw9appdrlmmb9j3bz4qkrxqdnwb9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -617,6 +617,17 @@ also walk each side of a merge and test those changes individually.")
                         (substitute* (find-files "." ".*")
                           ((" perl -")
                            (string-append " " perl " -"))))))
+                  (add-before 'install 'fix-hooks-shebangs
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((perl (string-append (assoc-ref inputs "perl")
+                                                 "/bin/perl")))
+                        ;; The files in 'lib/Gitolite/Hooks' keep references to
+                        ;; '/usr/bin/perl', without this fix it is impossible to
+                        ;; to run gitolite in production.
+                        (substitute* (find-files "src/lib/Gitolite/Hooks" ".*")
+                          (("/usr/bin/perl")
+                           perl))
+                        #t)))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
@@ -1211,7 +1222,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
      `(;; for the tests
        ("python2-six" ,python2-six)))
     (propagated-inputs
-     `(("python2-dateutil" ,python2-dateutil-2)
+     `(("python2-dateutil" ,python2-dateutil)
        ("python2-futures" ,python2-futures)
        ("python2-rauth" ,python2-rauth)
        ("python2-swiftclient" ,python2-swiftclient)))

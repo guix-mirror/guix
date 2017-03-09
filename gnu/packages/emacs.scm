@@ -133,22 +133,20 @@
                (("/bin/pwd")
                 "pwd"))))
          (add-after 'install 'install-site-start
-           ;; Copy guix-emacs.el from Guix and add it to site-start.el.  This
-           ;; way, Emacs packages provided by Guix and installed in
+           ;; Use 'guix-emacs' in "site-start.el".  This way, Emacs packages
+           ;; provided by Guix and installed in
            ;; ~/.guix-profile/share/emacs/site-lisp/guix.d/PACKAGE-VERSION are
            ;; automatically found.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((guix-src (assoc-ref inputs "guix-src"))
-                    (out      (assoc-ref outputs "out"))
-                    (lisp-dir (string-append out "/share/emacs/site-lisp"))
-                    (unpack   (assoc-ref %standard-phases 'unpack)))
-               (mkdir "guix")
-               (with-directory-excursion "guix"
-                 (apply unpack (list #:source guix-src))
-                 (install-file "emacs/guix-emacs.el" lisp-dir))
+             (let* ((out      (assoc-ref outputs "out"))
+                    (lisp-dir (string-append out "/share/emacs/site-lisp")))
+               (copy-file (assoc-ref inputs "guix-emacs.el")
+                          (string-append lisp-dir "/guix-emacs.el"))
                (with-output-to-file (string-append lisp-dir "/site-start.el")
                  (lambda ()
-                   (display "(require 'guix-emacs nil t)")))
+                   (display
+                    (string-append "(when (require 'guix-emacs nil t)\n"
+                                   "  (guix-emacs-autoload-packages))\n"))))
                #t))))))
     (inputs
      `(("gnutls" ,gnutls)
@@ -175,13 +173,13 @@
        ("libsm" ,libsm)
        ("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
-       ("guix-src" ,(package-source guix))
 
        ;; multilingualization support
        ("libotf" ,libotf)
        ("m17n-lib" ,m17n-lib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("guix-emacs.el" ,(search-auxiliary-file "emacs/guix-emacs.el"))
+       ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
 
     (native-search-paths
@@ -1326,7 +1324,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.2.2")
+    (version "0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1334,7 +1332,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1i47yh24xvgmnc778765g3j9ip0xb2y85v6w83r4qmkigk9rl2ck"))))
+                "1327zp140c7acckk0ajl88cgwr0lk9j3mb67nsq2janxrkwmj6br"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3833,4 +3831,24 @@ mode-line.")
     (synopsis "Redisplay parts of the buffer as Unicode symbols")
     (description
      "Emacs minor mode for redisplaying parts of the buffer as pretty symbols.")
+    (license license:gpl3+)))
+
+(define-public emacs-yasnippet
+  (package
+    (name "emacs-yasnippet")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/joaotavora/yasnippet/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15di6mkkf09b7qddpsrm0qln02hji3sx8blya5jxssi9wxxx9iq5"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/joaotavora/yasnippet")
+    (synopsis "Yet another snippet extension for Emacs")
+    (description
+     "YASnippet is a template system for Emacs.  It allows you to type an
+abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))

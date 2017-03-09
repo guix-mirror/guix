@@ -102,7 +102,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r
   (package
     (name "r")
-    (version "3.3.2")
+    (version "3.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -110,7 +110,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0k2i9qdd83g09fcpls2198q4ykxkii5skczb514gnx7mx4hsv56j"))))
+                "0v7wpj89b0i3ad3fi1wak5c93hywmbxv8sdnixhq8l17782nidss"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -131,8 +131,19 @@ be output in text, PostScript, PDF or HTML.")
          (add-after 'unpack 'build-recommended-packages-reproducibly
            (lambda _
              (substitute* "src/library/Recommended/Makefile.in"
-               (("INSTALL_OPTS =.*" line)
-                (string-append line " --built-timestamp=1970-01-01")))
+               (("INSTALL_OPTS =(.*)" line rest )
+                (string-append "INSTALL_OPTS = --built-timestamp=1970-01-01"
+                               rest)))
+             ;; Ensure that gzipped files are reproducible
+             (substitute* '("src/library/grDevices/Makefile.in"
+                            "doc/manual/Makefile.in")
+               (("R_GZIPCMD\\)" line)
+                (string-append line " -n")))
+             ;; This library is installed using "install_package_description",
+             ;; so we need to pass the "builtStamp" argument.
+             (substitute* "src/library/tools/Makefile.in"
+               (("(install_package_description\\(.*\"')\\)\"" line prefix)
+                (string-append prefix ", builtStamp='1970-01-01')\"")))
              #t))
          (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
@@ -159,11 +170,7 @@ be output in text, PostScript, PDF or HTML.")
          "--with-ICU"
          "--enable-R-shlib"
          "--enable-BLAS-shlib"
-         "--with-system-zlib"
-         "--with-system-bzlib"
-         "--with-system-pcre"
-         "--with-system-tre"
-         "--with-system-xz")))
+         "--with-system-tre")))
     ;; R has some support for Java.  When the JDK is available at configure
     ;; time environment variables pointing to the JDK will be recorded under
     ;; $R_HOME/etc and ./tools/getsp.java will be compiled which is used by "R
@@ -344,24 +351,6 @@ OpenSSL should be used.")
     (description "Provides tools for determining estimability of linear
 functions of regression coefficients, and 'epredict' methods that handle
 non-estimable cases correctly.")
-    (license license:gpl2+)))
-
-(define-public r-gtable
-  (package
-    (name "r-gtable")
-    (version "0.1.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "gtable" version))
-       (sha256
-        (base32 "0k9hfj6r5y238gqh92s3cbdn34biczx3zfh79ix5xq0c5vkai2xh"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/gtable")
-    (synopsis "R library to arrange grobs in tables")
-    (description
-     "Gtable is a collection of tools to make it easier to work with
-\"tables\" of grobs.")
     (license license:gpl2+)))
 
 (define-public r-pheatmap
@@ -1068,22 +1057,6 @@ from knitr Rmarkdown.")
 the execution time of R expressions.")
     (license license:bsd-2)))
 
-(define-public r-codetools
-  (package
-    (name "r-codetools")
-    (version "0.2-14")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "codetools" version))
-              (sha256
-               (base32
-                "0y9r4m2b8xgavr89sc179knzwpz54xljbc1dinpq2q07i4xn0397"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/codetools/index.html")
-    (synopsis "Code analysis tools for R")
-    (description "This package provides code analysis tools for R.")
-    (license license:gpl3+)))
-
 (define-public r-pryr
   (package
     (name "r-pryr")
@@ -1471,15 +1444,14 @@ building design matrices.")
 (define-public python-statsmodels
   (package
     (name "python-statsmodels")
-    (version "0.6.1")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/"
-                           "s/statsmodels/statsmodels-" version ".tar.gz"))
+       (uri (pypi-uri "statsmodels" version))
        (sha256
         (base32
-         "0xn67sqr0cc1lmlhzm71352hrb4hw7g318p5ff5q97pc98vl8kmy"))
+         "0j30v3932shnj9368c9jr3svkyrvfj90h2l7nxnqkbpv0svilhr6"))
        (patches (search-patches "python-statsmodels-fix-tests.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1491,7 +1463,9 @@ building design matrices.")
           (lambda _
             ;; Set the matplotlib backend to Agg to avoid problems using the
             ;; GTK backend without a display.
-            (substitute* (find-files "statsmodels/graphics/tests" "\\.py")
+            (substitute* (append (find-files "statsmodels/graphics/tests" "\\.py")
+                                 '("statsmodels/tsa/vector_ar/tests/test_var.py"
+                                   "statsmodels/duration/tests/test_survfunc.py"))
               (("import matplotlib\\.pyplot as plt" line)
                (string-append "import matplotlib;matplotlib.use('Agg');"
                               line)))
@@ -2246,11 +2220,11 @@ variety of formats.")
                 "0vz7073m0a2q12qzzihrfh5c2kx5jqi5l7z470fxmwqghdllh7l0"))))
     (properties `((upstream-name . "gtable")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/gtable")
-    (synopsis "Arrange grobs in tables")
+    (home-page "https://cran.r-project.org/web/packages/gtable")
+    (synopsis "R library to arrange grobs in tables")
     (description
-     "This package provides tools to make it easier to work with tables of
-grobs.")
+     "Gtable is a collection of tools to make it easier to work with
+\"tables\" of grobs.")
     (license license:gpl2+)))
 
 (define-public r-gridextra
@@ -2568,7 +2542,7 @@ data.")
         (base32
          "0h7sjmvvsi35041jp47cxhsqzgf1y8jrw6fxii7n26i8g7nrh1sf"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/codetools")
+    (home-page "https://cran.r-project.org/web/packages/codetools")
     (synopsis "Code analysis tools for R")
     (description "This package provides code analysis tools for R to check R
 code for possible problems.")

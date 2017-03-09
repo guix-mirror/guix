@@ -16,6 +16,8 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +38,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -51,6 +54,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -437,7 +441,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "4.3.21")
+    (version "5.3.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -446,15 +450,14 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0z0p4a3p5mc6fjh5f8js9ppb0maxyvfxpiw2n6nqc5nim1kv6bim"))))
+                "1p2ih123zkj8rxz8acsxpaim1kq57f4rbq7zqsibafn5rkw5c5is"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))  ; no "check" target
+    (arguments
+     '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
+     `(("glm" ,glm)
        ("libxext" ,libxext)
-       ("imlib2" ,imlib2)
-       ("glew" ,glew)
+       ("libxrender" ,libxrender)
        ("mesa" ,mesa)))
     (home-page "https://github.com/naelstrof/slop")
     (synopsis "Select a region and print its bounds to stdout")
@@ -469,7 +472,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "3.4.47")
+    (version "4.4.61")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -478,27 +481,20 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kfp7k55bxc5h6h0wv8bwmsc5ny66h9ra2z4dzs4yzszq16544pv"))))
+                "14jksv05xyydbpb9v8k3jgq7sl72bh356iapymg02vwg519i1d5k"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f              ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((slop (string-append (assoc-ref inputs "slop")
-                                        "/bin/slop")))
-               ;; "slop" command is hardcoded in the source; replace it
-               ;; with the full file name.
-               (substitute* "src/main.cpp"
-                 (("^( +slopcommand.*)\"slop\"" all front)
-                  (string-append front "\"" slop "\"")))))))))
+     '(#:tests? #f))            ; no "check" target
     (inputs
-     `(("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
+     `(("glm" ,glm)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libxcomposite" ,libxcomposite)
        ("libxfixes" ,libxfixes)
-       ("imlib2" ,imlib2)
-       ("slop" ,slop)))
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("slop" ,slop)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/naelstrof/maim")
     (synopsis "Screenshot utility for X Window System")
     (description
@@ -694,9 +690,47 @@ compact configuration syntax.")
      ;; This sets the destination when installing the necessary terminal
      ;; capability data, which are not provided by 'ncurses'.  See
      ;; https://lists.gnu.org/archive/html/bug-ncurses/2009-10/msg00031.html
-     '(#:make-flags (list (string-append "TERMINFO="
+     `(#:make-flags (list (string-append "TERMINFO="
                                          (assoc-ref %outputs "out")
-                                         "/share/terminfo"))))
+                                         "/share/terminfo"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-desktop-urxvt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((output (assoc-ref outputs "out"))
+                    (desktop (string-append output "/share/applications")))
+               (mkdir-p desktop)
+               (with-output-to-file
+                   (string-append desktop "/urxvt.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=rxvt-unicode~@
+                           Comment=~@
+                           Exec=~a/bin/urxvt~@
+                           TryExec=~@*~a/bin/urxvt~@
+                           Icon=~@
+                           Type=Application~%"
+                           output)))
+               #t)))
+         (add-after 'install 'install-desktop-urxvtc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((output (assoc-ref outputs "out"))
+                    (desktop (string-append output "/share/applications")))
+               (mkdir-p desktop)
+               (with-output-to-file
+                   (string-append desktop "/urxvtc.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=rxvt-unicode~@
+                           Comment=Rxvt clone with XFT and unicode support~@
+                           Exec=~a/bin/urxvtc~@
+                           TryExec=~@*~a/bin/urxvtc~@
+                           Icon=~@
+                           Type=Application~%"
+                           output)))
+               #t))))))
     (inputs
      `(("libXft" ,libxft)
        ("libX11" ,libx11)))
@@ -971,7 +1005,8 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases
+     `(#:parallel-tests? #f ; May fail in some circumstances.
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'adjust-tests
            (lambda _
@@ -1031,6 +1066,57 @@ The taskbar includes transparency and color settings for the font, icons,
 border, and background.  It also supports multihead setups, customized mouse
 actions, a built-in clock, a battery monitor and a system tray.")
     (license license:gpl2)))
+
+(define-public dzen
+  (let ((commit "488ab66019f475e35e067646621827c18a879ba1")
+        (revision "1"))
+    (package
+     (name "dzen")
+     (version (string-append "0.9.5-" ; Taken from `config.mk`.
+                             revision "." (string-take commit 7)))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/robm/dzen.git")
+                    (commit commit)))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0y47d6ii87vf4a517gi4fh0yl06f8b085sra77immnsasbq9pxnw"))))
+     (build-system gnu-build-system)
+     (arguments
+      `(#:tests? #f ; No test suite.
+        #:make-flags ; Replacement for `config.mk`.
+        (list
+         (string-append "VERSION = " ,version)
+         (string-append "PREFIX = " %output)
+         "MANPREFIX = ${PREFIX}/share/man"
+         "INCS = -I."
+         "LIBS = -lc -lX11 -lXinerama -lXpm $(shell pkg-config --libs xft)"
+         "CFLAGS = -Wall -Os ${INCS} -DVERSION=\\\"${VERSION}\\\"\
+         -DDZEN_XINERAMA -DDZEN_XPM -DDZEN_XFT $(shell pkg-config --cflags xft)"
+         "LDFLAGS = ${LIBS}"
+         "CC = gcc"
+         "LD = ${CC}")
+        #:phases
+        (modify-phases %standard-phases
+          (delete 'configure) ; No configuration script.
+          ;; Use own make-flags instead of `config.mk`.
+          (add-before 'build 'dont-include-config-mk
+            (lambda _
+              (substitute* "Makefile" (("include config.mk") ""))
+              #t)))))
+     (inputs
+      `(("libx11"      ,libx11)
+        ("libxft"      ,libxft)
+        ("libxpm"      ,libxpm)
+        ("libxinerama" ,libxinerama)))
+     (native-inputs `(("pkg-config" ,pkg-config)))
+     (synopsis "General purpose messaging, notification and menuing program for X11")
+     (description "Dzen is a general purpose messaging, notification and menuing
+program for X11.  It was designed to be fast, tiny and scriptable in any language.")
+     (home-page "https://github.com/robm/dzen")
+     (license license:expat))))
 
 (define-public xcb-util-xrm
   (package

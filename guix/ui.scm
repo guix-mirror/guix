@@ -635,16 +635,17 @@ report what is prerequisites are available for download."
 (define (right-arrow port)
   "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
 replacement if PORT is not Unicode-capable."
-  (with-fluids ((%default-port-encoding (port-encoding port)))
-    (let ((arrow "→"))
-      (catch 'encoding-error
-        (lambda ()
-          (call-with-output-string
-            (lambda (port)
-              (set-port-conversion-strategy! port 'error)
-              (display arrow port))))
-        (lambda (key . args)
-          "->")))))
+  (let ((encoding (port-encoding port))
+        (arrow "→"))
+    (catch 'encoding-error
+      (lambda ()
+        (call-with-output-string
+          (lambda (port)
+            (set-port-encoding! port encoding)
+            (set-port-conversion-strategy! port 'error)
+            (display arrow port))))
+      (lambda (key . args)
+        "->"))))
 
 (define* (show-manifest-transaction store manifest transaction
                                     #:key dry-run?)
@@ -687,7 +688,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be removed:~%~{~a~%~}~%"
                          len)
                      remove))))
-      (_ #f))
+      (x #f))
     (match downgrade
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
@@ -705,7 +706,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be downgraded:~%~{~a~%~}~%"
                          len)
                      downgrade))))
-      (_ #f))
+      (x #f))
     (match upgrade
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
@@ -723,7 +724,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be upgraded:~%~{~a~%~}~%"
                          len)
                      upgrade))))
-      (_ #f))
+      (x #f))
     (match install
       ((($ <manifest-entry> name version output item _) ..1)
        (let ((len     (length name))
@@ -739,7 +740,7 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be installed:~%~{~a~%~}~%"
                          len)
                      install))))
-      (_ #f))))
+      (x #f))))
 
 (define-syntax with-error-handling
   (syntax-rules ()
@@ -820,7 +821,7 @@ converted to a space; sequences of more than one line break are preserved."
   (match (string-fold maybe-break
                       `(,column 0 ())
                       str)
-    ((_ _ chars)
+    ((column newlines chars)
      (list->string (reverse chars)))))
 
 
@@ -1024,7 +1025,7 @@ DURATION-RELATION with the current time."
        (valid-generations (iota n 1)))
       ((lst ..1)
        (valid-generations lst))
-      (_ #f)))
+      (x #f)))
 
   (define (filter-by-duration duration)
     (define (time-at-midnight time)

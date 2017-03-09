@@ -55,15 +55,13 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.14.1")
+    (version "0.15.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
-             (patches
-               (search-patches "vdirsyncer-test-suite-slow-machines.patch"))
              (sha256
               (base32
-               "044f01fjd8dpz4y9dm3qcc1a8cihcxxbr1sz6y6fkvglpb6k85y5"))))
+               "08aa5yxcj7ziz2r0hz4p554q8hgpfl2bh8r6r85f4g24mg6arxsj"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases

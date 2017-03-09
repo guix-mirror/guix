@@ -11,6 +11,7 @@
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -438,14 +439,14 @@ interaction.")
 (define-public podofo
   (package
     (name "podofo")
-    (version "0.9.3")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/podofo/podofo/" version
                                   "/podofo-" version ".tar.gz"))
               (sha256
                (base32
-                "1n12lbq9x15vqn7dc0hsccp56l5jdff1xrhvlfqlbklxx0qiw9pc"))))
+                "012kgfx5j5n6w4zkc1d290d2cwjk60jhzsjlr2x19g3yi75q2jc5"))))
     (build-system cmake-build-system)
     (inputs                                      ; TODO: Add cppunit for tests
      `(("lua" ,lua-5.1)
@@ -632,6 +633,10 @@ using a stylus.")
                (base32
                 "0rz2pg04wnzjjm2f5a8ik9v8s54mv4xrjhv5liqjijqv6awh12gl"))))
     (build-system python-build-system)
+    (arguments
+     '(;; FIXME: There is one test failure, but it does not cause the
+       ;; build to fail. No time to investigate right now.
+       #:test-target "tests"))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
     (home-page "http://www.reportlab.com")

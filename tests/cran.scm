@@ -126,7 +126,8 @@ Date/Publication: 2015-07-14 14:15:16
           "This is a long description spanning multiple lines: \
 and it could confuse the parser that there is a colon : on the \
 lines.  And: this line continues the description.")
-         ('license 'gpl3+)))
+         ('license 'gpl3+))
+       #t)
       (x
        (begin
          (format #t "~s\n" x)

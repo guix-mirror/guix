@@ -256,13 +256,11 @@ re-executing them as necessary.")
               (base32
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--localstatedir=/var")
-
-                 ;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
-                 ;; which is currently missing.
-                 #:tests? #f))
+    (arguments
+     '(#:configure-flags '("--localstatedir=/var")))
     (inputs `(("ncurses" ,ncurses)
-              ("readline" ,readline)))            ; for 'ftp'
+              ("readline" ,readline)))        ;for 'ftp'
+    (native-inputs `(("netstat" ,net-tools))) ;for tests
     (home-page "http://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
@@ -279,7 +277,8 @@ client and server, a telnet client and server, and an rsh client and server.")
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"))
+              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"
+                                       "shadow-CVE-2017-2616.patch"))
               (sha256
                (base32
                 "0g7hf55ar2pafg5g3ldx0fwzjk36wf4xb21p4ndanbjm3c2a9ab1"))))
@@ -1701,15 +1700,29 @@ throughput (in the same interval).")
                (base32
                 "04q2cn8c83f6z6wn1scla1ilrpi5ssjc64987hvmwfvwvb82bvkp"))))
     (build-system python-build-system)
-    (inputs
+    (arguments
+     '(#:tests? #f))
+       ;; FIXME: 10 test failures. Some require newer pytest (> 2.9.2).
+       ;; Others need more work. Un-comment the below to run the tests.
+       ;; #:phases
+       ;; (modify-phases %standard-phases
+       ;;   (replace 'check
+       ;;     (lambda _
+       ;;       ;; Some tests need write access to $HOME.
+       ;;       (setenv "HOME" "/tmp")
+       ;;       (zero? (system* "py.test" "-v")))))))
+    (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
        ("python-psutil" ,python-psutil)
        ("python-six" ,python-six)))
     (native-inputs
-     ;; Requires setuptools >= 17.1 due to some features used, while our
-     ;; python currently only includes 12.0. TODO: Remove this input.
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ;; Requires setuptools >= 17.1 due to some features used, while our
+       ;; python currently only includes 12.0. TODO: Remove this input.
+       ("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/nvbn/thefuck")
     (synopsis "Correct mistyped console command")
     (description
@@ -1720,13 +1733,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.42")
+    (version "4.43")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1i6m9zdnidn8268q1lz9fd8payk7s4pgwh5zlam9rr4dy6h6a67n"))))
+        (base32 "1q25jy51qfzsym9b2w0cqzscq2j492gn60dy6gbp88m8nwm4sdy8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Obscure test failures.
@@ -1751,14 +1764,14 @@ highly portable.  Great for heterogenous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.4")
+    (version "1.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/valr/"
                                   name "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "023fvsa4q7rl98rqgwrb1shyzaybdkkbyz5sywd0s5p7ixkksxqx"))
+                "0xzz1faqgm57bwlkw6sjdfbckf5hck81879zbfk18p7xn9vhvixv"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments

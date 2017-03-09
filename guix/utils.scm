@@ -43,7 +43,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:use-module ((ice-9 iconv) #:select (bytevector->string))
+  #:use-module ((ice-9 iconv) #:prefix iconv:)
   #:use-module (system foreign)
   #:re-export (memoize)         ; for backwards compatibility
   #:export (bytevector->base16-string
@@ -326,7 +326,7 @@ This procedure returns #t on success."
       (seek in 0 SEEK_SET) ; read from the beginning of the file.
       (let* ((pre-bv  (get-bytevector-n in start))
              ;; The expression in string form.
-             (str     (bytevector->string
+             (str     (iconv:bytevector->string
                        (get-bytevector-n in (- end start))
                        (port-encoding in)))
              (post-bv (get-bytevector-all in))

@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (gnu packages perl-web))
+  #:use-module (gnu packages perl-web)
+  #:use-module (gnu packages pkg-config))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -206,6 +208,31 @@ explicitly alias the class to another name or, if you prefer, you can do so
 implicitly.")
     (license (package-license perl))))
 
+(define-public perl-any-moose
+  (package
+    (name "perl-any-moose")
+    (version "0.27")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                                  "Any-Moose-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dc55mpayrixwx8dwql0vj0jalg4rlb3k64rprc84bl0z8vkx9m8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-mouse" ,perl-mouse)
+       ("perl-moose" ,perl-moose)))
+    (home-page "http://search.cpan.org/dist/Any-Moose")
+    (synopsis "Transparently use Moose or Mouse modules")
+    (description
+     "This module facilitates using @code{Moose} or @code{Mouse} modules
+without changing the code.  By default, Mouse will be provided to libraries,
+unless Moose is already loaded, or explicitly requested by the end-user.  End
+users can force the decision of which backend to use by setting the environment
+variable ANY_MOOSE to be Moose or Mouse.")
+    (license (package-license perl))))
+
 (define-public perl-appconfig
   (package
     (name "perl-appconfig")
@@ -266,6 +293,39 @@ manipulate, read, and write Zip archive files.")
     (synopsis "Small utils for array manipulation")
     (description "@code{Array::Utils} is a small pure-perl module containing
 list manipulation routines.")
+    (license (package-license perl))))
+
+(define-public perl-async-interrupt
+  (package
+    (name "perl-async-interrupt")
+    (version "1.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                                  "Async-Interrupt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "092zs7b72f8q109c3z829nqfgwqghp3nhw44c0gcyhacbb4wgpk3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/Async-Interrupt")
+    (synopsis "Allow C/XS libraries to interrupt perl asynchronously")
+    (description
+     "@code{Async::Interrupt} implements a single feature only of interest
+to advanced perl modules, namely asynchronous interruptions (think \"UNIX
+signals\", which are very similar).
+
+Sometimes, modules wish to run code asynchronously (in another thread,
+or from a signal handler), and then signal the perl interpreter on
+certain events.  One common way is to write some data to a pipe and use
+an event handling toolkit to watch for I/O events.  Another way is to
+send a signal.  Those methods are slow, and in the case of a pipe, also
+not asynchronous - it won't interrupt a running perl interpreter.
+
+This module implements asynchronous notifications that enable you to
+signal running perl code from another thread, asynchronously, and
+sometimes even without using a single syscall.")
     (license (package-license perl))))
 
 (define-public perl-autovivification
@@ -561,6 +621,25 @@ sent to STDOUT or STDERR, regardless of whether it comes from Perl, from XS
 code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
+
+(define-public perl-canary-stability
+  (package
+    (name "perl-canary-stability")
+    (version "2012")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                                  "Canary-Stability-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01vih43hvpqy67m6a6fwmlswli91mqpv8n8ccglvlkc33l8hn97x"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Canary-Stability")
+    (synopsis "Check compatibility with the installed perl version")
+    (description
+     "This module is used by Schmorp's modules during configuration stage
+to test the installed perl for compatibility with his modules.")
+    (license (package-license perl))))
 
 (define-public perl-carp-assert
   (package
@@ -1288,6 +1367,28 @@ standard, like the program described in \"A Random Word Generator For
 Pronounceable Passwords\".  This code is a re-engineering of the program
 contained in Appendix A of FIPS Publication 181, \"Standard for Automated
 Password Generator\".")
+    (license (package-license perl))))
+
+(define-public perl-cwd-guard
+  (package
+    (name "perl-cwd-guard")
+    (version "0.05")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
+                                  "Cwd-Guard-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xwf4rmii55k3lp19mpbh00mbgby7rxdk2lk84148bjhp6i7rz3s"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-requires" ,perl-test-requires)))
+    (home-page "http://search.cpan.org/dist/Cwd-Guard")
+    (synopsis "Temporarily change working directory")
+    (description
+     "@code{Cwd::Guard} changes the current directory using a limited scope.
+It returns to the previous working directory when the object is destroyed.")
     (license (package-license perl))))
 
 (define-public perl-czplib
@@ -2097,6 +2198,27 @@ the appropriate objects.")
 particular command is available.")
     (license (package-license perl))))
 
+(define-public perl-devel-checkcompiler
+  (package
+  (name "perl-devel-checkcompiler")
+  (version "0.07")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://cpan/authors/id/S/SY/SYOHEX/"
+                                "Devel-CheckCompiler-" version ".tar.gz"))
+            (sha256
+             (base32
+              "1db973a4dbyknjxq608hywil5ai6vplnayshqxrd7m5qnjbpd2vn"))))
+  (build-system perl-build-system)
+  (native-inputs
+   `(("perl-module-build-tiny" ,perl-module-build-tiny)))
+  (home-page "http://search.cpan.org/dist/Devel-CheckCompiler")
+  (synopsis "Check compiler availability")
+  (description "@code{Devel::CheckCompiler} is a tiny module to check
+whether a compiler is available.  It can test for a C99 compiler, or
+you can tell it to compile a C source file with optional linker flags.")
+  (license (package-license perl))))
+
 (define-public perl-devel-globaldestruction
   (package
     (name "perl-devel-globaldestruction")
@@ -2603,6 +2725,29 @@ By itself it is not a particularly interesting module by any measure, however
 it ties together a family of modern toolchain modules.")
     (license (package-license perl))))
 
+(define-public perl-extutils-depends
+  (package
+    (name "perl-extutils-depends")
+    (version "0.405")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
+                                  "ExtUtils-Depends-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b4ab9qmcihsfs2ajhn5qzg7nhazr68v3r0zvb7076smswd41mla"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-number-delta" ,perl-test-number-delta)))
+    (home-page "http://search.cpan.org/dist/ExtUtils-Depends")
+    (synopsis "Easily build XS extensions that depend on XS extensions")
+    (description
+     "This module tries to make it easy to build Perl extensions that use
+functions and typemaps provided by other perl extensions.  This means that a
+perl extension is treated like a shared library that provides also a C and an
+XS interface besides the perl one.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-helpers
   (package
     (name "perl-extutils-helpers")
@@ -2644,6 +2789,29 @@ their Perl code.  Although there are mechanisms to compile and link (or glue)
 C code in your Perl programs, there isn't a clear method to compile standard,
 self-contained C libraries.  This module main goal is to help in that task.")
     (license (package-license perl))))
+
+(define-public perl-extutils-pkgconfig
+  (package
+    (name "perl-extutils-pkgconfig")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
+                                  "ExtUtils-PkgConfig-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cxh6w8vmyqmhl6afys2q6z6jkp1m6zvacpk70196zmk48p1kcv9"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://search.cpan.org/dist/ExtUtils-PkgConfig")
+    (synopsis "Simplistic interface to pkg-config")
+    (description
+     "@code{ExtUtils::PkgConfig} is a very simplistic interface to the
+@command{pkg-config} utility, intended for use in the @file{Makefile.PL}
+of perl extensions which bind libraries that @command{pkg-config} knows.
+It is really just boilerplate code that you would have written yourself.")
+    (license lgpl2.1+)))
 
 (define-public perl-file-changenotify
   (package
@@ -3953,6 +4121,50 @@ replacement.  Whereas Module::Build has over 6,700 lines of code; this module
 has less than 120, yet supports the features needed by most distributions.")
     (license (package-license perl))))
 
+(define-public perl-module-build-xsutil
+  (package
+    (name "perl-module-build-xsutil")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/H/HI/HIDEAKIO/"
+                                  "Module-Build-XSUtil-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nrs0b6hmwl3sw3g50b9857qgp5cbbbpl716zwn30h9vwjj2yxhm"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-cwd-guard" ,perl-cwd-guard)
+       ("perl-file-copy-recursive" ,perl-file-copy-recursive)
+       ("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-devel-checkcompiler" ,perl-devel-checkcompiler)))
+    (home-page "http://search.cpan.org/dist/Module-Build-XSUtil")
+    (synopsis "Module::Build class for building XS modules")
+    (description
+     "@code{Module::Build::XSUtil} is subclass of @code{Module::Build}
+for support building XS modules.
+
+This is a list of a new parameters in the @code{Module::Build::new} method:
+
+@enumerate
+@item @code{needs_compiler_c99}: This option checks C99 compiler availability.
+@item @code{needs_compiler_cpp}: This option checks C++ compiler availability.
+Can also pass @code{extra_compiler_flags} and @code{extra_linker_flags} for C++.
+@item @code{generate_ppport_h}: Generate @file{ppport.h} by @code{Devel::PPPort}.
+@item @code{generate_xshelper_h}: Generate @file{xshelper.h} which is a helper
+header file to include @file{EXTERN.h}, @file{perl.h}, @file{XSUB.h} and
+@file{ppport.h}, and defines some portability stuff which are not supported by
+@file{ppport.h}.
+
+It is ported from @code{Module::Install::XSUtil}.
+@item @code{cc_warnings}: Toggle compiler warnings.  Enabled by default.
+@item @code{-g options}: Invoke @file{Build.PL} with @code{-g} to enable
+debug options.
+@end enumerate")
+    (license (package-license perl))))
+
 (define-public perl-module-find
   (package
     (name "perl-module-find")
@@ -4730,6 +4942,62 @@ constraint with coercion to load the class.")
     (description "MooX::Types::MooseLike provides a possibility to build your
 own set of Moose-like types.  These custom types can then be used to describe
 fields in Moo-based classes.")
+    (license (package-license perl))))
+
+(define-public perl-mouse
+  (package
+  (name "perl-mouse")
+  (version "2.4.9")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://cpan/authors/id/S/SY/SYOHEX/Mouse-v"
+                  version
+                  ".tar.gz"))
+            (sha256
+             (base32
+              "1y20sl97x1h4y1iid47hj0w1hb2887dchh4nfffgmqpyggkslh4n"))))
+  (build-system perl-build-system)
+  (native-inputs
+   `(("perl-module-build" ,perl-module-build)
+     ("perl-module-build-xsutil" ,perl-module-build-xsutil)
+     ("perl-test-exception" ,perl-test-exception)
+     ("perl-test-fatal" ,perl-test-fatal)
+     ("perl-test-leaktrace" ,perl-test-leaktrace)
+     ("perl-test-output" ,perl-test-output)
+     ("perl-test-requires" ,perl-test-requires)
+     ("perl-try-tiny" ,perl-try-tiny)))
+  (home-page "https://github.com/gfx/p5-Mouse")
+  (synopsis "Fast Moose-compatible object system for perl5")
+  (description
+   "Mouse is a @code{Moose} compatible object system that implements a
+subset of the functionality for reduced startup time.")
+  (license (package-license perl))))
+
+(define-public perl-mousex-nativetraits
+  (package
+    (name "perl-mousex-nativetraits")
+    (version "1.09")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GF/GFUJI/"
+                                  "MouseX-NativeTraits-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pnbchkxfz9fwa8sniyjqp0mz75b3k2fafq9r09znbbh51dbz9gq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-any-moose" ,perl-any-moose)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-mouse" ,perl-mouse)))
+    (home-page "http://search.cpan.org/dist/MouseX-NativeTraits")
+    (synopsis "Extend attribute interfaces for Mouse")
+    (description
+     "While @code{Mouse} attributes provide a way to name your accessors,
+readers, writers, clearers and predicates, @code{MouseX::NativeTraits}
+provides commonly used attribute helper methods for more specific types
+of data.")
     (license (package-license perl))))
 
 (define-public perl-mozilla-ca
@@ -6445,6 +6713,29 @@ including a stack trace of what was going on when it occurred.")
                               "Test-NoWarnings-" version))
     (license lgpl2.1)))
 
+(define-public perl-test-number-delta
+  (package
+    (name "perl-test-number-delta")
+    (version "1.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                                  "Test-Number-Delta-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0jfhzhpzkc23mkrlbnv085ykpfncmy99hvppbzjnrpvgks8k0m2k"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Number-Delta")
+    (synopsis
+     "Compare the difference between numbers against a given tolerance")
+    (description
+     "At some point or another, most programmers find they need to compare
+floating-point numbers for equality.  The typical idiom is to test if the
+absolute value of the difference of the numbers is within a desired tolerance,
+usually called epsilon.  This module provides such a function for use with
+@code{Test::More}.")
+    (license asl2.0)))
+
 (define-public perl-test-output
   (package
     (name "perl-test-output")
@@ -7491,6 +7782,30 @@ attribute names.")
     ;; Redistribution and use in source and compiled forms, with or without
     ;; modification, are permitted under any circumstances.  No warranty.
     (license public-domain)))
+
+(define-public perl-xs-object-magic
+  (package
+    (name "perl-xs-object-magic")
+    (version "0.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                                  "XS-Object-Magic-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03fghj7hq0fiicmfdxhmzfm4mzv7s097pgkd32ji7jnljvhm9six"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (home-page "http://search.cpan.org/dist/XS-Object-Magic")
+    (synopsis "Opaque, extensible XS pointer backed objects using sv_magic")
+    (description
+     "This way of associating structs with Perl space objects is designed to
+supersede Perl's builtin @code{T_PTROBJ} with something that is extensible
+(structs can be associated with any data type) and opaque (the C pointer is
+neither visible nor modifiable from Perl space).")
+    (license (package-license perl))))
 
 (define-public perl-yaml
   (package

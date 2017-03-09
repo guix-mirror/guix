@@ -43,44 +43,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (srfi srfi-1))
 
-(define-public stellarium
-  (package
-    (name "stellarium")
-    (version "0.14.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/stellarium/"
-                                 "Stellarium-sources/"
-                                 version "/stellarium-" version ".tar.gz"))
-             (sha256 (base32
-                      "1xxil0rv61zc08znfv83cpsc47y1gjl2f3njhz0pn5zd8jpaa15a"))))
-    (build-system cmake-build-system)
-    (inputs
-      `(("qtbase" ,qtbase)
-        ("zlib" ,zlib)
-        ("qtserialport" ,qtserialport)
-        ("qtscript" ,qtscript)
-        ("gettext" ,gettext-minimal)))
-    (native-inputs
-      `(("qtbase" ,qtbase)                   ;Qt MOC is needed at compile time
-        ("qttools" ,qttools)
-        ("perl" ,perl)))                          ;for 'pod2man'
-    (arguments
-      `(#:test-target "tests"
-        #:phases (modify-phases %standard-phases
-                   (add-before 'check 'set-offscreen-display
-                     (lambda _
-                       (setenv "QT_QPA_PLATFORM" "offscreen")
-                       (setenv "HOME" "/tmp")
-                       #t)))))
-    (home-page "http://www.stellarium.org/")
-    (synopsis "3D sky viewer")
-    (description "Stellarium is a planetarium.  It shows a realistic sky in
-3D, just like what you see with the naked eye, binoculars, or a telescope.  It
-can be used to control telescopes over a serial port for tracking celestial
-objects.")
-    (license license:gpl2+)))
-
 (define-public gcompris
   (package
     (name "gcompris")

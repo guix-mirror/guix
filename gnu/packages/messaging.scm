@@ -495,14 +495,14 @@ end-to-end encryption support; XML console.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.9.10")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "0bv6s5c0iizz015hh1lxlwlw1iwvisywajm2rcrbdfyrskzfwdj8"))))
+                "139yxqpinajl32ryrybvilh54ddb1q6s0ajjhlcs4a0rnwia6n8s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -572,8 +572,7 @@ end-to-end encryption support; XML console.")
        ("lua5.1-expat" ,lua5.1-expat)
        ("lua5.1-socket" ,lua5.1-socket)
        ("lua5.1-filesystem" ,lua5.1-filesystem)
-       ;; See <https://prosody.im/doc/depends#luasec>.
-       ("lua5.1-sec" ,lua5.1-sec-0.5)))
+       ("lua5.1-sec" ,lua5.1-sec)))
     (home-page "https://prosody.im/")
     (synopsis "Jabber (XMPP) server")
     (description "Prosody is a modern XMPP communication server.  It aims to

@@ -1,7 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
-# Copyright © 2015 Alex Kost <alezost@gmail.com>
+# Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2016, 2017 Mark H Weaver <mhw@netris.org>
 #
@@ -196,16 +196,17 @@ endif BUILD_DAEMON_OFFLOAD
 # Internal modules with test suite support.
 dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 
-# Linux-Libre configurations.
-KCONFIGS =					\
-  gnu/packages/linux-libre-4.10-i686.conf	\
-  gnu/packages/linux-libre-4.10-x86_64.conf	\
-  gnu/packages/linux-libre-4.9-i686.conf	\
-  gnu/packages/linux-libre-4.9-x86_64.conf	\
-  gnu/packages/linux-libre-4.4-i686.conf	\
-  gnu/packages/linux-libre-4.4-x86_64.conf	\
-  gnu/packages/linux-libre-4.1-i686.conf	\
-  gnu/packages/linux-libre-4.1-x86_64.conf
+# Auxiliary files for packages.
+AUX_FILES =						\
+  gnu/packages/aux-files/emacs/guix-emacs.el		\
+  gnu/packages/aux-files/linux-libre/4.10-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.10-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.9-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.9-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.4-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.1-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf
 
 # Templates, examples.
 EXAMPLES =					\
@@ -216,7 +217,7 @@ EXAMPLES =					\
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
 nobase_dist_guilemodule_DATA =                  \
-  $(MODULES) $(KCONFIGS) $(EXAMPLES)            \
+  $(MODULES) $(AUX_FILES) $(EXAMPLES)            \
   $(MISC_DISTRO_FILES)
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 

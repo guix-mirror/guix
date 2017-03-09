@@ -1,6 +1,6 @@
 ;;; guix-emacs.el --- Emacs packages installed with Guix
 
-;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -19,22 +19,14 @@
 
 ;;; Commentary:
 
-;; This file provides auxiliary code for working with Emacs packages
+;; This file provides auxiliary code to autoload Emacs packages
 ;; installed with Guix.
 
 ;;; Code:
 
 (require 'cl-lib)
-(unless (require 'guix-profiles nil t)
-  (defvar guix-user-profile (expand-file-name "~/.guix-profile")))
 
-(defcustom guix-package-enable-at-startup t
-  "If non-nil, activate Emacs packages installed in a user profile.
-Set this variable to nil before requiring `guix-emacs' file to
-avoid loading autoloads of Emacs packages installed in
-`guix-user-profile'."
-  :type 'boolean
-  :group 'guix)
+(defvar guix-user-profile (expand-file-name "~/.guix-profile"))
 
 (defvar guix-emacs-autoloads nil
   "List of the last loaded Emacs autoloads.")
@@ -92,8 +84,8 @@ profiles.
 'Autoload' means add directories with Emacs packages to
 `load-path' and load 'autoloads' files matching
 `guix-emacs-autoloads-regexp'."
-  (interactive (list (if (fboundp 'guix-profile-prompt)
-                         (funcall 'guix-profile-prompt)
+  (interactive (list (if (fboundp 'guix-read-package-profile)
+                         (funcall 'guix-read-package-profile)
                        guix-user-profile)))
   (let ((profiles (or profiles
                       (list "/run/current-system/profile"
@@ -114,9 +106,6 @@ profiles.
               (load file 'noerror))
             (setq guix-emacs-autoloads
                   (append new-autoloads guix-emacs-autoloads))))))))
-
-(when guix-package-enable-at-startup
-  (guix-emacs-autoload-packages))
 
 (provide 'guix-emacs)
 

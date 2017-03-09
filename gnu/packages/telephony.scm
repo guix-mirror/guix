@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -354,7 +354,7 @@ address of one of the participants.")
                              (string-append "CONFIG+="
                                             (string-join
                                              (list "no-update"
-                                                   "no-server"
+                                                   "no-ice"
                                                    "no-embed-qt-translations"
                                                    "no-bundled-speex"
                                                    "pch"
@@ -378,6 +378,8 @@ address of one of the participants.")
          (replace 'install ; install phase does not exist
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc/murmur"))
+                    (dbus (string-append out "/etc/dbus-1/system.d/"))
                     (bin (string-append out "/bin"))
                     (services (string-append out "/share/services"))
                     (applications (string-append out "/share/applications"))
@@ -391,6 +393,12 @@ address of one of the participants.")
                (install-file "icons/mumble.svg" icons)
                (install-file "man/mumble-overlay.1" man)
                (install-file "man/mumble.1" man)
+               (install-file "release/murmurd" bin)
+               (install-file "scripts/murmur.ini.system" etc)
+               (rename-file (string-append etc "/murmur.ini.system")
+                            (string-append etc "/murmur.ini"))
+               (install-file "scripts/murmur.conf" dbus)
+               (install-file "man/murmurd.1" man)
                (for-each (lambda (file) (install-file file lib))
                          (find-files "." "\\.so\\."))
                (for-each (lambda (file) (install-file file lib))
@@ -414,7 +422,9 @@ address of one of the participants.")
     (synopsis "Low-latency, high quality voice chat software")
     (description
      "Mumble is an low-latency, high quality voice chat
-software primarily intended for use while gaming.")
+software primarily intended for use while gaming.
+Mumble consists of two applications for separate usage:
+@code{mumble} for the client, and @code{murmur} for the server.")
     (home-page "https://wiki.mumble.info/wiki/Main_Page")
     (license (list license:bsd-3
                    ;; The bundled celt is bsd-2. Remove after 1.3.0.

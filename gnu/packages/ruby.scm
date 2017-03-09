@@ -426,13 +426,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.14.4")
+    (version "1.14.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "1hafmb7p41pm40a2z7f4x5zpgrb72xvgwlvkxnflmzqkvq2prkfv"))))
+                "0635s6naz9hn4iqbvkhnm1by4j4spvv13mb7nzwwimnpbqgx663i"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -1018,26 +1018,6 @@ User Agents.")
     (description "Bacon is a small RSpec clone providing all essential
 features.")
     (home-page "https://github.com/chneukirchen/bacon")
-    (license license:expat)))
-
-(define-public ruby-arel
-  (package
-    (name "ruby-arel")
-    (version "6.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "arel" version))
-              (sha256
-               (base32
-                "18wnfnzr2i5p3fygsddjbi1cimws6823nbk8drxidmnj8jz7h0ar"))))
-    (build-system ruby-build-system)
-    (arguments
-     '(#:tests? #f)) ; no test suite
-    (synopsis "SQL AST manager for Ruby")
-    (description "Arel is a SQL AST manager for Ruby.  It simplifies the
-generation of complex SQL queries and adapts to various relational database
-implementations.")
-    (home-page "https://github.com/rails/arel")
     (license license:expat)))
 
 (define-public ruby-connection-pool
@@ -1854,8 +1834,9 @@ net/http library.")
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/rails/arel")
     (synopsis "SQL AST manager for Ruby")
-    (description "Arel is a SQL AST manager for Ruby.  It simplifies the
-generation of complex SQL queries and is compatible with various RDBMSes.")
+    (description "Arel is an SQL @dfn{Abstract Syntax Tree} (AST) manager for
+Ruby.  It simplifies the generation of complex SQL queries and adapts to
+various relational database implementations.")
     (license license:expat)))
 
 (define-public ruby-minitar
@@ -1992,14 +1973,14 @@ extract comments.")
 (define-public ruby-coderay
   (package
     (name "ruby-coderay")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "coderay" version))
        (sha256
         (base32
-         "059wkzlap2jlkhg460pkwc1ay4v4clsmg1bp4vfzjzkgwdckr52s"))))
+         "1x6z923iwr1hi04k6kz5a6llrixflz8h5sskl9mhaaxy9jx2x93r"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; missing test files
@@ -2012,14 +1993,14 @@ for select languages.")
 (define-public ruby-pry
   (package
     (name "ruby-pry")
-    (version "0.10.1")
+    (version "0.10.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pry" version))
        (sha256
         (base32
-         "1j0r5fm0wvdwzbh6d6apnp7c0n150hpm9zxpm5xvcgfqr36jaj8z"))))
+         "05xbzyin63aj2prrv8fbq2d5df2mid93m81hz5bvf2v4hnzs42ar"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests

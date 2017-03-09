@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -252,7 +252,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public leveldb
   (package
     (name "leveldb")
-    (version "1.19")
+    (version "1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/google/leveldb"
@@ -260,7 +260,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00jjgs9xlwycfkg0xd7n1rj6v9zrx7xc7hann6zalrjyhap18ykx"))))
+                "0r36bcrj6b2afsp4aw1gjai3jbs1c7734pxpc1jz7hh9nasyiazm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc")
@@ -553,7 +553,7 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.1.2")
+    (version "5.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/rocksdb"
@@ -561,7 +561,7 @@ types are supported, as is encryption.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1qdbs13al7g45xc2j44wzx0ywrg32q1gsdhk5j6j4952xg91rfmh"))
+                "0ddyj8lh5jk6vx675pdg4jhgs7c12ckw5j31rz85jlrds68ygrry"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1202,6 +1202,37 @@ sets, bitmaps and hyperloglogs.")
 and B+ Tree data storage models.  It is a fast key-value lightweight
 database and supports many programming languages.  It is a NoSQL database.")
     (license license:gpl3+)))
+
+(define-public tokyocabinet
+  (package
+    (name "tokyocabinet")
+    (version "1.4.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://fallabs.com/tokyocabinet/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "140zvr0n8kvsl0fbn2qn3f2kh3yynfwnizn4dgbj47m975yg80x0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-pthread" "--enable-off64" "--enable-fastest"
+        (string-append "LDFLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib"))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://fallabs.com/tokyocabinet/")
+    (synopsis "Tokyo Cabinet is a modern implementation of the DBM database")
+    (description
+     "Tokyo Cabinet is a library of routines for managing a database.
+The database is a simple data file containing records, each is a pair of a
+key and a value.  Every key and value is serial bytes with variable length.
+Both binary data and character string can be used as a key and a value.
+There is neither concept of data tables nor data types.  Records are
+organized in hash table, B+ tree, or fixed-length array.")
+    (license license:lgpl2.1+)))
 
 (define-public wiredtiger
   (package

@@ -248,6 +248,14 @@ DNS domain name queries.")
         (base32
          "0a92lk8790dpp9j64vb6p4sazax0x3nby01lnfll7mxs1hx6n27q"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda _
+             (substitute* "sshoot/tests/test_manager.py"
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (inputs
      `(("python-argcomplete" ,python-argcomplete)
        ("python-prettytable" ,python-prettytable)

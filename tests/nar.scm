@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,6 +186,7 @@
       (lambda ()
         (let-values (((port get-hash) (open-sha256-port)))
           (write-file input port)
+          (close-port port)
           (get-hash)))
       (lambda ()
         (rm-rf input)))))

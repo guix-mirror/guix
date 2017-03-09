@@ -26,10 +26,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages python)
+  #:use-module (guix build-system perl)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tls))
 
 (define-public libevent
   (package
@@ -149,3 +152,78 @@ resolution, asynchronous file system operations, and threading primitives.")
     ;; A few files fall under other non-copyleft licenses; see 'LICENSE' for
     ;; details.
     (license x11)))
+
+(define-public perl-anyevent
+  (package
+    (name "perl-anyevent")
+    (version "7.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                                  "AnyEvent-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b84ilkbrfbzqapv25x8z6gva92skbrf2srybdabb1wnxx6ky454"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-canary-stability" ,perl-canary-stability)))
+    (propagated-inputs
+     `(("perl-async-interrupt" ,perl-async-interrupt)
+       ("perl-ev" ,perl-ev)
+       ("perl-guard" ,perl-guard)
+       ("perl-json" ,perl-json)
+       ("perl-json-xs" ,perl-json-xs)
+       ("perl-net-ssleay" ,perl-net-ssleay)
+       ("perl-task-weaken" ,perl-task-weaken)))
+    (home-page "http://search.cpan.org/dist/AnyEvent")
+    (synopsis
+     "API for I/O, timer, signal, child process and completion events")
+    (description
+     "This module allows using a variety of events without forcing module
+authors to pick a specific event loop, and without noticable overhead.
+Currently supported event loops are EV, Event, Glib/Gtk2, Tk, Qt,
+@code{Event::Lib}, Irssi, @code{IO::Async} and POE (and thus also WxWidgets
+and Prima).  It also comes with a very fast Pure Perl event loop that does
+not rely on XS.")
+    (license (package-license perl))))
+
+(define-public perl-ev
+  (package
+    (name "perl-ev")
+    (version "4.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/EV-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "14d9115q8f2ca2q3vbcalm55zqsbx8xjq5aj098laj9f9rrzirra"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop bundled libev.
+                  (delete-file-recursively "libev")
+                  #t))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-libev
+           ;; This package requires the libev *sources* in order
+           ;; to build. Unpack system libev here...
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir "./libev")
+             (zero? (system* "tar" "-xf" (assoc-ref inputs "libev-source")
+                             "-C" "./libev" "--strip-components=1")))))))
+    (native-inputs
+     `(("libev-source" ,(package-source libev))
+       ("perl-canary-stability" ,perl-canary-stability)))
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/EV")
+    (synopsis "Perl interface to libev")
+    (description
+     "This module provides an interface to @code{libev}, a high performance
+full-featured event loop.  It can be used through the @code{AnyEvent} module
+and still be faster than other event loops currently supported in Perl.")
+    (license (package-license perl))))

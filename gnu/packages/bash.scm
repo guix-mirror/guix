@@ -22,6 +22,7 @@
 (define-module (gnu packages bash)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages bison)
@@ -262,7 +263,7 @@ without modification.")
 (define-public bash-completion
   (package
     (name "bash-completion")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -270,7 +271,7 @@ without modification.")
                     version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xlhd09sb2w3bw8qaypxgkr0782w082mcbx8zf7yzjgy0996pxy0"))
+                "1kwmii1z1ljx5i4z702ynsr8jgrq64bj9w9hl3n2aa2kcl659fdh"))
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)

@@ -98,7 +98,7 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.10.3")
+    (version "1.10.4")
     (source
      (origin
       (method url-fetch)
@@ -107,7 +107,7 @@ arrays of data.")
             version ".tar.xz"))
       (sha256
        (base32
-        "0gdnxg5igbhnpjhrzp31w1ww95j805byqd6mj3x29wli54dxrfc5"))))
+        "062jidnw17hkpva6ddygp80gyasyigfkpm1y7w56rk56a2pzbhjh"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -146,7 +146,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.10.3")
+    (version "1.10.4")
     (source
      (origin
       (method url-fetch)
@@ -154,9 +154,11 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "040pifl4cgsqqz2si4s1y5khj3zwm39w21siagxwp805swbrcag6"))
-      (patches
-       (search-patches "gst-plugins-base-fix-test-on-32bit.patch"))))
+        "1dsyjf6rncsbg4rfj40cvf1wwpjj9h3j3c7bh4zp7jylnfv4blpn"))
+;      (patches
+;       (search-patches "gst-plugins-base-fix-test-on-32bit.patch"))
+      
+      ))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -203,7 +205,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.10.3")
+    (version "1.10.4")
     (source
      (origin
       (method url-fetch)
@@ -212,7 +214,7 @@ for the GStreamer multimedia library.")
             name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0mar8ss8bvpz699ql4kgndvna8qsv7kj372py4435ffl6hzfj1sf"))))
+        "0zjdwxn83sp9wjp9rxjbyk8kf284g9av7l2v6rjldi586hacd1la"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)
@@ -268,14 +270,14 @@ developers consider to have good quality code and correct functionality.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.10.3")
+    (version "1.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rwla1p57yzygb68z2xk5l5kvqzj5w3nxq0davkwk139zd8r6294"))))
+                "0rk9rlzf2b0hjw5hwbadz53yh4ls7vm3w3cshsa3n8isdd8axp93"))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
@@ -345,7 +347,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.10.3")
+    (version "1.10.4")
     (source
      (origin
        (method url-fetch)
@@ -353,7 +355,7 @@ par compared to the rest.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1lkb8kznc9wxmhbp7k67b50y27nz8jp2x2flb91xzydz7b89f5f9"))))
+         "0ngsiwcsz3jd08id4mc0qiy2q1n7h2kkvdnh3r1vm725m1ycg1k3"))))
     (build-system gnu-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
@@ -384,7 +386,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.10.3")
+    (version "1.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -392,7 +394,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1aajayv63ardkbmcg7pnh2d87r067325a5wzinwihaw6n5jw2sws"))))
+                "12r68ri03mgbbwsxyn6yklgfsq32rwvyq83zw0aq7m73fp5gx83c"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-system-libav")
@@ -422,7 +424,7 @@ compression formats through the use of the libav library.")
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.10.3")
+    (version "1.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -430,7 +432,7 @@ compression formats through the use of the libav library.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "1s5437bnk0j5hfg2gwfwq4b68l6vj1lfskxh73v6ikp0vw32vymx"))))
+                "04l2hvvz9b0f3nyds1k3yfk5di8a91fpr6maj19c11mwp1s82l2r"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Factorize python-sitedir with python-build-system.

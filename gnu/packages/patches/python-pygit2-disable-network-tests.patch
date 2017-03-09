@@ -1,0 +1,64 @@
+Disable tests trying to look up remote servers.
+
+diff --git a/test/test_credentials.py b/test/test_credentials.py
+index 92482d9..9a281e5 100644
+--- a/test/test_credentials.py
++++ b/test/test_credentials.py
+@@ -68,39 +68,5 @@ class CredentialCreateTest(utils.NoRepoTestCase):
+         self.assertEqual((username, None, None, None), cred.credential_tuple)
+ 
+ 
+-class CredentialCallback(utils.RepoTestCase):
+-    def test_callback(self):
+-        class MyCallbacks(pygit2.RemoteCallbacks):
+-            @staticmethod
+-            def credentials(url, username, allowed):
+-                self.assertTrue(allowed & GIT_CREDTYPE_USERPASS_PLAINTEXT)
+-                raise Exception("I don't know the password")
+-
+-        url = "https://github.com/github/github"
+-        remote = self.repo.create_remote("github", url)
+-
+-        self.assertRaises(Exception, lambda: remote.fetch(callbacks=MyCallbacks()))
+-
+-    def test_bad_cred_type(self):
+-        class MyCallbacks(pygit2.RemoteCallbacks):
+-            @staticmethod
+-            def credentials(url, username, allowed):
+-                self.assertTrue(allowed & GIT_CREDTYPE_USERPASS_PLAINTEXT)
+-                return Keypair("git", "foo.pub", "foo", "sekkrit")
+-
+-        url = "https://github.com/github/github"
+-        remote = self.repo.create_remote("github", url)
+-        self.assertRaises(TypeError, lambda: remote.fetch(callbacks=MyCallbacks()))
+-
+-class CallableCredentialTest(utils.RepoTestCase):
+-
+-    def test_user_pass(self):
+-        credentials = UserPass("libgit2", "libgit2")
+-        callbacks = pygit2.RemoteCallbacks(credentials=credentials)
+-
+-        url = "https://bitbucket.org/libgit2/testgitrepository.git"
+-        remote = self.repo.create_remote("bb", url)
+-        remote.fetch(callbacks=callbacks)
+-
+ if __name__ == '__main__':
+     unittest.main()
+diff --git a/test/test_repository.py b/test/test_repository.py
+index cfdf01e..c0d8de4 100644
+--- a/test/test_repository.py
++++ b/test/test_repository.py
+@@ -538,13 +538,6 @@ class CloneRepositoryTest(utils.NoRepoTestCase):
+         self.assertTrue('refs/remotes/custom_remote/master' in repo.listall_references())
+         self.assertIsNotNone(repo.remotes["custom_remote"])
+ 
+-    def test_clone_with_credentials(self):
+-        repo = clone_repository(
+-            "https://bitbucket.org/libgit2/testgitrepository.git",
+-            self._temp_dir, callbacks=pygit2.RemoteCallbacks(credentials=pygit2.UserPass("libgit2", "libgit2")))
+-
+-        self.assertFalse(repo.is_empty)
+-
+     def test_clone_with_checkout_branch(self):
+         # create a test case which isolates the remote
+         test_repo = clone_repository('./test/data/testrepo.git',

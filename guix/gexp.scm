@@ -68,6 +68,9 @@
             file-append-base
             file-append-suffix
 
+            load-path-expression
+            gexp-modules
+
             gexp->derivation
             gexp->file
             gexp->script

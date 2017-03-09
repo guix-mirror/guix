@@ -4,10 +4,9 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
@@ -431,7 +431,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.0")
+    (version "2.5.1")
     (source
      (origin
       (method url-fetch)
@@ -440,7 +440,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "1bkfvapi4z826slycmicvs7hwgk4l82gd8w6nqvznldbammvyll6"))))
+        "1kc709scgd76vk7fld4jnb4wb5lxdv1cj8zsgyjb33xp4jlf06pp"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
@@ -469,13 +469,13 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.11.1")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "0kk95iqxygrg0cd66kq8kbyalg2x5pz9hn1175cgwgf1vy72adfv"))))
+        "1pzv8fcfwdqzvvpyhgjz412is0b98yj9495k8sidzzqgbdmvlp50"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -526,7 +526,7 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1wis5kgqcsrs60kkcmbrbx8z9yasmwa6lg9ir5im232hdm4285vc"))))
+                "1dw86gb8lyap5ckjawmli1hxgbchw2g62g1lqfvxyqjv0df94waa"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -756,3 +756,31 @@ then ported to the GNU / Linux environment.")
     ;; acme-client is distributed under the ISC license, but the files 'jsmn.h'
     ;; and 'jsmn.c' are distributed under the Expat license.
     (license (list license:isc license:expat))))
+
+;; The "-apache" variant is the upstreamed prefered variant. A "-gpl"
+;; variant exists in addition to the "-apache" one.
+(define-public mbedtls-apache
+  (package
+    (name "mbedtls-apache")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; XXX: The download links on the website are script redirection links
+       ;; which effectively lead to the format listed in the uri here.
+       (uri (string-append "https://tls.mbed.org/download/mbedtls-"
+                           version "-apache.tgz"))
+       (sha256
+        (base32
+         "03bzbfidigljva6xj49k38q3kwlbj75lrky4a0ainylzsfg5bhy1"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (synopsis "Small TLS library")
+    (description
+     "@code{mbed TLS}, formerly known as PolarSSL, makes it trivially easy
+for developers to include cryptographic and SSL/TLS capabilities in their
+(embedded) products, facilitating this functionality with a minimal
+coding footprint.")
+    (home-page "https://tls.mbed.org")
+    (license license:asl2.0)))

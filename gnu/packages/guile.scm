@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -219,7 +220,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "2.1.5")
+    (version "2.1.7")
     (replacement #f)
     (source (origin
               (method url-fetch)
@@ -227,7 +228,7 @@ without requiring the source code to be rewritten.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0r9y4hw17dlxahik4zsccfb2f3p2a07wqndfm251bgmam9hln6gi"))
+                "0qf2664bglv5rrj4c99cc7gry7v9x0sqdyzgfg8zi8gm5wbcmqda"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -428,22 +429,18 @@ more.")
 (define-public guile-reader
   (package
     (name "guile-reader")
-    (version "0.6.1")
+    (version "0.6.2")
     (source  (origin
                (method url-fetch)
                (uri (string-append "mirror://savannah/guile-reader/guile-reader-"
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "020wz5w8z6g79nbqifg2n496wxwkcjzh8xizpv6mz0hczpl155ma"))))
+                 "0592s2s8ampqmqwilc4fvcild6rb9gy79di6vxv5kcdmv23abkgx"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
     (inputs `(("guile" ,guile-2.0)))
-    (arguments `(#:configure-flags
-                 (let ((out (assoc-ref %outputs "out")))
-                   (list (string-append "--with-guilemoduledir="
-                                        out "/share/guile/site/2.0")))))
     (synopsis "Framework for building readers for GNU Guile")
     (description
      "Guile-Reader is a simple framework for building readers for GNU Guile.
@@ -459,6 +456,9 @@ hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
     (home-page "http://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
+
+(define-public guile2.2-reader
+  (package-for-guile-2.2 guile-reader))
 
 (define-public guile-ncurses
   (package
@@ -617,32 +617,29 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.3")
+    (version "0.2.5")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0pwdd52vakni1fabaiav8v0ad7xp3bx8x3brijbr1mpgamm9dxqc"))))
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qbk485djgxqrbfjvk4b7w7y4x9xygf2qb8dqnl7885kajasx8qg"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-module-dir
-                    (lambda _
-                      (substitute* "src/Makefile.in"
-                        (("^moddir = ([[:graph:]]+)")
-                         "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
-                        (("^godir = ([[:graph:]]+)")
-                         "godir = \
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0")        ;to prevent guild errors
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-module-dir
+           (lambda _
+             (substitute* "src/Makefile.in"
+               (("^moddir = ([[:graph:]]+)")
+                "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
+               (("^godir = ([[:graph:]]+)")
+                "godir = \
 $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      ;; Work around a harmless test failure involving
-                      ;; two-spaces-after-period rendering.
-                      (zero? (system* "make" "check" ;"-C" "unit-tests"
-                                      "XFAIL_TESTS=texinfo.serialize.scm")))))))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)))
     (home-page "http://www.nongnu.org/guile-lib/")
@@ -1051,6 +1048,10 @@ Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license license:gpl3+)))
+
+(define-public guile2.2-haunt
+  (package-for-guile-2.2
+   (package (inherit haunt) (name "guile2.2-haunt"))))
 
 (define-public guile-config
   (package
@@ -1639,6 +1640,38 @@ and then run @command{scm example.scm}.")
 library for GNU Guile based on the actor model.
 
 Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
+    (license license:lgpl3+)))
+
+(define-public guile-fibers
+  (package
+    (name "guile-fibers")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wingolog.org/pub/fibers/fibers-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-next)))
+    (synopsis "Lightweight concurrency facility for Guile")
+    (description
+     "Fibers is a Guile library that implements a a lightweight concurrency
+facility, inspired by systems like Concurrent ML, Go, and Erlang.  A fiber is
+like a \"goroutine\" from the Go language: a lightweight thread-like
+abstraction.  Systems built with Fibers can scale up to millions of concurrent
+fibers, tens of thousands of concurrent socket connections, and many parallel
+cores.  The Fibers library also provides Concurrent ML-like channels for
+communication between fibers.
+
+Note that Fibers makes use of some Guile 2.1/2.2-specific features and
+is not available for Guile 2.0.")
+    (home-page "https://github.com/wingo/fibers")
     (license license:lgpl3+)))
 
 (define-public guile-git

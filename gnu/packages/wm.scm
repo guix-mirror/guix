@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages base)
@@ -231,6 +233,31 @@ commands would.")
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
     (license license:bsd-3)))
+
+(define-public perl-anyevent-i3
+  (package
+    (name "perl-anyevent-i3")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MS/MSTPLBG/"
+                                  "AnyEvent-I3-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qwva5vmmn929l6k9wzhp4h80ad4qm4m1g2dyv4nlas624003hig"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-anyevent" ,perl-anyevent)
+       ("perl-json-xs" ,perl-json-xs)))
+    (home-page "http://search.cpan.org/dist/AnyEvent-I3")
+    (synopsis
+     "Communicate with the i3 window manager through perl")
+    (description
+     "This module connects to the i3 window manager using the UNIX socket
+based IPC interface it provides (if enabled in the configuration file).
+You can then subscribe to events or send messages and receive their replies.")
+    ;; Can be used with either license.
+    (license (list license:gpl3+ (package-license perl)))))
 
 (define-public python-i3-py
   (package

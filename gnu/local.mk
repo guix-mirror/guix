@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+# Copyright © 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -483,7 +483,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
-  %D%/packages/patches/arb-ldconfig.patch			\
   %D%/packages/patches/artanis-fix-Makefile.in.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
@@ -603,6 +602,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
+  %D%/packages/patches/gnupg-2.1-fix-Y2038-test-failure.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
@@ -611,7 +611,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-gets-undeclared.patch		\
   %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
-  %D%/packages/patches/gst-plugins-base-fix-test-on-32bit.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
@@ -655,6 +654,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
+  %D%/packages/patches/kio-CVE-2017-6410.patch			\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
@@ -691,7 +691,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
-  %D%/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
@@ -749,7 +748,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
-  %D%/packages/patches/matplotlib-setupext-tk.patch		\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
   %D%/packages/patches/mcron-install.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
@@ -767,6 +765,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
   %D%/packages/patches/mupdf-mujs-CVE-2016-10132.patch		\
   %D%/packages/patches/mupdf-mujs-CVE-2016-10133.patch		\
+  %D%/packages/patches/mupdf-CVE-2017-5896.patch		\
+  %D%/packages/patches/mupdf-CVE-2017-5991.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
@@ -811,7 +811,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
-  %D%/packages/patches/pcre2-CVE-2016-3191.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -856,17 +855,24 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3.4-fix-tests.patch		\
   %D%/packages/patches/python-3.5-fix-tests.patch		\
+  %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
+  %D%/packages/patches/python-fake-factory-fix-build-32bit.patch	\
+  %D%/packages/patches/python-faker-fix-build-32bit.patch	\
+  %D%/packages/patches/python-pandas-skip-failing-tests.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
+  %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
+  %D%/packages/patches/python-pyopenssl-skip-network-test.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
+  %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2016-10155.patch			\
   %D%/packages/patches/qemu-CVE-2017-2615.patch			\
   %D%/packages/patches/qemu-CVE-2017-5525.patch			\
@@ -894,12 +900,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
-  %D%/packages/patches/screen-CVE-2017-5618.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/serf-comment-style-fix.patch		\
   %D%/packages/patches/serf-deflate-buckets-test-fix.patch	\
   %D%/packages/patches/shadow-4.4-su-snprintf-fix.patch         \
+  %D%/packages/patches/shadow-CVE-2017-2616.patch		\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\
@@ -925,6 +931,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tcsh-fix-autotest.patch			\
   %D%/packages/patches/tcsh-fix-out-of-bounds-read.patch	\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
+  %D%/packages/patches/texlive-texmf-CVE-2016-10243.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
   %D%/packages/patches/tidy-CVE-2015-5522+5523.patch		\
@@ -951,9 +958,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-overflow-long-fsize.patch		\
   %D%/packages/patches/unzip-remove-build-date.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
+  %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
-  %D%/packages/patches/vdirsyncer-test-suite-slow-machines.patch	\
   %D%/packages/patches/vim-CVE-2017-5953.patch			\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
@@ -973,6 +980,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
   %D%/packages/patches/xcb-proto-python3-print.patch		\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
+  %D%/packages/patches/wxwidgets-fix-windowGTK.patch		\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-input-wacom-xorg-abi-25.patch	\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\

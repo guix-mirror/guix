@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -128,7 +128,7 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.7.6")
+   (version "2.9.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -136,7 +136,7 @@ solve the shortest vector problem.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "04dqi697czd8mmw8aiwzrkgbvkjassqagg6lfy3lkf1k5qi9g9rr"))))
+                "0rq7wz9df1xs4acdzzb5dapx8vs6m5py39n2wynw2qv4d2b0ylfw"))))
    (build-system gnu-build-system)
    (native-inputs `(("texlive" ,texlive-minimal)))
    (inputs `(("gmp" ,gmp)
@@ -168,7 +168,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.9pl5")
+   (version "0.0.10")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -176,7 +176,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "1q003mkagc5ib6lqb2xfay7j4ffkwv7xlnznp6wdrq2sbqq4vyak"))))
+                "1xhpz5p81iw261ay1kip283ggr0ir8ydz8qx3v24z8jfms1r3y70"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -202,7 +202,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.2.3-19")
+    (version "1.2.3-25")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -214,7 +214,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "0asynsj0xcfdjn0vkyxdgdy3hfpr6gc9f92xxa1rmn7clbqmlk1y"))))
+                "0d6a42p8111raf7k16yvjajnpj22abiqndy3yzkrb4b8l071r24d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -311,7 +311,7 @@ fast arithmetic.")
 (define-public arb
   (package
    (name "arb")
-   (version "2.8.1")
+   (version "2.10.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -320,8 +320,7 @@ fast arithmetic.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
               (base32
-                "04hhcpshfkcq9fr4hixbhpps50yf9drk62xgkvlcaj5kb4nyrx7l"))
-            (patches (search-patches "arb-ldconfig.patch"))))
+                "0jwcv9ssvi8axb1y7m2h4ykgyl015cl6g28gfl92l4dgnag585ak"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h

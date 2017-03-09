@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -214,14 +214,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.7.2")
+    (version "1.8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1yazrl82s9fxmamnlvwmsxhwrxnwv6kwakgfmawda8ndhwb50lqm"))
+               "1axdcylyv0p194y6lj1jx127g5yc74zqzzxdc014cjw02bd1x125"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -254,7 +254,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170113")
+    (version "20170225")
     (source
      (origin
        (method url-fetch)
@@ -263,10 +263,12 @@ operating systems.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0cqr77q263b5qcmdw6g0qixdpk6gmzgzpa03v226nr55v2ips9jg"))))
+         "00ll35g9pcanzrxsjp09vrmq6flml249dipcznrq2z4jy2zd386p"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
+       ("lmdb" ,lmdb)
+       ("tokyocabinet" ,tokyocabinet)
        ("gpgme" ,gpgme)
        ("ncurses" ,ncurses)
        ("gnutls" ,gnutls)
@@ -289,10 +291,11 @@ operating systems.")
              "--enable-gpgme"
 
              ;; database, implies header caching
-             "--without-tokyocabinet"
+             ;; neomutt supports building multiple backends
+             "--with-tokyocabinet"
              "--without-qdbm"
              "--without-bdb"
-             "--without-lmdb"
+             "--with-lmdb"
              "--with-gdbm"
 
              "--with-gnutls"
@@ -659,14 +662,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.23.5")
+    (version "0.23.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ry2k9sdwd1vw8cf6svch8wk98523s07mwxvsf7b8kghqnrr89n6"))))
+                "04w90c43zk23pys6prkqb14al408qypifcfj2qznqpwlf46v26zi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -1509,7 +1512,11 @@ maintained.")
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (doc (string-append out "/share/doc/khard")))
-                (copy-recursively "misc/khard" doc)))))))
+                (copy-recursively "misc/khard" doc)
+                #t))))
+        ;; FIXME: check phase fails with
+        ;; "Config file /tmp/.config/khard/khard.conf not available"
+        #:tests? #f))
     (propagated-inputs
      `(("python-vobject" ,python-vobject)
        ("python-pyyaml" ,python-pyyaml)
@@ -1950,4 +1957,39 @@ installation on systems where resources are limited.  Its features include:
 @item Delivery Status Notification (RFC1891) support,
 @item Rich and customisable texts for automated operations.
 @end enumerate\n")
+    (license license:expat)))
+
+(define-public blists
+  (package
+    (name "blists")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.openwall.net/pub/projects/"
+                           "blists/blists-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gp51kmb8yv8d693wcpdslmwlbw5w2kgz4kxhrcaf7y89w8wy4qd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "bindex" bin)
+               (install-file "bit" bin)
+               #t))))))
+    (home-page "http://www.openwall.com/blists/")
+    (synopsis "Web interface to mailing list archives")
+    (description
+     "Blists is a web interface to mailing list archives that works off
+indexed mbox files.  There are two programs: @code{bindex} and @code{bit}.
+@code{bindex} generates or updates the index file (incremental updates
+are supported).  @code{bit} is a CGI/SSI program that generates web pages
+on the fly.  Both programs are written in C and are very fast.")
     (license license:expat)))

@@ -750,3 +750,27 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
       (description "This package provides Kicad component, footprint and 3D
 render model libraries.")
       (license license:lgpl2.0+))))
+
+(define-public linsmith
+  (package
+    (name "linsmith")
+    (version "0.99.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/linsmith/linsmith/linsmith-"
+                    version "/linsmith-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18qslhr2r45rhpj4v6bjcqx189vs0bflvsj271wr7w8kvh69qwvn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gtk" ,gtk+-2)
+       ("libgnome" ,libgnomeui)))
+    (home-page "http://jcoppens.com/soft/linsmith/index.en.php")
+    (synopsis "Smith Charting program")
+    (description "LinSmith is a Smith Charting program, mainly designed for
+educational use.  As such, there is an emphasis on capabilities that improve
+the 'showing the effect of'-style of operation.")
+    (license license:gpl2+)))

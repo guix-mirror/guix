@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +51,9 @@
                            "releases/download/v" version
                            "/wxWidgets-" version ".tar.bz2"))
        (sha256
-        (base32 "0paq27brw4lv8kspxh9iklpa415mxi8zc117vbbbhfjgapf7js1l"))))
+        (base32 "0paq27brw4lv8kspxh9iklpa415mxi8zc117vbbbhfjgapf7js1l"))
+       (patches (search-patches
+                 "wxwidgets-fix-windowGTK.patch"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("glu" ,glu)

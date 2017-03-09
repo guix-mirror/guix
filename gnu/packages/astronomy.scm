@@ -21,7 +21,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages maths)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public cfitsio
@@ -107,3 +113,43 @@ systems in a FITS image header.")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
 programs for the manipulation and analysis of astronomical data.")
     (license license:gpl3+)))
+
+(define-public stellarium
+  (package
+    (name "stellarium")
+    (version "0.15.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/stellarium/"
+                                 "Stellarium-sources/"
+                                 version "/stellarium-" version ".tar.gz"))
+             (sha256
+              (base32
+               "04avigz8i8mi2x6x71bqr9np85n1p9qnvbj2hxr947f1jv22zr8g"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtscript" ,qtscript)
+       ("qtserialport" ,qtserialport)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal) ; xgettext is used at compile time
+       ("perl" ,perl) ; For pod2man
+       ("qtbase" ,qtbase) ; Qt MOC is needed at compile time
+       ("qttools" ,qttools)))
+    (arguments
+      `(#:test-target "tests"
+        #:phases (modify-phases %standard-phases
+                   (add-before 'check 'set-offscreen-display
+                     (lambda _
+                       (setenv "QT_QPA_PLATFORM" "offscreen")
+                       (setenv "HOME" "/tmp")
+                       #t)))))
+    (home-page "http://www.stellarium.org/")
+    (synopsis "3D sky viewer")
+    (description "Stellarium is a planetarium.  It shows a realistic sky in
+3D, just like what you see with the naked eye, binoculars, or a telescope.  It
+can be used to control telescopes over a serial port for tracking celestial
+objects.")
+    (license license:gpl2+)))

@@ -1,0 +1,28 @@
+See: https://bugs.launchpad.net/oslosphinx/+bug/1661861
+diff -ur orig/pbr-1.10.0/pbr/builddoc.py pbr-1.10.0/pbr/builddoc.py
+--- orig/pbr-1.10.0/pbr/builddoc.py	2016-05-23 21:38:18.000000000 +0200
++++ pbr-1.10.0/pbr/builddoc.py	2017-02-18 14:01:37.424434317 +0100
+@@ -138,7 +138,8 @@
+             sphinx_config.init_values(warnings.warn)
+         else:
+             sphinx_config.init_values()
+-        if self.builder == 'man' and len(sphinx_config.man_pages) == 0:
++        if self.builder == 'man' and len(
++                getattr(sphinx_config, 'man_pages', '')) == 0:
+             return
+         app = application.Sphinx(
+             self.source_dir, self.config_dir,
+diff -ur orig/pbr-1.10.0/pbr/util.py pbr-1.10.0/pbr/util.py
+--- orig/pbr-1.10.0/pbr/util.py	2016-05-23 21:38:18.000000000 +0200
++++ pbr-1.10.0/pbr/util.py	2017-02-18 15:36:32.951196795 +0100
+@@ -211,7 +211,9 @@
+     parser.read(path)
+     config = {}
+     for section in parser.sections():
+-        config[section] = dict(parser.items(section))
++        config[section] = dict()
++        for k, value in parser.items(section):
++            config[section][k.replace('-', '_')] = value
+ 
+     # Run setup_hooks, if configured
+     setup_hooks = has_get_option(config, 'global', 'setup_hooks')

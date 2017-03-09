@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -157,6 +158,340 @@ configuration files.")
        ("ruby" ,ruby)
        ("tcl" ,tcl)
        ,@(package-inputs vim)))))
+
+(define-public vim-neocomplete
+  (package
+    (name "vim-neocomplete")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Shougo/neocomplete.vim/"
+                           "archive/ver." version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1307gbrdwam2akq9w2lpijc41740i4layk2qkd9sjkqxfch5lni2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (doc (string-append vimfiles "/doc"))
+                    (plugin (string-append vimfiles "/plugin")))
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "doc" doc)
+               (copy-recursively "plugin" plugin)
+               #t))))))
+    (synopsis "Next generation completion framework for Vim")
+    (description
+     "@code{neocomplete}, an abbreviation of 'neo-completion with cache',
+is a plugin for Vim.
+It provides keyword completion system by maintaining a cache of keywords in
+the current buffer.  Neocomplete can be customized easily and has many more
+features than Vim's built-in completion.")
+    (home-page "https://github.com/Shougo/neocomplete.vim/")
+    (license license:expat)))
+
+;; There are no release tarballs.
+(define-public vim-neosnippet-snippets
+  (let ((commit "8e2b1c0cab9ed9a832b3743dbb65e9966a64331a")
+        (revision "1"))
+    (package
+      (name "vim-neosnippet-snippets")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shougo/neosnippet-snippets")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "151wpvbj6jb9jdkbhj3b77f5sq7y328spvwfbqyj1y32rg4ifmc6"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles")))
+                 (copy-recursively "neosnippets"
+                                   (string-append vimfiles "/neosnippets"))
+               #t))))))
+    (synopsis "Snippets for neosnippet")
+    (description
+     "@code{neosnippet-snippets} provides standard snippets for the Vim plugin
+@code{neosnippet}.  Snippets are small templates for commonly used code that
+you can fill in on the fly.")
+    (home-page "https://github.com/Shougo/neosnippet-snippets")
+    (license license:expat))))
+
+;; The released tarball is too old for our Vim.
+(define-public vim-neosnippet
+  (let ((commit "1bd7e23c79b73da16eb0c9469b25c376d3594583")
+        (revision "1"))
+  (package
+    (name "vim-neosnippet")
+    (version (string-append "4.2-" revision "." (string-take commit 7)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Shougo/neosnippet.vim/")
+             (commit commit)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "0k80syscmpnj38ks1fq02ds59g0r4jlg9ll7z4qc048mgi35alw5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (doc (string-append vimfiles "/doc"))
+                    (ftdetect (string-append vimfiles "/ftdetect"))
+                    (ftplugin (string-append vimfiles "/ftplugin"))
+                    (indent (string-append vimfiles "/indent"))
+                    (plugin (string-append vimfiles "/plugin"))
+                    (rplugin (string-append vimfiles "/rplugin"))
+                    (syntax (string-append vimfiles "/syntax")))
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "doc" doc)
+               (copy-recursively "ftdetect" ftdetect)
+               (copy-recursively "ftplugin" ftplugin)
+               (copy-recursively "indent" indent)
+               (copy-recursively "plugin" plugin)
+               (copy-recursively "rplugin" rplugin)
+               (copy-recursively "syntax" syntax)
+               #t))))))
+    (synopsis "Snippet support for Vim")
+    (description
+     "@code{neosnippet}, is a plugin for Vim which adds snippet support to Vim.
+Snippets are small templates for commonly used code that you can fill in on
+the fly.  To use snippets can increase your productivity in Vim a lot.
+The functionality of this plug-in is quite similar to plug-ins like
+@code{snipMate.vim} or @code{snippetsEmu.vim}.  But since you can choose
+snippets with the neocomplcache / neocomplete interface, you might have less
+trouble using them, because you do not have to remember each snippet name.")
+    (home-page "https://github.com/Shougo/neosnippet.vim/")
+    (license license:expat))))
+
+(define-public vim-scheme
+  (let ((commit "93827987c10f2d5dc519166a761f219204926d5f")
+        (revision "1"))
+    (package
+      (name "vim-scheme")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.foldling.org/vim-scheme.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1ynjr1109dxgj0lz261gmzz3wf5ap1m6j6hnvl3lcyv66a4y8pjv"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (after (string-append vimfiles "/after"))
+                      (syntax (string-append vimfiles "/syntax"))
+                      (ftplugin (string-append vimfiles "/ftplugin")))
+                 (copy-recursively "after" after)
+                 (copy-recursively "ftplugin" ftplugin)
+                 (copy-recursively "syntax" syntax)
+                 #t))))))
+      (synopsis "Scheme syntax for Vim")
+      (description
+       "@code{vim-scheme} provides Scheme support for Vim (R7RS and CHICKEN).")
+      (home-page "http://foldling.org/git/vim-scheme.git/")
+      (license license:public-domain))))
+
+(define-public vim-luna
+  (let ((commit "633619953dcf8577168e255230f96b05f28d6371")
+        (revision "1"))
+    (package
+      (name "vim-luna")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/notpratheek/vim-luna")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0ka3qbhsh8lix1vyj4678j7dnchkd8khhirrnn3aylxxf8fpqyg8"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (colors (string-append vimfiles "/colors")))
+                 (copy-recursively "colors" colors)
+                 #t))))))
+      (synopsis "Dark color theme for Vim")
+      (description
+       "@code{vim-luna} is a dark color theme for Vim.")
+      (home-page "https://github.com/notpratheek/vim-luna")
+      (license license:expat))))
+
+;; There are no tarball releases.
+(define-public vim-context-filetype
+  (let ((commit "5e85f8cae26806f391aefe2661791a6de53bcea2")
+        (revision "1"))
+    (package
+      (name "vim-context-filetype")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shougo/context_filetype.vim")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0alvrfhmd91zkd9h83s8wvgyq4iakcf6rybsyjd369qbgpcqky89"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (doc (string-append vimfiles "/doc"))
+                      (autoload (string-append vimfiles "/autoload")))
+                 (copy-recursively "doc" doc)
+                 (copy-recursively "autoload" autoload)
+                 #t))))))
+      (synopsis "Context filetype library for Vim")
+      (description
+       "@code{vim-context-filetype} is context filetype library for Vim script.")
+      (home-page "https://github.com/Shougo/context_filetype.vim")
+      (license license:expat)))) ; ??? check again
+
+(define-public vim-airline
+  (package
+    (name "vim-airline")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/vim-airline/vim-airline/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "053sfq3jmgdc5y7zbg6jrk7r2hp0raj3y3mxa2h1c1bnkb6wvcaz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (doc (string-append vimfiles "/doc"))
+                    (t (string-append vimfiles "/t"))
+                    (plugin (string-append vimfiles "/plugin")))
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "doc" doc)
+               (copy-recursively "plugin" plugin)
+               (copy-recursively "t" t)
+               #t))))))
+    (synopsis "Statusline for Vim")
+    (description
+     "@code{vim-airline} is an extensible statusline for Vim.
+It can be extended and costumized with themes, works with unicode fonts
+and powerline symbols, etc.")
+    (home-page "https://github.com/vim-airline/vim-airline")
+    (license license:expat)))
+
+;; There are no tarball releases.
+(define-public vim-airline-themes
+  (let ((commit "6026eb78bf362cb3aa875aff8487f65728d0f7d8")
+        (revision "1"))
+    (package
+      (name "vim-airline-themes")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vim-airline/vim-airline-themes")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "13ijkavh1r0935cn2rjsfbdd1q3ka8bi26kw0bdkrqlrqxwvpss8"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (vimfiles (string-append out "/share/vim/vimfiles"))
+                      (doc (string-append vimfiles "/doc"))
+                      (plugin (string-append vimfiles "/plugin"))
+                      (autoload (string-append vimfiles "/autoload")))
+                 (copy-recursively "doc" doc)
+                 (copy-recursively "autoload" autoload)
+                 (copy-recursively "plugin" plugin)
+                 #t))))))
+      (synopsis "Collection of themes for Vim-airline")
+      (description
+       "@code{vim-airline-themes} is a collection of themes for @code{vim-airline}.")
+      (home-page "https://github.com/vim-airline/vim-airline-themes")
+      (license license:expat))))
 
 (define-public neovim
   (package

@@ -35,15 +35,13 @@
 (define-public screen
   (package
     (name "screen")
-    (version "4.5.0")
+    (version "4.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
-             (patches (search-patches "screen-CVE-2017-5618.patch"))
-             (patch-flags '("-p2"))
              (sha256
-              (base32 "1c7grw03a9iwvqbxfd6hmjb681rp8gb55zsxm7b3apqqcb1sghq1"))))
+              (base32 "0bbv16gpxrh64sn4bvjy3qjy7jsxjlqlilyysin02fwnvla23nwp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("makeinfo" ,texinfo)))

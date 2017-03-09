@@ -221,5 +221,5 @@ Later adapted to apply cleanly to nss-3.21.
  
  RELEASE = nss
  
--DIRS = coreconf lib cmd external_tests
-+DIRS = coreconf lib cmd external_tests config
+-DIRS = coreconf lib cmd gtests
++DIRS = coreconf lib cmd gtests config

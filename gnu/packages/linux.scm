@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -107,6 +107,7 @@
           ((string-prefix? "mips" arch) "mips")
           ((string-prefix? "arm" arch) "arm")
           ((string-prefix? "aarch64" arch) "arm64")
+          ((string-prefix? "alpha" arch) "alpha")
           (else arch))))
 
 (define-public (system->defconfig system)
@@ -204,11 +205,10 @@ defconfig.  Return the appropiate make target if applicable, otherwise return
 (define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
 for ARCH and optionally VARIANT, or #f if there is no such configuration."
-  (let* ((name (string-append "linux-libre-"
-                              (if variant (string-append variant "-") "")
+  (let* ((name (string-append (if variant (string-append variant "-") "")
                               (if (string=? "i386" arch) "i686" arch) ".conf"))
-         (file (string-append "gnu/packages/" name)))
-    (search-path %load-path file)))
+         (file (string-append "linux-libre/" name)))
+    (search-auxiliary-file file)))
 
 (define %default-extra-linux-options
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
@@ -348,8 +348,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.10")
-(define %linux-libre-hash "167zzgkivpqsp07did25wjqsswddzp3gifcdkq7xk00llxlmspla")
+(define %linux-libre-version "4.10.1")
+(define %linux-libre-hash "0mvwrjny1bjqyjqjxff9m97j48ybfdw8qpdazr5rwk12234v4k3d")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -358,14 +358,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.11"
-                    "1gypfg2984zr4z7hihnl3bbpxnk1mrqbynb6xd8ad2v2z04aw13q"
+  (make-linux-libre "4.9.13"
+                    "16miggwcwfpm7kx0yz256x887rky9wgmp1grg850lf8sdkiz0a1p"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.50"
-                    "0c157kk0vgrb1fsyy4q3czqdg4npgql82n6p303afy8ylh2w6d3l"
+  (make-linux-libre "4.4.52"
+                    "1fzcq9bbsxiij2fh6kgwrp417sy2j5gnbzs0wwlmznj7mvysl7qg"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -373,7 +373,17 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre "4.1.38"
                     "165kmzglhg63hn7y4q7r6cb2dpsljxiq1czvgyx0bkd1vd2bcvsa"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4")
+                            (file-name "linux-libre-CVE-2017-6074.patch")
+                            (sha256
+                             (base32
+                              "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -821,17 +831,25 @@ images more compressible.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.7")
+    (version "4.16")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "158iwk0pl2mfw93m1843xb7a2zb8p6lh0qim07rca6f1ff4dk764"))))
+               "1vzhmpcy989i4k12q4cc438yal2ghhm6x7ychscjbhcf2yspqj4q"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* "strace.c"
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (native-inputs `(("perl" ,perl)))
-    (home-page "http://strace.sourceforge.net/")
+    (home-page "https://strace.io/")
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
@@ -1022,7 +1040,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.9.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1030,7 +1048,7 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1i0n071hiqxw1gisngw2jln3kcp9sh47n6fj5hdwqrvp7w20zwy0"))))
+                "1a59y1zkddvr7z0lh2y9iasbh9wpfc1n39p56xcd6jkhzk0y3c92"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1039,6 +1057,7 @@ packet filter.")
                             (string-append "BASH_COMPDIR=" out
                                            "/etc/bash_completion.d")
                             (string-append "LIBDIR=" out "/lib")
+                            (string-append "HDRDIR=" out "/include")
                             (string-append "SBINDIR=" out "/sbin")
                             (string-append "CONFDIR=" out "/etc")
                             (string-append "DOCDIR=" out "/share/doc/"
@@ -1075,10 +1094,10 @@ allows a system administrator to make use of all iproute2 features, including
 traffic control.
 
 iproute2 is usually shipped in a package called iproute or iproute2 and
-consists of several tools, of which the most important are ip and tc.  ip
-controls IPv4 and IPv6 configuration and tc stands for traffic control.  Both
-tools print detailed usage messages and are accompanied by a set of
-manpages.")
+consists of several tools, of which the most important are @command{ip} and
+@command{tc}.  @command{ip} controls IPv4 and IPv6 configuration and
+@command{tc} stands for traffic control.  Both tools print detailed usage
+messages and are accompanied by a set of manpages.")
     (license license:gpl2+)))
 
 (define-public net-tools
@@ -2318,14 +2337,14 @@ about ACPI devices.")
 (define-public acpid
   (package
     (name "acpid")
-    (version "2.0.23")
+    (version "2.0.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/acpid2/acpid-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1vl7c6vc724v4jwki17czgj6lnrknnj1a6llm8gkl32i2gnam5j3"))))
+                "043igasvp1l6nv5rzh4sksmymay2qn20anl4zm4zvwnkn1a3l34q"))))
     (build-system gnu-build-system)
     (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
@@ -3209,7 +3228,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -3217,7 +3236,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0asnlkzqms520r0dra08dzcz5hh6hs7lkajfw9wij3vrd0hxsnzz"))))
+                "18dwfxzsw3agiy2dxbflrkhmjgvlji0wwkk636nabh2ng41qrp1x"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

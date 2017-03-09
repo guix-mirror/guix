@@ -220,14 +220,14 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20161205-2245")
+    (version "20170224-2245")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
                                   "x264-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jjzdwag59kqlk09bb2pykm1ss8bw3p9q7bsks2kjgdwbj121a44"))))
+                "0paw8vzsy2qh5jf6xg2i1risjwyvmxgfnivly4gh0bib62cp4vib"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -268,7 +268,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public x265
   (package
     (name "x265")
-    (version "2.1")
+    (version "2.3")
     (source
       (origin
         (method url-fetch)
@@ -276,7 +276,7 @@ H.264 (MPEG-4 AVC) video streams.")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "0hx6sr9l7586gs4qds2sj0i1m5brxkaqq3cwmibhfb559fpvkz48"))
+          "07z4ydxg0lk6j43h0wlh2xddb91cy4y4mny2ln71d4278b1hllj7"))
         (modules '((guix build utils)))
         (snippet
          '(delete-file-recursively "source/compat/getopt"))))
@@ -299,7 +299,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
 (define-public libass
   (package
     (name "libass")
-    (version "0.13.4")
+    (version "0.13.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -307,7 +307,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
                     version "/libass-" version ".tar.xz"))
               (sha256
                (base32
-                "1dlzkjybnpl2fkvyjq0qblb7qw12cs893bs7zj3rvf8ij342yjnq"))))
+                "0b9cj5xfsa7zwlk5m146fhv102v51iqs3rapq0n2xrz30k8p9a7q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -842,7 +842,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.23.0")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -850,7 +850,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1629v5l0rmphxra7chmfm7bnn59zc1mp529b9m2zqzaqf1czxvla"))
+                "059zblcj98fhrns1rwa66mf4km68czpam4nnk8q9qny31bx58654"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -980,7 +980,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.02.16")
+    (version "2017.03.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -988,7 +988,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1c2rx8hj960wg2sffpvg2513rl9grkwcpn4xk612ibfq4m7h3991"))))
+                "0f86qnppxnbh2c8bmpf0c1xhwk5vqjdzz7pqh9sydhscv8r0209g"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1495,7 +1495,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "17.0.2")
+    (version "18.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1503,7 +1503,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02cfhpkcsq718zwhwwsm48gjggf95qr38hqpi0kwrvsy18ll0msm"))))
+                "0pxrzzp8z7kmwfdp49rwrk0j3lpya6garvbbzzfvldwhyam9az5d"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests

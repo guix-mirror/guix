@@ -255,7 +255,7 @@ code."
       ""
       (match device
         ;; Preferably refer to DEVICE by its UUID or label.  This is more
-        ;; efficient and less ambiguous, see <>.
+        ;; efficient and less ambiguous, see <http://bugs.gnu.org/22281>.
         ((? bytevector? uuid)
          (format #f "search --fs-uuid --set ~a"
                  (uuid->string device)))

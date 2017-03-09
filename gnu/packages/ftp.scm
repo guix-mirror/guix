@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,12 +27,21 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xml))
 
 (define-public lftp
   (package
@@ -159,3 +169,66 @@ maintaining a web page or other FTP archive.  It synchronizes a set of
 local files to a remote server by performing uploads and remote deletes
 as required.")
     (license gpl2+)))
+
+(define-public libfilezilla
+  (package
+    (name "libfilezilla")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.filezilla-project.org/"
+                           name "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0340v5xs48f28q2d16ldb9359dkzlhl4l449mgyv3qabnlz2pl21"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)))
+    (home-page "https://lib.filezilla-project.org")
+    (synopsis "Cross-platform C++ library used by Filezilla client")
+    (description
+     "This package provides some basic functionality to build high-performing,
+platform-independent programs.")
+    (license gpl2+)))
+
+(define-public filezilla
+  (package
+    (name "filezilla")
+    (version "3.24.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://sourceforge.net/projects/" name
+                           "/files/FileZilla_Client/" version
+                           "/FileZilla_" version "_src" ".tar.bz2"))
+       (sha256
+        (base32
+         "0ahcld3g6jj92nakm5i58wgmcv6f4l9yisw3aqbc2ry0gs679pg6"))))
+    (build-system gnu-build-system)
+    (arguments
+      ;; Don't let filezilla phone home to check for updates.
+     '(#:configure-flags '("--disable-autoupdatecheck")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("pugixml" ,pugixml)
+       ("xdg-utils" ,xdg-utils)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("gnutls" ,gnutls)
+       ("gtk+" ,gtk+)
+       ("libfilezilla" ,libfilezilla)
+       ("libidn" ,libidn)
+       ("nettle" ,nettle)
+       ("sqlite" ,sqlite)
+       ("wxwidgets" ,wxwidgets)))
+    (home-page "https://filezilla-project.org")
+    (synopsis "Full-featured graphical FTP/FTPS/SFTP client")
+    (description
+     "Filezilla client supports FTP, FTP over SSL/TLS (FTPS),
+SSH File Transfer Protocol (SFTP), HTTP/1.1, SOCKS5, FTP-Proxy, IPv6
+and others features such as bookmarks, drag and drop, filename filters,
+directory comparison and more.")
+    (license gpl2+)
+    (properties '((upstream-name . "FileZilla")))))

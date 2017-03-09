@@ -443,8 +443,15 @@ Run the daemon, and set it to automatically start on boot.
 If your host distro uses the systemd init system, this can be achieved
 with these commands:
 
+@c Versions of systemd that supported symlinked service files are not
+@c yet widely deployed, so we should suggest that users copy the service
+@c files into place.
+@c
+@c See this thread for more information:
+@c http://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
+
 @example
-# ln -s ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
+# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
         /etc/systemd/system/
 # systemctl start guix-daemon && systemctl enable guix-daemon
 @end example
@@ -452,8 +459,8 @@ with these commands:
 If your host distro uses the Upstart init system:
 
 @example
-# ln -s ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
 # initctl reload-configuration
+# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
 # start guix-daemon
 @end example
 
@@ -8396,7 +8403,7 @@ other things.
 
 @deftp {Data Type} mingetty-configuration
 This is the data type representing the configuration of Mingetty, which
-implements console log-in.
+provides the default implementation of virtual console log-in.
 
 @table @asis
 
@@ -8423,6 +8430,172 @@ The Mingetty package to use.
 @end table
 @end deftp
 
+@deffn {Scheme Procedure} agetty-service @var{config}
+Return a service to run agetty according to @var{config}, an
+@code{<agetty-configuration>} object, which specifies the tty to run,
+among other things.
+@end deffn
+
+@deftp {Data Type} agetty-configuration
+This is the data type representing the configuration of agetty, which
+implements virtual and serial console log-in.  See the @code{agetty(8)}
+man page for more information.
+
+@table @asis
+
+@item @code{tty}
+The name of the console this agetty runs on, as a string---e.g.,
+@code{"ttyS0"}. This argument is mandatory.
+
+@item @code{baud-rate} (default: @code{#f})
+A string containing a comma-separated list of one or more baud rates, in
+descending order.
+
+@item @code{term} (default: @code{#f})
+A string containing the value used for the @code{TERM} environment
+variable.
+
+@item @code{eight-bits?} (default: @code{#f})
+When @code{#t}, the tty is assumed to be 8-bit clean, and parity detection is
+disabled.
+
+@item @code{auto-login} (default: @code{#f})
+When passed a login name, as a string, the specified user will be logged
+in automatically without prompting for their login name or password.
+
+@item @code{no-reset?} (default: @code{#f})
+When @code{#t}, don't reset terminal cflags (control modes).
+
+@item @code{host} (default: @code{#f})
+This accepts a string containing the "login_host", which will be written
+into the @file{/var/run/utmpx} file.
+
+@item @code{remote?} (default: @code{#f})
+When set to @code{#t} in conjunction with @var{host}, this will add an
+@code{-r} fakehost option to the command line of the login program
+specified in @var{login-program}.
+
+@item @code{flow-control?} (default: @code{#f})
+When set to @code{#t}, enable hardware (RTS/CTS) flow control.
+
+@item @code{no-issue?} (default: @code{#f})
+When set to @code{#t}, the contents of the @file{/etc/issue} file will
+not be displayed before presenting the login prompt.
+
+@item @code{init-string} (default: @code{#f})
+This accepts a string that will be sent to the tty or modem before
+sending anything else.  It can be used to initialize a modem.
+
+@item @code{no-clear?} (default: @code{#f})
+When set to @code{#t}, agetty will not clear the screen before showing
+the login prompt.
+
+@item @code{login-program} (default: (file-append shadow "/bin/login"))
+This must be either a gexp denoting the name of a log-in program, or
+unset, in which case the default value is the @command{login} from the
+Shadow tool suite.
+
+@item @code{local-line} (default: @code{#f})
+Control the CLOCAL line flag.  This accepts one of three symbols as
+arguments, @code{'auto}, @code{'always}, or @code{'never}. If @code{#f},
+the default value chosen by agetty is @code{'auto}.
+
+@item @code{extract-baud?} (default: @code{#f})
+When set to @code{#t}, instruct agetty to try to extract the baud rate
+from the status messages produced by certain types of modems.
+
+@item @code{skip-login?} (default: @code{#f})
+When set to @code{#t}, do not prompt the user for a login name.  This
+can be used with @var{login-program} field to use non-standard login
+systems.
+
+@item @code{no-newline?} (default: @code{#f})
+When set to @code{#t}, do not print a newline before printing the
+@file{/etc/issue} file.
+
+@c Is this dangerous only when used with login-program, or always?
+@item @code{login-options} (default: @code{#f})
+This option accepts a string containing options that are passed to the
+login program.  When used with the @var{login-program}, be aware that a
+malicious user could try to enter a login name containing embedded
+options that could be parsed by the login program.
+
+@item @code{login-pause} (default: @code{#f})
+When set to @code{#t}, wait for any key before showing the login prompt.
+This can be used in conjunction with @var{auto-login} to save memory by
+lazily spawning shells.
+
+@item @code{chroot} (default: @code{#f})
+Change root to the specified directory.  This option accepts a directory
+path as a string.
+
+@item @code{hangup?} (default: @code{#f})
+Use the Linux system call @code{vhangup} to do a virtual hangup of the
+specified terminal.
+
+@item @code{keep-baud?} (default: @code{#f})
+When set to @code{#t}, try to keep the existing baud rate.  The baud
+rates from @var{baud-rate} are used when agetty receives a @key{BREAK}
+character.
+
+@item @code{timeout} (default: @code{#f})
+When set to an integer value, terminate if no user name could be read
+within @var{timeout} seconds.
+
+@item @code{detect-case?} (default: @code{#f})
+When set to @code{#t}, turn on support for detecting an uppercase-only
+terminal.  This setting will detect a login name containing only
+uppercase letters as indicating an uppercase-only terminal and turn on
+some upper-to-lower case conversions.  Note that this will not support
+Unicode characters.
+
+@item @code{wait-cr?} (default: @code{#f})
+When set to @code{#t}, wait for the user or modem to send a
+carriage-return or linefeed character before displaying
+@file{/etc/issue} or login prompt.  This is typically used with the
+@var{init-string} option.
+
+@item @code{no-hints?} (default: @code{#f})
+When set to @code{#t}, do not print hints about Num, Caps, and Scroll
+locks.
+
+@item @code{no-hostname?} (default: @code{#f})
+By default, the hostname is printed.  When this option is set to
+@code{#t}, no hostname will be shown at all.
+
+@item @code{long-hostname?} (default: @code{#f})
+By default, the hostname is only printed until the first dot.  When this
+option is set to @code{#t}, the fully qualified hostname by
+@code{gethostname} or @code{getaddrinfo} is shown.
+
+@item @code{erase-characters} (default: @code{#f})
+This option accepts a string of additional characters that should be
+interpreted as backspace when the user types their login name.
+
+@item @code{kill-characters} (default: @code{#f})
+This option accepts a string that should be interpreted to mean "ignore
+all previous characters" (also called a "kill" character) when the types
+their login name.
+
+@item @code{chdir} (default: @code{#f})
+This option accepts, as a string, a directory path that will be changed
+to before login.
+
+@item @code{delay} (default: @code{#f})
+This options accepts, as an integer, the number of seconds to sleep
+before opening the tty and displaying the login prompt.
+
+@item @code{nice} (default: @code{#f})
+This option accepts, as an integer, the nice value with which to run the
+@command{login} program.
+
+@item @code{extra-options} (default: @code{'()})
+This option provides an "escape hatch" for the user to provide arbitrary
+command-line arguments to @command{agetty} as a list of strings.
+
+@end table
+@end deftp
+
 @deffn {Scheme Procedure} kmscon-service-type @var{config}
 Return a service to run @uref{https://www.freedesktop.org/wiki/Software/kmscon,kmscon}
 according to @var{config}, a @code{<kmscon-configuration>} object, which
@@ -8431,7 +8604,7 @@ specifies the tty to run, among other things.
 
 @deftp {Data Type} kmscon-configuration
 This is the data type representing the configuration of Kmscon, which
-implements console log-in.
+implements virtual console log-in.
 
 @table @asis
 
@@ -8615,6 +8788,13 @@ are written.
 
 @item @code{lsof} (default: @var{lsof})
 The lsof package to use.
+
+@item @code{http-proxy} (default: @code{#f})
+The HTTP proxy used for downloading fixed-output derivations and
+substitutes.
+
+@item @code{tmpdir} (default: @code{#f})
+A directory path where the @command{guix-daemon} will perform builds.
 
 @end table
 @end deftp

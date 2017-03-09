@@ -141,7 +141,8 @@ made available under the /xchg CIFS share."
                          (gnu build vm))
 
             (let ((inputs  '#$(list qemu coreutils))
-                  (linux   (string-append #$linux "/bzImage"))
+                  (linux   (string-append #$linux "/"
+                                          #$(system-linux-image-file-name)))
                   (initrd  (string-append #$initrd "/initrd"))
                   (loader  #$loader)
                   (graphs  '#$(match references-graphs
@@ -364,7 +365,7 @@ of the GNU system as described by OS."
        (check? #f)
        (create-mount-point? #t)))))
 
-(define (virtualized-operating-system os mappings)
+(define* (virtualized-operating-system os mappings #:optional (full-boot? #f))
   "Return an operating system based on OS suitable for use in a virtualized
 environment with the store shared with the host.  MAPPINGS is a list of
 <file-system-mapping> to realize in the virtualized OS."
@@ -380,6 +381,15 @@ environment with the store shared with the host.  MAPPINGS is a list of
                          (string-prefix? "/dev/" source)))))
             (operating-system-file-systems os)))
 
+  (define virtual-file-systems
+    (cons (file-system
+            (mount-point "/")
+            (device "/dev/vda1")
+            (type "ext4"))
+
+          (append (map mapping->file-system mappings)
+                  user-file-systems)))
+
   (operating-system (inherit os)
     (initrd (lambda (file-systems . rest)
               (apply base-initrd file-systems
@@ -390,17 +400,16 @@ environment with the store shared with the host.  MAPPINGS is a list of
     ;; Disable swap.
     (swap-devices '())
 
-    (file-systems (cons* (file-system
-                           (mount-point "/")
-                           (device "/dev/vda1")
-                           (type "ext4"))
-
-                         (file-system (inherit
-                                       (mapping->file-system %store-mapping))
-                            (needed-for-boot? #t))
-
-                         (append (map mapping->file-system mappings)
-                                 user-file-systems)))))
+    ;; XXX: When FULL-BOOT? is true, do not add a 9p mount for /gnu/store
+    ;; since that would lead the bootloader config to look for the kernel and
+    ;; initrd in it.
+    (file-systems (if full-boot?
+                      virtual-file-systems
+                      (cons
+                       (file-system
+                         (inherit (mapping->file-system %store-mapping))
+                         (needed-for-boot? #t))
+                       virtual-file-systems)))))
 
 (define* (system-qemu-image/shared-store
           os
@@ -433,25 +442,26 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
 (define* (common-qemu-options image shared-fs)
   "Return the a string-value gexp with the common QEMU options to boot IMAGE,
 with '-virtfs' options for the host file systems listed in SHARED-FS."
-  (define (virtfs-option fs)
-    #~(string-append "-virtfs local,path=\"" #$fs
-                     "\",security_model=none,mount_tag=\""
-                     #$(file-system->mount-tag fs)
-                     "\" "))
 
-  #~(string-append
-     ;; Only enable kvm if we see /dev/kvm exists.
+  (define (virtfs-option fs)
+    #~(format #f "-virtfs local,path=~s,security_model=none,mount_tag=~s"
+              #$fs #$(file-system->mount-tag fs)))
+
+  #~(;; Only enable kvm if we see /dev/kvm exists.
      ;; This allows users without hardware virtualization to still use these
      ;; commands.
-     #$(if (file-exists? "/dev/kvm")
-           " -enable-kvm "
-           "")
-     " -no-reboot -net nic,model=virtio \
-  " #$@(map virtfs-option shared-fs) " \
-  -vga std \
-  -drive file=" #$image
-  ",if=virtio,cache=writeback,werror=report,readonly \
-  -m 256"))
+     #$@(if (file-exists? "/dev/kvm")
+            '("-enable-kvm")
+            '())
+
+     "-no-reboot"
+     "-net nic,model=virtio"
+
+     #$@(map virtfs-option shared-fs)
+     "-vga std"
+     (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly"
+             #$image)
+     "-m 256"))
 
 (define* (system-qemu-image/shared-store-script os
                                                 #:key
@@ -472,31 +482,37 @@ When FULL-BOOT? is true, the returned script runs everything starting from the
 bootloader; otherwise it directly starts the operating system kernel.  The
 DISK-IMAGE-SIZE parameter specifies the size in bytes of the root disk image;
 it is mostly useful when FULL-BOOT?  is true."
-  (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings))
+  (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings full-boot?))
                        (os-drv (operating-system-derivation os))
                        (image  (system-qemu-image/shared-store
                                 os
                                 #:full-boot? full-boot?
                                 #:disk-image-size disk-image-size)))
+    (define kernel-arguments
+      #~(list "--root=/dev/vda1"
+              (string-append "--system=" #$os-drv)
+              (string-append "--load=" #$os-drv "/boot")
+              #$@(if graphic? #~() #~("console=ttyS0"))
+              #+@(operating-system-kernel-arguments os)))
+
+    (define qemu-exec
+      #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))
+              #$@(if full-boot?
+                     #~()
+                     #~("-kernel" #$(operating-system-kernel-file os)
+                        "-initrd" #$(file-append os-drv "/initrd")
+                        (format #f "-append ~s"
+                                (string-join #$kernel-arguments " "))))
+              #$@(common-qemu-options image
+                                      (map file-system-mapping-source
+                                           (cons %store-mapping mappings)))))
+
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)
-            (display
-             (string-append "#!" #$bash "/bin/sh
-exec " #$qemu "/bin/" #$(qemu-command (%current-system))
-
-#$@(if full-boot?
-       #~()
-       #~(" -kernel " #$(operating-system-kernel os) "/bzImage \
-            -initrd " #$os-drv "/initrd \
-            -append \"" #$(if graphic? "" "console=ttyS0 ")
-            "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1 "
-            (string-join (list #+@(operating-system-kernel-arguments os))) "\" "))
-#$(common-qemu-options image
-                       (map file-system-mapping-source
-                            (cons %store-mapping mappings)))
-" \"$@\"\n")
-             port)
+            (format port "#!~a~% exec ~a \"$@\"~%"
+                    #$(file-append bash "/bin/sh")
+                    (string-join #$qemu-exec " "))
             (chmod port #o555))))
 
     (gexp->derivation "run-vm.sh" builder)))

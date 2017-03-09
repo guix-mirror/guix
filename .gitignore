@@ -44,11 +44,6 @@
 /doc/os-config-desktop.texi
 /doc/stamp-vti
 /doc/version.texi
-/emacs/Makefile
-/emacs/Makefile.in
-/emacs/guix-autoloads.el
-/emacs/guix-config.el
-/emacs/guix-helper.scm
 /etc/guix-daemon.conf
 /etc/guix-daemon.service
 /etc/guix-publish.conf

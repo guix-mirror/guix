@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +25,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -43,6 +43,7 @@
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages rsync)
@@ -67,6 +68,7 @@
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)     ;setsid command, for the tests
+       ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
        ("mock" ,python2-mock)))
     (propagated-inputs
@@ -83,16 +85,18 @@
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'build 'patch-source ; embed gpg store name
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "duplicity/gpginterface.py"
-              (("self.call = 'gpg'")
-               (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))))
+         (add-before 'build 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; embed gpg store name
+             (substitute* "duplicity/gpginterface.py"
+               (("self.call = 'gpg'")
+                (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
+             (substitute* '("testing/functional/__init__.py"
+                            "testing/overrides/bin/lftp")
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-before 'check 'check-setup
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "testing/functional/__init__.py"
-               (("/bin/sh") (which "sh")))
              (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
              (setenv "TZDIR"          ;some timestamp checks need TZDIR
                      (string-append (assoc-ref inputs "tzdata")
@@ -363,6 +367,42 @@ rdiff-backup can operate in a bandwidth efficient manner over a pipe, like
 rsync.  Thus you can use rdiff-backup and ssh to securely back a hard drive up
 to a remote location, and only the differences will be transmitted.  Finally,
 rdiff-backup is easy to use and settings have sensible defaults.")
+    (license license:gpl2+)))
+
+(define-public rsnapshot
+  (package
+    (name "rsnapshot")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/rsnapshot/rsnapshot/releases/download/"
+             version "/rsnapshot-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05jfy99a0xs6lvsjfp3wz21z0myqhmwl2grn3jr9clijbg282ah4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (substitute* '("t/cmd-post_pre-exec/conf/pre-true-post-true.conf"
+                            "t/backup_exec/conf/backup_exec_fail.conf"
+                            "t/backup_exec/conf/backup_exec.conf")
+               (("/bin/true") (which "true"))
+               (("/bin/false") (which "false")))
+             (zero? (system* "make" "test")))))))
+    (inputs
+     `(("perl" ,perl)
+       ("rsync" ,rsync)))
+    (home-page "http://rsnapshot.org")
+    (synopsis "Deduplicating snapshot backup utility based on rsync")
+    (description "rsnapshot is a filesystem snapshot utility based on rsync.
+rsnapshot makes it easy to make periodic snapshots of local machines, and
+remote machines over SSH.  To reduce the disk space required for each backup,
+rsnapshot uses hard links to deduplicate identical files.")
     (license license:gpl2+)))
 
 (define-public libchop

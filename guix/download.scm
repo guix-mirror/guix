@@ -103,8 +103,8 @@
        "http://mirror.csclub.uwaterloo.ca/nongnu/"
        "http://nongnu.askapache.com/"
        "http://savannah.c3sl.ufpr.br/"
-       "http://www.centervenus.com/mirrors/nongnu/"
-       "http://download.savannah.gnu.org/releases-noredirect/")
+       "http://download.savannah.gnu.org/releases-noredirect/"
+       "http://download-mirror.savannah.gnu.org/releases/")
       (sourceforge ; https://sourceforge.net/p/forge/documentation/Mirrors/
        "http://downloads.sourceforge.net/project/"
        "http://ufpr.dl.sourceforge.net/project/"

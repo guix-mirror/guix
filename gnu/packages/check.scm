@@ -201,7 +201,7 @@ normally do not detect.  The goal is to detect only real errors in the code
 (define-public googletest
   (package
     (name "googletest")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -210,46 +210,10 @@ normally do not detect.  The goal is to detect only real errors in the code
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1k0nf1l9cb3prdmsvaajl5i31bx86c1mw0d5jgzykz7rzm36afpp"))))
-    (build-system gnu-build-system)
+         "1n5p1m2m3fjrjdj752lf92f9wq3pl5cbsfrb49jqbg52ghkz99jq"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("python-2" ,python-2)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'autoconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi"))))
-         (add-before 'autoconf 'generate-headers
-           (lambda _
-             (begin
-               (delete-file "include/gtest/gtest-param-test.h")
-               (system* "python2" "scripts/pump.py"
-                        "include/gtest/gtest-param-test.h.pump")
-               (delete-file "include/gtest/internal/gtest-tuple.h")
-               (system* "python2" "scripts/pump.py"
-                        "include/gtest//internal/gtest-tuple.h.pump")
-               (delete-file
-                "include/gtest/internal/gtest-param-util-generated.h")
-               (system*
-                "python2" "scripts/pump.py"
-                "include/gtest/internal/gtest-param-util-generated.h.pump")
-               (delete-file "include/gtest/internal/gtest-type-util.h")
-               (system* "python2" "scripts/pump.py"
-                        "include/gtest/internal/gtest-type-util.h.pump"))))
-         (replace 'install
-           (lambda _
-             (let ((out (assoc-ref %outputs "out")))
-               (begin
-                 (install-file "lib/.libs/libgtest_main.a"
-                               (string-append out "/lib"))
-                 (install-file "lib/.libs/libgtest.a"
-                               (string-append out "/lib"))
-                 (copy-recursively "include"
-                  (string-append out "/include")))))))))
+     `(("python-2" ,python-2)))
     (home-page "https://github.com/google/googletest/")
     (synopsis "Test discovery and XUnit test framework")
     (description "Google Test features an XUnit test framework, automated test

@@ -190,7 +190,7 @@ nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service
 etc/guix-%.service: etc/guix-%.service.in	\
 			 $(top_builddir)/config.status
 	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
-	$(SED) -e 's|@''bindir''@|$(bindir)|' <	\
+	$(SED) -e 's|@''localstatedir''@|$(localstatedir)|' <	\
 	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
@@ -201,7 +201,7 @@ nodist_upstartjob_DATA = etc/guix-daemon.conf etc/guix-publish.conf
 etc/guix-%.conf: etc/guix-%.conf.in	\
 			 $(top_builddir)/config.status
 	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
-	$(SED) -e 's|@''bindir''@|$(bindir)|' <	\
+	$(SED) -e 's|@''localstatedir''@|$(localstatedir)|' <	\
 	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 

@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,8 +26,8 @@
 (define-module (gnu packages scheme)
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3
-                          cc-by-sa4.0))
+                #:select (gpl2+ lgpl2.0+ lgpl2.1+ lgpl3+ asl2.0 bsd-3
+                          cc-by-sa4.0 non-copyleft))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages zip)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)
@@ -844,3 +846,100 @@ metalinguistic abstraction, recursion, interpreters, and modular programming.")
        "String pattern-matching library for scheme48 based on the SRE
 regular-expression notation.")
       (license bsd-3))))
+
+(define-public slib
+  (package
+    (name "slib")
+    (version "3b5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://groups.csail.mit.edu/mac/ftpdir/scm/slib-"
+                                 version ".zip"))
+             (sha256
+              (base32
+               "0q0p2d53p8qw2592yknzgy2y1p5a9k7ppjx0cfrbvk6242c4mdpq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There is no check target.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-bin-share
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (delete-file-recursively
+                       (string-append (assoc-ref outputs "out") "/bin"))))
+         (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (zero? (system* "./configure"
+                                    (string-append "--prefix="
+                                                   (assoc-ref outputs "out")))))))))
+    (native-inputs `(("unzip" ,unzip)
+                     ("texinfo" ,texinfo)))
+    (home-page "http://people.csail.mit.edu/jaffer/SLIB/")
+    (synopsis "Compatibility and utility library for Scheme")
+    (description "SLIB is a portable Scheme library providing compatibility and
+utility functions for all standard Scheme implementations.")
+    (license (non-copyleft
+              "http://people.csail.mit.edu/jaffer/SLIB_COPYING.txt"
+              "Or see COPYING in the distribution."))))
+
+(define-public scm
+  (package
+    (name "scm")
+    (version "5f2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://groups.csail.mit.edu/mac/ftpdir/scm/scm-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "050ijb51jm1cij9g3r89zl9rawsrikhbb5y8zb7lspb7bsxq5w99"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (zero? (system* "./configure"
+                                    (string-append "--prefix="
+                                                   (assoc-ref outputs "out"))))))
+         (add-before 'build 'pre-build
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (substitute* "Makefile"
+                         (("ginstall-info") "install-info"))))
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (setenv "SCHEME_LIBRARY_PATH"
+                            (string-append (assoc-ref inputs "slib")
+                                           "/lib/slib/"))
+                    (and
+                     (zero? (system* "make" "scmlit" "CC=gcc"))
+                     (zero? (system* "make" "all")))))
+         (add-after 'install 'post-install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((req
+                             (string-append (assoc-ref outputs "out")
+                                            "/lib/scm/require.scm")))
+                        (and
+                         (delete-file req)
+                         (format (open req (logior O_WRONLY O_CREAT))
+                                 "(define (library-vicinity) ~s)\n"
+                                 (string-append (assoc-ref inputs "slib")
+                                                "/lib/slib/"))
+
+                         ;; We must generate the slibcat file
+                         (zero? (system*
+                                 (string-append
+                                  (assoc-ref outputs "out")
+                                  "/bin/scm")
+                                 "-br" "new-catalog")))))))))
+    (inputs `(("slib" ,slib)))
+    (native-inputs `(("unzip" ,unzip)
+                     ("texinfo" ,texinfo)))
+    (home-page "http://people.csail.mit.edu/jaffer/SCM")
+    (synopsis "Scheme implementation conforming to R5RS and IEEE P1178")
+    (description "GNU SCM is an implementation of Scheme.  This
+implementation includes Hobbit, a Scheme-to-C compiler, which can
+generate C files whose binaries can be dynamically or statically
+linked with a SCM executable.")
+    (license lgpl3+)))

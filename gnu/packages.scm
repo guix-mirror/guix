@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -40,8 +40,10 @@
   #:use-module (srfi srfi-39)
   #:export (search-patch
             search-patches
+            search-auxiliary-file
             search-bootstrap-binary
             %patch-path
+            %auxiliary-files-path
             %bootstrap-binaries-path
             %package-module-path
 
@@ -62,16 +64,26 @@
 ;;;
 ;;; Code:
 
-;; By default, we store patches and bootstrap binaries alongside Guile
-;; modules.  This is so that these extra files can be found without
-;; requiring a special setup, such as a specific installation directory
-;; and an extra environment variable.  One advantage of this setup is
-;; that everything just works in an auto-compilation setting.
+;; By default, we store patches, auxiliary files and bootstrap binaries
+;; alongside Guile modules.  This is so that these extra files can be
+;; found without requiring a special setup, such as a specific
+;; installation directory and an extra environment variable.  One
+;; advantage of this setup is that everything just works in an
+;; auto-compilation setting.
 
 (define %bootstrap-binaries-path
   (make-parameter
    (map (cut string-append <> "/gnu/packages/bootstrap")
         %load-path)))
+
+(define %auxiliary-files-path
+  (make-parameter
+   (map (cut string-append <> "/gnu/packages/aux-files")
+        %load-path)))
+
+(define (search-auxiliary-file file-name)
+  "Search the auxiliary FILE-NAME.  Return #f if not found."
+  (search-path (%auxiliary-files-path) file-name))
 
 (define (search-patch file-name)
   "Search the patch FILE-NAME.  Raise an error if not found."
@@ -299,8 +311,8 @@ return its return value."
     ((pkg . pkg*)
      (unless (null? pkg*)
        (warning (_ "ambiguous package specification `~a'~%") spec)
-       (warning (_ "choosing ~a from ~a~%")
-                (package-full-name pkg)
+       (warning (_ "choosing ~a@~a from ~a~%")
+                (package-name pkg) (package-version pkg)
                 (location->string (package-location pkg))))
      (when fallback?
        (warning (_ "deprecated NAME-VERSION syntax; \

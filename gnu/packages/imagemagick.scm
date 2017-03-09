@@ -46,14 +46,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.7-7")
+    (version "6.9.7-9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "02x463z31j449pfm8czb7jlpkd3nx4a3yyjxq3bhpjfq13i20d62"))))
+               "1fqvi6h96mfbyw292awiwsqs449sjmw6i9ib53c66nnq1zchw7l3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
@@ -162,11 +162,12 @@ script.")
     (license (package-license imagemagick))))
 
 (define-public graphicsmagick
-  (let ((changeset "56c8cae")  ; 3e01b
-        (revision "1"))
+  (let ((changeset "6156b4c2992d855ece6079653b3b93c3229fc4b8") ; fix CVE-2017-6335
+        (revision "2"))
     (package
       (name "graphicsmagick")
-      (version (string-append "1.3.25-" revision "." changeset))
+      (version (string-append "1.3.25-" revision "."
+                              (string-take changeset 7)))
       (source (origin
                 (method hg-fetch)
                 (uri (hg-reference
@@ -179,7 +180,7 @@ script.")
                 ;;                    "/GraphicsMagick-" version ".tar.xz"))
                 (sha256
                  (base32
-                  "1s9apvkn0kxr6i4i5wlkfw1prja02rgk689n3cf822zc0dkycxdh"))))
+                  "08yfsn8mrqkwpax43vv1crfr55rcf004wwpzsinr5c6m0asqr08b"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags

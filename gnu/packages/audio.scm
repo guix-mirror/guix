@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -186,7 +186,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.6")
+    (version "5.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -203,18 +203,20 @@ streams from live audio.")
 namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
               (sha256
                (base32
-                "1fgvjmvdyh61qn8azpmh19ac58ps5sl2dywwshr56v0svakhwwh9"))
+                "1lcvslrcw6g4kp9w0h1jx46x6ilz4nzz0k2yrw4gd545k1rwx0c1"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
      `(#:configure-flags '("--cxx11"          ; required by gtkmm
-                           "--no-phone-home") ; don't contact ardour.org
+                           "--no-phone-home"  ; don't contact ardour.org
+                           "--freedesktop"    ; install .desktop file
+                           "--test")          ; build unit tests
        #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
           ,(ardour-rpath-phase (version-prefix version 1))))
-       #:tests? #f ; no check target
+       #:test-target "test"
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -256,6 +258,8 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
     (native-inputs
      `(("perl" ,perl)
        ("cppunit" ,cppunit)
+       ("itstool" ,itstool)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (home-page "http://ardour.org")
     (synopsis "Digital audio workstation")

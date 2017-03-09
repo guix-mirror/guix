@@ -72,6 +72,8 @@
   (origin
     (method url-fetch)
     (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-texmf.tar.xz")
+    (patches (search-patches "texlive-texmf-CVE-2016-10243.patch"))
+    (patch-flags '("-p2"))
     (sha256 (base32
               "1dv8vgfzpczqw82hv9g7a8djhhyzywljmrarlcyy6g2qi5q51glr"))))
 

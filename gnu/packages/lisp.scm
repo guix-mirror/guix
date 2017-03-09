@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016 ng0 <ngillmann@runbox.com>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -37,16 +37,27 @@
   #:use-module (guix build-system asdf)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libffcall)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages libsigsegv)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages ed)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -529,6 +540,69 @@ simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
 The core is 12 builtin special forms and 33 builtin functions.")
       (home-page "https://github.com/JeffBezanson/femtolisp")
       (license license:bsd-3))))
+
+(define-public lush2
+  (package
+    (name "lush2")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/lush/lush2/lush-"
+                           version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "src/unix.c"
+               (("\\{ \"LUSH_DATE\", __DATE__ \\},") "")
+               (("\\{ \"LUSH_TIME\", __TIME__ \\},") ""))
+             (substitute* "src/main.c"
+               (("\" \\(built \" __DATE__ \"\\)\"") ""))))
+       (sha256
+        (base32
+         "02pkfn3nqdkm9fm44911dbcz0v3r0l53vygj8xigl6id5g3iwi4k"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; We have to add these LIBS so that they are found.
+       #:configure-flags (list "LIBS=-lz"
+                               "X_EXTRA_LIBS=-lfontconfig"
+                               "--with-x")
+       #:tests? #f)) ; No make check.
+    (native-inputs `(("intltool" ,intltool)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)
+       ("sdl-net" ,sdl-net)
+       ("sdl-ttf" ,sdl-ttf)
+       ("lapack" ,lapack)
+       ("libxft" ,libxft)
+       ("fontconfig" ,fontconfig)
+       ("gsl" ,gsl)
+       ("openblas" ,openblas)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("mesa-utils" ,mesa-utils)
+       ("binutils" ,binutils)
+       ("libiberty" ,libiberty)
+       ("readline" ,readline)
+       ("zlib" ,zlib)
+       ("gettext-minimal" ,gettext-minimal)))
+    (synopsis "Lisp Universal Shell")
+    (description
+     "Lush is an object-oriented Lisp interpreter/compiler with features
+designed to please people who want to prototype large numerical
+applications.  Lush includes an extensive library of
+vector/matrix/tensor manipulation, numerous numerical libraries
+(including GSL, LAPACK, and BLAS), a set of graphic functions, a
+simple GUI toolkit, and interfaces to various graphic and multimedia
+libraries such as OpenGL, SDL, Video4Linux, and ALSA (video/audio
+grabbing), and others.  Lush is an ideal frontend script language for
+programming projects written in C or other languages.  Lush also has
+libraries for Machine Learning, Neural Nets and statistical estimation.")
+    (home-page "http://lush.sourceforge.net/")
+    (license license:lgpl2.1+)))
 
 (define-public sbcl-alexandria
   (let ((revision "1")

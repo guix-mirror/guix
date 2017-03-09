@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +67,7 @@ In Guile <= 2.0.9, CBIPs were always fully buffered, so the
   (let-values (((port get)
                 (open-sha256-port)))
     (put-bytevector port (string->utf8 "hello world"))
+    (force-output port)
     (get)))
 
 (test-assert "port-sha256"

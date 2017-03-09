@@ -56,15 +56,15 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.7.3")
+    (version "0.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://red.libssh.org/attachments/download/195/libssh-"
+                    "https://red.libssh.org/attachments/download/210/libssh-"
                     version ".tar.xz"))
               (sha256
                (base32
-                "165g49i4kmm3bfsjm0n8hm21kadv79g9yjqyq09138jxanz4dvr6"))))
+                "03bcp9ksqp0s1pmwfmzhcknvkxay5k0mjzzxp3rjlifbng1vxq9r"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
@@ -79,7 +79,7 @@
 client and server implementations.  With libssh, you can remotely execute
 programs, transfer files, and use a secure and transparent tunnel for your
 remote applications.")
-    (home-page "http://www.libssh.org")
+    (home-page "https://www.libssh.org")
     (license license:lgpl2.1+)))
 
 (define-public libssh2

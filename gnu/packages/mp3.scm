@@ -230,7 +230,7 @@ pre-defined or user-specifiable output format.")
 (define-public libmp3splt
   (package
    (name "libmp3splt")
-   (version "0.8.1a")
+   (version "0.9.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/mp3splt/libmp3splt/"
@@ -238,7 +238,7 @@ pre-defined or user-specifiable output format.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0d20r1bd4fgp9kp7w3qixjgll34czck9dgw59mx2kbhb0mhh00d8"))))
+              "1p1mn2hsmj5cp40fnc8g1yfvk72p8pjxi866gjdkgjsqrr7xdvih"))))
    (build-system gnu-build-system)
    (inputs `(("libid3tag" ,libid3tag)
              ("libmad" ,libmad)
@@ -263,7 +263,7 @@ This package contains the library.")
 (define-public mp3splt
   (package
    (name "mp3splt")
-   (version "2.5.1")
+   (version "2.6.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/mp3splt/mp3splt/"
@@ -271,8 +271,9 @@ This package contains the library.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "106dnka56prlc9nsfh300f8841am2lmkwlzgl9lkr25mgnc35wwh"))))
+              "1aiv20gypb6r84qabz8gblk8vi42cg3x333vk2pi3fyqvl82phry"))))
    (build-system gnu-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("libmp3splt" ,libmp3splt)))
    (synopsis "Utility for splitting mp3 and ogg vorbis files")
    (description

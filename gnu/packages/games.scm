@@ -175,6 +175,49 @@ You may even apply photos to the faces instead of colors.  The game is
 scriptable with Guile.")
     (license license:gpl3+)))
 
+(define-public gnushogi
+  (package
+    (name "gnushogi")
+    (version "1.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gnushogi/gnushogi-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0a9bsl2nbnb138lq0h14jfc5xvz7hpb2bcsj4mjn6g1hcsl4ik0y"))))
+    (arguments `(#:tests? #f)) ;; No check target.
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/gnushogi/")
+    (synopsis "The game of Shogi (Japanese chess)")
+    (description  "GNU Shogi is a program that plays the game Shogi (Japanese
+Chess).  It is similar to standard chess but this variant is far more complicated.")
+    (license license:gpl3+)))
+
+(define-public xshogi
+  (package
+    (name "xshogi")
+    (version "1.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gnushogi/xshogi-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1dns0nhymak44by18sv48m4xb2skiwbi2i3nb9hl6w9iwd2i2brf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxaw" ,libxaw)
+       ("libxt" ,libxt)))
+    (home-page "http://www.gnu.org/software/gnushogi/")
+    (synopsis "User interface for gnushogi")
+    (description  "A graphical user interface for the package @code{gnushogi}.")
+    ;; Contains a copy of GPLv3 but the licence notices simply
+    ;; state "GNU General Public Licence" without specifying a version.
+    (license license:gpl1+)))
+
 (define-public abbaye
   (package
     (name "abbaye")
@@ -840,15 +883,15 @@ using the curses.h library for screen control.")
 (define-public glulxe
   (package
    (name "glulxe")
-   (version "0.5.2")
+   (version "0.5.4")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://www.ifarchive.org/if-archive/programming/"
-                         "glulx/interpreters/glulxe/glulxe-052.tar.gz"))
+                         "glulx/interpreters/glulxe/glulxe-054.tar.gz"))
      (sha256
       (base32
-       "19iw6kl8ncqcy9pv4gsqfh3xsa1n94zd234rqavvmxccnf3nj19g"))))
+       "0vipydg6ra90yf9b3ipgppwxyb2xdhcxwvirgjy0v20wlf56zhhz"))))
    (build-system gnu-build-system)
    (inputs `(("glk" ,glkterm)))
    (arguments
@@ -873,7 +916,7 @@ using the curses.h library for screen control.")
 playing interactive fiction.  It was designed by Andrew Plotkin to relieve
 some of the restrictions in the venerable Z-machine format.  This is the
 reference interpreter, using Glk API.")
-   (license (license:fsf-free "file://README"))))
+   (license license:expat)))
 
 (define-public fizmo
   (package
@@ -2574,7 +2617,7 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2583,18 +2626,8 @@ tactics.")
                     name "-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1qb5nk0b3d0ia5zszmg4a3ydf4fiy39fmymb66vwkqn4djajdhzq"))))
+                "1646hpjq8bz2fkfkja1dah511hn7zd2r7da4w9c9blhad3p5732v"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f ; no check target
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "PREFIX=" out)
-               (string-append "BINDIR=" out "/bin/")))
-       #:phases
-       (modify-phases %standard-phases
-         ;; no configure script
-         (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

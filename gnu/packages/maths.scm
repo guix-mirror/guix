@@ -83,6 +83,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages scheme)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -142,14 +143,14 @@ interactive dialogs to guide them.")
 (define-public coda
   (package
     (name "coda")
-    (version "2.17.3")
+    (version "2.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/stcorp/coda/releases/download/"
                            version "/coda-" version ".tar.gz"))
        (sha256
-        (base32 "04b9l3wzcix0mnfq77mwnil6cbr8h2mki8myvy0lzn236qcwaq1h"))
+        (base32 "11asla1ap8vd73farqjlpb179sfiy0biydcwxjfcakrp9sf8v9bs"))
        (patches (search-patches "coda-use-system-libs.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -923,7 +924,7 @@ can solve two kinds of problems:
 (define-public octave
   (package
     (name "octave")
-    (version "4.2.0")
+    (version "4.2.1")
     (source
      (origin
       (method url-fetch)
@@ -931,7 +932,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "19vvliwxgip0af812vny5xy5r8kacyj7v62203mh4z2n3p14b78i"))))
+        "09zhhch79jw3ynw39vizx0i2cbd2bjz3sp38pjdzraqrbivpwp92"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -2008,7 +2009,9 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "16.12.2")
+    ;; Versions 16.12.0 to 16.12.2 have a bug which causes output lines to
+    ;; overlap. See <https://debbugs.gnu.org/25793>
+    (version "16.04.2")
     (source
      (origin
        (method url-fetch)
@@ -2016,7 +2019,7 @@ point numbers.")
                            version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0y22zhyhyxj2cbhzvs9c4pxr44i55ryfy5xi96d39bg2nbgs9h22"))))
+         "1fpqzk1921isiqrpgpf433ldq41924qs9sy99fl1zn5661b2l73n"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
@@ -2956,3 +2959,54 @@ algorithm for LCS.  It is a fast program to compute the approximate
 Longest Commons Subsequence of a set of strings.")
       (home-page "https://github.com/gdv/Reduce-Expand-for-LCS")
       (license license:gpl3+))))
+
+(define-public jacal
+  (package
+    (name "jacal")
+    (version "1c4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://groups.csail.mit.edu/mac/ftpdir/scm/jacal-"
+                    version ".zip"))
+              (sha256 (base32
+                       "055zrn12a1dmy0dqkwrkq3fklbhg3yir6vn0lacp4mvbg8573a3q"))
+              (patches (search-patches "jacal-fix-texinfo.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+                     ;; Don't use upstream's script - it really doesn't fit into
+                     ;; Guix's functional paradigm.
+                     (lambda* (#:key inputs outputs #:allow-other-keys)
+                       (substitute* "Makefile"
+                         (("^install: install-script") "install: "))))
+         (add-after 'install 'post-install
+                    ;; Instead, we provide our own simplified script.
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((wrapper (string-append (assoc-ref outputs "out")
+                                                    "/bin/jacal")))
+                        (format (open wrapper (logior O_WRONLY O_CREAT))
+                                (string-append "#!~a\nexec ~a/bin/scm -ip1 "
+                                "-e '(slib:load \"~a/lib/jacal/math\") "
+                                "(math)' \"$@\"\n")
+                                (which  "bash")
+                                (assoc-ref inputs "scm")
+                                (assoc-ref outputs "out"))
+                        (chmod wrapper #o555))))
+         (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (zero? (system* "./configure"
+                                    (string-append "--prefix="
+                                                   (assoc-ref outputs "out")))))))))
+    (inputs `(("scm" ,scm)))
+    (native-inputs `(("unzip" ,unzip)
+                     ("texinfo" ,texinfo)))
+    (synopsis "Symbolic mathematics system")
+    (description "GNU JACAL is an interactive symbolic mathematics program based on
+Scheme.  It manipulate and simplify a range of mathematical expressions such
+as equations, scalars, vectors, and matrices.")
+    (home-page "http://www.gnu.org/software/jacal")
+    (license license:gpl3+)))
+

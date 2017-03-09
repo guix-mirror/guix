@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -221,6 +221,34 @@ the @code{Graph} class and write it out in a specific file format.")
 @code{XML::Atom} implements the feed format as well as a client for the API.")
     (license (package-license perl))))
 
+(define-public perl-xml-descent
+  (package
+    (name "perl-xml-descent")
+    (version "1.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AN/ANDYA/"
+                                  "XML-Descent-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l5xmw2hd95ypppz3lyvp4sn02ccsikzjwacli3ydxfdz1bbh4d7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-test-differences" ,perl-test-differences)
+       ("perl-xml-tokeparser" ,perl-xml-tokeparser)))
+    (home-page "http://search.cpan.org/dist/XML-Descent")
+    (synopsis "Recursive descent XML parsing")
+    (description
+     "The conventional models for parsing XML are either @dfn{DOM}
+(a data structure representing the entire document tree is created) or
+@dfn{SAX} (callbacks are issued for each element in the XML).
+
+XML grammar is recursive - so it's nice to be able to write recursive
+parsers for it.  @code{XML::Descent} allows such parsers to be created.")
+    (license (package-license perl))))
+
 (define-public perl-xml-parser
   (package
     (name "perl-xml-parser")
@@ -251,6 +279,29 @@ then passed on to the Expat object on each parse call.  They can also be given
 as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
     (home-page "http://search.cpan.org/dist/XML-Parser")))
+
+(define-public perl-xml-tokeparser
+  (package
+    (name "perl-xml-tokeparser")
+    (version "0.05")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/P/PO/PODMASTER/"
+                                  "XML-TokeParser-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hnpwb3lh6cbgwvjjgqzcp6jm4mp612qn6ili38adc9nhkwv8fc5"))))
+    (build-system perl-build-system)
+    (propagated-inputs `(("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "http://search.cpan.org/dist/XML-TokeParser")
+    (synopsis "Simplified interface to XML::Parser")
+    (description
+     "@code{XML::TokeParser} provides a procedural (\"pull mode\") interface
+to @code{XML::Parser} in much the same way that Gisle Aas'
+@code{HTML::TokeParser} provides a procedural interface to @code{HTML::Parser}.
+@code{XML::TokeParser} splits its XML input up into \"tokens\", each
+corresponding to an @code{XML::Parser} event.")
+    (license (package-license perl))))
 
 (define-public perl-libxml
   (package
@@ -735,7 +786,9 @@ the form of functions.")
         "0fcgggry5x5bn0zhb09ij9hb0p45nb0sv0d9fw3cm1cf62hp9n80"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ; no tests
+     `(#:configure-flags '("-DCMAKE_CXX_FLAGS=-shared -fPIC"
+                           "-DCMAKE_C_FLAGS=-shared -fPIC")
+       #:tests? #f))                    ; no tests
     (home-page "http://pugixml.org")
     (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
     (description
@@ -779,9 +832,11 @@ code for classes that correspond to data structures defined by XMLSchema.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append
-            "https://fedorahosted.org/releases/x/m/xmlto/xmlto-"
-            version ".tar.bz2"))
+      ;; The old source on fedorahosted.org is offline permanently:
+      ;; <https://bugs.gnu.org/25989>
+      (uri (string-append "mirror://debian/pool/main/x/xmlto/"
+                          "xmlto_" version ".orig.tar.bz2"))
+      (file-name (string-append name "-" version ".tar.bz2"))
       (sha256
        (base32
         "0xhj8b2pwp4vhl9y16v3dpxpsakkflfamr191mprzsspg4xdyc0i"))))
