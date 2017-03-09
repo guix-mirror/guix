@@ -253,6 +253,8 @@ re-executing them as necessary.")
               (base32
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--localstatedir=/var")))
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))        ;for 'ftp'
     (native-inputs `(("netstat" ,net-tools))) ;for tests
