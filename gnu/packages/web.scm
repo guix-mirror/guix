@@ -4459,10 +4459,9 @@ functions of Tidy.")
     (home-page "https://www.hiawatha-webserver.org")
     (synopsis "Webserver with focus on security")
     (description
-     "Hiawatha has been written with security in mind.  This resulted in a
-highly secure webserver in both code and features.  Hiawatha can stop SQL
-injections, XSS and CSRF attacks and exploit attempts.  Via a specially
-crafted monitoring tool, you can keep track of all your webservers.")
+     "Hiawatha has been written with security in mind.
+Features include the ability to stop SQL injections, XSS and CSRF attacks and
+exploit attempts.")
     (license l:gpl2)))
 
 (define-public qutebrowser
