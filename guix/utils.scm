@@ -31,7 +31,7 @@
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
-  #:use-module ((rnrs io ports) #:hide (bytevector->string))
+  #:autoload   (rnrs io ports) (make-custom-binary-input-port)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port))
@@ -43,7 +43,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:use-module ((ice-9 iconv) #:select (bytevector->string))
+  #:use-module ((ice-9 iconv) #:prefix iconv:)
   #:use-module (system foreign)
   #:re-export (memoize)         ; for backwards compatibility
   #:export (bytevector->base16-string
@@ -326,7 +326,7 @@ This procedure returns #t on success."
       (seek in 0 SEEK_SET) ; read from the beginning of the file.
       (let* ((pre-bv  (get-bytevector-n in start))
              ;; The expression in string form.
-             (str     (bytevector->string
+             (str     (iconv:bytevector->string
                        (get-bytevector-n in (- end start))
                        (port-encoding in)))
              (post-bv (get-bytevector-all in))
