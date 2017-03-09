@@ -246,7 +246,12 @@ shared NFS home directories.")
 
                      ("gio/tests/gdbus-unix-addresses.c"
                       (;; Requires /etc/machine-id.
-                       "/gdbus/x11-autolaunch")))))
+                       "/gdbus/x11-autolaunch"))
+
+                     ("glib/tests/gdatetime.c"
+                      (;; Assumes that the Brasilian time zone is named 'BRT',
+                       ;; which is no longer true as of tzdata-2017a.
+                       "/GDateTime/new_full")))))
               (and-map (lambda (x) (apply disable x)) failing-tests)))))
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
