@@ -170,11 +170,7 @@ be output in text, PostScript, PDF or HTML.")
          "--with-ICU"
          "--enable-R-shlib"
          "--enable-BLAS-shlib"
-         "--with-system-zlib"
-         "--with-system-bzlib"
-         "--with-system-pcre"
-         "--with-system-tre"
-         "--with-system-xz")))
+         "--with-system-tre")))
     ;; R has some support for Java.  When the JDK is available at configure
     ;; time environment variables pointing to the JDK will be recorded under
     ;; $R_HOME/etc and ./tools/getsp.java will be compiled which is used by "R
