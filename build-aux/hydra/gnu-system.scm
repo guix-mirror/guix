@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -257,14 +257,17 @@ valid."
       ;; prevents known-to-fail cross-builds from i686-linux or armhf-linux to
       ;; mips64el-linux-gnuabi64.
       (and (or (string-prefix? "i686-" system)
+               (string-prefix? "i586-" system)
                (string-prefix? "armhf-" system))
-           (string-suffix? "64" target)))
+           (string-contains target "64")))    ;x86_64, mips64el, aarch64, etc.
 
     (define (same? target)
       ;; Return true if SYSTEM and TARGET are the same thing.  This is so we
       ;; don't try to cross-compile to 'mips64el-linux-gnu' from
       ;; 'mips64el-linux'.
-      (string-contains target system))
+      (or (string-contains target system)
+          (and (string-prefix? "armhf" system)    ;armhf-linux
+               (string-prefix? "arm" target))))   ;arm-linux-gnueabihf
 
     (define (pointless? target)
       ;; Return #t if it makes no sense to cross-build to TARGET from SYSTEM.
