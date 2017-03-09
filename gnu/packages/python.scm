@@ -3591,10 +3591,10 @@ association studies (GWAS) on extremely large data sets.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/scipy/scipy-sphinx-theme.git")
-                 (commit "c466764e22")))
+                 (commit "c466764e2231ba132c09826b5b138fffa1cfcec3")))
            (sha256
             (base32
-                "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl"))))
+             "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl"))))
        ,@(package-native-inputs python-numpy)))
     (arguments
      `(#:tests? #f ; we're only generating the documentation
