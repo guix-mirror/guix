@@ -4257,3 +4257,25 @@ including Bayesian regularization, dimension reduction for visualisation,
 and resampling-based inference.")
     (license license:gpl2+)))
 
+(define-public r-prabclus
+  (package
+    (name "r-prabclus")
+    (version "2.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "prabclus" version))
+       (sha256
+        (base32
+         "0qjsxrx6yv338bxm4ki0w9h8hind1l98abdrz828588bwj02jya1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mclust" ,r-mclust)))
+    (home-page "https://cran.r-project.org/web/packages/prabclus")
+    (synopsis "Parametric bootstrap tests for spatial neighborhood clustering")
+    (description
+     "This package provides a distance-based parametric bootstrap tests
+for clustering with spatial neighborhood information.  Some distance measures,
+clustering of presence-absence, abundance and multilocus genetical data for
+species delimitation, nearest neighbor based noise detection.")
+    (license license:gpl2+)))
