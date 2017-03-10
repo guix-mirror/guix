@@ -4279,3 +4279,26 @@ for clustering with spatial neighborhood information.  Some distance measures,
 clustering of presence-absence, abundance and multilocus genetical data for
 species delimitation, nearest neighbor based noise detection.")
     (license license:gpl2+)))
+
+(define-public r-deoptimr
+  (package
+    (name "r-deoptimr")
+    (version "1.0-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DEoptimR" version))
+       (sha256
+        (base32
+         "1vz546hyjyhly70z62h5n3mn62b8llhhmim8ffp9y6jnnb0i2sc4"))))
+    (properties `((upstream-name . "DEoptimR")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/DEoptimR")
+    (synopsis "Differential evolution optimization in pure R")
+    (description
+     "This package provides a differential evolution (DE) stochastic
+algorithms for global optimization of problems with and without constraints.
+The aim is to curate a collection of its state-of-the-art variants that (1) do
+not sacrifice simplicity of design, (2) are essentially tuning-free, and (3)
+can be efficiently implemented directly in the R language.")
+    (license license:gpl2+)))
