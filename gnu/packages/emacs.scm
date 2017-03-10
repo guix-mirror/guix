@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -3852,3 +3852,32 @@ mode-line.")
      "YASnippet is a template system for Emacs.  It allows you to type an
 abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
+
+(define-public emacs-memoize
+  (package
+   (name "emacs-memoize")
+   (version "20130421.b55eab0")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/skeeto/emacs-memoize")
+           (commit "b55eab0cb6ab05d941e07b8c01f1655c0cf1dd75")))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "0fjwlrdm270qcrqffvarw5yhijk656q4lam79ybhaznzj0dq3xpw"))))
+   (build-system emacs-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'install 'check
+                    (lambda _
+                      (zero? (system* "emacs" "-batch" "-l" "memoize.el"
+                                      "-l" "memoize-test.el"
+                                      "-f" "ert-run-tests-batch-and-exit")))))))
+   (home-page "https://github.com/skeeto/emacs-memoize")
+   (synopsis "Emacs lisp memoization library")
+   (description "@code{emacs-memoize} is an Emacs library for
+memoizing functions.")
+   (license license:unlicense)))
