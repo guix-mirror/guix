@@ -2839,15 +2839,17 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
   (package
     (name "hmmer")
     (version "3.1b2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://eddylab.org/software/hmmer"
-                    (version-prefix version 1) "/"
-                    version "/hmmer-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://eddylab.org/software/hmmer"
+             (version-prefix version 1) "/"
+             version "/hmmer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))
+       (patches (search-patches "hmmer-remove-cpu-specificity.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "http://hmmer.org/")
