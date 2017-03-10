@@ -6808,7 +6808,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-More than 4,000 packages are available, but you may
+More than 5,000 packages are available, but you may
 occasionally find that a useful package is missing.
 
 @item
