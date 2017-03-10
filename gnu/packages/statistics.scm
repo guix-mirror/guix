@@ -4302,3 +4302,26 @@ The aim is to curate a collection of its state-of-the-art variants that (1) do
 not sacrifice simplicity of design, (2) are essentially tuning-free, and (3)
 can be efficiently implemented directly in the R language.")
     (license license:gpl2+)))
+
+(define-public r-robustbase
+  (package
+    (name "r-robustbase")
+    (version "0.92-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "robustbase" version))
+       (sha256
+        (base32
+         "13xz4am7y0s0kl5bmbcw3dlhl7ji8h9sjx56wsgmj6r9n35nrggw"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-deoptimr" ,r-deoptimr)))
+    (home-page "http://robustbase.r-forge.r-project.org/")
+    (synopsis "Basic robust statistics")
+    (description
+     "This packages allows to analyze data with robust methods such as
+regression methodology including model selections and multivariate statistics.")
+    (license license:gpl2+)))
