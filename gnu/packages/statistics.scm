@@ -4169,3 +4169,23 @@ perform @dfn{independent component analysis} (ICA) and projection pursuit.")
 "This package provides the Breiman and Cutler's random forests algorithm, based on a
 forest of trees using random inputs, for classification and regression.")
     (license license:gpl2+)))
+
+(define-public r-diptest
+  (package
+    (name "r-diptest")
+    (version "0.75-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "diptest" version))
+       (sha256
+        (base32
+         "06xnc5gv1284ll0addxnxb6ljz6fn8dbyrp5vchyz6551h800aa6"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/diptest")
+    (synopsis "Hartigan's dip test statistic for unimodality")
+    (description
+     "This package computes Hartigan's dip test statistic for unimodality,
+multimodality and provides a test with simulation based p-values, where the
+original public code has been corrected.")
+    (license license:gpl2+)))
