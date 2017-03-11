@@ -220,6 +220,27 @@ publication-quality data plots.  A large amount of 3rd-party packages are
 available, greatly increasing its breadth and scope.")
     (license license:gpl3+)))
 
+(define-public r-boot
+  (package
+    (name "r-boot")
+    (version "1.3-18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "boot" version))
+       (sha256
+        (base32
+         "0pi348vvgzn1ny54yxhw6kq6nl7rx9bpr9ji1a6wqs8ah5zj7z8j"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/boot")
+    (synopsis "Bootstrap functions for R")
+    (description
+     "This package provides functions and datasets for bootstrapping from the
+book \"Bootstrap Methods and Their Application\" by A.C. Davison and
+D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
+    ;; Unlimited distribution
+    (license (license:non-copyleft "file://R/bootfuns.q"))))
+
 (define-public r-bit
   (package
     (name "r-bit")
