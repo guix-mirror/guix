@@ -511,6 +511,28 @@ analysis.")
     ;; Either version may be picked.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-survival
+  (package
+    (name "r-survival")
+    (version "2.40-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survival" version))
+       (sha256
+        (base32
+         "10pf0kq0g66k5rgizrvh29mq3r84acljw2jgrv5yp6z38xw23mci"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/therneau/survival")
+    (synopsis "Survival analysis")
+    (description
+     "This package contains the core survival analysis routines, including
+definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
+curves, Cox models, and parametric accelerated failure time models.")
+    (license license:lgpl2.0+)))
+
 (define-public r-bit
   (package
     (name "r-bit")
@@ -3682,26 +3704,6 @@ following problems:
  overlapping groups,...).
 @end enumerate\n")
     (license license:gpl3+)))
-
-(define-public r-survival
-  (package
-    (name "r-survival")
-    (version "2.40-1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "survival" version))
-       (sha256
-        (base32
-         "10pf0kq0g66k5rgizrvh29mq3r84acljw2jgrv5yp6z38xw23mci"))))
-    (build-system r-build-system)
-    (home-page "https://github.com/therneau/survival")
-    (synopsis "Survival analysis")
-    (description
-     "This package contains the core survival analysis routines, including
-definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
-curves, Cox models, and parametric accelerated failure time models.")
-    (license license:lgpl2.0+)))
 
 (define-public r-base64
   (package
