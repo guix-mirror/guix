@@ -4376,3 +4376,28 @@ clustering by merging Gaussian mixture components, as well as symmetric and
 asymmetric discriminant projections for visualisation of the separation of
 groupings.")
   (license license:gpl2+)))
+
+(define-public r-vgam
+  (package
+    (name "r-vgam")
+    (version "1.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "VGAM" version))
+       (sha256
+        (base32
+         "0wr6szcpj8r4a1rlzgd6iym7khin69fmvxcf37iyvs8mms86dfr3"))))
+    (properties `((upstream-name . "VGAM")))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://www.stat.auckland.ac.nz/~yee/VGAM")
+    (synopsis "Vector generalized linear and additive models")
+    (description
+    "This package is an implementation of about 6 major classes of statistical
+regression models.  Currently only fixed-effects models are implemented, i.e.,
+no random-effects models.  Many (150+) models and distributions are estimated
+by maximum likelihood estimation (MLE) or penalized MLE, using Fisher scoring.
+VGLMs can be loosely thought of as multivariate generalised linear models.")
+    (license license:gpl2+)))
