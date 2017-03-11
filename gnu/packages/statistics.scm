@@ -31,6 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -536,6 +537,30 @@ analysis.")
 definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
 curves, Cox models, and parametric accelerated failure time models.")
     (license license:lgpl2.0+)))
+
+(define-public r-with-recommended-packages
+  (package (inherit r)
+    (name "r-with-recommended-packages")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     `(("r" ,r)
+       ("r-boot" ,r-boot)
+       ("r-class" ,r-class)
+       ("r-cluster" ,r-cluster)
+       ("r-codetools" ,r-codetools)
+       ("r-foreign" ,r-foreign)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nlme" ,r-nlme)
+       ("r-nnet" ,r-nnet)
+       ("r-rpart" ,r-rpart)
+       ("r-spatial" ,r-spatial)
+       ("r-survival" ,r-survival)))))
 
 (define-public r-bit
   (package
