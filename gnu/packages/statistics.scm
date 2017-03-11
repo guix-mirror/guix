@@ -99,6 +99,9 @@ can be imported from spreadsheets, text files and database sources and it can
 be output in text, PostScript, PDF or HTML.")
     (license license:gpl3+)))
 
+;; Update this package together with the set of recommended packages: r-boot,
+;; r-class, r-cluster, r-codetools, r-foreign, r-kernsmooth, r-lattice,
+;; r-mass, r-matrix, r-mgcv, r-nlme, r-nnet, r-rpart, r-spatial, r-survival.
 (define-public r
   (package
     (name "r")
@@ -128,12 +131,8 @@ be output in text, PostScript, PDF or HTML.")
                (substitute* "src/scripts/R.sh.in"
                  (("uname") uname-bin)))
              #t))
-         (add-after 'unpack 'build-recommended-packages-reproducibly
+         (add-after 'unpack 'build-reproducibly
            (lambda _
-             (substitute* "src/library/Recommended/Makefile.in"
-               (("INSTALL_OPTS =(.*)" line rest )
-                (string-append "INSTALL_OPTS = --built-timestamp=1970-01-01"
-                               rest)))
              ;; Ensure that gzipped files are reproducible
              (substitute* '("src/library/grDevices/Makefile.in"
                             "doc/manual/Makefile.in")
@@ -162,7 +161,12 @@ be output in text, PostScript, PDF or HTML.")
          (add-after 'build 'install-info
           (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
-       '("--with-cairo"
+       '(;; Do not build the recommended packages.  The build system creates
+         ;; random temporary directories and embeds their names in some
+         ;; package files.  We build these packages with the r-build-system
+         ;; instead.
+         "--without-recommended-packages"
+         "--with-cairo"
          "--with-blas=-lopenblas"
          "--with-libpng"
          "--with-jpeglib"
@@ -991,6 +995,7 @@ legends.")
        ("r-gtable" ,r-gtable)
        ("r-plyr" ,r-plyr)
        ("r-lazyeval" ,r-lazyeval)
+       ("r-mass" ,r-mass)
        ("r-tibble" ,r-tibble)
        ("r-reshape2" ,r-reshape2)
        ("r-scales" ,r-scales)
@@ -1611,6 +1616,8 @@ side.")
         (base32
          "0lafrmq1q7x026m92h01hc9cjjiximqqi3v1g2hw7ai9vf7i897m"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
     (home-page "http://cran.r-project.org/web/packages/locfit")
     (synopsis "Local regression, likelihood and density estimation")
     (description
@@ -1788,6 +1795,8 @@ inference for statistical models.")
                (base32
                 "14a4a8df4ygj05h37chmdn8kzcqs07fpbflxfrq530563mrza7yl"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
     (home-page "http://cran.r-project.org/web/packages/coda")
     (synopsis "This is a package for Output Analysis and Diagnostics for MCMC")
     (description "This package provides functions for summarizing and plotting
@@ -2936,6 +2945,8 @@ flexible than the orphaned \"base64\" package.")
         (base32
          "1qbcn0ix85pmk296jhpi419kvh06vxm5cq24yk013ps3g7fyi0si"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
     (home-page "http://cran.r-project.org/web/packages/irlba")
     (synopsis "Methods for eigendecomposition of large matrices")
     (description
@@ -2956,10 +2967,11 @@ analysis of large sparse or dense matrices.")
       (base32
        "1cbpzmbv837fvq88rgn6mgzgr9f1wqp9fg8gh2kkmngvr1957a9c"))))
    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
+   (inputs
+    `(("gfortran" ,gfortran)))
    (propagated-inputs
-    `(("r-foreach" ,r-foreach)))
+    `(("r-foreach" ,r-foreach)
+      ("r-matrix" ,r-matrix)))
    (home-page "http://www.jstatsoft.org/v33/i01")
    (synopsis "Lasso and elastic-net regularized generalized linear models")
    (description
@@ -3077,6 +3089,8 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
         (base32
          "1069qwj9gsjq6par2cgfah8nn5x2w38830761x1f7mqpmk0gnj3h"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)))
     (home-page "http://cran.r-project.org/web/packages/e1071")
     (synopsis "Miscellaneous functions for probability theory")
     (description
@@ -3688,6 +3702,9 @@ from within R.")
                (("if isnan\\(lambda\\) \\{")
                 "if (isnan(lambda)) {"))
              #t)))))
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-matrix" ,r-matrix)))
     (home-page "http://spams-devel.gforge.inria.fr")
     (synopsis "Toolbox for solving sparse estimation problems")
     (description "SPAMS (SPArse Modeling Software) is an optimization toolbox
@@ -3746,17 +3763,20 @@ package instead.")
      `(("r-acepack" ,r-acepack)
        ("r-base64" ,r-base64)
        ("r-base64enc" ,r-base64enc)
+       ("r-cluster" ,r-cluster)
        ("r-data-table" ,r-data-table)
+       ("r-foreign" ,r-foreign)
        ("r-formula" ,r-formula)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-gtable" ,r-gtable)
-       ;; Hmisc needs survival >= 2.40.1, so it cannot use the survival
-       ;; package that comes with R 3.3.2.
-       ("r-survival" ,r-survival)
+       ("r-lattice" ,r-lattice)
        ("r-latticeextra" ,r-latticeextra)
        ("r-htmltable" ,r-htmltable)
        ("r-htmltools" ,r-htmltools)
+       ("r-nnet" ,r-nnet)
+       ("r-rpart" ,r-rpart)
+       ("r-survival" ,r-survival)
        ("r-viridis" ,r-viridis)))
     (home-page "http://biostat.mc.vanderbilt.edu/Hmisc")
     (synopsis "Miscellaneous data analysis and graphics functions")
@@ -4041,6 +4061,8 @@ estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
                (base32
                 "167m142rwwfy8b9hnfc3fi28dcsdjk61g1crqhll6sh5xmgnfn28"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
     (home-page "http://zoo.R-Forge.R-project.org/")
     (synopsis "S3 infrastructure for regular and irregular time series")
     (description "This package contains an S3 class with methods for totally
@@ -4307,7 +4329,9 @@ letters, as is often required for scientific publications.")
          "133rr17ywmlhsc6457hs8qxi8ng443ql9ashxpwc8875gjhv1x32"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-segmented" ,r-segmented)))
+     `(("r-boot" ,r-boot)
+       ("r-mass" ,r-mass)
+       ("r-segmented" ,r-segmented)))
     (home-page "http://cran.r-project.org/web/packages/mixtools")
     (synopsis "Tools for analyzing finite mixture models")
     (description
@@ -4437,7 +4461,9 @@ to change in the future.")
          "1i205yw3kkxs27gqcs6zx0c2mh16p332a2p06wq6fdzb20bazg3z"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-modeltools" ,r-modeltools)))
+     `(("r-lattice" ,r-lattice)
+       ("r-modeltools" ,r-modeltools)
+       ("r-nnet" ,r-nnet)))
     (home-page "http://cran.r-project.org/web/packages/flexmix")
     (synopsis "Flexible mixture modeling")
     (description
@@ -4484,7 +4510,8 @@ and resampling-based inference.")
          "0qjsxrx6yv338bxm4ki0w9h8hind1l98abdrz828588bwj02jya1"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mclust" ,r-mclust)))
+     `(("r-mass" ,r-mass)
+       ("r-mclust" ,r-mclust)))
     (home-page "https://cran.r-project.org/web/packages/prabclus")
     (synopsis "Parametric bootstrap tests for spatial neighborhood clustering")
     (description
@@ -4573,9 +4600,12 @@ of the points.")
          "15m0p9l9w2v7sl0cnzyg81i2fmx3hrhvr3371544mwn3fpsca5sx"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-diptest" ,r-diptest)
+     `(("r-class" ,r-class)
+       ("r-cluster" ,r-cluster)
+       ("r-diptest" ,r-diptest)
        ("r-flexmix" ,r-flexmix)
        ("r-kernlab" ,r-kernlab)
+       ("r-mass" ,r-mass)
        ("r-mclust" ,r-mclust)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-prabclus" ,r-prabclus)
@@ -4694,7 +4724,8 @@ based on an interface to Fortran implementations by M. J. D. Powell.")
     (properties `((upstream-name . "RcppEigen")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-matrix" ,r-matrix)))
     (home-page "http://eigen.tuxfamily.org")
     (synopsis "Rcpp integration for the Eigen templated linear algebra library")
     (description
@@ -4739,6 +4770,8 @@ metrics for evaluating models.")
          "0cyfvhci2p1vr2x52ymkyqqs63x1qchn856dh2j94yb93r08x1zy"))))
     (properties `((upstream-name . "MatrixModels")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
     (home-page "https://cran.r-project.org/web/packages/MatrixModels")
     (synopsis "Modelling with sparse and dense matrices")
     (description
@@ -4816,7 +4849,9 @@ algorithms.")
        ("r-rcppeigen" ,r-rcppeigen)))
     (propagated-inputs
      `(("r-minqa" ,r-minqa)
-       ("r-nloptr" ,r-nloptr)))
+       ("r-nloptr" ,r-nloptr)
+       ("r-mass" ,r-mass)
+       ("r-nlme" ,r-nlme)))
     (home-page "http://cran.r-project.org/web/packages/lme4")
     (synopsis "Linear mixed-effects models using eigen and S4")
     (description
@@ -4839,7 +4874,9 @@ C++ library for numerical linear algebra and RcppEigen glue.")
          "00cw18q7wvddzjrbxz917wkix6r7672vi2wmsp4gwgzady8vha4x"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lme4" ,r-lme4)))
+     `(("r-lme4" ,r-lme4)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
     (home-page "http://people.math.aau.dk/~sorenh/software/pbkrtest/")
     (synopsis "Methods for linear mixed model comparison")
     (description
@@ -4861,7 +4898,10 @@ bootstrap test for generalized linear mixed models.")
          "0a6v7rsd1xsdyapnfqy37m7c4kx9wslkzsizc9k0lmnba0bwyfgx"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-pbkrtest" ,r-pbkrtest)
+     `(("r-mass" ,r-mass)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nnet" ,r-nnet)
+       ("r-pbkrtest" ,r-pbkrtest)
        ("r-quantreg" ,r-quantreg)))
     (home-page "https://r-forge.r-project.org/projects/car/")
     (synopsis "Companion to applied regression")
@@ -5000,7 +5040,8 @@ multivariate case.")
          "0a1b7yp4l9wf6ic5czizyl2cnxrc1virj0icr8i6m1vv23jd8jfp"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mclust" ,r-mclust)
+     `(("r-cluster" ,r-cluster)
+       ("r-mclust" ,r-mclust)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-sn" ,r-sn)))
     (home-page "http://cran.r-project.org/web/packages/tclust")
