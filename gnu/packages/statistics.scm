@@ -4531,3 +4531,30 @@ metrics for evaluating models.")
      "This package models with sparse and dense matrix matrices,
 using modular prediction and response module classes.")
     (license license:gpl2+)))
+
+(define-public r-quantreg
+  (package
+    (name "r-quantreg")
+    (version "5.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "quantreg" version))
+       (sha256
+        (base32
+         "098gy8xv9kcl5y0cm93b8chr5sm6crrdxi20bkx9lmwmybl3himv"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-matrixmodels" ,r-matrixmodels)
+       ("r-sparsem" ,r-sparsem)))
+    (home-page "http://www.r-project.org")
+    (synopsis "Quantile regression")
+    (description
+     "This package provides an estimation and inference methods for models
+of conditional quantiles: linear and nonlinear parametric and non-parametric
+models for conditional quantiles of a univariate response and several methods
+for handling censored survival data.  Portfolio selection methods based on
+expected shortfall risk are also included.")
+    (license license:gpl2+)))
