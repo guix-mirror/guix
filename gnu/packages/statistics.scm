@@ -4345,3 +4345,34 @@ regression methodology including model selections and multivariate statistics.")
 Matran (1997).  This optimizes the k-means criterion under trimming a portion
 of the points.")
     (license license:gpl2+)))
+
+(define-public r-fpc
+  (package
+    (name "r-fpc")
+    (version "2.1-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fpc" version))
+       (sha256
+        (base32
+         "15m0p9l9w2v7sl0cnzyg81i2fmx3hrhvr3371544mwn3fpsca5sx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-diptest" ,r-diptest)
+       ("r-flexmix" ,r-flexmix)
+       ("r-kernlab" ,r-kernlab)
+       ("r-mclust" ,r-mclust)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-prabclus" ,r-prabclus)
+       ("r-robustbase" ,r-robustbase)
+       ("r-trimcluster" ,r-trimcluster)))
+    (home-page "http://cran.r-project.org/web/packages/fpc")
+    (synopsis "Flexible procedures for clustering")
+    (description
+     "This package provides various methods for clustering and cluster validation.
+For example, it provides fixed point clustering, linear regression clustering,
+clustering by merging Gaussian mixture components, as well as symmetric and
+asymmetric discriminant projections for visualisation of the separation of
+groupings.")
+  (license license:gpl2+)))
