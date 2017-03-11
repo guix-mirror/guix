@@ -544,21 +544,16 @@ GNU Guix depends on the following packages:
 @itemize
 @item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or later;
 @item @url{http://gnupg.org/, GNU libgcrypt};
+@item
+@uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
+(@pxref{Guile Preparations, how to install the GnuTLS bindings for
+Guile,, gnutls-guile, GnuTLS-Guile});
 @item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
 The following dependencies are optional:
 
 @itemize
-@item
-Installing @uref{http://gnutls.org/, GnuTLS-Guile} will allow you to
-access @code{https} URLs for substitutes, which is highly recommended
-(@pxref{Substitutes}).  It also allows you to access HTTPS URLs with the
-@command{guix download} command (@pxref{Invoking guix download}), the
-@command{guix import pypi} command, and the @command{guix import cpan}
-command.  @xref{Guile Preparations, how to install the GnuTLS bindings
-for Guile,, gnutls-guile, GnuTLS-Guile}.
-
 @item
 Installing
 @url{http://savannah.nongnu.org/projects/guile-json/, Guile-JSON} will
@@ -2003,8 +1998,7 @@ or to client tools such as @command{guix package}
 (@pxref{client-substitute-urls,, client @option{--substitute-urls}
 option}).
 
-Substitute URLs can be either HTTP or HTTPS@footnote{For HTTPS access,
-the Guile bindings of GnuTLS must be installed.  @xref{Requirements}.}
+Substitute URLs can be either HTTP or HTTPS.
 HTTPS is recommended because communications are encrypted; conversely,
 using HTTP makes all communications visible to an eavesdropper, who
 could use the information gathered to determine, for instance, whether
