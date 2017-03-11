@@ -4633,3 +4633,25 @@ C++ library for numerical linear algebra and RcppEigen glue.")
 modification of F-tests for linear mixed effects models and a parametric
 bootstrap test for generalized linear mixed models.")
     (license license:gpl2+)))
+
+(define-public r-car
+  (package
+    (name "r-car")
+    (version "2.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "car" version))
+       (sha256
+        (base32
+         "0a6v7rsd1xsdyapnfqy37m7c4kx9wslkzsizc9k0lmnba0bwyfgx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-pbkrtest" ,r-pbkrtest)
+       ("r-quantreg" ,r-quantreg)))
+    (home-page "https://r-forge.r-project.org/projects/car/")
+    (synopsis "Companion to applied regression")
+    (description
+      "This package provides functions and datasets from book Companion
+to Applied regression, Second Edition, Sage, 2011.")
+    (license license:gpl2+)))
