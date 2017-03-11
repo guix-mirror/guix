@@ -96,6 +96,28 @@
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
+(define-public r-ape
+  (package
+    (name "r-ape")
+    (version "4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ape" version))
+       (sha256
+        (base32
+         "0959fiiy11rzfzrzaknmgrx64bhszj02l0ycz79k5a6bmpfzanlk"))))
+    (build-system r-build-system)
+    (home-page "http://ape-package.ird.fr/")
+    (synopsis "Analyses of phylogenetics and evolution")
+    (description
+     "This package provides functions for reading, writing, plotting, and
+manipulating phylogenetic trees, analyses of comparative data in a
+phylogenetic framework, ancestral character analyses, analyses of
+diversification and macroevolution, computing distances from DNA sequences,
+and several other tools.")
+    (license license:gpl2+)))
+
 (define-public aragorn
   (package
     (name "aragorn")
