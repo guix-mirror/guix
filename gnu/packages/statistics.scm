@@ -4772,3 +4772,27 @@ ones, notably the skew-t family, and provides related statistical
 methods for data fitting and diagnostics, in the univariate and the
 multivariate case.")
     (license license:gpl2+)))
+
+(define-public r-tclust
+  (package
+    (name "r-tclust")
+    (version "1.2-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tclust" version))
+       (sha256
+        (base32
+         "0a1b7yp4l9wf6ic5czizyl2cnxrc1virj0icr8i6m1vv23jd8jfp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mclust" ,r-mclust)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-sn" ,r-sn)))
+    (home-page "http://cran.r-project.org/web/packages/tclust")
+    (synopsis "Robust trimmed clustering")
+    (description
+     "This package implements different robust clustering
+algorithms (@code{tclust}) based on trimming and including some graphical
+diagnostic tools (@code{ctlcurves} and @code{DiscrFact}).")
+    (license license:gpl3)))
