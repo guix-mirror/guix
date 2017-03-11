@@ -364,6 +364,26 @@ estimation) corresponding to the book: Wand, M.P. and Jones, M.C. (1995)
     ;; Unlimited distribution
     (license (license:non-copyleft "file://LICENCE.note"))))
 
+(define-public r-lattice
+  (package
+    (name "r-lattice")
+    (version "0.20-34")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lattice" version))
+              (sha256
+               (base32
+                "0615h69czr73k47whhzimf1qxv5qk0cabcrkljwhyrn6m6piq6ja"))))
+    (build-system r-build-system)
+    (home-page "http://lattice.r-forge.r-project.org/")
+    (synopsis "High-level data visualization system")
+    (description
+     "The lattice package provides a powerful and elegant high-level data
+visualization system inspired by Trellis graphics, with an emphasis on
+multivariate data.  Lattice is sufficient for typical graphics needs, and is
+also flexible enough to handle most nonstandard requirements.")
+    (license license:gpl2+)))
+
 (define-public r-bit
   (package
     (name "r-bit")
@@ -2169,26 +2189,6 @@ scaling functions for R.")
     (synopsis "Integration of base and grid graphics")
     (description
      "This package provides an integration of base and grid graphics for R.")
-    (license license:gpl2+)))
-
-(define-public r-lattice
-  (package
-    (name "r-lattice")
-    (version "0.20-34")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "lattice" version))
-              (sha256
-               (base32
-                "0615h69czr73k47whhzimf1qxv5qk0cabcrkljwhyrn6m6piq6ja"))))
-    (build-system r-build-system)
-    (home-page "http://lattice.r-forge.r-project.org/")
-    (synopsis "High-level data visualization system")
-    (description
-     "The lattice package provides a powerful and elegant high-level data
-visualization system inspired by Trellis graphics, with an emphasis on
-multivariate data.  Lattice is sufficient for typical graphics needs, and is
-also flexible enough to handle most nonstandard requirements.")
     (license license:gpl2+)))
 
 (define-public r-latticeextra
