@@ -4655,3 +4655,29 @@ bootstrap test for generalized linear mixed models.")
       "This package provides functions and datasets from book Companion
 to Applied regression, Second Edition, Sage, 2011.")
     (license license:gpl2+)))
+
+(define-public r-caret
+  (package
+    (name "r-caret")
+    (version "6.0-73")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "caret" version))
+       (sha256
+        (base32
+         "1jzaqwv4glyqqnfbpalgajd0ag866247vvdh5i83ffqs1yhs984h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-modelmetrics" ,r-modelmetrics)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/topepo/caret")
+    (synopsis "Classification and regression training")
+    (description
+     "This package provides misc functions for training and plotting
+classification and regression models.")
+    (license license:gpl2+)))
