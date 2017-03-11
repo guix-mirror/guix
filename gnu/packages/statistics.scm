@@ -4442,3 +4442,26 @@ showing the progress is useful e.g. bootstrap.")
 search algorithms and related applications including KNN classification,
 regression and information measures.")
     (license license:gpl2+)))
+
+(define-public r-minqa
+  (package
+    (name "r-minqa")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "minqa" version))
+       (sha256
+        (base32
+         "036drja6xz7awja9iwb76x91415p26fb0jmg7y7v0p65m6j978fg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://optimizer.r-forge.r-project.org")
+    (synopsis "Derivative-free optimization algorithms by quadratic approximation")
+    (description
+      "This package provides a derivative-free optimization by quadratic approximation
+based on an interface to Fortran implementations by M. J. D. Powell.")
+    (license license:gpl2)))
