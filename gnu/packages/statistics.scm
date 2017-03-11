@@ -453,6 +453,25 @@ parameter estimation by GCV, REML or UBRE/AIC.  The library includes a
 distributions beyond the exponential family.")
    (license license:gpl2+)))
 
+(define-public r-nnet
+  (package
+    (name "r-nnet")
+    (version "7.3-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nnet" version))
+       (sha256
+        (base32
+         "17amqnw9dpap2w8ivx53hxha2xrm0drwfnj32li0xk41hlz548r7"))))
+    (build-system r-build-system)
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "Feed-forward neural networks and multinomial log-linear models")
+    (description
+     "This package provides functions for feed-forward neural networks with a
+single hidden layer, and for multinomial log-linear models.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-bit
   (package
     (name "r-bit")
