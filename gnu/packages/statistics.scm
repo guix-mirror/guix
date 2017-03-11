@@ -491,6 +491,26 @@ single hidden layer, and for multinomial log-linear models.")
 classification, regression and survival trees.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-spatial
+  (package
+    (name "r-spatial")
+    (version "7.3-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatial" version))
+       (sha256
+        (base32
+         "04aw8j533sn63ybyrf4hyhrqm4058vfcb7yhjy07kq92mk94hi32"))))
+    (build-system r-build-system)
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "Functions for kriging and point pattern analysis")
+    (description
+     "This package provides functions for kriging and point pattern
+analysis.")
+    ;; Either version may be picked.
+    (license (list license:gpl2 license:gpl3))))
+
 (define-public r-bit
   (package
     (name "r-bit")
