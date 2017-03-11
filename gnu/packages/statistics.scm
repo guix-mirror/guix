@@ -4681,3 +4681,26 @@ to Applied regression, Second Edition, Sage, 2011.")
      "This package provides misc functions for training and plotting
 classification and regression models.")
     (license license:gpl2+)))
+
+(define-public r-rcppprogress
+  (package
+    (name "r-rcppprogress")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppProgress" version))
+       (sha256
+        (base32
+         "0796g11w7iv3ix1wfm3fh09qq7jki4r4cp1mjagq77igri3xrr9x"))))
+    (properties `((upstream-name . "RcppProgress")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/kforner/rcpp_progress")
+    (synopsis "Interruptible progress bar for C++ in R packages")
+    (description
+     "This package allows to display a progress bar in the R console for long running
+computations taking place in C++ code, and support for interrupting those computations
+even in multithreaded code, typically using OpenMP.")
+    (license license:gpl3+)))
