@@ -20,6 +20,7 @@
 
 (define-module (gnu packages wget)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
@@ -39,6 +40,7 @@
       (method url-fetch)
       (uri (string-append "mirror://gnu/wget/wget-"
                           version ".tar.xz"))
+      (patches (search-patches "wget-CVE-2017-6508.patch"))
       (sha256
        (base32
         "1ljcfhbkdsd0zjfm520rbl1ai62fc34i7c45sfj244l8f6b0p58c"))))
