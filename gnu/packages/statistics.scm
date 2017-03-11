@@ -4511,3 +4511,23 @@ decompositions of such matrices, and solutions of linear systems.")
      "Written in C++ using @code{Rcpp}, this package provides a collection of
 metrics for evaluating models.")
     (license license:gpl2+)))
+
+(define-public r-matrixmodels
+  (package
+    (name "r-matrixmodels")
+    (version "0.4-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MatrixModels" version))
+       (sha256
+        (base32
+         "0cyfvhci2p1vr2x52ymkyqqs63x1qchn856dh2j94yb93r08x1zy"))))
+    (properties `((upstream-name . "MatrixModels")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/MatrixModels")
+    (synopsis "Modelling with sparse and dense matrices")
+    (description
+     "This package models with sparse and dense matrix matrices,
+using modular prediction and response module classes.")
+    (license license:gpl2+)))
