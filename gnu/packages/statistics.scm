@@ -429,6 +429,30 @@ and operations on them using LAPACK and SuiteSparse.")
 nonlinear mixed-effects models.")
     (license license:gpl2+)))
 
+(define-public r-mgcv
+  (package
+   (name "r-mgcv")
+   (version "1.8-16")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "mgcv" version))
+     (sha256
+      (base32
+       "0pj31gdwra7nv8spys4pfcbmsik99q1y1d0d2g37ywc3sz5s0rlj"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-matrix" ,r-matrix)
+      ("r-nlme" ,r-nlme)))
+   (home-page "http://cran.r-project.org/web/packages/mgcv")
+   (synopsis "Mixed generalised additive model computation")
+   (description
+    "GAMs, GAMMs and other generalized ridge regression with multiple smoothing
+parameter estimation by GCV, REML or UBRE/AIC.  The library includes a
+@code{gam()} function, a wide variety of smoothers, JAGS support and
+distributions beyond the exponential family.")
+   (license license:gpl2+)))
+
 (define-public r-bit
   (package
     (name "r-bit")
@@ -667,27 +691,6 @@ about Rcpp is provided by several vignettes included in this package, via the
 and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 'citation(\"Rcpp\")' for details on these last two.")
     (license license:gpl2+)))
-
-(define-public r-mgcv
-  (package
-   (name "r-mgcv")
-   (version "1.8-16")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (cran-uri "mgcv" version))
-     (sha256
-      (base32
-       "0pj31gdwra7nv8spys4pfcbmsik99q1y1d0d2g37ywc3sz5s0rlj"))))
-   (build-system r-build-system)
-   (home-page "http://cran.r-project.org/web/packages/mgcv")
-   (synopsis "Mixed generalised additive model computation")
-   (description
-    "GAMs, GAMMs and other generalized ridge regression with multiple smoothing
-parameter estimation by GCV, REML or UBRE/AIC.  The library includes a
-@code{gam()} function, a wide variety of smoothers, JAGS support and
-distributions beyond the exponential family.")
-   (license license:gpl2+)))
 
 (define-public r-permute
   (package
