@@ -284,6 +284,26 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
     ;; Either of the two versions can be picked.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-cluster
+  (package
+    (name "r-cluster")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cluster" version))
+       (sha256
+        (base32
+         "1bkvqmv8h2c423q9ag2afb6s9j2vcdlxsf559zzbimraphrr2c2b"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/cluster")
+    (synopsis "Methods for cluster analysis")
+    (description
+     "This package provides methods for cluster analysis.  It is a much
+extended version of the original from Peter Rousseeuw, Anja Struyf and Mia
+Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
+    (license license:gpl2+)))
+
 (define-public r-bit
   (package
     (name "r-bit")
