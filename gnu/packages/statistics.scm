@@ -304,6 +304,24 @@ extended version of the original from Peter Rousseeuw, Anja Struyf and Mia
 Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
     (license license:gpl2+)))
 
+(define-public r-codetools
+  (package
+    (name "r-codetools")
+    (version "0.2-15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "codetools" version))
+       (sha256
+        (base32
+         "0h7sjmvvsi35041jp47cxhsqzgf1y8jrw6fxii7n26i8g7nrh1sf"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/codetools")
+    (synopsis "Code analysis tools for R")
+    (description "This package provides code analysis tools for R.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-bit
   (package
     (name "r-bit")
