@@ -4325,3 +4325,23 @@ can be efficiently implemented directly in the R language.")
      "This packages allows to analyze data with robust methods such as
 regression methodology including model selections and multivariate statistics.")
     (license license:gpl2+)))
+
+(define-public r-trimcluster
+  (package
+    (name "r-trimcluster")
+    (version "0.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "trimcluster" version))
+       (sha256
+        (base32
+         "0lsgbg93hm0w1rdb813ry0ks2l0jfpyqzqkf3h3bj6fch0avcbv2"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/trimcluster")
+    (synopsis "Cluster analysis with trimming")
+    (description
+     "The trimmed k-means clustering method by Cuesta-Albertos, Gordaliza and
+Matran (1997).  This optimizes the k-means criterion under trimming a portion
+of the points.")
+    (license license:gpl2+)))
