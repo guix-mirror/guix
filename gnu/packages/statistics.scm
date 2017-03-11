@@ -4796,3 +4796,26 @@ multivariate case.")
 algorithms (@code{tclust}) based on trimming and including some graphical
 diagnostic tools (@code{ctlcurves} and @code{DiscrFact}).")
     (license license:gpl3)))
+
+(define-public r-ranger
+  (package
+    (name "r-ranger")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ranger" version))
+       (sha256
+        (base32
+         "1fwqwbi0dnla16x6zj14rf95qr5gmilfmlrwnv7s960h4yiw4n97"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/imbs-hl/ranger")
+    (synopsis "Fast implementation of random forests")
+    (description
+     "This package provides a fast implementation of Random Forests,
+particularly suited for high dimensional data.  Ensembles of classification,
+regression, survival and probability prediction trees are supported.  Data from
+genome-wide association studies can be analyzed efficiently.")
+    (license license:gpl3)))
