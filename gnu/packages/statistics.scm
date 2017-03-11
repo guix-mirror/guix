@@ -4558,3 +4558,29 @@ models for conditional quantiles of a univariate response and several methods
 for handling censored survival data.  Portfolio selection methods based on
 expected shortfall risk are also included.")
     (license license:gpl2+)))
+
+(define-public r-nloptr
+  (package
+    (name "r-nloptr")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nloptr" version))
+       (sha256
+        (base32
+         "1cypz91z28vhvwq2rzqjrbdc6a2lvfr2g16vid2sax618q6ai089"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("nlopt" ,nlopt)))
+    (home-page "http://cran.r-project.org/web/packages/nloptr")
+    (synopsis "R interface to NLopt")
+    (description
+     "This package is interface to NLopt, a library for nonlinear
+optimization.  NLopt is a library for nonlinear optimization, providing a
+common interface for a number of different free optimization routines
+available online as well as original implementations of various other
+algorithms.")
+    (license license:lgpl3)))
