@@ -4489,3 +4489,25 @@ library for linear algebra: matrices, vectors, numerical solvers and related alg
 It supports dense and sparse matrices on integer, floating point and complex numbers,
 decompositions of such matrices, and solutions of linear systems.")
     (license license:gpl2+)))
+
+(define-public r-modelmetrics
+  (package
+    (name "r-modelmetrics")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+        (uri (cran-uri "ModelMetrics" version))
+        (sha256
+         (base32
+          "119xxmzb5biq7k1yxqsf0jmmarmfn6lds9x9hfgv593xlpym6za8"))))
+    (properties `((upstream-name . "ModelMetrics")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://cran.r-project.org/web/packages/ModelMetrics")
+    (synopsis "Rapid calculation of model metrics")
+    (description
+     "Written in C++ using @code{Rcpp}, this package provides a collection of
+metrics for evaluating models.")
+    (license license:gpl2+)))
