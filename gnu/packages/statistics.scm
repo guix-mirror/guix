@@ -4584,3 +4584,30 @@ common interface for a number of different free optimization routines
 available online as well as original implementations of various other
 algorithms.")
     (license license:lgpl3)))
+
+(define-public r-lme4
+  (package
+    (name "r-lme4")
+    (version "1.1-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lme4" version))
+       (sha256
+        (base32
+         "0j60l5kgx1wvw2wm3jwfqwi63hammaq8gfcxzwa4h552likvaxi9"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (propagated-inputs
+     `(("r-minqa" ,r-minqa)
+       ("r-nloptr" ,r-nloptr)))
+    (home-page "http://cran.r-project.org/web/packages/lme4")
+    (synopsis "Linear mixed-effects models using eigen and S4")
+    (description
+      "This package provides fit linear and generalized linear mixed-effects
+models.  The models and their components are represented using S4 classes and
+methods.  The core computational algorithms are implemented using the Eigen
+C++ library for numerical linear algebra and RcppEigen glue.")
+    (license license:gpl2+)))
