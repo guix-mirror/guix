@@ -4465,3 +4465,27 @@ regression and information measures.")
       "This package provides a derivative-free optimization by quadratic approximation
 based on an interface to Fortran implementations by M. J. D. Powell.")
     (license license:gpl2)))
+
+(define-public r-rcppeigen
+  (package
+    (name "r-rcppeigen")
+    (version "0.3.2.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppEigen" version))
+       (sha256
+        (base32
+         "0fy9kr03160f1ywzff3p380s8a59jz7d2d0rggb14g2y0slzpbr5"))))
+    (properties `((upstream-name . "RcppEigen")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://eigen.tuxfamily.org")
+    (synopsis "Rcpp integration for the Eigen templated linear algebra library")
+    (description
+      "This package provides an integration of Eigen in R using a C++ template
+library for linear algebra: matrices, vectors, numerical solvers and related algorithms.
+It supports dense and sparse matrices on integer, floating point and complex numbers,
+decompositions of such matrices, and solutions of linear systems.")
+    (license license:gpl2+)))
