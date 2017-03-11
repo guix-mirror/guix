@@ -241,6 +241,27 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
     ;; Unlimited distribution
     (license (license:non-copyleft "file://R/bootfuns.q"))))
 
+(define-public r-mass
+  (package
+    (name "r-mass")
+    (version "7.3-45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MASS" version))
+       (sha256
+        (base32
+         "13lp5919h2bnpmf8rbmkar8a41yx62fnx66pkvljvqf60wa29qsx"))))
+    (properties `((upstream-name . "MASS")))
+    (build-system r-build-system)
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "Support functions and datasets for Venables and Ripley's MASS")
+    (description
+     "This package provides functions and datasets for the book \"Modern
+Applied Statistics with S\" (4th edition, 2002) by Venables and Ripley.")
+    ;; Either version may be picked.
+    (license (list license:gpl2 license:gpl3))))
+
 (define-public r-bit
   (package
     (name "r-bit")
