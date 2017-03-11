@@ -262,6 +262,28 @@ Applied Statistics with S\" (4th edition, 2002) by Venables and Ripley.")
     ;; Either version may be picked.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-class
+  (package
+    (name "r-class")
+    (version "7.3-14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "class" version))
+       (sha256
+        (base32
+         "173b8a16lh1i0zjmr784l0xr0azp9v8bgslh12hfdswbq7dpdf0q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "R functions for classification")
+    (description
+     "This package provides various functions for classification, including
+k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
+    ;; Either of the two versions can be picked.
+    (license (list license:gpl2 license:gpl3))))
+
 (define-public r-bit
   (package
     (name "r-bit")
