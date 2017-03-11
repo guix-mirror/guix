@@ -325,6 +325,7 @@ data types.")
               (patches (search-patches
                         "python-fix-tests.patch"
                         "python-3.5-fix-tests.patch"
+                        "python-3.5-getentropy-on-old-kernels.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
