@@ -406,6 +406,29 @@ also flexible enough to handle most nonstandard requirements.")
 and operations on them using LAPACK and SuiteSparse.")
     (license license:gpl2+)))
 
+(define-public r-nlme
+  (package
+    (name "r-nlme")
+    (version "3.1-131")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nlme" version))
+       (sha256
+        (base32
+         "0k2nvdzhic6bzhfsbq6la6q6a1i5nlj4pnh6lpdxiiwvxdks3nkr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/nlme")
+    (synopsis "Linear and nonlinear mixed effects models")
+    (description
+     "This package provides tools to fit and compare Gaussian linear and
+nonlinear mixed-effects models.")
+    (license license:gpl2+)))
+
 (define-public r-bit
   (package
     (name "r-bit")
