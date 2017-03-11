@@ -4727,3 +4727,23 @@ distribution function of multivariate normal and \"t\" random variables, and
 for generating random vectors sampled from these distributions.  Probabilities
 are computed via non-Monte Carlo methods.")
     (license license:gpl2+)))
+
+(define-public r-numderiv
+  (package
+    (name "r-numderiv")
+    (version "2016.8-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "numDeriv" version))
+       (sha256
+        (base32
+         "07ni52rwiap4wilfz94w5mrqaxr59axxmgn57857ip4p6qkiss0v"))))
+    (properties `((upstream-name . "numDeriv")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/numDeriv")
+    (synopsis "Accurate numerical derivatives")
+    (description
+     "This package provides methods for calculating accurate numerical
+first and second order derivatives.")
+    (license license:gpl2)))
