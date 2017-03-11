@@ -4401,3 +4401,23 @@ no random-effects models.  Many (150+) models and distributions are estimated
 by maximum likelihood estimation (MLE) or penalized MLE, using Fisher scoring.
 VGLMs can be loosely thought of as multivariate generalised linear models.")
     (license license:gpl2+)))
+
+(define-public r-pbapply
+  (package
+    (name "r-pbapply")
+    (version "1.3-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pbapply" version))
+       (sha256
+        (base32
+         "1sdmjlnwxb99f95g5v8k8mirrkzw99yig377v0qi9lzwjgd6fqqr"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/psolymos/pbapply")
+    (synopsis "Adding progress bar to apply functions")
+    (description
+     "This lightweight package that adds progress bar to vectorized R
+functions apply.  The implementation can easily be added to functions where
+showing the progress is useful e.g. bootstrap.")
+    (license license:gpl2)))
