@@ -4747,3 +4747,28 @@ are computed via non-Monte Carlo methods.")
      "This package provides methods for calculating accurate numerical
 first and second order derivatives.")
     (license license:gpl2)))
+
+(define-public r-sn
+  (package
+    (name "r-sn")
+    (version "1.5-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sn" version))
+       (sha256
+        (base32
+         "0fh7xjsfd2x8d9lbnss7raldh24b72b3pvcv7zqa1qprzg7zfr01"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mnormt" ,r-mnormt)
+       ("r-numderiv" ,r-numderiv)))
+    (home-page "http://azzalini.stat.unipd.it/SN")
+    (synopsis "The skew-normal and skew-t distributions")
+    (description
+     "This packages provides functionalities to build and manipulate
+probability distributions of the skew-normal family and some related
+ones, notably the skew-t family, and provides related statistical
+methods for data fitting and diagnostics, in the univariate and the
+multivariate case.")
+    (license license:gpl2+)))
