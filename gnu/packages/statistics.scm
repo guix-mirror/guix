@@ -384,6 +384,28 @@ multivariate data.  Lattice is sufficient for typical graphics needs, and is
 also flexible enough to handle most nonstandard requirements.")
     (license license:gpl2+)))
 
+(define-public r-matrix
+  (package
+    (name "r-matrix")
+    (version "1.2-7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Matrix" version))
+       (sha256
+        (base32
+         "09rd51na9spz0lm1lylkfhw43w7c922b83m4jsggmpg3pbd6dssa"))))
+    (properties `((upstream-name . "Matrix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://Matrix.R-forge.R-project.org/")
+    (synopsis "Sparse and dense matrix classes and methods")
+    (description
+     "This package provides classes and methods for dense and sparse matrices
+and operations on them using LAPACK and SuiteSparse.")
+    (license license:gpl2+)))
+
 (define-public r-bit
   (package
     (name "r-bit")
@@ -621,28 +643,6 @@ about Rcpp is provided by several vignettes included in this package, via the
 'Rcpp Gallery' site at <http://gallery.rcpp.org>, the paper by Eddelbuettel
 and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 'citation(\"Rcpp\")' for details on these last two.")
-    (license license:gpl2+)))
-
-(define-public r-matrix
-  (package
-    (name "r-matrix")
-    (version "1.2-7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "Matrix" version))
-       (sha256
-        (base32
-         "09rd51na9spz0lm1lylkfhw43w7c922b83m4jsggmpg3pbd6dssa"))))
-    (properties `((upstream-name . "Matrix")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-lattice" ,r-lattice)))
-    (home-page "http://Matrix.R-forge.R-project.org/")
-    (synopsis "Sparse and dense matrix classes and methods")
-    (description
-     "This package provides classes and methods for dense and sparse matrices
-and operations on them using LAPACK and SuiteSparse.")
     (license license:gpl2+)))
 
 (define-public r-mgcv
