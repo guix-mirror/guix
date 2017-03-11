@@ -134,11 +134,44 @@ be output in text, PostScript, PDF or HTML.")
              #t))
          (add-after 'unpack 'build-reproducibly
            (lambda _
-             ;; Ensure that gzipped files are reproducible
+             ;; The documentation contains time stamps to demonstrate
+             ;; documentation generation in different phases.
+             (substitute* "src/library/tools/man/Rd2HTML.Rd"
+               (("\\\\%Y-\\\\%m-\\\\%d at \\\\%H:\\\\%M:\\\\%S")
+                "(removed for reproducibility)"))
+
+             ;; Remove timestamp from tracing environment.  This fixes
+             ;; reproducibility of "methods.rd{b,x}".
+             (substitute* "src/library/methods/R/trace.R"
+               (("dateCreated = Sys.time\\(\\)")
+                "dateCreated = as.POSIXct(\"1970-1-1 00:00:00\", tz = \"UTC\")"))
+
+             ;; Ensure that gzipped files are reproducible.
              (substitute* '("src/library/grDevices/Makefile.in"
                             "doc/manual/Makefile.in")
                (("R_GZIPCMD\\)" line)
                 (string-append line " -n")))
+
+             ;; The "srcfile" procedure in "src/library/base/R/srcfile.R"
+             ;; queries the mtime of a given file and records it in an object.
+             ;; This is acceptable at runtime to detect stale source files,
+             ;; but it destroys reproducibility at build time.
+             ;;
+             ;; Instead of disabling this feature, which may have unexpected
+             ;; consequences, we reset the mtime of generated files before
+             ;; passing them to the "srcfile" procedure.
+             (substitute* "src/library/Makefile.in"
+               (("@\\(cd base && \\$\\(MAKE\\) mkdesc\\)" line)
+                (string-append line "\n	find $(top_builddir)/library/tools | xargs touch -d '1970-01-01'; \n"))
+               (("@\\$\\(MAKE\\) Rdobjects" line)
+                (string-append "@find $(srcdir)/tools | xargs touch -d '1970-01-01'; \n	"
+                               line)))
+             (substitute* "src/library/tools/Makefile.in"
+               (("@\\$\\(INSTALL_DATA\\) all.R \\$\\(top_builddir\\)/library/\\$\\(pkg\\)/R/\\$\\(pkg\\)" line)
+                (string-append
+                 line
+                 "\n	find $(srcdir)/$(pkg) $(top_builddir)/library/$(pkg) | xargs touch -d \"1970-01-01\"; \n")))
+
              ;; This library is installed using "install_package_description",
              ;; so we need to pass the "builtStamp" argument.
              (substitute* "src/library/tools/Makefile.in"
