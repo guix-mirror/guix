@@ -36,6 +36,7 @@
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
+;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13598,3 +13599,26 @@ The distinctive feature of this B-tree is that a node is never
 copy-on-write.  This makes it easy to clone a tree, and modify only the
 clone, while other processes access the original tree.")
     (license license:gpl3+)))
+
+(define-public python-htmlmin
+  (package
+    (name "python-htmlmin")
+    (version "0.1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "htmlmin" version))
+       (sha256
+        (base32
+         "0qxa93j3p1ak32qh8d9kshqv8v3z0hkc13dwbhp5cn7sn3xmsp6a"))))
+    (arguments
+     `(#:tests? #f)) ;htmlmin has no tests
+    (build-system python-build-system)
+    (home-page "https://htmlmin.readthedocs.org/en/latest/")
+    (synopsis "HTML minifier")
+    (description "@code{htmlmin} is an HTML minifier that just works.
+It comes with safe defaults and easily configurable options.")
+    (license license:bsd-3)))
+
+(define-public python2-htmlmin
+  (package-with-python2 python-htmlmin))
