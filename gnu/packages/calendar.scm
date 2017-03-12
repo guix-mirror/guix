@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
@@ -64,10 +64,11 @@
            (lambda _
              (let ((tzdata (assoc-ref %build-inputs "tzdata")))
                (substitute* "src/libical/icaltz-util.c"
-                 (("char \\*search_paths \\[\\] =.*$")
-                  (string-append
-                   "char *search_paths [] = "
-                   "{\"" tzdata "/share/zoneinfo\"};\n"))))
+                 (("\\\"/usr/share/zoneinfo\\\",")
+                  (string-append "\"" tzdata "/share/zoneinfo\""))
+                 (("\\\"/usr/lib/zoneinfo\\\",") "")
+                 (("\\\"/etc/zoneinfo\\\",") "")
+                 (("\\\"/usr/share/lib/zoneinfo\\\"") "")))
              #t)))))
     (native-inputs
      `(("perl" ,perl)))
