@@ -13622,3 +13622,27 @@ It comes with safe defaults and easily configurable options.")
 
 (define-public python2-htmlmin
   (package-with-python2 python-htmlmin))
+
+(define-public python-flask-htmlmin
+  (package
+    (name "python-flask-htmlmin")
+    (version "1.2")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Flask-HTMLmin" version))
+      (sha256
+       (base32
+        "1n6zlq72kakkw0z2jpq6nh74lfsmxybm4g053pwhc14fbr809348"))))
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-htmlmin" ,python-htmlmin)))
+    (build-system python-build-system)
+    (home-page "https://github.com/hamidfzm/Flask-HTMLmin")
+    (synopsis "HTML response minifier for Flask")
+    (description
+     "Minify @code{text/html} MIME type responses when using @code{Flask}.")
+    (license license:bsd-3)))
+
+(define-public python2-flask-htmlmin
+  (package-with-python2 python-flask-htmlmin))
