@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,5 +123,25 @@
                 ;; unifying it requires traversing them all, and creating a
                 ;; new 'bin' sub-directory in the profile.
                 (eq? 'directory (stat:type (lstat "bin"))))))))
+
+(test-assert "union-build #:create-all-directories? #t"
+  (let* ((build  `(begin
+                    (use-modules (guix build union))
+                    (union-build (assoc-ref %outputs "out")
+                                 (map cdr %build-inputs)
+                                 #:create-all-directories? #t)))
+         (input  (package-derivation %store %bootstrap-guile))
+         (drv    (build-expression->derivation %store "union-test-all-dirs"
+                                               build
+                                               #:modules '((guix build union))
+                                               #:inputs `(("g" ,input)))))
+    (and (build-derivations %store (list drv))
+         (with-directory-excursion (derivation->output-path drv)
+           ;; Even though there's only one input to the union,
+           ;; #:create-all-directories? #t must have created bin/ rather than
+           ;; making it a symlink to Guile's bin/.
+           (and (file-exists? "bin/guile")
+                (file-is-directory? "bin")
+                (eq? 'symlink (stat:type (lstat "bin/guile"))))))))
 
 (test-end)
