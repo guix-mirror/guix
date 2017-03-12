@@ -317,7 +317,7 @@ data types.")
 
 (define-public python-3.5
   (package (inherit python-2)
-    (version "3.5.2")
+    (version "3.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -330,7 +330,7 @@ data types.")
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "0h6a5fr7ram2s483lh0pnmc4ncijb8llnpfdxdcl5dxr01hza400"))
+                "1c6v1n9nz4mlx9mw1125fxpmbrgniqdbbx9hnqx44maqazb2mzpf"))
               (snippet
                '(delete-file
                   "Lib/ctypes/test/test_win32.py")))) ; fails on aarch64

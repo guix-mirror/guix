@@ -3,23 +3,22 @@ http://bugs.python.org/issue20868 .
 
 --- Lib/test/test_shutil.py     2014-03-01 03:02:36.088311000 +0100
 +++ Lib/test/test_shutil.py     2014-03-01 04:56:37.768311000 +0100
-@@ -1053,6 +1053,7 @@
+@@ -1127,6 +1127,7 @@
          self.assertRaises(ValueError, make_archive, base_name, 'xxx')
- 
-     @requires_zlib
+
+     @support.requires_zlib
 +    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
      def test_make_archive_owner_group(self):
          # testing make_archive with owner and group, with various combinations
          # this works even if there's not gid/uid support
-@@ -1081,6 +1082,7 @@
- 
- 
-     @requires_zlib
+@@ -1155,6 +1156,7 @@
+
+
+     @support.requires_zlib
 +    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
      @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
      def test_tarfile_root_owner(self):
-         tmpdir, tmpdir2, base_name =  self._create_files()
-
+         root_dir, base_dir = self._create_files()
 --- Lib/test/test_socket.py.orig	2014-03-02 22:14:12.264311000 +0100
 +++ Lib/test/test_socket.py	2014-03-21 03:50:45.660311000 +0100
 @@ -819,6 +819,8 @@
