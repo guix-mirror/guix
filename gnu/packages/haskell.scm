@@ -8234,4 +8234,29 @@ handler built in.")
 handled safely, this is what you're left with.")
     (license license:isc)))
 
+(define-public ghc-json
+  (package
+    (name "ghc-json")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/json/"
+                           "json-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18l5027vc68hnnxrxlnyl59vkkg95a92m1zzms0dqiby2r6pxdcn"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-text" ,ghc-text)
+       ("ghc-parsec" ,ghc-parsec)))
+    (home-page "http://hackage.haskell.org/package/json")
+    (synopsis "Serializes Haskell data to and from JSON")
+    (description "This package provides a parser and pretty printer for
+converting between Haskell values and JSON.
+JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
