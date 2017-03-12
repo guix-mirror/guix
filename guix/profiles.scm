@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -877,9 +878,12 @@ entries.  It's used to query the MIME type of a given file."
                           #:substitutable? #f)
         (return #f))))
 
+;; Several font packages may install font files into same directory, so
+;; fonts.dir and fonts.scale file should be generated here, instead of in
+;; packages.
 (define (fonts-dir-file manifest)
   "Return a derivation that builds the @file{fonts.dir} and @file{fonts.scale}
-files for the truetype fonts of the @var{manifest} entries."
+files for the fonts of the @var{manifest} entries."
   (define mkfontscale
     (module-ref (resolve-interface '(gnu packages xorg)) 'mkfontscale))
 
@@ -891,29 +895,54 @@ files for the truetype fonts of the @var{manifest} entries."
         (use-modules (srfi srfi-26)
                      (guix build utils)
                      (guix build union))
-        (let ((ttf-dirs (filter file-exists?
-                                (map (cut string-append <>
-                                          "/share/fonts/truetype")
-                                     '#$(manifest-inputs manifest)))))
+        (let ((fonts-dirs (filter file-exists?
+                                  (map (cut string-append <>
+                                            "/share/fonts")
+                                       '#$(manifest-inputs manifest)))))
           (mkdir #$output)
-          (if (null? ttf-dirs)
+          (if (null? fonts-dirs)
               (exit #t)
-              (let* ((fonts-dir   (string-append #$output "/share/fonts"))
-                     (ttf-dir     (string-append fonts-dir "/truetype"))
+              (let* ((share-dir   (string-append #$output "/share"))
+                     (fonts-dir   (string-append share-dir "/fonts"))
                      (mkfontscale (string-append #+mkfontscale
                                                  "/bin/mkfontscale"))
                      (mkfontdir   (string-append #+mkfontdir
-                                                 "/bin/mkfontdir")))
-                (mkdir-p fonts-dir)
-                (union-build ttf-dir ttf-dirs
-                             #:log-port (%make-void-port "w"))
-                (with-directory-excursion ttf-dir
-                  (exit (and (zero? (system* mkfontscale))
-                             (zero? (system* mkfontdir))))))))))
+                                                 "/bin/mkfontdir"))
+                     (empty-file? (lambda (filename)
+                                    (call-with-ascii-input-file filename
+                                      (lambda (p)
+                                        (eqv? #\0 (read-char p))))))
+                     (fonts-dir-file "fonts.dir")
+                     (fonts-scale-file "fonts.scale"))
+                (mkdir-p share-dir)
+                ;; Create all sub-directories, because we may create fonts.dir
+                ;; and fonts.scale files in the sub-directories.
+                (union-build fonts-dir fonts-dirs
+                             #:log-port (%make-void-port "w")
+                             #:create-all-directories? #t)
+                (let ((directories (find-files fonts-dir
+                                               (lambda (file stat)
+                                                 (eq? 'directory (stat:type stat)))
+                                               #:directories? #t)))
+                  (for-each (lambda (dir)
+                              (with-directory-excursion dir
+                                (when (file-exists? fonts-scale-file)
+                                  (delete-file fonts-scale-file))
+                                (when (file-exists? fonts-dir-file)
+                                  (delete-file fonts-dir-file))
+                                (unless (and (zero? (system* mkfontscale))
+                                             (zero? (system* mkfontdir)))
+                                  (exit #f))
+                                (when (empty-file? fonts-scale-file)
+                                  (delete-file fonts-scale-file))
+                                (when (empty-file? fonts-dir-file)
+                                  (delete-file fonts-dir-file))))
+                            directories)))))))
 
   (gexp->derivation "fonts-dir" build
                     #:modules '((guix build utils)
-                                (guix build union))
+                                (guix build union)
+                                (srfi srfi-26))
                     #:local-build? #t
                     #:substitutable? #f))
 
