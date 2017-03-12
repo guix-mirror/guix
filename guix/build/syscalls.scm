@@ -1346,12 +1346,12 @@ given an integer, returns the list of names of the constants that are or'd."
      (begin
        (define-syntax constructor
          (syntax-rules (names ...)
+           ((_) 0)
            ((_ names) values) ...
-           ((_ several (... ...))
-            (logior (constructor several) (... ...)))))
+           ((_ first rest (... ...))
+            (logior (constructor first) rest (... ...)))))
        (define (bits->symbols bits)
-         (bits->symbols-body bits (names ...) (values ...)))
-       (define names values) ...))))
+         (bits->symbols-body bits (names ...) (values ...)))))))
 
 ;; 'local-flags' bits from <bits/termios.h>
 (define-bits local-flags
