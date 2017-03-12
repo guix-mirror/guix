@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,23 @@
      `(#:tests? #f                     ; no 'check' target
        #:phases
        (modify-phases %standard-phases
+         ;; Some XML-related binaries are required for asciidoc's proper usage.
+         ;; Without these, asciidoc fails when parsing XML documents, either
+         ;; reporting a missing "xmllint" binary or, when passed the
+         ;; "--no-xmllint" option, a missing "xsltproc" binary.
+         ;; The following phase enables asciidoc to find some of them.
+         (add-before 'configure 'set-xml-binary-paths
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let* ((libxml2 (assoc-ref inputs "libxml2"))
+                              (xmllint (string-append libxml2 "/bin/xmllint"))
+                              (libxslt (assoc-ref inputs "libxslt"))
+                              (xsltproc (string-append libxslt "/bin/xsltproc")))
+                         (substitute* "a2x.py"
+                           (("XMLLINT = 'xmllint'")
+                            (string-append "XMLLINT = '" xmllint "'"))
+                           (("XSLTPROC = 'xsltproc'")
+                            (string-append "XSLTPROC = '" xsltproc "'")))
+                         #t)))
          ;; Make asciidoc use the local docbook-xsl package instead of fetching
          ;; it from the internet at run-time.
          (add-before 'install 'make-local-docbook-xsl
@@ -67,7 +85,9 @@ release/xsl/current")
                                           ,(package-version docbook-xsl)))))
                        #t)))))
     (inputs `(("python" ,python-2)
-              ("docbook-xsl" ,docbook-xsl)))
+              ("docbook-xsl" ,docbook-xsl)
+              ("libxml2" ,libxml2)
+              ("libxslt" ,libxslt)))
     (home-page "http://www.methods.co.nz/asciidoc/")
     (synopsis "Text-based document generation system")
     (description
