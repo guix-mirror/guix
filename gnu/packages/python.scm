@@ -13646,3 +13646,32 @@ It comes with safe defaults and easily configurable options.")
 
 (define-public python2-flask-htmlmin
   (package-with-python2 python-flask-htmlmin))
+
+(define-public python-flask-login
+  (package
+    (name "python-flask-login")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/maxcountryman/flask-login/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pdqp7a2gyb7k06xda004x0fi2w66s6kn2i0ndkqndmg12d83f9w"))))
+    (arguments
+     ;; Tests fail PEP8 compliance. See:
+     ;; https://github.com/maxcountryman/flask-login/issues/340
+     `(#:tests? #f))
+    (build-system python-build-system)
+    (home-page "https://github.com/maxcountryman/flask-login")
+    (synopsis "User session management for Flask")
+    (description
+     "@code{Flask-Login} provides user session management for Flask.  It
+handles the common tasks of logging in, logging out, and remembering your
+users' sessions over extended periods of time.")
+    (license license:expat)))
+
+(define-public python2-flask-login
+  (package-with-python2 python-flask-login))
