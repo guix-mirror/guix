@@ -2880,8 +2880,8 @@ the GNU GPL.")
     (version "2.01.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://sourceforge.net/projects/tintin"
-                                  "/files/TinTin++ Source Code/" version
+              (uri (string-append "mirror://sourceforge/tintin"
+                                  "/TinTin++ Source Code/" version
                                   "/tintin" "-" version ".tar.gz"))
               (sha256
                (base32
