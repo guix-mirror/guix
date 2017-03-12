@@ -119,6 +119,7 @@ Package Management
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
+* Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 
 Programming Interface
@@ -530,6 +531,14 @@ by running the following command in the Guix source tree:
 make guix-binary.@var{system}.tar.xz
 @end example
 
+@noindent
+... which, in turn, runs:
+
+@example
+guix pack -s @var{system} guix
+@end example
+
+@xref{Invoking guix pack}, for more info on this handy tool.
 
 @node Requirements
 @section Requirements
@@ -1422,6 +1431,7 @@ guix package -i emacs-guix
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
+* Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 @end menu
 
@@ -2375,6 +2385,60 @@ guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar
 Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
 @end table
+
+
+@node Invoking guix pack
+@section Invoking @command{guix pack}
+
+Occasionally you want to pass software to people who are not (yet!)
+lucky enough to be using Guix.  You'd tell them to run @command{guix
+package -i @var{something}}, but that's not possible in this case.  This
+is where @command{guix pack} comes in.
+
+@cindex pack
+@cindex bundle
+@cindex application bundle
+@cindex software bundle
+The @command{guix pack} command creates a shrink-wrapped @dfn{pack} or
+@dfn{software bundle}: it creates a tarball or some other archive
+containing the binaries of the software you're interested in, and all
+its dependencies.  The resulting archive can be used on any machine that
+does not have Guix, and people can run the exact same binaries as those
+you have with Guix.
+
+For example, to create a bundle containing Guile, Emacs, Geiser, and all
+their dependencies, you can run:
+
+@example
+$ guix pack guile emacs geiser
+@dots{}
+/gnu/store/@dots{}-pack.tar.gz
+@end example
+
+The result here is a tarball containing a @file{/gnu/store} directory
+with all the relevant packages.  The resulting tarball contains a
+@dfn{profile} with the three packages of interest; the profile is the
+same as would be created by @command{guix package -i}.  It is this
+mechanism that is used to create Guix's own standalone binary tarball
+(@pxref{Binary Installation}).
+
+Several command-line options allow you to customize your pack:
+
+@table @code
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
+the system type of the build host.
+
+@item --compression=@var{tool}
+@itemx -C @var{tool}
+Compress the resulting tarball using @var{tool}---one of @code{gzip},
+@code{bzip2}, @code{xz}, or @code{lzip}.
+@end table
+
+In addition, @command{guix pack} supports all the common build options
+(@pxref{Common Build Options}) and all the package transformation
+options (@pxref{Package Transformation Options}).
 
 
 @node Invoking guix archive

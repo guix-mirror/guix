@@ -139,6 +139,7 @@ MODULES =					\
   guix/scripts/package.scm			\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
+  guix/scripts/pack.scm				\
   guix/scripts/pull.scm				\
   guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
@@ -397,7 +398,6 @@ EXTRA_DIST =						\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
-  build-aux/make-binary-tarball.scm			\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/run-system-tests.scm			\
@@ -486,9 +486,10 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 
 # The self-contained tarball.
 guix-binary.%.tar.xz:
-	$(AM_V_GEN)GUIX_PACKAGE_PATH= \
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	  "$(top_srcdir)/build-aux/make-binary-tarball.scm" "$*" "$@"
+	$(AM_V_GEN)GUIX_PACKAGE_PATH=				\
+	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz	\
+	  -s "$*" guix` ;					\
+	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
 dist-hook: sync-descriptions gen-ChangeLog gen-AUTHORS

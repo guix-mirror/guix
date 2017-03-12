@@ -39,12 +39,15 @@
 (use-modules (guix config)
              (guix store)
              (guix grafts)
+             (guix profiles)
              (guix packages)
              (guix derivations)
              (guix monads)
              ((guix licenses) #:select (gpl3+))
              ((guix utils) #:select (%current-system))
              ((guix scripts system) #:select (read-operating-system))
+             ((guix scripts pack)
+              #:select (lookup-compressor self-contained-tarball))
              (gnu packages)
              (gnu packages gcc)
              (gnu packages base)
@@ -213,7 +216,11 @@ all its dependencies, and ready to be installed on non-GuixSD distributions.")
                (run-with-store store
                  (mbegin %store-monad
                    (set-guile-for-build (default-guile))
-                   (self-contained-tarball))
+                   (>>= (profile-derivation (packages->manifest (list guix)))
+                        (lambda (profile)
+                          (self-contained-tarball "guix-binary" profile
+                                                  #:compressor
+                                                  (lookup-compressor "xz")))))
                  #:system system))))
 
 (define job-name
