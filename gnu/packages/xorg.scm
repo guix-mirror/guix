@@ -2989,7 +2989,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.13")
+    (version "1.0.14")
     (source
      (origin
        (method url-fetch)
@@ -2999,7 +2999,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
              ".tar.bz2"))
        (sha256
         (base32
-         "1js7vak68g2800f1cy5r41wl5x2j7dbmbd7zxypzfgcw2fx454kd"))))
+         "1h9izq510m2pvg77d0y9krc0cvvbhp2y3xlrrz6id7y47jdzkpsd"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
