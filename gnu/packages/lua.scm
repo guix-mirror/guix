@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -112,13 +112,13 @@ for configuration, scripting, and rapid prototyping.")
 (define-public luajit
   (package
     (name "luajit")
-    (version "2.0.4")
+    (version "2.1.0-beta2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://luajit.org/download/LuaJIT-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0zc0y7p6nx1c0pp4nhgbdgjljpfxsb5kgwp4ysz22l1p2bms83v2"))
+               (base32 "0iyghj1xjlmd9ywa4flf9yszynf3jhbp0yqb9b49k7ab0g528fbi"))
               (patches (search-patches "luajit-symlinks.patch"
                                        "luajit-no_ldconfig.patch"))))
     (build-system gnu-build-system)
