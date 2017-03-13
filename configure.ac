@@ -91,7 +91,14 @@ dnl Installation directory for .scm and .go files.
 guilemoduledir="${datarootdir}/guile/site/$GUILE_EFFECTIVE_VERSION"
 AC_SUBST([guilemoduledir])
 
-dnl guile-json is used for the PyPI package importer
+dnl The GnuTLS bindings are necessary for substitutes over HTTPS and for 'guix
+dnl pull', among other things.
+GUILE_MODULE_AVAILABLE([have_gnutls], [(gnutls)])
+if test "x$have_gnutls" != "xyes"; then
+  AC_MSG_ERROR([The Guile bindings of GnuTLS are missing; please install them.])
+fi
+
+dnl Guile-JSON is used in various places.
 GUILE_MODULE_AVAILABLE([have_guile_json], [(json)])
 AM_CONDITIONAL([HAVE_GUILE_JSON], [test "x$have_guile_json" = "xyes"])
 

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -622,3 +623,35 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
     (license (list license:gpl3+
                    license:lgpl3+
                    license:cc0))))
+
+(define-public obnam
+  (package
+    (name "obnam")
+    (version "1.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://code.liw.fi/debian/pool/main/o/obnam/obnam_"
+             version ".orig.tar.xz"))
+       (sha256
+        (base32
+         "0qlipsq50hca71zc0dp1mg9zs12qm0sbblw7qfzl0hj6mk2rv1by"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (inputs
+     `(("python2-cliapp" ,python2-cliapp)
+       ("python2-larch" ,python2-larch)
+       ("python2-paramiko" ,python2-paramiko)
+       ("python2-pyaml" ,python2-pyaml)
+       ("python2-tracing" ,python2-tracing)
+       ("python2-ttystatus" ,python2-ttystatus)))
+    (home-page "https://obnam.org/")
+    (synopsis "Easy and secure backup program")
+    (description "Obnam is an easy, secure backup program.  Features
+include snapshot backups, data de-duplication and encrypted backups
+using GnuPG.  Backups can be stored on local hard disks, or online via
+the SSH SFTP protocol.  The backup server, if used, does not require
+any special software, on top of SSH.")
+    (license license:gpl3+)))

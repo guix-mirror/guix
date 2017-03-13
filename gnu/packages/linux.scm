@@ -348,8 +348,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.10.1")
-(define %linux-libre-hash "0mvwrjny1bjqyjqjxff9m97j48ybfdw8qpdazr5rwk12234v4k3d")
+(define %linux-libre-version "4.10.2")
+(define %linux-libre-hash "01kinnv40lqsk6fyz1k7hkx2diyg4mgp28bwraar5sii1gqmcw7k")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -358,14 +358,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.13"
-                    "16miggwcwfpm7kx0yz256x887rky9wgmp1grg850lf8sdkiz0a1p"
+  (make-linux-libre "4.9.14"
+                    "104715z772if18qi61jbyhvidfh6qnwkiy0m9aa8irxgzs1pk9mn"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.52"
-                    "1fzcq9bbsxiij2fh6kgwrp417sy2j5gnbzs0wwlmznj7mvysl7qg"
+  (make-linux-libre "4.4.53"
+                    "07sfg4i506f3hmd9k4iimnq1w3x0980qxnh649d1sldqxbmhdgjs"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2764,7 +2764,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.9.1")
+    (version "4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2772,7 +2772,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1ppy2y9vypxw9awchari21yd3s2d7w2a9q3f4jq7dnjy5gyrnjj6"))))
+                "1njw2nrm51380d8arvqfmspa3app9353yd7hiddas3gpkaiwrjs4"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2839,9 +2839,9 @@ easy administration.")
            (remove-store-references target)
            (chmod target #o555)))))
     (home-page (package-home-page btrfs-progs))
-    (synopsis "Statically-linked btrfs command from btrfsprogs")
-    (description "This package provides statically-linked command of btrfs taken
-from the btrfsprogs package.  It is meant to be used in initrds.")
+    (synopsis "Statically-linked btrfs command from btrfs-progs")
+    (description "This package provides the statically-linked @command{btrfs}
+from the btrfs-progs package.  It is meant to be used in initrds.")
     (license (package-license btrfs-progs))))
 
 (define-public freefall

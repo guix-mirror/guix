@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -24,7 +24,6 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
-  #:use-module (guix profiles)
   #:use-module (gnu services shepherd)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
@@ -38,8 +37,7 @@
   #:use-module (gnu packages nvi)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
-  #:export (self-contained-tarball
-            installation-os))
+  #:export (installation-os))
 
 ;;; Commentary:
 ;;;
@@ -47,63 +45,6 @@
 ;;; for USB sticks etc., for the installation of the GNU system.
 ;;;
 ;;; Code:
-
-
-(define* (self-contained-tarball #:key (guix guix))
-  "Return a self-contained tarball containing a store initialized with the
-closure of GUIX.  The tarball contains /gnu/store, /var/guix, and a profile
-under /root/.guix-profile where GUIX is installed."
-  (mlet %store-monad ((profile (profile-derivation
-                                (manifest
-                                 (list (package->manifest-entry guix))))))
-    (define build
-      (with-imported-modules '((guix build utils)
-                               (guix build store-copy)
-                               (gnu build install))
-        #~(begin
-            (use-modules (guix build utils)
-                         (gnu build install))
-
-            (define %root "root")
-
-            (setenv "PATH"
-                    (string-append #$guix "/sbin:" #$tar "/bin:" #$xz "/bin"))
-
-            ;; Note: there is not much to gain here with deduplication and
-            ;; there is the overhead of the '.links' directory, so turn it
-            ;; off.
-            (populate-single-profile-directory %root
-                                               #:profile #$profile
-                                               #:closure "profile"
-                                               #:deduplicate? #f)
-
-            ;; Create the tarball.  Use GNU format so there's no file name
-            ;; length limitation.
-            (with-directory-excursion %root
-              (zero? (system* "tar" "--xz" "--format=gnu"
-
-                              ;; Avoid non-determinism in the archive.  Use
-                              ;; mtime = 1, not zero, because that is what the
-                              ;; daemon does for files in the store (see the
-                              ;; 'mtimeStore' constant in local-store.cc.)
-                              "--sort=name"
-                              "--mtime=@1"        ;for files in /var/guix
-                              "--owner=root:0"
-                              "--group=root:0"
-
-                              "--check-links"
-                              "-cvf" #$output
-                              ;; Avoid adding / and /var to the tarball, so
-                              ;; that the ownership and permissions of those
-                              ;; directories will not be overwritten when
-                              ;; extracting the archive.  Do not include /root
-                              ;; because the root account might have a
-                              ;; different home directory.
-                              "./var/guix"
-                              (string-append "." (%store-directory))))))))
-
-    (gexp->derivation "guix-tarball.tar.xz" build
-                      #:references-graphs `(("profile" ,profile)))))
 
 
 (define (log-to-info)

@@ -57,6 +57,21 @@
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define (uglify-field-name field-name)
+  (let ((str (symbol->string field-name)))
+    (string-concatenate
+     (map string-titlecase
+          (string-split (if (string-suffix? "?" str)
+                            (substring str 0 (1- (string-length str)))
+                            str)
+                        #\-)))))
+
+(define (serialize-field field-name val)
+  (format #t "~a ~a\n" (uglify-field-name field-name) val))
+
+(define (serialize-string field-name val)
+  (serialize-field field-name val))
+
 (define (multiline-string-list? val)
   (and (list? val)
        (and-map (lambda (x)
@@ -65,10 +80,27 @@
 (define (serialize-multiline-string-list field-name val)
   (for-each (lambda (str) (serialize-field field-name str)) val))
 
+(define (space-separated-string-list? val)
+  (and (list? val)
+       (and-map (lambda (x)
+                  (and (string? x) (not (string-index x #\space))))
+                val)))
+(define (serialize-space-separated-string-list field-name val)
+  (serialize-field field-name (string-join val " ")))
+
 (define (space-separated-symbol-list? val)
   (and (list? val) (and-map symbol? val)))
 (define (serialize-space-separated-symbol-list field-name val)
   (serialize-field field-name (string-join (map symbol->string val) " ")))
+
+(define (file-name? val)
+  (and (string? val)
+       (string-prefix? "/" val)))
+(define (serialize-file-name field-name val)
+  (serialize-string field-name val))
+
+(define (serialize-boolean field-name val)
+  (serialize-string field-name (if val "yes" "no")))
 
 (define (non-negative-integer? val)
   (and (exact-integer? val) (not (negative? val))))

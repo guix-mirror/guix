@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,7 +74,7 @@
 (define-public nss-certs
   (package
     (name "nss-certs")
-    (version "3.29.2")
+    (version "3.29.3")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -84,7 +85,7 @@
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "149807rmzb76hnh48rw4m9jw83iw0168njzchz0hmbsgc8mk0i5w"))))
+                "1sz1r2iml9bhd4iqiqz75gii855a25895vpy9scjky0y4lqwrp9m"))))
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs
@@ -139,3 +140,60 @@
 taken from the NSS package and thus ultimately from the Mozilla project.")
     (home-page "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")
     (license license:mpl2.0)))
+
+(define-public le-certs
+  (package
+    (name "le-certs")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((root (assoc-ref %build-inputs "isrgrootx1.pem"))
+               (intermediate (assoc-ref %build-inputs "letsencryptauthorityx3.pem"))
+               (backup (assoc-ref %build-inputs "letsencryptauthorityx4.pem"))
+               (out (string-append (assoc-ref %outputs "out") "/etc/ssl/certs")))
+           (mkdir-p out)
+           (for-each
+             (lambda (cert)
+               (copy-file cert (string-append out "/"
+                                              (strip-store-file-name cert))))
+             (list root intermediate backup))))))
+    (inputs
+     `(; The Let's Encrypt root certificate, "ISRG Root X1".
+       ("isrgrootx1.pem"
+        ,(origin
+           (method url-fetch)
+           (uri "https://letsencrypt.org/certs/isrgrootx1.pem")
+           (sha256
+            (base32
+             "0zhd1ps7sz4w1x52xk3v7ng6d0rcyi7y7rcrplwkmilnq5hzjv1y"))))
+       ;; "Let’s Encrypt Authority X3", the active Let's Encrypt intermediate
+       ;; certificate.
+       ("letsencryptauthorityx3.pem"
+        ,(origin
+           (method url-fetch)
+           (uri "https://letsencrypt.org/certs/letsencryptauthorityx3.pem")
+           (sha256
+            (base32
+             "0zbamj6c7zqw1j9mbqygc8k1ykgj6xiisp9svmlif5lkbnyjhnkk"))))
+       ;; "Let’s Encrypt Authority X4", the backup Let's Encrypt intermediate
+       ;; certificate.  This will be used for disaster recovery and will only be
+       ;; used should Let's Encrypt lose the ability to issue with "Let’s
+       ;; Encrypt Authority X3".
+       ("letsencryptauthorityx4.pem"
+        ,(origin
+           (method url-fetch)
+           (uri "https://letsencrypt.org/certs/letsencryptauthorityx4.pem")
+           (sha256
+            (base32
+             "003dc94c8qwj634h0dq743x7hqv9rdcfaisdksprkmi2jd107xq4"))))))
+    (home-page "https://letsencrypt.org/certificates/")
+    (synopsis "Let's Encrypt root and intermediate certificates")
+    (description "This package provides a certificate store containing only the
+Let's Encrypt root and intermediate certificates.  It is intended to be used
+within Guix.")
+    (license license:public-domain)))

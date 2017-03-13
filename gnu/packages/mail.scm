@@ -254,7 +254,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170225")
+    (version "20170306")
     (source
      (origin
        (method url-fetch)
@@ -263,20 +263,20 @@ operating systems.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00ll35g9pcanzrxsjp09vrmq6flml249dipcznrq2z4jy2zd386p"))))
+         "0qwcbjm9j1hgzmybw15w53pvfbqcdf47d4sw21s6r2yaj8kx1hag"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
-       ("lmdb" ,lmdb)
-       ("tokyocabinet" ,tokyocabinet)
        ("gpgme" ,gpgme)
        ("ncurses" ,ncurses)
        ("gnutls" ,gnutls)
        ("openssl" ,openssl) ;For smime
        ("perl" ,perl)
+       ("kyotocabinet" ,kyotocabinet)
        ("libxslt" ,libxslt)
        ("libidn" ,libidn)
        ("libxml2" ,libxml2)
+       ("lmdb" ,lmdb)
        ("docbook-xsl" ,docbook-xsl)
        ("notmuch" ,notmuch)))
     (native-inputs
@@ -291,11 +291,12 @@ operating systems.")
              "--enable-gpgme"
 
              ;; database, implies header caching
-             ;; neomutt supports building multiple backends
-             "--with-tokyocabinet"
+             "--without-tokyocabinet"
              "--without-qdbm"
              "--without-bdb"
              "--with-lmdb"
+             (string-append "--with-kyotocabinet="
+                            (assoc-ref %build-inputs "kyotocabinet"))
              "--with-gdbm"
 
              "--with-gnutls"
@@ -410,7 +411,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.13")
+    (version "7.0.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -418,7 +419,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kl72wcxnxb4y5lm2f7ymwjsisnnpwb4w971ajkxlsiwjhzq8i7p"))))
+                "0i5dvygps1ai2qwgamab8kngrp0c5m3bgaw0jk34l8ypsk54wj8r"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -662,14 +663,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.23.7")
+    (version "0.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04w90c43zk23pys6prkqb14al408qypifcfj2qznqpwlf46v26zi"))))
+                "1z3m9knsdmchvfjzjhjf2cmdc9yahmvbvzn46wsrsrihfvv4rr7p"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.

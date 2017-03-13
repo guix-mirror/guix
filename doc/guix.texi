@@ -32,7 +32,8 @@ Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
-Copyright @copyright{} 2017 Federico Beffa
+Copyright @copyright{} 2017 Federico Beffa@*
+Copyright @copyright{} 2017 Carlo Zancanaro
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -118,6 +119,7 @@ Package Management
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
+* Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 
 Programming Interface
@@ -529,6 +531,14 @@ by running the following command in the Guix source tree:
 make guix-binary.@var{system}.tar.xz
 @end example
 
+@noindent
+... which, in turn, runs:
+
+@example
+guix pack -s @var{system} guix
+@end example
+
+@xref{Invoking guix pack}, for more info on this handy tool.
 
 @node Requirements
 @section Requirements
@@ -543,21 +553,16 @@ GNU Guix depends on the following packages:
 @itemize
 @item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or later;
 @item @url{http://gnupg.org/, GNU libgcrypt};
+@item
+@uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
+(@pxref{Guile Preparations, how to install the GnuTLS bindings for
+Guile,, gnutls-guile, GnuTLS-Guile});
 @item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
 The following dependencies are optional:
 
 @itemize
-@item
-Installing @uref{http://gnutls.org/, GnuTLS-Guile} will allow you to
-access @code{https} URLs for substitutes, which is highly recommended
-(@pxref{Substitutes}).  It also allows you to access HTTPS URLs with the
-@command{guix download} command (@pxref{Invoking guix download}), the
-@command{guix import pypi} command, and the @command{guix import cpan}
-command.  @xref{Guile Preparations, how to install the GnuTLS bindings
-for Guile,, gnutls-guile, GnuTLS-Guile}.
-
 @item
 Installing
 @url{http://savannah.nongnu.org/projects/guile-json/, Guile-JSON} will
@@ -1426,6 +1431,7 @@ guix package -i emacs-guix
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
+* Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 @end menu
 
@@ -2002,8 +2008,7 @@ or to client tools such as @command{guix package}
 (@pxref{client-substitute-urls,, client @option{--substitute-urls}
 option}).
 
-Substitute URLs can be either HTTP or HTTPS@footnote{For HTTPS access,
-the Guile bindings of GnuTLS must be installed.  @xref{Requirements}.}
+Substitute URLs can be either HTTP or HTTPS.
 HTTPS is recommended because communications are encrypted; conversely,
 using HTTP makes all communications visible to an eavesdropper, who
 could use the information gathered to determine, for instance, whether
@@ -2380,6 +2385,60 @@ guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar
 Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
 @end table
+
+
+@node Invoking guix pack
+@section Invoking @command{guix pack}
+
+Occasionally you want to pass software to people who are not (yet!)
+lucky enough to be using Guix.  You'd tell them to run @command{guix
+package -i @var{something}}, but that's not possible in this case.  This
+is where @command{guix pack} comes in.
+
+@cindex pack
+@cindex bundle
+@cindex application bundle
+@cindex software bundle
+The @command{guix pack} command creates a shrink-wrapped @dfn{pack} or
+@dfn{software bundle}: it creates a tarball or some other archive
+containing the binaries of the software you're interested in, and all
+its dependencies.  The resulting archive can be used on any machine that
+does not have Guix, and people can run the exact same binaries as those
+you have with Guix.
+
+For example, to create a bundle containing Guile, Emacs, Geiser, and all
+their dependencies, you can run:
+
+@example
+$ guix pack guile emacs geiser
+@dots{}
+/gnu/store/@dots{}-pack.tar.gz
+@end example
+
+The result here is a tarball containing a @file{/gnu/store} directory
+with all the relevant packages.  The resulting tarball contains a
+@dfn{profile} with the three packages of interest; the profile is the
+same as would be created by @command{guix package -i}.  It is this
+mechanism that is used to create Guix's own standalone binary tarball
+(@pxref{Binary Installation}).
+
+Several command-line options allow you to customize your pack:
+
+@table @code
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
+the system type of the build host.
+
+@item --compression=@var{tool}
+@itemx -C @var{tool}
+Compress the resulting tarball using @var{tool}---one of @code{gzip},
+@code{bzip2}, @code{xz}, or @code{lzip}.
+@end table
+
+In addition, @command{guix pack} supports all the common build options
+(@pxref{Common Build Options}) and all the package transformation
+options (@pxref{Package Transformation Options}).
 
 
 @node Invoking guix archive
@@ -6812,7 +6871,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-More than 4,000 packages are available, but you may
+More than 5,000 packages are available, but you may
 occasionally find that a useful package is missing.
 
 @item
@@ -9336,18 +9395,30 @@ false, users have to use other authentication method.
 Authorized public keys are stored in @file{~/.ssh/authorized_keys}.
 This is used only by protocol version 2.
 
-@item @code{rsa-authentication?} (default: @code{#t})
-When true, users may log in using pure RSA authentication.  When false,
-users have to use other means of authentication.  This is used only by
-protocol 1.
-
 @item @code{x11-forwarding?} (default: @code{#f})
 When true, forwarding of X11 graphical client connections is
 enabled---in other words, @command{ssh} options @option{-X} and
 @option{-Y} will work.
 
-@item @code{protocol-number} (default: @code{2})
-The SSH protocol number to use.
+@item @code{challenge-response-authentication?} (default: @code{#f})
+Specifies whether challenge response authentication is allowed (e.g. via
+PAM).
+
+@item @code{use-pam?} (default: @code{#t})
+Enables the Pluggable Authentication Module interface.  If set to
+@code{#t}, this will enable PAM authentication using
+@code{challenge-response-authentication?} and
+@code{password-authentication?}, in addition to PAM account and session
+module processing for all authentication types.
+
+Because PAM challenge response authentication usually serves an
+equivalent role to password authentication, you should disable either
+@code{challenge-response-authentication?} or
+@code{password-authentication?}.
+
+@item @code{print-last-log?} (default: @code{#t})
+Specifies whether @command{sshd} should print the date and time of the
+last user login when a user logs in interactively.
 @end table
 @end deftp
 
@@ -10928,8 +10999,9 @@ Defaults to @samp{()}.
 
 Available @code{unix-listener-configuration} fields are:
 
-@deftypevr {@code{unix-listener-configuration} parameter} file-name path
-The file name on which to listen.
+@deftypevr {@code{unix-listener-configuration} parameter} string path
+Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.
 @end deftypevr
 
 @deftypevr {@code{unix-listener-configuration} parameter} string mode
@@ -10950,8 +11022,9 @@ Defaults to @samp{""}.
 
 Available @code{fifo-listener-configuration} fields are:
 
-@deftypevr {@code{fifo-listener-configuration} parameter} file-name path
-The file name on which to listen.
+@deftypevr {@code{fifo-listener-configuration} parameter} string path
+Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.
 @end deftypevr
 
 @deftypevr {@code{fifo-listener-configuration} parameter} string mode
@@ -12207,6 +12280,45 @@ File-like object of the OpenSMTPD configuration file to use.  By default
 it listens on the loopback network interface, and allows for mail from
 users and daemons on the local machine, as well as permitting email to
 remote servers.  Run @command{man smtpd.conf} for more information.
+
+@end table
+@end deftp
+
+@subsubheading Exim Service
+
+@deffn {Scheme Variable} exim-service-type
+This is the type of the @uref{https://exim.org, Exim} service, whose value
+should be an @code{exim-configuration} object as in this example:
+
+@example
+(service exim-service-type
+         (exim-configuration
+           (config-file (local-file "./my-exim.conf"))
+           (aliases '(("postmaster" "bob")
+                      ("bob" "bob@@example.com" "bob@@example2.com")))))
+@end example
+@end deffn
+
+@deftp {Data Type} exim-configuration
+Data type representing the configuration of exim.
+
+@table @asis
+@item @code{package} (default: @var{exim})
+Package object of the Exim server.
+
+@item @code{config-file} (default: @code{#f})
+File-like object of the Exim configuration file to use. If its value is
+@code{#f} then use the default configuration file from the package
+provided in @code{package}. The resulting configuration file is loaded
+after setting the @code{exim_user} and @code{exim_group} configuration
+variables.
+
+@item @code{aliases} (default: @code{'()})
+List of aliases to use when delivering mail on this system. The
+@code{car} of each list is used to match incoming mail, with the
+@code{cdr} of each list designating how to deliver it. There may be many
+delivery methods provided, in which case the mail is delivered to them
+all.
 
 @end table
 @end deftp
@@ -13840,9 +13952,9 @@ kernel modules that may be needed to achieve that.
 
 The @code{initrd} field of an @code{operating-system} declaration allows
 you to specify which initrd you would like to use.  The @code{(gnu
-system linux-initrd)} module provides two ways to build an initrd: the
-high-level @code{base-initrd} procedure, and the low-level
-@code{expression->initrd} procedure.
+system linux-initrd)} module provides three ways to build an initrd: the
+high-level @code{base-initrd} procedure and the low-level
+@code{raw-initrd} and @code{expression->initrd} procedures.
 
 The @code{base-initrd} procedure is intended to cover most common uses.
 For example, if you want to add a bunch of kernel modules to be loaded
@@ -13863,9 +13975,16 @@ The @code{base-initrd} procedure also handles common use cases that
 involves using the system as a QEMU guest, or as a ``live'' system with
 volatile root file system.
 
-The initial RAM disk produced by @code{base-initrd} honors several
-options passed on the Linux kernel command line (that is, arguments
-passed @i{via} the @code{linux} command of GRUB, or the
+The @code{base-initrd} procedure is built from @code{raw-initrd} procedure.
+Unlike @code{base-initrd}, @code{raw-initrd} doesn't do anything high-level,
+such as trying to guess which kernel modules and packages should be included
+to the initrd. An example use of @code{raw-initrd} is when a user has
+a custom Linux kernel configuration and default kernel modules included by
+@code{base-initrd} are not available.
+
+The initial RAM disk produced by @code{base-initrd} or @code{raw-initrd}
+honors several options passed on the Linux kernel command line
+(that is, arguments passed @i{via} the @code{linux} command of GRUB, or the
 @code{-append} option of QEMU), notably:
 
 @table @code
@@ -13904,19 +14023,23 @@ Manual}, for more information on Guile's REPL.
 @end table
 
 Now that you know all the features that initial RAM disks produced by
-@code{base-initrd} provide, here is how to use it and customize it
-further.
+@code{base-initrd} and @code{raw-initrd} provide,
+here is how to use it and customize it further.
 
 @cindex initrd
 @cindex initial RAM disk
-@deffn {Monadic Procedure} base-initrd @var{file-systems} @
-       [#:qemu-networking? #f] [#:virtio? #t] [#:volatile-root? #f] @
-       [#:extra-modules '()] [#:mapped-devices '()]
-Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
+@deffn {Monadic Procedure} raw-initrd @var{file-systems} @
+       [#:linux-modules '()] [#:mapped-devices '()] @
+       [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
+Return a monadic derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via @code{--root}.
+@var{linux-modules} is a list of kernel modules to be loaded at boot time.
 @var{mapped-devices} is a list of device mappings to realize before
 @var{file-systems} are mounted (@pxref{Mapped Devices}).
+@var{helper-packages} is a list of packages to be copied in the initrd. It may
+include @code{e2fsck/static} or other packages needed by the initrd to check
+root partition.
 
 When @var{qemu-networking?} is true, set up networking with the standard QEMU
 parameters.  When @var{virtio?} is true, load additional modules so that the
@@ -13924,6 +14047,18 @@ initrd can be used as a QEMU guest with para-virtualized I/O drivers.
 
 When @var{volatile-root?} is true, the root file system is writable but any changes
 to it are lost.
+@end deffn
+
+@deffn {Monadic Procedure} base-initrd @var{file-systems} @
+       [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
+       [#:virtio? #t] [#:extra-modules '()]
+Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
+a list of file systems to be mounted by the initrd like for @code{raw-initrd}.
+@var{mapped-devices}, @var{qemu-networking?} and @var{volatile-root?}
+also behaves as in @code{raw-initrd}.
+
+When @var{virtio?} is true, load additional modules so that the
+initrd can be used as a QEMU guest with para-virtualized I/O drivers.
 
 The initrd is automatically populated with all the kernel modules necessary
 for @var{file-systems} and for the given options.  However, additional kernel

@@ -2392,7 +2392,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.24.0")
+    (version "0.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2400,7 +2400,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0a1nn65qq71bbfhxq39zdb4b1h6ickzv98cjdacv4ngd18shgjyx"))))
+                "0vsmijamfzf6vcljrr0am2qcz33zl2l0lj2mzmbwgrm7ixjx2zxv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2811,10 +2811,10 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "e4fe79cf0d9a05ee3f3a027148ef0aeb2b1b34e1"))
+  (let ((commit "7e9e92c86b0fc4c848d164fe571798add5e1e36e"))
     (package
       (name "xf86-video-intel")
-      (version (string-append "2.99.917-3-" (string-take commit 7)))
+      (version (string-append "2.99.917-4-" (string-take commit 7)))
       (source
        (origin
          ;; there's no current tarball
@@ -2824,7 +2824,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "0hf3fxv5jchyh820h449c1ld9x19gc8081w1yk98mab6zr89zswp"))
+           "0igfw8vpz1q0a2526j81fl65z6avfh6lzzrijcs72gwihqqhb1sv"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -2994,7 +2994,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.13")
+    (version "1.0.14")
     (source
      (origin
        (method url-fetch)
@@ -3004,7 +3004,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
              ".tar.bz2"))
        (sha256
         (base32
-         "1js7vak68g2800f1cy5r41wl5x2j7dbmbd7zxypzfgcw2fx454kd"))))
+         "1h9izq510m2pvg77d0y9krc0cvvbhp2y3xlrrz6id7y47jdzkpsd"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))

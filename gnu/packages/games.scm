@@ -1349,7 +1349,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.1.21")
+    (version "1.7.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1357,7 +1357,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0q9hk9jgz5jja1mmba5iafxwavk6991kjpmdxdkgbam0hk15pqmz"))))
+                "0mbxzsgjg16pqa3jnxkd7wwvw1lrx455r7fvwjfhzp0yv7acrn10"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2880,8 +2880,8 @@ the GNU GPL.")
     (version "2.01.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://sourceforge.net/projects/tintin"
-                                  "/files/TinTin++ Source Code/" version
+              (uri (string-append "mirror://sourceforge/tintin"
+                                  "/TinTin++ Source Code/" version
                                   "/tintin" "-" version ".tar.gz"))
               (sha256
                (base32

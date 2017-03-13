@@ -652,8 +652,8 @@ hardware-related operations as necessary when booting a Linux container."
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
   (find (match-lambda
-         (($ <file-system> _ _ "/") #t)
-         (_ #f))
+         (($ <file-system> device title "/") #t)
+         (x #f))
         (operating-system-file-systems os)))
 
 (define (operating-system-initrd-file os)

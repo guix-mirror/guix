@@ -8194,4 +8194,22 @@ or filter messages based on the priority and source.  It also has a syslog
 handler built in.")
     (license license:bsd-3)))
 
+(define-public ghc-unexceptionalio
+  (package
+    (name "ghc-unexceptionalio")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "unexceptionalio-" version "/" "unexceptionalio-"
+                           version ".tar.gz"))
+       (sha256 (base32 "1f7h7zwky4scdcyjspg4ksfh7x6yra0wjybxq70p7vcwpgk2nzlj"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/singpolyma/unexceptionalio")
+    (synopsis "IO without any non-error, synchronous exceptions")
+    (description "When you've caught all the exceptions that can be
+handled safely, this is what you're left with.")
+    (license license:isc)))
+
 ;;; haskell.scm ends here

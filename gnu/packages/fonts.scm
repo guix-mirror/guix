@@ -1035,6 +1035,70 @@ designed to work well in user interface environments.")
 vector graphics.")
    (license license:silofl1.1)))
 
+(define-public font-tamzen
+  (package
+    (name "font-tamzen")
+    (version "1.11.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sunaku/tamzen-font/archive/"
+                           "Tamzen-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ryd7gp6qiwaqw73jqbmh4kwlriyd8xykh4j7z90z8xp9fm7lrys"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
+                                        "/bin/tar"))
+               (PATH     (string-append (assoc-ref %build-inputs "gzip")
+                                        "/bin"))
+               (font-dir (string-append %output "/share/fonts/misc"))
+               (psf-dir (string-append %output "/share/kbd/consolefonts"))
+               (src-pcf-dir (string-append "tamzen-font-Tamzen-"
+                                            ,version "/pcf")))
+           (setenv "PATH" PATH)
+           (system* tar "xvf" (assoc-ref %build-inputs "source"))
+           (mkdir-p font-dir)
+           (mkdir-p psf-dir)
+           (chdir src-pcf-dir)
+           (for-each (lambda (pcf)
+                       (install-file pcf font-dir))
+                     (find-files "." "\\.pcf$"))
+           (chdir "../psf")
+           (for-each (lambda (psf)
+                       (install-file psf psf-dir))
+                     (find-files "." "\\.psf$"))
+           #t))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (home-page "https://github.com/sunaku/tamzen-font")
+    (synopsis "Monospaced bitmap font for console and X11")
+    (description
+     "Tamzen is a fork of the @code{Tamsyn} font.  It is programatically forked
+from @code{Tamsyn} version 1.11, backporting glyphs from older versions while
+deleting deliberately empty glyphs (which are marked as unimplemented) to
+allow secondary/fallback fonts to provide real glyphs at those codepoints.
+
+The @code{TamzenForPowerline} fonts provide additional @code{Powerline} symbols,
+which are programatically injected with @code{bitmap-font-patcher} and
+later hand-tweaked with the gbdfed(1) editor:
+
+@enumerate
+@item all icons are expanded to occupy the maximum available space
+@item the branch of the fork icon ( U+E0A0) was made larger than the trunk
+@item for the newline icon ( U+E0A1), the @emph{N} was made larger at the bottom
+@item the keyhole in the padlock icon ( U+E0A2) was replaced with @emph{//} lines.
+@end enumerate\n")
+    (license (license:non-copyleft "file://LICENSE"))))
+
 (define-public font-comic-neue
   (package
    (name "font-comic-neue")

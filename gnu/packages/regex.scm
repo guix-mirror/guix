@@ -22,7 +22,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils))
 
 (define-public re2
    (package
@@ -42,7 +43,16 @@
      (arguments
       `(#:test-target "test"
         ;; There is no configure step, but the Makefile respects a prefix.
-        #:make-flags (list (string-append "prefix=" %output))
+        ;; As ./configure does not know anything about the target CXX
+        ;; we need to specify TARGET-g++ explicitly.
+        #:make-flags (list (string-append "prefix=" %output)
+                           (string-append
+                             "CXX=" ,(string-append
+                                       (if (%current-target-system)
+                                           (string-append
+                                             (%current-target-system) "-")
+                                           "")
+                                       "g++")))
         #:phases
         (modify-phases %standard-phases
           (delete 'configure)

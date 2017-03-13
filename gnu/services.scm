@@ -334,9 +334,11 @@ ACTIVATION-SCRIPT-TYPE."
   (mlet* %store-monad ((actions (service-activations)))
     (gexp->file "activate"
                 (with-imported-modules (source-module-closure
-                                        '((gnu build activation)))
+                                        '((gnu build activation)
+                                          (guix build utils)))
                   #~(begin
-                      (use-modules (gnu build activation))
+                      (use-modules (gnu build activation)
+                                   (guix build utils))
 
                       ;; Make sure the user accounting database exists.  If it
                       ;; does not exist, 'setutxent' does not create it and
@@ -345,6 +347,7 @@ ACTIVATION-SCRIPT-TYPE."
 
                       ;; Same for 'wtmp', which is populated by mingetty et
                       ;; al.
+                      (mkdir-p "/var/log")
                       (close-port (open-file "/var/log/wtmp" "a0"))
 
                       ;; Set up /run/current-system.  Among other things this

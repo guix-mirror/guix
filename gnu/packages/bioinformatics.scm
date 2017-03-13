@@ -63,6 +63,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages ldc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
@@ -94,6 +95,28 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
+
+(define-public r-ape
+  (package
+    (name "r-ape")
+    (version "4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ape" version))
+       (sha256
+        (base32
+         "0959fiiy11rzfzrzaknmgrx64bhszj02l0ycz79k5a6bmpfzanlk"))))
+    (build-system r-build-system)
+    (home-page "http://ape-package.ird.fr/")
+    (synopsis "Analyses of phylogenetics and evolution")
+    (description
+     "This package provides functions for reading, writing, plotting, and
+manipulating phylogenetic trees, analyses of comparative data in a
+phylogenetic framework, ancestral character analyses, analyses of
+diversification and macroevolution, computing distances from DNA sequences,
+and several other tools.")
+    (license license:gpl2+)))
 
 (define-public aragorn
   (package
@@ -2838,15 +2861,17 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
   (package
     (name "hmmer")
     (version "3.1b2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://eddylab.org/software/hmmer"
-                    (version-prefix version 1) "/"
-                    version "/hmmer-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://eddylab.org/software/hmmer"
+             (version-prefix version 1) "/"
+             version "/hmmer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))
+       (patches (search-patches "hmmer-remove-cpu-specificity.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "http://hmmer.org/")
@@ -5741,7 +5766,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
@@ -5751,7 +5776,7 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "007q9a50hdw4vs2iajabvbw7qccml4r8cbqzyi5ipkkf42jk3vnr"))
+         "15zy2d9xvgbgdjlxvrhj8s5ga42p13k7a3xv015ingn0bi1p3n6w"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
@@ -8574,3 +8599,99 @@ identifications while not exceeding a specified false discovery rate.  It also
 contains a number of utilities to explore the MS/MS results and assess missed
 and irregular enzymatic cleavages, mass measurement accuracy, etc.")
     (license license:artistic2.0)))
+
+(define htslib-for-sambamba
+  (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
+    (package
+      (inherit htslib)
+      (name "htslib-for-sambamba")
+      (version (string-append "1.3.1-1." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lomereiter/htslib.git")
+               (commit commit)))
+         (file-name (string-append "htslib-" version "-checkout"))
+         (sha256
+          (base32
+           "0g38g8s3npr0gjm9fahlbhiskyfws9l5i0x1ml3rakzj7az5l9c9"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments htslib)
+         ((#:phases phases)
+          `(modify-phases  ,phases
+             (add-before 'configure 'bootstrap
+               (lambda _
+                 (zero? (system* "autoreconf" "-vif"))))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ,@(package-native-inputs htslib))))))
+
+(define-public sambamba
+  (package
+    (name "sambamba")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lomereiter/sambamba/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17076gijd65a3f07zns2gvbgahiz5lriwsa6dq353ss3jl85d8vy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there is no test target
+       #:make-flags
+       '("D_COMPILER=ldc2"
+         ;; Override "--compiler" flag only.
+         "D_FLAGS=--compiler=ldc2 -IBioD -g -d"
+         "sambamba-ldmd2-64")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'place-biod
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "biod") "BioD")
+             #t))
+         (add-after 'unpack 'unbundle-prerequisites
+           (lambda _
+             (substitute* "Makefile"
+               ((" htslib-static lz4-static") ""))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin")))
+               (mkdir-p bin)
+               (install-file "build/sambamba" bin)
+               #t))))))
+    (native-inputs
+     `(("ldc" ,ldc)
+       ("rdmd" ,rdmd)
+       ("biod"
+        ,(let ((commit "1248586b54af4bd4dfb28ebfebfc6bf012e7a587"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/biod/BioD.git")
+                   (commit commit)))
+             (file-name (string-append "biod-"
+                                       (string-take commit 9)
+                                       "-checkout"))
+             (sha256
+              (base32
+               "1m8hi1n7x0ri4l6s9i0x6jg4z4v94xrfdzp7mbizdipfag0m17g3")))))))
+    (inputs
+     `(("lz4" ,lz4)
+       ("htslib" ,htslib-for-sambamba)))
+    (home-page "http://lomereiter.github.io/sambamba")
+    (synopsis "Tools for working with SAM/BAM data")
+    (description "Sambamba is a high performance modern robust and
+fast tool (and library), written in the D programming language, for
+working with SAM and BAM files.  Current parallelised functionality is
+an important subset of samtools functionality, including view, index,
+sort, markdup, and depth.")
+    (license license:gpl2+)))

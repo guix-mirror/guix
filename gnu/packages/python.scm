@@ -30,12 +30,13 @@
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
+;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3433,8 +3434,6 @@ producing implementations of dynamic languages, emphasizing a clean separation
 between language specification and implementation aspects.")
     (license license:expat)))
 
-;; This version of numpy is missing the documentation and is only used to
-;; build matplotlib which is required to build numpy's documentation.
 (define-public python-numpy
   (package
     (name "python-numpy")
@@ -3581,10 +3580,10 @@ association studies (GWAS) on extremely large data sets.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/scipy/scipy-sphinx-theme.git")
-                 (commit "c466764e22")))
+                 (commit "c466764e2231ba132c09826b5b138fffa1cfcec3")))
            (sha256
             (base32
-                "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl"))))
+             "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl"))))
        ,@(package-native-inputs python-numpy)))
     (arguments
      `(#:tests? #f ; we're only generating the documentation
@@ -13479,3 +13478,188 @@ specified to apply on the key before comparison (e.g. @code{string.lower})).")
 Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
     (license license:gpl2)))
+
+(define-public python2-cliapp
+  (package
+    (name "python2-cliapp")
+    (version "1.20160724")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/cliapp/snapshot/cliapp-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "025cyi75vxyghbm4hav8dz4fzwksshddavy9g9fwr440awcvw74f"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-pyaml" ,python2-pyaml)))
+    (home-page "https://liw.fi/cliapp/")
+    (synopsis "Python framework for command line programs")
+    (description "@code{python2-cliapp} is a python framework for
+command line programs.  It contains the typical stuff such programs
+need to do, such as parsing the command line for options, and
+iterating over input files.")
+    (license license:gpl2+)))
+
+(define-public python2-ttystatus
+  (package
+    (name "python2-ttystatus")
+    (version "0.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/ttystatus/snapshot/ttystatus-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0b5g889jj23r2w1hi300cdldx6jvspanp0ybf5n1qvdvl150aamf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://liw.fi/ttystatus/")
+    (synopsis "Python library for showing progress reporting and
+status updates on terminals")
+    (description "@code{python2-ttystatus} is a python library for
+showing progress reporting and status updates on terminals, for
+command line programs.  Output is automatically adapted to the width
+of the terminal: truncated if it does not fit, and resized if the
+terminal size changes.")
+    (license license:gpl3+)))
+
+(define-public python2-tracing
+  (package
+    (name "python2-tracing")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/python-tracing/snapshot/tracing-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "06cw4zg42fsvqy372vi2whj26w56vzg5axhzwdjc2bgwf03garbw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://liw.fi/tracing/")
+    (synopsis "Python debug logging helper")
+    (description "@code{python2-tracing} is a python library for
+logging debug messages.  It provides a way to turn debugging messages
+on and off, based on the filename they occur in.  It is much faster
+than using @code{logging.Filter} to accomplish the same thing, which
+matters when code is run in production mode.  The actual logging still
+happens using the @code{logging} library.")
+    (license license:gpl3+)))
+
+(define-public python2-larch
+  (package
+    (name "python2-larch")
+    (version "1.20151025")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/larch/snapshot/larch-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1p4knkkavlqymgciz2wbcnfrdgdbafhg14maplnk4vbw0q8xs663"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-tracing" ,python2-tracing)))
+    (home-page "https://liw.fi/larch/")
+    (synopsis "Python copy-on-write B-tree library")
+    (description "@code{python2-larch} is an implementation of
+particular kind of B-tree, based on research by Ohad Rodeh.  See
+@url{http://liw.fi/larch/ohad-btrees-shadowing-clones.pdf} for details
+on the data structure.
+
+The distinctive feature of this B-tree is that a node is never
+(conceptually) modified.  Instead, all updates are done by
+copy-on-write.  This makes it easy to clone a tree, and modify only the
+clone, while other processes access the original tree.")
+    (license license:gpl3+)))
+
+(define-public python-htmlmin
+  (package
+    (name "python-htmlmin")
+    (version "0.1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "htmlmin" version))
+       (sha256
+        (base32
+         "0qxa93j3p1ak32qh8d9kshqv8v3z0hkc13dwbhp5cn7sn3xmsp6a"))))
+    (arguments
+     `(#:tests? #f)) ;htmlmin has no tests
+    (build-system python-build-system)
+    (home-page "https://htmlmin.readthedocs.org/en/latest/")
+    (synopsis "HTML minifier")
+    (description "@code{htmlmin} is an HTML minifier that just works.
+It comes with safe defaults and easily configurable options.")
+    (license license:bsd-3)))
+
+(define-public python2-htmlmin
+  (package-with-python2 python-htmlmin))
+
+(define-public python-flask-htmlmin
+  (package
+    (name "python-flask-htmlmin")
+    (version "1.2")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Flask-HTMLmin" version))
+      (sha256
+       (base32
+        "1n6zlq72kakkw0z2jpq6nh74lfsmxybm4g053pwhc14fbr809348"))))
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-htmlmin" ,python-htmlmin)))
+    (build-system python-build-system)
+    (home-page "https://github.com/hamidfzm/Flask-HTMLmin")
+    (synopsis "HTML response minifier for Flask")
+    (description
+     "Minify @code{text/html} MIME type responses when using @code{Flask}.")
+    (license license:bsd-3)))
+
+(define-public python2-flask-htmlmin
+  (package-with-python2 python-flask-htmlmin))
+
+(define-public python-flask-login
+  (package
+    (name "python-flask-login")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/maxcountryman/flask-login/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pdqp7a2gyb7k06xda004x0fi2w66s6kn2i0ndkqndmg12d83f9w"))))
+    (arguments
+     ;; Tests fail PEP8 compliance. See:
+     ;; https://github.com/maxcountryman/flask-login/issues/340
+     `(#:tests? #f))
+    (build-system python-build-system)
+    (home-page "https://github.com/maxcountryman/flask-login")
+    (synopsis "User session management for Flask")
+    (description
+     "@code{Flask-Login} provides user session management for Flask.  It
+handles the common tasks of logging in, logging out, and remembering your
+users' sessions over extended periods of time.")
+    (license license:expat)))
+
+(define-public python2-flask-login
+  (package-with-python2 python-flask-login))

@@ -129,7 +129,7 @@ interface to the Tk widget system.")
 (define-public ecl
   (package
     (name "ecl")
-    (version "16.1.2")
+    (version "16.1.3")
     (source
      (origin
        (method url-fetch)
@@ -137,7 +137,7 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "16ab8qs3awvdxy8xs8jy82v8r04x4wr70l9l2j45vgag18d2nj1d"))
+        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))
        (modules '((guix build utils)))
        (snippet
         ;; Add ecl-bundle-systems to 'default-system-source-registry'.
@@ -152,9 +152,6 @@ interface to the Tk widget system.")
               ("libffi" ,libffi)))
     (arguments
      '(#:tests? #t
-       #:make-flags `(,(string-append "ECL="
-                                      (assoc-ref %outputs "out")
-                                      "/bin/ecl"))
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -182,7 +179,12 @@ interface to the Tk widget system.")
                          `("kernel-headers" ,@libraries)))
                  `("LIBRARY_PATH" suffix ,library-directories)
                  `("LD_LIBRARY_PATH" suffix ,library-directories)))))
-         (add-after 'wrap 'check (assoc-ref %standard-phases 'check)))))
+         (add-after 'wrap 'check (assoc-ref %standard-phases 'check))
+         (add-before 'check 'fix-path-to-ecl
+           (lambda _
+             (substitute* "build/tests/Makefile"
+               (("\\$\\{exec_prefix\\}/") ""))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DATA_DIRS")

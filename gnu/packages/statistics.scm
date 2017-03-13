@@ -3227,14 +3227,17 @@ and tidyr provides no margins or aggregation.")
 (define-public r-hexbin
   (package
     (name "r-hexbin")
-    (version "1.27.1")
+    ;; The package tarball was updated in place, resulting in a change in the
+    ;; hash value.  We decided to bump the version to 1.27.1-1 instead of
+    ;; keeping the version at upstream's 1.27.1.
+    (version "1.27.1-1")
     (source
      (origin
        (method url-fetch)
-       (uri (cran-uri "hexbin" version))
+       (uri (cran-uri "hexbin" "1.27.1"))
        (sha256
         (base32
-         "0xi6fbf1fvyn2gffr052n3viibqzpr3603sgi4xaminbzja4syjh"))))
+         "025d609z1nyy684hwvp34b9mjzkgvild7fvfr95f941dmsikan87"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -4169,4 +4172,672 @@ perform @dfn{independent component analysis} (ICA) and projection pursuit.")
     (description
 "This package provides the Breiman and Cutler's random forests algorithm, based on a
 forest of trees using random inputs, for classification and regression.")
+    (license license:gpl2+)))
+
+(define-public r-diptest
+  (package
+    (name "r-diptest")
+    (version "0.75-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "diptest" version))
+       (sha256
+        (base32
+         "06xnc5gv1284ll0addxnxb6ljz6fn8dbyrp5vchyz6551h800aa6"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/diptest")
+    (synopsis "Hartigan's dip test statistic for unimodality")
+    (description
+     "This package computes Hartigan's dip test statistic for unimodality,
+multimodality and provides a test with simulation based p-values, where the
+original public code has been corrected.")
+    (license license:gpl2+)))
+
+(define-public r-modeltools
+  (package
+    (name "r-modeltools")
+    (version "0.2-21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "modeltools" version))
+       (sha256
+        (base32
+         "0ynds453xprxv0jqqzi3blnv5w6vrdww9pvd1sq4lrr5ar3k3cq7"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/modeltools")
+    (synopsis "Tools and classes for statistical models")
+    (description
+     "This package provides a collection of tools to deal with statistical
+models.  The functionality is experimental and the user interface is likely
+to change in the future.")
+    (license license:gpl2)))
+
+(define-public r-flexmix
+  (package
+    (name "r-flexmix")
+    (version "2.3-13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flexmix" version))
+       (sha256
+        (base32
+         "1i205yw3kkxs27gqcs6zx0c2mh16p332a2p06wq6fdzb20bazg3z"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-modeltools" ,r-modeltools)))
+    (home-page "http://cran.r-project.org/web/packages/flexmix")
+    (synopsis "Flexible mixture modeling")
+    (description
+     "This package implements a general framework for finite mixtures of
+regression models using the EM algorithm.  FlexMix provides the E-step and
+all data handling, while the M-step can be supplied by the user to easily
+define new models.  Existing drivers implement mixtures of standard linear
+models, generalized linear models and model-based clustering.")
+    (license license:gpl2+)))
+
+(define-public r-mclust
+  (package
+    (name "r-mclust")
+    (version "5.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mclust" version))
+       (sha256
+        (base32
+         "19cbg7p5h2b6h9mvcx9rjppyd3awma18ymaljakbnclpvhwbqpwd"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://www.stat.washington.edu/mclust/")
+    (synopsis "Gaussian mixture modelling for model-based clustering etc.")
+    (description
+     "This package provides Gaussian finite mixture models fitted via EM
+algorithm for model-based clustering, classification, and density estimation,
+including Bayesian regularization, dimension reduction for visualisation,
+and resampling-based inference.")
+    (license license:gpl2+)))
+
+(define-public r-prabclus
+  (package
+    (name "r-prabclus")
+    (version "2.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "prabclus" version))
+       (sha256
+        (base32
+         "0qjsxrx6yv338bxm4ki0w9h8hind1l98abdrz828588bwj02jya1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mclust" ,r-mclust)))
+    (home-page "https://cran.r-project.org/web/packages/prabclus")
+    (synopsis "Parametric bootstrap tests for spatial neighborhood clustering")
+    (description
+     "This package provides a distance-based parametric bootstrap tests
+for clustering with spatial neighborhood information.  Some distance measures,
+clustering of presence-absence, abundance and multilocus genetical data for
+species delimitation, nearest neighbor based noise detection.")
+    (license license:gpl2+)))
+
+(define-public r-deoptimr
+  (package
+    (name "r-deoptimr")
+    (version "1.0-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DEoptimR" version))
+       (sha256
+        (base32
+         "1vz546hyjyhly70z62h5n3mn62b8llhhmim8ffp9y6jnnb0i2sc4"))))
+    (properties `((upstream-name . "DEoptimR")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/DEoptimR")
+    (synopsis "Differential evolution optimization in pure R")
+    (description
+     "This package provides a differential evolution (DE) stochastic
+algorithms for global optimization of problems with and without constraints.
+The aim is to curate a collection of its state-of-the-art variants that (1) do
+not sacrifice simplicity of design, (2) are essentially tuning-free, and (3)
+can be efficiently implemented directly in the R language.")
+    (license license:gpl2+)))
+
+(define-public r-robustbase
+  (package
+    (name "r-robustbase")
+    (version "0.92-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "robustbase" version))
+       (sha256
+        (base32
+         "13xz4am7y0s0kl5bmbcw3dlhl7ji8h9sjx56wsgmj6r9n35nrggw"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-deoptimr" ,r-deoptimr)))
+    (home-page "http://robustbase.r-forge.r-project.org/")
+    (synopsis "Basic robust statistics")
+    (description
+     "This packages allows to analyze data with robust methods such as
+regression methodology including model selections and multivariate statistics.")
+    (license license:gpl2+)))
+
+(define-public r-trimcluster
+  (package
+    (name "r-trimcluster")
+    (version "0.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "trimcluster" version))
+       (sha256
+        (base32
+         "0lsgbg93hm0w1rdb813ry0ks2l0jfpyqzqkf3h3bj6fch0avcbv2"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/trimcluster")
+    (synopsis "Cluster analysis with trimming")
+    (description
+     "The trimmed k-means clustering method by Cuesta-Albertos, Gordaliza and
+Matran (1997).  This optimizes the k-means criterion under trimming a portion
+of the points.")
+    (license license:gpl2+)))
+
+(define-public r-fpc
+  (package
+    (name "r-fpc")
+    (version "2.1-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fpc" version))
+       (sha256
+        (base32
+         "15m0p9l9w2v7sl0cnzyg81i2fmx3hrhvr3371544mwn3fpsca5sx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-diptest" ,r-diptest)
+       ("r-flexmix" ,r-flexmix)
+       ("r-kernlab" ,r-kernlab)
+       ("r-mclust" ,r-mclust)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-prabclus" ,r-prabclus)
+       ("r-robustbase" ,r-robustbase)
+       ("r-trimcluster" ,r-trimcluster)))
+    (home-page "http://cran.r-project.org/web/packages/fpc")
+    (synopsis "Flexible procedures for clustering")
+    (description
+     "This package provides various methods for clustering and cluster validation.
+For example, it provides fixed point clustering, linear regression clustering,
+clustering by merging Gaussian mixture components, as well as symmetric and
+asymmetric discriminant projections for visualisation of the separation of
+groupings.")
+  (license license:gpl2+)))
+
+(define-public r-vgam
+  (package
+    (name "r-vgam")
+    (version "1.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "VGAM" version))
+       (sha256
+        (base32
+         "0wr6szcpj8r4a1rlzgd6iym7khin69fmvxcf37iyvs8mms86dfr3"))))
+    (properties `((upstream-name . "VGAM")))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://www.stat.auckland.ac.nz/~yee/VGAM")
+    (synopsis "Vector generalized linear and additive models")
+    (description
+    "This package is an implementation of about 6 major classes of statistical
+regression models.  Currently only fixed-effects models are implemented, i.e.,
+no random-effects models.  Many (150+) models and distributions are estimated
+by maximum likelihood estimation (MLE) or penalized MLE, using Fisher scoring.
+VGLMs can be loosely thought of as multivariate generalised linear models.")
+    (license license:gpl2+)))
+
+(define-public r-pbapply
+  (package
+    (name "r-pbapply")
+    (version "1.3-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pbapply" version))
+       (sha256
+        (base32
+         "1sdmjlnwxb99f95g5v8k8mirrkzw99yig377v0qi9lzwjgd6fqqr"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/psolymos/pbapply")
+    (synopsis "Adding progress bar to apply functions")
+    (description
+     "This lightweight package that adds progress bar to vectorized R
+functions apply.  The implementation can easily be added to functions where
+showing the progress is useful e.g. bootstrap.")
+    (license license:gpl2)))
+
+(define-public r-fnn
+  (package
+    (name "r-fnn")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "FNN" version))
+       (sha256
+        (base32
+         "1kncmiaraq1mrykb9fj3fsxswabk3l71fnp1vks0x9aay5xfk8mj"))))
+    (properties `((upstream-name . "FNN")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/FNN")
+    (synopsis "Fast nearest neighbor search algorithms and applications")
+    (description
+     "This package provides cover-tree and kd-tree fast k-nearest neighbor
+search algorithms and related applications including KNN classification,
+regression and information measures.")
+    (license license:gpl2+)))
+
+(define-public r-minqa
+  (package
+    (name "r-minqa")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "minqa" version))
+       (sha256
+        (base32
+         "036drja6xz7awja9iwb76x91415p26fb0jmg7y7v0p65m6j978fg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://optimizer.r-forge.r-project.org")
+    (synopsis "Derivative-free optimization algorithms by quadratic approximation")
+    (description
+      "This package provides a derivative-free optimization by quadratic approximation
+based on an interface to Fortran implementations by M. J. D. Powell.")
+    (license license:gpl2)))
+
+(define-public r-rcppeigen
+  (package
+    (name "r-rcppeigen")
+    (version "0.3.2.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppEigen" version))
+       (sha256
+        (base32
+         "0fy9kr03160f1ywzff3p380s8a59jz7d2d0rggb14g2y0slzpbr5"))))
+    (properties `((upstream-name . "RcppEigen")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://eigen.tuxfamily.org")
+    (synopsis "Rcpp integration for the Eigen templated linear algebra library")
+    (description
+      "This package provides an integration of Eigen in R using a C++ template
+library for linear algebra: matrices, vectors, numerical solvers and related algorithms.
+It supports dense and sparse matrices on integer, floating point and complex numbers,
+decompositions of such matrices, and solutions of linear systems.")
+    (license license:gpl2+)))
+
+(define-public r-modelmetrics
+  (package
+    (name "r-modelmetrics")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+        (uri (cran-uri "ModelMetrics" version))
+        (sha256
+         (base32
+          "119xxmzb5biq7k1yxqsf0jmmarmfn6lds9x9hfgv593xlpym6za8"))))
+    (properties `((upstream-name . "ModelMetrics")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://cran.r-project.org/web/packages/ModelMetrics")
+    (synopsis "Rapid calculation of model metrics")
+    (description
+     "Written in C++ using @code{Rcpp}, this package provides a collection of
+metrics for evaluating models.")
+    (license license:gpl2+)))
+
+(define-public r-matrixmodels
+  (package
+    (name "r-matrixmodels")
+    (version "0.4-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MatrixModels" version))
+       (sha256
+        (base32
+         "0cyfvhci2p1vr2x52ymkyqqs63x1qchn856dh2j94yb93r08x1zy"))))
+    (properties `((upstream-name . "MatrixModels")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/MatrixModels")
+    (synopsis "Modelling with sparse and dense matrices")
+    (description
+     "This package models with sparse and dense matrix matrices,
+using modular prediction and response module classes.")
+    (license license:gpl2+)))
+
+(define-public r-quantreg
+  (package
+    (name "r-quantreg")
+    (version "5.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "quantreg" version))
+       (sha256
+        (base32
+         "098gy8xv9kcl5y0cm93b8chr5sm6crrdxi20bkx9lmwmybl3himv"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-matrixmodels" ,r-matrixmodels)
+       ("r-sparsem" ,r-sparsem)))
+    (home-page "http://www.r-project.org")
+    (synopsis "Quantile regression")
+    (description
+     "This package provides an estimation and inference methods for models
+of conditional quantiles: linear and nonlinear parametric and non-parametric
+models for conditional quantiles of a univariate response and several methods
+for handling censored survival data.  Portfolio selection methods based on
+expected shortfall risk are also included.")
+    (license license:gpl2+)))
+
+(define-public r-nloptr
+  (package
+    (name "r-nloptr")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nloptr" version))
+       (sha256
+        (base32
+         "1cypz91z28vhvwq2rzqjrbdc6a2lvfr2g16vid2sax618q6ai089"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("nlopt" ,nlopt)))
+    (home-page "http://cran.r-project.org/web/packages/nloptr")
+    (synopsis "R interface to NLopt")
+    (description
+     "This package is interface to NLopt, a library for nonlinear
+optimization.  NLopt is a library for nonlinear optimization, providing a
+common interface for a number of different free optimization routines
+available online as well as original implementations of various other
+algorithms.")
+    (license license:lgpl3)))
+
+(define-public r-lme4
+  (package
+    (name "r-lme4")
+    (version "1.1-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lme4" version))
+       (sha256
+        (base32
+         "0j60l5kgx1wvw2wm3jwfqwi63hammaq8gfcxzwa4h552likvaxi9"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (propagated-inputs
+     `(("r-minqa" ,r-minqa)
+       ("r-nloptr" ,r-nloptr)))
+    (home-page "http://cran.r-project.org/web/packages/lme4")
+    (synopsis "Linear mixed-effects models using eigen and S4")
+    (description
+      "This package provides fit linear and generalized linear mixed-effects
+models.  The models and their components are represented using S4 classes and
+methods.  The core computational algorithms are implemented using the Eigen
+C++ library for numerical linear algebra and RcppEigen glue.")
+    (license license:gpl2+)))
+
+(define-public r-pbkrtest
+  (package
+    (name "r-pbkrtest")
+    (version "0.4-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pbkrtest" version))
+       (sha256
+        (base32
+         "00cw18q7wvddzjrbxz917wkix6r7672vi2wmsp4gwgzady8vha4x"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lme4" ,r-lme4)))
+    (home-page "http://people.math.aau.dk/~sorenh/software/pbkrtest/")
+    (synopsis "Methods for linear mixed model comparison")
+    (description
+     "This package implements a parametric bootstrap test and a Kenward Roger
+modification of F-tests for linear mixed effects models and a parametric
+bootstrap test for generalized linear mixed models.")
+    (license license:gpl2+)))
+
+(define-public r-car
+  (package
+    (name "r-car")
+    (version "2.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "car" version))
+       (sha256
+        (base32
+         "0a6v7rsd1xsdyapnfqy37m7c4kx9wslkzsizc9k0lmnba0bwyfgx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-pbkrtest" ,r-pbkrtest)
+       ("r-quantreg" ,r-quantreg)))
+    (home-page "https://r-forge.r-project.org/projects/car/")
+    (synopsis "Companion to applied regression")
+    (description
+      "This package provides functions and datasets from book Companion
+to Applied regression, Second Edition, Sage, 2011.")
+    (license license:gpl2+)))
+
+(define-public r-caret
+  (package
+    (name "r-caret")
+    (version "6.0-73")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "caret" version))
+       (sha256
+        (base32
+         "1jzaqwv4glyqqnfbpalgajd0ag866247vvdh5i83ffqs1yhs984h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-modelmetrics" ,r-modelmetrics)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/topepo/caret")
+    (synopsis "Classification and regression training")
+    (description
+     "This package provides misc functions for training and plotting
+classification and regression models.")
+    (license license:gpl2+)))
+
+(define-public r-rcppprogress
+  (package
+    (name "r-rcppprogress")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppProgress" version))
+       (sha256
+        (base32
+         "0796g11w7iv3ix1wfm3fh09qq7jki4r4cp1mjagq77igri3xrr9x"))))
+    (properties `((upstream-name . "RcppProgress")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/kforner/rcpp_progress")
+    (synopsis "Interruptible progress bar for C++ in R packages")
+    (description
+     "This package allows to display a progress bar in the R console for long running
+computations taking place in C++ code, and support for interrupting those computations
+even in multithreaded code, typically using OpenMP.")
+    (license license:gpl3+)))
+
+(define-public r-mnormt
+  (package
+    (name "r-mnormt")
+    (version "1.5-5")
+    (source
+     (origin
+       (method url-fetch)
+        (uri (cran-uri "mnormt" version))
+        (sha256
+          (base32
+           "1b34xxrnf35khsx82mhvmk96sgfr2flyasaah7qkb2976pwxay7z"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://azzalini.stat.unipd.it/SW/Pkg-mnormt")
+    (synopsis "Multivariate normal and \"t\" distributions")
+    (description
+     "This package provides functions for computing the density and the
+distribution function of multivariate normal and \"t\" random variables, and
+for generating random vectors sampled from these distributions.  Probabilities
+are computed via non-Monte Carlo methods.")
+    (license license:gpl2+)))
+
+(define-public r-numderiv
+  (package
+    (name "r-numderiv")
+    (version "2016.8-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "numDeriv" version))
+       (sha256
+        (base32
+         "07ni52rwiap4wilfz94w5mrqaxr59axxmgn57857ip4p6qkiss0v"))))
+    (properties `((upstream-name . "numDeriv")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/numDeriv")
+    (synopsis "Accurate numerical derivatives")
+    (description
+     "This package provides methods for calculating accurate numerical
+first and second order derivatives.")
+    (license license:gpl2)))
+
+(define-public r-sn
+  (package
+    (name "r-sn")
+    (version "1.5-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sn" version))
+       (sha256
+        (base32
+         "0fh7xjsfd2x8d9lbnss7raldh24b72b3pvcv7zqa1qprzg7zfr01"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mnormt" ,r-mnormt)
+       ("r-numderiv" ,r-numderiv)))
+    (home-page "http://azzalini.stat.unipd.it/SN")
+    (synopsis "The skew-normal and skew-t distributions")
+    (description
+     "This packages provides functionalities to build and manipulate
+probability distributions of the skew-normal family and some related
+ones, notably the skew-t family, and provides related statistical
+methods for data fitting and diagnostics, in the univariate and the
+multivariate case.")
+    (license license:gpl2+)))
+
+(define-public r-tclust
+  (package
+    (name "r-tclust")
+    (version "1.2-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tclust" version))
+       (sha256
+        (base32
+         "0a1b7yp4l9wf6ic5czizyl2cnxrc1virj0icr8i6m1vv23jd8jfp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mclust" ,r-mclust)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-sn" ,r-sn)))
+    (home-page "http://cran.r-project.org/web/packages/tclust")
+    (synopsis "Robust trimmed clustering")
+    (description
+     "This package implements different robust clustering
+algorithms (@code{tclust}) based on trimming and including some graphical
+diagnostic tools (@code{ctlcurves} and @code{DiscrFact}).")
+    (license license:gpl3)))
+
+(define-public r-ranger
+  (package
+    (name "r-ranger")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ranger" version))
+       (sha256
+        (base32
+         "1fwqwbi0dnla16x6zj14rf95qr5gmilfmlrwnv7s960h4yiw4n97"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/imbs-hl/ranger")
+    (synopsis "Fast implementation of random forests")
+    (description
+     "This package provides a fast implementation of Random Forests,
+particularly suited for high dimensional data.  Ensembles of classification,
+regression, survival and probability prediction trees are supported.  Data from
+genome-wide association studies can be analyzed efficiently.")
+    (license license:gpl3)))
+
+(define-public r-tsne
+  (package
+    (name "r-tsne")
+    (version "0.1-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tsne" version))
+       (sha256
+        (base32
+         "0s8cv2pndkddq62rzlgzgfdjp1vjv5hz5i5957sllnb97vbzbzb6"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jdonaldson/rtsne/")
+    (synopsis "t-Distributed Stochastic Neighbor Embedding for R")
+    (description
+     "This package provides a pure R implementation of the t-SNE algorithm.")
     (license license:gpl2+)))

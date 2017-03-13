@@ -46,14 +46,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.7-9")
+    (version "6.9.7-10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1fqvi6h96mfbyw292awiwsqs449sjmw6i9ib53c66nnq1zchw7l3"))))
+               "02gvxz1xap5nm1vrgjxhkx13q6ja06vf23n28nc6cfdpb4s2xyqb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
@@ -187,6 +187,8 @@ script.")
          (list "--with-frozenpaths"
                "--enable-shared=yes"
                "--with-x=yes"
+               "--with-quantum-depth=16" ; required by Octave
+               "--enable-quantum-library-names"
                (string-append "--with-gs-font-dir="
                               (assoc-ref %build-inputs "gs-fonts")
                               "/share/fonts/type1/ghostscript"))))

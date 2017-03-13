@@ -231,6 +231,11 @@ For synthesis, the compiler generates netlists in the desired format.")
                 (("-I/usr/local/include") "")
                 (("-L/usr/local/lib") ""))
               #t))
+          (add-after 'remove-usr-local 'fix-usr-local
+            (lambda* (#:key outputs #:allow-other-keys)
+              (substitute* "icebox/icebox_vlog.py"
+                (("/usr/local/share") (string-append (assoc-ref outputs "out") "/share")))
+              #t))
           (delete 'configure))))
     (inputs
      `(("libftdi" ,libftdi)))

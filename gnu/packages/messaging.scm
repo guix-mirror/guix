@@ -265,7 +265,7 @@ supports IPv6, SSL-protected connections as well as PAM for authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.11.0")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ supports IPv6, SSL-protected connections as well as PAM for authentication.")
                            version "/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "0crkggjj6y07v1kdwil9vw532b0vrs6p33nmlvdkpnl60m2169pp"))
+         "1y5p2mq3bfw35b66jsafmbva0w5gg1k99y9z8fyp3jfksqv3agcc"))
        (patches (search-patches "pidgin-add-search-path.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs

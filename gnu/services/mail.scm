@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:export (dovecot-service
             dovecot-service-type
             dovecot-configuration
@@ -53,7 +55,12 @@
             opensmtpd-configuration
             opensmtpd-configuration?
             opensmtpd-service-type
-            %default-opensmtpd-config-file))
+            %default-opensmtpd-config-file
+
+            exim-configuration
+            exim-configuration?
+            exim-service-type
+            %default-exim-config-file))
 
 ;;; Commentary:
 ;;;
@@ -62,6 +69,27 @@
 ;;;
 ;;; Code:
 
+(define (uglify-field-name field-name)
+  (let ((str (symbol->string field-name)))
+    (string-join (string-split (if (string-suffix? "?" str)
+                                   (substring str 0 (1- (string-length str)))
+                                   str)
+                               #\-)
+                 "_")))
+
+(define (serialize-field field-name val)
+  (format #t "~a=~a\n" (uglify-field-name field-name) val))
+
+(define (serialize-string field-name val)
+  (serialize-field field-name val))
+
+(define (space-separated-string-list? val)
+  (and (list? val)
+       (and-map (lambda (x)
+                  (and (string? x) (not (string-index x #\space))))
+                val)))
+(define (serialize-space-separated-string-list field-name val)
+  (serialize-field field-name (string-join val " ")))
 
 (define (comma-separated-string-list? val)
   (and (list? val)
@@ -71,12 +99,21 @@
 (define (serialize-comma-separated-string-list field-name val)
   (serialize-field field-name (string-join val ",")))
 
+(define (file-name? val)
+  (and (string? val)
+       (string-prefix? "/" val)))
+(define (serialize-file-name field-name val)
+  (serialize-string field-name val))
+
 (define (colon-separated-file-name-list? val)
   (and (list? val)
        ;; Trailing slashes not needed and not
        (and-map file-name? val)))
 (define (serialize-colon-separated-file-name-list field-name val)
   (serialize-field field-name (string-join val ":")))
+
+(define (serialize-boolean field-name val)
+  (serialize-string field-name (if val "yes" "no")))
 
 (define (non-negative-integer? val)
   (and (exact-integer? val) (not (negative? val))))
@@ -158,8 +195,9 @@
 
 (define-configuration unix-listener-configuration
   (path
-   (file-name (configuration-missing-field 'unix-listener 'path))
-   "The file name on which to listen.")
+   (string (configuration-missing-field 'unix-listener 'path))
+   "Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.")
   (mode
    (string "0600")
    "The access mode for the socket.")
@@ -177,8 +215,9 @@
 
 (define-configuration fifo-listener-configuration
   (path
-   (file-name (configuration-missing-field 'fifo-listener 'path))
-   "The file name on which to listen.")
+   (string (configuration-missing-field 'fifo-listener 'path))
+   "Path to the file, relative to @code{base-dir} field.  This is also used as
+the section name.")
   (mode
    (string "0600")
    "The access mode for the socket.")
@@ -1620,3 +1659,96 @@ accept from local for any relay
                              (compose list opensmtpd-configuration-package))
           (service-extension shepherd-root-service-type
                              opensmtpd-shepherd-service)))))
+
+
+;;;
+;;; Exim.
+;;;
+
+(define-record-type* <exim-configuration> exim-configuration
+  make-exim-configuration
+  exim-configuration?
+  (package       exim-configuration-package ;<package>
+                 (default exim))
+  (config-file   exim-configuration-config-file ;file-like
+                 (default #f))
+  (aliases       exim-configuration-aliases ;; list of lists
+                 (default '())))
+
+(define %exim-accounts
+  (list (user-group
+         (name "exim")
+         (system? #t))
+        (user-account
+         (name "exim")
+         (group "exim")
+         (system? #t)
+         (comment "Exim Daemon")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define (exim-computed-config-file package config-file)
+  (computed-file "exim.conf"
+                 #~(call-with-output-file #$output
+                     (lambda (port)
+                       (format port "
+exim_user = exim
+exim_group = exim
+.include ~a"
+                               #$(or config-file
+                                     (file-append package "/etc/exim.conf")))))))
+
+(define exim-shepherd-service
+  (match-lambda
+    (($ <exim-configuration> package config-file aliases)
+     (list (shepherd-service
+            (provision '(exim mta))
+            (documentation "Run the exim daemon.")
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      '(#$(file-append package "/bin/exim")
+                        "-bd" "-v" "-C"
+                        #$(exim-computed-config-file package config-file))))
+            (stop #~(make-kill-destructor)))))))
+
+(define exim-activation
+  (match-lambda
+    (($ <exim-configuration> package config-file aliases)
+     (with-imported-modules '((guix build utils))
+       #~(begin
+           (use-modules (guix build utils))
+
+           (let ((uid (passwd:uid (getpw "exim")))
+                 (gid (group:gid (getgr "exim"))))
+             (mkdir-p "/var/spool/exim")
+             (chown "/var/spool/exim" uid gid))
+
+           (zero? (system* #$(file-append package "/bin/exim")
+                           "-bV" "-C" #$(exim-computed-config-file package config-file))))))))
+
+(define exim-etc
+  (match-lambda
+    (($ <exim-configuration> package config-file aliases)
+     `(("aliases" ,(plain-file "aliases"
+                               ;; Ideally we'd use a format string like
+                               ;; "~:{~a: ~{~a~^,~}\n~}", but it gives a
+                               ;; warning that I can't figure out how to fix,
+                               ;; so we'll just use string-join below instead.
+                               (format #f "~:{~a: ~a\n~}"
+                                       (map (lambda (entry)
+                                              (list (car entry)
+                                                    (string-join (cdr entry) ",")))
+                                            aliases))))))))
+
+(define exim-profile
+  (compose list exim-configuration-package))
+
+(define exim-service-type
+  (service-type
+   (name 'exim)
+   (extensions
+    (list (service-extension shepherd-root-service-type exim-shepherd-service)
+          (service-extension account-service-type (const %exim-accounts))
+          (service-extension activation-service-type exim-activation)
+          (service-extension profile-service-type exim-profile)
+          (service-extension etc-service-type exim-etc)))))
