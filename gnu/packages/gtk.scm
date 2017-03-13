@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -730,38 +730,36 @@ application suites.")
     (name "guile-cairo")
     (version "1.4.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://download.gna.org/guile-cairo/guile-cairo-"
-                   version
-                   ".tar.gz"))
-             (sha256
-              (base32
-               "1f5nd9n46n6cwfl1byjml02q3y2hgn7nkx98km1czgwarxl7ws3x"))))
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.gna.org/guile-cairo/guile-cairo-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1f5nd9n46n6cwfl1byjml02q3y2hgn7nkx98km1czgwarxl7ws3x"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'set-module-directory
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Install modules under $out/share/guile/site/2.0.
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* "Makefile.in"
-                       (("scmdir = ([[:graph:]]+).*" _ value)
-                        (string-append "scmdir = " value "/2.0\n")))
-                     (substitute* "cairo/Makefile.in"
-                       (("moduledir = ([[:graph:]]+).*" _ value)
-                        (string-append "moduledir = "
-                                       "$(prefix)/share/guile/site/2.0/cairo\n'")))))
-                 (alist-cons-after
-                  'install 'install-missing-file
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; By default 'vector-types.scm' is not installed, so do
-                    ;; it here.
-                    (let ((out (assoc-ref outputs "out")))
-                      (copy-file "cairo/vector-types.scm"
-                                 (string-append out "/share/guile/site/2.0"
-                                                "/cairo/vector-types.scm"))))
-                  %standard-phases))))
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-module-directory
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Install modules under $out/share/guile/site/2.0.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile.in"
+                          (("scmdir = ([[:graph:]]+).*" _ value)
+                           (string-append "scmdir = " value "/2.0\n")))
+                        (substitute* "cairo/Makefile.in"
+                          (("moduledir = ([[:graph:]]+).*" _ value)
+                           (string-append "moduledir = "
+                                          "$(prefix)/share/guile/site/2.0/cairo\n'"))))))
+                  (add-after 'install 'install-missing-file
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; By default 'vector-types.scm' is not installed, so do
+                      ;; it here.
+                      (let ((out (assoc-ref outputs "out")))
+                        (copy-file "cairo/vector-types.scm"
+                                   (string-append out "/share/guile/site/2.0"
+                                                  "/cairo/vector-types.scm"))))))))
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
@@ -770,7 +768,7 @@ application suites.")
      ;; The .pc file refers to 'cairo'.
      `(("cairo" ,cairo)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.nongnu.org/guile-cairo/")
     (synopsis "Cairo bindings for GNU Guile")
     (description
