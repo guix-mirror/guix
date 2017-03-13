@@ -252,6 +252,7 @@ without requiring the source code to be rewritten.")
                                   (find-files "prebuilt" "\\.go$")))))
     (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
     (properties '((timeout . 72000)               ;20 hours
+                  (max-silent-time . 10800)       ;3 hours (needed on ARM)
                   (upstream-name . "guile")
                   (ftp-server . "alpha.gnu.org")
                   (ftp-directory . "/gnu/guile")))
