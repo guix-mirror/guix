@@ -2528,7 +2528,8 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
                                                   "/bin/tar"))
                           (out     (assoc-ref %outputs "out"))
                           (bin     (string-append out "/bin"))
-                          (doc     (string-append out "/share/doc")))
+                          (doc     (string-append out
+                                                  "/share/doc/grue-hunter")))
                      (begin
                        (mkdir out)
                        (copy-file tarball "grue-hunter.tar.gz")
@@ -2542,8 +2543,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
                                       (list perl))
 
                        (mkdir-p doc)
-                       (copy-file "grue-hunter/AGPLv3.txt"
-                                  (string-append doc "/grue-hunter")))))))
+                       (install-file "grue-hunter/AGPLv3.txt" doc))))))
     (inputs `(("perl" ,perl)
               ("tar" ,tar)
               ("gzip" ,gzip)
