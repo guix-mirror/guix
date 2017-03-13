@@ -740,26 +740,42 @@ application suites.")
                 "1f5nd9n46n6cwfl1byjml02q3y2hgn7nkx98km1czgwarxl7ws3x"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(#:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+
+       #:phases (modify-phases %standard-phases
                   (add-before 'configure 'set-module-directory
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Install modules under $out/share/guile/site/2.0.
-                      (let ((out (assoc-ref outputs "out")))
+                      (let ((out (assoc-ref outputs "out"))
+                            (effective
+                             (read-line
+                              (open-pipe* OPEN_READ "guile" "-c"
+                                          "(display (effective-version))"))))
                         (substitute* "Makefile.in"
                           (("scmdir = ([[:graph:]]+).*" _ value)
-                           (string-append "scmdir = " value "/2.0\n")))
+                           (string-append "scmdir = " value "/" effective "\n")))
                         (substitute* "cairo/Makefile.in"
                           (("moduledir = ([[:graph:]]+).*" _ value)
                            (string-append "moduledir = "
-                                          "$(prefix)/share/guile/site/2.0/cairo\n'"))))))
+                                          "$(prefix)/share/guile/site/"
+                                          effective "/cairo\n'")))
+                        #t)))
                   (add-after 'install 'install-missing-file
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; By default 'vector-types.scm' is not installed, so do
                       ;; it here.
-                      (let ((out (assoc-ref outputs "out")))
-                        (copy-file "cairo/vector-types.scm"
-                                   (string-append out "/share/guile/site/2.0"
-                                                  "/cairo/vector-types.scm"))))))))
+                      (let ((out (assoc-ref outputs "out"))
+                            (effective
+                             (read-line
+                              (open-pipe* OPEN_READ "guile" "-c"
+                                          "(display (effective-version))"))))
+                        (install-file "cairo/vector-types.scm"
+                                      (string-append out "/share/guile/site/"
+                                                     effective "/cairo"))
+                        #t))))))
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
