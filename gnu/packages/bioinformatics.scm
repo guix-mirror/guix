@@ -151,11 +151,9 @@ and several other tools.")
                            (bin (string-append out "/bin"))
                            (man (string-append out "/share/man/man1")))
                       (mkdir-p bin)
-                      (copy-file "aragorn"
-                                 (string-append bin "/aragorn"))
+                      (install-file "aragorn" bin)
                       (mkdir-p man)
-                      (copy-file "aragorn.1"
-                                 (string-append man "/aragorn.1")))
+                      (install-file "aragorn.1" man))
                     #t)))))
     (home-page "http://mbio-serv2.mbioekol.lu.se/ARAGORN")
     (synopsis "Detect tRNA, mtRNA and tmRNA genes in nucleotide sequences")
@@ -1700,15 +1698,16 @@ gene predictor designed to work with assembled, aligned RNA-seq transcripts.")
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
               (copy-recursively "src" (string-append out "/src"))
-              (mkdir (string-append out "/bin"))
+              (mkdir bin)
               ;; Add "src" directory to module lookup path.
               (substitute* "couger"
                 (("from argparse")
                  (string-append "import sys\nsys.path.append(\""
                                 out "\")\nfrom argparse")))
-              (copy-file "couger" (string-append out "/bin/couger")))
+              (install-file "couger" bin))
             #t))
          (add-after
           'install 'wrap-program
@@ -2231,8 +2230,7 @@ quantitative phenotypes.")
                     (let ((target (string-append (assoc-ref outputs "out")
                                                  "/bin")))
                       (mkdir-p target)
-                      (copy-file "edirect.pl"
-                                 (string-append target "/edirect.pl"))
+                      (install-file "edirect.pl" target)
                       #t)))
          (add-after
           'install 'wrap-program
@@ -2378,10 +2376,8 @@ ChIP-Seq, and analysis of metagenomic data.")
                    (let ((bin (string-append (assoc-ref outputs "out")
                                              "/bin")))
                      (mkdir-p bin)
-                     (copy-file "scripts/convertToEBD.py"
-                                (string-append bin "/convertToEBD.py"))
-                     (copy-file "bin/ExpressBetaDiversity"
-                                (string-append bin "/ExpressBetaDiversity"))
+                     (install-file "scripts/convertToEBD.py" bin)
+                     (install-file "bin/ExpressBetaDiversity" bin)
                      #t))))))
    (inputs
     `(("python" ,python-2)))
@@ -2440,10 +2436,8 @@ similarity of community members.")
             (let ((bin (string-append (assoc-ref outputs "out")
                                       "/bin")))
               (mkdir-p bin)
-              (copy-file "FastTree"
-                         (string-append bin "/FastTree"))
-              (copy-file "FastTreeMP"
-                         (string-append bin "/FastTreeMP"))
+              (install-file "FastTree" bin)
+              (install-file "FastTreeMP" bin)
               #t))))))
    (home-page "http://www.microbesonline.org/fasttree")
    (synopsis "Infers approximately-maximum-likelihood phylogenetic trees")
@@ -4101,11 +4095,9 @@ phylogenies.")
                       (mkdir-p bin)
                       (mkdir-p perl)
                       (for-each (lambda (file)
-                                  (copy-file file
-                                             (string-append bin (basename file))))
+                                  (install-file file bin))
                                 (find-files "." "rsem-.*"))
-                      (copy-file "rsem_perl_utils.pm"
-                                 (string-append perl "/rsem_perl_utils.pm")))
+                      (install-file "rsem_perl_utils.pm" perl))
                     #t))
          (add-after
           'install 'wrap-program
@@ -4336,8 +4328,7 @@ viewer.")
                    (let ((bin (string-append
                                (assoc-ref outputs "out") "/bin")))
                      (mkdir-p bin)
-                     (copy-file "samtools"
-                                (string-append bin "/samtools"))
+                     (install-file "samtools" bin)
                      #t)))
                (delete 'patch-tests)
                (delete 'configure))))))))

@@ -271,13 +271,13 @@ features that are not supported by the standard @code{stdio} implementation.")
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (mkdir-p (string-append out "/lib"))
-              (mkdir (string-append out "/include"))
-              (copy-file "src/withershins.hpp"
-                         (string-append out "/include/withershins.hpp"))
-              (copy-file "src/libwithershins.a"
-                         (string-append out "/lib/libwithershins.a")))
+            (let* ((out (assoc-ref outputs "out"))
+                   (include (string-append out "/include"))
+                   (lib (string-append out "/lib")))
+              (mkdir-p include)
+              (install-file "src/withershins.hpp" include)
+              (mkdir-p lib)
+              (install-file "src/libwithershins.a" lib))
             #t)))))
     (home-page "https://github.com/cameronwhite/withershins")
     (inputs
