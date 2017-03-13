@@ -4284,7 +4284,8 @@ to the user's query of interest.")
          'install 'install-library
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-             (install-file "libbam.a" lib)))
+             (install-file "libbam.a" lib)
+             #t))
          (alist-cons-after
           'install 'install-headers
           (lambda* (#:key outputs #:allow-other-keys)
@@ -4336,7 +4337,8 @@ viewer.")
                                (assoc-ref outputs "out") "/bin")))
                      (mkdir-p bin)
                      (copy-file "samtools"
-                                (string-append bin "/samtools")))))
+                                (string-append bin "/samtools"))
+                     #t)))
                (delete 'patch-tests)
                (delete 'configure))))))))
 
