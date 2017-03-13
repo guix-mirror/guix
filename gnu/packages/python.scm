@@ -344,23 +344,6 @@ data types.")
                                         (version-major+minor version)
                                         "/site-packages"))))))))
 
-(define-public python-3.4
-  (package (inherit python-3.5)
-    (version "3.4.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.python.org/ftp/python/"
-                                  version "/Python-" version ".tar.xz"))
-              (patches (search-patches
-                        "python-fix-tests.patch"
-                        "python-3.4-fix-tests.patch"
-                        "python-3-deterministic-build-info.patch"
-                        "python-3-search-paths.patch"))
-              (patch-flags '("-p0"))
-              (sha256
-               (base32
-                "12l9klp778wklxmckhghniy5hklss8r26995pyd00qbllk4b2r7f"))))))
-
 ;; Current 3.x version.
 (define-public python-3 python-3.5)
 

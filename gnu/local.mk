@@ -853,7 +853,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-2.7-source-date-epoch.patch	\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
-  %D%/packages/patches/python-3.4-fix-tests.patch		\
   %D%/packages/patches/python-3.5-fix-tests.patch		\
   %D%/packages/patches/python-3.5-getentropy-on-old-kernels.patch	\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
