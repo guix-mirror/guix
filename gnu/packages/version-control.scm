@@ -616,17 +616,6 @@ also walk each side of a merge and test those changes individually.")
                         (substitute* (find-files "." ".*")
                           ((" perl -")
                            (string-append " " perl " -"))))))
-                  (add-before 'install 'fix-hooks-shebangs
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((perl (string-append (assoc-ref inputs "perl")
-                                                 "/bin/perl")))
-                        ;; The files in 'lib/Gitolite/Hooks' keep references to
-                        ;; '/usr/bin/perl', without this fix it is impossible to
-                        ;; to run gitolite in production.
-                        (substitute* (find-files "src/lib/Gitolite/Hooks" ".*")
-                          (("/usr/bin/perl")
-                           perl))
-                        #t)))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
