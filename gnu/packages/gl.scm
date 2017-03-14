@@ -264,6 +264,9 @@ also known as DXTn or DXTC) for Mesa.")
          ;; are stuck at OpenGL 2.1 instead of OpenGL 3.0+.
          "--enable-texture-float"
          
+         ;; Also enable the tests.
+         "--enable-gallium-tests"
+
          ;; on non-intel systems, drop i915 and i965
          ;; from the default dri drivers
          ,@(match (%current-system)
