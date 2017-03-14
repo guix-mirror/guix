@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,10 @@
             ntp-configuration?
             ntp-service
             ntp-service-type
+
+            inetd-configuration
+            inetd-entry
+            inetd-service-type
 
             tor-configuration
             tor-configuration?
@@ -429,6 +434,90 @@ make an initial adjustment of more than 1,000 seconds."
                               (servers servers)
                               (allow-large-adjustment?
                                allow-large-adjustment?))))
+
+
+;;;
+;;; Inetd.
+;;;
+
+(define-record-type* <inetd-configuration> inetd-configuration
+  make-inetd-configuration
+  inetd-configuration?
+  (program           inetd-configuration-program   ;file-like
+                     (default (file-append inetutils "/libexec/inetd")))
+  (entries           inetd-configuration-entries   ;list of <inetd-entry>
+                     (default '())))
+
+(define-record-type* <inetd-entry> inetd-entry make-inetd-entry
+  inetd-entry?
+  (node              inetd-entry-node         ;string or #f
+                     (default #f))
+  (name              inetd-entry-name)        ;string, from /etc/services
+
+  (socket-type       inetd-entry-socket-type) ;stream | dgram | raw |
+                                              ;rdm | seqpacket
+  (protocol          inetd-entry-protocol)    ;string, from /etc/protocols
+
+  (wait?             inetd-entry-wait?        ;Boolean
+                     (default #t))
+  (user              inetd-entry-user)        ;string
+
+  (program           inetd-entry-program      ;string or file-like object
+                     (default "internal"))
+  (arguments         inetd-entry-arguments    ;list of strings or file-like objects
+                     (default '())))
+
+(define (inetd-config-file entries)
+  (apply mixed-text-file "inetd.conf"
+         (map
+          (lambda (entry)
+            (let* ((node (inetd-entry-node entry))
+                   (name (inetd-entry-name entry))
+                   (socket
+                    (if node (string-append node ":" name) name))
+                   (type
+                    (match (inetd-entry-socket-type entry)
+                      ((or 'stream 'dgram 'raw 'rdm 'seqpacket)
+                       (symbol->string (inetd-entry-socket-type entry)))))
+                   (protocol (inetd-entry-protocol entry))
+                   (wait (if (inetd-entry-wait? entry) "wait" "nowait"))
+                   (user (inetd-entry-user entry))
+                   (program (inetd-entry-program entry))
+                   (args (inetd-entry-arguments entry)))
+              #~(string-append
+                 (string-join
+                  (list #$@(list socket type protocol wait user program) #$@args)
+                  " ") "\n")))
+          entries)))
+
+(define inetd-shepherd-service
+  (match-lambda
+    (($ <inetd-configuration> program ()) '()) ; empty list of entries -> do nothing
+    (($ <inetd-configuration> program entries)
+     (list
+      (shepherd-service
+       (documentation "Run inetd.")
+       (provision '(inetd))
+       (requirement '(user-processes networking syslogd))
+       (start #~(make-forkexec-constructor
+                 (list #$program #$(inetd-config-file entries))
+                 #:pid-file "/var/run/inetd.pid"))
+       (stop #~(make-kill-destructor)))))))
+
+(define-public inetd-service-type
+  (service-type
+   (name 'inetd)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             inetd-shepherd-service)))
+
+   ;; The service can be extended with additional lists of entries.
+   (compose concatenate)
+   (extend (lambda (config entries)
+             (inetd-configuration
+              (inherit config)
+              (entries (append (inetd-configuration-entries config)
+                               entries)))))))
 
 
 ;;;

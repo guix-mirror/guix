@@ -33,7 +33,8 @@ Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
-Copyright @copyright{} 2017 Carlo Zancanaro
+Copyright @copyright{} 2017 Carlo Zancanaro@*
+Copyright @copyright{} 2017 Thomas Danckaert
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -9399,6 +9400,99 @@ make an initial adjustment of more than 1,000 seconds.
 @defvr {Scheme Variable} %ntp-servers
 List of host names used as the default NTP servers.
 @end defvr
+
+@cindex inetd
+@deffn {Scheme variable} inetd-service-type
+This service runs the @command{inetd} (@pxref{inetd invocation,,,
+inetutils, GNU Inetutils}) daemon.  @command{inetd} listens for
+connections on internet sockets, and lazily starts the specified server
+program when a connection is made on one of these sockets.
+
+The value of this service is an @code{inetd-configuration} object.  The
+following example configures the @command{inetd} daemon to provide the
+built-in @command{echo} service, as well as an smtp service which
+forwards smtp traffic over ssh to a server @code{smtp-server} behind a
+gateway @code{hostname}:
+
+@example
+(service
+ inetd-service-type
+ (inetd-configuration
+  (entries (list
+            (inetd-entry
+             (name "echo")
+             (socket-type 'stream)
+             (protocol "tcp")
+             (wait? #f)
+             (user "root"))
+            (inetd-entry
+             (node "127.0.0.1")
+             (name "smtp")
+             (socket-type 'stream)
+             (protocol "tcp")
+             (wait? #f)
+             (user "root")
+             (program (file-append openssh "/bin/ssh"))
+             (arguments
+              '("ssh" "-qT" "-i" "/path/to/ssh_key"
+                "-W" "smtp-server:25" "user@@hostname")))))
+@end example
+
+See below for more details about @code{inetd-configuration}.
+@end deffn
+
+@deftp {Data Type} inetd-configuration
+Data type representing the configuration of @command{inetd}.
+
+@table @asis
+@item @code{program} (default: @code{(file-append inetutils "/libexec/inetd")})
+The @command{inetd} executable to use.
+
+@item @code{entries} (default: @code{'()})
+A list of @command{inetd} service entries.  Each entry should be created
+by the @code{inetd-entry} constructor.
+@end table
+@end deftp
+
+@deftp {Data Type} inetd-entry
+Data type representing an entry in the @command{inetd} configuration.
+Each entry corresponds to a socket where @command{inetd} will listen for
+requests.
+
+@table @asis
+@item @code{node} (default: @code{#f})
+Optional string, a comma-separated list of local addresses
+@command{inetd} should use when listening for this service.
+@xref{Configuration file,,, inetutils, GNU Inetutils} for a complete
+description of all options.
+@item @code{name}
+A string, the name must correspond to an entry in @code{/etc/services}.
+@item @code{socket-type}
+One of @code{'stream}, @code{'dgram}, @code{'raw}, @code{'rdm} or
+@code{'seqpacket}.
+@item @code{protocol}
+A string, must correspond to an entry in @code{/etc/protocols}.
+@item @code{wait?} (default: @code{#t})
+Whether @command{inetd} should wait for the server to exit before
+listening to new service requests.
+@item @code{user}
+A string containing the user (and, optionally, group) name of the user
+as whom the server should run.  The group name can be specified in a
+suffix, separated by a colon or period, i.e. @code{"user"},
+@code{"user:group"} or @code{"user.group"}.
+@item @code{program} (default: @code{"internal"})
+The server program which will serve the requests, or @code{"internal"}
+if @command{inetd} should use a built-in service.
+@item @code{arguments} (default: @code{'()})
+A list strings or file-like objects, which are the server program's
+arguments, starting with the zeroth argument, i.e. the name of the
+program itself.  For @command{inetd}'s internal services, this entry
+must be @code{'()} or @code{'("internal")}.
+@end table
+
+@xref{Configuration file,,, inetutils, GNU Inetutils} for a more
+detailed discussion of each configuration field.
+@end deftp
 
 @cindex Tor
 @deffn {Scheme Procedure} tor-service [@var{config-file}] [#:tor @var{tor}]
