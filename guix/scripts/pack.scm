@@ -43,20 +43,19 @@
 
 ;; Type of a compression tool.
 (define-record-type <compressor>
-  (compressor name package extension tar-option)
+  (compressor name package extension command)
   compressor?
   (name       compressor-name)                    ;string (e.g., "gzip")
   (package    compressor-package)                 ;package
   (extension  compressor-extension)               ;string (e.g., "lz")
-  (tar-option compressor-tar-option))             ;string (e.g., "--lzip")
+  (command    compressor-command))                ;list (e.g., '("gzip" "-9n"))
 
 (define %compressors
   ;; Available compression tools.
-  ;; FIXME: Use '--no-name' for gzip.
-  (list (compressor "gzip"  gzip  "gz"  "--gzip")
-        (compressor "lzip"  lzip  "lz"  "--lzip")
-        (compressor "xz"    xz    "xz"  "--xz")
-        (compressor "bzip2" bzip2 "bz2" "--bzip2")))
+  (list (compressor "gzip"  gzip  "gz"  '("gzip" "-9n"))
+        (compressor "lzip"  lzip  "lz"  '("lzip" "-9"))
+        (compressor "xz"    xz    "xz"  '("xz" "-e"))
+        (compressor "bzip2" bzip2 "bz2" '("bzip2" "-9"))))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -130,7 +129,8 @@ added to the pack."
           ;; length limitation.
           (with-directory-excursion %root
             (exit
-             (zero? (apply system* "tar" #$(compressor-tar-option compressor)
+             (zero? (apply system* "tar"
+                           "-I" #$(string-join (compressor-command compressor))
                            "--format=gnu"
 
                            ;; Avoid non-determinism in the archive.  Use
