@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -228,10 +229,14 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
         ("libxvmc" ,libxvmc)
+        ,@(match (%current-system)
+            ((or "x86_64-linux" "i686-linux")
+             `(("llvm" ,llvm)))
+            (_
+             `()))
         ("makedepend" ,makedepend)
         ("presentproto" ,presentproto)
         ("s2tc" ,s2tc)
-        ("llvm" ,llvm)
         ("wayland" ,wayland)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
@@ -239,7 +244,6 @@ also known as DXTn or DXTC) for Mesa.")
     (arguments
      `(#:configure-flags
        '("--with-gallium-drivers=i915,r300,r600,svga,swrast,nouveau,virgl"
-         "--enable-gallium-llvm"
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "--with-egl-platforms=x11,drm,wayland"
@@ -255,12 +259,13 @@ also known as DXTn or DXTC) for Mesa.")
          ;; Without floating point texture support, drivers such as Nouveau
          ;; are stuck at OpenGL 2.1 instead of OpenGL 3.0+.
          "--enable-texture-float"
-
+         
          ;; on non-intel systems, drop i915 and i965
          ;; from the default dri drivers
          ,@(match (%current-system)
              ((or "x86_64-linux" "i686-linux")
-              '())
+              '("--with-dri-drivers=915,i965,nouveau,r200,radeon,swrast"
+                "--enable-gallium-llvm")) ; default is x86/x86_64 only
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
        #:phases
