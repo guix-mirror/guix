@@ -70,20 +70,40 @@ found."
 (define* (self-contained-tarball name profile
                                  #:key deduplicate?
                                  (compressor (first %compressors))
-                                 localstatedir?)
+                                 localstatedir?
+                                 (symlinks '()))
   "Return a self-contained tarball containing a store initialized with the
 closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
 LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
-with a properly initialized store database."
+with a properly initialized store database.
+
+SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
+added to the pack."
   (define build
     (with-imported-modules '((guix build utils)
                              (guix build store-copy)
                              (gnu build install))
       #~(begin
           (use-modules (guix build utils)
-                       (gnu build install))
+                       (gnu build install)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (ice-9 match))
 
           (define %root "root")
+
+          (define symlink->directives
+            ;; Return "populate directives" to make the given symlink and its
+            ;; parent directories.
+            (match-lambda
+              ((source '-> target)
+               (let ((target (string-append #$profile "/" target)))
+                 `((directory ,(dirname source))
+                   (,source -> ,target))))))
+
+          (define directives
+            ;; Fully-qualified symlinks.
+            (append-map symlink->directives '#$symlinks))
 
           ;; We need Guix here for 'guix-register'.
           (setenv "PATH"
@@ -102,34 +122,46 @@ with a properly initialized store database."
                                              #:deduplicate? #f
                                              #:register? #$localstatedir?)
 
+          ;; Create SYMLINKS.
+          (for-each (cut evaluate-populate-directive <> %root)
+                    directives)
+
           ;; Create the tarball.  Use GNU format so there's no file name
           ;; length limitation.
           (with-directory-excursion %root
-            (zero? (system* "tar" #$(compressor-tar-option compressor)
-                            "--format=gnu"
+            (exit
+             (zero? (apply system* "tar" #$(compressor-tar-option compressor)
+                           "--format=gnu"
 
-                            ;; Avoid non-determinism in the archive.  Use
-                            ;; mtime = 1, not zero, because that is what the
-                            ;; daemon does for files in the store (see the
-                            ;; 'mtimeStore' constant in local-store.cc.)
-                            "--sort=name"
-                            "--mtime=@1"          ;for files in /var/guix
-                            "--owner=root:0"
-                            "--group=root:0"
+                           ;; Avoid non-determinism in the archive.  Use
+                           ;; mtime = 1, not zero, because that is what the
+                           ;; daemon does for files in the store (see the
+                           ;; 'mtimeStore' constant in local-store.cc.)
+                           "--sort=name"
+                           "--mtime=@1"           ;for files in /var/guix
+                           "--owner=root:0"
+                           "--group=root:0"
 
-                            "--check-links"
-                            "-cvf" #$output
-                            ;; Avoid adding / and /var to the tarball, so
-                            ;; that the ownership and permissions of those
-                            ;; directories will not be overwritten when
-                            ;; extracting the archive.  Do not include /root
-                            ;; because the root account might have a
-                            ;; different home directory.
-                            #$@(if localstatedir?
-                                   '("./var/guix")
-                                   '())
+                           "--check-links"
+                           "-cvf" #$output
+                           ;; Avoid adding / and /var to the tarball, so
+                           ;; that the ownership and permissions of those
+                           ;; directories will not be overwritten when
+                           ;; extracting the archive.  Do not include /root
+                           ;; because the root account might have a
+                           ;; different home directory.
+                           #$@(if localstatedir?
+                                  '("./var/guix")
+                                  '())
 
-                            (string-append "." (%store-directory))))))))
+                           (string-append "." (%store-directory))
+
+                           (delete-duplicates
+                            (filter-map (match-lambda
+                                          (('directory directory)
+                                           (string-append "." directory))
+                                          (_ #f))
+                                        directives)))))))))
 
   (gexp->derivation (string-append name ".tar."
                                    (compressor-extension compressor))
@@ -149,6 +181,7 @@ with a properly initialized store database."
     (graft? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
+    (symlinks . ())
     (compressor . ,(first %compressors))))
 
 (define %options
@@ -172,6 +205,19 @@ with a properly initialized store database."
                  (lambda (opt name arg result)
                    (alist-cons 'compressor (lookup-compressor arg)
                                result)))
+         (option '(#\S "symlink") #t #f
+                 (lambda (opt name arg result)
+                   (match (string-tokenize arg
+                                           (char-set-complement
+                                            (char-set #\=)))
+                     ((source target)
+                      (let ((symlinks (assoc-ref result 'symlinks)))
+                        (alist-cons 'symlinks
+                                    `((,source -> ,target) ,@symlinks)
+                                    (alist-delete 'symlinks result eq?))))
+                     (x
+                      (leave (_ "~a: invalid symlink specification~%")
+                             arg)))))
          (option '("localstatedir") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'localstatedir? #t result)))
@@ -190,6 +236,8 @@ Create a bundle of PACKAGE.\n"))
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
   -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""))
+  (display (_ "
+  -S, --symlink=SPEC     create symlinks to the profile according to SPEC"))
   (display (_ "
       --localstatedir    include /var/guix in the resulting pack"))
   (newline)
@@ -224,6 +272,7 @@ Create a bundle of PACKAGE.\n"))
                                 list))
                             specs))
              (compressor (assoc-ref opts 'compressor))
+             (symlinks   (assoc-ref opts 'symlinks))
              (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store
           (run-with-store store
@@ -232,6 +281,8 @@ Create a bundle of PACKAGE.\n"))
                                  (drv (self-contained-tarball "pack" profile
                                                               #:compressor
                                                               compressor
+                                                              #:symlinks
+                                                              symlinks
                                                               #:localstatedir?
                                                               localstatedir?)))
               (mbegin %store-monad

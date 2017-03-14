@@ -2422,6 +2422,18 @@ same as would be created by @command{guix package -i}.  It is this
 mechanism that is used to create Guix's own standalone binary tarball
 (@pxref{Binary Installation}).
 
+Users of this pack would have to run
+@file{/gnu/store/@dots{}-profile/bin/guile} to run Guile, which you may
+find inconvenient.  To work around it, you can create, say, a
+@file{/opt/gnu/bin} symlink to the profile:
+
+@example
+guix pack -S /opt/gnu/bin=bin guile emacs geiser
+@end example
+
+@noindent
+That way, users can happily type @file{/opt/gnu/bin/guile} and enjoy.
+
 Several command-line options allow you to customize your pack:
 
 @table @code
@@ -2434,6 +2446,18 @@ the system type of the build host.
 @itemx -C @var{tool}
 Compress the resulting tarball using @var{tool}---one of @code{gzip},
 @code{bzip2}, @code{xz}, or @code{lzip}.
+
+@item --symlink=@var{spec}
+@itemx -S @var{spec}
+Add the symlinks specified by @var{spec} to the pack.  This option can
+appear several times.
+
+@var{spec} has the form @code{@var{source}=@var{target}}, where
+@var{source} is the symlink that will be created and @var{target} is the
+symlink target.
+
+For instance, @code{-S /opt/gnu/bin=bin} creates a @file{/opt/gnu/bin}
+symlink pointing to the @file{bin} sub-directory of the profile.
 
 @item --localstatedir
 Include the ``local state directory'', @file{/var/guix}, in the

@@ -24,6 +24,7 @@
   #:use-module (ice-9 match)
   #:export (install-grub
             install-grub-config
+            evaluate-populate-directive
             populate-root-file-system
             reset-timestamps
             register-closure
