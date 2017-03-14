@@ -36,7 +36,7 @@
 (define-public w3m
   (package
     (name "w3m")
-    (version "0.5.3+git20161120")
+    (version "0.5.3+git20170102")
     (source (origin
               (method git-fetch)
               ;; Debian's fork of w3m is the only one that is still
@@ -47,7 +47,7 @@
               (file-name (string-append "w3m-" version "-checkout"))
               (sha256
                (base32
-                "06n5a9jdyihkd4xdjmyci32dpqp1k2l5awia5g9ng0bn256bacdc"))))
+                "0p8csd49b550q69bk45ncs2y2x48xij7jj11xapp0s8dn1j7kcgx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ; no check target
