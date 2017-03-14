@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
@@ -1141,18 +1141,22 @@ datetime module, available in Python 2.3+.")
 (define-public python-parsedatetime
   (package
     (name "python-parsedatetime")
-    (version "2.1")
+    (version "2.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "parsedatetime" version))
       (sha256
        (base32
-        "0bdgyw6y3v7bcxlx0p50s8drxsh5bb5cy2afccqr3j90amvpii8p"))))
+        "1vkrmd398s11h1zn3zaqqsiqhj9lwy1ikcg6irx2lrgjzjg3rjll"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-pyicu" ,python-pyicu)))
+       ("python-pyicu" ,python-pyicu)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-future" ,python-future)))
     (home-page "http://github.com/bear/parsedatetime/")
     (synopsis
      "Parse human-readable date/time text")
