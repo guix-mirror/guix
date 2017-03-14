@@ -69,10 +69,12 @@ found."
 
 (define* (self-contained-tarball name profile
                                  #:key deduplicate?
-                                 (compressor (first %compressors)))
+                                 (compressor (first %compressors))
+                                 localstatedir?)
   "Return a self-contained tarball containing a store initialized with the
-closure of PROFILE, a derivation.  The tarball contains /gnu/store, /var/guix,
-and PROFILE is available as /root/.guix-profile."
+closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
+LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
+with a properly initialized store database."
   (define build
     (with-imported-modules '((guix build utils)
                              (guix build store-copy)
@@ -85,7 +87,10 @@ and PROFILE is available as /root/.guix-profile."
 
           ;; We need Guix here for 'guix-register'.
           (setenv "PATH"
-                  (string-append #$guix "/sbin:" #$tar "/bin:"
+                  (string-append #$(if localstatedir?
+                                       (file-append guix "/sbin:")
+                                       "")
+                                 #$tar "/bin:"
                                  #$(compressor-package compressor) "/bin"))
 
           ;; Note: there is not much to gain here with deduplication and
@@ -94,7 +99,8 @@ and PROFILE is available as /root/.guix-profile."
           (populate-single-profile-directory %root
                                              #:profile #$profile
                                              #:closure "profile"
-                                             #:deduplicate? #f)
+                                             #:deduplicate? #f
+                                             #:register? #$localstatedir?)
 
           ;; Create the tarball.  Use GNU format so there's no file name
           ;; length limitation.
@@ -119,7 +125,10 @@ and PROFILE is available as /root/.guix-profile."
                             ;; extracting the archive.  Do not include /root
                             ;; because the root account might have a
                             ;; different home directory.
-                            "./var/guix"
+                            #$@(if localstatedir?
+                                   '("./var/guix")
+                                   '())
+
                             (string-append "." (%store-directory))))))))
 
   (gexp->derivation (string-append name ".tar."
@@ -163,6 +172,9 @@ and PROFILE is available as /root/.guix-profile."
                  (lambda (opt name arg result)
                    (alist-cons 'compressor (lookup-compressor arg)
                                result)))
+         (option '("localstatedir") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'localstatedir? #t result)))
 
          (append %transformation-options
                  %standard-build-options)))
@@ -178,6 +190,8 @@ Create a bundle of PACKAGE.\n"))
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
   -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""))
+  (display (_ "
+      --localstatedir    include /var/guix in the resulting pack"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -209,14 +223,17 @@ Create a bundle of PACKAGE.\n"))
                                     (specification->package+output spec))
                                 list))
                             specs))
-             (compressor (assoc-ref opts 'compressor)))
+             (compressor (assoc-ref opts 'compressor))
+             (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
                                            (packages->manifest packages)))
                                  (drv (self-contained-tarball "pack" profile
                                                               #:compressor
-                                                              compressor)))
+                                                              compressor
+                                                              #:localstatedir?
+                                                              localstatedir?)))
               (mbegin %store-monad
                 (show-what-to-build* (list drv)
                                      #:use-substitutes?

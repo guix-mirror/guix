@@ -535,7 +535,7 @@ make guix-binary.@var{system}.tar.xz
 ... which, in turn, runs:
 
 @example
-guix pack -s @var{system} guix
+guix pack -s @var{system} --localstatedir guix
 @end example
 
 @xref{Invoking guix pack}, for more info on this handy tool.
@@ -2434,6 +2434,19 @@ the system type of the build host.
 @itemx -C @var{tool}
 Compress the resulting tarball using @var{tool}---one of @code{gzip},
 @code{bzip2}, @code{xz}, or @code{lzip}.
+
+@item --localstatedir
+Include the ``local state directory'', @file{/var/guix}, in the
+resulting pack.
+
+@file{/var/guix} contains the store database (@pxref{The Store}) as well
+as garbage-collector roots (@pxref{Invoking guix gc}).  Providing it in
+the pack means that the store is ``complete'' and manageable by Guix;
+not providing it pack means that the store is ``dead'': items cannot be
+added to it or removed from it after extraction of the pack.
+
+One use case for this is the Guix self-contained binary tarball
+(@pxref{Binary Installation}).
 @end table
 
 In addition, @command{guix pack} supports all the common build options

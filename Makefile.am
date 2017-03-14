@@ -488,7 +488,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=				\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz	\
-	  -s "$*" guix` ;					\
+	  -s "$*" --localstatedir guix` ;			\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
