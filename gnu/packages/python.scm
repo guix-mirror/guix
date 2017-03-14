@@ -6176,14 +6176,14 @@ so it might be a tiny bit slower.")
 (define-public python-waf
   (package
     (name "python-waf")
-    (version "1.9.5")
+    (version "1.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://waf.io/"
                                   "waf-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sl3ipi2czds57rlzjnpdzqa0skx8asfvmh3qmibpvdwf15rpppg"))))
+                "0wl4cnmp06lfxqjxaan58bqxn27smhydz0sg5prrfbl3bsw4gv6q"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -6197,7 +6197,7 @@ so it might be a tiny bit slower.")
          (replace 'install
            (lambda _
              (copy-file "waf" %output))))))
-    (home-page "http://waf.io/")
+    (home-page "https://waf.io/")
     (synopsis "Python-based build system")
     (description
      "Waf is a Python-based framework for configuring, compiling and installing
