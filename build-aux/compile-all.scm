@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +63,34 @@
     (format #t "  LOAD     ~a~%" module)
     (resolve-interface module)))
 
+(cond-expand
+  (guile-2.2 (use-modules (language tree-il optimize)
+                          (language cps optimize)))
+  (else #f))
+
+(define %default-optimizations
+  ;; Default optimization options (equivalent to -O2 on Guile 2.2).
+  (cond-expand
+    (guile-2.2 (append (tree-il-default-optimization-options)
+                       (cps-default-optimization-options)))
+    (else '())))
+
+(define %lightweight-optimizations
+  ;; Lightweight optimizations (like -O0, but with partial evaluation).
+  (let loop ((opts %default-optimizations)
+             (result '()))
+    (match opts
+      (() (reverse result))
+      ((#:partial-eval? _ rest ...)
+       (loop rest `(#t #:partial-eval? ,@result)))
+      ((kw _ rest ...)
+       (loop rest `(#f ,kw ,@result))))))
+
+(define (optimization-options file)
+  (if (string-contains file "gnu/packages/")
+      %lightweight-optimizations                  ;build faster
+      '()))
+
 (define (compile-file* file output-mutex)
   (let ((go (scm->go file)))
     (with-mutex output-mutex
@@ -74,7 +102,8 @@
         (lambda ()
           (compile-file file
                         #:output-file go
-                        #:opts `(#:warnings ,warnings)))))))
+                        #:opts `(#:warnings ,warnings
+                                 ,@(optimization-options file))))))))
 
 ;; Install a SIGINT handler to give unwind handlers in 'compile-file' an
 ;; opportunity to run upon SIGINT and to remove temporary output files.
