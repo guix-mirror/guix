@@ -70,7 +70,8 @@ found."
                                  #:key deduplicate?
                                  (compressor (first %compressors))
                                  localstatedir?
-                                 (symlinks '()))
+                                 (symlinks '())
+                                 (tar tar))
   "Return a self-contained tarball containing a store initialized with the
 closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
 LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
@@ -103,6 +104,14 @@ added to the pack."
           (define directives
             ;; Fully-qualified symlinks.
             (append-map symlink->directives '#$symlinks))
+
+          ;; The --sort option was added to GNU tar in version 1.28, released
+          ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
+          ;; older and doesn't support it.
+          (define tar-supports-sort?
+            (zero? (system* (string-append #+tar "/bin/tar")
+                            "cf" "/dev/null" "--files-from=/dev/null"
+                            "--sort=name")))
 
           ;; We need Guix here for 'guix-register'.
           (setenv "PATH"
@@ -137,7 +146,7 @@ added to the pack."
                            ;; mtime = 1, not zero, because that is what the
                            ;; daemon does for files in the store (see the
                            ;; 'mtimeStore' constant in local-store.cc.)
-                           "--sort=name"
+                           (if tar-supports-sort? "--sort=name" "--mtime=@1")
                            "--mtime=@1"           ;for files in /var/guix
                            "--owner=root:0"
                            "--group=root:0"

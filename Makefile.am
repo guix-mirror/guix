@@ -297,6 +297,7 @@ SCM_TESTS =					\
   tests/services.scm				\
   tests/scripts-build.scm			\
   tests/containers.scm				\
+  tests/pack.scm				\
   tests/import-utils.scm
 
 if HAVE_GUILE_JSON
