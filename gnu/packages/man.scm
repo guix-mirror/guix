@@ -134,7 +134,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "4.09")
+    (version "4.10")
     (source (origin
               (method url-fetch)
               (uri
@@ -147,7 +147,7 @@ the traditional flat-text whatis databases.")
                     "man-pages-" version ".tar.xz")))
               (sha256
                (base32
-                "1740gq9sq28dp5a5sjn1ya7cvrv8mbky6knb7734v8k29a7a0x55"))))
+                "1yk3ibmbc1wamw798lqw8lh203xnrjddy8wdk5d3hifmj71xz5bk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)
@@ -161,7 +161,7 @@ the traditional flat-text whatis databases.")
        #:make-flags (list (string-append "MANDIR="
                                          (assoc-ref %outputs "out")
                                          "/share/man"))))
-    (home-page "http://www.kernel.org/doc/man-pages/")
+    (home-page "https://www.kernel.org/doc/man-pages/")
     (synopsis "Development manual pages from the Linux project")
     (description
      "This package provides traditional Unix \"man pages\" documenting the
