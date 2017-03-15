@@ -912,13 +912,17 @@ environment."
                          (system (%current-system))
                          (guile (%guile-for-build)))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
-of (FINAL-PATH . FILE-NAME) pairs; each FILE-NAME is read from the file
-system, imported, and appears under FINAL-PATH in the resulting store path."
+of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
+resulting store path.  FILE can be either a file name, or a file-like object,
+as returned by 'local-file' for example."
   (define file-pair
     (match-lambda
-     ((final-path . file-name)
+     ((final-path . (? string? file-name))
       (mlet %store-monad ((file (interned-file file-name
                                                (basename final-path))))
+        (return (list final-path file))))
+     ((final-path . file-like)
+      (mlet %store-monad ((file (lower-object file-like system)))
         (return (list final-path file))))))
 
   (mlet %store-monad ((files (sequence %store-monad
@@ -950,14 +954,28 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                            (guile (%guile-for-build))
                            (module-path %load-path))
   "Return a derivation that contains the source files of MODULES, a list of
-module names such as `(ice-9 q)'.  All of MODULES must be in the MODULE-PATH
-search path."
-  ;; TODO: Determine the closure of MODULES, build the `.go' files,
-  ;; canonicalize the source files through read/write, etc.
-  (let ((files (map (lambda (m)
-                      (let ((f (module->source-file-name m)))
-                        (cons f (search-path* module-path f))))
-                    modules)))
+module names such as `(ice-9 q)'.  All of MODULES must be either names of
+modules to be found in the MODULE-PATH search path, or a module name followed
+by an arrow followed by a file-like object.  For example:
+
+  (imported-modules `((guix build utils)
+                      (guix gcrypt)
+                      ((guix config) => ,(scheme-file …))))
+
+In this example, the first two modules are taken from MODULE-PATH, and the
+last one is created from the given <scheme-file> object."
+  (mlet %store-monad ((files
+                       (mapm %store-monad
+                             (match-lambda
+                               (((module ...) '=> file)
+                                (return
+                                 (cons (module->source-file-name module)
+                                       file)))
+                               ((module ...)
+                                (let ((f (module->source-file-name module)))
+                                  (return
+                                   (cons f (search-path* module-path f))))))
+                             modules)))
     (imported-files files #:name name #:system system
                     #:guile guile)))
 

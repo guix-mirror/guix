@@ -4347,8 +4347,22 @@ of the @code{gexp?} type (see below.)
 
 @deffn {Scheme Syntax} with-imported-modules @var{modules} @var{body}@dots{}
 Mark the gexps defined in @var{body}@dots{} as requiring @var{modules}
-in their execution environment.  @var{modules} must be a list of Guile
-module names, such as @code{'((guix build utils) (guix build gremlin))}.
+in their execution environment.
+
+Each item in @var{modules} can be the name of a module, such as
+@code{(guix build utils)}, or it can be a module name, followed by an
+arrow, followed by a file-like object:
+
+@example
+`((guix build utils)
+  (guix gcrypt)
+  ((guix config) => ,(scheme-file "config.scm"
+                                  #~(define-module @dots{}))))
+@end example
+
+@noindent
+In the example above, the first two modules are taken from the search
+path, and the last one is created from the given file-like object.
 
 This form has @emph{lexical} scope: it has an effect on the gexps
 directly defined in @var{body}@dots{}, but not on those defined, say, in

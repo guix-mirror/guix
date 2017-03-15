@@ -598,6 +598,23 @@
                             get-bytevector-all))))
                 files))))))
 
+(test-assertm "imported-files with file-like objects"
+  (mlet* %store-monad ((plain -> (plain-file "foo" "bar!"))
+                       (q-scm -> (search-path %load-path "ice-9/q.scm"))
+                       (files -> `(("a/b/c" . ,q-scm)
+                                   ("p/q"   . ,plain)))
+                       (drv      (imported-files files)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (mlet %store-monad ((dir -> (derivation->output-path drv))
+                          (plain* (text-file "foo" "bar!"))
+                          (q-scm* (interned-file q-scm "c")))
+        (return
+         (and (string=? (readlink (string-append dir "/a/b/c"))
+                        q-scm*)
+              (string=? (readlink (string-append dir "/p/q"))
+                        plain*)))))))
+
 (test-equal "gexp-modules & ungexp"
   '((bar) (foo))
   ((@@ (guix gexp) gexp-modules)
@@ -667,6 +684,28 @@
         (return (and (eq? (stat:type s) 'directory)
                      (equal? '(chdir "/foo")
                              (call-with-input-file b read))))))))
+
+(test-assertm "gexp->derivation & with-imported-module & computed module"
+  (mlet* %store-monad
+      ((module -> (scheme-file "x" #~(begin
+                                       (define-module (foo bar)
+                                         #:export (the-answer))
+
+                                       (define the-answer 42))))
+       (build -> (with-imported-modules `(((foo bar) => ,module)
+                                          (guix build utils))
+                   #~(begin
+                       (use-modules (guix build utils)
+                                    (foo bar))
+                       mkdir-p
+                       (call-with-output-file #$output
+                         (lambda (port)
+                           (write the-answer port))))))
+       (drv      (gexp->derivation "thing" build))
+       (out ->   (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (= 42 (call-with-input-file out read))))))
 
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad
