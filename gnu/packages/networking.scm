@@ -1141,3 +1141,28 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
      "Command line interface for testing internet bandwidth using
 speedtest.net.")
     (license license:asl2.0)))
+
+(define-public tftp-hpa
+  (package
+    (name "tftp-hpa")
+    (version "5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/"
+                                  "network/tftp/tftp-hpa/tftp-hpa-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "12vidchglhyc20znq5wdsbhi9mqg90jnl7qr9qs8hbvaz4fkdvmg"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ; no test target
+    (synopsis "HPA's tftp client")
+    (description
+     "This is a tftp client derived from OpenBSD tftp with some extra options
+added and bugs fixed.  The source includes readline support but it is not
+enabled due to license conflicts between the BSD advertising clause and the GPL.")
+    (home-page "http://git.kernel.org/cgit/network/tftp/tftp-hpa.git/about/")
+    ;; Some source files are distributed under a 3-clause BSD license, and
+    ;; others under a 4-clause BSD license. Refer to the files in the source
+    ;; distribution for clarification.
+    (license (list license:bsd-3 license:bsd-4))))
