@@ -22,12 +22,23 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages vtk))
 
 ;; We use the latest snapshot of this package because the latest release is
 ;; from 2011 and has known vulnerabilities that cannot easily be fixed by
@@ -63,3 +74,57 @@ demonstrative image storage and worklist servers.")
               "file://COPYRIGHT"
               "A union of the Apache 2.0 licence and various non-copyleft
 licences similar to the Modified BSD licence."))))
+
+(define-public mia
+  (package
+    (name "mia")
+    (version "2.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mia/mia/"
+                                  (version-major+minor version)
+                                  "/mia-" version ".tar.xz"))
+              (sha256
+               (base32
+                "124gvf8nkls59mlnx8ynq00n9zrah7a54gsywafx7qmfr0y95ra7"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DMIA_CREATE_NIPYPE_INTERFACES=0"
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out") "/lib")
+             "-DCMAKE_CXX_FLAGS=-fpermissive")))
+    (inputs
+     `(("boost" ,boost)
+       ("dcmtk" ,dcmtk)
+       ("doxygen" ,doxygen)
+       ("eigen" ,eigen)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("gsl" ,gsl)
+       ("gts" ,gts)
+       ("hdf5" ,hdf5)
+       ("itpp" ,itpp)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libxml" ,libxml2)
+       ("libxml++" ,libxml++)
+       ("maxflow" ,maxflow)
+       ("niftilib" ,niftilib)
+       ("nlopt" ,nlopt)
+       ("openexr" ,openexr)
+       ("python-lxml" ,python2-lxml)
+       ("vtk" ,vtk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (home-page "http://mia.sourceforge.net")
+    (synopsis "Toolkit for gray scale medical image analysis")
+    (description "MIA provides a combination of command line tools, plug-ins,
+and libraries that make it possible run image processing tasks interactively
+in a command shell and to prototype using the shell's scripting language.  It
+is built around a plug-in structure that makes it easy to add functionality
+without compromising the original code base and it makes use of a wide variety
+of external libraries that provide additional functionality.")
+    (license license:gpl3+)))
