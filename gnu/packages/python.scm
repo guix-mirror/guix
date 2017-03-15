@@ -12053,14 +12053,14 @@ List.")
 (define-public python-publicsuffix2
   (package
     (name "python-publicsuffix2")
-    (version "2.20160621")
+    (version "2.20160818")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "publicsuffix2" version ".tar.bz2"))
        (sha256
         (base32
-         "06lx603gdwad5hc3hmn763ngq0rq9bzz1ni3ga72nzk5n872arkd"))))
+         "1bb55yka9vkn7i6y1kjzxa516kh6v4gsrxa90w5wdz5p5n968r68"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; The test suite requires network access.
