@@ -194,6 +194,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/idris.scm			\
   %D%/packages/idutils.scm			\
   %D%/packages/image.scm			\
+  %D%/packages/image-processing.scm	\
   %D%/packages/image-viewers.scm	\
   %D%/packages/imagemagick.scm			\
   %D%/packages/indent.scm			\
