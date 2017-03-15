@@ -1300,7 +1300,8 @@ are both supported).")
         (version "0.5.1")
         (source (origin
                   (method url-fetch)
-                  (uri "http://www.profanity.im/profanity-0.5.1.tar.gz")
+                  (uri (string-append "http://www.profanity.im/profanity-"
+                                      version ".tar.gz"))
                   (sha256
                    (base32
                      "1f7ylw3mhhnii52mmk40hyc4kqhpvjdr3hmsplzkdhsfww9kflg3"))))
