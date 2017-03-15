@@ -149,21 +149,6 @@ the number of uncompressed bytes written, a strictly positive integer."
   ;; Z_DEFAULT_COMPRESSION.
   -1)
 
-(define (close-procedure gzfile port)
-  "Return a procedure that closes GZFILE, ensuring its underlying PORT is
-closed even if closing GZFILE triggers an exception."
-  (lambda ()
-    (catch 'zlib-error
-      (lambda ()
-        ;; 'gzclose' closes the underlying file descriptor.  'close-port'
-        ;; calls close(2), gets EBADF, which is ignores.
-        (gzclose gzfile)
-        (close-port port))
-      (lambda args
-        ;; Make sure PORT is closed despite the zlib error.
-        (close-port port)
-        (apply throw args)))))
-
 (define* (make-gzip-input-port port #:key (buffer-size %default-buffer-size))
   "Return an input port that decompresses data read from PORT, a file port.
 PORT is automatically closed when the resulting port is closed.  BUFFER-SIZE
@@ -173,7 +158,11 @@ buffered input, which would be lost (and is lost anyway)."
   (define gzfile
     (match (drain-input port)
       (""                                         ;PORT's buffer is empty
-       (gzdopen (fileno port) "r"))
+       ;; Since 'gzclose' will eventually close the file descriptor beneath
+       ;; PORT, we increase PORT's revealed count and never call 'close-port'
+       ;; on PORT since we would get EBADF if 'gzclose' already closed it (on
+       ;; 2.0 EBADF is swallowed by 'fport_close' but on 2.2 it is raised).
+       (gzdopen (port->fdes port) "r"))
       (_
        ;; This is unrecoverable but it's better than having the buffered input
        ;; be lost, leading to unclear end-of-file or corrupt-data errors down
@@ -188,7 +177,8 @@ buffered input, which would be lost (and is lost anyway)."
     (gzbuffer! gzfile buffer-size))
 
   (make-custom-binary-input-port "gzip-input" read! #f #f
-                                 (close-procedure gzfile port)))
+                                 (lambda ()
+                                   (gzclose gzfile))))
 
 (define* (make-gzip-output-port port
                                 #:key
@@ -200,7 +190,7 @@ port is closed."
   (define gzfile
     (begin
       (force-output port)                         ;empty PORT's buffer
-      (gzdopen (fileno port)
+      (gzdopen (port->fdes port)
                (string-append "w" (number->string level)))))
 
   (define (write! bv start count)
@@ -210,7 +200,8 @@ port is closed."
     (gzbuffer! gzfile buffer-size))
 
   (make-custom-binary-output-port "gzip-output" write! #f #f
-                                  (close-procedure gzfile port)))
+                                  (lambda ()
+                                    (gzclose gzfile))))
 
 (define* (call-with-gzip-input-port port proc
                                     #:key (buffer-size %default-buffer-size))
