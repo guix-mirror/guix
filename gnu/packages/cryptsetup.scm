@@ -32,7 +32,7 @@
 (define-public cryptsetup
   (package
    (name "cryptsetup")
-   (version "1.7.3")
+   (version "1.7.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
@@ -40,7 +40,7 @@
                                 "/" name "-" version ".tar.xz"))
             (sha256
              (base32
-              "00nwd96m9yq4k3cayc04i5y7iakkzana35zxky6hpx2w8zl08axg"))))
+              "05m0ric8anrkl62smk8rafgi30j9jrxw20qzss9gnf4sywz8kkvw"))))
    (build-system gnu-build-system)
    (inputs
     `(("libgcrypt" ,libgcrypt)
