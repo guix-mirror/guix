@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,7 +23,6 @@
 
 (define-module (gnu packages gnuzilla)
   #:use-module ((srfi srfi-1) #:hide (zip))
-  #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -204,7 +203,7 @@ in the Mozilla clients.")
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
-     `(#:parallel-build? #f ; not supported
+     '(#:parallel-build? #f ; failed
        #:make-flags
        (let* ((out (assoc-ref %outputs "out"))
               (nspr (string-append (assoc-ref %build-inputs "nspr")))
@@ -224,14 +223,11 @@ in the Mozilla clients.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
+           (lambda* (#:key system inputs #:allow-other-keys)
              (setenv "CC" "gcc")
              ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
-             ,@(match (%current-system)
-                 ((or "x86_64-linux" "aarch64-linux")
-                  `((setenv "USE_64" "1")))
-                 (_
-                  '()))
+             (when (string-prefix? "x86_64" system)
+               (setenv "USE_64" "1"))
              #t))
          (replace 'check
            (lambda _
