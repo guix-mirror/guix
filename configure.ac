@@ -73,9 +73,9 @@ m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
 m4_pattern_forbid([^GUILE_P$])
 
-dnl Search for 'guile' and 'guild'.  Prefer 2.0 until the 2.2 upgrade is
-dnl complete.  This macro defines 'GUILE_EFFECTIVE_VERSION'.
-GUILE_PKG([2.0 2.2])
+dnl Search for 'guile' and 'guild'.  This macro defines
+dnl 'GUILE_EFFECTIVE_VERSION'.
+GUILE_PKG([2.2 2.0])
 GUILE_PROGS
 if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
@@ -83,8 +83,6 @@ fi
 
 if test "x$GUILE_EFFECTIVE_VERSION" = "x2.0"; then
   PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7])
-else
-  AC_MSG_WARN([Guile $GUILE_EFFECTIVE_VERSION is not fully supported!])
 fi
 
 dnl Installation directory for .scm and .go files.

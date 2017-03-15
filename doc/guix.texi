@@ -551,7 +551,8 @@ in the Guix source tree for additional details.
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or later;
+@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or
+later, including 2.2.x;
 @item @url{http://gnupg.org/, GNU libgcrypt};
 @item
 @uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
