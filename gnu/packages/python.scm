@@ -9349,14 +9349,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.11.47")
+   (version "1.11.63")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri name version))
      (sha256
       (base32
-       "0p0pila0k99fm87q1gb24wyd34ags0vkh37h1fa6hklq4mi69i1w"))))
+       "1r8aqv8w27k76lcsfk83w6qw9lz8gk2ibzwacp5wjhpp2gik911m"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-colorama" ,python-colorama)
