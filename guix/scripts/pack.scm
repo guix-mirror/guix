@@ -43,20 +43,19 @@
 
 ;; Type of a compression tool.
 (define-record-type <compressor>
-  (compressor name package extension tar-option)
+  (compressor name package extension command)
   compressor?
   (name       compressor-name)                    ;string (e.g., "gzip")
   (package    compressor-package)                 ;package
   (extension  compressor-extension)               ;string (e.g., "lz")
-  (tar-option compressor-tar-option))             ;string (e.g., "--lzip")
+  (command    compressor-command))                ;list (e.g., '("gzip" "-9n"))
 
 (define %compressors
   ;; Available compression tools.
-  ;; FIXME: Use '--no-name' for gzip.
-  (list (compressor "gzip"  gzip  "gz"  "--gzip")
-        (compressor "lzip"  lzip  "lz"  "--lzip")
-        (compressor "xz"    xz    "xz"  "--xz")
-        (compressor "bzip2" bzip2 "bz2" "--bzip2")))
+  (list (compressor "gzip"  gzip  "gz"  '("gzip" "-9n"))
+        (compressor "lzip"  lzip  "lz"  '("lzip" "-9"))
+        (compressor "xz"    xz    "xz"  '("xz" "-e"))
+        (compressor "bzip2" bzip2 "bz2" '("bzip2" "-9"))))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -69,23 +68,57 @@ found."
 
 (define* (self-contained-tarball name profile
                                  #:key deduplicate?
-                                 (compressor (first %compressors)))
+                                 (compressor (first %compressors))
+                                 localstatedir?
+                                 (symlinks '())
+                                 (tar tar))
   "Return a self-contained tarball containing a store initialized with the
-closure of PROFILE, a derivation.  The tarball contains /gnu/store, /var/guix,
-and PROFILE is available as /root/.guix-profile."
+closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
+LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
+with a properly initialized store database.
+
+SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
+added to the pack."
   (define build
     (with-imported-modules '((guix build utils)
                              (guix build store-copy)
                              (gnu build install))
       #~(begin
           (use-modules (guix build utils)
-                       (gnu build install))
+                       (gnu build install)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (ice-9 match))
 
           (define %root "root")
 
+          (define symlink->directives
+            ;; Return "populate directives" to make the given symlink and its
+            ;; parent directories.
+            (match-lambda
+              ((source '-> target)
+               (let ((target (string-append #$profile "/" target)))
+                 `((directory ,(dirname source))
+                   (,source -> ,target))))))
+
+          (define directives
+            ;; Fully-qualified symlinks.
+            (append-map symlink->directives '#$symlinks))
+
+          ;; The --sort option was added to GNU tar in version 1.28, released
+          ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
+          ;; older and doesn't support it.
+          (define tar-supports-sort?
+            (zero? (system* (string-append #+tar "/bin/tar")
+                            "cf" "/dev/null" "--files-from=/dev/null"
+                            "--sort=name")))
+
           ;; We need Guix here for 'guix-register'.
           (setenv "PATH"
-                  (string-append #$guix "/sbin:" #$tar "/bin:"
+                  (string-append #$(if localstatedir?
+                                       (file-append guix "/sbin:")
+                                       "")
+                                 #$tar "/bin:"
                                  #$(compressor-package compressor) "/bin"))
 
           ;; Note: there is not much to gain here with deduplication and
@@ -94,33 +127,50 @@ and PROFILE is available as /root/.guix-profile."
           (populate-single-profile-directory %root
                                              #:profile #$profile
                                              #:closure "profile"
-                                             #:deduplicate? #f)
+                                             #:deduplicate? #f
+                                             #:register? #$localstatedir?)
+
+          ;; Create SYMLINKS.
+          (for-each (cut evaluate-populate-directive <> %root)
+                    directives)
 
           ;; Create the tarball.  Use GNU format so there's no file name
           ;; length limitation.
           (with-directory-excursion %root
-            (zero? (system* "tar" #$(compressor-tar-option compressor)
-                            "--format=gnu"
+            (exit
+             (zero? (apply system* "tar"
+                           "-I" #$(string-join (compressor-command compressor))
+                           "--format=gnu"
 
-                            ;; Avoid non-determinism in the archive.  Use
-                            ;; mtime = 1, not zero, because that is what the
-                            ;; daemon does for files in the store (see the
-                            ;; 'mtimeStore' constant in local-store.cc.)
-                            "--sort=name"
-                            "--mtime=@1"          ;for files in /var/guix
-                            "--owner=root:0"
-                            "--group=root:0"
+                           ;; Avoid non-determinism in the archive.  Use
+                           ;; mtime = 1, not zero, because that is what the
+                           ;; daemon does for files in the store (see the
+                           ;; 'mtimeStore' constant in local-store.cc.)
+                           (if tar-supports-sort? "--sort=name" "--mtime=@1")
+                           "--mtime=@1"           ;for files in /var/guix
+                           "--owner=root:0"
+                           "--group=root:0"
 
-                            "--check-links"
-                            "-cvf" #$output
-                            ;; Avoid adding / and /var to the tarball, so
-                            ;; that the ownership and permissions of those
-                            ;; directories will not be overwritten when
-                            ;; extracting the archive.  Do not include /root
-                            ;; because the root account might have a
-                            ;; different home directory.
-                            "./var/guix"
-                            (string-append "." (%store-directory))))))))
+                           "--check-links"
+                           "-cvf" #$output
+                           ;; Avoid adding / and /var to the tarball, so
+                           ;; that the ownership and permissions of those
+                           ;; directories will not be overwritten when
+                           ;; extracting the archive.  Do not include /root
+                           ;; because the root account might have a
+                           ;; different home directory.
+                           #$@(if localstatedir?
+                                  '("./var/guix")
+                                  '())
+
+                           (string-append "." (%store-directory))
+
+                           (delete-duplicates
+                            (filter-map (match-lambda
+                                          (('directory directory)
+                                           (string-append "." directory))
+                                          (_ #f))
+                                        directives)))))))))
 
   (gexp->derivation (string-append name ".tar."
                                    (compressor-extension compressor))
@@ -140,6 +190,7 @@ and PROFILE is available as /root/.guix-profile."
     (graft? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
+    (symlinks . ())
     (compressor . ,(first %compressors))))
 
 (define %options
@@ -163,6 +214,22 @@ and PROFILE is available as /root/.guix-profile."
                  (lambda (opt name arg result)
                    (alist-cons 'compressor (lookup-compressor arg)
                                result)))
+         (option '(#\S "symlink") #t #f
+                 (lambda (opt name arg result)
+                   (match (string-tokenize arg
+                                           (char-set-complement
+                                            (char-set #\=)))
+                     ((source target)
+                      (let ((symlinks (assoc-ref result 'symlinks)))
+                        (alist-cons 'symlinks
+                                    `((,source -> ,target) ,@symlinks)
+                                    (alist-delete 'symlinks result eq?))))
+                     (x
+                      (leave (_ "~a: invalid symlink specification~%")
+                             arg)))))
+         (option '("localstatedir") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'localstatedir? #t result)))
 
          (append %transformation-options
                  %standard-build-options)))
@@ -178,6 +245,10 @@ Create a bundle of PACKAGE.\n"))
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
   -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""))
+  (display (_ "
+  -S, --symlink=SPEC     create symlinks to the profile according to SPEC"))
+  (display (_ "
+      --localstatedir    include /var/guix in the resulting pack"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -209,14 +280,20 @@ Create a bundle of PACKAGE.\n"))
                                     (specification->package+output spec))
                                 list))
                             specs))
-             (compressor (assoc-ref opts 'compressor)))
+             (compressor (assoc-ref opts 'compressor))
+             (symlinks   (assoc-ref opts 'symlinks))
+             (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
                                            (packages->manifest packages)))
                                  (drv (self-contained-tarball "pack" profile
                                                               #:compressor
-                                                              compressor)))
+                                                              compressor
+                                                              #:symlinks
+                                                              symlinks
+                                                              #:localstatedir?
+                                                              localstatedir?)))
               (mbegin %store-monad
                 (show-what-to-build* (list drv)
                                      #:use-substitutes?

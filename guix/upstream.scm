@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -131,7 +131,7 @@ correspond to the same version."
   "Return an updater among UPDATERS that matches PACKAGE, or #f if none of
 them matches."
   (any (match-lambda
-         (($ <upstream-updater> _ _ pred latest)
+         (($ <upstream-updater> name description pred latest)
           (and (pred package) latest)))
        updaters))
 

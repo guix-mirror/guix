@@ -383,7 +383,9 @@
                      (package-derivation %store %bootstrap-guile))))
             (guard (c ((nix-protocol-error? c) #t))
               (build-derivations %store (list d))))))))
-   "garbage: ?lambda: λ"))
+   (cond-expand
+     (guile-2.0 "garbage: ?lambda: λ")
+     (else      "garbage: �lambda: λ"))))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))

@@ -656,6 +656,36 @@ mounted at FILE."
 (define CLONE_NEWPID         #x20000000)
 (define CLONE_NEWNET         #x40000000)
 
+(cond-expand
+  (guile-2.2
+   (define %set-automatic-finalization-enabled?!
+     (let ((proc (pointer->procedure int
+                                     (dynamic-func
+                                      "scm_set_automatic_finalization_enabled"
+                                      (dynamic-link))
+                                     (list int))))
+       (lambda (enabled?)
+         "Switch on or off automatic finalization in a separate thread.
+Turning finalization off shuts down the finalization thread as a side effect."
+         (->bool (proc (if enabled? 1 0))))))
+
+   (define-syntax-rule (without-automatic-finalization exp)
+     "Turn off automatic finalization within the dynamic extent of EXP."
+     (let ((enabled? #t))
+       (dynamic-wind
+         (lambda ()
+           (set! enabled? (%set-automatic-finalization-enabled?! #f)))
+         (lambda ()
+           exp)
+         (lambda ()
+           (%set-automatic-finalization-enabled?! enabled?))))))
+
+  (else
+   (define-syntax-rule (without-automatic-finalization exp)
+     ;; Nothing to do here: Guile 2.0 does not have a separate finalization
+     ;; thread.
+     exp)))
+
 ;; The libc interface to sys_clone is not useful for Scheme programs, so the
 ;; low-level system call is wrapped instead.  The 'syscall' function is
 ;; declared in <unistd.h> as a variadic function; in practice, it expects 6
@@ -678,10 +708,17 @@ mounted at FILE."
 Unlike the fork system call, clone accepts FLAGS that specify which resources
 are shared between the parent and child processes."
       (let-values (((ret err)
-                    (proc syscall-id flags
-                          %null-pointer                     ;child stack
-                          %null-pointer %null-pointer       ;ptid & ctid
-                          %null-pointer)))                  ;unused
+                    ;; Guile 2.2 runs a finalization thread.  'primitive-fork'
+                    ;; takes care of shutting it down before forking, and we
+                    ;; must do the same here.  Failing to do that, if the
+                    ;; child process calls 'primitive-fork', it will hang
+                    ;; while trying to pthread_join the finalization thread
+                    ;; since that thread does not exist.
+                    (without-automatic-finalization
+                     (proc syscall-id flags
+                           %null-pointer              ;child stack
+                           %null-pointer %null-pointer ;ptid & ctid
+                           %null-pointer))))           ;unused
         (if (= ret -1)
             (throw 'system-error "clone" "~d: ~A"
                    (list flags (strerror err))

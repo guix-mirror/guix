@@ -656,6 +656,9 @@ for Guile\".")
     ;; details.
     (license license:gpl3+)))
 
+(define-public guile2.2-lib
+  (package-for-guile-2.2 guile-lib))
+
 (define-public guile-json
   (package
     (name "guile-json")

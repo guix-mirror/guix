@@ -535,7 +535,7 @@ make guix-binary.@var{system}.tar.xz
 ... which, in turn, runs:
 
 @example
-guix pack -s @var{system} guix
+guix pack -s @var{system} --localstatedir guix
 @end example
 
 @xref{Invoking guix pack}, for more info on this handy tool.
@@ -551,7 +551,8 @@ in the Guix source tree for additional details.
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or later;
+@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or
+later, including 2.2.x;
 @item @url{http://gnupg.org/, GNU libgcrypt};
 @item
 @uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
@@ -2422,6 +2423,18 @@ same as would be created by @command{guix package -i}.  It is this
 mechanism that is used to create Guix's own standalone binary tarball
 (@pxref{Binary Installation}).
 
+Users of this pack would have to run
+@file{/gnu/store/@dots{}-profile/bin/guile} to run Guile, which you may
+find inconvenient.  To work around it, you can create, say, a
+@file{/opt/gnu/bin} symlink to the profile:
+
+@example
+guix pack -S /opt/gnu/bin=bin guile emacs geiser
+@end example
+
+@noindent
+That way, users can happily type @file{/opt/gnu/bin/guile} and enjoy.
+
 Several command-line options allow you to customize your pack:
 
 @table @code
@@ -2434,6 +2447,31 @@ the system type of the build host.
 @itemx -C @var{tool}
 Compress the resulting tarball using @var{tool}---one of @code{gzip},
 @code{bzip2}, @code{xz}, or @code{lzip}.
+
+@item --symlink=@var{spec}
+@itemx -S @var{spec}
+Add the symlinks specified by @var{spec} to the pack.  This option can
+appear several times.
+
+@var{spec} has the form @code{@var{source}=@var{target}}, where
+@var{source} is the symlink that will be created and @var{target} is the
+symlink target.
+
+For instance, @code{-S /opt/gnu/bin=bin} creates a @file{/opt/gnu/bin}
+symlink pointing to the @file{bin} sub-directory of the profile.
+
+@item --localstatedir
+Include the ``local state directory'', @file{/var/guix}, in the
+resulting pack.
+
+@file{/var/guix} contains the store database (@pxref{The Store}) as well
+as garbage-collector roots (@pxref{Invoking guix gc}).  Providing it in
+the pack means that the store is ``complete'' and manageable by Guix;
+not providing it pack means that the store is ``dead'': items cannot be
+added to it or removed from it after extraction of the pack.
+
+One use case for this is the Guix self-contained binary tarball
+(@pxref{Binary Installation}).
 @end table
 
 In addition, @command{guix pack} supports all the common build options

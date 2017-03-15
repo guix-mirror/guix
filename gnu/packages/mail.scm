@@ -44,6 +44,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -93,7 +94,7 @@
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
-                           bsd-2 x11-style))
+                           bsd-2 x11-style agpl3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1129,6 +1130,104 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
     ;; is covered by a variant of BSD-3, and UnicodeData.txt is covered by the
     ;; Unicode, Inc. License Agreement for Data Files and Software.
     (license (list lgpl2.1 license:expat (non-copyleft "file://COPYING")))))
+
+(define-public dovecot-trees
+  (let ((commit "006059c8a47d68f14f73c09743e45b9a73014dbf")
+        (revision "1"))
+    (package
+      (name "dovecot-trees")
+      (version (string-append "2.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://0xacab.org/riseuplabs/trees.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0ax90bzc66x179wi1m7ywqwa8nssyhjngs7ij109hqqxg5ymfp73"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("automake" ,automake)
+         ("autoconf" ,autoconf)
+         ("libtool" ,libtool)
+         ("dovecot" ,dovecot)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libsodium" ,libsodium)))
+      (arguments
+       `(#:tests? #f ;No tests exist.
+         #:configure-flags (list (string-append "--with-dovecot="
+                                                (assoc-ref %build-inputs "dovecot")
+                                                "/lib/dovecot"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autogen
+             (lambda _
+               (zero? (system* "./autogen.sh")))))))
+      (home-page "https://0xacab.org/riseuplabs/trees")
+      (synopsis "NaCL-based Dovecot email storage encryption plugin")
+      (description
+       "Technology for Resting Email Encrypted Storage (TREES) is a NaCL-based
+Dovecot encryption plugin.  This plugin adds individually encrypted mail
+storage to the Dovecot IMAP server.  It is inspired by Posteo's scrambler
+which uses OpenSSL and RSA keypairs.  TREES works in a similar way, but uses
+the Sodium crypto library (based on NaCL).
+
+How it works:
+@enumerate
+@item On IMAP log in, the user's cleartext password is passed to the plugin.
+@item The plugin creates an argon2 digest from the password.
+@item This password digest is used as a symmetric secret to decrypt a libsodium secretbox.
+@item Inside the secretbox is stored a Curve25519 private key.
+@item The Curve25519 private key is used to decrypt each individual message,
+using lidsodium sealed boxes.
+@item New mail is encrypted as it arrives using the Curve25519 public key.
+@end enumerate\n")
+      (license agpl3))))
+
+(define-public dovecot-libsodium-plugin
+  (let ((commit "044de73c01c35385df0105f6b387bec5d5317ce7")
+        (revision "1"))
+    (package
+      (name "dovecot-libsodium-plugin")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "13h07l7xy713zchnj2p9fhvq7fdl4zy1ai94li3ygkqjjj8hrgas"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("automake" ,automake)
+         ("autoconf" ,autoconf)
+         ("libtool" ,libtool)
+         ("dovecot" ,dovecot)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libsodium" ,libsodium)))
+      (arguments
+       `(#:tests? #f ;No tests exist.
+         #:configure-flags (list (string-append "--with-dovecot="
+                                                (assoc-ref %build-inputs "dovecot")
+                                                "/lib/dovecot"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autogen
+             (lambda _
+               (zero? (system* "./autogen.sh")))))))
+      (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
+      (synopsis "Libsodium password hashing schemes plugin for Dovecot")
+      (description
+       "@code{dovecot-libsodium-plugin} provides libsodium password
+hashing schemes plugin for @code{Dovecot}.")
+      (license gpl3+))))
 
 (define-public isync
   (package

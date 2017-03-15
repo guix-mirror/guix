@@ -298,6 +298,7 @@ SCM_TESTS =					\
   tests/services.scm				\
   tests/scripts-build.scm			\
   tests/containers.scm				\
+  tests/pack.scm				\
   tests/import-utils.scm
 
 if HAVE_GUILE_JSON
@@ -489,7 +490,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=				\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz	\
-	  -s "$*" guix` ;					\
+	  -s "$*" --localstatedir guix` ;			\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 

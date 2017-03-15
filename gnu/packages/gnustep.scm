@@ -35,7 +35,7 @@
 (define-public windowmaker
   (package
     (name "windowmaker")
-    (version "0.95.7")
+    (version "0.95.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -43,40 +43,39 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1acph0nq6fsb452sl7j7a7kcc87zqqaw7qms1p8ijar19dn4hbc4"))))
+                "12p8kljqgx5hnic0zvs5mxwp7kg21sb6qjagb2qw8ydvf5amrgwx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; 'wmaker' wants to invoke 'wmaker.inst' the first time,
-                   ;; and the 'wmsetbg', so make sure it uses the right ones.
-                   ;; We can't use a wrapper here because that would pollute
-                   ;; $PATH in the whole session.
-                   (let* ((out (assoc-ref outputs "out"))
-                          (bin (string-append out "/bin")))
-                     (substitute* "src/main.c"
-                       (("\"wmaker\\.inst")
-                        (string-append "\"" bin "/wmaker.inst")))
-                     (substitute* '("src/defaults.c" "WPrefs.app/Menu.c")
-                       (("\"wmsetbg")
-                        (string-append "\"" bin "/wmsetbg")))
-                     ;; Add enough cells to the command character array to
-                     ;; allow passing our large path to the wmsetbg binary.
-                     ;; The path to wmsetbg in Guix requires 67 extra characters.
-                     (substitute* "src/defaults.c"
-                       (("len = strlen\\(text\\) \\+ 40;")
-                        (string-append "len = strlen(text) + 107;")))))
-                 (alist-cons-after
-                  'install 'wrap
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bin (string-append out "/bin")))
-                      ;; In turn, 'wmaker.inst' wants to invoke 'wmmenugen'
-                      ;; etc., so make sure everything is in $PATH.
-                      (wrap-program (string-append bin "/wmaker.inst")
-                                    `("PATH" ":" prefix (,bin)))))
-                  %standard-phases))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; 'wmaker' wants to invoke 'wmaker.inst' the first time,
+             ;; and the 'wmsetbg', so make sure it uses the right ones.
+             ;; We can't use a wrapper here because that would pollute
+             ;; $PATH in the whole session.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* "src/main.c"
+                 (("\"wmaker\\.inst")
+                  (string-append "\"" bin "/wmaker.inst")))
+               (substitute* '("src/defaults.c" "WPrefs.app/Menu.c")
+                 (("\"wmsetbg")
+                  (string-append "\"" bin "/wmsetbg")))
+               ;; Add enough cells to the command character array to
+               ;; allow passing our large path to the wmsetbg binary.
+               ;; The path to wmsetbg in Guix requires 67 extra characters.
+               (substitute* "src/defaults.c"
+                 (("len = strlen\\(text\\) \\+ 40;")
+                  (string-append "len = strlen(text) + 107;"))))))
+         (add-after 'install 'wrap
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                ;; In turn, 'wmaker.inst' wants to invoke 'wmmenugen'
+                ;; etc., so make sure everything is in $PATH.
+                (wrap-program (string-append bin "/wmaker.inst")
+                              `("PATH" ":" prefix (,bin)))))))))
     (inputs
      `(("libxmu" ,libxmu)
        ("libxft" ,libxft)

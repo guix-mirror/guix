@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
 ;;;
@@ -37,6 +37,7 @@
   #:use-module (ice-9 format)
   #:export (open-socket-for-uri
             open-connection-for-uri
+            %x509-certificate-directory
             close-connection
             resolve-uri-reference
             maybe-expand-mirrors

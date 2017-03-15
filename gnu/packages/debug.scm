@@ -304,12 +304,12 @@ down the road.")
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description
-       "Stress Make is a customized GNU Make that explicitely managess the
-order in which concurrent jobs are run in order to provoke erroneous behavior
-into becoming manifest.  It can run jobs in the order they're launched, in
-backwards order, or in random order.  The thought is that if code builds
-correctly with Stress Make then it is likely that the @code{Makefile} contains
-no race conditions.")
+       "Stress Make is a customized GNU Make that explicitely manages the order
+in which concurrent jobs are run to provoke erroneous behavior into becoming
+manifest.  It can run jobs in the order in which they're launched, in backwards
+order, or in random order.  The thought is that if code builds correctly with
+Stress Make, then it is likely that the @code{Makefile} contains no race
+conditions.")
       ;; stress-make wrapper is under BSD-3-modifications-must-be-indicated,
       ;; and patched GNU Make is under its own license.
       (license (list (non-copyleft "COPYING.md")

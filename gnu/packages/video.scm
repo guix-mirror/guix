@@ -980,7 +980,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.03.07")
+    (version "2017.03.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -988,7 +988,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19acz9m3gazd1ims4l9a9ni1p7jw8z4y0ncqn99xlx9kna8ryjnv"))))
+                "0h561pbphdkfalir9awp0k4fmsnzdf6kx56adb9bb0v9pfsb1y0f"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1495,7 +1495,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "18.0.0")
+    (version "18.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1503,7 +1503,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pxrzzp8z7kmwfdp49rwrk0j3lpya6garvbbzzfvldwhyam9az5d"))))
+                "043f8mfdh4ll0hpivpyg3iniirckwsgri0gzamyrba1yhf2c2ibr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests

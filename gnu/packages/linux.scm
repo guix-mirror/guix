@@ -370,8 +370,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.38"
-                    "165kmzglhg63hn7y4q7r6cb2dpsljxiq1czvgyx0bkd1vd2bcvsa"
+  (make-linux-libre "4.1.39"
+                    "06pb3zpkfkc7pb7yh537vvzn8i9nhqyx58kqxv0wq23b4hhpza7d"
                     %intel-compatible-systems
                     #:configuration-file kernel-config
                     #:patches
@@ -1999,7 +1999,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2016.06.10")
+    (version "2017.03.07")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2007,7 +2007,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "1dxqy7a7zpzya30ff00s8k1qgrlndrwys99gc0r8yg0vab1z3vfg"))
+                "1f9mcp78sdd4sci6v32vxfcl1rfjpv205jisz1p93kkfnaisy7ip"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(delete-file "regulatory.bin"))))

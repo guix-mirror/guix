@@ -2280,3 +2280,205 @@ than ocaml's Pervasives.compare.  Scaffolding functions also gives you more
 flexibility by allowing you to override them for a specific type and more safety
 by making sure that you only compare comparable values.")
     (license license:asl2.0)))
+
+(define-public ocaml-sexplib
+  (package
+    (name "ocaml-sexplib")
+    (version "113.33.03")
+    (source (janestreet-origin "sexplib" version
+              "1ffjmj8if9lyv965cgn2ld1xv7g52qsr8mqflbm515ck1i8l2ima"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/sexplib/")
+    (synopsis "Library for serializing OCaml values to and from S-expressions")
+    (description "Sexplib contains functionality for parsing and pretty-printing
+s-expressions.")
+    (license license:asl2.0)))
+
+(define-public ocaml-typerep
+  (package
+    (name "ocaml-typerep")
+    (version "113.33.03")
+    (source (janestreet-origin "typerep" version
+              "1b9v5bmi824a9d4sx0f40ixq0yfcbiqxafg4a1jx95xg9199zafy"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/typerep/")
+    (synopsis "Typerep is a library for runtime types")
+    (description "Typerep is a library for runtime types.")
+    (license license:asl2.0)))
+
+(define-public ocaml-variantslib
+  (package
+    (name "ocaml-variantslib")
+    (version "113.33.03")
+    (source (janestreet-origin "variantslib" version
+              "05vp799vl38fvl98ga5miwbzh09cnnpapi6q6gdvwyqi6w7s919n"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/variantslib")
+    (synopsis "OCaml variants as first class values")
+    (description "OCaml variants as first class values.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-conv
+  (package
+    (name "ocaml-ppx-sexp-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_sexp_conv" version
+              "1rbj6d5dl625gdxih34xcrdvikci6h8i2dl9x3wraa4qrgishiw7"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("sexplib" ,ocaml-sexplib)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_sexp_conv")
+    (synopsis "Generation of S-expression conversion functions from type definitions")
+    (description "Generation of S-expression conversion functions from type
+definitions.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-variants-conv
+  (package
+    (name "ocaml-ppx-variants-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_variants_conv" version
+              "0vnn2l1118cj72413d3f7frlw6yc09l8f64jlzkzbgb9bxpalx34"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-core" ,ocaml-ppx-core)
+       ("variantslib" ,ocaml-variantslib)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_variants_conv")
+    (synopsis "Generation of accessor and iteration functions for ocaml variant
+types")
+    (description "Generation of accessor and iteration functions for ocaml
+variant types.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-here
+  (package
+    (name "ocaml-ppx-here")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_here" version
+              "1ay8lfxi0qg3ib2zkwh4h0vqk3gjmxaz572gzab0bbxyqn3z86v7"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_here")
+    (synopsis "Expands [%here] into its location")
+    (description "Expands [%here] into its location.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-assert
+  (package
+    (name "ocaml-ppx-assert")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_assert" version
+              "1k5kxmqkibp5fk25pgz81f3c1r4mgvb5byzf6bnmxd24y60wn46p"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-compare" ,ocaml-ppx-compare)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-sexplib" ,ocaml-sexplib)
+       ("ppx-here" ,ocaml-ppx-here)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_assert")
+    (synopsis "Assert-like extension nodes that raise useful errors on failure")
+    (description "Assert-like extension nodes that raise useful errors on failure.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-enumerate
+  (package
+    (name "ocaml-ppx-enumerate")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_enumerate" version
+              "15g7yfv9wg2h9r6k6q1zrhygmsl4xrfn25mrb0i4czjjivzmxjh4"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_enumerate")
+    (synopsis "Generate a list containing all values of a finite type")
+    (description "Ppx_enumerate is a ppx rewriter which generates a definition
+for the list of all values of a type (for a type which only has finitely
+many values).")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-let
+  (package
+    (name "ocaml-ppx-let")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_let" version
+              "0gd6d3gdaqfwjcs7gaw1qxc30i584q6a86ndaj1bx1q63xqd6yx9"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_let")
+    (synopsis "Monadic let-bindings")
+    (description "A ppx rewriter for monadic and applicative let bindings,
+match expressions, and if expressions.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-typerep-conv
+  (package
+    (name "ocaml-ppx-typerep-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_typerep_conv" version
+              "0g0xqm9s1b2jjvxb8yp69281q2s3bwz6sibn10fvgcdawpa0rmrg"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("typerep" ,ocaml-typerep)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_typerep_conv")
+    (synopsis "Generation of runtime types from type declarations")
+    (description "Automatic generation of runtime types from type definitions.")
+    (license license:asl2.0)))
