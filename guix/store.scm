@@ -22,6 +22,7 @@
   #:use-module (guix memoization)
   #:use-module (guix serialization)
   #:use-module (guix monads)
+  #:use-module (guix base16)
   #:autoload   (guix base32) (bytevector->base32-string)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)

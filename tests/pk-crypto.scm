@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 (define-module (test-pk-crypto)
   #:use-module (guix pk-crypto)
   #:use-module (guix utils)
+  #:use-module (guix base16)
   #:use-module (guix hash)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)

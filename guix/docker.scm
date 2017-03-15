@@ -19,6 +19,7 @@
 (define-module (guix docker)
   #:use-module (guix hash)
   #:use-module (guix store)
+  #:use-module (guix base16)
   #:use-module (guix utils)
   #:use-module ((guix build utils)
                 #:select (delete-file-recursively

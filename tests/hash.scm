@@ -18,7 +18,7 @@
 
 (define-module (test-hash)
   #:use-module (guix hash)
-  #:use-module (guix utils)
+  #:use-module (guix base16)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64)

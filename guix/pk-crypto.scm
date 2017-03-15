@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,9 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix pk-crypto)
-  #:use-module ((guix utils)
-                #:select (bytevector->base16-string
-                          base16-string->bytevector))
+  #:use-module (guix base16)
   #:use-module (guix gcrypt)
 
   #:use-module (system foreign)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
@@ -35,13 +35,6 @@
   (string-append "t-utils-" (number->string (getpid))))
 
 (test-begin "utils")
-
-(test-assert "bytevector->base16-string->bytevector"
-  (every (lambda (bv)
-           (equal? (base16-string->bytevector
-                    (bytevector->base16-string bv))
-                   bv))
-         (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
 
 (test-assert "gnu-triplet->nix-system"
   (let ((samples '(("i586-gnu0.3" "i686-gnu")

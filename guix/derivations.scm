@@ -31,6 +31,7 @@
   #:use-module (ice-9 vlist)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix base16)
   #:use-module (guix memoization)
   #:use-module (guix combinators)
   #:use-module (guix monads)
