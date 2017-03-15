@@ -395,7 +395,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
   %D%/packages/vpn.scm				\
-  %D%/packages/vtk.scm				\
   %D%/packages/w3m.scm				\
   %D%/packages/wdiff.scm			\
   %D%/packages/web.scm				\
