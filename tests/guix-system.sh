@@ -76,7 +76,14 @@ EOF
 if guix system build "$tmpfile" -n 2> "$errorfile"
 then false
 else
-    grep "$tmpfile:9:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+    if test "`guile -c '(display (effective-version))'`" = 2.2
+    then
+	# FIXME: With Guile 2.2.0 the error is reported on line 4.
+	# See <http://bugs.gnu.org/26107>.
+	grep "$tmpfile:[49]:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+    else
+	grep "$tmpfile:9:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+    fi
 fi
 
 OS_BASE='
