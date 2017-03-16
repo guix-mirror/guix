@@ -31,9 +31,6 @@
 (define-syntax-rule (return/1 value)
   value)
 
-(define %nothing                                  ;nothingness
-  (list 'this 'is 'nothing))
-
 (define-syntax define-cache-procedure
   (syntax-rules ()
     "Define a procedure NAME that implements a cache using HASH-REF and
@@ -41,15 +38,17 @@ HASH-SET!.  Use CALL to invoke the thunk and RETURN to return its value; CALL
 and RETURN are used to distinguish between multiple-value and single-value
 returns."
     ((_ name hash-ref hash-set! call return)
-     (define (name cache key thunk)
-       "Cache the result of THUNK under KEY in CACHE, or return the
+     (define name
+       (let ((%nothing '(this is nothing)))
+         (lambda (cache key thunk)
+           "Cache the result of THUNK under KEY in CACHE, or return the
 already-cached result."
-       (let ((results (hash-ref cache key %nothing)))
-         (if (eq? results %nothing)
-             (let ((results (call thunk)))
-               (hash-set! cache key results)
-               (return results))
-             (return results)))))
+           (let ((results (hash-ref cache key %nothing)))
+             (if (eq? results %nothing)
+                 (let ((results (call thunk)))
+                   (hash-set! cache key results)
+                   (return results))
+                 (return results)))))))
     ((_ name hash-ref hash-set!)
      (define-cache-procedure name hash-ref hash-set!
        call/mv return/mv))))
