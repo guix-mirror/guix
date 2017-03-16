@@ -283,9 +283,10 @@ with COMPRESSOR.  It can be passed to 'docker load'."
                                result)))
          (option '(#\S "symlink") #t #f
                  (lambda (opt name arg result)
-                   (match (string-tokenize arg
-                                           (char-set-complement
-                                            (char-set #\=)))
+                   ;; Note: Using 'string-split' allows us to handle empty
+                   ;; TARGET (as in "/opt/guile=", meaning that /opt/guile is
+                   ;; a symlink to the profile) correctly.
+                   (match (string-split arg (char-set #\=))
                      ((source target)
                       (let ((symlinks (assoc-ref result 'symlinks)))
                         (alist-cons 'symlinks
