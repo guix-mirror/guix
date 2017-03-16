@@ -284,6 +284,9 @@ Create a bundle of PACKAGE.\n"))
              (symlinks   (assoc-ref opts 'symlinks))
              (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store
+          ;; Set the build options before we do anything else.
+          (set-build-options-from-command-line store opts)
+
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
                                            (packages->manifest packages)))
