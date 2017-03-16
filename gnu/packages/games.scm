@@ -45,6 +45,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +119,8 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages kde)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libedit)
@@ -174,6 +177,7 @@
   #:use-module (guix build-system scons)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26))
@@ -7909,3 +7913,53 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
 @end itemize")
    (home-page "https://github.com/bernds/q5Go")
    (license license:gpl2+)))
+
+(define-public ktuberling
+  (package
+    (name "ktuberling")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/ktuberling-" version ".tar.xz"))
+      (sha256
+       (base32 "1qdf4q6wjh1lnlqw5c8z4rpj9w5vbyjfri1dah6yjm3mwppbc12j"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("perl" ,perl)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdelibs4support" ,kdelibs4support)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Stamp drawing toy")
+    (description "KTuberling is a drawing toy intended for small children and
+adults who remain young at heart.  The game has no winner; the only purpose is
+to make the funniest faces you can.  Several activites are possible, e.g.:
+
+@itemize
+@item Give the potato a funny face, clothes, and other goodies
+@item Build a small town, complete with school, zoo, and fire department
+@item Create a fantastic moonscape with spaceships and aliens
+@item Top a pizza
+@end itemize
+
+KTuberling can speak the name of each the object in several languages,
+to assist in learning basic vocabulary.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
