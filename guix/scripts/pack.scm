@@ -24,6 +24,7 @@
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix monads)
+  #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix derivations)
@@ -32,6 +33,8 @@
   #:use-module (gnu packages compression)
   #:autoload   (gnu packages base) (tar)
   #:autoload   (gnu packages package-management) (guix)
+  #:autoload   (gnu packages gnupg) (libgcrypt)
+  #:autoload   (gnu packages guile) (guile-json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-37)
@@ -177,6 +180,59 @@ added to the pack."
                     build
                     #:references-graphs `(("profile" ,profile))))
 
+(define* (docker-image name profile
+                       #:key deduplicate?
+                       (compressor (first %compressors))
+                       localstatedir?
+                       (symlinks '())
+                       (tar tar))
+  "Return a derivation to construct a Docker image of PROFILE.  The
+image is a tarball conforming to the Docker Image Specification, compressed
+with COMPRESSOR.  It can be passed to 'docker load'."
+  ;; FIXME: Honor SYMLINKS and LOCALSTATEDIR?.
+  (define not-config?
+    (match-lambda
+      (('guix 'config) #f)
+      (('guix rest ...) #t)
+      (('gnu rest ...) #t)
+      (rest #f)))
+
+  (define config
+    ;; (guix config) module for consumption by (guix gcrypt).
+    (scheme-file "gcrypt-config.scm"
+                 #~(begin
+                     (define-module (guix config)
+                       #:export (%libgcrypt))
+
+                     ;; XXX: Work around <http://bugs.gnu.org/15602>.
+                     (eval-when (expand load eval)
+                       (define %libgcrypt
+                         #+(file-append libgcrypt "/lib/libgcrypt"))))))
+
+  (define build
+    (with-imported-modules `(,@(source-module-closure '((guix docker))
+                                                      #:select? not-config?)
+                             ((guix config) => ,config))
+      #~(begin
+          ;; Guile-JSON is required by (guix docker).
+          (add-to-load-path
+           (string-append #$guile-json "/share/guile/site/"
+                          (effective-version)))
+
+          (use-modules (guix docker))
+
+          (setenv "PATH"
+                  (string-append #$tar "/bin:"
+                                 #$(compressor-package compressor) "/bin"))
+
+          (build-docker-image #$output #$profile
+                              #:closure "profile"
+                              #:compressor '#$(compressor-command compressor)))))
+
+  (gexp->derivation (string-append name ".tar."
+                                   (compressor-extension compressor))
+                    build
+                    #:references-graphs `(("profile" ,profile))))
 
 
 ;;;
@@ -185,13 +241,19 @@ added to the pack."
 
 (define %default-options
   ;; Alist of default option values.
-  `((system . ,(%current-system))
+  `((format . tarball)
+    (system . ,(%current-system))
     (substitutes? . #t)
     (graft? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
     (symlinks . ())
     (compressor . ,(first %compressors))))
+
+(define %formats
+  ;; Supported pack formats.
+  `((tarball . ,self-contained-tarball)
+    (docker  . ,docker-image)))
 
 (define %options
   ;; Specifications of the command-line options.
@@ -206,6 +268,9 @@ added to the pack."
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\f "format") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'format (string->symbol arg) result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -241,6 +306,8 @@ Create a bundle of PACKAGE.\n"))
   (newline)
   (show-transformation-options-help)
   (newline)
+  (display (_ "
+  -f, --format=FORMAT    build a pack in the given FORMAT"))
   (display (_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
@@ -280,8 +347,16 @@ Create a bundle of PACKAGE.\n"))
                                     (specification->package+output spec))
                                 list))
                             specs))
-             (compressor (assoc-ref opts 'compressor))
-             (symlinks   (assoc-ref opts 'symlinks))
+             (pack-format (assoc-ref opts 'format))
+             (name        (string-append (symbol->string pack-format)
+                                         "-pack"))
+             (compressor  (assoc-ref opts 'compressor))
+             (symlinks    (assoc-ref opts 'symlinks))
+             (build-image (match (assq-ref %formats pack-format)
+                            ((? procedure? proc) proc)
+                            (#f
+                             (leave (_ "~a: unknown pack format")
+                                    format))))
              (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store
           ;; Set the build options before we do anything else.
@@ -290,13 +365,13 @@ Create a bundle of PACKAGE.\n"))
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
                                            (packages->manifest packages)))
-                                 (drv (self-contained-tarball "pack" profile
-                                                              #:compressor
-                                                              compressor
-                                                              #:symlinks
-                                                              symlinks
-                                                              #:localstatedir?
-                                                              localstatedir?)))
+                                 (drv (build-image name profile
+                                                   #:compressor
+                                                   compressor
+                                                   #:symlinks
+                                                   symlinks
+                                                   #:localstatedir?
+                                                   localstatedir?)))
               (mbegin %store-monad
                 (show-what-to-build* (list drv)
                                      #:use-substitutes?

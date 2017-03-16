@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,16 +19,17 @@
 
 (define-module (guix docker)
   #:use-module (guix hash)
-  #:use-module (guix store)
   #:use-module (guix base16)
-  #:use-module (guix utils)
   #:use-module ((guix build utils)
                 #:select (delete-file-recursively
                           with-directory-excursion))
-  #:use-module (json)
+  #:use-module (guix build store-copy)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:export (build-docker-image))
+
+;; Load Guile-JSON at run time to simplify the job of 'imported-modules' & co.
+(module-use! (current-module) (resolve-interface '(json)))
 
 ;; Generate a 256-bit identifier in hexadecimal encoding for the Docker image
 ;; containing the closure at PATH.
@@ -81,48 +83,55 @@
     (rootfs . ((type . "layers")
                (diff_ids . (,(layer-diff-id layer)))))))
 
-(define* (build-docker-image path #:key system)
-  "Generate a Docker image archive from the given store PATH.  The image
-contains the closure of the given store item."
-  (let ((id (docker-id path))
+(define* (build-docker-image image path #:key closure compressor)
+  "Write to IMAGE a Docker image archive from the given store PATH.  The image
+contains the closure of PATH, as specified in CLOSURE (a file produced by
+#:references-graphs).  Use COMPRESSOR, a command such as '(\"gzip\" \"-9n\"),
+to compress IMAGE."
+  (let ((directory "/tmp/docker-image")           ;temporary working directory
+        (closure (canonicalize-path closure))
+        (id (docker-id path))
         (time (strftime "%FT%TZ" (localtime (current-time))))
-        (name (string-append (getcwd)
-                             "/docker-image-" (basename path) ".tar"))
-        (arch (match system
-                ("x86_64-linux" "amd64")
-                ("i686-linux" "386")
-                ("armhf-linux" "arm")
-                ("mips64el-linux" "mips64le"))))
-    (and (call-with-temporary-directory
-          (lambda (directory)
-            (with-directory-excursion directory
-              ;; Add symlink from /bin to /gnu/store/.../bin
-              (symlink (string-append path "/bin") "bin")
+        (arch (match (utsname:machine (uname))
+                ("x86_64" "amd64")
+                ("i686"   "386")
+                ("armv7l" "arm")
+                ("mips64" "mips64le"))))
+    ;; Make sure we start with a fresh, empty working directory.
+    (mkdir directory)
 
-              (mkdir id)
-              (with-directory-excursion id
-                (with-output-to-file "VERSION"
-                  (lambda () (display schema-version)))
-                (with-output-to-file "json"
-                  (lambda () (scm->json (image-description id time))))
+    (and (with-directory-excursion directory
+           ;; Add symlink from /bin to /gnu/store/.../bin
+           (symlink (string-append path "/bin") "bin")
 
-                ;; Wrap it up
-                (let ((items (with-store store
-                               (requisites store (list path)))))
-                  (and (zero? (apply system* "tar" "-cf" "layer.tar"
-                                     (cons "../bin" items)))
-                       (delete-file "../bin"))))
+           (mkdir id)
+           (with-directory-excursion id
+             (with-output-to-file "VERSION"
+               (lambda () (display schema-version)))
+             (with-output-to-file "json"
+               (lambda () (scm->json (image-description id time))))
 
-              (with-output-to-file "config.json"
-                (lambda ()
-                  (scm->json (config (string-append id "/layer.tar")
-                                     time arch))))
-              (with-output-to-file "manifest.json"
-                (lambda ()
-                  (scm->json (manifest path id))))
-              (with-output-to-file "repositories"
-                (lambda ()
-                  (scm->json (repositories path id)))))
-            (and (zero? (system* "tar" "-C" directory "-cf" name "."))
-                 (begin (delete-file-recursively directory) #t))))
-         name)))
+             ;; Wrap it up
+             (let ((items (call-with-input-file closure
+                            read-reference-graph)))
+               (and (zero? (apply system* "tar" "-cf" "layer.tar"
+                                  (cons "../bin" items)))
+                    (delete-file "../bin"))))
+
+           (with-output-to-file "config.json"
+             (lambda ()
+               (scm->json (config (string-append id "/layer.tar")
+                                  time arch))))
+           (with-output-to-file "manifest.json"
+             (lambda ()
+               (scm->json (manifest path id))))
+           (with-output-to-file "repositories"
+             (lambda ()
+               (scm->json (repositories path id)))))
+
+         (and (zero? (apply system* "tar" "-C" directory "-cf" image
+                            `(,@(if compressor
+                                    (list "-I" (string-join compressor))
+                                    '())
+                              ".")))
+              (begin (delete-file-recursively directory) #t)))))
