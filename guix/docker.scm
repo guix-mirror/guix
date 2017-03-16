@@ -84,6 +84,11 @@
     (rootfs . ((type . "layers")
                (diff_ids . (,(layer-diff-id layer)))))))
 
+(define %tar-determinism-options
+  ;; GNU tar options to produce archives deterministically.
+  '("--sort=name" "--mtime=@1"
+    "--owner=root:0" "--group=root:0"))
+
 (define* (build-docker-image image path
                              #:key closure compressor
                              (creation-time (current-time time-utc)))
@@ -119,7 +124,8 @@ creation time in metadata."
              (let ((items (call-with-input-file closure
                             read-reference-graph)))
                (and (zero? (apply system* "tar" "-cf" "layer.tar"
-                                  (cons "../bin" items)))
+                                  (append %tar-determinism-options
+                                          (cons "../bin" items))))
                     (delete-file "../bin"))))
 
            (with-output-to-file "config.json"
@@ -134,7 +140,8 @@ creation time in metadata."
                (scm->json (repositories path id)))))
 
          (and (zero? (apply system* "tar" "-C" directory "-cf" image
-                            `(,@(if compressor
+                            `(,@%tar-determinism-options
+                              ,@(if compressor
                                     (list "-I" (string-join compressor))
                                     '())
                               ".")))
