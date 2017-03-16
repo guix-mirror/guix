@@ -483,9 +483,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
                    (display
                     (string-append
                      "#!" bash "/bin/sh\n"
-                     "if [ -z \"$CCL_DEFAULT_DIRECTORY\" ]; then\n"
-                     "    CCL_DEFAULT_DIRECTORY=" libdir "\n"
-                     "fi\n"
+                     "CCL_DEFAULT_DIRECTORY=" libdir "\n"
                      "export CCL_DEFAULT_DIRECTORY\n"
                      "exec " libdir kernel "\n"))))
                (chmod wrapper #o755)))
