@@ -4738,7 +4738,7 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.7.0")
+    (version "2.8.2-1")
     (source
      (origin
        (method url-fetch)
@@ -4748,13 +4748,19 @@ sequence itself can be retrieved from these databases.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "13paw7bq6y47d2pl0ac5gpgcqp1xsy1g7v1fwysm3hr8lb2dck17"))))
+         "1camsijmvv2s45mb4iyf44ghl4gkd4rl0viphpcgl3ccchy32a0g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
        #:make-flags
-       (list (string-append "VDB_LIBDIR="
+       (list (string-append "DEFAULT_CRT="
+                            (assoc-ref %build-inputs "ncbi-vdb")
+                            "/kfg/certs.kfg")
+             (string-append "DEFAULT_KFG="
+                            (assoc-ref %build-inputs "ncbi-vdb")
+                            "/kfg/default.kfg")
+             (string-append "VDB_LIBDIR="
                             (assoc-ref %build-inputs "ncbi-vdb")
                             ,(if (string-prefix? "x86_64"
                                                  (or (%current-target-system)
