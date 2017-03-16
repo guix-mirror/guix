@@ -877,6 +877,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2016-10155.patch			\
   %D%/packages/patches/qemu-CVE-2017-2615.patch			\
+  %D%/packages/patches/qemu-CVE-2017-2620.patch			\
+  %D%/packages/patches/qemu-CVE-2017-2630.patch			\
   %D%/packages/patches/qemu-CVE-2017-5525.patch			\
   %D%/packages/patches/qemu-CVE-2017-5526.patch			\
   %D%/packages/patches/qemu-CVE-2017-5552.patch			\
