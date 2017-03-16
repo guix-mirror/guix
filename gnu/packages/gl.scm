@@ -271,7 +271,7 @@ also known as DXTn or DXTC) for Mesa.")
          ;; from the default dri drivers
          ,@(match (%current-system)
              ((or "x86_64-linux" "i686-linux")
-              '("--with-dri-drivers=915,i965,nouveau,r200,radeon,swrast"
+              '("--with-dri-drivers=i915,i965,nouveau,r200,radeon,swrast"
                 "--enable-gallium-llvm")) ; default is x86/x86_64 only
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
