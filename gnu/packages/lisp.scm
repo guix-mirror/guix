@@ -414,6 +414,9 @@ statistical profiler, a code coverage tool, and many other extensions.")
        ("subversion" ,subversion)))
     (arguments
      `(#:tests? #f                      ;no 'check' target
+       #:modules ((srfi srfi-26)
+                  (guix build utils)
+                  (guix build gnu-build-system))
        #:phases
        (alist-replace
         'unpack
@@ -465,10 +468,16 @@ statistical profiler, a code coverage tool, and many other extensions.")
                         ;; "guix package --search="
                         (_              "UNSUPPORTED")))
                     (heap (string-append kernel ".image")))
-               (mkdir-p libdir)
+               (install-file kernel libdir)
+               (install-file heap libdir)
+
+               (let ((dirs '("lib" "library" "examples" "contrib"
+                             "tools" "objc-bridge")))
+                 (for-each copy-recursively
+                           dirs
+                           (map (cut string-append libdir <>) dirs)))
+
                (mkdir-p bindir)
-               (copy-file kernel (string-append libdir kernel))
-               (copy-file heap (string-append libdir heap))
                (with-output-to-file wrapper
                  (lambda ()
                    (display
