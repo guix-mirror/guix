@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -54,6 +56,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
@@ -656,3 +659,57 @@ system-wide profiler for Linux using statistical sampling with hardware
 performance counters.  There also exist converters for profiling output of
 Python, PHP, and Perl.")
     (license license:gpl2)))
+
+(define-public libkdegames
+  (package
+    (name "libkdegames")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/libkdegames-" version ".tar.xz"))
+      (sha256
+       (base32 "12dvkmjgbi8dp9y55zmx1pw3zr2i374c4vn3mfn9r31bf06dr701"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("kdnssd" ,kdnssd)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ;("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("knewstuff" ,knewstuff)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libsndfile" ,libsndfile)
+       ("openal" ,openal)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://games.kde.org/")
+    (synopsis "Runtime library for kdegames")
+    (description "Runtime library for kdegames")
+    (license (list license:gpl2+  license:fdl1.2+))))
