@@ -4483,6 +4483,11 @@ simultaneously.")
                  (("CFLAGS	=" prefix)
                   (string-append prefix "-msse2 ")))
 
+               ;; Override search path for ngs-java
+               (substitute* "setup/package.prl"
+                 (("/usr/local/ngs/ngs-java")
+                  (assoc-ref inputs "java-ngs")))
+
                ;; The 'configure' script doesn't recognize things like
                ;; '--enable-fast-install'.
                (zero? (system*
@@ -4494,8 +4499,6 @@ simultaneously.")
                                       (assoc-ref inputs "libxml2"))
                        (string-append "--with-ngs-sdk-prefix="
                                       (assoc-ref inputs "ngs-sdk"))
-                       (string-append "--with-ngs-java-prefix="
-                                      (assoc-ref inputs "java-ngs"))
                        (string-append "--with-hdf5-prefix="
                                       (assoc-ref inputs "hdf5")))))))
          (add-after 'install 'install-interfaces
