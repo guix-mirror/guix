@@ -4519,6 +4519,14 @@ simultaneously.")
              (copy-recursively "interfaces"
                                (string-append (assoc-ref outputs "out")
                                               "/include"))
+             #t))
+         ;; These files are needed by sra-tools.
+         (add-after 'install 'install-configuration-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out") "/kfg")))
+               (mkdir target)
+               (install-file "libs/kfg/default.kfg" target)
+               (install-file "libs/kfg/certs.kfg" target))
              #t)))))
     (inputs
      `(("libxml2" ,libxml2)
