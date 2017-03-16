@@ -134,8 +134,8 @@ and BOOTP/TFTP for network booting of diskless machines.")
            (lambda _
              (zero? (system* "make" "force-test")))))))
     (synopsis "An implementation of the Domain Name System")
-    (description "BIND is an implementation of the Domain Name System (DNS)
-protocols for the Internet.  It is a reference implementation of those
+    (description "BIND is an implementation of the @dfn{Domain Name System}
+(DNS) protocols for the Internet.  It is a reference implementation of those
 protocols, but it is also production-grade software, suitable for use in
 high-volume and high-reliability applications. The name BIND stands for
 \"Berkeley Internet Name Domain\", because the software originated in the early
@@ -298,9 +298,9 @@ asynchronous fashion.")
                                "--disable-nsid")))
     (home-page "http://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
-    (description "YADIFA is an authorative name server for the Domain Name
-System (DNS).  It aims for both higher performance and a smaller memory
+    (description "YADIFA is an authoritative name server for the @dfn{Domain
+Name System} (DNS).  It aims for both higher performance and a smaller memory
 footprint than other implementations, while remaining fully RFC-compliant.
-YADIFA supports dynamic record updates and the Domain Name System Security
-Extensions (DNSSEC).")
+YADIFA supports dynamic record updates and the @dfn{Domain Name System Security
+Extensions} (DNSSEC).")
     (license license:bsd-3)))
