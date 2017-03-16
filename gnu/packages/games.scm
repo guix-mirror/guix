@@ -8122,3 +8122,43 @@ layouts.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public kshisen
+  (package
+    (name "kshisen")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/"
+                          version "/src/kshisen-" version ".tar.xz"))
+      (sha256
+       (base32 "1bq5m48af4h5apfp3bfsp76nlpv6h5sc0gd544zv7cgpfznz1sds"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ;("perl" ,perl)
+       ;("pkg-config" ,pkg-config)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("libkmahjongg" ,libkmahjongg)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Shisen-Sho solitaire game")
+    (description "KShisen is a solitaire-like game played using the standard
+set of Mahjong tiles.  Unlike Mahjong however, KShisen has only one layer of
+scrambled tiles
+
+This package is part of the KDE games module.")
+    (license license:gpl2+)))
