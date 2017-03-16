@@ -47,7 +47,6 @@ Documentation License''.
 @direntry
 * Guix: (guix).       Manage installed software and system configuration.
 * guix package: (guix)Invoking guix package.  Installing, removing, and upgrading packages.
-* guix build: (guix)Invoking guix build.      Building packages.
 * guix gc: (guix)Invoking guix gc.            Reclaiming unused disk space.
 * guix pull: (guix)Invoking guix pull.        Update the list of available packages.
 * guix system: (guix)Invoking guix system.    Manage the operating system configuration.
@@ -56,6 +55,8 @@ Documentation License''.
 @dircategory Software development
 @direntry
 * guix environment: (guix)Invoking guix environment. Building development environments with Guix.
+* guix build: (guix)Invoking guix build.      Building packages.
+* guix pack: (guix)Invoking guix pack.        Creating binary bundles.
 @end direntry
 
 @titlepage
