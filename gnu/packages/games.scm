@@ -8001,3 +8001,52 @@ grid.  The aim is to reveal a hidden picture.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kolf
+  (package
+    (name "kolf")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kolf-" version ".tar.xz"))
+       (sha256
+        (base32 "06sfd0llr5cc3zf1vrpcxgw9bm009ky7y8822kynic9ipcd4z1hw"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("ktextwidgets" ,ktextwidgets)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Miniature golf game")
+    (description "Kolf is a miniature golf game for one to ten players.  The
+game is played from an overhead view, with a short bar representing the golf
+club.  Kolf features many different types of objects, such as water hazards,
+slopes, sand traps, and black holes (warps), among others.
+
+Features are:
+@itemize
+@item Single and Multi-player (up to ten players) modes
+@item High scores table
+@item Dynamic courses
+@item Third-party courses
+@item Course editor
+@end itemize
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
