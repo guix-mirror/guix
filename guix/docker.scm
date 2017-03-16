@@ -21,7 +21,8 @@
   #:use-module (guix hash)
   #:use-module (guix base16)
   #:use-module ((guix build utils)
-                #:select (delete-file-recursively
+                #:select (mkdir-p
+                          delete-file-recursively
                           with-directory-excursion))
   #:use-module (guix build store-copy)
   #:use-module (srfi srfi-19)
@@ -89,14 +90,30 @@
   '("--sort=name" "--mtime=@1"
     "--owner=root:0" "--group=root:0"))
 
+(define symlink-source
+  (match-lambda
+    ((source '-> target)
+     (string-trim source #\/))))
+
+(define (topmost-component file)
+  "Return the topmost component of FILE.  For instance, if FILE is \"/a/b/c\",
+return \"a\"."
+  (match (string-tokenize file (char-set-complement (char-set #\/)))
+    ((first rest ...)
+     first)))
+
 (define* (build-docker-image image path
                              #:key closure compressor
+                             (symlinks '())
                              (creation-time (current-time time-utc)))
   "Write to IMAGE a Docker image archive from the given store PATH.  The image
 contains the closure of PATH, as specified in CLOSURE (a file produced by
-#:references-graphs).  Use COMPRESSOR, a command such as '(\"gzip\" \"-9n\"),
-to compress IMAGE.  Use CREATION-TIME, a SRFI-19 time-utc object, as the
-creation time in metadata."
+#:references-graphs).  SYMLINKS must be a list of (SOURCE -> TARGET) tuples
+describing symlinks to be created in the image, where each TARGET is relative
+to PATH.
+
+Use COMPRESSOR, a command such as '(\"gzip\" \"-9n\"), to compress IMAGE.  Use
+CREATION-TIME, a SRFI-19 time-utc object, as the creation time in metadata."
   (let ((directory "/tmp/docker-image")           ;temporary working directory
         (closure (canonicalize-path closure))
         (id (docker-id path))
@@ -110,9 +127,6 @@ creation time in metadata."
     (mkdir directory)
 
     (and (with-directory-excursion directory
-           ;; Add symlink from /bin to /gnu/store/.../bin
-           (symlink (string-append path "/bin") "bin")
-
            (mkdir id)
            (with-directory-excursion id
              (with-output-to-file "VERSION"
@@ -120,13 +134,25 @@ creation time in metadata."
              (with-output-to-file "json"
                (lambda () (scm->json (image-description id time))))
 
-             ;; Wrap it up
+             ;; Wrap it up.
              (let ((items (call-with-input-file closure
                             read-reference-graph)))
+               ;; Create SYMLINKS.
+               (for-each (match-lambda
+                           ((source '-> target)
+                            (let ((source (string-trim source #\/)))
+                              (mkdir-p (dirname source))
+                              (symlink (string-append path "/" target)
+                                       source))))
+                         symlinks)
+
                (and (zero? (apply system* "tar" "-cf" "layer.tar"
                                   (append %tar-determinism-options
-                                          (cons "../bin" items))))
-                    (delete-file "../bin"))))
+                                          items
+                                          (map symlink-source symlinks))))
+                    (for-each delete-file-recursively
+                              (map (compose topmost-component symlink-source)
+                                   symlinks)))))
 
            (with-output-to-file "config.json"
              (lambda ()

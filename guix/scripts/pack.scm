@@ -189,7 +189,7 @@ added to the pack."
   "Return a derivation to construct a Docker image of PROFILE.  The
 image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'."
-  ;; FIXME: Honor SYMLINKS and LOCALSTATEDIR?.
+  ;; FIXME: Honor LOCALSTATEDIR?.
   (define not-config?
     (match-lambda
       (('guix 'config) #f)
@@ -227,6 +227,7 @@ with COMPRESSOR.  It can be passed to 'docker load'."
 
           (build-docker-image #$output #$profile
                               #:closure "profile"
+                              #:symlinks '#$symlinks
                               #:compressor '#$(compressor-command compressor)
                               #:creation-time (make-time time-utc 0 1)))))
 
