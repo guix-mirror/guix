@@ -4463,61 +4463,60 @@ simultaneously.")
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            ;; Override include path for libmagic
-            (substitute* "setup/package.prl"
-              (("name => 'magic', Include => '/usr/include'")
-               (string-append "name=> 'magic', Include => '"
-                              (assoc-ref inputs "libmagic")
-                              "/include" "'")))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Override include path for libmagic
+               (substitute* "setup/package.prl"
+                 (("name => 'magic', Include => '/usr/include'")
+                  (string-append "name=> 'magic', Include => '"
+                                 (assoc-ref inputs "libmagic")
+                                 "/include" "'")))
 
-            ;; Install kdf5 library (needed by sra-tools)
-            (substitute* "build/Makefile.install"
-              (("LIBRARIES_TO_INSTALL =")
-               "LIBRARIES_TO_INSTALL = kdf5.$(VERSION_LIBX) kdf5.$(VERSION_SHLX)"))
+               ;; Install kdf5 library (needed by sra-tools)
+               (substitute* "build/Makefile.install"
+                 (("LIBRARIES_TO_INSTALL =")
+                  "LIBRARIES_TO_INSTALL = kdf5.$(VERSION_LIBX) kdf5.$(VERSION_SHLX)"))
 
-            (substitute* "build/Makefile.env"
-              (("CFLAGS	=" prefix)
-               (string-append prefix "-msse2 ")))
+               (substitute* "build/Makefile.env"
+                 (("CFLAGS	=" prefix)
+                  (string-append prefix "-msse2 ")))
 
-            ;; The 'configure' script doesn't recognize things like
-            ;; '--enable-fast-install'.
-            (zero? (system*
-                    "./configure"
-                    (string-append "--build-prefix=" (getcwd) "/build")
-                    (string-append "--prefix=" (assoc-ref outputs "out"))
-                    (string-append "--debug")
-                    (string-append "--with-xml2-prefix="
-                                   (assoc-ref inputs "libxml2"))
-                    (string-append "--with-ngs-sdk-prefix="
-                                   (assoc-ref inputs "ngs-sdk"))
-                    (string-append "--with-ngs-java-prefix="
-                                   (assoc-ref inputs "java-ngs"))
-                    (string-append "--with-hdf5-prefix="
-                                   (assoc-ref inputs "hdf5"))))))
-        (alist-cons-after
-         'install 'install-interfaces
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Install interface libraries.  On i686 the interface libraries
-           ;; are installed to "linux/gcc/i386", so we need to use the Linux
-           ;; architecture name ("i386") instead of the target system prefix
-           ;; ("i686").
-           (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
-           (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
-                                            ,(system->linux-architecture
-                                              (or (%current-target-system)
-                                                  (%current-system)))
-                                            "/rel/ilib")
-                             (string-append (assoc-ref outputs "out")
-                                            "/ilib"))
-           ;; Install interface headers
-           (copy-recursively "interfaces"
-                             (string-append (assoc-ref outputs "out")
-                                            "/include")))
-         %standard-phases))))
+               ;; The 'configure' script doesn't recognize things like
+               ;; '--enable-fast-install'.
+               (zero? (system*
+                       "./configure"
+                       (string-append "--build-prefix=" (getcwd) "/build")
+                       (string-append "--prefix=" (assoc-ref outputs "out"))
+                       (string-append "--debug")
+                       (string-append "--with-xml2-prefix="
+                                      (assoc-ref inputs "libxml2"))
+                       (string-append "--with-ngs-sdk-prefix="
+                                      (assoc-ref inputs "ngs-sdk"))
+                       (string-append "--with-ngs-java-prefix="
+                                      (assoc-ref inputs "java-ngs"))
+                       (string-append "--with-hdf5-prefix="
+                                      (assoc-ref inputs "hdf5")))))))
+         (add-after 'install 'install-interfaces
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install interface libraries.  On i686 the interface libraries
+             ;; are installed to "linux/gcc/i386", so we need to use the Linux
+             ;; architecture name ("i386") instead of the target system prefix
+             ;; ("i686").
+             (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
+             (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
+                                              ,(system->linux-architecture
+                                                (or (%current-target-system)
+                                                    (%current-system)))
+                                              "/rel/ilib")
+                               (string-append (assoc-ref outputs "out")
+                                              "/ilib"))
+             ;; Install interface headers
+             (copy-recursively "interfaces"
+                               (string-append (assoc-ref outputs "out")
+                                              "/include"))
+             #t)))))
     (inputs
      `(("libxml2" ,libxml2)
        ("ngs-sdk" ,ngs-sdk)
