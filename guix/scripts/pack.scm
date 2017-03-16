@@ -219,7 +219,7 @@ with COMPRESSOR.  It can be passed to 'docker load'."
            (string-append #$guile-json "/share/guile/site/"
                           (effective-version)))
 
-          (use-modules (guix docker))
+          (use-modules (guix docker) (srfi srfi-19))
 
           (setenv "PATH"
                   (string-append #$tar "/bin:"
@@ -227,7 +227,8 @@ with COMPRESSOR.  It can be passed to 'docker load'."
 
           (build-docker-image #$output #$profile
                               #:closure "profile"
-                              #:compressor '#$(compressor-command compressor)))))
+                              #:compressor '#$(compressor-command compressor)
+                              #:creation-time (make-time time-utc 0 1)))))
 
   (gexp->derivation (string-append name ".tar."
                                    (compressor-extension compressor))

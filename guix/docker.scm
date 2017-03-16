@@ -24,6 +24,7 @@
                 #:select (delete-file-recursively
                           with-directory-excursion))
   #:use-module (guix build store-copy)
+  #:use-module (srfi srfi-19)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:export (build-docker-image))
@@ -83,15 +84,18 @@
     (rootfs . ((type . "layers")
                (diff_ids . (,(layer-diff-id layer)))))))
 
-(define* (build-docker-image image path #:key closure compressor)
+(define* (build-docker-image image path
+                             #:key closure compressor
+                             (creation-time (current-time time-utc)))
   "Write to IMAGE a Docker image archive from the given store PATH.  The image
 contains the closure of PATH, as specified in CLOSURE (a file produced by
 #:references-graphs).  Use COMPRESSOR, a command such as '(\"gzip\" \"-9n\"),
-to compress IMAGE."
+to compress IMAGE.  Use CREATION-TIME, a SRFI-19 time-utc object, as the
+creation time in metadata."
   (let ((directory "/tmp/docker-image")           ;temporary working directory
         (closure (canonicalize-path closure))
         (id (docker-id path))
-        (time (strftime "%FT%TZ" (localtime (current-time))))
+        (time (date->string (time-utc->date creation-time) "~4"))
         (arch (match (utsname:machine (uname))
                 ("x86_64" "amd64")
                 ("i686"   "386")
