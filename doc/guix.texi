@@ -2405,7 +2405,9 @@ The @command{guix pack} command creates a shrink-wrapped @dfn{pack} or
 containing the binaries of the software you're interested in, and all
 its dependencies.  The resulting archive can be used on any machine that
 does not have Guix, and people can run the exact same binaries as those
-you have with Guix.
+you have with Guix.  The pack itself is created in a bit-reproducible
+fashion, so anyone can verify that it really contains the build results
+that you pretend to be shipping.
 
 For example, to create a bundle containing Guile, Emacs, Geiser, and all
 their dependencies, you can run:
