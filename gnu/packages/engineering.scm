@@ -96,13 +96,13 @@
                                            (assoc-ref inputs "boost")))))
         (replace 'install
          (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (mkdir-p (string-append out "/bin"))
-             (mkdir-p (string-append out "/share/librecad"))
-             (copy-file "unix/librecad"
-                        (string-append out "/bin/librecad"))
-             (copy-recursively "unix/resources"
-                               (string-append out "/share/librecad"))))))))
+           (let* ((out   (assoc-ref outputs "out"))
+                  (bin   (string-append out "/bin"))
+                  (share (string-append out "/share/librecad")))
+             (mkdir-p bin)
+             (install-file "unix/librecad" bin)
+             (mkdir-p share)
+             (copy-recursively "unix/resources" share)))))))
     (inputs
      `(("boost" ,boost)
        ("muparser" ,muparser)

@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -1221,5 +1223,110 @@ text as well as tab-completion of buddy names, commands and English words.  It
 is also scriptable and extensible via Guile.")
     (home-page "https://www.gnu.org/software/freetalk")
     (license license:gpl3+)))
+
+(define-public libmesode
+  (package
+    (name "libmesode")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/boothj5/libmesode/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0iaj56fkd5bjvqpvq3324ni895rmbj1akbfqipjydnghfwaym4z6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (zero? (system* "./bootstrap.sh")))))))
+    (inputs
+     `(("expat" ,expat)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "C library for writing XMPP clients")
+    (description "Libmesode is a fork of libstrophe for use with Profanity
+XMPP Client.  In particular, libmesode provides extra TLS functionality such as
+manual SSL certificate verification.")
+    (home-page "https://github.com/boothj5/libmesode")
+    ;; Dual licensed.
+    (license (list license:gpl3+ license:x11))))
+
+(define-public libstrophe
+  (package
+    (name "libstrophe")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/strophe/libstrophe/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hzwdax4nsz0fncf5bjfza0cn0lc6xsf38y569ql1gg5hvwr6169"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (zero? (system* "./bootstrap.sh")))))))
+    (inputs
+     `(("expat" ,expat)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "C library for writing XMPP clients")
+    (description "Libstrophe is a minimal XMPP library written in C.  It has
+almost no external dependencies, only an XML parsing library (expat or libxml
+are both supported).")
+    (home-page "http://strophe.im/libstrophe")
+    ;; Dual licensed.
+    (license (list license:gpl3+ license:x11))))
+
+(define-public profanity
+    (package
+        (name "profanity")
+        (version "0.5.1")
+        (source (origin
+                  (method url-fetch)
+                  (uri (string-append "http://www.profanity.im/profanity-"
+                                      version ".tar.gz"))
+                  (sha256
+                   (base32
+                     "1f7ylw3mhhnii52mmk40hyc4kqhpvjdr3hmsplzkdhsfww9kflg3"))))
+        (build-system gnu-build-system)
+        (inputs
+         `(("curl" ,curl)
+           ("expat" ,expat)
+           ("glib" ,glib)
+           ("gpgme" ,gpgme)
+           ("libmesode" ,libmesode)
+           ("libotr" ,libotr)
+           ("ncurses" ,ncurses)
+           ("openssl" ,openssl)
+           ("readline" ,readline)))
+        (native-inputs
+         `(("autoconf" ,autoconf)
+           ("autoconf-archive" ,autoconf-archive)
+           ("automake" ,automake)
+           ("cmocka" ,cmocka)
+           ("libtool" ,libtool)
+           ("pkg-config" ,pkg-config)))
+        (synopsis "Console-based XMPP client")
+        (description "Profanity is a console based XMPP client written in C
+using ncurses and libmesode, inspired by Irssi.")
+        (home-page "http://www.profanity.im")
+        (license license:gpl3+)))
 
 ;;; messaging.scm ends here

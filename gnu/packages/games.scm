@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -73,6 +73,7 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
@@ -194,6 +195,50 @@ scriptable with Guile.")
     (description  "GNU Shogi is a program that plays the game Shogi (Japanese
 Chess).  It is similar to standard chess but this variant is far more complicated.")
     (license license:gpl3+)))
+
+(define-public prboom-plus
+  (package
+   (name "prboom-plus")
+   (version "2.5.1.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                version "/" name "-" version ".tar.gz"))
+            (sha256
+             (base32
+              "151v6nign86m1a2vqz27krsccpc9m4d1jax4y43v2fa82wfj9qp0"))
+            (modules '((guix build utils)))
+            (snippet
+             '(substitute* "src/version.c"
+                           (("__DATE__") "")
+                           (("__TIME__") "")))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:configure-flags '("--disable-cpu-opt")
+      #:make-flags `(,(string-append "gamesdir="
+                                     (assoc-ref %outputs "out") "/bin"))
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'set-paths 'set-sdl'paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "CPATH"
+                    (string-append (assoc-ref inputs "sdl-union")
+                                   "/include/SDL"))
+            #t)))))
+   (inputs
+    `(("fluidsynth" ,fluidsynth)
+      ("glu" ,glu)
+      ("libmad" ,libmad)
+      ("libpng" ,libpng)
+      ("libvorbis" ,libvorbis)
+      ("pcre" ,pcre)
+      ("portmidi" ,portmidi)
+      ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-net)))))
+   (home-page "http://prboom-plus.sourceforge.net/")
+   (synopsis "Version of the classic 3D shoot'em'up game Doom")
+   (description
+    "PrBoom+ is a Doom source port developed from the original PrBoom project.")
+   (license license:gpl2+)))
 
 (define-public xshogi
   (package
@@ -3190,7 +3235,7 @@ to the Space Age.")
 (define-public no-more-secrets
   (package
     (name "no-more-secrets")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
@@ -3199,7 +3244,7 @@ to the Space Age.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "038flwqr0kqv55im2v76xjn01zbvvkb3nzb5ridwm2kbnk9cgg4v"))))
+         "00mzdif859vm75n1igrffh8c07p1nr4rlm3yb7lrkwwxhrw8xzla"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

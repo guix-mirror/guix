@@ -6521,7 +6521,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
 (define-public python-ptyprocess
   (package
     (name "python-ptyprocess")
-    (version "0.5")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -6530,7 +6530,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0nggns5kikn32yyda2zrj1xdmh49pi3v0drggcdwljbv36r8zdyw"))))
+         "19l1xrjn4l9gjz01s3vg92gn2dd9d8mw1v86ppkzlnr9m5iwwc05"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -9304,14 +9304,14 @@ document.")
 (define-public python-botocore
   (package
    (name "python-botocore")
-   (version "1.5.10")
+   (version "1.5.26")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "botocore" version))
      (sha256
       (base32
-       "1hqvqwhgfcch4knm1l02ynx7qd1igxk3pj34c1x2b0r79jca524n"))))
+       "1b7l48hr88galrrc5q6k21z3sdadzxc87ppzs7k9fz4p1w8bfnvb"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Many tests are failing.
@@ -9338,14 +9338,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.11.47")
+   (version "1.11.63")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri name version))
      (sha256
       (base32
-       "0p0pila0k99fm87q1gb24wyd34ags0vkh37h1fa6hklq4mi69i1w"))))
+       "1r8aqv8w27k76lcsfk83w6qw9lz8gk2ibzwacp5wjhpp2gik911m"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-colorama" ,python-colorama)
@@ -12042,14 +12042,14 @@ List.")
 (define-public python-publicsuffix2
   (package
     (name "python-publicsuffix2")
-    (version "2.20160621")
+    (version "2.20160818")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "publicsuffix2" version ".tar.bz2"))
        (sha256
         (base32
-         "06lx603gdwad5hc3hmn763ngq0rq9bzz1ni3ga72nzk5n872arkd"))))
+         "1bb55yka9vkn7i6y1kjzxa516kh6v4gsrxa90w5wdz5p5n968r68"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; The test suite requires network access.

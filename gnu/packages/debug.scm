@@ -68,10 +68,10 @@
               (mkdir-p bin)
               (mkdir-p doc)
               (for-each (lambda (h)
-                          (copy-file h (string-append doc "/" (basename h))))
+                          (install-file h doc))
                         `("License.txt" ,@(find-files "www" ".*\\.html")))
               (for-each (lambda (b)
-                          (copy-file b (string-append bin "/" b)))
+                          (install-file b bin))
                         `("delta" "multidelta" "topformflat")))))
         (alist-delete 'configure %standard-phases))))
     (home-page "http://delta.tigris.org/")
@@ -212,13 +212,13 @@ tools that process C/C++ code.")
                                       (system* "tar" "xf"
                                                (assoc-ref inputs "afl-src")))
                                (error "tar failed to unpack afl-src"))
-                             (copy-file (string-append patch-dir
-                                                       "/afl-qemu-cpu-inl.h")
-                                        "./afl-qemu-cpu-inl.h")
+                             (install-file (string-append patch-dir
+                                                          "/afl-qemu-cpu-inl.h")
+                                           ".")
                              (copy-file (string-append afl-dir "/config.h")
                                         "./afl-config.h")
-                             (copy-file (string-append afl-dir "/types.h")
-                                        "./types.h")
+                             (install-file (string-append afl-dir "/types.h")
+                                           ".")
                              (substitute* "afl-qemu-cpu-inl.h"
                                (("\\.\\./\\.\\./config.h") "afl-config.h"))
                              (substitute* (string-append patch-dir

@@ -908,9 +908,7 @@ commands and their arguments.")
                            (man8 (string-append man "/man8")))
                       (define (copy-man-page target)
                         (lambda (file)
-                          (copy-file file
-                                     (string-append target "/"
-                                                    (basename file)))))
+                          (install-file file target)))
 
                       (mkdir-p man5) (mkdir man8)
                       (for-each (copy-man-page man5)

@@ -107,14 +107,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.1.1")
+    (version "3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1dpylyg79avi7brpkcmzaq7bqqkz45flp0ws6f2c8b1gyz4hdnzm"))))
+               "0c06yj5hgqibi24ib9sx865kq6i1h18wn201g6iwcfbpi2a7psdm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

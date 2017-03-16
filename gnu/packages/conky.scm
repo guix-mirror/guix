@@ -64,7 +64,7 @@
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
              (mkdir-p bin)
-             (copy-file "src/conky" (string-append bin "/conky"))))
+             (install-file "src/conky" bin)))
          %standard-phases))))
     (inputs
      `(("freetype" ,freetype)
