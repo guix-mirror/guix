@@ -177,7 +177,7 @@ directory tree.")
             "09i03sk878cmx2i40lkpsysn7zqcvlczb30j7x3lryb11jz4gx1q"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxfont2" ,libxfont2)))
+      `(("libxfont" ,libxfont)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
