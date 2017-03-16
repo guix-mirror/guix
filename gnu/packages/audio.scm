@@ -1286,6 +1286,15 @@ synchronous execution of all clients, and low latency operation.")
                            "--alsa")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-fast_rand
+           (lambda _
+             (substitute* "common/memops.c"
+               ;; Fixed in upstream commit d3c8e2d8d78899fba40a3e677ed4dbe388d82269
+               (("^inline unsigned int fast_rand" line)
+                (string-append "static " line))
+               ;; Fixed in upstream commit 0279a2d65a36d1378f5bab56d95bf9e99cc8cefb
+               ((" 96314165") " 196314165"))
+             #t))
          (add-before
           'configure 'set-linkflags
           (lambda _
