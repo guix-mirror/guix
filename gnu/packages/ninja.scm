@@ -29,7 +29,7 @@
 (define-public ninja
   (package
     (name "ninja")
-    (version "1.7.1")
+    (version "1.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martine/ninja/"
@@ -37,9 +37,8 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "06dy2dc1aafm61ynw9gzig88la3km9dsh53bxf4mnw7l7kjisn2i"))
-              (patches (search-patches "ninja-zero-mtime.patch"
-                                       "ninja-tests.patch"))))
+                "1n8n3g26ppwh7zwrc37n3alkbpbj0wki34ih53s3rkhs8ajs1p9f"))
+              (patches (search-patches "ninja-zero-mtime.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (arguments
