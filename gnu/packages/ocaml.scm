@@ -972,14 +972,14 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
 (define-public ocaml-qtest
   (package
     (name "ocaml-qtest")
-    (version "2.3")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/vincent-hugot/iTeML/"
                                   "archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1n7x5l6h4j44f75wzgzjsjkq349i4gj707w1hr7fx84igxxfr6vl"))))
+                "1hw3jqir7w79payy4knc38fa3nxcvl7ap6y6hnqavrhpi8zqb59j"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("findlib" ,ocaml-findlib)))
