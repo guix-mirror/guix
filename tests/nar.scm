@@ -35,6 +35,7 @@
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 regex)
+  #:use-module ((ice-9 control) #:select (let/ec))
   #:use-module (ice-9 match))
 
 ;; Test the (guix nar) module.
@@ -147,17 +148,6 @@
   ;; An output directory under $top_builddir.
   (string-append (dirname (search-path %load-path "pre-inst-env"))
                  "/test-nar-" (number->string (getpid))))
-
-(define-syntax-rule (let/ec k exp...)
-  ;; This one appeared in Guile 2.0.9, so provide a copy here.
-  (let ((tag (make-prompt-tag)))
-    (call-with-prompt tag
-      (lambda ()
-        (let ((k (lambda args
-                   (apply abort-to-prompt tag args))))
-          exp...))
-      (lambda (_ . args)
-        (apply values args)))))
 
 
 (test-begin "nar")

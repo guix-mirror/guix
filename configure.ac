@@ -82,7 +82,7 @@ if test "x$GUILD" = "x"; then
 fi
 
 if test "x$GUILE_EFFECTIVE_VERSION" = "x2.0"; then
-  PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7])
+  PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.9])
 fi
 
 dnl Installation directory for .scm and .go files.

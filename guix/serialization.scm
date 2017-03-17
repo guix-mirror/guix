@@ -130,8 +130,7 @@
   ;; <http://bugs.gnu.org/19621>.  See <http://bugs.gnu.org/19610> for
   ;; a discussion.
   (let ((bv (read-byte-string p)))
-    ;; XXX: Rewrite using (ice-9 iconv) when the minimum requirement is
-    ;; upgraded to Guile >= 2.0.9.
+    ;; XXX: Rewrite using (ice-9 iconv).
     (list->string (map integer->char (bytevector->u8-list bv)))))
 
 (define (read-maybe-utf8-string p)
