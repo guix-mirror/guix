@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -211,6 +211,35 @@
                                        #:hooks '()
                                        #:locales? #f)))
     (return (derivation-inputs drv))))
+
+(test-assertm "profile-derivation, cross-compilation"
+  (mlet* %store-monad
+      ((manifest -> (packages->manifest (list packages:sed packages:grep)))
+       (target ->   "arm-linux-gnueabihf")
+       (grep        (package->cross-derivation packages:grep target))
+       (sed         (package->cross-derivation packages:sed target))
+       (locales     (package->derivation packages:glibc-utf8-locales))
+       (drv         (profile-derivation manifest
+                                        #:hooks '()
+                                        #:locales? #t
+                                        #:target target)))
+    (define (find-input name)
+      (let ((name (string-append name ".drv")))
+        (any (lambda (input)
+               (let ((input (derivation-input-path input)))
+                 (and (string-suffix? name input) input)))
+             (derivation-inputs drv))))
+
+    ;; The inputs for grep and sed should be cross-build derivations, but that
+    ;; for the glibc-utf8-locales should be a native build.
+    (return (and (string=? (derivation-system drv) (%current-system))
+                 (string=? (find-input (package-full-name packages:grep))
+                           (derivation-file-name grep))
+                 (string=? (find-input (package-full-name packages:sed))
+                           (derivation-file-name sed))
+                 (string=? (find-input
+                            (package-full-name packages:glibc-utf8-locales))
+                           (derivation-file-name locales))))))
 
 (test-assert "package->manifest-entry defaults to \"out\""
   (let ((outputs (package-outputs packages:glibc)))
