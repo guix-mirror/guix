@@ -2809,9 +2809,9 @@ and copy/paste text in the console and in xterm.")
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
-    (description "Btrfs is a copy-on-write (CoW) file system for Linux aimed at
-implementing advanced features while focusing on fault tolerance, repair and
-easy administration.")
+    (description "Btrfs is a @dfn{copy-on-write} (CoW) file system for Linux
+aimed at implementing advanced features while focusing on fault tolerance,
+repair and easy administration.")
     ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
     ;; GPL2: Everything else.
     (license (list license:gpl2 license:gpl2+))))
