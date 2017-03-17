@@ -130,7 +130,6 @@ library.  It supports almost all PNG features and is extensible.")
              (substitute* "Makefile.in"
                (("^scripts/symbols.chk") "")
                (("check: scripts/symbols.chk") ""))
-             (zero? (system* "libtool"))
              #t)))))
     (inputs
      `(("apng" ,(origin
