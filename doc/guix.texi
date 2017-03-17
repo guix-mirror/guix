@@ -2438,11 +2438,8 @@ guix pack -S /opt/gnu/bin=bin guile emacs geiser
 @noindent
 That way, users can happily type @file{/opt/gnu/bin/guile} and enjoy.
 
-Alternatively, you can produce a pack in the Docker image format, as
-described in
-@uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
-version 1.2 of the specification}.  This is what the following command
-does:
+Alternatively, you can produce a pack in the Docker image format using
+the following command:
 
 @example
 guix pack -f docker guile emacs geiser
@@ -2457,6 +2454,23 @@ documentation} for more information.
 Several command-line options allow you to customize your pack:
 
 @table @code
+@item --format=@var{format}
+@itemx -f @var{format}
+Produce a pack in the given @var{format}.
+
+The available formats are:
+
+@table @code
+@item tarball
+This is the default format.  It produces a tarball containing all the
+specifies binaries and symlinks.
+
+@item docker
+This produces a tarball that follows the
+@uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
+Docker Image Specification}.
+@end table
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
