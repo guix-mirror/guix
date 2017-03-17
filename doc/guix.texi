@@ -6404,7 +6404,7 @@ home directory is accessible read-only via the @file{/exchange}
 directory:
 
 @example
-guix environment --container --expose=$HOME=/exchange guile -- guile
+guix environment --container --expose=$HOME=/exchange --ad-hoc guile -- guile
 @end example
 
 @item --share=@var{source}[=@var{target}]
@@ -6418,7 +6418,7 @@ home directory is accessible for both reading and writing via the
 @file{/exchange} directory:
 
 @example
-guix environment --container --share=$HOME=/exchange guile -- guile
+guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
 @end example
 @end table
 
