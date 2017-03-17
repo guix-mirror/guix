@@ -805,17 +805,16 @@ multi-dimensional image processing.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "0.5.1")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://downloads.webmproject.org/releases/webp/libwebp-" version
              ".tar.gz"))
-       (patches (search-patches "libwebp-CVE-2016-9085.patch"))
        (sha256
         (base32
-         "1pqki1g8nzi8qgciysypd5r38zccv81np1dn43g27830rmpnrmka"))))
+         "0h1brwkyxc7lb8lc53aacdks5vc1y9hzngqi41gg7y6l56912a69"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
