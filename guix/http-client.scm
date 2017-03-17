@@ -38,7 +38,9 @@
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
                 #:select (open-socket-for-uri
-                          open-connection-for-uri resolve-uri-reference))
+                          (open-connection-for-uri
+                           . guix:open-connection-for-uri)
+                          resolve-uri-reference))
   #:re-export (open-socket-for-uri)
   #:export (&http-get-error
             http-get-error?
@@ -234,9 +236,9 @@ Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri (if (string? uri)
                       (string->uri uri)
                       uri)))
-    (let ((port (or port (open-connection-for-uri uri
-                                                  #:verify-certificate?
-                                                  verify-certificate?)))
+    (let ((port (or port (guix:open-connection-for-uri uri
+                                                       #:verify-certificate?
+                                                       verify-certificate?)))
           (headers (match (uri-userinfo uri)
                      ((? string? str)
                       (cons (cons 'Authorization

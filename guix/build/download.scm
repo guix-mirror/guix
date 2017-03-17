@@ -464,6 +464,9 @@ ETIMEDOUT error is raised."
   "Like 'open-socket-for-uri', but also handle HTTPS connections.  The
 resulting port must be closed with 'close-connection'.  When
 VERIFY-CERTIFICATE? is true, verify HTTPS server certificates."
+  ;; Note: Guile 2.2.0's (web client) has a same-named export that's actually
+  ;; undefined.  See Guile commit 011669af3b428e5626f7bbf66b11d57d9768c047.
+
   (define https?
     (eq? 'https (uri-scheme uri)))
 
