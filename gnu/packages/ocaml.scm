@@ -1243,6 +1243,30 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 @code{ocaml-sqlite}.")
     (license license:expat)))
 
+(define-public ocaml-csv
+  (package
+    (name "ocaml-csv")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://github.com/Chris00/ocaml-csv/releases/download/"
+         version "/csv-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rv7x843vn6scxj87hzl01yqrl26rc27lr8s7z6rp9vs745g05zj"))))
+    (build-system ocaml-build-system)
+    (home-page "https://github.com/Chris00/ocaml-csv")
+    (synopsis "Pure OCaml functions to read and write CSV")
+    (description
+     "@dfn{Comma separated values} (CSV) is a simple tabular format supported
+by all major spreadsheets.  This library implements pure OCaml functions to
+read and write files in this format as well as some convenience functions to
+manipulate such data.")
+    (license (package-license camlp4))))
+
 (define-public ocaml-mtime
   (package
     (name "ocaml-mtime")
