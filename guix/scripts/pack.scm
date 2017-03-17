@@ -46,19 +46,22 @@
 
 ;; Type of a compression tool.
 (define-record-type <compressor>
-  (compressor name package extension command)
+  (compressor name extension command)
   compressor?
-  (name       compressor-name)                    ;string (e.g., "gzip")
-  (package    compressor-package)                 ;package
-  (extension  compressor-extension)               ;string (e.g., "lz")
-  (command    compressor-command))                ;list (e.g., '("gzip" "-9n"))
+  (name       compressor-name)      ;string (e.g., "gzip")
+  (extension  compressor-extension) ;string (e.g., "lz")
+  (command    compressor-command))  ;gexp (e.g., #~("/gnu/store/…/gzip" "-9n"))
 
 (define %compressors
   ;; Available compression tools.
-  (list (compressor "gzip"  gzip  "gz"  '("gzip" "-9n"))
-        (compressor "lzip"  lzip  "lz"  '("lzip" "-9"))
-        (compressor "xz"    xz    "xz"  '("xz" "-e"))
-        (compressor "bzip2" bzip2 "bz2" '("bzip2" "-9"))))
+  (list (compressor "gzip"  "gz"
+                    #~(#+(file-append gzip "/bin/gzip") "-9n"))
+        (compressor "lzip"  "lz"
+                    #~(#+(file-append lzip "/bin/lzip") "-9"))
+        (compressor "xz"    "xz"
+                    #~(#+(file-append xz "/bin/xz") "-e"))
+        (compressor "bzip2" "bz2"
+                    #~(#+(file-append bzip2 "/bin/bzip2") "-9"))))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -121,8 +124,7 @@ added to the pack."
                   (string-append #$(if localstatedir?
                                        (file-append guix "/sbin:")
                                        "")
-                                 #$tar "/bin:"
-                                 #$(compressor-package compressor) "/bin"))
+                                 #$tar "/bin"))
 
           ;; Note: there is not much to gain here with deduplication and
           ;; there is the overhead of the '.links' directory, so turn it
@@ -142,7 +144,8 @@ added to the pack."
           (with-directory-excursion %root
             (exit
              (zero? (apply system* "tar"
-                           "-I" #$(string-join (compressor-command compressor))
+                           "-I"
+                           (string-join '#+(compressor-command compressor))
                            "--format=gnu"
 
                            ;; Avoid non-determinism in the archive.  Use
@@ -221,9 +224,7 @@ with COMPRESSOR.  It can be passed to 'docker load'."
 
           (use-modules (guix docker) (srfi srfi-19))
 
-          (setenv "PATH"
-                  (string-append #$tar "/bin:"
-                                 #$(compressor-package compressor) "/bin"))
+          (setenv "PATH" (string-append #$tar "/bin"))
 
           (build-docker-image #$output #$profile
                               #:closure "profile"

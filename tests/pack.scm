@@ -42,7 +42,8 @@
 (define %gzip-compressor
   ;; Compressor that uses the bootstrap 'gzip'.
   ((@ (guix scripts pack) compressor) "gzip"
-   %bootstrap-coreutils&co "gz" '("gzip" "-6n")))
+   "gz"
+   #~(#+(file-append %bootstrap-coreutils&co "/bin/gzip") "-6n")))
 
 (define %tar-bootstrap %bootstrap-coreutils&co)
 
