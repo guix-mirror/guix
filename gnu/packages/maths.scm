@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix build-system r)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
@@ -77,6 +79,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
@@ -275,6 +278,30 @@ and C++.  It includes a wide range of mathematical routines, with over 1000
 functions in total.  Subject areas covered by the library include:
 differential equations, linear algebra, Fast Fourier Transforms and random
 numbers.")
+    (license license:gpl3+)))
+
+(define-public ocaml-gsl
+  (package
+    (name "ocaml-gsl")
+    (version "1.19.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://github.com/mmottl/gsl-ocaml/releases/download/v"
+         version"/gsl-ocaml-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nzp43hp8pbjqkrxnwp5lgjrabxayf61h18fjaydi0s5faq6f3xh"))))
+    (build-system ocaml-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (home-page "https://mmottl.github.io/gsl-ocaml")
+    (synopsis "Bindings to the GNU Scientific Library")
+    (description
+     "GSL-OCaml is an interface to the @dfn{GNU scientific library} (GSL) for
+the OCaml language.")
     (license license:gpl3+)))
 
 (define-public glpk
