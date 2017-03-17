@@ -73,7 +73,8 @@ found."
       (leave (_ "~a: compressor not found~%") name)))
 
 (define* (self-contained-tarball name profile
-                                 #:key deduplicate?
+                                 #:key target
+                                 deduplicate?
                                  (compressor (first %compressors))
                                  localstatedir?
                                  (symlinks '())
@@ -184,14 +185,17 @@ added to the pack."
                     #:references-graphs `(("profile" ,profile))))
 
 (define* (docker-image name profile
-                       #:key deduplicate?
+                       #:key target
+                       deduplicate?
                        (compressor (first %compressors))
                        localstatedir?
                        (symlinks '())
                        (tar tar))
   "Return a derivation to construct a Docker image of PROFILE.  The
 image is a tarball conforming to the Docker Image Specification, compressed
-with COMPRESSOR.  It can be passed to 'docker load'."
+with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
+must a be a GNU triplet and it is used to derive the architecture metadata in
+the image."
   ;; FIXME: Honor LOCALSTATEDIR?.
   (define not-config?
     (match-lambda
@@ -227,6 +231,7 @@ with COMPRESSOR.  It can be passed to 'docker load'."
           (setenv "PATH" (string-append #$tar "/bin"))
 
           (build-docker-image #$output #$profile
+                              #:system (or #$target (utsname:machine (uname)))
                               #:closure "profile"
                               #:symlinks '#$symlinks
                               #:compressor '#$(compressor-command compressor)
@@ -278,6 +283,10 @@ with COMPRESSOR.  It can be passed to 'docker load'."
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
                                (alist-delete 'system result eq?))))
+         (option '("target") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'target arg
+                               (alist-delete 'target result eq?))))
          (option '(#\C "compression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'compressor (lookup-compressor arg)
@@ -314,6 +323,8 @@ Create a bundle of PACKAGE.\n"))
   -f, --format=FORMAT    build a pack in the given FORMAT"))
   (display (_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
+  (display (_ "
+      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
   (display (_ "
   -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""))
   (display (_ "
@@ -354,6 +365,7 @@ Create a bundle of PACKAGE.\n"))
              (pack-format (assoc-ref opts 'format))
              (name        (string-append (symbol->string pack-format)
                                          "-pack"))
+             (target      (assoc-ref opts 'target))
              (compressor  (assoc-ref opts 'compressor))
              (symlinks    (assoc-ref opts 'symlinks))
              (build-image (match (assq-ref %formats pack-format)
@@ -368,8 +380,11 @@ Create a bundle of PACKAGE.\n"))
 
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
-                                           (packages->manifest packages)))
+                                           (packages->manifest packages)
+                                           #:target target))
                                  (drv (build-image name profile
+                                                   #:target
+                                                   target
                                                    #:compressor
                                                    compressor
                                                    #:symlinks

@@ -2476,6 +2476,12 @@ Docker Image Specification}.
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
 the system type of the build host.
 
+@item --target=@var{triplet}
+@cindex cross-compilation
+Cross-build for @var{triplet}, which must be a valid GNU triplet, such
+as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+configuration triplets,, autoconf, Autoconf}).
+
 @item --compression=@var{tool}
 @itemx -C @var{tool}
 Compress the resulting tarball using @var{tool}---one of @code{gzip},
@@ -5063,8 +5069,8 @@ to build packages in a complete 32-bit environment.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Configuration Names, GNU
-configuration triplets,, configure, GNU Configure and Build System}).
+as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+configuration triplets,, autoconf, Autoconf}).
 
 @anchor{build-check}
 @item --check

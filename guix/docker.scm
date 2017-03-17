@@ -105,12 +105,14 @@ return \"a\"."
 (define* (build-docker-image image path
                              #:key closure compressor
                              (symlinks '())
+                             (system (utsname:machine (uname)))
                              (creation-time (current-time time-utc)))
   "Write to IMAGE a Docker image archive from the given store PATH.  The image
 contains the closure of PATH, as specified in CLOSURE (a file produced by
 #:references-graphs).  SYMLINKS must be a list of (SOURCE -> TARGET) tuples
 describing symlinks to be created in the image, where each TARGET is relative
-to PATH.
+to PATH.  SYSTEM is a GNU triplet (or prefix thereof) of the system the
+binaries at PATH are for; it is used to produce metadata in the image.
 
 Use COMPRESSOR, a command such as '(\"gzip\" \"-9n\"), to compress IMAGE.  Use
 CREATION-TIME, a SRFI-19 time-utc object, as the creation time in metadata."
@@ -118,11 +120,18 @@ CREATION-TIME, a SRFI-19 time-utc object, as the creation time in metadata."
         (closure (canonicalize-path closure))
         (id (docker-id path))
         (time (date->string (time-utc->date creation-time) "~4"))
-        (arch (match (utsname:machine (uname))
-                ("x86_64" "amd64")
-                ("i686"   "386")
-                ("armv7l" "arm")
-                ("mips64" "mips64le"))))
+        (arch (let-syntax ((cond* (syntax-rules ()
+                                    ((_ (pattern clause) ...)
+                                     (cond ((string-prefix? pattern system)
+                                            clause)
+                                           ...
+                                           (else
+                                            (error "unsupported system"
+                                                   system)))))))
+                (cond* ("x86_64" "amd64")
+                       ("i686"   "386")
+                       ("arm"    "arm")
+                       ("mips64" "mips64le")))))
     ;; Make sure we start with a fresh, empty working directory.
     (mkdir directory)
 
