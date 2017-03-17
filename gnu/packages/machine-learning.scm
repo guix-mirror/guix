@@ -26,6 +26,7 @@
   #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -237,6 +239,39 @@ networks) based on simulation of (stochastic) flow in graphs.")
     ;; under the GNU General Public License, version 3.", but in several of
     ;; the source code files it suggests GPL3 or later.
     ;; http://listserver.ebi.ac.uk/pipermail/mcl-users/2016/000376.html
+    (license license:gpl3)))
+
+(define-public ocaml-mcl
+  (package
+    (name "ocaml-mcl")
+    (version "12-068oasis4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/fhcrc/mcl/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l5jbhwjpsj38x8b9698hfpkv75h8hn3kj0gihjhn8ym2cwwv110"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-paths
+           (lambda _
+             (substitute* "configure"
+               (("SHELL = /bin/sh") (string-append "SHELL = "(which "sh"))))
+             (substitute* "setup.ml"
+               (("LDFLAGS=-fPIC")
+                (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh"))))
+             #t)))))
+    (home-page "https://github.com/fhcrc/mcl")
+    (synopsis "OCaml wrappers around MCL")
+    (description
+     "This package provides OCaml bindings for the MCL graph clustering
+algorithm.")
     (license license:gpl3)))
 
 (define-public randomjungle
