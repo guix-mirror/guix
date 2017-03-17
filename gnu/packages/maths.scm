@@ -311,6 +311,9 @@ numbers.")
 the OCaml language.")
     (license license:gpl3+)))
 
+(define-public ocaml4.01-gsl
+  (package-with-ocaml4.01 ocaml-gsl))
+
 (define-public glpk
   (package
     (name "glpk")
