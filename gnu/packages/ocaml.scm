@@ -1348,6 +1348,9 @@ read and write files in this format as well as some convenience functions to
 manipulate such data.")
     (license (package-license camlp4))))
 
+(define-public ocaml4.01-csv
+  (package-with-ocaml4.01 ocaml-csv))
+
 (define-public ocaml-mtime
   (package
     (name "ocaml-mtime")
