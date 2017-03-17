@@ -10,6 +10,7 @@
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -399,12 +400,23 @@ compromised.")
                 "1jia6kq6bp8yxfj02d5vj9vqb4pylqcldspyjj6iz82kkka2a0ig"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; tries to download GoogleTest with wget
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "tar" "xf"
+                             (assoc-ref inputs "googletest-source"))))))
        #:configure-flags '("--enable-python"
                            "--enable-perl"
-                           "--enable-cyrus")))
+                           "--enable-cyrus"
+                           ,(string-append "--with-gtest="
+                                          "googletest-release-"
+                                          (package-version googletest)
+                                          "/googletest"))
+       #:test-target "test"))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("googletest-source" ,(package-source googletest))
+       ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("python" ,python)))
     (inputs
