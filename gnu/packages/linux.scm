@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -70,6 +70,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -3030,6 +3031,74 @@ from userspace.")
 commonly found on Microsoft Windows.  It is implemented as a FUSE file system.
 The package provides additional NTFS tools.")
     (license license:gpl2+)))
+
+(define-public rdma-core
+  (package
+    (name "rdma-core")
+    (version "13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/linux-rdma/rdma-core"
+                                  "/releases/download/v" version "/rdma-core-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15qdfqkia22vab1dh41s88vgi70yifi40ar5s4x7a456rpbhy8z5"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       ;; Upstream uses the "ninja" build system and encourage distros
+       ;; to do the same for consistency. They also recommend using the
+       ;; "Release" build type.
+       #:configure-flags (list "-GNinja"
+                               ;; Defaults to "lib64" on 64-bit archs.
+                               (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                              (assoc-ref %outputs "out") "/lib")
+                               "-DCMAKE_BUILD_TYPE=Release")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (zero? (system* "ninja"
+                             "-j" (number->string (parallel-job-count))))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "ninja" "install")))))))
+    (native-inputs
+     `(("ninja" ,ninja)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("libnl" ,libnl)
+       ("udev" ,eudev)))
+    (home-page "https://github.com/linux-rdma/rdma-core")
+    (synopsis "Utilities and libraries for working with RDMA devices")
+    (description
+     "This package provides userspace components for the InfiniBand
+subsystem of the Linux kernel.  Specifically it contains userspace
+libraries for the following device nodes:
+
+@enumerate
+@item @file{/dev/infiniband/uverbsX} (@code{libibverbs})
+@item @file{/dev/infiniband/rdma_cm} (@code{librdmacm})
+@item @file{/dev/infiniband/umadX} (@code{libibumad})
+@end enumerate
+
+The following service daemons are also provided:
+@enumerate
+@item @code{srp_daemon} (for the @code{ib_srp} kernel module)
+@item @code{iwpmd} (for iWARP kernel providers)
+@item @code{ibacm} (for InfiniBand communication management assistant)
+@end enumerate")
+    ;; All library code is dual licensed under GPL2 and a custom MIT
+    ;; variant. The package also includes some components covered by
+    ;; other licenses. Consult COPYING.md for full details.
+    (license
+     (list license:gpl2
+           (license:x11-style "See COPYING.BSD_MIT in the distribution")
+           license:bsd-2             ; Files referring to COPYING.BSD_FB
+           license:cc0               ; most files in ccan/
+           license:bsd-3))))         ; providers/hfi1verbs are dual GPL2/BSD-3
 
 (define-public rng-tools
   (package
