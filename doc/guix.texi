@@ -506,11 +506,13 @@ To use substitutes from @code{hydra.gnu.org} or one of its mirrors
 @example
 # guix archive --authorize < ~root/.guix-profile/share/guix/hydra.gnu.org.pub
 @end example
+
+@item
+Each user may need to perform a few additional steps to make their Guix
+environment ready for use, @pxref{Application Setup}.
 @end enumerate
 
-This completes root-level install of Guix.  Each user will need to
-perform additional steps to make their Guix environment ready for use,
-@pxref{Application Setup}.
+Voilà, the installation is complete!
 
 You can confirm that Guix is working by installing a sample package into
 the root profile:
