@@ -1321,6 +1321,9 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 @code{ocaml-sqlite}.")
     (license license:expat)))
 
+(define-public ocaml4.01-sqlite3
+  (package-with-ocaml4.01 ocaml-sqlite3))
+
 (define-public ocaml-csv
   (package
     (name "ocaml-csv")
