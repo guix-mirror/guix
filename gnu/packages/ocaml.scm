@@ -59,7 +59,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix svn-download)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1))
 
 ;; A shortcut for files from ocaml forge. Downloaded files are computed from
 ;; their number, not their name.
@@ -1126,7 +1127,21 @@ a camlp4-based tool that allows to instrument your application before running
 tests.  After application execution, it is possible to generate a report in HTML
 format that is the replica of the application source code annotated with code
 coverage information.")
+    (properties `((ocaml4.01-variant . ,(delay ocaml4.01-bisect))))
     (license license:gpl3+)))
+
+(define-public ocaml4.01-bisect
+  (let ((base (package-with-ocaml4.01 (strip-ocaml4.01-variant ocaml-bisect))))
+    (package
+      (inherit base)
+      (arguments
+       `(#:ocaml ,ocaml-4.01
+         ;; Camlp4 is included with OCaml 4.01, so do not include it as a
+         ;; separate input.
+         ,@(strip-keyword-arguments '(#:make-flags) (package-arguments base))))
+      (native-inputs `(,@(alist-delete "camlp4" (package-native-inputs base))))
+      (propagated-inputs
+       `(,@(alist-delete "camlp4" (package-propagated-inputs base)))))))
 
 (define-public ocaml-bitstring
   (package
