@@ -103,9 +103,9 @@ be output in text, PostScript, PDF or HTML.")
 ;; Update this package together with the set of recommended packages: r-boot,
 ;; r-class, r-cluster, r-codetools, r-foreign, r-kernsmooth, r-lattice,
 ;; r-mass, r-matrix, r-mgcv, r-nlme, r-nnet, r-rpart, r-spatial, r-survival.
-(define-public r
+(define-public r-minimal
   (package
-    (name "r")
+    (name "r-minimal")
     (version "3.3.3")
     (source (origin
               (method url-fetch)
@@ -538,14 +538,14 @@ definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
 curves, Cox models, and parametric accelerated failure time models.")
     (license license:lgpl2.0+)))
 
-(define-public r-with-recommended-packages
-  (package (inherit r)
-    (name "r-with-recommended-packages")
+(define-public r
+  (package (inherit r-minimal)
+    (name "r")
     (source #f)
     (build-system trivial-build-system)
     (arguments '(#:builder (mkdir %output)))
     (propagated-inputs
-     `(("r" ,r)
+     `(("r-minimal" ,r-minimal)
        ("r-boot" ,r-boot)
        ("r-class" ,r-class)
        ("r-cluster" ,r-cluster)

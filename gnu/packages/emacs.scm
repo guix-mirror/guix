@@ -2924,7 +2924,7 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
                 (string-append "SHELL = " (which "sh")))))))))
     (inputs
      `(("emacs" ,emacs-minimal)
-       ("r" ,r)))
+       ("r-minimal" ,r-minimal)))
     (native-inputs
      `(("perl" ,perl)
        ("texinfo" ,texinfo)

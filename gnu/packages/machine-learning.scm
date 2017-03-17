@@ -402,7 +402,7 @@ sample proximities between pairs of cases.")
     (inputs
      `(("python" ,python)
        ("numpy" ,python-numpy)
-       ("r" ,r)
+       ("r-minimal" ,r-minimal)
        ("octave" ,octave)
        ("swig" ,swig)
        ("hdf5" ,hdf5)

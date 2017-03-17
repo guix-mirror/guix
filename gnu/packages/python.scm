@@ -4085,7 +4085,7 @@ operators such as union, intersection, and difference.")
      `(("readline" ,readline)
        ("icu4c" ,icu4c)
        ("pcre" ,pcre)
-       ("r" ,r)
+       ("r-minimal" ,r-minimal)
        ("r-survival" ,r-survival)))
     (native-inputs
      `(("zlib" ,zlib)))
