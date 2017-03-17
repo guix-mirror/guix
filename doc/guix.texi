@@ -6422,8 +6422,10 @@ guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
 @end example
 @end table
 
-It also supports all of the common build options that @command{guix
+@command{guix environment}
+also supports all of the common build options that @command{guix
 build} supports (@pxref{Common Build Options}).
+
 
 @node Invoking guix publish
 @section Invoking @command{guix publish}
