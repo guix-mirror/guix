@@ -274,6 +274,9 @@ networks) based on simulation of (stochastic) flow in graphs.")
 algorithm.")
     (license license:gpl3)))
 
+(define-public ocaml4.01-mcl
+  (package-with-ocaml4.01 ocaml-mcl))
+
 (define-public randomjungle
   (package
     (name "randomjungle")
