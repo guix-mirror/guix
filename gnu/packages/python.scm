@@ -13722,3 +13722,32 @@ builds partial trees by inspecting living objects.")
 
 (define-public python2-astroid
   (package-with-python2 python-astroid))
+
+(define-public python-isort
+  (package
+    (name "python-isort")
+    (version "4.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/timothycrosley/isort/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zsrgkb0krn5476yncy5dd56k7dk34zqb4bnlvwy44ixgilyjmfh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/timothycrosley/isort")
+    (synopsis "Python utility/library to sort python imports")
+    (description "@code{python-isort} is a python utility/library to sort
+imports alphabetically, and automatically separated into sections.  It
+provides a command line utility, a python library and plugins for various
+editors.")
+    (license license:expat)))
+
+(define-public python2-isort
+  (package-with-python2 python-isort))
