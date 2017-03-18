@@ -1630,14 +1630,14 @@ and then run @command{scm example.scm}.")
 (define-public guile-8sync
   (package
     (name "guile-8sync")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/8sync/8sync-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1fvf8d2s3vvg4nyskbqaiqmlm2x571hv7hizcnmny45zvalydr9h"))))
+                "031wm13srak3wsnll7j2mbbi29g1pcm4swdb71ds9yn567pn20qw"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
