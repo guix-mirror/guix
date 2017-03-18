@@ -22,6 +22,8 @@
   #:use-module (guix records)
   #:use-module ((gnu build file-systems)
                 #:select (string->uuid uuid->string))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages disk)
   #:re-export (string->uuid
                uuid->string)
   #:export (<file-system>
@@ -64,6 +66,8 @@
             file-system-mapping-writable?
 
             file-system-mapping->bind-mount
+
+            file-system-packages
 
             %store-mapping
             %network-configuration-files
@@ -410,5 +414,27 @@ a bind mount."
                  ;; cannot be bind mounted read-only within the container.
                  (writable? (string=? file "/etc/resolv.conf"))))
               %network-configuration-files))
+
+(define (file-system-type-predicate type)
+  (lambda (fs)
+    (string=? (file-system-type fs) type)))
+
+(define* (file-system-packages file-systems #:key (volatile-root? #f))
+ `(,@(if (find (lambda (fs)
+                 (string-prefix? "ext" (file-system-type fs)))
+               file-systems)
+         (list e2fsck/static)
+         '())
+   ,@(if (find (lambda (fs)
+                 (string-suffix? "fat" (file-system-type fs)))
+               file-systems)
+         (list fatfsck/static)
+         '())
+   ,@(if (find (file-system-type-predicate "btrfs") file-systems)
+         (list btrfs-progs/static)
+         '())
+   ,@(if volatile-root?
+         (list unionfs-fuse/static)
+         '())))
 
 ;;; file-systems.scm ends here
