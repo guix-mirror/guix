@@ -13751,3 +13751,26 @@ editors.")
 
 (define-public python2-isort
   (package-with-python2 python-isort))
+
+(define-public python2-backports-functools-lru-cache
+  (package
+    (name "python2-backports-functools-lru-cache")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       ;; only the pypi tarballs contain the necessary metadata
+       (uri (pypi-uri "backports.functools_lru_cache" version))
+       (sha256
+        (base32
+         "158ysf2hb0q4p4695abfiym9x1ywg0dgh8a3apd7gqaaxjy22jj4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-setuptools-scm" ,python2-setuptools-scm)))
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/jaraco/backports.functools_lru_cache")
+    (synopsis "Backport of functools.lru_cache from Python 3.3")
+    (description "@code{python2-backports-functools-lru-cache} is a backport
+of @code{functools.lru_cache} from python 3.3.")
+    (license license:expat)))
