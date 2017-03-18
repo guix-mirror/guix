@@ -298,14 +298,14 @@ and extensible with plugins and scripts.")
 (define-public limnoria
   (package
     (name "limnoria")
-    (version "2016.08.07")
+    (version "2017.01.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "limnoria" version))
        (sha256
         (base32
-         "0w1d98hfhn4iqrczam7zahhqsvxa79n3xfcrm4jwkg5lba4f9ccm"))))
+         "0va7iiwkrd5miibpaphfm2jlfsmaazbqb8izkmlnlzkqnskhz1ff"))))
     (build-system python-build-system)
     (inputs
      `(("python-pytz" ,python-pytz)
