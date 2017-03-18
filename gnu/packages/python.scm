@@ -13799,3 +13799,34 @@ in other versions.")
 
 (define-public python2-configparser
   (package-with-python2 python-configparser))
+
+(define-public python2-coverage-test-runner
+  (package
+    (name "python2-coverage-test-runner")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/"
+             "coverage-test-runner/snapshot/coverage-test-runner-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0y1m7z3dl63kmhcmydl1mwg0hacnf6ghrx9dah17j9iasssfa3g7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "./testrun")))))))
+    (propagated-inputs
+     `(("python2-coverage" ,python2-coverage)))
+    (home-page "https://liw.fi/coverage-test-runner/")
+    (synopsis "Python module for running unit tests")
+    (description "@code{CoverageTestRunner} is a python module for running
+unit tests and failing them if the unit test module does not excercise all
+statements in the module it tests.")
+    (license license:gpl3+)))
