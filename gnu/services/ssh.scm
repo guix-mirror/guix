@@ -260,28 +260,39 @@ The other options should be self-descriptive."
 (define-record-type* <openssh-configuration>
   openssh-configuration make-openssh-configuration
   openssh-configuration?
-  (openssh               openssh-configuration-openssh ;package
+  ;; <package>
+  (openssh               openssh-configuration-openssh
                          (default openssh))
+  ;; string
   (pid-file              openssh-configuration-pid-file
                          (default "/var/run/sshd.pid"))
-  (port-number           openssh-configuration-port-number ;integer
+  ;; integer
+  (port-number           openssh-configuration-port-number
                          (default 22))
-  (permit-root-login     openssh-configuration-permit-root-login ;Boolean | 'without-password
+  ;; Boolean | 'without-password
+  (permit-root-login     openssh-configuration-permit-root-login
                          (default #f))
-  (allow-empty-passwords? openssh-configuration-allow-empty-passwords? ;Boolean
+  ;; Boolean
+  (allow-empty-passwords? openssh-configuration-allow-empty-passwords?
                           (default #f))
-  (password-authentication? openssh-configuration-password-authentication? ;Boolean
+  ;; Boolean
+  (password-authentication? openssh-configuration-password-authentication?
                             (default #t))
+  ;; Boolean
   (public-key-authentication? openssh-configuration-public-key-authentication?
-                              (default #t))                         ;Boolean
-  (x11-forwarding?       openssh-configuration-x11-forwarding? ;Boolean
+                              (default #t))
+  ;; Boolean
+  (x11-forwarding?       openssh-configuration-x11-forwarding?
                          (default #f))
+  ;; Boolean
   (challenge-response-authentication? openssh-challenge-response-authentication?
-                                      (default #f)) ;Boolean
+                                      (default #f))
+  ;; Boolean
   (use-pam?              openssh-configuration-use-pam?
-                         (default #t)) ;Boolean
+                         (default #t))
+  ;; Boolean
   (print-last-log?       openssh-configuration-print-last-log?
-                         (default #t))) ;Boolean
+                         (default #t)))
 
 (define %openssh-accounts
   (list (user-group (name "sshd") (system? #t))
