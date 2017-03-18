@@ -450,11 +450,7 @@ to lock down your entire repository.")
                     #t)))))))
     (native-inputs
      ;; For building manpage.
-     `(("asciidoc" ,asciidoc)
-       ("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("xmllint" ,libxml2)
-       ("xsltprot" ,libxslt)))
+     `(("asciidoc" ,asciidoc)))
     (inputs
      `(("git:src" ,(package-source git@2.9))
        ("openssl" ,openssl)
@@ -856,10 +852,6 @@ RCS, PRCS, and Aegis packages.")
        (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
     (inputs `(("git" ,git)))
     (native-inputs `(("asciidoc"    ,asciidoc)
-                     ("docbook-xml" ,docbook-xml)
-                     ("docbook-xsl" ,docbook-xsl)
-                     ("xmllint"     ,libxml2)
-                     ("xsltproc"    ,libxslt)
                      ;; These are needed for the tests.
                      ("cvs"    ,cvs)
                      ("python" ,python-2)

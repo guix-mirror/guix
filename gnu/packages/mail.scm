@@ -423,8 +423,7 @@ and corrections.  It is based on a Bayesian filter.")
                 "0i5dvygps1ai2qwgamab8kngrp0c5m3bgaw0jk34l8ypsk54wj8r"))))
     (build-system python-build-system)
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("libxslt" ,libxslt)))  ; for xsltproc
+     `(("asciidoc" ,asciidoc)))
     (inputs `(("python2-pysqlite" ,python2-pysqlite)
               ("python2-six" ,python2-six)))
     (arguments

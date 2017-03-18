@@ -50,7 +50,6 @@
       (build-system gnu-build-system)
       (inputs
        `(("dbus" ,dbus)
-         ("docbook-xml" ,docbook-xml)
          ("libconfig" ,libconfig)
          ("libx11" ,libx11)
          ("libxcomposite" ,libxcomposite)
@@ -58,10 +57,8 @@
          ("libxext" ,libxext)
          ("libxfixes" ,libxfixes)
          ("libxinerama" ,libxinerama)
-         ("libxml2" ,libxml2)
          ("libxrandr" ,libxrandr)
          ("libxrender" ,libxrender)
-         ("libxslt" ,libxslt)
          ("mesa" ,mesa)
          ("xprop" ,xprop)
          ("xwininfo" ,xwininfo)))

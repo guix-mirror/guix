@@ -177,26 +177,12 @@ commands would.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let* ((docbook-xsl-name-version ,(string-append
-                                          (package-name docbook-xsl) "-"
-                                          (package-version  docbook-xsl)))
-              (docbook-xsl-catalog-file (string-append
-                                         (assoc-ref %build-inputs "docbook-xsl")
-                                         "/xml/xsl/"
-                                         docbook-xsl-name-version
-                                         "/catalog.xml"))
-              (docbook-xml-catalog-file (string-append
-                                         (assoc-ref %build-inputs "docbook-xml")
-                                         "/xml/dtd/docbook/catalog.xml")))
-         ;; Reference the catalog files required to build the manpages.
-         (list (string-append "XML_CATALOG_FILES=" docbook-xsl-catalog-file " "
-                              docbook-xml-catalog-file)
-              "CC=gcc"
-              (string-append "PREFIX=" %output)
-              ;; This works around the following error:
-              ;; 'error: ‘for’ loop initial declarations are only allowed in C99
-              ;; or C11 mode'
-              "CFLAGS=-std=c11"))
+       (list "CC=gcc"
+             (string-append "PREFIX=" %output)
+             ;; This works around the following error:
+             ;; 'error: ‘for’ loop initial declarations are only allowed in C99
+             ;; or C11 mode'
+             "CFLAGS=-std=c11")
        ;; The build system tries to build in a separate directory, but that
        ;; seems to be unnecessary.
        #:configure-flags '("--disable-builddir")
@@ -215,7 +201,6 @@ commands would.")
        ("asciidoc" ,asciidoc)
        ("xmlto" ,xmlto)
        ("perl-pod-simple" ,perl-pod-simple)
-       ("docbook-xml" ,docbook-xml)
        ("libx11" ,libx11)
        ("pcre" ,pcre)
        ("startup-notification" ,startup-notification)
@@ -226,6 +211,7 @@ commands would.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ;; For building the documentation.
+       ("libxml2" ,libxml2)
        ("docbook-xsl" ,docbook-xsl)))
     (home-page "https://i3wm.org/")
     (synopsis "Improved tiling window manager")
