@@ -13830,3 +13830,62 @@ in other versions.")
 unit tests and failing them if the unit test module does not excercise all
 statements in the module it tests.")
     (license license:gpl3+)))
+
+(define-public python-pylint
+  (package
+    (name "python-pylint")
+    (version "1.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/PyCQA/pylint/archive/pylint-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "08pmgflmq2zrzrn9nkfadzwa5vybz46wvwxhrsd2mjlcgsh4rzbm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-tox" ,python-tox)))
+    (propagated-inputs
+     `(("python-astroid" ,python-astroid)
+       ("python-isort" ,python-isort)
+       ("python-mccabe" ,python-mccabe)
+       ("python-six" ,python-six)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    ;; Somehow, tests for python2-pylint
+                    ;; fail if run from the build directory
+                    (let ((work "/tmp/work"))
+                      (mkdir-p work)
+                      (setenv "PYTHONPATH"
+                              (string-append (getenv "PYTHONPATH") ":" work))
+                      (copy-recursively "." work)
+                      (with-directory-excursion "/tmp"
+                        (zero? (system* "python" "-m" "unittest" "discover"
+                                        "-s" (string-append work "/pylint/test")
+                                        "-p" "*test_*.py")))))))))
+    (home-page "https://github.com/PyCQA/pylint")
+    (synopsis "Python source code analyzer which looks for coding standard
+errors")
+    (description "Pylint is a Python source code analyzer which looks
+for programming errors, helps enforcing a coding standard and sniffs
+for some code smells (as defined in Martin Fowler's Refactoring book).
+
+Pylint has many rules enabled by default, way too much to silence them
+all on a minimally sized program.  It's highly configurable and handle
+pragmas to control it from within your code.  Additionally, it is
+possible to write plugins to add your own checks.")
+    (license license:gpl2+)))
+
+(define-public python2-pylint
+  (let ((pylint (package-with-python2 python-pylint)))
+    (package (inherit pylint)
+             (propagated-inputs
+              `(("python2-backports-functools-lru-cache"
+                 ,python2-backports-functools-lru-cache)
+                ("python2-configparser" ,python2-configparser)
+                ,@(package-propagated-inputs pylint))))))
