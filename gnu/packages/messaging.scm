@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1328,5 +1329,37 @@ are both supported).")
 using ncurses and libmesode, inspired by Irssi.")
         (home-page "http://www.profanity.im")
         (license license:gpl3+)))
+
+(define-public libircclient
+  (package
+    (name "libircclient")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/libircclient/libircclient/"
+                           version "/libircclient-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r60i76jh4drjh2jgp5sx71chagqllmkaq49zv67nrhqwvp9ghw1"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir="
+                            (assoc-ref %outputs "out") "/lib")
+             "--enable-shared"
+             "--enable-ipv6"
+             "--enable-openssl")
+       ;; no test suite
+       #:tests? #f))
+    (home-page "https://www.ulduzsoft.com/libircclient/")
+    (synopsis "Library implementing the client IRC protocol")
+    (description "Libircclient is a library which implements the client IRC
+protocol.  It is designed to be small, fast, portable and compatible with the
+RFC standards as well as non-standard but popular features.  It can be used for
+building the IRC clients and bots.")
+    (license license:lgpl3+)))
 
 ;;; messaging.scm ends here
