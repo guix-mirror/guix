@@ -677,6 +677,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libepoxy-gl-null-checks.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
+  %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
   %D%/packages/patches/libevent-2.0-evdns-fix-remote-stack-overread.patch	\
   %D%/packages/patches/libevent-2.0-evdns-fix-searching-empty-hostnames.patch	\
   %D%/packages/patches/libevent-2.0-evutil-fix-buffer-overflow.patch	\
