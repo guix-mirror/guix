@@ -206,7 +206,10 @@ the freedesktop.org XDG Base Directory specification.")
        ("m4" ,m4)
        ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
        ("pkg-config" ,pkg-config)
-       ("gperf" ,gperf)))
+
+       ;; Use gperf 3.0 to work around
+       ;; <https://github.com/wingo/elogind/issues/8>.
+       ("gperf" ,gperf-3.0)))
     (inputs
      `(("linux-pam" ,linux-pam)
        ("linux-libre-headers" ,linux-libre-headers)
