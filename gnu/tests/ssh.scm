@@ -55,10 +55,12 @@
     (services (cons service
                     (operating-system-user-services %base-os)))))
 
-(define (run-ssh-test name ssh-service pid-file)
+(define* (run-ssh-test name ssh-service pid-file #:key (sftp? #f))
   "Run a test of an OS running SSH-SERVICE, which writes its PID to PID-FILE.
 SSH-SERVICE must be configured to listen on port 22 and to allow for root and
-empty-password logins."
+empty-password logins.
+
+When SFTP? is true, run an SFTP server test."
   (mlet* %store-monad ((os ->   (marionette-operating-system
                                  (os-with-service ssh-service)
                                  #:imported-modules '((gnu services herd)
@@ -81,7 +83,8 @@ empty-password logins."
                          (ice-9 match)
                          (ssh session)
                          (ssh auth)
-                         (ssh channel))
+                         (ssh channel)
+                         (ssh sftp))
 
             (define marionette
               ;; Enable TCP forwarding of the guest's port 22.
@@ -187,6 +190,21 @@ root with an empty password."
                    (and (zero? (channel-get-exit-status channel))
                         (wait-for-file "/root/witness"))))))
 
+            ;; Connect to the guest over SFTP.  Make sure we can write and
+            ;; read a file there.
+            (unless #$sftp?
+              (test-skip 1))
+            (test-equal "SFTP file writing and reading"
+              'hello
+              (call-with-connected-session/auth
+               (lambda (session)
+                 (let ((sftp-session (make-sftp-session session))
+                       (witness "/root/sftp-witness"))
+                   (call-with-remote-output-file sftp-session witness
+                                                 (cut display "hello" <>))
+                   (call-with-remote-input-file sftp-session witness
+                                                read)))))
+
             (test-end)
             (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
@@ -203,7 +221,8 @@ root with an empty password."
                                  (openssh-configuration
                                   (permit-root-login #t)
                                   (allow-empty-passwords? #t)))
-                        "/var/run/sshd.pid"))))
+                        "/var/run/sshd.pid"
+                        #:sftp? #t))))
 
 (define %test-dropbear
   (system-test
