@@ -1057,10 +1057,10 @@ Guile's foreign function interface.")
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-reader" ,guile-reader)
-       ("guile-commonmark" ,guile-commonmark)))
+     `(("guile-reader" ,guile2.2-reader)
+       ("guile-commonmark" ,guile2.2-commonmark)))
     (synopsis "Functional static site generator")
     (description "Haunt is a static site generator written in Guile
 Scheme.  Haunt features a functional build system and an extensible
@@ -1068,9 +1068,11 @@ interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license license:gpl3+)))
 
+(define-public guile2.0-haunt
+  (package-for-guile-2.0
+   (package (inherit haunt) (name "guile2.0-haunt"))))
 (define-public guile2.2-haunt
-  (package-for-guile-2.2
-   (package (inherit haunt) (name "guile2.2-haunt"))))
+  (deprecated-package "guile2.2-haunt" haunt))
 
 (define-public guile-config
   (package
