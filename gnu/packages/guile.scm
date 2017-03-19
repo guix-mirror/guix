@@ -456,7 +456,7 @@ more.")
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (synopsis "Framework for building readers for GNU Guile")
     (description
      "Guile-Reader is a simple framework for building readers for GNU Guile.
@@ -473,8 +473,10 @@ many readers as needed).")
     (home-page "http://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
 
+(define-public guile2.0-reader
+  (package-for-guile-2.0 guile-reader))
 (define-public guile2.2-reader
-  (package-for-guile-2.2 guile-reader))
+  (deprecated-package "guile2.2-reader" guile-reader))
 
 (define-public guile-ncurses
   (package
@@ -1059,7 +1061,7 @@ Guile's foreign function interface.")
     (inputs
      `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-reader" ,guile2.2-reader)
+     `(("guile-reader" ,guile-reader)
        ("guile-commonmark" ,guile2.2-commonmark)))
     (synopsis "Functional static site generator")
     (description "Haunt is a static site generator written in Guile
