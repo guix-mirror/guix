@@ -3207,6 +3207,64 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
                license:expat license:bsd-2 license:bsd-3
                license:public-domain))))
 
+(define-public khtml
+  (package
+    (name "khtml")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0j490jfnz8pbfl1i11wj514nw0skpnxr2fvi9pqpfql9lfhsanxv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("perl", perl)))
+    (inputs
+     `(("giflib" ,giflib)
+       ("karchive" ,karchive)
+       ("kcodecs" ,kcodecs)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kjs" ,kjs)
+       ("knotifications" ,knotifications)
+       ("kparts" ,kparts)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet", kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libjpeg", libjpeg)
+       ("libpng", libpng)
+       ("openssl", openssl)
+       ("phonon", phonon)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 HTML widget and component")
+    (description "KHTML is a web rendering engine, based on the KParts
+technology and using KJS for JavaScript support.")
+    ;; Most files are distributed under LGPL2+, but the package includes code
+    ;; under a variety of licenses.
+    (license '(license:lgpl2.0+ license:lgpl2.1+
+               license:gpl2  license:gpl3+
+               license:expat license:bsd-2 license:bsd-3))))
+
 (define-public kjs
   (package
     (name "kjs")
