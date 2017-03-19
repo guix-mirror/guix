@@ -285,7 +285,7 @@ FILE-SYSTEM."
                            ,@(map dependency->shepherd-service-name dependencies)))
             (documentation "Check, mount, and unmount the given file system.")
             (start #~(lambda args
-		       #$(if create?
+                       #$(if create?
                              #~(mkdir-p #$target)
                              #t)
 
