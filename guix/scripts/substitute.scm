@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,7 +34,8 @@
   #:use-module ((guix build download)
                 #:select (current-terminal-columns
                           progress-proc uri-abbreviation nar-uri-abbreviation
-                          open-connection-for-uri
+                          (open-connection-for-uri
+                           . guix:open-connection-for-uri)
                           close-connection
                           store-path-abbreviation byte-count->string))
   #:use-module (ice-9 rdelim)
@@ -210,8 +211,8 @@ provide."
                  (close-connection port))))
            (begin
              (when (or (not port) (port-closed? port))
-               (set! port (open-connection-for-uri uri
-                                                   #:verify-certificate? #f))
+               (set! port (guix:open-connection-for-uri
+                           uri #:verify-certificate? #f))
                (unless (or buffered? (not (file-port? port)))
                  (setvbuf port _IONBF)))
              (http-fetch uri #:text? #f #:port port
@@ -247,9 +248,10 @@ failure, return #f and #f."
                    read-cache-info)
                  #f))
         ((http https)
-         (let ((port (open-connection-for-uri uri
-                                              #:verify-certificate? #f
-                                              #:timeout %fetch-timeout)))
+         (let ((port (guix:open-connection-for-uri
+                      uri
+                      #:verify-certificate? #f
+                      #:timeout %fetch-timeout)))
            (guard (c ((http-get-error? c)
                       (warning (_ "while fetching '~a': ~a (~s)~%")
                                (uri->string (http-get-error-uri c))
@@ -533,9 +535,10 @@ initial connection on which HTTP requests are sent."
                 (result   seed))
     ;; (format (current-error-port) "connecting (~a requests left)..."
     ;;         (length requests))
-    (let ((p (or port (open-connection-for-uri base-uri
-                                               #:verify-certificate?
-                                               verify-certificate?))))
+    (let ((p (or port (guix:open-connection-for-uri
+                       base-uri
+                       #:verify-certificate?
+                       verify-certificate?))))
       ;; For HTTPS, P is not a file port and does not support 'setvbuf'.
       (when (file-port? p)
         (setvbuf p _IOFBF (expt 2 16)))

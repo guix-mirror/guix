@@ -348,8 +348,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.10.2")
-(define %linux-libre-hash "01kinnv40lqsk6fyz1k7hkx2diyg4mgp28bwraar5sii1gqmcw7k")
+(define %linux-libre-version "4.10.4")
+(define %linux-libre-hash "0cmz4y8pb3sdag32bsrn7vg1i8v9rymfspg85ipkbamm53c7v54g")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -358,14 +358,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.14"
-                    "104715z772if18qi61jbyhvidfh6qnwkiy0m9aa8irxgzs1pk9mn"
+  (make-linux-libre "4.9.16"
+                    "0n7y7h7ps4l1pr9d0m75hkw41jnfyw301r343dsaznwc0lpq3ch7"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.53"
-                    "07sfg4i506f3hmd9k4iimnq1w3x0980qxnh649d1sldqxbmhdgjs"
+  (make-linux-libre "4.4.55"
+                    "1m4h3wi4j573hny1yfi9qwkiicx2bx3gwy52zpr8bhxpyqz0d2dl"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2764,7 +2764,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.10")
+    (version "4.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2772,7 +2772,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1njw2nrm51380d8arvqfmspa3app9353yd7hiddas3gpkaiwrjs4"))))
+                "06hs20jwa15xybbmlalba8wvhv3slq1g0wrqrgyh7ll5y11bc5kc"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2807,9 +2807,9 @@ and copy/paste text in the console and in xterm.")
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
-    (description "Btrfs is a copy-on-write (CoW) file system for Linux aimed at
-implementing advanced features while focusing on fault tolerance, repair and
-easy administration.")
+    (description "Btrfs is a @dfn{copy-on-write} (CoW) file system for Linux
+aimed at implementing advanced features while focusing on fault tolerance,
+repair and easy administration.")
     ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
     ;; GPL2: Everything else.
     (license (list license:gpl2 license:gpl2+))))

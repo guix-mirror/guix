@@ -464,6 +464,9 @@ ETIMEDOUT error is raised."
   "Like 'open-socket-for-uri', but also handle HTTPS connections.  The
 resulting port must be closed with 'close-connection'.  When
 VERIFY-CERTIFICATE? is true, verify HTTPS server certificates."
+  ;; Note: Guile 2.2.0's (web client) has a same-named export that's actually
+  ;; undefined.  See Guile commit 011669af3b428e5626f7bbf66b11d57d9768c047.
+
   (define https?
     (eq? 'https (uri-scheme uri)))
 
@@ -511,12 +514,6 @@ port if PORT is a TLS session record port."
 (module-define! (resolve-module '(web response))
                 'set-port-encoding!
                 (lambda (p e) #f))
-
-;; XXX: Work around <http://bugs.gnu.org/13095>, present in Guile
-;; up to 2.0.7.
-(module-define! (resolve-module '(web client))
-                'shutdown (const #f))
-
 
 ;; XXX: Work around <http://bugs.gnu.org/23421>, fixed in Guile commit
 ;; 16050431f29d56f80c4a8253506fc851b8441840.  Guile's date validation
@@ -682,12 +679,6 @@ the connection could not be established in less than TIMEOUT seconds.  Return
 FILE on success.  When VERIFY-CERTIFICATE? is true, verify HTTPS
 certificates; otherwise simply ignore them."
 
-  (define post-2.0.7?
-    (or (> (string->number (major-version)) 2)
-        (> (string->number (minor-version)) 0)
-        (> (string->number (micro-version)) 7)
-        (string>? (version) "2.0.7")))
-
   (define headers
     `(;; Some web sites, such as http://dist.schmorp.de, would block you if
       ;; there's no 'User-Agent' header, presumably on the assumption that
@@ -712,20 +703,9 @@ certificates; otherwise simply ignore them."
                                           #:verify-certificate?
                                           verify-certificate?))
                 ((resp bv-or-port)
-                 ;; XXX: `http-get*' was introduced in 2.0.7, and replaced by
-                 ;; #:streaming? in 2.0.8.  We know we're using it within the
-                 ;; chroot, but `guix-download' might be using a different
-                 ;; version.  So keep this compatibility hack for now.
-                 (if post-2.0.7?
-                     (http-get uri #:port connection #:decode-body? #f
-                               #:streaming? #t
-                               #:headers headers)
-                     (if (module-defined? (resolve-interface '(web client))
-                                          'http-get*)
-                         (http-get* uri #:port connection #:decode-body? #f
-                                    #:headers headers)
-                         (http-get uri #:port connection #:decode-body? #f
-                                   #:extra-headers headers))))
+                 (http-get uri #:port connection #:decode-body? #f
+                           #:streaming? #t
+                           #:headers headers))
                 ((code)
                  (response-code resp))
                 ((size)

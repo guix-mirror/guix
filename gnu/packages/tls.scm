@@ -222,7 +222,7 @@ required structures.")
      (substitute-keyword-arguments (package-arguments gnutls)
        ((#:configure-flags flags)
         `(cdr ,flags))))
-    (inputs `(("guile" ,guile-next)
+    (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs gnutls))))))
 
 (define-public openssl

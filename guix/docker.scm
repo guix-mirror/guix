@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,15 +19,19 @@
 
 (define-module (guix docker)
   #:use-module (guix hash)
-  #:use-module (guix store)
-  #:use-module (guix utils)
+  #:use-module (guix base16)
   #:use-module ((guix build utils)
-                #:select (delete-file-recursively
+                #:select (mkdir-p
+                          delete-file-recursively
                           with-directory-excursion))
-  #:use-module (json)
+  #:use-module (guix build store-copy)
+  #:use-module (srfi srfi-19)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:export (build-docker-image))
+
+;; Load Guile-JSON at run time to simplify the job of 'imported-modules' & co.
+(module-use! (current-module) (resolve-interface '(json)))
 
 ;; Generate a 256-bit identifier in hexadecimal encoding for the Docker image
 ;; containing the closure at PATH.
@@ -80,48 +85,99 @@
     (rootfs . ((type . "layers")
                (diff_ids . (,(layer-diff-id layer)))))))
 
-(define* (build-docker-image path #:key system)
-  "Generate a Docker image archive from the given store PATH.  The image
-contains the closure of the given store item."
-  (let ((id (docker-id path))
-        (time (strftime "%FT%TZ" (localtime (current-time))))
-        (name (string-append (getcwd)
-                             "/docker-image-" (basename path) ".tar"))
-        (arch (match system
-                ("x86_64-linux" "amd64")
-                ("i686-linux" "386")
-                ("armhf-linux" "arm")
-                ("mips64el-linux" "mips64le"))))
-    (and (call-with-temporary-directory
-          (lambda (directory)
-            (with-directory-excursion directory
-              ;; Add symlink from /bin to /gnu/store/.../bin
-              (symlink (string-append path "/bin") "bin")
+(define %tar-determinism-options
+  ;; GNU tar options to produce archives deterministically.
+  '("--sort=name" "--mtime=@1"
+    "--owner=root:0" "--group=root:0"))
 
-              (mkdir id)
-              (with-directory-excursion id
-                (with-output-to-file "VERSION"
-                  (lambda () (display schema-version)))
-                (with-output-to-file "json"
-                  (lambda () (scm->json (image-description id time))))
+(define symlink-source
+  (match-lambda
+    ((source '-> target)
+     (string-trim source #\/))))
 
-                ;; Wrap it up
-                (let ((items (with-store store
-                               (requisites store (list path)))))
-                  (and (zero? (apply system* "tar" "-cf" "layer.tar"
-                                     (cons "../bin" items)))
-                       (delete-file "../bin"))))
+(define (topmost-component file)
+  "Return the topmost component of FILE.  For instance, if FILE is \"/a/b/c\",
+return \"a\"."
+  (match (string-tokenize file (char-set-complement (char-set #\/)))
+    ((first rest ...)
+     first)))
 
-              (with-output-to-file "config.json"
-                (lambda ()
-                  (scm->json (config (string-append id "/layer.tar")
-                                     time arch))))
-              (with-output-to-file "manifest.json"
-                (lambda ()
-                  (scm->json (manifest path id))))
-              (with-output-to-file "repositories"
-                (lambda ()
-                  (scm->json (repositories path id)))))
-            (and (zero? (system* "tar" "-C" directory "-cf" name "."))
-                 (begin (delete-file-recursively directory) #t))))
-         name)))
+(define* (build-docker-image image path
+                             #:key closure compressor
+                             (symlinks '())
+                             (system (utsname:machine (uname)))
+                             (creation-time (current-time time-utc)))
+  "Write to IMAGE a Docker image archive from the given store PATH.  The image
+contains the closure of PATH, as specified in CLOSURE (a file produced by
+#:references-graphs).  SYMLINKS must be a list of (SOURCE -> TARGET) tuples
+describing symlinks to be created in the image, where each TARGET is relative
+to PATH.  SYSTEM is a GNU triplet (or prefix thereof) of the system the
+binaries at PATH are for; it is used to produce metadata in the image.
+
+Use COMPRESSOR, a command such as '(\"gzip\" \"-9n\"), to compress IMAGE.  Use
+CREATION-TIME, a SRFI-19 time-utc object, as the creation time in metadata."
+  (let ((directory "/tmp/docker-image")           ;temporary working directory
+        (closure (canonicalize-path closure))
+        (id (docker-id path))
+        (time (date->string (time-utc->date creation-time) "~4"))
+        (arch (let-syntax ((cond* (syntax-rules ()
+                                    ((_ (pattern clause) ...)
+                                     (cond ((string-prefix? pattern system)
+                                            clause)
+                                           ...
+                                           (else
+                                            (error "unsupported system"
+                                                   system)))))))
+                (cond* ("x86_64" "amd64")
+                       ("i686"   "386")
+                       ("arm"    "arm")
+                       ("mips64" "mips64le")))))
+    ;; Make sure we start with a fresh, empty working directory.
+    (mkdir directory)
+
+    (and (with-directory-excursion directory
+           (mkdir id)
+           (with-directory-excursion id
+             (with-output-to-file "VERSION"
+               (lambda () (display schema-version)))
+             (with-output-to-file "json"
+               (lambda () (scm->json (image-description id time))))
+
+             ;; Wrap it up.
+             (let ((items (call-with-input-file closure
+                            read-reference-graph)))
+               ;; Create SYMLINKS.
+               (for-each (match-lambda
+                           ((source '-> target)
+                            (let ((source (string-trim source #\/)))
+                              (mkdir-p (dirname source))
+                              (symlink (string-append path "/" target)
+                                       source))))
+                         symlinks)
+
+               (and (zero? (apply system* "tar" "-cf" "layer.tar"
+                                  (append %tar-determinism-options
+                                          items
+                                          (map symlink-source symlinks))))
+                    (for-each delete-file-recursively
+                              (map (compose topmost-component symlink-source)
+                                   symlinks)))))
+
+           (with-output-to-file "config.json"
+             (lambda ()
+               (scm->json (config (string-append id "/layer.tar")
+                                  time arch))))
+           (with-output-to-file "manifest.json"
+             (lambda ()
+               (scm->json (manifest path id))))
+           (with-output-to-file "repositories"
+             (lambda ()
+               (scm->json (repositories path id)))))
+
+         (and (zero? (apply system* "tar" "-C" directory "-cf" image
+                            `(,@%tar-determinism-options
+                              ,@(if compressor
+                                    (list "-I" (string-join compressor))
+                                    '())
+                              ".")))
+              (begin (delete-file-recursively directory) #t)))))

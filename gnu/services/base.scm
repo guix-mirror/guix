@@ -274,7 +274,8 @@ FILE-SYSTEM."
         (options (file-system-options file-system))
         (check?  (file-system-check? file-system))
         (create? (file-system-create-mount-point? file-system))
-        (dependencies (file-system-dependencies file-system)))
+        (dependencies (file-system-dependencies file-system))
+        (packages (file-system-packages (list file-system))))
     (and (file-system-mount? file-system)
          (with-imported-modules '((gnu build file-systems)
                                   (guix build bournish))
@@ -284,7 +285,7 @@ FILE-SYSTEM."
                            ,@(map dependency->shepherd-service-name dependencies)))
             (documentation "Check, mount, and unmount the given file system.")
             (start #~(lambda args
-		       #$(if create?
+                       #$(if create?
                              #~(mkdir-p #$target)
                              #t)
 
@@ -292,11 +293,12 @@ FILE-SYSTEM."
                          ;; Make sure fsck.ext2 & co. can be found.
                          (dynamic-wind
                            (lambda ()
-                             (setenv "PATH"
-                                     (string-append
-                                      #$e2fsprogs "/sbin:"
-                                      "/run/current-system/profile/sbin:"
-                                      $PATH)))
+                             ;; Don’t display the PATH settings.
+                             (with-output-to-port (%make-void-port "w")
+                               (lambda ()
+                                 (set-path-environment-variable "PATH"
+                                                                '("bin" "sbin")
+                                                                '#$packages))))
                            (lambda ()
                              (mount-file-system
                               `(#$device #$title #$target #$type #$flags

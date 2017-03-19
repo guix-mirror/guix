@@ -11,6 +11,7 @@
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 #
 # This file is part of GNU Guix.
 #
@@ -680,6 +681,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.0-CVE-2016-10195.patch	\
   %D%/packages/patches/libevent-2.0-CVE-2016-10196.patch	\
   %D%/packages/patches/libevent-2.0-CVE-2016-10197.patch	\
+  %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
   %D%/packages/patches/libevent-2.1-dns-tests.patch		\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
@@ -714,7 +716,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
-  %D%/packages/patches/libwebp-CVE-2016-9085.patch		\
   %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
   %D%/packages/patches/libwmf-CVE-2006-3376.patch		\
   %D%/packages/patches/libwmf-CVE-2007-0455.patch		\
@@ -779,7 +780,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
-  %D%/packages/patches/ninja-tests.patch			\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
@@ -809,6 +809,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch			\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
+  %D%/packages/patches/password-store-gnupg-compat.patch	\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
@@ -878,6 +879,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2016-10155.patch			\
   %D%/packages/patches/qemu-CVE-2017-2615.patch			\
+  %D%/packages/patches/qemu-CVE-2017-2620.patch			\
+  %D%/packages/patches/qemu-CVE-2017-2630.patch			\
   %D%/packages/patches/qemu-CVE-2017-5525.patch			\
   %D%/packages/patches/qemu-CVE-2017-5526.patch			\
   %D%/packages/patches/qemu-CVE-2017-5552.patch			\
@@ -965,6 +968,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/vim-CVE-2017-5953.patch			\
+  %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\

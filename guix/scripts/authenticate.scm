@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +18,7 @@
 
 (define-module (guix scripts authenticate)
   #:use-module (guix config)
-  #:use-module (guix utils)
+  #:use-module (guix base16)
   #:use-module (guix pk-crypto)
   #:use-module (guix pki)
   #:use-module (guix ui)

@@ -44,7 +44,7 @@
   #:use-module (srfi srfi-26))
 
 ;; Should be one less than the current released version.
-(define %rust-bootstrap-binaries-version "1.13.0")
+(define %rust-bootstrap-binaries-version "1.14.0")
 
 (define %rust-bootstrap-binaries
   (origin
@@ -55,7 +55,7 @@
           "-i686-unknown-linux-gnu.tar.gz"))
     (sha256
      (base32
-      "0fcl7xgm2m21sjv1f27i3v692aa91lk8r867hl8d6l377w8k95r3"))))
+      "0h384prpabcl08mxs1bilyb0dbk0knpdylcnz4b84ij4idr7ap4d"))))
 
 (define (increment-rust-version rust-version major patch)
   (match (string-split rust-version #\.)
@@ -205,7 +205,7 @@ rustc-bootstrap and cargo-bootstrap packages.")
                     "rustc-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0srvmhhdbbcl21nzg9m9zni7k10h88lsy8k1ljz03g8mx79fv467"))))
+                "0wvn8m1nfg664b95qrdpfh72q1a6ir09rqkrnlzbkay2r7xf8mgn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cmake" ,cmake)
@@ -234,10 +234,13 @@ rustc-bootstrap and cargo-bootstrap packages.")
            (lambda _
              (setenv "SHELL" (which "sh"))
              (setenv "CONFIG_SHELL" (which "sh"))))
-         (add-after 'unpack 'patch-lockfile-test
-           (lambda _
+         (add-after 'unpack 'patch-tests
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/tools/tidy/src/main.rs"
-               (("^.*cargo.*::check.*$") ""))))
+               (("^.*cargo.*::check.*$") ""))
+             (substitute* "src/libstd/process.rs"
+               (("\"/bin/sh\"") (string-append "\"" (assoc-ref inputs "bash") "/bin/sh\"")))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -260,7 +263,7 @@ rustc-bootstrap and cargo-bootstrap packages.")
                             "--release-channel=stable"
                             "--enable-rpath"
                             "--enable-local-rust"
-                            ;;"--enable-rustbuild"
+                            "--disable-rustbuild" ; use Makefiles
                             "--disable-manage-submodules")))
                ;; Rust uses a custom configure script (no autoconf).
                (zero? (apply system* "./configure" flags)))))
@@ -288,15 +291,12 @@ safety and thread safety guarantees.")
     (version (cargo-version (rustc-version %rust-bootstrap-binaries-version)))
     (source (origin
               (method url-fetch)
-              ;; Use a cargo tarball with vendored dependencies and a cargo
-              ;; config file.
-              (uri (string-append
-                    "https://github.com/dvc94ch/cargo"
-                    "/archive/" version "-cargo-vendor.tar.gz"))
+              (uri (string-append "https://github.com/rust-lang/cargo/archive/"
+                                  version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hpix5hwz10pm1wh65gimhsy9nxjvy7yikgbpw8afwglqr3bl856"))))
+                "194i06y9nql0p93gahh0vm4qwv6c1kpd9rprpf22w5gav9lpcyjz"))))
     (build-system cargo-build-system)
     (propagated-inputs
      `(("cmake" ,cmake)
@@ -308,6 +308,483 @@ safety and thread safety guarantees.")
        ("openssl" ,openssl)
        ("python-2" ,python-2)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("rust-openssl"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "openssl" "0.9.1"))
+           (sha256
+            (base32
+             "1m2mhiar87qnw4gxci286q9g85ljafbc41salbj2hmcgh8aagchy"))))
+       ("rust-strsim"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "strsim" "0.5.1"))
+           (sha256
+            (base32
+             "0bj4fsm1l2yqbfpspyvjf9m3m50pskapcddzm0ji9c74jbgnkh2h"))))
+       ("rust-libc"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "libc" "0.2.18"))
+           (sha256
+            (base32
+             "0w5cghr0wx3hi2sclk8r9iyzlbxsakil87ada40q2ykyhky24655"))))
+       ("rust-bitflags"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "bitflags" "0.7.0"))
+           (sha256
+            (base32
+             "0v8hh6wdkpk9my8z8442g4hqrqf05h0qj53dsay6mv18lqvqklda"))))
+       ("rust-unicode-normalization"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "unicode-normalization" "0.1.2"))
+           (sha256
+            (base32
+             "0whi4xxqcjfsz6ywyrfd5lhgk1a44c86qwgvfqcmzidshcpklr16"))))
+       ("rust-rand"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "rand" "0.3.14"))
+           (sha256
+            (base32
+             "1984zvj8572ig28fz6idc4r96fx39h4lzmr07yf7kb7gdn6di497"))))
+       ("rust-gcc"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "gcc" "0.3.39"))
+           (sha256
+            (base32
+             "1q0idjvmhp6shkb9hqabh51rgfr8dqpi1xfmyzq7q8vgzybll7kp"))))
+       ("rust-tempdir"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "tempdir" "0.3.5"))
+           (sha256
+            (base32
+             "1mij45kgzflkja0h8q9avrik76h5a0b60m9hfd6k9yqxbiplm5w7"))))
+       ("rust-memchr"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "memchr" "0.1.11"))
+           (sha256
+            (base32
+             "084d85hjfa3xf5kwdms2mhbkh78m1gl2254cp5swcxj3a7xjkdnq"))))
+       ("rust-rustc-serialize"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "rustc-serialize" "0.3.21"))
+           (sha256
+            (base32
+             "064qmyr2508qf78dwcpiv25rfjp9h9vd0wrj4mmwgppjg4fgrydz"))))
+       ("rust-cmake"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "cmake" "0.1.19"))
+           (sha256
+            (base32
+             "0am8c8ns1h6b1a5x9z2r1m3rszvya5nccl2pzszzjv5aiiaydgcf"))))
+       ("rust-matches"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "matches" "0.1.4"))
+           (sha256
+            (base32
+             "1c8190j84hbicy8jwscw5icfam12j6lcxi02lvmadq9260p65mzg"))))
+       ("rust-winapi"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "winapi" "0.2.8"))
+           (sha256
+            (base32
+             "0yh816lh6lf56dpsgxy189c2ai1z3j8mw9si6izqb6wsjkbcjz8n"))))
+       ("rust-pkg-config"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "pkg-config" "0.3.8"))
+           (sha256
+            (base32
+             "1ypj4nj2z9z27qg06v3g40jyhw685i3l2wi098d21bvyri781vlc"))))
+       ("rust-libssh2-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "libssh2-sys" "0.2.4"))
+           (sha256
+            (base32
+             "1pmmh0hcx14856wg9bp740yf618qfl2765vhf67sfs5lmf39227d"))))
+       ("rust-libz-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "libz-sys" "1.0.10"))
+           (sha256
+            (base32
+             "1rl85x045sk5d345hgcahx99plpbdg2a3bx5vjfxig30qah74p4h"))))
+       ("rust-curl-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "curl-sys" "0.3.6"))
+           (sha256
+            (base32
+             "0fi8kjz3f8m8vfazycs3ddm0h6j3x78hw78gwbvybx71129192i1"))))
+       ("rust-openssl-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "openssl-sys" "0.9.1"))
+           (sha256
+            (base32
+             "1sdhgalfm2zdqf144xhdnxdha7ifjgsfbmlrqbx0j9f3mh4gpscm"))))
+       ("rust-fs2"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "fs2" "0.3.0"))
+           (sha256
+            (base32
+             "0lg57mgcm1r0m8jm4nqpcrl6lmxg8lj854k2h0r7qp46pphh2034"))))
+       ("rust-log"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "log" "0.3.6"))
+           (sha256
+            (base32
+             "0m40hgs3cg57dd5kk1mabfk6gk8z6l1cihar8akx4kmzz1xlk0xb"))))
+       ("rust-filetime"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "filetime" "0.1.10"))
+           (sha256
+            (base32
+             "08p9scgv30i1141cnp5xi4pqlnkfci455nrpca55df1r867anqsk"))))
+       ("rust-tar"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "tar" "0.4.9"))
+           (sha256
+            (base32
+             "1vi3nl8s3jjf5l20ni47gmh1p4bdjfh7q50fbg7izzqrf7i4i40c"))))
+       ("rust-glob"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "glob" "0.2.11"))
+           (sha256
+            (base32
+             "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))
+       ("rust-cfg-if"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "cfg-if" "0.1.0"))
+           (sha256
+            (base32
+             "137qikjcal4h75frzcn6mknygqk8vy5bva7w851aydb5gc6pc7ny"))))
+       ("rust-winapi-build"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "winapi-build" "0.1.1"))
+           (sha256
+            (base32
+             "1g4rqsgjky0a7530qajn2bbfcrl2v0zb39idgdws9b1l7gp5wc9d"))))
+       ("rust-advapi32-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "advapi32-sys" "0.2.0"))
+           (sha256
+            (base32
+             "16largvlrd1800vvdchml0ngnszjlnpqm01rcz5hm7di1h48hrg0"))))
+       ("rust-gdi32-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "gdi32-sys" "0.2.0"))
+           (sha256
+            (base32
+             "0605d4ngjsspghwjv4jicajich1gnl0aik9f880ajjzjixd524h9"))))
+       ("rust-ws2_32-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "ws2_32-sys" "0.2.1"))
+           (sha256
+            (base32
+             "0ppscg5qfqaw0gzwv2a4nhn5bn01ff9iwn6ysqnzm4n8s3myz76m"))))
+       ("rust-user32-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "user32-sys" "0.2.0"))
+           (sha256
+            (base32
+             "0ivxc7hmsxax9crdhxdd1nqwik4s9lhb2x59lc8b88bv20fp3x2f"))))
+       ("rust-unicode-bidi"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "unicode-bidi" "0.2.3"))
+           (sha256
+            (base32
+             "0gqbyf6slkgzr14nf6v8dw8a19l5snh6bpms8bpfvzpxdawwxxy1"))))
+       ("rust-net2"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "net2" "0.2.26"))
+           (sha256
+            (base32
+             "1qp3q6xynb481rsp3ig1nmqb6qlxfba3shfrmqij88cppsv9rpsy"))))
+       ("rust-utf8-ranges"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "utf8-ranges" "0.1.3"))
+           (sha256
+            (base32
+             "03xf604b2v51ag3jgzw92l97xnb10kw9zv948bhc7ja1ik017jm1"))))
+       ("rust-crossbeam"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "crossbeam" "0.2.10"))
+           (sha256
+            (base32
+             "15wga0kvk3iqf3l077957j931brf1pl3p74xibd698jccqas4phc"))))
+       ("rust-toml"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "toml" "0.2.1"))
+           (sha256
+            (base32
+             "1d1cz43bxrx4fd6j2p6myckf81f72bp47akg36y3flxjkhj60svk"))))
+       ("rust-aho-corasick"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "aho-corasick" "0.5.3"))
+           (sha256
+            (base32
+             "0rnvdmlajikq0i4zdy1p3pv699q6apvsxfc7av7byhppllp2r5ya"))))
+       ("rust-psapi-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "psapi-sys" "0.1.0"))
+           (sha256
+            (base32
+             "0y14g8qshsfnmb7nk2gs1rpbrs1wrggajmzp4yby4q6k0wd5vkdb"))))
+       ("rust-idna"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "idna" "0.1.0"))
+           (sha256
+            (base32
+             "049c2rmlydrrrgrxdaq2v21adx9vkfh6k9x4xj56ckyf01p26lqh"))))
+       ("rust-url"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "url" "1.2.3"))
+           (sha256
+            (base32
+             "1myr1i8djbl2bhvvrm6n3h7bj7sl6kh5dmaaz2f7c6x8hyyzgk28"))))
+       ("rust-regex-syntax"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "regex-syntax" "0.3.9"))
+           (sha256
+            (base32
+             "0ms9hgdhhsxw9w920i7gipydvagf100bb56jbs192rz86ln01v7r"))))
+       ("rust-kernel32-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "kernel32-sys" "0.2.2"))
+           (sha256
+            (base32
+             "1389av0601a9yz8dvx5zha9vmkd6ik7ax0idpb032d28555n41vm"))))
+       ("rust-term"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "term" "0.4.4"))
+           (sha256
+            (base32
+             "0jpr7jb1xidadh0arklwr99r8w1k1dfc4an3ginpsq5nnfigivrx"))))
+       ("rust-thread-id"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "thread-id" "2.0.0"))
+           (sha256
+            (base32
+             "00zzs2bx1xw8aqm5plqqgr7bc2zz6zkqrdxq8vpiqb8hc2srslx9"))))
+       ("rust-thread_local"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "thread_local" "0.2.7"))
+           (sha256
+            (base32
+             "1mgxikqvhpsic6xk7pan95lvgsky1sdxzw2w5m2l35pgrazxnxl5"))))
+       ("rust-miow"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "miow" "0.1.3"))
+           (sha256
+            (base32
+             "16jvfjsp6fr4mbd2sw5hcdmi4dsa0m0aa45gjz78mb1h4mwcdgym"))))
+       ("rust-regex"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "regex" "0.1.80"))
+           (sha256
+            (base32
+             "0bs036h3vzc6pj5jj4vc909s9rppq7b808ic99qn0y6gm3karm2g"))))
+       ("rust-num_cpus"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num_cpus" "1.1.0"))
+           (sha256
+            (base32
+             "1bfwcn3yhwa31rinjw9yr7b6gvn6c06hnwnjz06pvm938w4fd448"))))
+       ("rust-libgit2-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "libgit2-sys" "0.6.5"))
+           (sha256
+            (base32
+             "0yl80n12ih4jh1halpbj3zqlqvw5zxdr6m6xdcvdz67svjy50bjh"))))
+       ("rust-env_logger"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "env_logger" "0.3.5"))
+           (sha256
+            (base32
+             "0bvcjgkw4s3k1rd7glpflgc8s9a393zjd6jfdgvs8gjvwj0dgaqm"))))
+       ("rust-openssl-probe"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "openssl-probe" "0.1.0"))
+           (sha256
+            (base32
+             "0689h6rhzy6dypqr90lsxnf108nsnh952wsx7ggs70s48b44jvbm"))))
+       ("rust-lazy_static"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "lazy_static" "0.2.2"))
+           (sha256
+            (base32
+             "16z1h7w702sxnscak38jykxlhxq0b5ip4mndlb46pkaqwzi0xgka"))))
+       ("rust-semver-parser"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "semver-parser" "0.6.1"))
+           (sha256
+            (base32
+             "1s8s7a7yg8xhgci17y0xhyyncg229byivhpr0wbs3ljdlyjl73p8"))))
+       ("rust-semver"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "semver" "0.5.1"))
+           (sha256
+            (base32
+             "1xbiv8l72rmngb3lgbmk3vd4lalcbzxcnrn085c2b75irl7gcbxf"))))
+       ("rust-docopt"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "docopt" "0.6.86"))
+           (sha256
+            (base32
+             "1nf4f4zf5yk0d0l4kl7hkii4na22fhn0l2hgfb46yzv08l2g6zja"))))
+       ("rust-miniz-sys"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "miniz-sys" "0.1.7"))
+           (sha256
+            (base32
+             "0m7dlggsxash0k5jkx576p556g9r8vnhyl9244gjxhq1g8rls7wx"))))
+       ("rust-curl"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "curl" "0.4.1"))
+           (sha256
+            (base32
+             "1b0y27b6vpqffgzm2kxc1s2i6bgdzxk3wn65g2asbcdxrvys3mcg"))))
+       ("rust-flate2"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "flate2" "0.2.14"))
+           (sha256
+            (base32
+             "1fx3zsls5bb1zfx87s5sxkgk853z4nhjsbvq5s6if13kjlg4isry"))))
+       ("rust-git2"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "git2" "0.6.3"))
+           (sha256
+            (base32
+             "06b1bw3pwszs8617xn8js6h0j983qjgfwsychw33lshccj3cld05"))))
+       ("rust-crates-io"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "crates-io" "0.4.0"))
+           (sha256
+            (base32
+             "0kk6abp1qbpv44hkq1yjp7xgpzjzafs83i1l26ycr0aph1gbwig9"))))
+       ("rust-git2-curl"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "git2-curl" "0.7.0"))
+           (sha256
+            (base32
+             "13mzqp4rd81zp78261rlq23iw9aaysdr56484y1yy2xzhk3nnrv8"))))
+       ("rust-bufstream"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "bufstream" "0.1.2"))
+           (sha256
+            (base32
+             "0x6h27md1fwabbhbycfldj0wklrpjr520z9p0cpzm60fzzidnj3v"))))
+       ("rust-hamcrest"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "hamcrest" "0.1.1"))
+           (sha256
+            (base32
+             "1m49rf7bnkx0qxja56slrjh44zi4z5bjz5x4pblqjw265828y25z"))))
+       ("rust-num"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num" "0.1.36"))
+           (sha256
+            (base32
+             "081i1r3mdz6jasqd7qwraqqfqa3sdpvdvxl1xq0s7ip714xw1rxx"))))
+       ("rust-num-traits"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num-traits" "0.1.36"))
+           (sha256
+            (base32
+             "07688sp4z40p14lh5ywvrpm4zq8kcxzhjks8sg33jsr5da2l4sm1"))))
+       ("rust-num-integer"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num-integer" "0.1.32"))
+           (sha256
+            (base32
+             "14pvaaawl0pgdcgh4dfdd67lz58yxlfl95bry86h28pjnfzxj97v"))))
+       ("rust-num-bigint"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num-bigint" "0.1.35"))
+           (sha256
+            (base32
+             "0jayfkdm33p4zvcahlv46zdfhlzg053mpw32abf2lz0z8xw47cc8"))))
+       ("rust-num-rational"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num-rational" "0.1.35"))
+           (sha256
+            (base32
+             "1bwaygv64qg7i78yqg0v4d0amfhamj598rpy4yxjz9rlhcxn1zsl"))))
+       ("rust-num-iter"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num-iter" "0.1.32"))
+           (sha256
+            (base32
+             "0p74nj5c1mc33h9lx4wpmlmggmn5lnkhxv1225g0aix8d6ciqyi8"))))
+       ("rust-num-complex"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "num-complex" "0.1.35"))
+           (sha256
+            (base32
+             "0bzrjfppnnzf9vmkpklhp2dw9sb1lqzydb8r6k83z76i9l2qxizh"))))))
     (arguments
      `(#:cargo ,cargo-bootstrap
        #:tests? #f ; FIXME
@@ -317,12 +794,41 @@ safety and thread safety guarantees.")
          (delete 'patch-source-shebangs)
          (delete 'patch-generated-file-shebangs)
          (delete 'patch-usr-bin-file)
+         (add-after 'unpack 'unpack-submodule-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((unpack (lambda (source target)
+                             (mkdir-p target)
+                             (with-directory-excursion target
+                               (zero? (system* "tar" "xf"
+                                               source
+                                               "--strip-components=1"))))))
+               (mkdir "vendor")
+               (for-each (lambda (p)
+                           (let ((name (car p)))
+                             (if (string-prefix? "rust-" name)
+                               (let ((rsrc (string-append "vendor/"
+                                                           (string-drop name
+                                                                        (string-length "rust-")))))
+                                 (unpack (assoc-ref inputs name) rsrc)
+                                 (system* "touch" (string-append rsrc "/.cargo-ok"))
+                                 (generate-checksums rsrc (assoc-ref inputs name)))))) inputs))))
          ;; Set CARGO_HOME to use the vendored dependencies.
          (add-after 'unpack 'set-cargo-home
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((gcc (assoc-ref inputs "gcc"))
                     (cc (string-append gcc "/bin/gcc")))
+               (mkdir "cargohome")
                (setenv "CARGO_HOME" (string-append (getcwd) "/cargohome"))
+               (call-with-output-file "cargohome/config"
+                 (lambda (p)
+                   (format p "
+[source.crates-io]
+registry = 'https://github.com/rust-lang/crates.io-index'
+replace-with = 'vendored-sources'
+
+[source.vendored-sources]
+directory = 'vendor'
+")))
                (setenv "CMAKE_C_COMPILER" cc)
                (setenv "CC" cc))
              #t)))))

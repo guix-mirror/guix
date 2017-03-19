@@ -24,6 +24,7 @@
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix monads)
+  #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix derivations)
@@ -32,6 +33,8 @@
   #:use-module (gnu packages compression)
   #:autoload   (gnu packages base) (tar)
   #:autoload   (gnu packages package-management) (guix)
+  #:autoload   (gnu packages gnupg) (libgcrypt)
+  #:autoload   (gnu packages guile) (guile-json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-37)
@@ -43,19 +46,22 @@
 
 ;; Type of a compression tool.
 (define-record-type <compressor>
-  (compressor name package extension command)
+  (compressor name extension command)
   compressor?
-  (name       compressor-name)                    ;string (e.g., "gzip")
-  (package    compressor-package)                 ;package
-  (extension  compressor-extension)               ;string (e.g., "lz")
-  (command    compressor-command))                ;list (e.g., '("gzip" "-9n"))
+  (name       compressor-name)      ;string (e.g., "gzip")
+  (extension  compressor-extension) ;string (e.g., "lz")
+  (command    compressor-command))  ;gexp (e.g., #~("/gnu/store/…/gzip" "-9n"))
 
 (define %compressors
   ;; Available compression tools.
-  (list (compressor "gzip"  gzip  "gz"  '("gzip" "-9n"))
-        (compressor "lzip"  lzip  "lz"  '("lzip" "-9"))
-        (compressor "xz"    xz    "xz"  '("xz" "-e"))
-        (compressor "bzip2" bzip2 "bz2" '("bzip2" "-9"))))
+  (list (compressor "gzip"  "gz"
+                    #~(#+(file-append gzip "/bin/gzip") "-9n"))
+        (compressor "lzip"  "lz"
+                    #~(#+(file-append lzip "/bin/lzip") "-9"))
+        (compressor "xz"    "xz"
+                    #~(#+(file-append xz "/bin/xz") "-e"))
+        (compressor "bzip2" "bz2"
+                    #~(#+(file-append bzip2 "/bin/bzip2") "-9"))))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -67,7 +73,8 @@ found."
       (leave (_ "~a: compressor not found~%") name)))
 
 (define* (self-contained-tarball name profile
-                                 #:key deduplicate?
+                                 #:key target
+                                 deduplicate?
                                  (compressor (first %compressors))
                                  localstatedir?
                                  (symlinks '())
@@ -118,8 +125,7 @@ added to the pack."
                   (string-append #$(if localstatedir?
                                        (file-append guix "/sbin:")
                                        "")
-                                 #$tar "/bin:"
-                                 #$(compressor-package compressor) "/bin"))
+                                 #$tar "/bin"))
 
           ;; Note: there is not much to gain here with deduplication and
           ;; there is the overhead of the '.links' directory, so turn it
@@ -139,7 +145,8 @@ added to the pack."
           (with-directory-excursion %root
             (exit
              (zero? (apply system* "tar"
-                           "-I" #$(string-join (compressor-command compressor))
+                           "-I"
+                           (string-join '#+(compressor-command compressor))
                            "--format=gnu"
 
                            ;; Avoid non-determinism in the archive.  Use
@@ -177,6 +184,63 @@ added to the pack."
                     build
                     #:references-graphs `(("profile" ,profile))))
 
+(define* (docker-image name profile
+                       #:key target
+                       deduplicate?
+                       (compressor (first %compressors))
+                       localstatedir?
+                       (symlinks '())
+                       (tar tar))
+  "Return a derivation to construct a Docker image of PROFILE.  The
+image is a tarball conforming to the Docker Image Specification, compressed
+with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
+must a be a GNU triplet and it is used to derive the architecture metadata in
+the image."
+  ;; FIXME: Honor LOCALSTATEDIR?.
+  (define not-config?
+    (match-lambda
+      (('guix 'config) #f)
+      (('guix rest ...) #t)
+      (('gnu rest ...) #t)
+      (rest #f)))
+
+  (define config
+    ;; (guix config) module for consumption by (guix gcrypt).
+    (scheme-file "gcrypt-config.scm"
+                 #~(begin
+                     (define-module (guix config)
+                       #:export (%libgcrypt))
+
+                     ;; XXX: Work around <http://bugs.gnu.org/15602>.
+                     (eval-when (expand load eval)
+                       (define %libgcrypt
+                         #+(file-append libgcrypt "/lib/libgcrypt"))))))
+
+  (define build
+    (with-imported-modules `(,@(source-module-closure '((guix docker))
+                                                      #:select? not-config?)
+                             ((guix config) => ,config))
+      #~(begin
+          ;; Guile-JSON is required by (guix docker).
+          (add-to-load-path
+           (string-append #$guile-json "/share/guile/site/"
+                          (effective-version)))
+
+          (use-modules (guix docker) (srfi srfi-19))
+
+          (setenv "PATH" (string-append #$tar "/bin"))
+
+          (build-docker-image #$output #$profile
+                              #:system (or #$target (utsname:machine (uname)))
+                              #:closure "profile"
+                              #:symlinks '#$symlinks
+                              #:compressor '#$(compressor-command compressor)
+                              #:creation-time (make-time time-utc 0 1)))))
+
+  (gexp->derivation (string-append name ".tar."
+                                   (compressor-extension compressor))
+                    build
+                    #:references-graphs `(("profile" ,profile))))
 
 
 ;;;
@@ -185,13 +249,19 @@ added to the pack."
 
 (define %default-options
   ;; Alist of default option values.
-  `((system . ,(%current-system))
+  `((format . tarball)
+    (system . ,(%current-system))
     (substitutes? . #t)
     (graft? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
     (symlinks . ())
     (compressor . ,(first %compressors))))
+
+(define %formats
+  ;; Supported pack formats.
+  `((tarball . ,self-contained-tarball)
+    (docker  . ,docker-image)))
 
 (define %options
   ;; Specifications of the command-line options.
@@ -206,19 +276,27 @@ added to the pack."
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\f "format") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'format (string->symbol arg) result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
                                (alist-delete 'system result eq?))))
+         (option '("target") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'target arg
+                               (alist-delete 'target result eq?))))
          (option '(#\C "compression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'compressor (lookup-compressor arg)
                                result)))
          (option '(#\S "symlink") #t #f
                  (lambda (opt name arg result)
-                   (match (string-tokenize arg
-                                           (char-set-complement
-                                            (char-set #\=)))
+                   ;; Note: Using 'string-split' allows us to handle empty
+                   ;; TARGET (as in "/opt/guile=", meaning that /opt/guile is
+                   ;; a symlink to the profile) correctly.
+                   (match (string-split arg (char-set #\=))
                      ((source target)
                       (let ((symlinks (assoc-ref result 'symlinks)))
                         (alist-cons 'symlinks
@@ -242,7 +320,11 @@ Create a bundle of PACKAGE.\n"))
   (show-transformation-options-help)
   (newline)
   (display (_ "
+  -f, --format=FORMAT    build a pack in the given FORMAT"))
+  (display (_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
+  (display (_ "
+      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
   (display (_ "
   -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""))
   (display (_ "
@@ -280,20 +362,35 @@ Create a bundle of PACKAGE.\n"))
                                     (specification->package+output spec))
                                 list))
                             specs))
-             (compressor (assoc-ref opts 'compressor))
-             (symlinks   (assoc-ref opts 'symlinks))
+             (pack-format (assoc-ref opts 'format))
+             (name        (string-append (symbol->string pack-format)
+                                         "-pack"))
+             (target      (assoc-ref opts 'target))
+             (compressor  (assoc-ref opts 'compressor))
+             (symlinks    (assoc-ref opts 'symlinks))
+             (build-image (match (assq-ref %formats pack-format)
+                            ((? procedure? proc) proc)
+                            (#f
+                             (leave (_ "~a: unknown pack format")
+                                    format))))
              (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store
+          ;; Set the build options before we do anything else.
+          (set-build-options-from-command-line store opts)
+
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
-                                           (packages->manifest packages)))
-                                 (drv (self-contained-tarball "pack" profile
-                                                              #:compressor
-                                                              compressor
-                                                              #:symlinks
-                                                              symlinks
-                                                              #:localstatedir?
-                                                              localstatedir?)))
+                                           (packages->manifest packages)
+                                           #:target target))
+                                 (drv (build-image name profile
+                                                   #:target
+                                                   target
+                                                   #:compressor
+                                                   compressor
+                                                   #:symlinks
+                                                   symlinks
+                                                   #:localstatedir?
+                                                   localstatedir?)))
               (mbegin %store-monad
                 (show-what-to-build* (list drv)
                                      #:use-substitutes?

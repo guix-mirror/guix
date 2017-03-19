@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,17 +24,25 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages dns)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -134,8 +142,8 @@ and BOOTP/TFTP for network booting of diskless machines.")
            (lambda _
              (zero? (system* "make" "force-test")))))))
     (synopsis "An implementation of the Domain Name System")
-    (description "BIND is an implementation of the Domain Name System (DNS)
-protocols for the Internet.  It is a reference implementation of those
+    (description "BIND is an implementation of the @dfn{Domain Name System}
+(DNS) protocols for the Internet.  It is a reference implementation of those
 protocols, but it is also production-grade software, suitable for use in
 high-volume and high-reliability applications. The name BIND stands for
 \"Berkeley Internet Name Domain\", because the software originated in the early
@@ -298,9 +306,80 @@ asynchronous fashion.")
                                "--disable-nsid")))
     (home-page "http://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
-    (description "YADIFA is an authorative name server for the Domain Name
-System (DNS).  It aims for both higher performance and a smaller memory
+    (description "YADIFA is an authoritative name server for the @dfn{Domain
+Name System} (DNS).  It aims for both higher performance and a smaller memory
 footprint than other implementations, while remaining fully RFC-compliant.
-YADIFA supports dynamic record updates and the Domain Name System Security
-Extensions (DNSSEC).")
+YADIFA supports dynamic record updates and the @dfn{Domain Name System Security
+Extensions} (DNSSEC).")
     (license license:bsd-3)))
+
+(define-public knot
+  (package
+    (name "knot")
+    (version "2.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://secure.nic.cz/files/knot-dns/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0k3hkc6vqj8yd479zdn80ki5f0vnjhrm4fka7kfj9z7mkgwxsr60"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled libraries and dependencies on them.
+                  (substitute* "configure"
+                    (("src/contrib/dnstap/Makefile") ""))
+                  (substitute* "src/Makefile.in"
+                    (("contrib/dnstap ") ""))
+                  (with-directory-excursion "src/contrib"
+                    (for-each delete-file-recursively
+                              (list "dnstap" "lmdb")))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("jansson" ,jansson)
+       ("libcap-ng" ,libcap-ng)
+       ("libedit" ,libedit)
+       ("libidn" ,libidn)
+       ("liburcu" ,liburcu)
+       ("lmdb" ,lmdb)
+       ("ncurses" ,ncurses)
+       ("nettle" ,nettle)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-directory-pre-creation
+           (lambda _
+             ;; Don't install empty directories like ‘/etc’ outside the store.
+             (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/knot"))
+                    (etc (string-append doc "/examples/etc")))
+               (zero?
+                (system* "make"
+                         (string-append "config_dir=" etc)
+                         "install"))))))
+       #:configure-flags
+       (list "--sysconfdir=/etc"
+             "--localstatedir=/var"
+             "--enable-rosedb"          ; serve static records from a database
+             (string-append "--with-bash-completions="
+                            (assoc-ref %outputs "out")
+                            "/etc/bash_completion.d"))))
+    (home-page "https://www.knot-dns.cz/")
+    (synopsis "Authoritative DNS name server")
+    (description "Knot DNS is an authorative name server for the @dfn{Domain
+Name System} (DNS), designed to meet the needs of root and @dfn{top-level
+domain} (TLD) name servers.  It is implemented as a threaded daemon and uses a
+number of programming techniques to improve speed.  For example, the responder
+is completely lock-free, resulting in a very high response rate.  Other features
+include automatic @dfn{DNS Security Extensions} (DNSSEC) signing, dynamic record
+synthesis, and on-the-fly re-configuration.")
+    (license (list license:expat        ; src/contrib/{hat-trie,murmurhash3}
+                   license:lgpl2.0+     ; parts of scr/contrib/ucw
+                   license:gpl3+))))    ; everything else

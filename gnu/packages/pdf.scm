@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages gettext)
@@ -875,3 +877,31 @@ This is much like @command{poster} does for Postscript files, but working with
 PDF.  Since sometimes @command{poster} does not like your files converted from
 PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
     (license license:gpl3+)))
+
+(define-public pdfgrep
+  (package
+    (name "pdfgrep")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pdfgrep.org/download/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07llkrkcfjwd3ybai9ad10ybhr0biffcplmy7lw4fb87nd2dfw03"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("pcre" ,pcre)
+       ("poppler" ,poppler)))
+    (home-page "https://pdfgrep.org")
+    (synopsis "Command-line utility to search text in PDF files")
+    (description
+     "Pdfgrep searches in pdf files for strings matching a regular expression.
+Support some GNU grep options as file name output, page number output,
+optional case insensitivity, count occurrences, color highlights and search in
+multiple files.")
+    (license license:gpl2+)))

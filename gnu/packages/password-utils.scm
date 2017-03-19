@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -291,7 +292,8 @@ any X11 window.")
                               name "-" version ".tar.xz"))
               (sha256
                (base32
-                "002mw7j0m33bw483rllzhcf41wp3ixka8yma6kqrfaj57jyw66hn"))))
+                "002mw7j0m33bw483rllzhcf41wp3ixka8yma6kqrfaj57jyw66hn"))
+              (patches (search-patches "password-store-gnupg-compat.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

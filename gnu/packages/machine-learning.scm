@@ -26,6 +26,7 @@
   #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -239,6 +241,39 @@ networks) based on simulation of (stochastic) flow in graphs.")
     ;; http://listserver.ebi.ac.uk/pipermail/mcl-users/2016/000376.html
     (license license:gpl3)))
 
+(define-public ocaml-mcl
+  (package
+    (name "ocaml-mcl")
+    (version "12-068oasis4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/fhcrc/mcl/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l5jbhwjpsj38x8b9698hfpkv75h8hn3kj0gihjhn8ym2cwwv110"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-paths
+           (lambda _
+             (substitute* "configure"
+               (("SHELL = /bin/sh") (string-append "SHELL = "(which "sh"))))
+             (substitute* "setup.ml"
+               (("LDFLAGS=-fPIC")
+                (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh"))))
+             #t)))))
+    (home-page "https://github.com/fhcrc/mcl")
+    (synopsis "OCaml wrappers around MCL")
+    (description
+     "This package provides OCaml bindings for the MCL graph clustering
+algorithm.")
+    (license license:gpl3)))
+
 (define-public randomjungle
   (package
     (name "randomjungle")
@@ -402,7 +437,7 @@ sample proximities between pairs of cases.")
     (inputs
      `(("python" ,python)
        ("numpy" ,python-numpy)
-       ("r" ,r)
+       ("r-minimal" ,r-minimal)
        ("octave" ,octave)
        ("swig" ,swig)
        ("hdf5" ,hdf5)
@@ -459,25 +494,6 @@ in terms of new algorithms.")
 adaptive sparsity and the Wong algorithm for adaptively sparse gaussian
 geometric models.")
     (license license:lgpl3+)))
-
-(define-public r-nnet
-  (package
-    (name "r-nnet")
-    (version "7.3-12")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "nnet" version))
-       (sha256
-        (base32
-         "17amqnw9dpap2w8ivx53hxha2xrm0drwfnj32li0xk41hlz548r7"))))
-    (build-system r-build-system)
-    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
-    (synopsis "Feed-forward neural networks and multinomial log-linear models")
-    (description
-     "This package provides functions for feed-forward neural networks with a
-single hidden layer, and for multinomial log-linear models.")
-    (license (list license:gpl2+ license:gpl3+))))
 
 (define-public r-kernlab
   (package

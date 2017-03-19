@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -27,7 +27,7 @@
              (web client)
              (rnrs io ports)
              (srfi srfi-11)
-             (guix utils)
+             (guix base16)
              (guix hash))
 
 (define %url-base
@@ -36,11 +36,6 @@
   ;; Alternately:
   ;;"http://www.fdn.fr/~lcourtes/software/guix/packages"
   )
-
-;; XXX: Work around <http://bugs.gnu.org/13095>, present in Guile
-;; up to 2.0.7.
-(module-define! (resolve-module '(web client))
-                'shutdown (const #f))
 
 (define (file-name->uri file)
   "Return the URI for FILE."

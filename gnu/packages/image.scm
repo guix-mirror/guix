@@ -3,10 +3,10 @@
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2014, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
-;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,6 +90,52 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
+
+(define-public libpng-apng
+  (package
+    (inherit libpng)
+    (replacement #f) ;libpng's replacement doesn't apply here
+    (name "libpng-apng")
+    (version (package-version libpng))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-apng
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (apply-patch file)
+               (zero? (system* "patch" "-p1" "--force"
+                               "--input" file)))
+             (let ((apng.gz (assoc-ref inputs "apng")))
+               (format #t "Applying APNG patch '~a'...~%"
+                       apng.gz)
+               (system (string-append "gunzip < " apng.gz " > the-patch"))
+               (and (apply-patch "the-patch")
+                    (for-each apply-patch
+                              (find-files "\\.patch"))))
+           #t))
+         (add-before 'configure 'no-checks
+           (lambda _
+             (substitute* "Makefile.in"
+               (("^scripts/symbols.chk") "")
+               (("check: scripts/symbols.chk") ""))
+             #t)))))
+    (inputs
+     `(("apng" ,(origin
+                  (method url-fetch)
+                  (uri
+                   (string-append "mirror://sourceforge/libpng-apng/libpng16/"
+                                  version "/libpng-" version "-apng.patch.gz"))
+                  (sha256
+                   (base32
+                    "026r0gbkf6d6v54wca02cdxln8sj4m2c1yk62sj2aasv2ki2ffh5"))))))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (synopsis "APNG patch for libpng")
+    (description
+     "APNG (Animated Portable Network Graphics) is an unofficial
+extension of the APNG (Portable Network Graphics) format.
+APNG patch provides APNG support to libpng.")
+    (home-page "https://sourceforge.net/projects/libpng-apng/")))
 
 (define-public libpng-1.2
   (package
@@ -721,17 +768,16 @@ multi-dimensional image processing.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "0.5.1")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://downloads.webmproject.org/releases/webp/libwebp-" version
              ".tar.gz"))
-       (patches (search-patches "libwebp-CVE-2016-9085.patch"))
        (sha256
         (base32
-         "1pqki1g8nzi8qgciysypd5r38zccv81np1dn43g27830rmpnrmka"))))
+         "0h1brwkyxc7lb8lc53aacdks5vc1y9hzngqi41gg7y6l56912a69"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
@@ -1081,3 +1127,47 @@ interface.  It supports color space extensions that allow it to compress from
 and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ; jsimd*.[ch] and most of simd/
                    license:ijg))))      ; the rest
+
+(define-public niftilib
+  (package
+    (name "niftilib")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "mirror://sourceforge/niftilib/"
+                                        "nifticlib/nifticlib_"
+                                        (string-join (string-split version #\.) "_")
+                                        "/nifticlib-" version ".tar.gz")))
+              (sha256
+               (base32 "123z9bwzgin5y8gi5ni8j217k7n683whjsvg0lrpii9flgk8isd3"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; there is no test target
+       #:parallel-build? #f             ; not supported
+       #:make-flags
+       (list "SHELL=bash"
+             (string-append "ZLIB_INC="
+                            (assoc-ref %build-inputs "zlib") "/include")
+             ;; Append "-fPIC" to CFLAGS.
+             (string-append "CFLAGS="
+                            "-Wall -ansi -pedantic -fPIC"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (dir)
+                  (copy-recursively dir (string-append out "/" dir)))
+                '("bin" "lib" "include")))
+             #t))
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "Library for reading and writing files in the nifti-1 format")
+    (description "Niftilib is a set of i/o libraries for reading and writing
+files in the nifti-1 data format - a binary file format for storing
+medical image data, e.g. magnetic resonance image (MRI) and functional MRI
+(fMRI) brain images.")
+    (home-page "http://niftilib.sourceforge.net")
+    (license license:public-domain)))

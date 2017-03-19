@@ -108,6 +108,9 @@
         (base32
          "0959fiiy11rzfzrzaknmgrx64bhszj02l0ycz79k5a6bmpfzanlk"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-nlme" ,r-nlme)))
     (home-page "http://ape-package.ird.fr/")
     (synopsis "Analyses of phylogenetics and evolution")
     (description
@@ -475,7 +478,7 @@ BED, GFF/GTF, VCF.")
     (inputs
      `(("bedtools" ,bedtools-2.18)
        ("samtools" ,samtools-0.1)
-       ("r" ,r)
+       ("r-minimal" ,r-minimal)
        ("r-foreach" ,r-foreach)
        ("r-xnomial" ,r-xnomial)
        ("r-domc" ,r-domc)
@@ -1725,7 +1728,7 @@ gene predictor designed to work with assembled, aligned RNA-seq transcripts.")
        ("python2-scipy" ,python2-scipy)
        ("python2-matplotlib" ,python2-matplotlib)))
     (propagated-inputs
-     `(("r" ,r)
+     `(("r-minimal" ,r-minimal)
        ("libsvm" ,libsvm)
        ("randomjungle" ,randomjungle)))
     (native-inputs
@@ -4001,7 +4004,7 @@ partial genes, and identifies translation initiation sites.")
        ("grep" ,grep)
        ("sed" ,sed)
        ("gawk" ,gawk)
-       ("r" ,r)
+       ("r-minimal" ,r-minimal)
        ("r-ggplot2" ,r-ggplot2)
        ("coreutils" ,coreutils)))
     (home-page "http://sanger-pathogens.github.io/Roary")
@@ -4116,7 +4119,7 @@ phylogenies.")
     (inputs
      `(("boost" ,boost)
        ("ncurses" ,ncurses)
-       ("r" ,r)
+       ("r-minimal" ,r-minimal)
        ("perl" ,perl)
        ("samtools" ,samtools-0.1)
        ("zlib" ,zlib)))
@@ -4383,7 +4386,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "1.2.5")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -4393,7 +4396,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "04y1fsmdnb5y86m3gg6f5g9wcscr6r25n7m8mdlcxy0i2q6w6cia"))))
+         "1wiyf4c6nm2j87pv015cbi0qny5byf3pbvcw3likifz5dl56ag40"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -4447,7 +4450,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.7.0")
+    (version "2.8.2")
     (source
      (origin
        (method url-fetch)
@@ -4457,67 +4460,77 @@ simultaneously.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0x1cg1x8vy0yjlkp0snc1533zcjhxqzqsaiwqk598n7vvw37n8lf"))))
+         "1acn4bv81mfl137qnbn9995mjjhwd36pm0b7qli1iw5skrxa9j8m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            ;; Override include path for libmagic
-            (substitute* "setup/package.prl"
-              (("name => 'magic', Include => '/usr/include'")
-               (string-append "name=> 'magic', Include => '"
-                              (assoc-ref inputs "libmagic")
-                              "/include" "'")))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Override include path for libmagic
+               (substitute* "setup/package.prl"
+                 (("name => 'magic', Include => '/usr/include'")
+                  (string-append "name=> 'magic', Include => '"
+                                 (assoc-ref inputs "libmagic")
+                                 "/include" "'")))
 
-            ;; Install kdf5 library (needed by sra-tools)
-            (substitute* "build/Makefile.install"
-              (("LIBRARIES_TO_INSTALL =")
-               "LIBRARIES_TO_INSTALL = kdf5.$(VERSION_LIBX) kdf5.$(VERSION_SHLX)"))
+               ;; Install kdf5 library (needed by sra-tools)
+               (substitute* "build/Makefile.install"
+                 (("LIBRARIES_TO_INSTALL =")
+                  "LIBRARIES_TO_INSTALL = kdf5.$(VERSION_LIBX) kdf5.$(VERSION_SHLX)"))
 
-            (substitute* "build/Makefile.env"
-              (("CFLAGS	=" prefix)
-               (string-append prefix "-msse2 ")))
+               (substitute* "build/Makefile.env"
+                 (("CFLAGS	=" prefix)
+                  (string-append prefix "-msse2 ")))
 
-            ;; The 'configure' script doesn't recognize things like
-            ;; '--enable-fast-install'.
-            (zero? (system*
-                    "./configure"
-                    (string-append "--build-prefix=" (getcwd) "/build")
-                    (string-append "--prefix=" (assoc-ref outputs "out"))
-                    (string-append "--debug")
-                    (string-append "--with-xml2-prefix="
-                                   (assoc-ref inputs "libxml2"))
-                    (string-append "--with-ngs-sdk-prefix="
-                                   (assoc-ref inputs "ngs-sdk"))
-                    (string-append "--with-ngs-java-prefix="
-                                   (assoc-ref inputs "java-ngs"))
-                    (string-append "--with-hdf5-prefix="
-                                   (assoc-ref inputs "hdf5"))))))
-        (alist-cons-after
-         'install 'install-interfaces
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Install interface libraries.  On i686 the interface libraries
-           ;; are installed to "linux/gcc/i386", so we need to use the Linux
-           ;; architecture name ("i386") instead of the target system prefix
-           ;; ("i686").
-           (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
-           (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
-                                            ,(system->linux-architecture
-                                              (or (%current-target-system)
-                                                  (%current-system)))
-                                            "/rel/ilib")
-                             (string-append (assoc-ref outputs "out")
-                                            "/ilib"))
-           ;; Install interface headers
-           (copy-recursively "interfaces"
-                             (string-append (assoc-ref outputs "out")
-                                            "/include")))
-         %standard-phases))))
+               ;; Override search path for ngs-java
+               (substitute* "setup/package.prl"
+                 (("/usr/local/ngs/ngs-java")
+                  (assoc-ref inputs "java-ngs")))
+
+               ;; The 'configure' script doesn't recognize things like
+               ;; '--enable-fast-install'.
+               (zero? (system*
+                       "./configure"
+                       (string-append "--build-prefix=" (getcwd) "/build")
+                       (string-append "--prefix=" (assoc-ref outputs "out"))
+                       (string-append "--debug")
+                       (string-append "--with-xml2-prefix="
+                                      (assoc-ref inputs "libxml2"))
+                       (string-append "--with-ngs-sdk-prefix="
+                                      (assoc-ref inputs "ngs-sdk"))
+                       (string-append "--with-hdf5-prefix="
+                                      (assoc-ref inputs "hdf5")))))))
+         (add-after 'install 'install-interfaces
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install interface libraries.  On i686 the interface libraries
+             ;; are installed to "linux/gcc/i386", so we need to use the Linux
+             ;; architecture name ("i386") instead of the target system prefix
+             ;; ("i686").
+             (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
+             (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
+                                              ,(system->linux-architecture
+                                                (or (%current-target-system)
+                                                    (%current-system)))
+                                              "/rel/ilib")
+                               (string-append (assoc-ref outputs "out")
+                                              "/ilib"))
+             ;; Install interface headers
+             (copy-recursively "interfaces"
+                               (string-append (assoc-ref outputs "out")
+                                              "/include"))
+             #t))
+         ;; These files are needed by sra-tools.
+         (add-after 'install 'install-configuration-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out") "/kfg")))
+               (mkdir target)
+               (install-file "libs/kfg/default.kfg" target)
+               (install-file "libs/kfg/certs.kfg" target))
+             #t)))))
     (inputs
      `(("libxml2" ,libxml2)
        ("ngs-sdk" ,ngs-sdk)
@@ -4728,7 +4741,7 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.7.0")
+    (version "2.8.2-1")
     (source
      (origin
        (method url-fetch)
@@ -4738,13 +4751,19 @@ sequence itself can be retrieved from these databases.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "13paw7bq6y47d2pl0ac5gpgcqp1xsy1g7v1fwysm3hr8lb2dck17"))))
+         "1camsijmvv2s45mb4iyf44ghl4gkd4rl0viphpcgl3ccchy32a0g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
        #:make-flags
-       (list (string-append "VDB_LIBDIR="
+       (list (string-append "DEFAULT_CRT="
+                            (assoc-ref %build-inputs "ncbi-vdb")
+                            "/kfg/certs.kfg")
+             (string-append "DEFAULT_KFG="
+                            (assoc-ref %build-inputs "ncbi-vdb")
+                            "/kfg/default.kfg")
+             (string-append "VDB_LIBDIR="
                             (assoc-ref %build-inputs "ncbi-vdb")
                             ,(if (string-prefix? "x86_64"
                                                  (or (%current-target-system)
@@ -5337,6 +5356,7 @@ information as possible.")
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
        ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
        ("r-permute" ,r-permute)))
     (home-page "https://cran.r-project.org/web/packages/vegan")
@@ -5418,7 +5438,8 @@ microarrays.")
      `(("r-annotate" ,r-annotate)
        ("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-survival" ,r-survival)))
     (home-page "http://bioconductor.org/packages/genefilter")
     (synopsis "Filter genes from high-throughput experiments")
     (description
@@ -5716,6 +5737,7 @@ annotation infrastructure.")
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-mass" ,r-mass)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
     (home-page "https://github.com/Kraus-Lab/groHMM")
@@ -6115,7 +6137,8 @@ functionality.")
     (native-inputs
      `(("which" ,which)))
     (propagated-inputs
-     `(("r-graph" ,r-graph)
+     `(("r-codetools" ,r-codetools)
+       ("r-graph" ,r-graph)
        ("r-knitr" ,r-knitr)
        ("r-httr" ,r-httr)
        ("r-optparse" ,r-optparse)
@@ -6643,6 +6666,7 @@ files.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
        ("r-s4vectors" ,r-s4vectors)))
     (home-page "http://bioconductor.org/packages/SummarizedExperiment")
     (synopsis "Container for representing genomic ranges by sample")
@@ -6834,8 +6858,9 @@ information about the latest version of the Gene Ontologies.")
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-go-db" ,r-go-db)
-       ("r-matrixstats" ,r-matrixstats)
        ("r-graph" ,r-graph)
+       ("r-lattice" ,r-lattice)
+       ("r-matrixstats" ,r-matrixstats)
        ("r-sparsem" ,r-sparsem)))
     (home-page "http://bioconductor.org/packages/topGO")
     (synopsis "Enrichment analysis for gene ontology")
@@ -7611,9 +7636,9 @@ library implementing most of the pipeline's features.")
                  `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))))
              #t)))))
     (inputs
-     `(("r" ,r)
+     `(("r-minimal" ,r-minimal)
        ("r-rcas" ,r-rcas)
-       ("guile-next" ,guile-next)
+       ("guile-next" ,guile-2.2)
        ("guile-json" ,guile2.2-json)
        ("guile-redis" ,guile2.2-redis)))
     (native-inputs
@@ -8227,7 +8252,8 @@ number detection tools.")
          "1wc1fjm6dzlsqqagm43y57w8jh8nsh0r0m8z1p6ximcb5gxqh7hn"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-genefilter" ,r-genefilter)))
+     `(("r-genefilter" ,r-genefilter)
+       ("r-mgcv" ,r-mgcv)))
     (home-page "http://bioconductor.org/packages/sva")
     (synopsis "Surrogate variable analysis")
     (description
@@ -8279,6 +8305,7 @@ data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
     (propagated-inputs
      `(("r-seqminer" ,r-seqminer)
        ("r-mvtnorm" ,r-mvtnorm)
+       ("r-mass" ,r-mass)
        ("r-compquadform" ,r-compquadform)
        ("r-getopt" ,r-getopt)))
     (home-page "http://genome.sph.umich.edu/wiki/RareMETALS2")
@@ -8437,6 +8464,7 @@ analysis.")
      `(("r-affy" ,r-affy)
        ("r-biobase" ,r-biobase)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-lattice" ,r-lattice)
        ("r-limma" ,r-limma)))
     (home-page "http://bioconductor.org/packages/release/bioc/html/vsn.html")
     (synopsis "Variance stabilization and calibration for microarray data")
@@ -8500,6 +8528,7 @@ specific parser.")
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-mass" ,r-mass)
        ("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/hredestig/pcamethods")
     (synopsis "Collection of PCA methods")
@@ -8592,6 +8621,85 @@ identifications while not exceeding a specified false discovery rate.  It also
 contains a number of utilities to explore the MS/MS results and assess missed
 and irregular enzymatic cleavages, mass measurement accuracy, etc.")
     (license license:artistic2.0)))
+
+(define-public r-seurat
+  ;; Source releases are only made for new x.0 versions.  All newer versions
+  ;; are only released as pre-built binaries.  At the time of this writing the
+  ;; latest binary release is 1.4.0.12, which is equivalent to this commit.
+  (let ((commit "fccb77d1452c35ee47e47ebf8e87bddb59f3b08d")
+        (revision "1"))
+    (package
+      (name "r-seurat")
+      (version (string-append "1.4.0.12-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/satijalab/seurat")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "101wq3aqrdmbfi3lqmq4iivk9iwbf10d4z216ss25hf7n9091cyl"))
+                ;; Delete pre-built jar.
+                (snippet
+                 '(begin (delete-file "inst/java/ModularityOptimizer.jar")
+                         #t))))
+      (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'build-jar
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((classesdir "tmp-classes"))
+                 (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+                 (mkdir classesdir)
+                 (and (zero? (apply system* `("javac" "-d" ,classesdir
+                                              ,@(find-files "java" "\\.java$"))))
+                      (zero? (system* "jar"
+                                      "-cf" "inst/java/ModularityOptimizer.jar"
+                                      "-C" classesdir ".")))))))))
+      (native-inputs
+       `(("jdk" ,icedtea "jdk")))
+      (propagated-inputs
+       `(("r-ape" ,r-ape)
+         ("r-caret" ,r-caret)
+         ("r-cowplot" ,r-cowplot)
+         ("r-dplyr" ,r-dplyr)
+         ("r-fastica" ,r-fastica)
+         ("r-fnn" ,r-fnn)
+         ("r-fpc" ,r-fpc)
+         ("r-gdata" ,r-gdata)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-gplots" ,r-gplots)
+         ("r-gridextra" ,r-gridextra)
+         ("r-igraph" ,r-igraph)
+         ("r-irlba" ,r-irlba)
+         ("r-lars" ,r-lars)
+         ("r-mixtools" ,r-mixtools)
+         ("r-pbapply" ,r-pbapply)
+         ("r-plyr" ,r-plyr)
+         ("r-ranger" ,r-ranger)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcppeigen" ,r-rcppeigen)
+         ("r-rcppprogress" ,r-rcppprogress)
+         ("r-reshape2" ,r-reshape2)
+         ("r-rocr" ,r-rocr)
+         ("r-rtsne" ,r-rtsne)
+         ("r-stringr" ,r-stringr)
+         ("r-tclust" ,r-tclust)
+         ("r-tsne" ,r-tsne)
+         ("r-vgam" ,r-vgam)))
+      (home-page "http://www.satijalab.org/seurat")
+      (synopsis "Seurat is an R toolkit for single cell genomics")
+      (description
+       "This package is an R package designed for QC, analysis, and
+exploration of single cell RNA-seq data.  It easily enables widely-used
+analytical techniques, including the identification of highly variable genes,
+dimensionality reduction; PCA, ICA, t-SNE, standard unsupervised clustering
+algorithms; density clustering, hierarchical clustering, k-means, and the
+discovery of differentially expressed genes and markers.")
+      (license license:gpl3))))
 
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))

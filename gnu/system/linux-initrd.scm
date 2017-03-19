@@ -272,23 +272,7 @@ loaded at boot time in the order in which they appear."
       ,@extra-modules))
 
   (define helper-packages
-    ;; Packages to be copied on the initrd.
-    `(,@(if (find (lambda (fs)
-                    (string-prefix? "ext" (file-system-type fs)))
-                  file-systems)
-            (list e2fsck/static)
-            '())
-      ,@(if (find (lambda (fs)
-                    (string-suffix? "fat" (file-system-type fs)))
-                  file-systems)
-            (list fatfsck/static)
-            '())
-      ,@(if (find (file-system-type-predicate "btrfs") file-systems)
-            (list btrfs-progs/static)
-            '())
-      ,@(if volatile-root?
-            (list unionfs-fuse/static)
-            '())))
+    (file-system-packages file-systems #:volatile-root? volatile-root?))
 
   (raw-initrd file-systems
               #:linux linux

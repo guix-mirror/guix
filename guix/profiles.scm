@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -933,13 +933,16 @@ files for the truetype fonts of the @var{manifest} entries."
                              #:key
                              (hooks %default-profile-hooks)
                              (locales? #t)
-                             system)
+                             system target)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes additional derivations returned by
 the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc.
 
 When LOCALES? is true, the build is performed under a UTF-8 locale; this adds
-a dependency on the 'glibc-utf8-locales' package."
+a dependency on the 'glibc-utf8-locales' package.
+
+When TARGET is true, it must be a GNU triplet, and the packages in MANIFEST
+are cross-built for TARGET."
   (mlet %store-monad ((system (if system
                                   (return system)
                                   (current-system)))
@@ -1000,6 +1003,7 @@ a dependency on the 'glibc-utf8-locales' package."
 
     (gexp->derivation "profile" builder
                       #:system system
+                      #:target target
 
                       ;; Not worth offloading.
                       #:local-build? #t

@@ -44,7 +44,8 @@
   #:use-module (web uri)
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
-                          open-connection-for-uri
+                          (open-connection-for-uri
+                           . guix:open-connection-for-uri)
                           close-connection))
   #:use-module (web request)
   #:use-module (web response)
@@ -377,7 +378,8 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
       ((or 'http 'https)
        (catch #t
          (lambda ()
-           (let ((port    (open-connection-for-uri uri #:timeout timeout))
+           (let ((port    (guix:open-connection-for-uri
+                           uri #:timeout timeout))
                  (request (build-request uri #:headers headers)))
              (define response
                (dynamic-wind

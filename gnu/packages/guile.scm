@@ -217,9 +217,9 @@ without requiring the source code to be rewritten.")
     (properties '((hidden? . #t)))          ;people should install 'guile-2.0'
     (replacement #f)))
 
-(define-public guile-next
+(define-public guile-2.2
   (package (inherit guile-2.0)
-    (name "guile-next")
+    (name "guile")
     (version "2.2.0")
     (replacement #f)
     (source (origin
@@ -236,12 +236,8 @@ without requiring the source code to be rewritten.")
               ;; times (almost 3 hours on a 4-core Intel i5).
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
-    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
     (properties '((timeout . 72000)               ;20 hours
-                  (max-silent-time . 10800)       ;3 hours (needed on ARM)
-                  (upstream-name . "guile")
-                  (ftp-server . "alpha.gnu.org")
-                  (ftp-directory . "/gnu/guile")))
+                  (max-silent-time . 10800)))     ;3 hours (needed on ARM)
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -251,23 +247,28 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/2.2/site-ccache"
                      "share/guile/site/2.2")))))))
 
-(define (guile-2.2-package-name name)
-  "Return NAME with a \"guile2.2-\" prefix instead of \"guile-\", when
-applicable."
-  (if (string-prefix? "guile-" name)
-      (string-append "guile2.2-"
-                     (string-drop name
-                                  (string-length "guile-")))
-      name))
+(define (guile-variant-package-name prefix)
+  (lambda (name)
+    "Return NAME with PREFIX instead of \"guile-\", when applicable."
+    (if (string-prefix? "guile-" name)
+        (string-append prefix "-"
+                       (string-drop name
+                                    (string-length "guile-")))
+        name)))
 
 (define package-for-guile-2.2
   ;; A procedure that rewrites the dependency tree of the given package to use
-  ;; GUILE-NEXT instead of GUILE-2.0.
-  (package-input-rewriting `((,guile-2.0 . ,guile-next))
-                           guile-2.2-package-name))
+  ;; GUILE-2.2 instead of GUILE-2.0.
+  (package-input-rewriting `((,guile-2.0 . ,guile-2.2))
+                           (guile-variant-package-name "guile2.2")))
+
+(define package-for-guile-2.0
+  ;; Likewise, but the other way around.  :-)
+  (package-input-rewriting `((,guile-2.2 . ,guile-2.0))
+                           (guile-variant-package-name "guile2.0")))
 
 (define-public guile-for-guile-emacs
-  (package (inherit guile-next)
+  (package (inherit guile-2.2)
     (name "guile-for-guile-emacs")
     (version "20150510.d8d9a8d")
     (source (origin
@@ -282,7 +283,7 @@ applicable."
      (substitute-keyword-arguments `(;; Tests aren't passing for now.
                                      ;; Obviously we should re-enable this!
                                      #:tests? #f
-                                     ,@(package-arguments guile-next))
+                                     ,@(package-arguments guile-2.2))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'autogen
@@ -300,7 +301,7 @@ applicable."
        ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("gettext" ,gettext-minimal)
-       ,@(package-native-inputs guile-next)))
+       ,@(package-native-inputs guile-2.2)))
     ;; Same as in guile-2.0
     (native-search-paths
      (list (search-path-specification
@@ -441,7 +442,7 @@ more.")
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (synopsis "Framework for building readers for GNU Guile")
     (description
      "Guile-Reader is a simple framework for building readers for GNU Guile.
@@ -458,8 +459,10 @@ many readers as needed).")
     (home-page "http://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
 
+(define-public guile2.0-reader
+  (package-for-guile-2.0 guile-reader))
 (define-public guile2.2-reader
-  (package-for-guile-2.2 guile-reader))
+  (deprecated-package "guile2.2-reader" guile-reader))
 
 (define-public guile-ncurses
   (package
@@ -1042,7 +1045,7 @@ Guile's foreign function interface.")
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (propagated-inputs
      `(("guile-reader" ,guile-reader)
        ("guile-commonmark" ,guile-commonmark)))
@@ -1053,9 +1056,11 @@ interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license license:gpl3+)))
 
+(define-public guile2.0-haunt
+  (package-for-guile-2.0
+   (package (inherit haunt) (name "guile2.0-haunt"))))
 (define-public guile2.2-haunt
-  (package-for-guile-2.2
-   (package (inherit haunt) (name "guile2.2-haunt"))))
+  (deprecated-package "guile2.2-haunt" haunt))
 
 (define-public guile-config
   (package
@@ -1413,7 +1418,7 @@ you send to a FIFO file.")
                      "/site/@GUILE_EFFECTIVE_VERSION@"))))))
     (build-system gnu-build-system)
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "CommonMark parser for Guile")
     (description
      "guile-commonmark is a library for parsing CommonMark, a fully specified
@@ -1424,8 +1429,10 @@ is no support for parsing block and inline level HTML.")
     (home-page "https://github.com/OrangeShark/guile-commonmark")
     (license license:lgpl3+)))
 
+(define-public guile2.0-commonmark
+  (package-for-guile-2.0 guile-commonmark))
 (define-public guile2.2-commonmark
-  (package-for-guile-2.2 guile-commonmark))
+  (deprecated-package "guile2.2-commonmark" guile-commonmark))
 
 (define-public guile-bytestructures
   (package
@@ -1616,18 +1623,18 @@ and then run @command{scm example.scm}.")
 (define-public guile-8sync
   (package
     (name "guile-8sync")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/8sync/8sync-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1fvf8d2s3vvg4nyskbqaiqmlm2x571hv7hizcnmny45zvalydr9h"))))
+                "031wm13srak3wsnll7j2mbbi29g1pcm4swdb71ds9yn567pn20qw"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
-                     ("guile" ,guile-next)
+                     ("guile" ,guile-2.2)
                      ("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))
     (arguments
@@ -1643,7 +1650,7 @@ and then run @command{scm example.scm}.")
      "GNU 8sync (pronounced \"eight-sync\") is an asynchronous programming
 library for GNU Guile based on the actor model.
 
-Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
+Note that 8sync is only available for Guile 2.2.")
     (license license:lgpl3+)))
 
 (define-public guile-fibers
@@ -1662,7 +1669,7 @@ Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
      `(("texinfo" ,texinfo)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-next)))
+     `(("guile" ,guile-2.2)))
     (synopsis "Lightweight concurrency facility for Guile")
     (description
      "Fibers is a Guile library that implements a a lightweight concurrency

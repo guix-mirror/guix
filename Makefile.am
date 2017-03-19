@@ -30,6 +30,7 @@ nodist_noinst_SCRIPTS =				\
 include gnu/local.mk
 
 MODULES =					\
+  guix/base16.scm				\
   guix/base32.scm				\
   guix/base64.scm				\
   guix/cpio.scm					\
@@ -251,6 +252,7 @@ TEST_EXTENSIONS = .scm .sh
 if CAN_RUN_TESTS
 
 SCM_TESTS =					\
+  tests/base16.scm				\
   tests/base32.scm				\
   tests/base64.scm				\
   tests/cpio.scm				\

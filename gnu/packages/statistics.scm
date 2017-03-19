@@ -31,6 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -99,9 +100,12 @@ can be imported from spreadsheets, text files and database sources and it can
 be output in text, PostScript, PDF or HTML.")
     (license license:gpl3+)))
 
-(define-public r
+;; Update this package together with the set of recommended packages: r-boot,
+;; r-class, r-cluster, r-codetools, r-foreign, r-kernsmooth, r-lattice,
+;; r-mass, r-matrix, r-mgcv, r-nlme, r-nnet, r-rpart, r-spatial, r-survival.
+(define-public r-minimal
   (package
-    (name "r")
+    (name "r-minimal")
     (version "3.3.3")
     (source (origin
               (method url-fetch)
@@ -129,17 +133,46 @@ be output in text, PostScript, PDF or HTML.")
                (substitute* "src/scripts/R.sh.in"
                  (("uname") uname-bin)))
              #t))
-         (add-after 'unpack 'build-recommended-packages-reproducibly
+         (add-after 'unpack 'build-reproducibly
            (lambda _
-             (substitute* "src/library/Recommended/Makefile.in"
-               (("INSTALL_OPTS =(.*)" line rest )
-                (string-append "INSTALL_OPTS = --built-timestamp=1970-01-01"
-                               rest)))
-             ;; Ensure that gzipped files are reproducible
+             ;; The documentation contains time stamps to demonstrate
+             ;; documentation generation in different phases.
+             (substitute* "src/library/tools/man/Rd2HTML.Rd"
+               (("\\\\%Y-\\\\%m-\\\\%d at \\\\%H:\\\\%M:\\\\%S")
+                "(removed for reproducibility)"))
+
+             ;; Remove timestamp from tracing environment.  This fixes
+             ;; reproducibility of "methods.rd{b,x}".
+             (substitute* "src/library/methods/R/trace.R"
+               (("dateCreated = Sys.time\\(\\)")
+                "dateCreated = as.POSIXct(\"1970-1-1 00:00:00\", tz = \"UTC\")"))
+
+             ;; Ensure that gzipped files are reproducible.
              (substitute* '("src/library/grDevices/Makefile.in"
                             "doc/manual/Makefile.in")
                (("R_GZIPCMD\\)" line)
                 (string-append line " -n")))
+
+             ;; The "srcfile" procedure in "src/library/base/R/srcfile.R"
+             ;; queries the mtime of a given file and records it in an object.
+             ;; This is acceptable at runtime to detect stale source files,
+             ;; but it destroys reproducibility at build time.
+             ;;
+             ;; Instead of disabling this feature, which may have unexpected
+             ;; consequences, we reset the mtime of generated files before
+             ;; passing them to the "srcfile" procedure.
+             (substitute* "src/library/Makefile.in"
+               (("@\\(cd base && \\$\\(MAKE\\) mkdesc\\)" line)
+                (string-append line "\n	find $(top_builddir)/library/tools | xargs touch -d '1970-01-01'; \n"))
+               (("@\\$\\(MAKE\\) Rdobjects" line)
+                (string-append "@find $(srcdir)/tools | xargs touch -d '1970-01-01'; \n	"
+                               line)))
+             (substitute* "src/library/tools/Makefile.in"
+               (("@\\$\\(INSTALL_DATA\\) all.R \\$\\(top_builddir\\)/library/\\$\\(pkg\\)/R/\\$\\(pkg\\)" line)
+                (string-append
+                 line
+                 "\n	find $(srcdir)/$(pkg) $(top_builddir)/library/$(pkg) | xargs touch -d \"1970-01-01\"; \n")))
+
              ;; This library is installed using "install_package_description",
              ;; so we need to pass the "builtStamp" argument.
              (substitute* "src/library/tools/Makefile.in"
@@ -163,7 +196,12 @@ be output in text, PostScript, PDF or HTML.")
          (add-after 'build 'install-info
           (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
-       '("--with-cairo"
+       '(;; Do not build the recommended packages.  The build system creates
+         ;; random temporary directories and embeds their names in some
+         ;; package files.  We build these packages with the r-build-system
+         ;; instead.
+         "--without-recommended-packages"
+         "--with-cairo"
          "--with-blas=-lopenblas"
          "--with-libpng"
          "--with-jpeglib"
@@ -220,6 +258,343 @@ and clustering.  It also provides robust support for producing
 publication-quality data plots.  A large amount of 3rd-party packages are
 available, greatly increasing its breadth and scope.")
     (license license:gpl3+)))
+
+(define-public r-boot
+  (package
+    (name "r-boot")
+    (version "1.3-18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "boot" version))
+       (sha256
+        (base32
+         "0pi348vvgzn1ny54yxhw6kq6nl7rx9bpr9ji1a6wqs8ah5zj7z8j"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/boot")
+    (synopsis "Bootstrap functions for R")
+    (description
+     "This package provides functions and datasets for bootstrapping from the
+book \"Bootstrap Methods and Their Application\" by A.C. Davison and
+D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
+    ;; Unlimited distribution
+    (license (license:non-copyleft "file://R/bootfuns.q"))))
+
+(define-public r-mass
+  (package
+    (name "r-mass")
+    (version "7.3-45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MASS" version))
+       (sha256
+        (base32
+         "13lp5919h2bnpmf8rbmkar8a41yx62fnx66pkvljvqf60wa29qsx"))))
+    (properties `((upstream-name . "MASS")))
+    (build-system r-build-system)
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "Support functions and datasets for Venables and Ripley's MASS")
+    (description
+     "This package provides functions and datasets for the book \"Modern
+Applied Statistics with S\" (4th edition, 2002) by Venables and Ripley.")
+    ;; Either version may be picked.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-class
+  (package
+    (name "r-class")
+    (version "7.3-14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "class" version))
+       (sha256
+        (base32
+         "173b8a16lh1i0zjmr784l0xr0azp9v8bgslh12hfdswbq7dpdf0q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "R functions for classification")
+    (description
+     "This package provides various functions for classification, including
+k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
+    ;; Either of the two versions can be picked.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-cluster
+  (package
+    (name "r-cluster")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cluster" version))
+       (sha256
+        (base32
+         "1bkvqmv8h2c423q9ag2afb6s9j2vcdlxsf559zzbimraphrr2c2b"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/cluster")
+    (synopsis "Methods for cluster analysis")
+    (description
+     "This package provides methods for cluster analysis.  It is a much
+extended version of the original from Peter Rousseeuw, Anja Struyf and Mia
+Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
+    (license license:gpl2+)))
+
+(define-public r-codetools
+  (package
+    (name "r-codetools")
+    (version "0.2-15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "codetools" version))
+       (sha256
+        (base32
+         "0h7sjmvvsi35041jp47cxhsqzgf1y8jrw6fxii7n26i8g7nrh1sf"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/codetools")
+    (synopsis "Code analysis tools for R")
+    (description "This package provides code analysis tools for R.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-foreign
+  (package
+    (name "r-foreign")
+    (version "0.8-67")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "foreign" version))
+       (sha256
+        (base32
+         "1mcrm2pydimbyjhkrw5h380bifj1jhwzifph1xgh90asf3lvd1xd"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/foreign")
+    (synopsis "Read data stored by other statistics software")
+    (description
+     "This package provides functions for reading and writing data stored by
+some versions of Epi Info, Minitab, S, SAS, SPSS, Stata, Systat and Weka and
+for reading and writing some dBase files.")
+    (license license:gpl2+)))
+
+(define-public r-kernsmooth
+  (package
+    (name "r-kernsmooth")
+    (version "2.23-15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "KernSmooth" version))
+       (sha256
+        (base32
+         "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
+    (properties `((upstream-name . "KernSmooth")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/KernSmooth")
+    (synopsis "Functions for kernel smoothing")
+    (description
+     "This package provides functions for kernel smoothing (and density
+estimation) corresponding to the book: Wand, M.P. and Jones, M.C. (1995)
+\"Kernel Smoothing\".")
+    ;; Unlimited distribution
+    (license (license:non-copyleft "file://LICENCE.note"))))
+
+(define-public r-lattice
+  (package
+    (name "r-lattice")
+    (version "0.20-34")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lattice" version))
+              (sha256
+               (base32
+                "0615h69czr73k47whhzimf1qxv5qk0cabcrkljwhyrn6m6piq6ja"))))
+    (build-system r-build-system)
+    (home-page "http://lattice.r-forge.r-project.org/")
+    (synopsis "High-level data visualization system")
+    (description
+     "The lattice package provides a powerful and elegant high-level data
+visualization system inspired by Trellis graphics, with an emphasis on
+multivariate data.  Lattice is sufficient for typical graphics needs, and is
+also flexible enough to handle most nonstandard requirements.")
+    (license license:gpl2+)))
+
+(define-public r-matrix
+  (package
+    (name "r-matrix")
+    (version "1.2-7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Matrix" version))
+       (sha256
+        (base32
+         "09rd51na9spz0lm1lylkfhw43w7c922b83m4jsggmpg3pbd6dssa"))))
+    (properties `((upstream-name . "Matrix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://Matrix.R-forge.R-project.org/")
+    (synopsis "Sparse and dense matrix classes and methods")
+    (description
+     "This package provides classes and methods for dense and sparse matrices
+and operations on them using LAPACK and SuiteSparse.")
+    (license license:gpl2+)))
+
+(define-public r-nlme
+  (package
+    (name "r-nlme")
+    (version "3.1-131")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nlme" version))
+       (sha256
+        (base32
+         "0k2nvdzhic6bzhfsbq6la6q6a1i5nlj4pnh6lpdxiiwvxdks3nkr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/nlme")
+    (synopsis "Linear and nonlinear mixed effects models")
+    (description
+     "This package provides tools to fit and compare Gaussian linear and
+nonlinear mixed-effects models.")
+    (license license:gpl2+)))
+
+(define-public r-mgcv
+  (package
+   (name "r-mgcv")
+   (version "1.8-16")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "mgcv" version))
+     (sha256
+      (base32
+       "0pj31gdwra7nv8spys4pfcbmsik99q1y1d0d2g37ywc3sz5s0rlj"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-matrix" ,r-matrix)
+      ("r-nlme" ,r-nlme)))
+   (home-page "http://cran.r-project.org/web/packages/mgcv")
+   (synopsis "Mixed generalised additive model computation")
+   (description
+    "GAMs, GAMMs and other generalized ridge regression with multiple smoothing
+parameter estimation by GCV, REML or UBRE/AIC.  The library includes a
+@code{gam()} function, a wide variety of smoothers, JAGS support and
+distributions beyond the exponential family.")
+   (license license:gpl2+)))
+
+(define-public r-nnet
+  (package
+    (name "r-nnet")
+    (version "7.3-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nnet" version))
+       (sha256
+        (base32
+         "17amqnw9dpap2w8ivx53hxha2xrm0drwfnj32li0xk41hlz548r7"))))
+    (build-system r-build-system)
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "Feed-forward neural networks and multinomial log-linear models")
+    (description
+     "This package provides functions for feed-forward neural networks with a
+single hidden layer, and for multinomial log-linear models.")
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-rpart
+  (package
+    (name "r-rpart")
+    (version "4.1-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rpart" version))
+       (sha256
+        (base32
+         "119dvh2cpab4vq9blvbkil5hgq6w018amiwlda3ii0fki39axpf5"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/rpart")
+    (synopsis "Recursive partitioning and regression trees")
+    (description
+     "This package provides recursive partitioning functions for
+classification, regression and survival trees.")
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-spatial
+  (package
+    (name "r-spatial")
+    (version "7.3-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatial" version))
+       (sha256
+        (base32
+         "04aw8j533sn63ybyrf4hyhrqm4058vfcb7yhjy07kq92mk94hi32"))))
+    (build-system r-build-system)
+    (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
+    (synopsis "Functions for kriging and point pattern analysis")
+    (description
+     "This package provides functions for kriging and point pattern
+analysis.")
+    ;; Either version may be picked.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-survival
+  (package
+    (name "r-survival")
+    (version "2.40-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survival" version))
+       (sha256
+        (base32
+         "10pf0kq0g66k5rgizrvh29mq3r84acljw2jgrv5yp6z38xw23mci"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/therneau/survival")
+    (synopsis "Survival analysis")
+    (description
+     "This package contains the core survival analysis routines, including
+definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
+curves, Cox models, and parametric accelerated failure time models.")
+    (license license:lgpl2.0+)))
+
+(define-public r
+  (package (inherit r-minimal)
+    (name "r")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     `(("r-minimal" ,r-minimal)
+       ("r-boot" ,r-boot)
+       ("r-class" ,r-class)
+       ("r-cluster" ,r-cluster)
+       ("r-codetools" ,r-codetools)
+       ("r-foreign" ,r-foreign)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nlme" ,r-nlme)
+       ("r-nnet" ,r-nnet)
+       ("r-rpart" ,r-rpart)
+       ("r-spatial" ,r-spatial)
+       ("r-survival" ,r-survival)))))
 
 (define-public r-bit
   (package
@@ -460,49 +835,6 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 'citation(\"Rcpp\")' for details on these last two.")
     (license license:gpl2+)))
 
-(define-public r-matrix
-  (package
-    (name "r-matrix")
-    (version "1.2-7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "Matrix" version))
-       (sha256
-        (base32
-         "09rd51na9spz0lm1lylkfhw43w7c922b83m4jsggmpg3pbd6dssa"))))
-    (properties `((upstream-name . "Matrix")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-lattice" ,r-lattice)))
-    (home-page "http://Matrix.R-forge.R-project.org/")
-    (synopsis "Sparse and dense matrix classes and methods")
-    (description
-     "This package provides classes and methods for dense and sparse matrices
-and operations on them using LAPACK and SuiteSparse.")
-    (license license:gpl2+)))
-
-(define-public r-mgcv
-  (package
-   (name "r-mgcv")
-   (version "1.8-16")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (cran-uri "mgcv" version))
-     (sha256
-      (base32
-       "0pj31gdwra7nv8spys4pfcbmsik99q1y1d0d2g37ywc3sz5s0rlj"))))
-   (build-system r-build-system)
-   (home-page "http://cran.r-project.org/web/packages/mgcv")
-   (synopsis "Mixed generalised additive model computation")
-   (description
-    "GAMs, GAMMs and other generalized ridge regression with multiple smoothing
-parameter estimation by GCV, REML or UBRE/AIC.  The library includes a
-@code{gam()} function, a wide variety of smoothers, JAGS support and
-distributions beyond the exponential family.")
-   (license license:gpl2+)))
-
 (define-public r-permute
   (package
    (name "r-permute")
@@ -722,6 +1054,7 @@ legends.")
        ("r-gtable" ,r-gtable)
        ("r-plyr" ,r-plyr)
        ("r-lazyeval" ,r-lazyeval)
+       ("r-mass" ,r-mass)
        ("r-tibble" ,r-tibble)
        ("r-reshape2" ,r-reshape2)
        ("r-scales" ,r-scales)
@@ -1342,6 +1675,8 @@ side.")
         (base32
          "0lafrmq1q7x026m92h01hc9cjjiximqqi3v1g2hw7ai9vf7i897m"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
     (home-page "http://cran.r-project.org/web/packages/locfit")
     (synopsis "Local regression, likelihood and density estimation")
     (description
@@ -1519,6 +1854,8 @@ inference for statistical models.")
                (base32
                 "14a4a8df4ygj05h37chmdn8kzcqs07fpbflxfrq530563mrza7yl"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
     (home-page "http://cran.r-project.org/web/packages/coda")
     (synopsis "This is a package for Output Analysis and Diagnostics for MCMC")
     (description "This package provides functions for summarizing and plotting
@@ -2026,26 +2363,6 @@ scaling functions for R.")
     (synopsis "Integration of base and grid graphics")
     (description
      "This package provides an integration of base and grid graphics for R.")
-    (license license:gpl2+)))
-
-(define-public r-lattice
-  (package
-    (name "r-lattice")
-    (version "0.20-34")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "lattice" version))
-              (sha256
-               (base32
-                "0615h69czr73k47whhzimf1qxv5qk0cabcrkljwhyrn6m6piq6ja"))))
-    (build-system r-build-system)
-    (home-page "http://lattice.r-forge.r-project.org/")
-    (synopsis "High-level data visualization system")
-    (description
-     "The lattice package provides a powerful and elegant high-level data
-visualization system inspired by Trellis graphics, with an emphasis on
-multivariate data.  Lattice is sufficient for typical graphics needs, and is
-also flexible enough to handle most nonstandard requirements.")
     (license license:gpl2+)))
 
 (define-public r-latticeextra
@@ -2687,6 +3004,8 @@ flexible than the orphaned \"base64\" package.")
         (base32
          "1qbcn0ix85pmk296jhpi419kvh06vxm5cq24yk013ps3g7fyi0si"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
     (home-page "http://cran.r-project.org/web/packages/irlba")
     (synopsis "Methods for eigendecomposition of large matrices")
     (description
@@ -2707,10 +3026,11 @@ analysis of large sparse or dense matrices.")
       (base32
        "1cbpzmbv837fvq88rgn6mgzgr9f1wqp9fg8gh2kkmngvr1957a9c"))))
    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
+   (inputs
+    `(("gfortran" ,gfortran)))
    (propagated-inputs
-    `(("r-foreach" ,r-foreach)))
+    `(("r-foreach" ,r-foreach)
+      ("r-matrix" ,r-matrix)))
    (home-page "http://www.jstatsoft.org/v33/i01")
    (synopsis "Lasso and elastic-net regularized generalized linear models")
    (description
@@ -2828,6 +3148,8 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
         (base32
          "1069qwj9gsjq6par2cgfah8nn5x2w38830761x1f7mqpmk0gnj3h"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)))
     (home-page "http://cran.r-project.org/web/packages/e1071")
     (synopsis "Miscellaneous functions for probability theory")
     (description
@@ -3439,6 +3761,9 @@ from within R.")
                (("if isnan\\(lambda\\) \\{")
                 "if (isnan(lambda)) {"))
              #t)))))
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-matrix" ,r-matrix)))
     (home-page "http://spams-devel.gforge.inria.fr")
     (synopsis "Toolbox for solving sparse estimation problems")
     (description "SPAMS (SPArse Modeling Software) is an optimization toolbox
@@ -3455,45 +3780,6 @@ following problems:
  overlapping groups,...).
 @end enumerate\n")
     (license license:gpl3+)))
-
-(define-public r-rpart
-  (package
-    (name "r-rpart")
-    (version "4.1-10")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "rpart" version))
-       (sha256
-        (base32
-         "119dvh2cpab4vq9blvbkil5hgq6w018amiwlda3ii0fki39axpf5"))))
-    (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/rpart")
-    (synopsis "Recursive partitioning and regression trees")
-    (description
-     "This package provides recursive partitioning functions for
-classification, regression and survival trees.")
-    (license (list license:gpl2+ license:gpl3+))))
-
-(define-public r-survival
-  (package
-    (name "r-survival")
-    (version "2.40-1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "survival" version))
-       (sha256
-        (base32
-         "10pf0kq0g66k5rgizrvh29mq3r84acljw2jgrv5yp6z38xw23mci"))))
-    (build-system r-build-system)
-    (home-page "https://github.com/therneau/survival")
-    (synopsis "Survival analysis")
-    (description
-     "This package contains the core survival analysis routines, including
-definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state)
-curves, Cox models, and parametric accelerated failure time models.")
-    (license license:lgpl2.0+)))
 
 (define-public r-base64
   (package
@@ -3536,17 +3822,20 @@ package instead.")
      `(("r-acepack" ,r-acepack)
        ("r-base64" ,r-base64)
        ("r-base64enc" ,r-base64enc)
+       ("r-cluster" ,r-cluster)
        ("r-data-table" ,r-data-table)
+       ("r-foreign" ,r-foreign)
        ("r-formula" ,r-formula)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-gtable" ,r-gtable)
-       ;; Hmisc needs survival >= 2.40.1, so it cannot use the survival
-       ;; package that comes with R 3.3.2.
-       ("r-survival" ,r-survival)
+       ("r-lattice" ,r-lattice)
        ("r-latticeextra" ,r-latticeextra)
        ("r-htmltable" ,r-htmltable)
        ("r-htmltools" ,r-htmltools)
+       ("r-nnet" ,r-nnet)
+       ("r-rpart" ,r-rpart)
+       ("r-survival" ,r-survival)
        ("r-viridis" ,r-viridis)))
     (home-page "http://biostat.mc.vanderbilt.edu/Hmisc")
     (synopsis "Miscellaneous data analysis and graphics functions")
@@ -3831,6 +4120,8 @@ estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
                (base32
                 "167m142rwwfy8b9hnfc3fi28dcsdjk61g1crqhll6sh5xmgnfn28"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
     (home-page "http://zoo.R-Forge.R-project.org/")
     (synopsis "S3 infrastructure for regular and irregular time series")
     (description "This package contains an S3 class with methods for totally
@@ -4097,7 +4388,9 @@ letters, as is often required for scientific publications.")
          "133rr17ywmlhsc6457hs8qxi8ng443ql9ashxpwc8875gjhv1x32"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-segmented" ,r-segmented)))
+     `(("r-boot" ,r-boot)
+       ("r-mass" ,r-mass)
+       ("r-segmented" ,r-segmented)))
     (home-page "http://cran.r-project.org/web/packages/mixtools")
     (synopsis "Tools for analyzing finite mixture models")
     (description
@@ -4227,7 +4520,9 @@ to change in the future.")
          "1i205yw3kkxs27gqcs6zx0c2mh16p332a2p06wq6fdzb20bazg3z"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-modeltools" ,r-modeltools)))
+     `(("r-lattice" ,r-lattice)
+       ("r-modeltools" ,r-modeltools)
+       ("r-nnet" ,r-nnet)))
     (home-page "http://cran.r-project.org/web/packages/flexmix")
     (synopsis "Flexible mixture modeling")
     (description
@@ -4274,7 +4569,8 @@ and resampling-based inference.")
          "0qjsxrx6yv338bxm4ki0w9h8hind1l98abdrz828588bwj02jya1"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mclust" ,r-mclust)))
+     `(("r-mass" ,r-mass)
+       ("r-mclust" ,r-mclust)))
     (home-page "https://cran.r-project.org/web/packages/prabclus")
     (synopsis "Parametric bootstrap tests for spatial neighborhood clustering")
     (description
@@ -4363,9 +4659,12 @@ of the points.")
          "15m0p9l9w2v7sl0cnzyg81i2fmx3hrhvr3371544mwn3fpsca5sx"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-diptest" ,r-diptest)
+     `(("r-class" ,r-class)
+       ("r-cluster" ,r-cluster)
+       ("r-diptest" ,r-diptest)
        ("r-flexmix" ,r-flexmix)
        ("r-kernlab" ,r-kernlab)
+       ("r-mass" ,r-mass)
        ("r-mclust" ,r-mclust)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-prabclus" ,r-prabclus)
@@ -4484,7 +4783,8 @@ based on an interface to Fortran implementations by M. J. D. Powell.")
     (properties `((upstream-name . "RcppEigen")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-matrix" ,r-matrix)))
     (home-page "http://eigen.tuxfamily.org")
     (synopsis "Rcpp integration for the Eigen templated linear algebra library")
     (description
@@ -4529,6 +4829,8 @@ metrics for evaluating models.")
          "0cyfvhci2p1vr2x52ymkyqqs63x1qchn856dh2j94yb93r08x1zy"))))
     (properties `((upstream-name . "MatrixModels")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
     (home-page "https://cran.r-project.org/web/packages/MatrixModels")
     (synopsis "Modelling with sparse and dense matrices")
     (description
@@ -4606,7 +4908,9 @@ algorithms.")
        ("r-rcppeigen" ,r-rcppeigen)))
     (propagated-inputs
      `(("r-minqa" ,r-minqa)
-       ("r-nloptr" ,r-nloptr)))
+       ("r-nloptr" ,r-nloptr)
+       ("r-mass" ,r-mass)
+       ("r-nlme" ,r-nlme)))
     (home-page "http://cran.r-project.org/web/packages/lme4")
     (synopsis "Linear mixed-effects models using eigen and S4")
     (description
@@ -4629,7 +4933,9 @@ C++ library for numerical linear algebra and RcppEigen glue.")
          "00cw18q7wvddzjrbxz917wkix6r7672vi2wmsp4gwgzady8vha4x"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lme4" ,r-lme4)))
+     `(("r-lme4" ,r-lme4)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
     (home-page "http://people.math.aau.dk/~sorenh/software/pbkrtest/")
     (synopsis "Methods for linear mixed model comparison")
     (description
@@ -4651,7 +4957,10 @@ bootstrap test for generalized linear mixed models.")
          "0a6v7rsd1xsdyapnfqy37m7c4kx9wslkzsizc9k0lmnba0bwyfgx"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-pbkrtest" ,r-pbkrtest)
+     `(("r-mass" ,r-mass)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nnet" ,r-nnet)
+       ("r-pbkrtest" ,r-pbkrtest)
        ("r-quantreg" ,r-quantreg)))
     (home-page "https://r-forge.r-project.org/projects/car/")
     (synopsis "Companion to applied regression")
@@ -4790,7 +5099,8 @@ multivariate case.")
          "0a1b7yp4l9wf6ic5czizyl2cnxrc1virj0icr8i6m1vv23jd8jfp"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mclust" ,r-mclust)
+     `(("r-cluster" ,r-cluster)
+       ("r-mclust" ,r-mclust)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-sn" ,r-sn)))
     (home-page "http://cran.r-project.org/web/packages/tclust")

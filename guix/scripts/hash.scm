@@ -24,7 +24,7 @@
   #:use-module (guix serialization)
   #:use-module (guix ui)
   #:use-module (guix scripts)
-  #:use-module (guix utils)
+  #:use-module (guix base16)
   #:use-module (ice-9 binary-ports)
   #:use-module (rnrs files)
   #:use-module (ice-9 match)

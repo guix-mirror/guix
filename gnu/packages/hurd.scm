@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2014, 2015, 2016, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -210,3 +210,35 @@ Library for GNU/Hurd.")
 Hurd-minimal package which are needed for both glibc and GCC.")
     (home-page (package-home-page hurd-headers))
     (license (package-license hurd-headers))))
+
+(define-public gnumach
+  (package
+    (name "gnumach")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (gnumach-source-url version))
+              (sha256
+               (base32
+                "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'produce-image
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out  (assoc-ref outputs "out"))
+                             (boot (string-append out "/boot")))
+                        (and (zero? (system* "make" "gnumach.gz"))
+                             (begin
+                               (install-file "gnumach.gz" boot)
+                               #t))))))))
+    (native-inputs
+     `(("mig" ,mig)
+       ("perl" ,perl)))
+    (supported-systems (cons "i686-linux" %hurd-systems))
+    (home-page
+     "https://www.gnu.org/software/hurd/microkernel/mach/gnumach.html")
+    (synopsis "Microkernel of the GNU system")
+    (description
+     "GNU Mach is the microkernel upon which a GNU Hurd system is based.")
+    (license gpl2+)))

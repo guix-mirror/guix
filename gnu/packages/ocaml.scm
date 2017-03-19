@@ -29,6 +29,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
@@ -971,14 +972,14 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
 (define-public ocaml-qtest
   (package
     (name "ocaml-qtest")
-    (version "2.3")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/vincent-hugot/iTeML/"
                                   "archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1n7x5l6h4j44f75wzgzjsjkq349i4gj707w1hr7fx84igxxfr6vl"))))
+                "1hw3jqir7w79payy4knc38fa3nxcvl7ap6y6hnqavrhpi8zqb59j"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("findlib" ,ocaml-findlib)))
@@ -1212,6 +1213,59 @@ declarative manner, without resorting to exceptions.  It defines combinators
 to operate on the result type available from OCaml 4.03 in the standard
 library.")
     (license license:isc)))
+
+(define-public ocaml-sqlite3
+  (package
+    (name "ocaml-sqlite3")
+    (version "4.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mmottl/sqlite3-ocaml/releases/download/v"
+             version "/sqlite3-ocaml-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14c1nir7c6bivajg0vyx853y7la7r5d25g1v5hjb2wfi73r15p1m"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (home-page "https://mmottl.github.io/sqlite3-ocaml")
+    (synopsis "SQLite3 Bindings for OCaml")
+    (description
+     "SQLite3-OCaml is an OCaml library with bindings to the SQLite3 client
+API.  Sqlite3 is a self-contained, serverless, zero-configuration,
+transactional SQL database engine with outstanding performance for many use
+cases.  These bindings are written in a way that enables a friendly
+coexistence with the old (version 2) SQLite and its OCaml wrapper
+@code{ocaml-sqlite}.")
+    (license license:expat)))
+
+(define-public ocaml-csv
+  (package
+    (name "ocaml-csv")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://github.com/Chris00/ocaml-csv/releases/download/"
+         version "/csv-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rv7x843vn6scxj87hzl01yqrl26rc27lr8s7z6rp9vs745g05zj"))))
+    (build-system ocaml-build-system)
+    (home-page "https://github.com/Chris00/ocaml-csv")
+    (synopsis "Pure OCaml functions to read and write CSV")
+    (description
+     "@dfn{Comma separated values} (CSV) is a simple tabular format supported
+by all major spreadsheets.  This library implements pure OCaml functions to
+read and write files in this format as well as some convenience functions to
+manipulate such data.")
+    (license (package-license camlp4))))
 
 (define-public ocaml-mtime
   (package

@@ -47,7 +47,6 @@ Documentation License''.
 @direntry
 * Guix: (guix).       Manage installed software and system configuration.
 * guix package: (guix)Invoking guix package.  Installing, removing, and upgrading packages.
-* guix build: (guix)Invoking guix build.      Building packages.
 * guix gc: (guix)Invoking guix gc.            Reclaiming unused disk space.
 * guix pull: (guix)Invoking guix pull.        Update the list of available packages.
 * guix system: (guix)Invoking guix system.    Manage the operating system configuration.
@@ -56,6 +55,8 @@ Documentation License''.
 @dircategory Software development
 @direntry
 * guix environment: (guix)Invoking guix environment. Building development environments with Guix.
+* guix build: (guix)Invoking guix build.      Building packages.
+* guix pack: (guix)Invoking guix pack.        Creating binary bundles.
 @end direntry
 
 @titlepage
@@ -505,11 +506,13 @@ To use substitutes from @code{hydra.gnu.org} or one of its mirrors
 @example
 # guix archive --authorize < ~root/.guix-profile/share/guix/hydra.gnu.org.pub
 @end example
+
+@item
+Each user may need to perform a few additional steps to make their Guix
+environment ready for use, @pxref{Application Setup}.
 @end enumerate
 
-This completes root-level install of Guix.  Each user will need to
-perform additional steps to make their Guix environment ready for use,
-@pxref{Application Setup}.
+Voilà, the installation is complete!
 
 You can confirm that Guix is working by installing a sample package into
 the root profile:
@@ -551,7 +554,7 @@ in the Guix source tree for additional details.
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or
+@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.9 or
 later, including 2.2.x;
 @item @url{http://gnupg.org/, GNU libgcrypt};
 @item
@@ -2405,7 +2408,9 @@ The @command{guix pack} command creates a shrink-wrapped @dfn{pack} or
 containing the binaries of the software you're interested in, and all
 its dependencies.  The resulting archive can be used on any machine that
 does not have Guix, and people can run the exact same binaries as those
-you have with Guix.
+you have with Guix.  The pack itself is created in a bit-reproducible
+fashion, so anyone can verify that it really contains the build results
+that you pretend to be shipping.
 
 For example, to create a bundle containing Guile, Emacs, Geiser, and all
 their dependencies, you can run:
@@ -2435,13 +2440,49 @@ guix pack -S /opt/gnu/bin=bin guile emacs geiser
 @noindent
 That way, users can happily type @file{/opt/gnu/bin/guile} and enjoy.
 
+Alternatively, you can produce a pack in the Docker image format using
+the following command:
+
+@example
+guix pack -f docker guile emacs geiser
+@end example
+
+@noindent
+The result is a tarball that can be passed to the @command{docker load}
+command.  See the
+@uref{https://docs.docker.com/engine/reference/commandline/load/, Docker
+documentation} for more information.
+
 Several command-line options allow you to customize your pack:
 
 @table @code
+@item --format=@var{format}
+@itemx -f @var{format}
+Produce a pack in the given @var{format}.
+
+The available formats are:
+
+@table @code
+@item tarball
+This is the default format.  It produces a tarball containing all the
+specifies binaries and symlinks.
+
+@item docker
+This produces a tarball that follows the
+@uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
+Docker Image Specification}.
+@end table
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
 the system type of the build host.
+
+@item --target=@var{triplet}
+@cindex cross-compilation
+Cross-build for @var{triplet}, which must be a valid GNU triplet, such
+as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+configuration triplets,, autoconf, Autoconf}).
 
 @item --compression=@var{tool}
 @itemx -C @var{tool}
@@ -2537,7 +2578,7 @@ what you should use in this case (@pxref{Invoking guix copy}).
 
 @cindex nar, archive format
 @cindex normalized archive (nar)
-By default archives are stored in the ``normalized archive'' or ``nar'' format, which is
+Archives are stored in the ``normalized archive'' or ``nar'' format, which is
 comparable in spirit to `tar', but with differences
 that make it more appropriate for our purposes.  First, rather than
 recording all Unix metadata for each file, the nar format only mentions
@@ -2552,9 +2593,6 @@ and that digital signature is appended.  When importing, the daemon
 verifies the signature and rejects the import in case of an invalid
 signature or if the signing key is not authorized.
 @c FIXME: Add xref to daemon doc about signatures.
-
-Optionally, archives can be exported as a Docker image in the tar
-archive format using @code{--format=docker}.
 
 The main options are:
 
@@ -2583,19 +2621,6 @@ keys (see @code{--authorize} below.)
 Read a list of store file names from the standard input, one per line,
 and write on the standard output the subset of these files missing from
 the store.
-
-@item -f
-@item --format=@var{FMT}
-@cindex docker, export
-@cindex export format
-Specify the export format.  Acceptable arguments are @code{nar} and
-@code{docker}.  The default is the nar format.  When the format is
-@code{docker}, recursively export the specified store directory as a
-Docker image in tar archive format, as specified in
-@uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
-version 1.2.0 of the Docker Image Specification}.  Using
-@code{--format=docker} implies @code{--recursive}.  The generated
-archive can be loaded by Docker using @command{docker load}.
 
 @item --generate-key[=@var{parameters}]
 @cindex signing, archives
@@ -4347,8 +4372,22 @@ of the @code{gexp?} type (see below.)
 
 @deffn {Scheme Syntax} with-imported-modules @var{modules} @var{body}@dots{}
 Mark the gexps defined in @var{body}@dots{} as requiring @var{modules}
-in their execution environment.  @var{modules} must be a list of Guile
-module names, such as @code{'((guix build utils) (guix build gremlin))}.
+in their execution environment.
+
+Each item in @var{modules} can be the name of a module, such as
+@code{(guix build utils)}, or it can be a module name, followed by an
+arrow, followed by a file-like object:
+
+@example
+`((guix build utils)
+  (guix gcrypt)
+  ((guix config) => ,(scheme-file "config.scm"
+                                  #~(define-module @dots{}))))
+@end example
+
+@noindent
+In the example above, the first two modules are taken from the search
+path, and the last one is created from the given file-like object.
 
 This form has @emph{lexical} scope: it has an effect on the gexps
 directly defined in @var{body}@dots{}, but not on those defined, say, in
@@ -4882,15 +4921,15 @@ or @code{guile@@1.8}.
 
 For instance, the following command builds Guix, but replaces its
 dependency on the current stable version of Guile with a dependency on
-the development version of Guile, @code{guile-next}:
+the legacy version of Guile, @code{guile@@2.0}:
 
 @example
-guix build --with-input=guile=guile-next guix
+guix build --with-input=guile=guile@@2.0 guix
 @end example
 
 This is a recursive, deep replacement.  So in this example, both
 @code{guix} and its dependency @code{guile-json} (which also depends on
-@code{guile}) get rebuilt against @code{guile-next}.
+@code{guile}) get rebuilt against @code{guile@@2.0}.
 
 This is implemented using the @code{package-input-rewriting} Scheme
 procedure (@pxref{Defining Packages, @code{package-input-rewriting}}).
@@ -5032,8 +5071,8 @@ to build packages in a complete 32-bit environment.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Configuration Names, GNU
-configuration triplets,, configure, GNU Configure and Build System}).
+as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+configuration triplets,, autoconf, Autoconf}).
 
 @anchor{build-check}
 @item --check
@@ -6365,7 +6404,7 @@ home directory is accessible read-only via the @file{/exchange}
 directory:
 
 @example
-guix environment --container --expose=$HOME=/exchange guile -- guile
+guix environment --container --expose=$HOME=/exchange --ad-hoc guile -- guile
 @end example
 
 @item --share=@var{source}[=@var{target}]
@@ -6379,12 +6418,14 @@ home directory is accessible for both reading and writing via the
 @file{/exchange} directory:
 
 @example
-guix environment --container --share=$HOME=/exchange guile -- guile
+guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
 @end example
 @end table
 
-It also supports all of the common build options that @command{guix
+@command{guix environment}
+also supports all of the common build options that @command{guix
 build} supports (@pxref{Common Build Options}).
+
 
 @node Invoking guix publish
 @section Invoking @command{guix publish}
@@ -9254,15 +9295,33 @@ NetworkManager will not modify @code{resolv.conf}.
 @end deftp
 
 @cindex Connman
-@deffn {Scheme Procedure} connman-service @
-       [#:connman @var{connman}]
-Return a service that runs @url{https://01.org/connman,Connman}, a network
-connection manager.
+@deffn {Scheme Variable} connman-service-type
+This is the service type to run @url{https://01.org/connman,Connman},
+a network connection manager.
 
-This service adds the @var{connman} package to the global profile, providing
-several the @command{connmanctl} command to interact with the daemon and
-configure networking."
+Its value must be an
+@code{connman-configuration} record as in this example:
+
+@example
+(service connman-service-type
+         (connman-configuration
+           (disable-vpn? #t)))
+@end example
+
+See below for details about @code{connman-configuration}.
 @end deffn
+
+@deftp {Data Type} connman-configuration
+Data Type representing the configuration of connman.
+
+@table @asis
+@item @code{connman} (default: @var{connman})
+The connman package to use.
+
+@item @code{disable-vpn?} (default: @code{#f})
+When true, enable connman's vpn plugin.
+@end table
+@end deftp
 
 @cindex WPA Supplicant
 @defvr {Scheme Variable} wpa-supplicant-service-type

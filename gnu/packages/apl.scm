@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,16 +31,16 @@
 (define-public apl
   (package
     (name "apl")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/apl/apl-" version ".tar.gz"))
       (sha256
        (base32
-        "057zwzvvgcrrwsl52a27w86hgy31jqq6avqq629xj7yq90qah3ay"))))
+        "07xq8ddlmz8psvsmwr23gar108ri0lwmw0n6kpxcv8ypas1f5xlg"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/apl/")
+    (home-page "https://www.gnu.org/software/apl/")
     (inputs
      `(("gettext" ,gettext-minimal)
        ("lapack" ,lapack)

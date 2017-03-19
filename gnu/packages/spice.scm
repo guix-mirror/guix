@@ -102,6 +102,7 @@
               (uri (string-append
                 "https://www.freedesktop.org/software/virgl/"
                 "virglrenderer-" version ".tar.bz2"))
+              (patches (search-patches "virglrenderer-CVE-2017-6386.patch"))
               (sha256
                (base32
                 "06kf0q4l52gzx5p63l8850hff8pmhp7xv1hk8zgx2apbw18y6jd5"))))

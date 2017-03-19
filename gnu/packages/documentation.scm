@@ -85,8 +85,17 @@ release/xsl/current")
                            (string-append (assoc-ref inputs "docbook-xsl")
                                           "/xml/xsl/docbook-xsl-"
                                           ,(package-version docbook-xsl)))))
+                       #t))
+         ;; Do the same for docbook-xml.
+         (add-before 'install 'make-local-docbook-xml
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (substitute* "docbook45.conf"
+                         (("http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd")
+                          (string-append (assoc-ref inputs "docbook-xml")
+                                         "/xml/dtd/docbook/docbookx.dtd")))
                        #t)))))
     (inputs `(("python" ,python-2)
+              ("docbook-xml" ,docbook-xml)
               ("docbook-xsl" ,docbook-xsl)
               ("libxml2" ,libxml2)
               ("libxslt" ,libxslt)))

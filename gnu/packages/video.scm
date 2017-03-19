@@ -220,14 +220,14 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20170224-2245")
+    (version "20170316-2245")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
                                   "x264-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0paw8vzsy2qh5jf6xg2i1risjwyvmxgfnivly4gh0bib62cp4vib"))))
+                "1s1nnvl3axz38sv4g09skijl6k9mbbngbb1nsh26w4dr2w2gyzad"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -980,7 +980,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.03.15")
+    (version "2017.03.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -988,7 +988,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0h561pbphdkfalir9awp0k4fmsnzdf6kx56adb9bb0v9pfsb1y0f"))))
+                "14nlgl0kh4mwl7sx58vd7nxr5iklxi00612lmydy91ngm6ykrpsm"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1022,7 +1022,7 @@ YouTube.com and a few more sites.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "0.9.3")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -1030,7 +1030,7 @@ YouTube.com and a few more sites.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1q1whviqv5sr9nr372h31zwid1rvbfbx3z4lzr8lnj25xha6cdm6"))))
+                "1k3lag4lxi2jjd3zh4wcb5l3hadzm54j5kagh92yzfy76p9svqzp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bdjava")
