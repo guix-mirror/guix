@@ -3372,3 +3372,47 @@ This framework is a porting aid.  It is not recommended for new projects, and
 existing projects that use it are advised to port away from it, and use plain
 KParts instead.")
     (license license:expat)))
+
+(define-public kross
+  (package
+    (name "kross")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "092qz8vyiialv9fvk4wvn8mrfhz5i5hnbq0xnz6nvi1pk3db6bxq"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kparts" ,kparts)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 solution for application scripting")
+    (description "Kross is a scripting bridge for the KDE Development Platform
+used to embed scripting functionality into an application.  It supports
+QtScript as a scripting interpreter backend.
+
+Kross provides an abstract API to provide scripting functionality in a
+interpreter-independent way.  The application that uses Kross should not need
+to know anything about the scripting language being used.  The core of Kross
+provides the framework to deal transparently with interpreter-backends and
+offers abstract functionality to deal with scripts.")
+    ;; Most files are distributed under LGPL2+, but the package includes code
+    ;; under a variety of licenses.
+    (license '(license:lgpl2.0+ license:lgpl2.1+
+               license:lgpl2.0 license:gpl3+))))
