@@ -3326,3 +3326,49 @@ support.")
     (description "KJSEmbed provides a method of binding Javascript objects to
 QObjects, so you can script your applications.")
     (license license:lgpl2.1+)))
+
+(define-public kmediaplayer
+  (package
+    (name "kmediaplayer")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1mq87qf86sdvwhas4w7rspd221qp4x9kds4nd0lpldiay4483k86"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kparts" ,kparts)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 plugin interface for media player features")
+    (description "KMediaPlayer builds on the KParts framework to provide a
+common interface for KParts that can play media files.
+
+This framework is a porting aid.  It is not recommended for new projects, and
+existing projects that use it are advised to port away from it, and use plain
+KParts instead.")
+    (license license:expat)))
