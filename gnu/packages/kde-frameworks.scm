@@ -30,6 +30,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -3053,7 +3055,7 @@ script engines.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
-    ;; Optional packages not yet in Guix: packagekitqt5, AppStreamQt
+    ;; TODO: Optional packages not yet in Guix: packagekitqt5, AppStreamQt
     (inputs
      `(("kconfig" ,kconfig)
        ("kconfigwidgets" ,kconfigwidgets)
@@ -3085,3 +3087,121 @@ workspace.")
     ;; files are explicitly LGPL2+.
     (license '(lgpl2.0 lgpl3.0 lgpl2.0+))
     (properties `((upstream-name . "frameworkintegration")))))
+
+
+;; Porting Aids
+;;
+;; Porting Aids frameworks provide code and utilities to ease the transition
+;; from kdelibs 4 to KDE Frameworks 5. Code should aim to port away from this
+;; framework, new projects should avoid using these libraries.
+
+(define-public kdelibs4support
+  (package
+    (name "kdelibs4support")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0q9jjsjcvc43va4yvfay2xi40vb95lnqhgzavpqcndzjihixwmi0"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("docbook-xml" ,docbook-xml-4.4) ; optional
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("perl", perl)
+       ("perl-uri" ,perl-uri)
+       ("pkg-config" ,pkg-config)
+       ("shared-mime-info" ,shared-mime-info)
+       ("kjobwidgets" ,kjobwidgets) ;; required for running the tests
+       ("strace" ,strace)
+       ("tzdata" ,tzdata)))
+    (propagated-inputs
+     ;; These are required to be installed along with this package, see
+     ;; lib64/cmake/KF5KDELibs4Support/KF5KDELibs4SupportConfig.cmake
+     `(("karchive" ,karchive)
+       ("kauth" ,kauth)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("kdoctools" ,kdoctools)
+       ("kemoticons" ,kemoticons)
+       ("kguiaddons" ,kguiaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kinit" ,kinit)
+       ("kitemmodels" ,kitemmodels)
+       ("knotifications" ,knotifications)
+       ("kparts" ,kparts)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kunitconversion", kunitconversion)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kded" ,kded)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("kdoctools" ,kdoctools)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libsm", libsm)
+       ("networkmanager-qt", networkmanager-qt)
+       ("openssl", openssl)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
+    ;; FIXME: Use GuixSD ca-bundle.crt in etc/xdg/ksslcalist and
+    ;; share/kf5/kssl/ca-bundle.crt
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-cmake-to-find-docbook
+           (lambda _
+             (substitute* "cmake/FindDocBookXML4.cmake"
+               (("^.*xml/docbook/schema/dtd.*$")
+                "xml/dtd/docbook\n"))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check-post-install
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (setenv "HOME" (getcwd))
+             (setenv "TZDIR"    ; KDateTimeTestsome needs TZDIR
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             ;; enable debug output
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; TODO: Make this tests pass (also see
+             ;; https://bugs.kde.org/381098)
+             (zero? (system* "dbus-launch" "ctest" "."
+                             "-E" "kmimetypetest|kstandarddirstest")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 porting aid from KDELibs4")
+    (description "This framework provides code and utilities to ease the
+transition from kdelibs 4 to KDE Frameworks 5.  This includes CMake macros and
+C++ classes whose functionality has been replaced by code in CMake, Qt and
+other frameworks.
+
+Code should aim to port away from this framework eventually.  The API
+documentation of the classes in this framework and the notes at
+http://community.kde.org/Frameworks/Porting_Notes should help with this.")
+    ;; Most files are distributed under LGPL2+, but the package includes code
+    ;; under a variety of licenses.
+    (license '(license:lgpl2.1+ license:lgpl2.0 license:lgpl2.0+
+               license:gpl2 license:gpl2+
+               license:expat license:bsd-2 license:bsd-3
+               license:public-domain))))
