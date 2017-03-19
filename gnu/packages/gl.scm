@@ -489,6 +489,10 @@ OpenGL graphics API.")
                    (mesa (assoc-ref inputs "mesa")))
                (substitute* "src/gen_dispatch.py"
                  (("/usr/bin/env python") python))
+               ;; Add support for aarch64, see upstream:
+               ;; https://github.com/anholt/libepoxy/pull/114
+               (substitute* "test/dlwrap.c"
+                 (("GLIBC_2.4") "GLIBC_2.17\", \"GLIBC_2.4"))
                (substitute* (find-files "." "\\.[ch]$")
                  (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
