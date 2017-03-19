@@ -568,6 +568,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                #t)))
             (add-before 'check 'set-display
               (lambda _
+                ;; make Qt render "offscreen", required for tests
                 (setenv "QT_QPA_PLATFORM" "offscreen")
                 #t)))))))
 

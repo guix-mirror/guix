@@ -650,6 +650,7 @@ infrastructure.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -984,7 +985,8 @@ represented by a QPoint or a QSize.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
-             (setenv "QT_QPA_PLATFORM" "offscreen") ; a better solution to Xvfb
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug info
              (setenv "DBUS_FATAL_WARNINGS" "0")
              #t))
@@ -1311,6 +1313,7 @@ utilities.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -1696,6 +1699,7 @@ gallons).")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t))
          (replace 'check
@@ -1820,6 +1824,7 @@ by which applications, and what documents have been linked to which activity.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -1898,6 +1903,7 @@ KCModules can be created with the KConfigWidgets framework.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2028,6 +2034,7 @@ started on demand.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2100,6 +2107,7 @@ with su and ssh respectively.")
            (lambda _
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2143,6 +2151,7 @@ emoticons coming from different providers.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2192,6 +2201,7 @@ window does not need focus for them to be activated.")
                                     "/share"))
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2301,6 +2311,7 @@ makes starting KDE applications faster and reduces memory consumption.")
              (setenv "HOME" (getcwd))
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     ;;(replace 'check
@@ -2365,6 +2376,7 @@ KIO enabled infrastructure.")
            (lambda _ ; XDG_DATA_DIRS isn't set
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2458,6 +2470,7 @@ notifications which can be embedded in your application.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2498,6 +2511,7 @@ widgets with a user-interface defined in terms of actions.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2554,6 +2568,7 @@ to easily extend the contacts collection.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2603,6 +2618,7 @@ typed.")
            (lambda _
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2669,6 +2685,7 @@ types or handled by application specific code.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              #t)))))
@@ -2716,6 +2733,7 @@ library.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2806,6 +2824,7 @@ the passwords on KDE work spaces.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              #t)))))
@@ -2918,6 +2937,7 @@ setUrl, setUserAgent and call.")
            (lambda _
              (setenv "HOME" (getcwd))
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")

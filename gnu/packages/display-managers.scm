@@ -100,6 +100,7 @@
          (add-before 'check 'check-setup
            (lambda _
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              #t))
