@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
@@ -36,18 +37,29 @@
 (define-public librep
   (package
     (name "librep")
-    (version "0.92.5")
+    (version "0.92.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.tuxfamily.org/" name "/"
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "0zsy5gi8kvz5vq41y5rzm6lfi3dpiwbg4diwb6d30qfi72mrpni2"))))
+                "1k6c0hmyzxh8459r790slh9vv9vwy9d7w3nlmrqypbx9mk855hgy"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _
+                      ;; The 0.92.6 tarball was not produced by 'make dist'
+                      ;; and lacks generated files.  Sadness.
+                      (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("makeinfo"   ,texinfo)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+
+       ("autoconf" ,(autoconf-wrapper))
+       ("automake" ,automake)
+       ("libtool"  ,libtool)))
     (inputs
      `(("gdbm"     ,gdbm)
        ("gmp"      ,gmp)
