@@ -1062,7 +1062,7 @@ Guile's foreign function interface.")
      `(("guile" ,guile-2.2)))
     (propagated-inputs
      `(("guile-reader" ,guile-reader)
-       ("guile-commonmark" ,guile2.2-commonmark)))
+       ("guile-commonmark" ,guile-commonmark)))
     (synopsis "Functional static site generator")
     (description "Haunt is a static site generator written in Guile
 Scheme.  Haunt features a functional build system and an extensible
@@ -1432,7 +1432,7 @@ you send to a FIFO file.")
                      "/site/@GUILE_EFFECTIVE_VERSION@"))))))
     (build-system gnu-build-system)
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "CommonMark parser for Guile")
     (description
      "guile-commonmark is a library for parsing CommonMark, a fully specified
@@ -1443,8 +1443,10 @@ is no support for parsing block and inline level HTML.")
     (home-page "https://github.com/OrangeShark/guile-commonmark")
     (license license:lgpl3+)))
 
+(define-public guile2.0-commonmark
+  (package-for-guile-2.0 guile-commonmark))
 (define-public guile2.2-commonmark
-  (package-for-guile-2.2 guile-commonmark))
+  (deprecated-package "guile2.2-commonmark" guile-commonmark))
 
 (define-public guile-bytestructures
   (package
