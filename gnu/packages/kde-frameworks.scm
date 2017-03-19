@@ -3297,3 +3297,32 @@ support.")
     (license '(license:lgpl2.1+
                license:bsd-2 license:bsd-3
                (license:non-copyleft "file://src/kjs/dtoa.cpp")))))
+
+(define-public kjsembed
+  (package
+    (name "kjsembed")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "17w8i370pqks1fj3pcziz7j014chnc6yi7md7w2p4xprw54pbmbk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ki18n" ,ki18n)
+       ("kjs" ,kjs)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 embedded Javascript engine for Qt")
+    (description "KJSEmbed provides a method of binding Javascript objects to
+QObjects, so you can script your applications.")
+    (license license:lgpl2.1+)))
