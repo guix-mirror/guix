@@ -52,6 +52,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
@@ -3205,3 +3206,36 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
                license:gpl2 license:gpl2+
                license:expat license:bsd-2 license:bsd-3
                license:public-domain))))
+
+(define-public kjs
+  (package
+    (name "kjs")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "18b7k1hi73iqn06c1ryy9lcmvscr9d08q7n1wwkrn0l2xmy05xsq"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pcre" ,pcre)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 support for Javascript scripting in Qt
+applications")
+    (description "Add-on library to Qt which adds JavaScript scripting
+support.")
+    ;; Most files are distributed under LGPL2+, but the package also includes
+    ;; code under a variety of licenses.
+    (license '(license:lgpl2.1+
+               license:bsd-2 license:bsd-3
+               (license:non-copyleft "file://src/kjs/dtoa.cpp")))))
