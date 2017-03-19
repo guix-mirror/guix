@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -380,6 +381,7 @@ applications should be.")
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/graphite/releases/"
                            "download/" version "/" name "-" version ".tgz"))
+       (patches (search-patches "graphite2-ffloat-store.patch"))
        (sha256
         (base32
          "0rs5h7m340z75kygx8d72cps0q6yvvqa9i788vym7585cfv8a0gc"))))
