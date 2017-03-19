@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2014, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
@@ -1167,57 +1167,44 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
 
 (define-public niftilib
   (package
-   (name "niftilib")
-   (version "2.0.0")
-   (source (origin
-            (method url-fetch)
-            (uri (list (string-append "mirror://sourceforge/niftilib/"
-                                      "nifticlib/nifticlib_"
-                                      (string-join (string-split version #\.) "_")
-                                      "/nifticlib-" version ".tar.gz")))
-            (sha256
-             (base32 "123z9bwzgin5y8gi5ni8j217k7n683whjsvg0lrpii9flgk8isd3"))))
-   (build-system gnu-build-system)
-   (arguments
-    '(#:tests? #f
-      #:parallel-build? #f
-      #:phases
-      (modify-phases %standard-phases
-        (replace 'install
-                 (lambda _
-                   (for-each
-                    (lambda (dir)
-                      (let ((directory (assoc-ref %outputs "out")))
-                        (mkdir-p (string-append directory "/" dir))
-                        (zero? (system* "cp" "-a" dir directory))))
-                    '("bin" "lib" "include"))))
-        (replace 'configure
-                 (lambda _
-                   (substitute* "Makefile"
-                     (("^SHELL[ \t]*=[ \t]*csh")
-                      (string-append "SHELL = "
-                                     (assoc-ref %build-inputs "bash")
-                                     "/bin/sh"))
-
-                     (("^CFLAGS[ \t]*=[ \t]\\$\\(ANSI_FLAGS\\)")
-                      "CFLAGS = $(ANSI_FLAGS) -fPIC")
-
-                     (("^ZLIB_INC[ \t]*=[ \t]*-I/usr/include")
-                      (string-append "ZLIB_INC = -I"
-                                     (assoc-ref %build-inputs "zlib")
-                                     "/include"))
-
-                     (("^CP[ \t]*=[ \t]*cp")
-                      (string-append "CP = "
-                                     (assoc-ref %build-inputs "coreutils")
-                                     "/bin/cp")))
-                   #t)))))
-   (inputs
-    `(("zlib" ,zlib)))
-   (synopsis "Library for reading and writing files in the nifti-1 format")
-   (description "Niftilib is a set of i/o libraries for reading and writing
+    (name "niftilib")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "mirror://sourceforge/niftilib/"
+                                        "nifticlib/nifticlib_"
+                                        (string-join (string-split version #\.) "_")
+                                        "/nifticlib-" version ".tar.gz")))
+              (sha256
+               (base32 "123z9bwzgin5y8gi5ni8j217k7n683whjsvg0lrpii9flgk8isd3"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; there is no test target
+       #:parallel-build? #f             ; not supported
+       #:make-flags
+       (list "SHELL=bash"
+             (string-append "ZLIB_INC="
+                            (assoc-ref %build-inputs "zlib") "/include")
+             ;; Append "-fPIC" to CFLAGS.
+             (string-append "CFLAGS="
+                            "-Wall -ansi -pedantic -fPIC"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (dir)
+                  (copy-recursively dir (string-append out "/" dir)))
+                '("bin" "lib" "include")))
+             #t))
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "Library for reading and writing files in the nifti-1 format")
+    (description "Niftilib is a set of i/o libraries for reading and writing
 files in the nifti-1 data format - a binary file format for storing
 medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (fMRI) brain images.")
-   (home-page "http://niftilib.sourceforge.net")
-   (license license:public-domain)))
+    (home-page "http://niftilib.sourceforge.net")
+    (license license:public-domain)))
