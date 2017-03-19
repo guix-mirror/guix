@@ -470,17 +470,15 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/anholt/libepoxy/releases/download/v"
-                    (version-major+minor version) "/libepoxy-"
-                    version
-                    ".tar.xz"))
+                    "https://github.com/anholt/libepoxy/releases/download/"
+                    version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "0hdbaapbxjjfdqsdvag460kfjvs800da5sngi2sc46wj9aqhda95"))))
+                "19hsyap2p0sflj75ycf4af9bsp453bamymbcgnmrphigabsspil8"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -501,7 +499,7 @@ OpenGL graphics API.")
        ("python" ,python)))
     (inputs
      `(("mesa" ,mesa)))
-    (home-page "http://github.com/anholt/libepoxy/")
+    (home-page "https://github.com/anholt/libepoxy/")
     (synopsis "A library for handling OpenGL function pointer management")
     (description
      "A library for handling OpenGL function pointer management.")
