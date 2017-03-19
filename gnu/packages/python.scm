@@ -359,11 +359,12 @@ data types.")
   (package (inherit python-2)
     (name "python-minimal")
     (outputs '("out"))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-2)
-       ((#:configure-flags cf)
-        `(append ,cf '("--without-system-ffi")))))
-    (inputs '())))                          ;none of the optional dependencies
+
+    ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
+    ;; is invoked upon 'make install'.  'pip' also expects 'ctypes' and thus
+    ;; libffi.
+    (inputs `(("libffi" ,libffi)
+              ("zlib" ,zlib)))))
 
 (define-public python-minimal
   (package (inherit python)
