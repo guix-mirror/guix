@@ -7638,7 +7638,7 @@ library implementing most of the pipeline's features.")
     (inputs
      `(("r-minimal" ,r-minimal)
        ("r-rcas" ,r-rcas)
-       ("guile-next" ,guile-next)
+       ("guile-next" ,guile-2.2)
        ("guile-json" ,guile2.2-json)
        ("guile-redis" ,guile2.2-redis)))
     (native-inputs

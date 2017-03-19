@@ -231,9 +231,9 @@ without requiring the source code to be rewritten.")
                 "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p"))
               (patches (search-patches "guile-repl-server-test.patch"))))))
 
-(define-public guile-next
+(define-public guile-2.2
   (package (inherit guile-2.0)
-    (name "guile-next")
+    (name "guile")
     (version "2.2.0")
     (replacement #f)
     (source (origin
@@ -250,12 +250,8 @@ without requiring the source code to be rewritten.")
               ;; times (almost 3 hours on a 4-core Intel i5).
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
-    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
     (properties '((timeout . 72000)               ;20 hours
-                  (max-silent-time . 10800)       ;3 hours (needed on ARM)
-                  (upstream-name . "guile")
-                  (ftp-server . "alpha.gnu.org")
-                  (ftp-directory . "/gnu/guile")))
+                  (max-silent-time . 10800)))     ;3 hours (needed on ARM)
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -276,12 +272,12 @@ applicable."
 
 (define package-for-guile-2.2
   ;; A procedure that rewrites the dependency tree of the given package to use
-  ;; GUILE-NEXT instead of GUILE-2.0.
-  (package-input-rewriting `((,guile-2.0 . ,guile-next))
+  ;; GUILE-2.2 instead of GUILE-2.0.
+  (package-input-rewriting `((,guile-2.0 . ,guile-2.2))
                            guile-2.2-package-name))
 
 (define-public guile-for-guile-emacs
-  (package (inherit guile-next)
+  (package (inherit guile-2.2)
     (name "guile-for-guile-emacs")
     (version "20150510.d8d9a8d")
     (source (origin
@@ -296,7 +292,7 @@ applicable."
      (substitute-keyword-arguments `(;; Tests aren't passing for now.
                                      ;; Obviously we should re-enable this!
                                      #:tests? #f
-                                     ,@(package-arguments guile-next))
+                                     ,@(package-arguments guile-2.2))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'autogen
@@ -314,7 +310,7 @@ applicable."
        ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("gettext" ,gettext-minimal)
-       ,@(package-native-inputs guile-next)))
+       ,@(package-native-inputs guile-2.2)))
     ;; Same as in guile-2.0
     (native-search-paths
      (list (search-path-specification
@@ -1641,7 +1637,7 @@ and then run @command{scm example.scm}.")
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
-                     ("guile" ,guile-next)
+                     ("guile" ,guile-2.2)
                      ("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))
     (arguments
@@ -1657,7 +1653,7 @@ and then run @command{scm example.scm}.")
      "GNU 8sync (pronounced \"eight-sync\") is an asynchronous programming
 library for GNU Guile based on the actor model.
 
-Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
+Note that 8sync is only available for Guile 2.2.")
     (license license:lgpl3+)))
 
 (define-public guile-fibers
@@ -1676,7 +1672,7 @@ Note that 8sync is only available for Guile 2.2 (guile-next in Guix).")
      `(("texinfo" ,texinfo)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-next)))
+     `(("guile" ,guile-2.2)))
     (synopsis "Lightweight concurrency facility for Guile")
     (description
      "Fibers is a Guile library that implements a a lightweight concurrency

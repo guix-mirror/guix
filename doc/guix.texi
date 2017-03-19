@@ -4921,15 +4921,15 @@ or @code{guile@@1.8}.
 
 For instance, the following command builds Guix, but replaces its
 dependency on the current stable version of Guile with a dependency on
-the development version of Guile, @code{guile-next}:
+the legacy version of Guile, @code{guile@@2.0}:
 
 @example
-guix build --with-input=guile=guile-next guix
+guix build --with-input=guile=guile@@2.0 guix
 @end example
 
 This is a recursive, deep replacement.  So in this example, both
 @code{guix} and its dependency @code{guile-json} (which also depends on
-@code{guile}) get rebuilt against @code{guile-next}.
+@code{guile}) get rebuilt against @code{guile@@2.0}.
 
 This is implemented using the @code{package-input-rewriting} Scheme
 procedure (@pxref{Defining Packages, @code{package-input-rewriting}}).
