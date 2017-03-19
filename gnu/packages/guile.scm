@@ -261,20 +261,25 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/2.2/site-ccache"
                      "share/guile/site/2.2")))))))
 
-(define (guile-2.2-package-name name)
-  "Return NAME with a \"guile2.2-\" prefix instead of \"guile-\", when
-applicable."
-  (if (string-prefix? "guile-" name)
-      (string-append "guile2.2-"
-                     (string-drop name
-                                  (string-length "guile-")))
-      name))
+(define (guile-variant-package-name prefix)
+  (lambda (name)
+    "Return NAME with PREFIX instead of \"guile-\", when applicable."
+    (if (string-prefix? "guile-" name)
+        (string-append prefix "-"
+                       (string-drop name
+                                    (string-length "guile-")))
+        name)))
 
 (define package-for-guile-2.2
   ;; A procedure that rewrites the dependency tree of the given package to use
   ;; GUILE-2.2 instead of GUILE-2.0.
   (package-input-rewriting `((,guile-2.0 . ,guile-2.2))
-                           guile-2.2-package-name))
+                           (guile-variant-package-name "guile2.2")))
+
+(define package-for-guile-2.0
+  ;; Likewise, but the other way around.  :-)
+  (package-input-rewriting `((,guile-2.2 . ,guile-2.0))
+                           (guile-variant-package-name "guile2.0")))
 
 (define-public guile-for-guile-emacs
   (package (inherit guile-2.2)
