@@ -245,7 +245,7 @@ also known as DXTn or DXTC) for Mesa.")
      `(#:configure-flags
        '(,@(match (%current-system)
              ((or "armhf-linux" "aarch64-linux")
-              '("--with-galluim-drivers=freedreno,nouveau,r300,r600,svga,svrast,vc4,virgl"))
+              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,svga,svrast,vc4,virgl"))
              (_
               '("--with-gallium-drivers=i915,nouveau,r300,r600,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
