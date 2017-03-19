@@ -3027,3 +3027,61 @@ script engines.")
 
 (define kinit-bootstrap
   ((package-input-rewriting `((,kdbusaddons . ,kdbusaddons-bootstrap))) kinit))
+
+
+;; Tier 4
+;;
+;; Tier 4 frameworks can be mostly ignored by application programmers; this
+;; tier consists of plugins acting behind the scenes to provide additional
+;; functionality or platform integration to existing frameworks (including
+;; Qt).
+
+(define-public kde-frameworkintegration
+  (package
+    (name "kde-frameworkintegration")
+    (version "5.34.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    "frameworkintegration-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hq1r2znjzy0wzm3nsclqmih1aia5300bsf87a2l4919q0ildb20"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    ;; Optional packages not yet in Guix: packagekitqt5, AppStreamQt
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("knewstuff" ,knewstuff)
+       ("knotificantions" ,knotifications)
+       ("kpackage" ,kpackage)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 workspace and cross-framework integration plugins")
+    (description "Framework Integration is a set of plugins responsible for
+better integration of Qt applications when running on a KDE Plasma
+workspace.")
+    ;; This package is distributed under either LGPL2 or LGPL3, but some
+    ;; files are explicitly LGPL2+.
+    (license '(lgpl2.0 lgpl3.0 lgpl2.0+))
+    (properties `((upstream-name . "frameworkintegration")))))
