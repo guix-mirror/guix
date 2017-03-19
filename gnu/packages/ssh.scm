@@ -446,7 +446,14 @@ basis for almost any application.")
      '(;; Skip the `configure' test that checks whether /dev/ptmx &
        ;; co. work as expected, because it relies on impurities (for
        ;; instance, /dev/pts may be unavailable in chroots.)
-       #:configure-flags '("lsh_cv_sys_unix98_ptys=yes")
+       #:configure-flags '("lsh_cv_sys_unix98_ptys=yes"
+
+                           ;; Use glibc's argp rather than the bundled one.
+                           "--with-system-argp"
+
+                           ;; 'lsh_argp.h' checks HAVE_ARGP_PARSE but nothing
+                           ;; defines it.
+                           "CPPFLAGS=-DHAVE_ARGP_PARSE")
 
        ;; FIXME: Tests won't run in a chroot, presumably because
        ;; /etc/profile is missing, and thus clients get an empty $PATH
@@ -459,6 +466,12 @@ basis for almost any application.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((nettle    (assoc-ref inputs "nettle"))
                     (sexp-conv (string-append nettle "/bin/sexp-conv")))
+               ;; Remove argp from the list of sub-directories; we don't want
+               ;; to build it, really.
+               (substitute* "src/Makefile.in"
+                 (("^SUBDIRS = argp")
+                  "SUBDIRS ="))
+
                ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
                ;; by default.
                (substitute* "src/environ.h.in"
