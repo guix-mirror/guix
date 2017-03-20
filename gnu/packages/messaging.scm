@@ -203,16 +203,15 @@ dictionaries.  HexChat can be extended with multiple addons.")
 (define-public ngircd
   (package
     (name "ngircd")
-    (version "22")
+    (version "24")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://arthur.barton.de/pub/ngircd/ngircd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "17k3g9qd9d010czk5846qxvzkmw4fihv8l6m2a2287crbxm3xhd4"))
-              (patches (search-patches "ngircd-no-dns-in-tests.patch"
-                                       "ngircd-handle-zombies.patch"))))
+                "020h9d1awyxqr0l42x1fhs47q7cmm17fdxzjish8p2kq23ma0gqp"))
+              (patches (search-patches "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
     (native-inputs `(("procps" ,procps)
