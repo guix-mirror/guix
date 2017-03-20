@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +40,8 @@
       (method url-fetch)
       (uri (string-append "mirror://gnu/wget/wget-"
                           version ".tar.xz"))
-      (patches (search-patches "wget-CVE-2017-6508.patch"))
+      (patches (search-patches "wget-CVE-2017-6508.patch"
+                               "wget-fix-504-test-timeout.patch"))
       (sha256
        (base32
         "1ljcfhbkdsd0zjfm520rbl1ai62fc34i7c45sfj244l8f6b0p58c"))))
