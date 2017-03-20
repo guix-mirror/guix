@@ -1236,6 +1236,13 @@ mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
                (substitute* "bristol/Makefile.in"
                  (("-msse -mfpmath=sse") "")))
              #t))
+         ;; alsa-lib 1.1.x no longer provides iatomic.h.  That's okay because
+         ;; bristol actually doesn't use it.
+         (add-after 'unpack 'do-not-use-alsa-iatomic
+           (lambda _
+             (substitute* "libbristolaudio/audioEngineJack.c"
+               (("#include <alsa/iatomic.h>") ""))
+             #t))
          ;; We know that Bristol has been linked with JACK and we don't have
          ;; ldd, so we can just skip this check.
          (add-after 'unpack 'do-not-grep-for-jack
