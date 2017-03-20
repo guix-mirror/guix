@@ -798,7 +798,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9850-CVE-2016-9851.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9572-CVE-2016-9573.patch		\
-  %D%/packages/patches/openjpeg-use-after-free-fix.patch	\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
