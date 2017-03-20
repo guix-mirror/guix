@@ -259,9 +259,10 @@ dictionaries.  HexChat can be extended with multiple addons.")
     (home-page "http://ngircd.barton.de/")
     (synopsis "Lightweight Internet Relay Chat server for small networks")
     (description
-     "ngIRCd is a lightweight Internet Relay Chat server for small or private
-networks.  It is easy to configure, can cope with dynamic IP addresses, and
-supports IPv6, SSL-protected connections as well as PAM for authentication.")
+     "ngIRCd is a lightweight @dfn{Internet Relay Chat} (IRC) server for small
+or private networks.  It is easy to configure, can cope with dynamic IP
+addresses, and supports IPv6, SSL-protected connections, as well as PAM for
+authentication.")
     (license license:gpl2+)))
 
 (define-public pidgin
