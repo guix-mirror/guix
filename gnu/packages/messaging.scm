@@ -206,7 +206,7 @@ dictionaries.  HexChat can be extended with multiple addons.")
     (version "24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://arthur.barton.de/pub/ngircd/ngircd-"
+              (uri (string-append "https://arthur.barton.de/pub/ngircd/ngircd-"
                                   version ".tar.xz"))
               (sha256
                (base32
@@ -256,7 +256,7 @@ dictionaries.  HexChat can be extended with multiple addons.")
                ;; It runs 'getpid.sh sh' to test if it works at all.  Run it on
                ;; 'make' instead.
                (("getpid.sh sh") "getpid.sh make")))))))
-    (home-page "http://ngircd.barton.de/")
+    (home-page "https://ngircd.barton.de/")
     (synopsis "Lightweight Internet Relay Chat server for small networks")
     (description
      "ngIRCd is a lightweight @dfn{Internet Relay Chat} (IRC) server for small
