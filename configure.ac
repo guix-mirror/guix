@@ -85,9 +85,11 @@ if test "x$GUILE_EFFECTIVE_VERSION" = "x2.0"; then
   PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.9])
 fi
 
-dnl Installation directory for .scm and .go files.
+dnl Installation directories for .scm and .go files.
 guilemoduledir="${datarootdir}/guile/site/$GUILE_EFFECTIVE_VERSION"
+guileobjectdir="${libdir}/guile/$GUILE_EFFECTIVE_VERSION/site-ccache"
 AC_SUBST([guilemoduledir])
+AC_SUBST([guileobjectdir])
 
 dnl The GnuTLS bindings are necessary for substitutes over HTTPS and for 'guix
 dnl pull', among other things.
