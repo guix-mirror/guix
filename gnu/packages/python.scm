@@ -5882,6 +5882,9 @@ of the structure, dynamics, and functions of complex networks.")
     (arguments
      ;; TODO: Package missing test dependencies.
      '(#:tests? #f))
+    (propagated-inputs
+     `(("python-wrapt" ,python-wrapt)
+       ("python-requests" ,python-requests)))
     (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
