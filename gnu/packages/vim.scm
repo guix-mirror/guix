@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 (define-module (gnu packages vim)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
@@ -58,16 +60,15 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.0300")
+    (version "8.0.0494")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
                                  version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
-             (patches (search-patches "vim-CVE-2017-5953.patch"))
              (sha256
               (base32
-               "04samk2bakyixbxyc3p0g6ypls45105sikibg0wc6lmak9bqjs85"))))
+               "08kzimdyla35ndrbn68jf8pmzm7nd2qrydnvk57j089m6ajic62r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -128,9 +129,27 @@ configuration files.")
              "--enable-xim"
              "--disable-selinux"
              "--enable-gui")
-       ,@(package-arguments vim)))
+       ,@(substitute-keyword-arguments (package-arguments vim)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'build 'drop-failing-tests
+                 (lambda _
+                   ;; These tests fail mysteriously with GUI enabled.
+                   ;; https://github.com/vim/vim/issues/1460
+                   (substitute* "src/testdir/test_cmdline.vim"
+                     (("call assert_equal\\(.+getcmd.+\\(\\)\\)") ""))
+                   #t))
+               (add-before 'check 'start-xserver
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Some tests require an X server, but does not start one.
+                   (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                         (display ":1"))
+                     (setenv "DISPLAY" display)
+                     (zero? (system (string-append xorg-server "/bin/Xvfb "
+                                                    display " &")))))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server)))
     (inputs
      `(("acl" ,acl)
        ("atk" ,atk)

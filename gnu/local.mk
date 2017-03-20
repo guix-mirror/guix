@@ -964,7 +964,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
-  %D%/packages/patches/vim-CVE-2017-5953.patch			\
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
