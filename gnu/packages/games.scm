@@ -25,6 +25,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3339,3 +3340,25 @@ This command works on piped data.  Pipe any ASCII or UTF-8 text to nms, and
 it will apply the hollywood effect, initially showing encrypted data, then
 starting a decryption sequence to reveal the original plaintext characters.")
     (license license:expat)))
+
+(define-public megaglest-data
+  (package
+    (name "megaglest-data")
+    (version "3.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/MegaGlest/megaglest-data"
+             "/releases/download/" version "/megaglest-data-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "0ipgza33z89fw3si32iafm981f3fvm0zldvbxj29whghd2k3rpj3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))
+    (home-page "https://megaglest.org/")
+    (synopsis "Data files for MegaGlest")
+    (description "This package contains the data files required for MegaGlest.")
+    (license license:cc-by-sa3.0)))
