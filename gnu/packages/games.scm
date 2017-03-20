@@ -110,6 +110,9 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages messaging)
+  #:use-module (gnu packages upnp)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -3362,3 +3365,59 @@ starting a decryption sequence to reveal the original plaintext characters.")
     (synopsis "Data files for MegaGlest")
     (description "This package contains the data files required for MegaGlest.")
     (license license:cc-by-sa3.0)))
+
+(define-public megaglest
+  (package
+    (name "megaglest")
+    (version "3.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/MegaGlest/megaglest-source"
+             "/releases/download/" version "/megaglest-source-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "1ffck3ii1wp5k3nn5p0ga06jgp7pzk4zw0xln3xim2w7qrxzdzh9"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("curl" ,curl)
+       ("fontconfig" ,fontconfig)
+       ("ftgl" ,ftgl)
+       ("glew" ,glew)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("megaglest-data" ,megaglest-data)
+       ("mesa" ,mesa)
+       ("miniupnpc" ,miniupnpc)
+       ("openal" ,openal)
+       ("libircclient" ,libircclient)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("lua" ,lua)
+       ("sdl2" ,sdl2)
+       ("wxwidgets" ,wxwidgets)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCUSTOM_DATA_INSTALL_PATH="
+                            (assoc-ref %build-inputs "megaglest-data")
+                            "/share/megaglest")
+             "-DBUILD_MEGAGLEST_TESTS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-ini-search-path
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "source/glest_game/global/config.cpp"
+                        (("/usr/share/megaglest/")
+                         (string-append (assoc-ref outputs "out")
+                                        "/share/megaglest/"))))))
+       #:test-target "megaglest_tests"))
+    (home-page "https://megaglest.org/")
+    (synopsis "3D real-time strategy (RTS) game")
+    (description "MegaGlest is a cross-platform 3D real-time strategy (RTS)
+game, where you control the armies of one of seven different factions: Tech,
+Magic, Egypt, Indians, Norsemen, Persian or Romans.")
+    (license license:gpl2+)))
