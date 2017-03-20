@@ -5178,6 +5178,29 @@ inherit from in order to allow your objects to generate unique cryptographic
 signatures.")
     (license (package-license perl))))
 
+(define-public perl-ole-storage-lite
+  (package
+    (name "perl-ole-storage-lite")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JM/JMCNAMARA/OLE-Storage_Lite-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "179cxwqxb0f9dpx8954nvwjmggxxi5ndnang41yav1dx6mf0abp7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/OLE-Storage_Lite")
+    (synopsis "Read and write OLE storage files")
+    (description "This module allows you to read and write
+an OLE-Structured file.  @dfn{OLE} (Object Linking and Embedding) is a
+technology to store hierarchical information such as links to other
+documents within a single file.")
+    (license (package-license perl))))
+
 (define-public perl-package-anon
   (package
     (name "perl-package-anon")
