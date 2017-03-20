@@ -4,7 +4,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
-;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -81,6 +81,7 @@
             fill-paragraph
             texi->plain-text
             package-description-string
+            package-synopsis-string
             string->recutils
             package->recutils
             package-specification->name+version+output
@@ -848,10 +849,18 @@ converted to a space; sequences of more than one line break are preserved."
   (with-fluids ((%default-port-encoding "UTF-8"))
     (stexi->plain-text (texi-fragment->stexi str))))
 
+(define (package-field-string package field-accessor)
+  "Return a plain-text representation of PACKAGE field."
+  (and=> (field-accessor package)
+         (compose texi->plain-text P_)))
+
 (define (package-description-string package)
   "Return a plain-text representation of PACKAGE description field."
-  (and=> (package-description package)
-         (compose texi->plain-text P_)))
+  (package-field-string package package-description))
+
+(define (package-synopsis-string package)
+  "Return a plain-text representation of PACKAGE synopsis field."
+  (package-field-string package package-synopsis))
 
 (define (string->recutils str)
   "Return a version of STR where newlines have been replaced by newlines
@@ -914,7 +923,7 @@ WIDTH columns."
           (string-map (match-lambda
                        (#\newline #\space)
                        (chr       chr))
-                      (or (and=> (package-synopsis p) P_)
+                      (or (and=> (package-synopsis-string p) P_)
                           "")))
   (format port "~a~2%"
           (string->recutils

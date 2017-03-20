@@ -7684,7 +7684,7 @@ Tree::Simple::Visitor::* objects.")
          "068vdbpacfawc3lkfs0b82xxl27h3l0gj14iada3vlwk8rps9yv0"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Try-Tiny")
-    (synopsis "Minimal try/catch with proper preservation of $@")
+    (synopsis "Minimal try/catch with proper preservation of $@@")
     (description "This module provides bare bones try/catch/finally statements
 that are designed to minimize common mistakes with eval blocks, and nothing
 else.")

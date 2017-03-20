@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -347,10 +348,25 @@ the synopsis")
                     (_ "synopsis should not start with the package name")
                     'synopsis)))
 
+  (define (check-texinfo-markup synopsis)
+    "Check that SYNOPSIS can be parsed as a Texinfo fragment.  If the
+markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
+    (catch #t
+      (lambda () (texi->plain-text synopsis))
+      (lambda (keys . args)
+        (emit-warning package
+                      (_ "Texinfo markup in synopsis is invalid")
+                      'synopsis)
+        #f)))
+
   (define checks
-    (list check-not-empty check-proper-start check-final-period
-          check-start-article check-start-with-package-name
-          check-synopsis-length))
+    (list check-not-empty
+          check-proper-start
+          check-final-period
+          check-start-article
+          check-start-with-package-name
+          check-synopsis-length
+          check-texinfo-markup))
 
   (match (package-synopsis package)
     ((? string? synopsis)
