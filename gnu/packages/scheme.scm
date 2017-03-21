@@ -325,18 +325,16 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.11.1")
+    (version "4.12.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://code.call-cc.org/releases/"
+              (uri (string-append "https://code.call-cc.org/releases/"
                                   version "/chicken-" version ".tar.gz"))
-              (uri (string-append "http://code.call-cc.org/dev-snapshots/"
-                                  "2016/09/12/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "1rwymbbmnwdyhdzilv9w75an989xw9kjf3x52iqdng3nphpflcga"))
+                "12b9gaa9lqh39lj1v4wm48f6z8ww3jdkvc5bh9gqqvn6kd2wwnk0"))
               (patches
-               (search-patches "chicken-CVE-2016-6830+CVE-2016-6831.patch"))))
+               (search-patches "chicken-CVE-2017-6949.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -359,12 +357,6 @@ mashups, office (web agendas, mail clients, ...), etc.")
 
        ;; Parallel builds are not supported, as noted in README.
        #:parallel-build? #f))
-    ;; One of the tests ("testing direct invocation can detect calls of too
-    ;; many arguments...") times out when building with a more recent GCC.
-    ;; The problem was reported here:
-    ;; https://lists.gnu.org/archive/html/chicken-hackers/2015-04/msg00059.html
-    (native-inputs
-     `(("gcc" ,gcc-4.8)))
     (home-page "http://www.call-cc.org/")
     (synopsis "R5RS Scheme implementation that compiles native code via C")
     (description
