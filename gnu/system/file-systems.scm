@@ -417,6 +417,8 @@ a bind mount."
               %network-configuration-files))
 
 (define (file-system-type-predicate type)
+  "Return a predicate that, when passed a file system, returns #t if that file
+system has the given TYPE."
   (lambda (fs)
     (string=? (file-system-type fs) type)))
 
