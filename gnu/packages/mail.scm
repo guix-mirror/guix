@@ -1461,8 +1461,14 @@ format and headers.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.stafford.uklinux.net/libesmtp/libesmtp-"
-                           version ".tar.bz2"))
+       (uri (list (string-append "https://pkgs.fedoraproject.org/repo/pkgs/"
+                                 "libesmtp/libesmtp-" version ".tar.bz2/"
+                                 "bf3915e627fd8f35524a8fdfeed979c8/libesmtp-"
+                                 version ".tar.bz2")
+                  ;; XXX This site is offline, so we fetch Fedora's cached copy
+                  ;; of the source tarball.
+                  (string-append "http://www.stafford.uklinux.net/libesmtp/libesmtp-"
+                                 version ".tar.bz2")))
        (sha256
         (base32
          "02zbniyz7qys1jmx3ghx21kxmns1wc3hmv80gp7ag7yra9f1m9nh"))))
