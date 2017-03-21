@@ -675,7 +675,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
-  %D%/packages/patches/libcmis-fix-test-onedrive.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libevent-2.0-CVE-2016-10195.patch	\

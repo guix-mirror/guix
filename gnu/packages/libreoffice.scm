@@ -243,15 +243,15 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
 (define-public libcmis
   (package
     (name "libcmis")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "-"
-                          version ".tar.gz"))
-      (sha256 (base32
-               "1dprvk4fibylv24l7gr49gfqbkfgmxynvgssvdcycgpf7n8h4zm8"))
-      (patches (search-patches "libcmis-fix-test-onedrive.patch"))))
+      (uri (string-append "https://github.com/tdf/libcmis/releases/download/v"
+                          version "/libcmis-" version ".tar.gz"))
+      (sha256
+       (base32
+        "03kvl8ywsv5qrxblf0m6955mmvl5q2zpb6vj51vs7ayvxhidzjva"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -276,7 +276,7 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; fails without the following flag.
           (string-append "--with-boost="
                          (assoc-ref %build-inputs "boost")))))
-    (home-page "https://sourceforge.net/projects/libcmis/")
+    (home-page "https://github.com/tdf/libcmis")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
 allows C++ applications to connect to any ECM behaving as a CMIS server such
