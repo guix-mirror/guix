@@ -1427,7 +1427,7 @@ understand the language at a deeper level.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)))
-    (home-page "http://github.com/hadley/memoise")
+    (home-page "https://github.com/hadley/memoise")
     (synopsis "Memoise functions for R")
     (description
      "This R package allows to cache the results of a function so that when
@@ -1921,7 +1921,7 @@ files in R.  It is built on top of the libxml2 C library.")
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://github.com/wesleyburr/multitaper/")
+    (home-page "https://github.com/wesleyburr/multitaper/")
     (synopsis "Multitaper spectral analysis tools")
     (description
      "This package implements multitaper spectral estimation
@@ -1966,7 +1966,7 @@ previous R versions and their release dates.")
                (base32
                 "0z4cn115gxcl086d6bnqr8afi67b6a7xqg6ivmk3l4ng1x8kcj28"))))
     (build-system r-build-system)
-    (home-page "http://github.com/edwindj/whisker")
+    (home-page "https://github.com/edwindj/whisker")
     (synopsis "Logicless mustache templating for R")
     (description
      "This package provides logicless templating, with a syntax that is not
@@ -3565,7 +3565,7 @@ and tidyr provides no margins or aggregation.")
      `(("r-lattice" ,r-lattice)))
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://github.com/edzer/hexbin")
+    (home-page "https://github.com/edzer/hexbin")
     (synopsis "Hexagonal binning routines")
     (description
      "This package provides binning and plotting functions for hexagonal bins.

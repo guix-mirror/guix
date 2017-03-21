@@ -259,7 +259,7 @@ interpolation of values to translations, pluralization, customizable
 transliteration to ASCII, flexible defaults, bulk lookup, lambdas as
 translation data, custom key/scope separator, custom exception handlers, and
 an extensible architecture with a swappable backend.")
-    (home-page "http://github.com/svenfuchs/i18n")
+    (home-page "https://github.com/svenfuchs/i18n")
     (license license:expat)))
 
 ;; RSpec is the dominant testing library for Ruby projects.  Even RSpec's
@@ -640,7 +640,7 @@ format.")
      "This gem generates a treemap showing the complexity of Ruby code on
 which it is run.  It uses Saikuro under the covers to analyze Ruby code
 complexity.")
-    (home-page "http://github.com/ThoughtWorksStudios/saikuro_treemap")
+    (home-page "https://github.com/ThoughtWorksStudios/saikuro_treemap")
     (license license:expat)))
 
 (define-public ruby-orderedhash
@@ -750,7 +750,7 @@ interfaces.")
 replacement for Logger or ActiveSupport::BufferedLogger.  It provides support
 for automatically rolling log files even with multiple processes writing the
 same log file.")
-    (home-page "http://github.com/bdurand/lumberjack")
+    (home-page "https://github.com/bdurand/lumberjack")
     (license license:expat)))
 
 (define-public ruby-nenv
@@ -876,7 +876,7 @@ libraries such as Libnotify.")
     (synopsis "Ruby library to format text on stdout")
     (description "Formatador is a Ruby library to format text printed to the
 standard output stream.")
-    (home-page "http://github.com/geemus/formatador")
+    (home-page "https://github.com/geemus/formatador")
     (license license:expat)))
 
 (define-public ruby-shindo
@@ -1002,7 +1002,7 @@ the SimpleCov code coverage tool for Ruby version 1.9 and above.")
     (description "SimpleCov is a code coverage framework for Ruby with a
 powerful configuration library and automatic merging of coverage across test
 suites.")
-    (home-page "http://github.com/colszowka/simplecov")
+    (home-page "https://github.com/colszowka/simplecov")
     (license license:expat)))
 
 (define-public ruby-useragent
@@ -1139,7 +1139,7 @@ localization.")
     (description
      "This package provides a collection of text algorithms: Levenshtein,
 Soundex, Metaphone, Double Metaphone, Porter Stemming.")
-    (home-page "http://github.com/threedaymonk/text")
+    (home-page "https://github.com/threedaymonk/text")
     (license license:expat)))
 
 (define-public ruby-gettext
@@ -1255,7 +1255,7 @@ It allows writing tests, checking results and automated testing in Ruby.")
     (description
      "Metaclass is a Ruby library adding a @code{metaclass} method to all Ruby
 objects.")
-    (home-page "http://github.com/floehopper/metaclass")
+    (home-page "https://github.com/floehopper/metaclass")
     (license license:expat)))
 
 (define-public ruby-blankslate
@@ -1283,7 +1283,7 @@ objects.")
 methods (except for @code{__send__} and @code{__id__}).  BlankSlate is useful
 as a base class when writing classes that depend upon
 @code{method_missing} (e.g. dynamic proxies).")
-    (home-page "http://github.com/masover/blankslate")
+    (home-page "https://github.com/masover/blankslate")
     (license license:expat)))
 
 (define-public ruby-instantiator
@@ -1395,7 +1395,7 @@ definitions on a Ruby object.")
     (description
      "Redcarpet is an extensible Ruby library for Markdown processing and
 conversion to (X)HTML.")
-    (home-page "http://github.com/vmg/redcarpet")
+    (home-page "https://github.com/vmg/redcarpet")
     (license license:expat)))
 
 (define-public ruby-mocha
@@ -1736,7 +1736,7 @@ instance, it provides @code{assert_true}, @code{assert_false} and
 suite of specs inside a database transaction, running each spec inside its own
 savepoint inside that transaction.  This can significantly speed up testing
 for specs that share expensive database setup code.")
-    (home-page "http://github.com/jeremyevans/minitest-hooks")
+    (home-page "https://github.com/jeremyevans/minitest-hooks")
     (license license:expat)))
 
 (define-public ruby-daemons
@@ -1905,7 +1905,7 @@ that provides the ability to deal with POSIX tar archive files.")
     (description "Mini-portile is a port/recipe system for Ruby developers.
 It provides a standard way to compile against specific versions of libraries
 to reproduce user environments.")
-    (home-page "http://github.com/flavorjones/mini_portile")
+    (home-page "https://github.com/flavorjones/mini_portile")
     (license license:expat)))
 
 (define-public ruby-mini-portile-2
@@ -2238,7 +2238,7 @@ current line in an external editor.")
     (description
      "SDoc is an RDoc documentation generator to build searchable HTML
 documentation for Ruby code.")
-    (home-page "http://github.com/voloko/sdoc")
+    (home-page "https://github.com/voloko/sdoc")
     (license license:expat)))
 
 (define-public ruby-tins
@@ -2802,7 +2802,7 @@ TracePoint C API for execution control and the Debug Inspector C API for call
 stack navigation.  The core component provides support that front-ends can
 build on.  It provides breakpoint handling and bindings for stack frames among
 other things and it comes with a command line interface.")
-    (home-page "http://github.com/deivid-rodriguez/byebug")
+    (home-page "https://github.com/deivid-rodriguez/byebug")
     (license license:bsd-2)))
 
 (define-public ruby-netrc
@@ -3650,7 +3650,7 @@ from within Ruby.  The advantage of bio-commandeer over other methods of
 running external commands is that when something goes wrong, messages printed
 to the @code{STDOUT} and @code{STDERR} streams are reported, giving extra
 detail to ease debugging.")
-    (home-page "http://github.com/wwood/bioruby-commandeer")
+    (home-page "https://github.com/wwood/bioruby-commandeer")
     (license license:expat)))
 
 (define-public ruby-rubytest
@@ -3910,7 +3910,7 @@ specific use case.")
     (description
      "This library provides methods to read @dfn{Adobe Font Metrics} (afm)
 files and use the data therein.")
-    (home-page "http://github.com/halfbyte/afm")
+    (home-page "https://github.com/halfbyte/afm")
     (license license:expat)))
 
 (define-public ruby-ascii85
@@ -4045,7 +4045,7 @@ or JRuby.")
      "This package provides a set of Hoe plugins for tighter Git integration.
 It provides tasks to automate release tagging and pushing and changelog
 generation.")
-    (home-page "http://github.com/jbarnette/hoe-git")
+    (home-page "https://github.com/jbarnette/hoe-git")
     (license license:expat)))
 
 (define-public ruby-sequel
@@ -4206,7 +4206,7 @@ libraries for compiling Ruby native extensions.")
      "This library implements HTTP's digest authentication scheme based on
 RFC 2617.  This enables the use of the digest authentication scheme instead
 of the more insecure basic authentication scheme.")
-    (home-page "http://github.com/drbrain/net-http-digest_auth")
+    (home-page "https://github.com/drbrain/net-http-digest_auth")
     (license license:expat)))
 
 (define-public ruby-mail

@@ -62,6 +62,6 @@ function interface.  A layer must exist above libffi that handles type
 conversions for values passed between the two languages.")
     (home-page "http://sources.redhat.com/libffi/")
 
-    ;; See <http://github.com/atgreen/libffi/blob/master/LICENSE>.
+    ;; See <https://github.com/atgreen/libffi/blob/master/LICENSE>.
     (license expat))))
 

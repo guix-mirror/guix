@@ -189,7 +189,7 @@ highlighting.")
     (description
      "This is a reimplementation by Byron Rakitzis of the Plan 9 shell.  It
 has a small feature set similar to a traditional Bourne shell.")
-    (home-page "http://github.com/rakitzis/rc")
+    (home-page "https://github.com/rakitzis/rc")
     (license zlib)))
 
 (define-public es

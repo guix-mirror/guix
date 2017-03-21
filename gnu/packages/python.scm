@@ -601,7 +601,7 @@ other HTTP libraries.")
     (inputs
      `(("openssl" ,openssl)))
     (home-page
-     "http://github.com/warner/python-ecdsa")
+     "https://github.com/warner/python-ecdsa")
     (synopsis
      "ECDSA cryptographic signature library (pure python)")
     (description
@@ -1147,7 +1147,7 @@ datetime module, available in Python 2.3+.")
        ("python-pytest-runner" ,python-pytest-runner)))
     (propagated-inputs
      `(("python-future" ,python-future)))
-    (home-page "http://github.com/bear/parsedatetime/")
+    (home-page "https://github.com/bear/parsedatetime/")
     (synopsis
      "Parse human-readable date/time text")
     (description
@@ -1231,7 +1231,7 @@ under several distributions that's hard or impossible to figure out.")
     (arguments
      `(#:python ,python-2 ; incompatible with Python 3
        #:tests? #f)) ; no test target
-    (home-page "http://github.com/ghaering/pysqlite")
+    (home-page "https://github.com/ghaering/pysqlite")
     (synopsis "SQLite bindings for Python")
     (description
      "Pysqlite provides SQLite bindings for Python that comply to the
@@ -2379,7 +2379,7 @@ backported from Python 2.7 for Python 2.4+.")
        ("python-parse-type" ,python-parse-type)))
     (arguments `(#:tests? #f))          ;TODO: tests require nose>=1.3 and
                                         ;PyHamcrest>=1.8
-    (home-page "http://github.com/behave/behave")
+    (home-page "https://github.com/behave/behave")
     (synopsis "Python behavior-driven development")
     (description
      "Behave is a tool for behavior-driven development in python.
@@ -2423,7 +2423,7 @@ files.")
                 "1m0fs6897vxfkf7awah5i66i7b7smm5fnywf1w50fpzyfbfhr156"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no tests
-    (home-page "http://github.com/digitalbazaar/pyld")
+    (home-page "https://github.com/digitalbazaar/pyld")
     (synopsis "Python implementation of the JSON-LD specification")
     (description
      "PyLD is an implementation of the JSON-LD specification.")
@@ -2694,7 +2694,7 @@ somewhat intelligeble.")
      `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "http://github.com/progrium/pyjwt")
+    (home-page "https://github.com/progrium/pyjwt")
     (synopsis "JSON Web Token implementation in Python")
     (description
      "PyJWT is a JSON Web Token implementation written in Python.")
@@ -2778,7 +2778,7 @@ OAuth request-signing logic.")
         (base32
          "06856q6x675ly542ig0plbqcyab6ksfzijlyf1hzhgg3sgwgrcyb"))))
     (build-system python-build-system)
-    (home-page "http://github.com/mitsuhiko/itsdangerous")
+    (home-page "https://github.com/mitsuhiko/itsdangerous")
     (synopsis "Python library for passing data to/from untrusted environments")
     (description
      "Itsdangerous provides various helpers to pass trusted data to untrusted
@@ -2863,7 +2863,7 @@ object.")
         (base32
          "1hvip33wva3fnmvfp9x5klqri7hpl1hkgqmjbss18nmrb7zimv54"))))
     (build-system python-build-system)
-    (home-page "http://github.com/mitsuhiko/markupsafe")
+    (home-page "https://github.com/mitsuhiko/markupsafe")
     (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
     (description
      "Markupsafe provides an XML/HTML/XHTML markup safe string implementation
@@ -4982,7 +4982,7 @@ them as the version argument or in a SCM managed file.")
                            (copy-file file (string-append doc "/" file)))
                          '("README.rst" "CHANGES.rst"))
                (copy-recursively "build/sphinx/html" html)))))))
-    (home-page "http://github.com/jaraco/path.py")
+    (home-page "https://github.com/jaraco/path.py")
     (synopsis "Python module wrapper for built-in os.path")
     (description
      "@code{path.py} implements path objects as first-class entities, allowing
@@ -6244,7 +6244,7 @@ applications.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-nose" ,python-nose)))
-    (home-page "http://github.com/zeromq/pyzmq")
+    (home-page "https://github.com/zeromq/pyzmq")
     (synopsis "Python bindings for 0MQ")
     (description
      "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
@@ -6720,7 +6720,7 @@ add functionality and customization to your projects with their own plugins.")
              (substitute* "setup.py"
                (("^[ \t]*extra_path *= *'FontTools',") ""))
              #t)))))
-    (home-page "http://github.com/behdad/fonttools")
+    (home-page "https://github.com/behdad/fonttools")
     (synopsis "Tools to manipulate font files")
     (description
      "FontTools/TTX is a library to manipulate font files from Python.  It
@@ -6771,7 +6771,7 @@ provided that can be used to do various manipulations with LilyPond files.")
           (base32
             "14id6wxi12lgyw0mg3bcfnf888ad07jz9yj46gfzhn186z8rcn4y"))))
     (build-system python-build-system)
-    (home-page "http://github.com/ActiveState/appdirs")
+    (home-page "https://github.com/ActiveState/appdirs")
     (synopsis
       "Determine platform-specific dirs, e.g. a \"user data dir\"")
     (description
@@ -7601,7 +7601,7 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "http://github.com/jsocol/bleach")
+    (home-page "https://github.com/jsocol/bleach")
     (synopsis "Whitelist-based HTML-sanitizing tool")
     (description "Bleach is an easy whitelist-based HTML-sanitizing tool.")
     (license license:asl2.0)))
@@ -9821,7 +9821,7 @@ and provides a uniform API regardless of which JSON implementation is used.")
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
-    (home-page "http://github.com/celery/py-amqp")
+    (home-page "https://github.com/celery/py-amqp")
     (synopsis
      "Low-level AMQP client for Python (fork of amqplib)")
     (description
@@ -9898,7 +9898,7 @@ RabbitMQ messaging server is the most popular implementation.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "http://github.com/celery/billiard")
+    (home-page "https://github.com/celery/billiard")
     (synopsis
      "Python multiprocessing fork with improvements and bugfixes")
     (description
@@ -10606,7 +10606,7 @@ CloudFront content delivery network.")
                (("cmd = 'pkg-config")
                 (string-append "cmd = '" (which "pkg-config"))))
              #t)))))
-    (home-page "http://github.com/matze/pkgconfig")
+    (home-page "https://github.com/matze/pkgconfig")
     (synopsis "Python interface for pkg-config")
     (description "This module provides a Python interface to pkg-config.  It
 can be used to find all pkg-config packages, check if a package exists,
@@ -11287,7 +11287,7 @@ datetime type.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://github.com/jpvanhal/inflection")
+    (home-page "https://github.com/jpvanhal/inflection")
     (synopsis "Python string transformation library")
     (description
      "Inflection is a string transformation library.  It singularizes
@@ -11309,7 +11309,7 @@ underscored string.")
                (base32
                 "1hz1x9blsbxya1y9nnhnwwdnqmakxi9mc0jkwj0rn6b1h44i0f86"))))
     (build-system python-build-system)
-    (home-page "http://github.com/toastdriven/pylev")
+    (home-page "https://github.com/toastdriven/pylev")
     (synopsis "Levenshtein distance implementation in Python")
     (description "Pure Python Levenshtein implementation, based off the
 Wikipedia code samples at
@@ -11949,7 +11949,7 @@ reasoning, wrappers for natural language processing libraries.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)))
-    (home-page "http://github.com/mongodb/mongo-python-driver")
+    (home-page "https://github.com/mongodb/mongo-python-driver")
     (synopsis "Python driver for MongoDB")
     (description "Python driver for MongoDB.")
     (license license:asl2.0)))
@@ -12096,7 +12096,7 @@ List.  Forked from and using the same API as the publicsuffix package.")
        ("python-nose" ,python-nose)))
     (arguments
      `(#:tests? #f)) ; FIXME: tests fail with "ImportError: No module named 'tests'"
-    (home-page "http://github.com/seomoz/url-py")
+    (home-page "https://github.com/seomoz/url-py")
     (synopsis "URL Parsing")
     (description "Library for parsing urls.")
     (license license:expat)
@@ -12857,7 +12857,7 @@ useful as a validator for JSON data.")
      `(("python-flask" ,python-flask)
        ("python-sqlalchemy" ,python-sqlalchemy)))
     (home-page
-      "http://github.com/mitsuhiko/flask-sqlalchemy")
+      "https://github.com/mitsuhiko/flask-sqlalchemy")
     (synopsis
       "Module adding SQLAlchemy support to your Flask application")
     (description
@@ -13010,7 +13010,7 @@ asynchronous messaging environments.")
          (replace 'check
            (lambda _
              (zero? (system* "python" "test3.py")))))))
-    (home-page "http://github.com/gfxmonk/termstyle")
+    (home-page "https://github.com/gfxmonk/termstyle")
     (synopsis "Console text coloring for Python")
     (description "This package provides console text coloring for Python.")
     (license license:bsd-3)))

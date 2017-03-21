@@ -6552,7 +6552,7 @@ better for some purposes.")
        ("ghc-quickcheck" ,ghc-quickcheck)))
     (native-inputs
      `(("hspec-discover" ,hspec-discover)))
-    (home-page "http://github.com/snoyberg/conduit")
+    (home-page "https://github.com/snoyberg/conduit")
     (synopsis "Conduit adapters for common libraries")
     (description
      "The @code{conduit} package itself maintains relative small dependencies.
@@ -6609,7 +6609,7 @@ documents.")
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://github.com/snoyberg/xml")
+    (home-page "https://github.com/snoyberg/xml")
     (synopsis "Utilities for dealing with XML with the conduit package")
     (description
      "This package provides pure-Haskell utilities for dealing with XML with
@@ -6710,7 +6710,7 @@ constant-time:
         (base32
          "0jf40m3yijqw6wd1rwwvviww46fasphaay9m9rgqyhf5aahnbzjs"))))
     (build-system haskell-build-system)
-    (home-page "http://github.com/bos/base16-bytestring")
+    (home-page "https://github.com/bos/base16-bytestring")
     (synopsis "Fast base16 (hex) encoding and decoding for ByteStrings")
     (description
      "This package provides a Haskell library for working with base16-encoded
@@ -6771,7 +6771,7 @@ been observed, so this library should be suitable for high performance scenarios
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
-    (home-page "http://github.com/vincenthz/hs-cryptohash")
+    (home-page "https://github.com/vincenthz/hs-cryptohash")
     (synopsis "Collection of cryptographic hashes in Haskell")
     (description
      "A collection of crypto hashes, with a practical incremental and one-pass,
@@ -6921,7 +6921,7 @@ this problem.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tasty" ,ghc-tasty)))
-    (home-page "http://github.com/bennofs/tasty-th")
+    (home-page "https://github.com/bennofs/tasty-th")
     (synopsis "Automatically generate tasty TestTrees")
     (description
       "Tasty-th automatically generates tasty TestTrees from functions of the
@@ -7369,7 +7369,7 @@ within appropriate monads, as well as some instances of these classes.")
      `(("ghc-hashable" ,ghc-hashable)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-transformers-compat" ,ghc-transformers-compat)))
-    (home-page "http://github.com/ekmett/constraints/")
+    (home-page "https://github.com/ekmett/constraints/")
     (synopsis "Constraint manipulation")
     (description
      "GHC 7.4 gave us the ability to talk about @code{ConstraintKinds}.
@@ -7859,7 +7859,7 @@ Haskell, using gnuplot for rendering.")
      `(("ghc-hashable" ,ghc-hashable)
        ("ghc-primitive" ,ghc-primitive)
        ("ghc-vector" ,ghc-vector)))
-    (home-page "http://github.com/gregorycollins/hashtables")
+    (home-page "https://github.com/gregorycollins/hashtables")
     (synopsis "Haskell Mutable hash tables in the ST monad")
     (description "This package provides a Haskell library including a
 couple of different implementations of mutable hash tables in the ST
@@ -8028,7 +8028,7 @@ specific Windows, Mac, and Linux filesystem event notification.")
        ("ghc-stm" ,ghc-stm)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-tasty" ,ghc-tasty)))
-    (home-page "http://github.com/ocharles/tasty-rerun")
+    (home-page "https://github.com/ocharles/tasty-rerun")
     (synopsis "Run tests by filtering the test tree")
     (description "This package adds the ability to run tests by filtering the
 test tree based on the result of a previous test run.  You can use this to run
@@ -8049,7 +8049,7 @@ been added since previous test run.")
                (base32
                 "1zvfnnd5nm5kgr60214cdyks0kqdqyzpwk5sdh0s60yr8b7fyjny"))))
     (build-system haskell-build-system)
-    (home-page "http://github.com/patperry/hs-ieee754")
+    (home-page "https://github.com/patperry/hs-ieee754")
     (synopsis "Utilities for dealing with IEEE floating point numbers")
     (description "Utilities for dealing with IEEE floating point numbers,
 ported from the Tango math library; approximate and exact equality comparisons

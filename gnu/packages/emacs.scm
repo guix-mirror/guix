@@ -1543,7 +1543,7 @@ Stack Overflow, Super User, and other StackExchange sites.")
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
        ("emacs-dash" ,emacs-dash)))
-    (home-page "http://github.com/rejeep/f.el")
+    (home-page "https://github.com/rejeep/f.el")
     (synopsis "Emacs API for working with files and directories")
     (description "This package provides an Emacs library for working with
 files and directories.")
@@ -1609,7 +1609,7 @@ of files under Git version control from within Emacs.")
         (base32
          "16xw94n58xxn3zvgyj72bmzs0k5lkvswjmzs79ws9n7rzdivb38b"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/rejeep/el-mock.el")
+    (home-page "https://github.com/rejeep/el-mock.el")
     (synopsis "Tiny mock and stub framework in Emacs Lisp")
     (description
      "Emacs Lisp Mock is a library for mocking and stubbing using readable
@@ -1635,7 +1635,7 @@ Expectations, but it can be used in other contexts.")
      `(("emacs-s" ,emacs-s)
        ("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)))
-    (home-page "http://github.com/ecukes/espuds")
+    (home-page "https://github.com/ecukes/espuds")
     (synopsis "Common step definitions for Ecukes")
     (description "Espuds is a collection of the most commonly used step
 definitions for testing with the Ecukes framework.")
@@ -1790,7 +1790,7 @@ Lisp.")
         (base32
          "0y4qrhxa9332vsvr999jg7qj1ymnfgwpf591yi4a4jgg90pm7qnn"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/tarsius/paren-face")
+    (home-page "https://github.com/tarsius/paren-face")
     (synopsis "Face for parentheses in lisp modes")
     (description
      "This library defines a face named @code{parenthesis} used just for
@@ -1927,7 +1927,7 @@ mode-line.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-rich-minority" ,emacs-rich-minority)))
-    (home-page "http://github.com/Malabarba/smart-mode-line")
+    (home-page "https://github.com/Malabarba/smart-mode-line")
     (synopsis "Color-coded smart mode-line")
     (description
      "Smart Mode Line is a mode-line theme for Emacs.  It aims to be easy to
@@ -2453,7 +2453,7 @@ organizer.")
                (base32
                 "0lyi84bm8sa7vj40n6zg6rlbsmi53mi1y9xn6gkjj29s5zbcnlg7"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/bbatsov/zenburn-emacs")
+    (home-page "https://github.com/bbatsov/zenburn-emacs")
     (synopsis "Low contrast color theme for Emacs")
     (description
      "Zenburn theme is a port of the popular Vim Zenburn theme for Emacs.
@@ -2475,7 +2475,7 @@ It is built on top of the custom theme support in Emacs 24 or later.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
-    (home-page "http://github.com/bbatsov/solarized-emacs")
+    (home-page "https://github.com/bbatsov/solarized-emacs")
     (synopsis "Port of the Solarized theme for Emacs")
     (description
      "Solarized for Emacs is a port of the Solarized theme for Vim.  This
@@ -2568,7 +2568,7 @@ regexp that matches all known keywords.")
         (base32
          "078ahh0kmhdylq5ib9c81c76kz1n02xwc83pm729d00i84ibviic"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/nex3/perspective-el")
+    (home-page "https://github.com/nex3/perspective-el")
     (synopsis "Switch between named \"perspectives\"")
     (description
      "This package provides tagged workspaces in Emacs, similar to workspaces in
@@ -2803,7 +2803,7 @@ S-expression.")
                (base32
                 "0gi8ra3ap5m3mz4qh1yxp2cldn7z9xcxvypznr6rrlc6a9l8s5a6"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/clojure-emacs/clojure-mode")
+    (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
      "This Emacs package provides font-lock, indentation, navigation and basic
@@ -2824,7 +2824,7 @@ It is recommended to use @code{clojure-mode} with paredit or smartparens.")
                (base32
                 "1511n3a3f5gvaf2b4nh018by61ciyzi3y3603fzqma7p9hrckarc"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/cask/epl")
+    (home-page "https://github.com/cask/epl")
     (synopsis "Emacs Package Library")
     (description
      "A package management library for Emacs, based on @code{package.el}.
@@ -3009,7 +3009,7 @@ various statistical analysis programs such as R and OpenBUGS.")
                (base32
                 "0ar310zx9k5y4i1vl2rawvi712xj9gx77160860jbs691p77cxqp"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/nonsequitur/smex/")
+    (home-page "https://github.com/nonsequitur/smex/")
     (synopsis "M-x interface with Ido-style fuzzy matching")
     (description
      "Smex is a M-x enhancement for Emacs.  Built on top of Ido, it provides a
@@ -3348,7 +3348,7 @@ CIDER).")
                (base32
                 "0sbhfny5ib65cnx6xcy6h9bbw27mw034s8m9cca00bhxqaqi6p4v"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/immerrr/lua-mode/")
+    (home-page "https://github.com/immerrr/lua-mode/")
     (synopsis "Major mode for lua")
     (description
      "This Emacs package provides a mode for @uref{https://www.lua.org/,
@@ -3449,7 +3449,7 @@ distribution, primarily targeting Clojure users")
   (package
     (name "emacs-writegood-mode")
     (version "2.0.2")
-    (home-page "http://github.com/bnbeckwith/writegood-mode")
+    (home-page "https://github.com/bnbeckwith/writegood-mode")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3927,7 +3927,7 @@ mode-line.")
                (base32
                 "15di6mkkf09b7qddpsrm0qln02hji3sx8blya5jxssi9wxxx9iq5"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/joaotavora/yasnippet")
+    (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")
     (description
      "YASnippet is a template system for Emacs.  It allows you to type an

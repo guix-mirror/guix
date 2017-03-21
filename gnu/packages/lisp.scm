@@ -888,7 +888,7 @@ from other CLXes around the net.")
 It attempts to be highly customizable while relying entirely on the keyboard
 for input.  These design decisions reflect the growing popularity of
 productive, customizable lisp based systems.")
-    (home-page "http://github.com/stumpwm/stumpwm")
+    (home-page "https://github.com/stumpwm/stumpwm")
     (license license:gpl2+)
     (properties `((ecl-variant . ,(delay ecl-stumpwm))))))
 

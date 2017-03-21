@@ -3182,7 +3182,7 @@ data.")
        #:tests? #f)) ; no test target
     (inputs
      `(("python-numpy" ,python2-numpy)))
-    (home-page "http://github.com/taoliu/MACS/")
+    (home-page "https://github.com/taoliu/MACS/")
     (synopsis "Model based analysis for ChIP-Seq data")
     (description
      "MACS is an implementation of a ChIP-Seq analysis algorithm for
@@ -4747,7 +4747,7 @@ complexity samples.")
      `(("python-nose" ,python-nose)))
     (inputs
      `(("python-bz2file" ,python-bz2file)))
-    (home-page "http://github.com/dib-lab/screed/")
+    (home-page "https://github.com/dib-lab/screed/")
     (synopsis "Short read sequence database utilities")
     (description "Screed parses FASTA and FASTQ files and generates databases.
 Values such as sequence name, sequence description, sequence quality and the
@@ -4924,7 +4924,7 @@ bioinformatics file formats, sequence alignment, and more.")
      `(("python-biopython" ,python2-biopython-1.66)))
     (native-inputs
      `(("python-nose" ,python2-nose)))
-    (home-page "http://github.com/fhcrc/seqmagick")
+    (home-page "https://github.com/fhcrc/seqmagick")
     (synopsis "Tools for converting and modifying sequence files")
     (description
      "Bioinformaticians often have to convert sequence files between formats
@@ -5969,7 +5969,7 @@ chr+pos+alt information in a database.")
      "Very fast parallel big-data BLAST XML file parser which can be used as
 command line utility.  Use blastxmlparser to: Parse BLAST XML; filter output;
 generate FASTA, JSON, YAML, RDF, JSON-LD, HTML, CSV, tabular output etc.")
-    (home-page "http://github.com/pjotrp/blastxmlparser")
+    (home-page "https://github.com/pjotrp/blastxmlparser")
     (license license:expat)))
 
 (define-public bioruby

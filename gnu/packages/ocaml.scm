@@ -1252,7 +1252,7 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
        (method url-fetch)
        (uri
         (string-append
-         "http://github.com/Chris00/ocaml-csv/releases/download/"
+         "https://github.com/Chris00/ocaml-csv/releases/download/"
          version "/csv-" version ".tar.gz"))
        (sha256
         (base32

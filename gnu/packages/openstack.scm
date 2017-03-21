@@ -135,7 +135,7 @@ manner.")
     (native-inputs
       `(;; Tests
         ("python-testscenarios" ,python-testscenarios)))
-    (home-page "http://github.com/openstack-dev/hacking")
+    (home-page "https://github.com/openstack-dev/hacking")
     (synopsis "OpenStack hacking guideline enforcement")
     (description
       "Python-hacking is a set of flake8 plugins that test and enforce the

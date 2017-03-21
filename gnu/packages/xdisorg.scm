@@ -779,7 +779,7 @@ within a single process.")
        ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://github.com/alols/xcape")
+    (home-page "https://github.com/alols/xcape")
     (synopsis "Use a modifier key in X.org as another key")
     (description
      "This utility for X.org allows to use modifier key as another key when
