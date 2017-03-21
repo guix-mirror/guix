@@ -121,7 +121,10 @@ seconds to wait for the connection to succeed."
              (raise-error errno)))))
       (connect s sockaddr)))
 
-(define* (ftp-open host #:optional (port "ftp") #:key timeout)
+(define* (ftp-open host #:optional (port "ftp")
+                        #:key timeout
+                              (username "anonymous")
+                              (password "guix@example.com"))
   "Open an FTP connection to HOST on PORT (a service-identifying string,
 or a TCP port number), and return it.
 
@@ -156,7 +159,7 @@ TIMEOUT, an ETIMEDOUT error is raised."
                (if (eqv? code 220)
                    (begin
                      ;;(%ftp-command "OPTS UTF8 ON" 200 s)
-                     (%ftp-login "anonymous" "guix@example.com" s)
+                     (%ftp-login username password s)
                      (%make-ftp-connection s ai))
                    (begin
                      (close s)
