@@ -339,7 +339,14 @@ generator library for C++.")
              #t))
          (add-before 'check 'build-kodi-test
            (lambda _
-             (zero? (system* "make" "kodi-test")))))))
+             (zero? (system* "make" "kodi-test"))))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (curl (string-append (assoc-ref inputs "curl") "/lib")))
+               (wrap-program (string-append out "/bin/kodi")
+                 `("LD_LIBRARY_PATH" suffix (,curl)))
+               #t))))))
     ;; TODO: Add dependencies for:
     ;; - nfs
     ;; - cec
