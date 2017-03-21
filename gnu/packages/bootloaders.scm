@@ -226,15 +226,15 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.2")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.kernel.org/pub/software/utils/dtc/"
+                    "mirror://kernel.org/software/utils/dtc/"
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "1b7si8niyca4wxbfah3qw4p4wli81mc1qwfhaswvrfqahklnwi8k"))))
+                "1yygyvnnpdh241hl90n9p3kxcdvk3jxmsr4ndb961c8mq3ak21s7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
