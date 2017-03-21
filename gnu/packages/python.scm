@@ -4537,6 +4537,7 @@ services for your Python modules and applications.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
+       (patches (search-patches "python-pillow-freetype-2.7-test-failure.patch"))
        (sha256
         (base32
          "0xkv0p1d73gz0a1qaasf0ai4262g8f334j07vd60bjrxs2wr3nmj"))))
