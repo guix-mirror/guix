@@ -31,6 +31,8 @@
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
   #:use-module (gnu system mapped-devices)
+  #:use-module ((gnu system linux-initrd)
+                #:select (file-system-packages))
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))

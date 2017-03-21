@@ -22,8 +22,6 @@
   #:use-module (guix records)
   #:use-module ((gnu build file-systems)
                 #:select (string->uuid uuid->string))
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages disk)
   #:re-export (string->uuid
                uuid->string)
   #:export (<file-system>
@@ -40,6 +38,8 @@
             file-system-check?
             file-system-create-mount-point?
             file-system-dependencies
+
+            file-system-type-predicate
 
             file-system->spec
             spec->file-system
@@ -67,8 +67,6 @@
 
             file-system-mapping->bind-mount
 
-            file-system-packages
-
             %store-mapping
             %network-configuration-files
             %network-file-mappings))
@@ -76,6 +74,9 @@
 ;;; Commentary:
 ;;;
 ;;; Declaring file systems to be mounted.
+;;;
+;;; Note: this file system is used both in the Shepherd and on the "host
+;;; side", so it must not include (gnu packages …) modules.
 ;;;
 ;;; Code:
 
@@ -418,23 +419,5 @@ a bind mount."
 (define (file-system-type-predicate type)
   (lambda (fs)
     (string=? (file-system-type fs) type)))
-
-(define* (file-system-packages file-systems #:key (volatile-root? #f))
- `(,@(if (find (lambda (fs)
-                 (string-prefix? "ext" (file-system-type fs)))
-               file-systems)
-         (list e2fsck/static)
-         '())
-   ,@(if (find (lambda (fs)
-                 (string-suffix? "fat" (file-system-type fs)))
-               file-systems)
-         (list fatfsck/static)
-         '())
-   ,@(if (find (file-system-type-predicate "btrfs") file-systems)
-         (list btrfs-progs/static)
-         '())
-   ,@(if volatile-root?
-         (list unionfs-fuse/static)
-         '())))
 
 ;;; file-systems.scm ends here
