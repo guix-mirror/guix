@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,9 +36,13 @@
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/libots/libots/"
-                           name "-" version "/" name "-" version
-                           ".tar.gz"))
+       ;; libots seems to have left sourceforge and taken their release
+       ;; tarballs with them
+       (uri (list (string-append "mirror://debian/pool/main/o/ots/ots_"
+                                 version ".orig.tar.gz")
+                  (string-append "mirror://sourceforge/libots/libots/"
+                                 name "-" version "/" name "-" version
+                                 ".tar.gz")))
        (sha256
         (base32 "0dz1ccd7ymzk4swz1aly4im0k3pascnshmgg1whd2rk14li8v47a"))
        (patches (search-patches "ots-no-include-missing-file.patch"))))
