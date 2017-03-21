@@ -120,6 +120,7 @@
                   ;; https://github.com/golang/go/issues/17545
                   ;; https://github.com/golang/go/issues/17276
                   ("time/time_test.go" "(.+)(TestLoadFixed.+)")
+                  ("time/format_test.go" "(.+)(TestParseInLocation.+)")
 
                   ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
@@ -266,6 +267,7 @@ sequential processes (CSP) concurrent programming features added.")
                     ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
                     ("os/os_test.go" "(.+)(TestHostname.+)")
                     ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
                     ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
                     ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
                     ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
