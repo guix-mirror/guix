@@ -283,6 +283,10 @@ H.264 (MPEG-4 AVC) video streams.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
+       ;; Currently the source code doesn't check for aarch64
+       ,@(if (string-prefix? "aarch64" (or (%current-target-system) (%current-system)))
+           '(#:configure-flags '("-DENABLE_PIC=TRUE"))
+           '())
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build
