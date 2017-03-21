@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
@@ -2243,7 +2243,8 @@ parts of it.")
         ,(let ((system (or (%current-target-system) (%current-system))))
            (or (string-prefix? "x86_64" system)
                (string-prefix? "i686" system)
-               (string-prefix? "mips" system)))
+               (string-prefix? "mips" system)
+               (string-prefix? "aarch64" system)))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
@@ -2263,6 +2264,9 @@ parts of it.")
                   ;; for Loongson cores are used.
                   ((string-prefix? "mips" system)
                    '("TARGET=SICORTEX"))
+                  ;; On aarch64 force the generic 'armv8-a' target
+                  ((string-prefix? "aarch64" system)
+                   '("TARGET=ARMV8"))
                   (else '()))))
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
