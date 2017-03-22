@@ -4382,14 +4382,14 @@ both of which are installed automatically if you install this library.")
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
-    (version "0.32.11")
+    (version "0.32.13")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "SQLAlchemy-Utils" version))
         (sha256
          (base32
-          "1wghyvk73cmq3iqyg3fczw128fv2pan2v76m0xg1bw05h8fhvnk3"))))
+          "0vsib7gidjamzsz6w4s5pdhxzxsrkghjnm4sqwk94igjrl3i5ixj"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Many tests require a running database server.
