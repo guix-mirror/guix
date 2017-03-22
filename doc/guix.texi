@@ -6523,6 +6523,18 @@ This allows the user's Guix to keep substitute information in cache for
 guarantee that the store items it provides will indeed remain available
 for as long as @var{ttl}.
 
+@item --public-key=@var{file}
+@itemx --private-key=@var{file}
+Use the specific @var{file}s as the public/private key pair used to sign
+the store items being published.
+
+The files must correspond to the same key pair (the private key is used
+for signing and the public key is merely advertised in the signature
+metadata).  They must contain keys in the canonical s-expression format
+as produced by @command{guix archive --generate-key} (@pxref{Invoking
+guix archive}).  By default, @file{/etc/guix/signing-key.pub} and
+@file{/etc/guix/signing-key.sec} are used.
+
 @item --repl[=@var{port}]
 @itemx -r [@var{port}]
 Spawn a Guile REPL server (@pxref{REPL Servers,,, guile, GNU Guile

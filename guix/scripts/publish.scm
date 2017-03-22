@@ -72,6 +72,10 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
   (display (_ "
+      --public-key=FILE  use FILE as the public key for signatures"))
+  (display (_ "
+      --private-key=FILE use FILE as the private key for signatures"))
+  (display (_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
   (newline)
   (display (_ "
@@ -148,6 +152,12 @@ compression disabled~%"))
                       (leave (_ "~a: invalid duration~%") arg))
                     (alist-cons 'narinfo-ttl (time-second duration)
                                 result))))
+        (option '("public-key") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'public-key-file arg result)))
+        (option '("private-key" "secret-key") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'private-key-file arg result)))
         (option '(#\r "repl") #f #t
                 (lambda (opt name arg result)
                   ;; If port unspecified, use default Guile REPL port.
