@@ -9003,14 +9003,14 @@ Python at your fingertips, in Lisp form.")
 (define-public python-rauth
   (package
     (name "python-rauth")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rauth" version))
         (sha256
          (base32
-          "00pq7zw429hhza9c0qzxiqp77m653jv09z92nralnmzwdf6pzicf"))))
+          "02kv8w8l98ky223avyq7vw7x1f2ya9chrm59r77ylq45qb0xnk2j"))))
     (build-system python-build-system)
     (arguments
      `(#:test-target "check"))
